@@ -20,6 +20,6 @@ repos:
       - id: mypy-baseline
         name: mypy (against baseline)
         language: system
-        entry: bash -c 'set -o pipefail; python -m mypy spacegame/ | python -m mypy_baseline filter'
+        entry: "bash -c 'python -m mypy spacegame/ | grep -v \": note:\" | python -m mypy_baseline filter'"
         pass_filenames: false
         types_or: [python]

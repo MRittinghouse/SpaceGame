@@ -22,10 +22,18 @@ pytest --cov=spacegame --cov-report=html         # Tests with coverage report
 ruff format spacegame/ tests/                    # Format code (replaces black)
 ruff check spacegame/                            # Lint (<1s)
 ruff check spacegame/ --fix                      # Auto-fix lint issues
-mypy spacegame/                                  # Type check
+mypy spacegame/                                  # Type check (raw, all errors)
+python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter   # Type check against ratchet
+python scripts/mypy_populations.py              # Print A/B/C population counts
 uv sync --extra dev                              # Install all dependencies (preferred)
 pip install -e ".[dev]"                          # Install with dev dependencies (fallback)
 ```
+
+### Type-check ratchet
+
+`mypy-baseline.txt` records the current set of 768 known mypy errors so new errors are caught without blocking the whole project. The pre-commit hook and the `types` CI job both run `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter`; that command exits 0 if no new errors were introduced, non-zero if any were. Note-severity lines (overload suggestions, annotation hints) are filtered before the baseline comparison because their message text varies across Python minor versions, causing spurious "new violation" alerts. Note: `set -o pipefail` is intentionally absent -- mypy exits 1 when errors exist, which would poison the pipeline; filter is the last command, so its exit code naturally propagates.
+
+**Do not regenerate `mypy-baseline.txt` as part of a feature commit.** Regeneration is permitted only in a commit whose diff contains nothing but type annotations and None-guards (e.g., adding `Optional[X]`, fixing a return type). Regenerating during feature work silently swallows newly introduced type errors, defeating the ratchet. See `requirements/roadmap/ROADMAP.md#qf-2` and `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` Section 1.
 
 ## Project Structure
 

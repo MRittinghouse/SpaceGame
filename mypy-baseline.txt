@@ -1,26 +1,9 @@
-﻿spacegame/models/combat_tutorial_helper.py:0: error: "object" has no attribute "player"  [attr-defined]
+spacegame/models/combat_tutorial_helper.py:0: error: "object" has no attribute "player"  [attr-defined]
 spacegame/models/system.py:0: error: Incompatible return value type (got "Station | None", expected "Station")  [return-value]
 spacegame/engine/easing.py:0: error: Returning Any from function declared to return "float"  [no-any-return]
 spacegame/views/base_view.py:0: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
 spacegame/engine/transitions.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/transitions.py:0: note: Use "-> None" if function does not return a value
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/transitions.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
 spacegame/engine/screen_effects.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/screen_effects.py:0: note: Use "-> None" if function does not return a value
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-spacegame/engine/screen_effects.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
 spacegame/engine/procedural.py:0: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
 spacegame/config.py:0: error: Function is missing a return type annotation  [no-untyped-def]
 spacegame/models/ship_build.py:0: error: Returning Any from function declared to return "int"  [no-any-return]
@@ -38,13 +21,10 @@ spacegame/models/ship_module.py:0: error: Name "ShipBuild" is not defined  [name
 spacegame/models/ship_module.py:0: error: Name "ShipBuild" is not defined  [name-defined]
 spacegame/models/ship_module.py:0: error: Name "HullMaterial" is not defined  [name-defined]
 spacegame/models/salvage.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/models/salvage.py:0: note: Use "-> None" if function does not return a value
 spacegame/models/salvage.py:0: error: Item "None" of "SalvageItemConfig | None" has no attribute "commodity_id"  [union-attr]
 spacegame/models/crew.py:0: error: Returning Any from function declared to return "int"  [no-any-return]
 spacegame/models/bidding.py:0: error: Returning Any from function declared to return "str"  [no-any-return]
 spacegame/engine/activity_registry.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/activity_registry.py:0: note: Use "-> None" if function does not return a value
-spacegame/engine/activity_registry.py:0: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
 spacegame/models/module_combat.py:0: error: Incompatible types in assignment (expression has type "object", variable has type "dict[str, float | bool]")  [assignment]
 spacegame/models/build_sharing.py:0: error: "object" has no attribute "unlocked_modules"  [attr-defined]
 spacegame/models/build_sharing.py:0: error: "object" has no attribute "unlocked_modules"  [attr-defined]
@@ -68,9 +48,6 @@ spacegame/engine/salvage_vfx.py:0: error: Argument 3 to "render" of "Font" has i
 spacegame/engine/refining_vfx.py:0: error: Unsupported operand types for >= ("float" and "object")  [operator]
 spacegame/engine/refining_vfx.py:0: error: Unsupported operand types for - ("float" and "object")  [operator]
 spacegame/engine/refining_vfx.py:0: error: No overload variant of "range" matches argument type "object"  [call-overload]
-spacegame/engine/refining_vfx.py:0: note: Possible overload variants:
-spacegame/engine/refining_vfx.py:0: note: def __new__(cls, SupportsIndex, /) -> range
-spacegame/engine/refining_vfx.py:0: note: def __new__(cls, SupportsIndex, SupportsIndex, SupportsIndex = ..., /) -> range
 spacegame/engine/refining_vfx.py:0: error: Argument 1 to "fill" of "Surface" has incompatible type "object"; expected "Color | SequenceLike[int] | str | int"  [arg-type]
 spacegame/engine/refining_vfx.py:0: error: Unsupported operand types for < ("int" and "object")  [operator]
 spacegame/engine/refining_vfx.py:0: error: Unsupported operand types for * ("object" and "float")  [operator]
@@ -79,18 +56,10 @@ spacegame/engine/mining_vfx.py:0: error: Unsupported operand types for >= ("int"
 spacegame/engine/mining_vfx.py:0: error: Unsupported operand types for <= ("int" and "object")  [operator]
 spacegame/engine/mining_vfx.py:0: error: Argument 1 to "_depth_to_y" of "DepthMeter" has incompatible type "object"; expected "int"  [arg-type]
 spacegame/engine/mining_vfx.py:0: error: No overload variant of "min" matches argument types "object", "int"  [call-overload]
-spacegame/engine/mining_vfx.py:0: note: Possible overload variants:
-spacegame/engine/mining_vfx.py:0: note: def [SupportsRichComparisonT: SupportsDunderLT[Any] | SupportsDunderGT[Any]] min(SupportsRichComparisonT, SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, key: None = ...) -> SupportsRichComparisonT
-spacegame/engine/mining_vfx.py:0: note: def [_T] min(_T, _T, /, *_args: _T, key: Callable[[_T], SupportsDunderLT[Any] | SupportsDunderGT[Any]]) -> _T
-spacegame/engine/mining_vfx.py:0: note: def [SupportsRichComparisonT: SupportsDunderLT[Any] | SupportsDunderGT[Any]] min(Iterable[SupportsRichComparisonT], /, *, key: None = ...) -> SupportsRichComparisonT
-spacegame/engine/mining_vfx.py:0: note: def [_T] min(Iterable[_T], /, *, key: Callable[[_T], SupportsDunderLT[Any] | SupportsDunderGT[Any]]) -> _T
-spacegame/engine/mining_vfx.py:0: note: def [SupportsRichComparisonT: SupportsDunderLT[Any] | SupportsDunderGT[Any], _T] min(Iterable[SupportsRichComparisonT], /, *, key: None = ..., default: _T) -> SupportsRichComparisonT | _T
-spacegame/engine/mining_vfx.py:0: note: def [_T1, _T2] min(Iterable[_T1], /, *, key: Callable[[_T1], SupportsDunderLT[Any] | SupportsDunderGT[Any]], default: _T2) -> _T1 | _T2
 spacegame/engine/mining_vfx.py:0: error: Expected iterable as variadic argument  [misc]
 spacegame/engine/mining_vfx.py:0: error: Argument 1 to "render" of "Font" has incompatible type "object"; expected "str | bytes | None"  [arg-type]
 spacegame/models/mission.py:0: error: Function is missing a return type annotation  [no-untyped-def]
 spacegame/models/mining.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/models/mining.py:0: note: Use "-> None" if function does not return a value
 spacegame/models/drone.py:0: error: Returning Any from function declared to return "float"  [no-any-return]
 spacegame/models/drone.py:0: error: Returning Any from function declared to return "float"  [no-any-return]
 spacegame/models/drone.py:0: error: Returning Any from function declared to return "bool"  [no-any-return]
@@ -100,13 +69,10 @@ spacegame/models/ship.py:0: error: Function is missing a type annotation for one
 spacegame/models/ship.py:0: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
 spacegame/models/ship.py:0: error: Name "ShipBuild" is not defined  [name-defined]
 spacegame/models/ship.py:0: error: Name "Optional" is not defined  [name-defined]
-spacegame/models/ship.py:0: note: Did you forget to import it from "typing"? (Suggestion: "from typing import Optional")
 spacegame/models/ship.py:0: error: Name "ShipBuild" is not defined  [name-defined]
 spacegame/models/ship.py:0: error: Name "Optional" is not defined  [name-defined]
-spacegame/models/ship.py:0: note: Did you forget to import it from "typing"? (Suggestion: "from typing import Optional")
 spacegame/models/ship.py:0: error: Name "ComputedShipStats" is not defined  [name-defined]
 spacegame/models/ship.py:0: error: Name "Optional" is not defined  [name-defined]
-spacegame/models/ship.py:0: note: Did you forget to import it from "typing"? (Suggestion: "from typing import Optional")
 spacegame/models/encounter.py:0: error: Incompatible types in assignment (expression has type "float", variable has type "int")  [assignment]
 spacegame/models/combat.py:0: error: Name "MomentumGauge" is not defined  [name-defined]
 spacegame/models/combat.py:0: error: Need type annotation for "module_catalog_ref" (hint: "module_catalog_ref: dict[<type>, <type>] = ...")  [var-annotated]
@@ -147,7 +113,6 @@ spacegame/models/dual_tech.py:0: error: Returning Any from function declared to 
 spacegame/models/player.py:0: error: Name "HiddenCompartment" is not defined  [name-defined]
 spacegame/models/player.py:0: error: Incompatible types in assignment (expression has type "float", variable has type "int")  [assignment]
 spacegame/models/player.py:0: error: Function "builtins.any" is not valid as a type  [valid-type]
-spacegame/models/player.py:0: note: Perhaps you meant "typing.Any" instead of "any"?
 spacegame/views/dialogue_view.py:0: error: Unsupported operand types for >= ("int" and "object")  [operator]
 spacegame/views/dialogue_view.py:0: error: Unsupported operand types for <= ("int" and "object")  [operator]
 spacegame/views/dialogue_view.py:0: error: Argument 1 to "render" of "Font" has incompatible type "object"; expected "str | bytes | None"  [arg-type]
@@ -169,7 +134,6 @@ spacegame/models/ship_presets.py:0: error: "object" has no attribute "combat_shi
 spacegame/models/ship_presets.py:0: error: "object" has no attribute "combat_evasion"  [attr-defined]
 spacegame/models/ship_presets.py:0: error: "object" has no attribute "name"  [attr-defined]
 spacegame/models/market.py:0: error: Function "builtins.any" is not valid as a type  [valid-type]
-spacegame/models/market.py:0: note: Perhaps you meant "typing.Any" instead of "any"?
 spacegame/views/station_layouts.py:0: error: "object" has no attribute "get_location_icon"  [attr-defined]
 spacegame/views/station_layouts.py:0: error: "object" has no attribute "name"  [attr-defined]
 spacegame/views/station_layouts.py:0: error: "object" has no attribute "name"  [attr-defined]
@@ -271,13 +235,9 @@ spacegame/views/trading_view.py:0: error: Item "None" of "Market | None" has no 
 spacegame/views/trading_view.py:0: error: Item "None" of "Market | None" has no attribute "get_sell_price"  [union-attr]
 spacegame/views/trading_view.py:0: error: Item "None" of "Market | None" has no attribute "record_sell"  [union-attr]
 spacegame/views/trading_view.py:0: error: No overload variant of "int" matches argument type "object"  [call-overload]
-spacegame/views/trading_view.py:0: note: Possible overload variants:
-spacegame/views/trading_view.py:0: note: def __new__(cls, str | Buffer | SupportsInt | SupportsIndex | SupportsTrunc = ..., /) -> int
-spacegame/views/trading_view.py:0: note: def __new__(cls, str | bytes | bytearray, /, base: SupportsIndex) -> int
 spacegame/views/trading_view.py:0: error: Item "None" of "Market | None" has no attribute "update_day"  [union-attr]
 spacegame/views/trading_view.py:0: error: Item "None" of "Market | None" has no attribute "regenerate_stock"  [union-attr]
 spacegame/views/trading_view.py:0: error: Unsupported operand types for <= ("int" and "None")  [operator]
-spacegame/views/trading_view.py:0: note: Left operand is of type "int | None"
 spacegame/views/station_hub_view.py:0: error: "object" has no attribute "get_docking_allowed"  [attr-defined]
 spacegame/views/station_hub_view.py:0: error: "object" has no attribute "get_chatter"  [attr-defined]
 spacegame/views/station_hub_view.py:0: error: Cannot infer type of lambda  [misc]
@@ -527,128 +487,67 @@ spacegame/engine/game.py:0: error: Incompatible types in assignment (expression 
 spacegame/engine/game.py:0: error: Incompatible types in assignment (expression has type "str | None", variable has type "str")  [assignment]
 spacegame/engine/game.py:0: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Incompatible types in assignment (expression has type "None", variable has type "str")  [assignment]
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Function is missing a return type annotation  [no-untyped-def]
-spacegame/engine/game.py:0: note: Use "-> None" if function does not return a value
 spacegame/engine/game.py:0: error: Incompatible types in assignment (expression has type "GalaxyMapView", variable has type "None")  [assignment]
 spacegame/engine/game.py:0: error: Argument 2 to "GalaxyMapView" has incompatible type "Player | None"; expected "Player"  [arg-type]
 spacegame/engine/game.py:0: error: "None" has no attribute "journal"  [attr-defined]
