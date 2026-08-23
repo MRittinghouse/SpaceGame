@@ -4648,7 +4648,7 @@ executing any QF sprint; it carries the evidence and the reasoning these sprints
 
 ### QF-1 — Quality gate infrastructure
 
-**Status**: in-progress (planning)
+**Status**: blocked
 **Source**: Spec A, Sections 1 and 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: none | **Blocks**: QF-2
@@ -4846,6 +4846,7 @@ tests/test_views/test_trading_actions.py
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:45 — harness: plan phase starting
 - 2026-08-23 15:15 — planning complete; verified all 4 context docs exist; confirmed 4 drifting
+- 2026-08-23 14:50 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-1: 2; no sentinel in ROADMAP.md or in agent stdout
   files (enumerated in touch zones); locked 8 decisions (chief among them: `ruff check` scoped to
   `spacegame/` only, since tests/ has 874 pre-existing findings and Spec A's "already clean" claim
   only holds for spacegame/); no scope expansion, no new sprints proposed; folded in 6 CI polish
