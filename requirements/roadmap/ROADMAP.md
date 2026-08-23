@@ -4866,7 +4866,7 @@ tests/test_views/test_trading_actions.py
 
 ### QF-2 — MyPy baseline + population metrics
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: Spec A, Section 1
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-1 | **Blocks**: QF-3
@@ -5202,24 +5202,24 @@ surface).
 - 2026-08-23 — [implement] pre-commit run --all-files exits 0. AC 4 satisfied.
 - 2026-08-23 — [implement] python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))" exits 0. AC 5 satisfied.
 - 2026-08-23 — [implement] Full suite: 10489 passed, 98 skipped (baseline 10463, +26 new tests). AC 6 satisfied. PHASE_OK
+- 2026-08-23 17:25 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 17:35 — [review] Plan audit: sound. All 11 locked decisions defensible. The implementer correctly rejected Decision 5's flawed rationale (set -o pipefail would always fail the pipe because mypy exits 1 on baseline errors); dropping pipefail from the pre-commit hook was right. However, the CI types job inherited GitHub Actions' default bash -eo pipefail, making it always exit 1 on a clean tree -- the gate was broken. Fixed directly: added `set +o pipefail` to the CI step's run block. All 6 ACs verified. 26 new tests pass (suite 10489 >= baseline 10463). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-23 17:06
-- Completed: 2026-08-23 18:30
-- Files_changed: mypy-baseline.txt, scripts/mypy_populations.py, tests/test_scripts/__init__.py, tests/test_scripts/test_mypy_populations.py, .pre-commit-config.yaml, .github/workflows/quality.yml, pyproject.toml, CLAUDE.md
-- Commits: c1cbfe1, 0a4d86d, 890d457
-- Tests_added: 26
-- Tests_baseline: 10463
+- Started: 2026-08-23 17:25
+- Completed: 2026-08-23 17:45
+- Files_changed: .github/workflows/quality.yml
+- Commits: 665f03f
 - Tests_passing: 10489
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Decision 9 fallback applied (baseline is comment-hostile); note filtering (grep -v ": note:") added to both hook and CI after discovering Python 3.13 vs 3.14 type-stub differences cause note-message churn; set -o pipefail dropped from pipeline because mypy exits 1 on errors, which would poison the pipeline without changing the gate's semantics (filter is last command, its exit code propagates). TOTAL = A_tracked + excluded + B + C (124+72+234+338=768) rather than A+B+C because excluded game.py union-attr count toward raw error total.
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: 5/5
+- Findings_critical: 1
+- Findings_minor_fixed_directly: 1
+- Single_tighten: The CI step has an explicit `shell: bash` attribute that is redundant given the workflow-level `defaults: run: shell: bash`; harmless but noise. Not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; Decision 5 was flawed in the plan but the implementer correctly caught and fixed it for the pre-commit hook. Review caught that the same pipefail issue re-emerged in the CI step (GitHub Actions bash adds -eo pipefail by default); fixed with `set +o pipefail`. AC 5 only validates YAML syntax and cannot verify CI execution without a push -- the pipefail bug was invisible to the implementer.
 
 ### QF-3 — Ralph quality-gate integration
 
