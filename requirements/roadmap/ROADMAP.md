@@ -4954,7 +4954,7 @@ tests/test_ralph/
 
 ### QF-4 — Import-boundary guard
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A (additional deliverable)
 **Size**: S | **Effort**: half day
 **Depends on**: none | **Blocks**: none
@@ -5089,26 +5089,36 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:50 — harness: plan phase starting
-- 2026-08-23 14:55 — planning complete; verified both scan roots are pygame-free today; locked 3
-- 2026-08-23 14:54 — harness: plan phase outcome=error, marking blocked. agent exited cleanly; commits referencing QF-4: 2; no sentinel in ROADMAP.md or in agent stdout
-  decisions (TYPE_CHECKING banned, no allowlist, direct-import only); folded in scan-roots-live
-  guard and synthetic-violation self-test as polish; no scope expansion needed. PHASE_OK
+- 2026-08-23 14:55 — planning complete (commit 470f2ad); verified both scan roots are pygame-free
+  today; locked 3 decisions (TYPE_CHECKING banned, no allowlist, direct-import only); folded in
+  scan-roots-live guard and synthetic-violation self-test as polish; no scope expansion needed
+- 2026-08-23 14:54 — harness: plan phase outcome=error, marking blocked. agent exited cleanly;
+  commits referencing QF-4: 2; no sentinel in ROADMAP.md or in agent stdout
+- 2026-08-23 15:12 — harness: plan phase starting
+- 2026-08-23 15:20 — re-verified: 3 context docs exist, both scan roots exist and contain `.py`
+  files, grep finds no pygame/pygame_gui imports under `models/` or `constants/`. Plan from prior
+  run is still correct and complete; consolidated mangled activity log entries. No changes to
+  Plan/Deliverables/Acceptance criteria. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-23 14:50
-- Completed: 2026-08-23 14:55
+- Started: 2026-08-23 15:12
+- Completed: 2026-08-23 15:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 470f2ad
+- Commits: pending
 - New_sprints_proposed: none
-- Polish_items_folded_in: scan-roots-live guard test, synthetic-violation self-test, deterministic
-  sorted output, submodule-and-alias coverage in acceptance criteria
-- Decisions_locked: 3 (TYPE_CHECKING banned, no allowlist, direct-import only)
-- Notes: Verified both context docs exist and read. Confirmed current tree is clean (grep finds no
-  pygame imports under models/ or constants/, and models/ does not transitively pull pygame via
-  engine/views/utils.image_loader). Sprint scope matches spec's "additional deliverable" bound (~20
-  lines). No cross-sprint reactions (foundational; no player-facing surface).
+- Polish_items_folded_in: (carried from prior plan run) scan-roots-live guard test,
+  synthetic-violation self-test, deterministic sorted output, submodule-and-alias coverage in
+  acceptance criteria
+- Decisions_locked: 3 (TYPE_CHECKING banned, no allowlist, direct-import only) — carried from
+  prior plan run, still valid
+- Notes: Prior plan run (commit 470f2ad, 14:55) produced a complete, correct plan but the harness
+  failed to detect the sentinel because a subsequent harness log entry was inserted mid-entry,
+  splitting the PHASE_OK marker across non-adjacent lines. This run re-verified all context (docs
+  exist, tree is still pygame-free under `models/` and `constants/`), confirmed the plan and
+  decisions remain valid, and consolidated the activity log so the sentinel sits on a single line
+  the harness can parse. No substantive Plan/Deliverables/Acceptance-criteria changes needed.
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
 **Status**: todo
