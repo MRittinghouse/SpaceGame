@@ -16,18 +16,18 @@ import signal
 import subprocess
 import sys
 import time
-from dataclasses import asdict, dataclass, field, fields as dataclass_fields
+from dataclasses import asdict, dataclass, field
+from dataclasses import fields as dataclass_fields
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Optional
 
 from ralph import agents, roadmap_state
-from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
+from ralph.agents import Outcome, Phase, PhaseContext
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
-    INTER_SPRINT_SLEEP,
     IN_PROGRESS_STALE_MINUTES,
+    INTER_SPRINT_SLEEP,
     LOCK_FILE,
     LOGS_DIR,
     MAX_REWORK_CYCLES,
@@ -46,7 +46,6 @@ from ralph.config import (
     STATUS_TODO,
     STOP_FILE,
 )
-
 
 # ---------------------------------------------------------------------------
 # Persistent state
@@ -246,6 +245,14 @@ def execute_sprint(
         _mark_terminal_outcome(sprint_id, "plan", plan_result.outcome, plan_result.reason)
         return plan_result.outcome
 
+    if not DRY_RUN:
+        gate = _run_quality_gates()
+        if gate is not None:
+            gate_name, err = gate
+            reason = f"quality-gate regression ({gate_name}): {err}"
+            _mark_terminal_outcome(sprint_id, "plan", Outcome.BLOCKED, reason)
+            return Outcome.BLOCKED
+
     if should_stop():
         roadmap_state.append_activity_log(sprint_id, "harness: stop requested after plan phase")
         return Outcome.OK  # Plan phase succeeded; stopping here is clean.
@@ -275,6 +282,14 @@ def execute_sprint(
             _mark_terminal_outcome(sprint_id, "implement", impl_result.outcome, impl_result.reason)
             return impl_result.outcome
 
+        if not DRY_RUN:
+            gate = _run_quality_gates()
+            if gate is not None:
+                gate_name, err = gate
+                reason = f"quality-gate regression ({gate_name}): {err}"
+                _mark_terminal_outcome(sprint_id, "implement", Outcome.BLOCKED, reason)
+                return Outcome.BLOCKED
+
         if should_stop():
             roadmap_state.update_status(sprint_id, STATUS_REVIEW)
             roadmap_state.append_activity_log(
@@ -302,6 +317,13 @@ def execute_sprint(
         )
 
         if review_result.outcome == Outcome.OK:
+            if not DRY_RUN:
+                gate = _run_quality_gates()
+                if gate is not None:
+                    gate_name, err = gate
+                    reason = f"quality-gate regression ({gate_name}): {err}"
+                    _mark_terminal_outcome(sprint_id, "review", Outcome.BLOCKED, reason)
+                    return Outcome.BLOCKED
             roadmap_state.update_status(sprint_id, STATUS_DONE)
             roadmap_state.append_activity_log(sprint_id, "harness: review passed, marking done")
             return Outcome.OK
@@ -391,6 +413,83 @@ _HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = (
     "STOP",
 )
 _HARNESS_MANAGED_RUNTIME_PREFIXES: tuple[str, ...] = ("ralph/logs/",)
+
+# Maximum characters of gate output captured in the activity-log entry.
+# Full output lives in the phase log; this keeps the ROADMAP readable.
+_GATE_ERROR_MAX_CHARS: int = 500
+
+
+def _run_quality_gates() -> Optional[tuple[str, str]]:
+    """Run ruff, ruff-format, and mypy quality gates against the project.
+
+    Runs three gates in order, short-circuiting on first failure:
+    1. ``ruff check spacegame/``
+    2. ``ruff format --check spacegame/ tests/``
+    3. ``mypy spacegame/`` piped through a Python note-filter into
+       ``mypy_baseline filter`` (Windows-safe; no shell=True).
+
+    Returns:
+        None when all gates pass, or ``(gate_name, error_text)`` on the
+        first regression. On subprocess exception (FileNotFoundError,
+        TimeoutExpired) the exception class and message are returned as
+        the error text so a broken tool install surfaces as a gate
+        failure rather than crashing the harness.
+    """
+
+    def _run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            cmd,
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=300,
+            encoding="utf-8",
+            errors="replace",
+            **kwargs,  # type: ignore[arg-type]
+        )
+
+    # Gate 1: ruff check spacegame/
+    gate_name = "ruff"
+    try:
+        result = _run([sys.executable, "-m", "ruff", "check", "spacegame/"])
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return (gate_name, f"{type(exc).__name__}: {exc}"[:_GATE_ERROR_MAX_CHARS])
+    if result.returncode != 0:
+        return (gate_name, (result.stdout + result.stderr)[:_GATE_ERROR_MAX_CHARS])
+
+    # Gate 2: ruff format --check spacegame/ tests/
+    gate_name = "ruff-format"
+    try:
+        result = _run([sys.executable, "-m", "ruff", "format", "--check", "spacegame/", "tests/"])
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return (gate_name, f"{type(exc).__name__}: {exc}"[:_GATE_ERROR_MAX_CHARS])
+    if result.returncode != 0:
+        return (gate_name, (result.stdout + result.stderr)[:_GATE_ERROR_MAX_CHARS])
+
+    # Gate 3: mypy spacegame/ | filter ": note:" lines | mypy_baseline filter
+    # Chained in Python (no shell=True) for Windows portability — grep isn't
+    # native on Windows and shell syntax differs from bash.
+    gate_name = "mypy"
+    try:
+        mypy_result = _run([sys.executable, "-m", "mypy", "spacegame/"])
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return (gate_name, f"{type(exc).__name__}: {exc}"[:_GATE_ERROR_MAX_CHARS])
+
+    filtered_output = "\n".join(
+        line for line in mypy_result.stdout.splitlines() if ": note:" not in line
+    )
+
+    try:
+        filter_result = _run(
+            [sys.executable, "-m", "mypy_baseline", "filter"],
+            input=filtered_output,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return (gate_name, f"{type(exc).__name__}: {exc}"[:_GATE_ERROR_MAX_CHARS])
+    if filter_result.returncode != 0:
+        return (gate_name, (filter_result.stdout + filter_result.stderr)[:_GATE_ERROR_MAX_CHARS])
+
+    return None
 
 
 def _filter_harness_managed_dirty(porcelain_text: str) -> tuple[str, list[str]]:
@@ -535,8 +634,8 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
             return 2
         except subprocess.TimeoutExpired:
             log(
-                f"Claude CLI did not respond to --version within 10s. "
-                f"The harness will still attempt invocation."
+                "Claude CLI did not respond to --version within 10s. "
+                "The harness will still attempt invocation."
             )
 
     # 8. Claude has agency (item 2 + agency upgrade): WRITE is required,
@@ -625,7 +724,7 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
         f"`WEBFETCH_FAIL: <error>` instead.\n\n"
         f"Reply with 'done' when all three steps are attempted."
     )
-    cmd = list(CLAUDE_CMD) + [prompt]
+    cmd = [*list(CLAUDE_CMD), prompt]
 
     log(f"Running agency probe (writes {rel_probe_path}, ~60-240s)...")
     try:
@@ -635,7 +734,7 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
             f.write(f"# Probe file: {rel_probe_path}\n")
             f.write(f"# Timeout: {PROBE_TIMEOUT_SECONDS}s\n\n")
             f.write(f"--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n\n")
-            f.write(f"--- AGENT OUTPUT ---\n")
+            f.write("--- AGENT OUTPUT ---\n")
             f.flush()
 
             try:

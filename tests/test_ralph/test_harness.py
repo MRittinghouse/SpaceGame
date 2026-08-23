@@ -13,14 +13,16 @@ helpers in isolation.
 from __future__ import annotations
 
 import json
+import subprocess
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ralph import config, harness, roadmap_state
+from ralph import agents, config, harness, roadmap_state
+from ralph.agents import Outcome, Phase, PhaseResult
 from ralph.harness import HarnessState, SprintState
-
 
 _ROADMAP_WITH_STUCK = """\
 # Test
@@ -228,7 +230,6 @@ class TestSafeParsePhaseReport:
 
     def test_extracts_fields_when_report_present(self, isolated_roadmap) -> None:
         # Append a phase report to SA-2's section.
-        from ralph.config import ROADMAP_PATH
 
         # Patched ROADMAP_PATH from fixture.
         path = roadmap_state.ROADMAP_PATH
@@ -266,7 +267,6 @@ class TestSprintStatePhaseReports:
 
     def test_load_tolerates_missing_report_fields(self, isolated_roadmap, tmp_path) -> None:
         # Old-format state.json without the new fields.
-        import json
         from ralph import config
 
         state_file = tmp_path / "state.json"
@@ -295,7 +295,6 @@ class TestSprintStatePhaseReports:
 
     def test_load_tolerates_unknown_keys(self, isolated_roadmap, tmp_path) -> None:
         # Future-format state.json with unknown extra fields.
-        import json
         from ralph import config
 
         state_file = tmp_path / "state.json"
@@ -534,3 +533,246 @@ class TestHarnessState:
         sprint_state = state.for_sprint("SA-NEW")
         assert sprint_state.sprint_id == "SA-NEW"
         assert "SA-NEW" in state.sprints
+
+
+# ---------------------------------------------------------------------------
+# Quality gates — _run_quality_gates() unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestRunQualityGates:
+    """Unit tests for _run_quality_gates() in isolation.
+
+    All subprocess calls are monkeypatched so no real ruff/mypy runs.
+    """
+
+    def _cp(
+        self,
+        returncode: int = 0,
+        stdout: str = "",
+        stderr: str = "",
+    ) -> subprocess.CompletedProcess:
+        return subprocess.CompletedProcess(
+            args=[], returncode=returncode, stdout=stdout, stderr=stderr
+        )
+
+    def test_all_pass_returns_none(self) -> None:
+        """When all three gates pass, returns None (no regression)."""
+        with patch(
+            "ralph.harness.subprocess.run",
+            side_effect=[
+                self._cp(0),  # ruff check spacegame/
+                self._cp(0),  # ruff format --check spacegame/ tests/
+                self._cp(
+                    1, stdout="spacegame/foo.py:12: error: old error"
+                ),  # mypy (existing errors OK)
+                self._cp(0),  # mypy_baseline filter: all in baseline → clean
+            ],
+        ):
+            result = harness._run_quality_gates()
+        assert result is None
+
+    def test_ruff_check_fails_returns_ruff_tuple(self) -> None:
+        """ruff check non-zero exit → ('ruff', error_text)."""
+        with patch("ralph.harness.subprocess.run", return_value=self._cp(1, stdout="lint error")):
+            result = harness._run_quality_gates()
+        assert result is not None
+        gate, err = result
+        assert gate == "ruff"
+        assert "lint error" in err
+
+    def test_ruff_format_fails_returns_ruff_format_tuple(self) -> None:
+        """ruff format --check non-zero exit → ('ruff-format', error_text)."""
+        with patch(
+            "ralph.harness.subprocess.run",
+            side_effect=[
+                self._cp(0),  # ruff check passes
+                self._cp(1, stdout="format violation"),  # ruff format fails
+            ],
+        ):
+            result = harness._run_quality_gates()
+        assert result is not None
+        gate, err = result
+        assert gate == "ruff-format"
+        assert "format violation" in err
+
+    def test_mypy_baseline_filter_fails_returns_mypy_tuple(self) -> None:
+        """mypy_baseline filter non-zero exit → ('mypy', error_text)."""
+        with patch(
+            "ralph.harness.subprocess.run",
+            side_effect=[
+                self._cp(0),  # ruff check passes
+                self._cp(0),  # ruff format passes
+                self._cp(1, stdout="spacegame/foo.py:12: error: incompatible type"),  # mypy
+                self._cp(1, stdout="Your changes introduced new violations."),  # filter fails
+            ],
+        ):
+            result = harness._run_quality_gates()
+        assert result is not None
+        gate, err = result
+        assert gate == "mypy"
+        assert "violations" in err
+
+    def test_long_output_truncated_to_gate_error_max(self) -> None:
+        """Error text longer than _GATE_ERROR_MAX_CHARS is truncated."""
+        long_output = "x" * 800
+        with patch("ralph.harness.subprocess.run", return_value=self._cp(1, stdout=long_output)):
+            result = harness._run_quality_gates()
+        assert result is not None
+        _, err = result
+        assert len(err) == harness._GATE_ERROR_MAX_CHARS
+
+    def test_mypy_file_not_found_returns_gate_tuple_no_crash(self) -> None:
+        """FileNotFoundError on mypy → ('mypy', 'FileNotFoundError: ...'), no crash."""
+        with patch(
+            "ralph.harness.subprocess.run",
+            side_effect=[
+                self._cp(0),  # ruff check passes
+                self._cp(0),  # ruff format passes
+                FileNotFoundError("mypy not found"),  # mypy invocation fails
+            ],
+        ):
+            result = harness._run_quality_gates()
+        assert result is not None
+        gate, err = result
+        assert gate == "mypy"
+        assert "FileNotFoundError" in err
+
+
+# ---------------------------------------------------------------------------
+# Quality gates — execute_sprint integration tests
+# ---------------------------------------------------------------------------
+
+
+class TestExecuteSprintQualityGate:
+    """Integration tests verifying quality-gate wiring inside execute_sprint.
+
+    agents.run_phase and _run_quality_gates are both mocked so no real
+    subprocess calls occur. Uses isolated_roadmap fixture for ROADMAP + state
+    file isolation.
+    """
+
+    def _ok_result(self, phase: Phase, tmp_path: Path) -> PhaseResult:
+        return PhaseResult(
+            outcome=Outcome.OK,
+            phase=phase,
+            sprint_id="SA-2",
+            log_path=tmp_path / "test.log",
+            reason="",
+        )
+
+    def test_plan_gate_failure_blocks_sprint(self, isolated_roadmap) -> None:
+        """When plan phase is OK but gate fails, sprint ends blocked."""
+        tmp = isolated_roadmap
+        gate_error = ("mypy", "spacegame/foo.py:12: error: incompatible type")
+
+        with patch.object(agents, "run_phase", return_value=self._ok_result(Phase.PLAN, tmp)):
+            with patch.object(harness, "_run_quality_gates", return_value=gate_error):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.BLOCKED
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "blocked" in content
+        assert "plan" in content
+        assert "mypy" in content
+
+    def test_implement_gate_failure_blocks_sprint(self, isolated_roadmap) -> None:
+        """When plan is clean but implement gate fails, sprint ends blocked."""
+        tmp = isolated_roadmap
+        gate_error = ("ruff", "lint error in spacegame/models/foo.py")
+
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+        ]
+        gate_results = [None, gate_error]  # plan clean, implement fails
+
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", side_effect=gate_results):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.BLOCKED
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "blocked" in content
+        assert "implement" in content
+        assert "ruff" in content
+
+    def test_review_gate_failure_blocks_sprint_not_done(self, isolated_roadmap) -> None:
+        """When review is OK but gate fails, sprint is blocked; STATUS_DONE not written."""
+        tmp = isolated_roadmap
+        gate_error = ("ruff-format", "format violation in spacegame/views/foo.py")
+
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+            self._ok_result(Phase.REVIEW, tmp),
+        ]
+        gate_results = [None, None, gate_error]  # plan+implement clean, review gate fails
+
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", side_effect=gate_results):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.BLOCKED
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "**Status**: done" not in content
+        assert "blocked" in content
+        assert "review" in content
+
+    def test_all_clean_happy_path_gate_called_three_times(self, isolated_roadmap) -> None:
+        """When all phases and gates are clean, sprint ends done; gate called exactly 3 times."""
+        tmp = isolated_roadmap
+
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+            self._ok_result(Phase.REVIEW, tmp),
+        ]
+        mock_gate = MagicMock(return_value=None)
+
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", mock_gate):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.OK
+        assert mock_gate.call_count == 3
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "**Status**: done" in content
+
+    def test_non_ok_plan_phase_skips_gate(self, isolated_roadmap) -> None:
+        """When plan phase returns non-OK, quality gate is not invoked."""
+        tmp = isolated_roadmap
+        blocked_result = PhaseResult(
+            outcome=Outcome.BLOCKED,
+            phase=Phase.PLAN,
+            sprint_id="SA-2",
+            log_path=tmp / "test.log",
+            reason="missing context doc",
+        )
+        gate_spy = MagicMock(return_value=None)
+
+        with patch.object(agents, "run_phase", return_value=blocked_result):
+            with patch.object(harness, "_run_quality_gates", gate_spy):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.BLOCKED
+        gate_spy.assert_not_called()
+
+    def test_dry_run_skips_gate(self, isolated_roadmap, monkeypatch) -> None:
+        """When DRY_RUN is True in harness module, quality gates are not invoked."""
+        tmp = isolated_roadmap
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+            self._ok_result(Phase.REVIEW, tmp),
+        ]
+        gate_spy = MagicMock(return_value=None)
+
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", gate_spy):
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.OK
+        gate_spy.assert_not_called()
