@@ -15,3 +15,11 @@ repos:
       - id: ruff-format
         args: [--check, spacegame/, tests/]
         pass_filenames: false
+  - repo: local
+    hooks:
+      - id: mypy-baseline
+        name: mypy (against baseline)
+        language: system
+        entry: bash -c 'set -o pipefail; python -m mypy spacegame/ | python -m mypy_baseline filter'
+        pass_filenames: false
+        types_or: [python]
