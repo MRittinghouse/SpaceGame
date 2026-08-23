@@ -4648,15 +4648,16 @@ executing any QF sprint; it carries the evidence and the reasoning these sprints
 
 ### QF-1 — Quality gate infrastructure
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Sections 1 and 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: none | **Blocks**: QF-2
 
 **Goal.** Turn on the gates that are already at zero and give the repo a CI pipeline. `ruff check`
-already passes clean; only `ruff format` drifts, on 4 files. There is no CI at all. This sprint makes
-lint, format, and tests enforced for every author (human, Claude, ralph) and gives tagged commits a
-Windows build artifact. MyPy is deliberately NOT wired here; it needs a baseline first (QF-2).
+on `spacegame/` already passes clean; only `ruff format` drifts, on 4 files. There is no CI at all.
+This sprint makes lint, format, and tests enforced for every author (human, Claude, ralph) and gives
+tagged commits a Windows build artifact. MyPy is deliberately NOT wired here; it needs a baseline
+first (QF-2).
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Sections 1 and 2)
@@ -4665,19 +4666,22 @@ Windows build artifact. MyPy is deliberately NOT wired here; it needs a baseline
 
 **Touch zones.**
 ```
-.pre-commit-config.yaml                     (NEW)
-.github/workflows/quality.yml               (NEW)
+.pre-commit-config.yaml                              (NEW)
+.github/workflows/quality.yml                        (NEW)
 pyproject.toml
+tests/test_launcher.py
+tests/test_models/test_okafor_research.py
 tests/test_models/test_okafor_template_balance.py
 tests/test_views/test_trading_actions.py
-(+2 further ruff-format-drifting test files)
 ```
 
 **Deliverables.**
-- `ruff format` applied to the 4 drifting files so the tree is format-clean.
-- `.pre-commit-config.yaml` running `ruff check` and `ruff format --check`. Uses the `pre-commit`
-  framework, NOT a raw `.git/hooks` script and NOT a Claude Code hook, because it must fire for every
-  author. Do NOT put pytest in the hook: 70s per commit is how hooks get bypassed.
+- `ruff format` applied to the 4 drifting test files so the tree is format-clean.
+- `.pre-commit-config.yaml` running `ruff check spacegame/` and `ruff format --check spacegame/ tests/`.
+  Uses the `pre-commit` framework, NOT a raw `.git/hooks` script and NOT a Claude Code hook, because
+  it must fire for every author. Do NOT put pytest in the hook: 70s per commit is how hooks get bypassed.
+  Do NOT wire mypy — deferred to QF-2, which introduces the baseline the hook needs.
+- `pre-commit>=3.5.0` added to `[project.optional-dependencies].dev` in `pyproject.toml`.
 - `.github/workflows/quality.yml` with jobs `lint` (ubuntu), `test` (matrix ubuntu + windows), and
   `build` (windows, tag-triggered, PyInstaller via `spacegame.spec`, uploads the artifact).
 - CI pinned to **Python 3.13**, matching `pyproject.toml`. Do not chase the local 3.14.
@@ -4686,17 +4690,183 @@ tests/test_views/test_trading_actions.py
 **Acceptance criteria.**
 1. `ruff format --check spacegame/ tests/` exits 0 on a clean tree.
 2. `pre-commit run --all-files` passes.
-3. A commit deliberately introducing a lint error is rejected by the hook.
-4. Workflow file is valid YAML and its job graph parses (`actionlint` or equivalent if available).
-5. Full suite green: 10,370 passed.
+3. A commit deliberately introducing a lint error is rejected by the hook (manual verification;
+   record the demonstrated rejection in Activity log, do not commit the sentinel file).
+4. Workflow file is valid YAML (`python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"`
+   returns without error). Run `actionlint` if available; note absence otherwise.
+5. Full suite green vs. baseline: pass count >= 10,370 (98 skips OK).
+
+**Plan.**
+
+1. **Format the 4 drifting test files.** Run
+   `python -m ruff format tests/test_launcher.py tests/test_models/test_okafor_research.py tests/test_models/test_okafor_template_balance.py tests/test_views/test_trading_actions.py`,
+   then confirm `python -m ruff format --check spacegame/ tests/` exits 0. Run the 4 files' tests to
+   verify no formatting artefact (e.g., reflowed string literal) broke an assertion:
+   `python -m pytest tests/test_launcher.py tests/test_models/test_okafor_research.py tests/test_models/test_okafor_template_balance.py tests/test_views/test_trading_actions.py`.
+   Commit: `QF-1: format the four ruff-drifting test files`.
+   - Files: the 4 test files above.
+   - Test surface: those 4 files' existing tests, unchanged.
+   - Risk: formatter may split a long f-string across lines; if a test asserts on a specific literal
+     that spans one of them, tighten the string before formatting. Very unlikely; check if a test
+     fails.
+
+2. **Add `pre-commit` to dev dependencies.** Edit `pyproject.toml` `[project.optional-dependencies].dev`
+   to include `"pre-commit>=3.5.0"`. Verify `pip install -e ".[dev]"` still resolves in a fresh venv
+   (or at minimum `pip check` shows no conflicts locally).
+   - File: `pyproject.toml`.
+   - Test surface: none direct; validated in step 5 via the hook's own installation.
+
+3. **Author `.pre-commit-config.yaml`.** Two hooks under `astral-sh/ruff-pre-commit`, pinned to the
+   locally-installed ruff version (run `pip show ruff` to read the version, prefix with `v`):
+   - `ruff check` with `args: [spacegame/]` (scoped to `spacegame/`; tests/ has 874 pre-existing
+     violations that are out of this sprint's scope — Decision 1 below).
+   - `ruff format --check` with `args: [--check, spacegame/, tests/]`.
+   Set `default_language_version: {python: python3.13}` for reproducibility. Do NOT wire mypy
+   (QF-2). Do NOT wire pytest (spec: "70s per commit is how hooks get bypassed").
+   - File: `.pre-commit-config.yaml`.
+   - Test surface: `python -m pre_commit run --all-files` from a clean tree.
+   - Risk: hook `args` interact with pre-commit's file-argument passing. Use `pass_filenames: false`
+     on both hooks so ruff runs against the declared paths, not the staged-file list.
+
+4. **Verify the hook rejects a deliberate lint error.** Create `spacegame/_qf1_lint_sentinel.py`
+   containing `import os` (unused → F401), `git add` it, then
+   `python -m pre_commit run --files spacegame/_qf1_lint_sentinel.py`; confirm non-zero exit and F401
+   in output. Delete the file and unstage. Record the demonstrated exit code + line of output in the
+   Activity log. Do NOT commit the sentinel.
+   - Files: none permanent.
+   - Test surface: manual, recorded in Activity log per AC 3.
+   - Risk: forgetting cleanup. Verify `git status` shows no sentinel before proceeding to step 5.
+
+5. **Author `.github/workflows/quality.yml` — top level.** Emit:
+   ```yaml
+   name: quality
+   on:
+     push:
+       branches: [master]
+       tags: ['v*']
+     pull_request:
+   concurrency:
+     group: ${{ github.workflow }}-${{ github.ref }}
+     cancel-in-progress: true
+   defaults:
+     run:
+       shell: bash
+   ```
+   Concurrency group cancels superseded runs on the same ref (cost + latency win). `bash` default lets
+   the workflow use one shell across ubuntu and windows; PowerShell steps can override per-step.
+   - File: `.github/workflows/quality.yml`.
+
+6. **`lint` job.** ubuntu-latest. `actions/checkout@v4` → `actions/setup-python@v5` (python-version
+   `'3.13'`, `cache: 'pip'`, `cache-dependency-path: pyproject.toml`) → `pip install -e ".[dev]"` →
+   `python -m ruff check spacegame/` → `python -m ruff format --check spacegame/ tests/`.
+   - Reason `ruff check` is scoped to `spacegame/` and not `tests/`: Decision 1 below.
+
+7. **`test` job.** `strategy.matrix.os: [ubuntu-latest, windows-latest]` with `fail-fast: false`.
+   Same setup pattern as `lint`. Ubuntu-only step (with `if: runner.os == 'Linux'`) installs SDL
+   runtime packages: `sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0`
+   (spec's Section 2 Risks — pygame-ce wheels usually bundle these but belt-and-braces avoids a
+   discovery failure). Set env `SDL_VIDEODRIVER: dummy` and `SDL_AUDIODRIVER: dummy` at the job level.
+   Run `python -m pytest -n auto`.
+   - Note: full validation of the workflow requires a push to GitHub, which QF-1 does not do
+     (harness policy: no remote push). Local YAML parse + manual read is the acceptable bar for AC 4.
+
+8. **`build` job.** windows-latest. `if: startsWith(github.ref, 'refs/tags/v')`. Same setup. Run
+   `python -m tools.build --skip-tests` (reuses the existing pipeline: icon generation, PyInstaller,
+   size reporting; `--skip-tests` avoids double-running pytest since the `test` job just did).
+   `actions/upload-artifact@v4` with `name: Aurelia-${{ github.ref_name }}` and
+   `path: dist/Aurelia/`.
+
+9. **`types` job stub.** Commented YAML block after `test`, one-line header comment referencing QF-2.
+   Do not emit an active job — a commented block will not fail the workflow.
+
+10. **Validate the workflow file.** Run
+    `python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"` — must succeed.
+    If `actionlint` is on PATH, run it and record output; otherwise note absence in Activity log per
+    AC 4. Do NOT install actionlint just to run it.
+
+11. **Commits and status.** Three commits recommended for recovery:
+    - `QF-1: format the four ruff-drifting test files`
+    - `QF-1: add pre-commit config + dev dep`
+    - `QF-1: add GitHub Actions quality workflow`
+    Then flip `Status: in-progress (planning)` → `Status: review` per AGENT_GUIDE convention, append
+    Activity log entry, overwrite `**Last phase report.**` block. Do NOT push.
+
+**Decisions locked (with rationale).**
+
+1. **`ruff check` scope: `spacegame/` only, not `tests/`.** Rationale: current CLAUDE.md Quick
+   Command is `ruff check spacegame/`; Spec A Section 1 calls `ruff check` "already clean" — a claim
+   that is only true for `spacegame/` (tests/ has 874 pre-existing violations, none crash-shaped).
+   Widening scope now would either (a) fail AC 2 from day one or (b) require an out-of-scope
+   874-item cleanup. If the user wants tests/ linted, that's a separate follow-up sprint. Include an
+   in-file comment in `.pre-commit-config.yaml` explaining the scope so a future reader does not
+   quietly widen it.
+
+2. **`ruff format --check` scope: `spacegame/ tests/`.** Rationale: AC 1 mandates it, drift is
+   already down to 4 files (fixed in step 1), and formatter changes are mechanical.
+
+3. **CI triggers: push (master + `v*` tags) + pull_request.** Rationale: matches spec's table.
+   Restricting push to master keeps CI cost sane; tags trigger the build.
+
+4. **Include ubuntu SDL apt step, plus `SDL_VIDEODRIVER=dummy` / `SDL_AUDIODRIVER=dummy` env.**
+   Rationale: Spec A Section 2 Risks explicitly flags this. `tests/conftest.py` already sets
+   `SDL_AUDIODRIVER=dummy` at import time, but CI env vars are the more robust surface.
+
+5. **Ruff hook pinned to locally-installed ruff version.** Rationale: guarantees pre-commit and
+   developer CLI report identical results. Bumping ruff becomes an explicit `pre-commit autoupdate`
+   step, not a silent drift.
+
+6. **`build` job uses `python -m tools.build --skip-tests`, not raw PyInstaller.** Rationale: reuses
+   the icon-regeneration step and size reporting that `tools/build.py` already implements.
+
+7. **Concurrency group `${{ github.workflow }}-${{ github.ref }}` with cancel-in-progress.**
+   Rationale: prevents superseded ref runs from consuming Actions minutes.
+
+8. **`tests/` remains lint-unclean; the 874 findings are noted as a follow-up, not addressed here.**
+
+**Polish items folded in.**
+- `cache: 'pip'` on `actions/setup-python@v5` — CI cost reduction.
+- `fail-fast: false` on the test matrix — always see both platforms' failures.
+- `concurrency:` group with `cancel-in-progress` — cost + latency.
+- `build` job reuses `tools/build.py` — icon generation + size reporting come for free.
+- `default_language_version: {python: python3.13}` on the pre-commit config — reproducibility.
+- Manual `ruff format` step on the 4 files' tests re-run — catch reflow-breaks-assertion cases early.
+
+**Polish items deferred (no new sprint proposed; belongs to future work if the user wants it).**
+- Test-tree ruff-check cleanup (874 findings). Would need its own sprint scoped explicitly.
+- README / CONTRIBUTING update documenting `pre-commit install` for local devs. Doc-only, not a
+  blocker; a docs sprint can bundle it.
+
+**Cross-sprint reactions to author.** None (foundational infrastructure, no player-facing surface).
 
 **Risks / open questions.**
-- Headless pygame-ce on ubuntu runners may need SDL system packages. If wheels do not bundle what is
-  needed, add the apt step rather than dropping the ubuntu test job.
+- Headless pygame-ce on ubuntu runners may need SDL system packages. Addressed by including the apt
+  step in Plan step 7.
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 14:45 — harness: plan phase starting
+- 2026-08-23 15:15 — planning complete; verified all 4 context docs exist; confirmed 4 drifting
+  files (enumerated in touch zones); locked 8 decisions (chief among them: `ruff check` scoped to
+  `spacegame/` only, since tests/ has 874 pre-existing findings and Spec A's "already clean" claim
+  only holds for spacegame/); no scope expansion, no new sprints proposed; folded in 6 CI polish
+  items; cross-sprint reaction surface: none. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 14:45
+- Completed: 2026-08-23 15:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: pip-cache, fail-fast-false, concurrency-group, tools.build-reuse,
+  default-language-version, format-then-retest-drifting-files
+- Decisions_locked: 8
+- Notes: The sprint is scope-appropriate as written. Key clarification: `ruff check` in the hook and
+  CI is scoped to `spacegame/` only — the "already clean" claim in Spec A is only true for that
+  path; tests/ has 874 pre-existing findings, out of scope for QF-1. Touch zones updated to
+  enumerate the exact 4 drifting test files (previously listed 2 by name plus "+2 further"). Plan
+  breaks into 11 steps across 3 commits.
 ### QF-2 — MyPy baseline + population metrics
 
 **Status**: todo
