@@ -47,6 +47,7 @@ from tools.crawler.crash_record import (
     normalized_signature,
     signature_from_exception,
 )
+from tools.crawler.hit_rects import hit_rects_for
 
 INTERACTIVE_TYPES: tuple[type, ...] = (
     UIButton,
@@ -56,6 +57,36 @@ INTERACTIVE_TYPES: tuple[type, ...] = (
     UISelectionList,
     UITextEntryBox,
 )
+
+# Buttons with these exact texts call sys.exit() and would terminate the
+# crawl process before coverage data is saved.  Exclude them from
+# enumeration so the crawler never clicks them.  Values are case-sensitive
+# and matched against element.text after stripping whitespace.
+_EXCLUDED_INTERACTIVE_TEXTS: frozenset[str] = frozenset({"QUIT GAME"})
+
+
+class HitRectElement:
+    """Thin wrapper that makes a hit-rect feel like an interactive widget.
+
+    ``enumerate_interactive`` appends one of these per active ``HitRect``
+    entry so that ``synthesize_events`` (which reads ``.rect``) and
+    ``_describe_element`` (which reads ``.text``) work without modification.
+    This wrapper is deliberately NOT a subclass of any ``INTERACTIVE_TYPES``
+    member so the type filter in ``enumerate_interactive`` does not pick it
+    up a second time.
+    """
+
+    # Synthesized enabled/visible flags so the crawler selection logic sees
+    # these as fully interactive.
+    is_enabled: bool = True
+    visible: int = 1
+
+    def __init__(self, name: str, rect: Any) -> None:
+        self.text = f"HitRect[{name}]"
+        self.rect = rect
+        # object_ids is read by _weight_for_element for nav-keyword matching.
+        self.object_ids: list[str] = [name]
+
 
 # States exempt from the softlock oracle: intentional gates with no escape
 # by design (players must complete character creation, etc.).
@@ -318,7 +349,13 @@ class Crawler:
         return len(self._iter_ui_elements())
 
     def enumerate_interactive(self) -> list[Any]:
-        """Return live enabled interactive elements per the LOCKED type tuple."""
+        """Return live enabled interactive elements per the LOCKED type tuple.
+
+        In addition to pygame_gui widgets, appends ``HitRectElement`` wrappers
+        for any active hit-rects registered in ``tools/crawler/hit_rects.py``.
+        Hit-rect elements are added *after* the type filter so they do not
+        interact with ``isinstance`` checks on ``INTERACTIVE_TYPES``.
+        """
         elements: list[Any] = []
         for el in self._iter_ui_elements():
             if not isinstance(el, INTERACTIVE_TYPES):
@@ -329,7 +366,18 @@ class Crawler:
                 continue
             if not visible:
                 continue
+            text = getattr(el, "text", "").strip()
+            if text in _EXCLUDED_INTERACTIVE_TEXTS:
+                continue
             elements.append(el)
+
+        # Append hit-rect elements for hand-drawn dialogs in the current state.
+        # HitRectDriftError is allowed to propagate — it signals a registry
+        # inconsistency that must be fixed in hit_rects.py, not silenced.
+        if self.game is not None:
+            for hr, rect in hit_rects_for(self.game):
+                elements.append(HitRectElement(hr.name, rect))
+
         return elements
 
     def bound_escape_keys(self) -> list[int]:
@@ -371,8 +419,24 @@ class Crawler:
         Excludes F11 because triggering a display-mode switch under
         ``SDL_VIDEODRIVER=dummy`` can raise a native access violation on
         some platforms. F11 still counts toward the softlock oracle.
+
+        Always includes K_y, K_n, K_RETURN, K_ESCAPE as dialog-dismissal keys:
+        - K_y / K_RETURN: confirm dialogs (e.g., new-game confirmation)
+        - K_n / K_ESCAPE: cancel dialogs
+        These are safe under SDL_VIDEODRIVER=dummy. K_ESCAPE in particular opens
+        the pause menu when a player is loaded and the state is non-exempt, which
+        is desired coverage; in exempt states (MAIN_MENU, CHARACTER_CREATION, etc.)
+        it is a no-op.
         """
-        return [k for k in self.bound_escape_keys() if k != pygame.K_F11]
+        base = [k for k in self.bound_escape_keys() if k != pygame.K_F11]
+        dialog_keys = [pygame.K_y, pygame.K_n, pygame.K_RETURN, pygame.K_ESCAPE]
+        # Deduplicate while preserving order: base keys first, then dialog keys.
+        seen: set[int] = set(base)
+        for k in dialog_keys:
+            if k not in seen:
+                base.append(k)
+                seen.add(k)
+        return base
 
     # ------------------------------------------------------------------
     # Action selection

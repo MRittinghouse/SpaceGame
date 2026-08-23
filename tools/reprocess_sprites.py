@@ -25,7 +25,9 @@ from tools.pixel_pipeline import process_sprite
 
 ASSETS_BASE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "spacegame", "data", "assets",
+    "spacegame",
+    "data",
+    "assets",
 )
 
 

@@ -55,7 +55,7 @@ def remove_background(
             return True
         for bg in bg_colors:
             dist = (r - bg[0]) ** 2 + (g - bg[1]) ** 2 + (b - bg[2]) ** 2
-            if dist <= tolerance ** 2:
+            if dist <= tolerance**2:
                 return True
         return False
 
@@ -105,9 +105,7 @@ def resize_nearest(img: Image.Image, size: tuple[int, int]) -> Image.Image:
     return img.resize(size, Image.NEAREST)
 
 
-def _color_distance_sq(
-    c1: tuple[int, int, int], c2: tuple[int, int, int]
-) -> int:
+def _color_distance_sq(c1: tuple[int, int, int], c2: tuple[int, int, int]) -> int:
     """Euclidean distance squared between two RGB colors."""
     return (c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2
 
@@ -429,10 +427,7 @@ def resize_for_pixel_art(
             size[1] * intermediate_scale,
         )
         # Only two-stage if source is larger than the intermediate target
-        if (
-            premul.size[0] <= intermediate_size[0]
-            and premul.size[1] <= intermediate_size[1]
-        ):
+        if premul.size[0] <= intermediate_size[0] and premul.size[1] <= intermediate_size[1]:
             resized = premul.resize(size, Image.LANCZOS)
         else:
             # Stage 1: LANCZOS — smooth area averaging

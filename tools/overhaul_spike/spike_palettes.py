@@ -61,9 +61,7 @@ def render_ships_under_palette(palette_name: str) -> dict[str, pygame.Surface]:
     activate_palette(palette_name)
     ships: dict[str, pygame.Surface] = {}
     for manuf_id, profile in PROFILES.items():
-        ships[manuf_id] = compose_ship(
-            SHIP_LAYOUT, profile, seed=SEED, palette_snap=True
-        )
+        ships[manuf_id] = compose_ship(SHIP_LAYOUT, profile, seed=SEED, palette_snap=True)
     return ships
 
 
@@ -89,9 +87,7 @@ def build_palette_compare_atlas(
     return compare
 
 
-def critique_one_palette(
-    palette_name: str, ships: dict[str, pygame.Surface]
-) -> list[str]:
+def critique_one_palette(palette_name: str, ships: dict[str, pygame.Surface]) -> list[str]:
     """Run the full Spike B critique suite on ships rendered under this palette.
 
     IMPORTANT: activate_palette MUST have been called before this — palette
@@ -152,7 +148,7 @@ def main() -> None:
     lines: list[str] = []
     lines.append("SPIKE C: palette stress test")
     lines.append(f"Seed: {SEED}  |  Palettes tested: {', '.join(PALETTE_ORDER)}")
-    lines.append(f"Render time (9 ships across 3 palettes): {elapsed*1000:.1f} ms")
+    lines.append(f"Render time (9 ships across 3 palettes): {elapsed * 1000:.1f} ms")
     lines.append(f"Canvas: 240 x 160  |  Modules per ship: {len(SHIP_LAYOUT)}")
     lines.append("")
 
@@ -199,9 +195,7 @@ def main() -> None:
         for name in PALETTE_ORDER:
             activate_palette(name)
             profile = PROFILES[manuf_id]
-            surfaces.append(
-                compose_ship(SHIP_LAYOUT, profile, seed=SEED, palette_snap=True)
-            )
+            surfaces.append(compose_ship(SHIP_LAYOUT, profile, seed=SEED, palette_snap=True))
         dist = check_variant_distinctness(surfaces, min_mean_diff=30.0)
         mark = "PASS" if dist.passed else "FAIL"
         lines.append(f"  [{mark}] {manuf_id} across palettes: {dist.diagnostic}")

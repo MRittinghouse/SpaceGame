@@ -21,14 +21,14 @@ class Material:
     """
 
     name: str
-    base_color: str              # palette role
-    highlight_color: str         # lit-side color (palette role)
-    shadow_color: str            # unlit-side color (palette role)
-    noise_intensity: float       # 0 (clean) -> 1 (heavy surface grain)
-    noise_scale: float           # lower = bigger patches
-    wear_intensity: float        # baseline grime
-    rivet_density: float         # approximate rivets per 1000 px^2 (0 = none)
-    gloss: float                 # edge-highlight strength, 0-1
+    base_color: str  # palette role
+    highlight_color: str  # lit-side color (palette role)
+    shadow_color: str  # unlit-side color (palette role)
+    noise_intensity: float  # 0 (clean) -> 1 (heavy surface grain)
+    noise_scale: float  # lower = bigger patches
+    wear_intensity: float  # baseline grime
+    rivet_density: float  # approximate rivets per 1000 px^2 (0 = none)
+    gloss: float  # edge-highlight strength, 0-1
     kind: Literal["solid", "emissive"] = "solid"
     signature_stripe: str | None = None  # optional palette-role stripe accent
 
@@ -54,11 +54,11 @@ MATERIALS: dict[str, Material] = {
         base_color="solari_chrome",
         highlight_color="solari_chrome_bright",
         shadow_color="solari_chrome_shadow",
-        noise_intensity=0.06,        # clean, polished
+        noise_intensity=0.06,  # clean, polished
         noise_scale=0.4,
-        wear_intensity=0.03,          # very little grime
-        rivet_density=0.2,            # minimalist
-        gloss=0.7,                    # strong highlight
+        wear_intensity=0.03,  # very little grime
+        rivet_density=0.2,  # minimalist
+        gloss=0.7,  # strong highlight
         signature_stripe="hud_cyan",  # cyan accent stripe
     ),
     "crimson_iron": Material(
@@ -66,11 +66,11 @@ MATERIALS: dict[str, Material] = {
         base_color="reach_crimson",
         highlight_color="reach_crimson_bright",
         shadow_color="reach_crimson_shadow",
-        noise_intensity=0.35,         # heavy grain
+        noise_intensity=0.35,  # heavy grain
         noise_scale=0.18,
-        wear_intensity=0.4,           # lots of patina
-        rivet_density=1.5,            # many rivets
-        gloss=0.15,                   # matte
+        wear_intensity=0.4,  # lots of patina
+        rivet_density=1.5,  # many rivets
+        gloss=0.15,  # matte
         signature_stripe="plasma_core",
     ),
     "union_ceramic": Material(
@@ -78,11 +78,11 @@ MATERIALS: dict[str, Material] = {
         base_color="union_ceramic",
         highlight_color="union_ceramic_bright",
         shadow_color="union_ceramic_shadow",
-        noise_intensity=0.22,         # some speckle (carbon scoring)
+        noise_intensity=0.22,  # some speckle (carbon scoring)
         noise_scale=0.3,
         wear_intensity=0.25,
-        rivet_density=2.2,            # heavy industrial rivets
-        gloss=0.1,                    # matte ceramic
+        rivet_density=2.2,  # heavy industrial rivets
+        gloss=0.1,  # matte ceramic
         signature_stripe="hud_warning",
     ),
 }

@@ -65,18 +65,19 @@ SHIP_LAYOUT = [
     # Densely overlapping layout — accepts abstract ship shape since
     # modules lack rotation support. Validates composition algorithm
     # connectivity and unified-object lighting, not ship design.
-    PlacedModule("cockpit",      x=78,  y=50),   # central body, spans (78-125, 50-89)
-    PlacedModule("structural",   x=100, y=62),   # nested inside cockpit back
-    PlacedModule("engine",       x=122, y=52),   # overlaps cockpit right + top-engine
-    PlacedModule("engine",       x=122, y=82),   # overlaps cockpit right + bottom
-    PlacedModule("weapon_small", x=88,  y=36),   # overlaps cockpit top
-    PlacedModule("weapon_small", x=88,  y=88),   # overlaps cockpit bottom
+    PlacedModule("cockpit", x=78, y=50),  # central body, spans (78-125, 50-89)
+    PlacedModule("structural", x=100, y=62),  # nested inside cockpit back
+    PlacedModule("engine", x=122, y=52),  # overlaps cockpit right + top-engine
+    PlacedModule("engine", x=122, y=82),  # overlaps cockpit right + bottom
+    PlacedModule("weapon_small", x=88, y=36),  # overlaps cockpit top
+    PlacedModule("weapon_small", x=88, y=88),  # overlaps cockpit bottom
 ]
 
 
 # ---------------------------------------------------------------------------
 # Ship-specific critique dimensions
 # ---------------------------------------------------------------------------
+
 
 def check_ship_single_connected(surface: pygame.Surface) -> CritiqueResult:
     """Ship silhouette must be ONE connected component.
@@ -138,8 +139,16 @@ def check_ship_lighting_consistency(surface: pygame.Surface) -> CritiqueResult:
     # Upper-right quadrant luminance
     y_mid = (y_min + y_max) // 2
     x_mid = (x_min + x_max) // 2
-    upper_right = mask & (np.arange(mask.shape[0])[:, None] <= y_mid) & (np.arange(mask.shape[1])[None, :] >= x_mid)
-    lower_left = mask & (np.arange(mask.shape[0])[:, None] > y_mid) & (np.arange(mask.shape[1])[None, :] < x_mid)
+    upper_right = (
+        mask
+        & (np.arange(mask.shape[0])[:, None] <= y_mid)
+        & (np.arange(mask.shape[1])[None, :] >= x_mid)
+    )
+    lower_left = (
+        mask
+        & (np.arange(mask.shape[0])[:, None] > y_mid)
+        & (np.arange(mask.shape[1])[None, :] < x_mid)
+    )
     if not upper_right.any() or not lower_left.any():
         return CritiqueResult("lighting_consistency", True, "insufficient ship extent")
     ur_lum = float(lum[upper_right].mean())
@@ -157,12 +166,11 @@ def check_ship_lighting_consistency(surface: pygame.Surface) -> CritiqueResult:
 # Runner
 # ---------------------------------------------------------------------------
 
+
 def render_all_ships(seed: int = 42, palette_snap: bool = True) -> dict[str, pygame.Surface]:
     ships = {}
     for manuf_id, profile in PROFILES.items():
-        ships[manuf_id] = compose_ship(
-            SHIP_LAYOUT, profile, seed=seed, palette_snap=palette_snap
-        )
+        ships[manuf_id] = compose_ship(SHIP_LAYOUT, profile, seed=seed, palette_snap=palette_snap)
     return ships
 
 
@@ -223,7 +231,7 @@ def main() -> None:
     lines: list[str] = []
     lines.append("SPIKE B: ship composition for 3 manufacturers (palette-snapped)")
     lines.append(f"Seed: {seed}")
-    lines.append(f"Render time (3 ships, snapped): {elapsed*1000:.1f} ms")
+    lines.append(f"Render time (3 ships, snapped): {elapsed * 1000:.1f} ms")
     lines.append(f"Canvas: 240 x 160  |  Modules per ship: {len(SHIP_LAYOUT)}")
     lines.append("")
 

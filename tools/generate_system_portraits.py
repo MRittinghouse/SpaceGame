@@ -18,14 +18,7 @@ except ImportError:
     print("Requires Pillow: pip install Pillow")
     raise SystemExit(1)
 
-OUTPUT_DIR = (
-    Path(__file__).parent.parent
-    / "spacegame"
-    / "data"
-    / "assets"
-    / "sprites"
-    / "systems"
-)
+OUTPUT_DIR = Path(__file__).parent.parent / "spacegame" / "data" / "assets" / "sprites" / "systems"
 
 W, H = 80, 60
 
@@ -176,7 +169,8 @@ def _draw_planet(
     if hr > 1:
         draw.arc(
             [cx - hr - 1, cy - hr - 1, cx + hr - 1, cy + hr - 1],
-            200, 340,
+            200,
+            340,
             fill=(*highlight, 180),
             width=1,
         )
@@ -274,8 +268,11 @@ def _compose_agricultural(
     _draw_planet(draw, 35, 32, 18, (*palette["planet"], 255), palette["accent"])
     # Atmosphere glow
     draw.arc(
-        [35 - 20, 32 - 20, 35 + 20, 32 + 20], 180, 360,
-        fill=(*palette["accent"][:3], 60), width=2,
+        [35 - 20, 32 - 20, 35 + 20, 32 + 20],
+        180,
+        360,
+        fill=(*palette["accent"][:3], 60),
+        width=2,
     )
     _draw_station(draw, 60, 42, palette["accent"])
 

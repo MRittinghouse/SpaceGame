@@ -269,12 +269,18 @@ def generate_via_api() -> None:
         }
 
         try:
-            resp = requests.post(f"{api_url}/v1/generate", json=payload, headers=headers, timeout=120)
+            resp = requests.post(
+                f"{api_url}/v1/generate", json=payload, headers=headers, timeout=120
+            )
             resp.raise_for_status()
             result = resp.json()
 
             # Handle various API response formats
-            audio_url = result.get("audio_url") or result.get("url") or result.get("data", {}).get("audio_url")
+            audio_url = (
+                result.get("audio_url")
+                or result.get("url")
+                or result.get("data", {}).get("audio_url")
+            )
             if not audio_url:
                 print(f"  ERROR: No audio URL in response: {json.dumps(result)[:200]}")
                 continue
@@ -297,7 +303,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="SpaceGame music generation helper")
     parser.add_argument("--track", type=str, help="Print prompt for a specific track ID")
     parser.add_argument("--api", action="store_true", help="Generate via third-party Suno API")
-    parser.add_argument("--update-manifest", action="store_true", help="Update manifest with existing .ogg files")
+    parser.add_argument(
+        "--update-manifest", action="store_true", help="Update manifest with existing .ogg files"
+    )
     parser.add_argument("--list", action="store_true", help="List all track IDs")
     args = parser.parse_args()
 

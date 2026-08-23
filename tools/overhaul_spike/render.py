@@ -45,9 +45,10 @@ class ModuleShape:
     Bounding box is (width, height) in pixels. Base is the rectangular
     housing; barrel is an ellipse extending to the right.
     """
+
     width: int = 96
     height: int = 48
-    base_rect: tuple[int, int, int, int] = (4, 10, 64, 28)   # x, y, w, h
+    base_rect: tuple[int, int, int, int] = (4, 10, 64, 28)  # x, y, w, h
     barrel_rect: tuple[int, int, int, int] = (60, 18, 32, 12)
     mount_pad_rect: tuple[int, int, int, int] = (8, 38, 40, 6)  # under-mount pad
 
@@ -73,6 +74,7 @@ def make_shape(profile: ManufacturerProfile) -> ModuleShape:
 # Shape raster — produces a coverage mask + lighting gradient
 # ---------------------------------------------------------------------------
 
+
 def rasterize_shape(shape: ModuleShape) -> tuple[np.ndarray, np.ndarray]:
     """Return (coverage_mask, lighting_field) as numpy arrays of shape (H, W).
 
@@ -84,10 +86,10 @@ def rasterize_shape(shape: ModuleShape) -> tuple[np.ndarray, np.ndarray]:
     coverage = np.zeros((h, w), dtype=np.float32)
     # Rectangular base
     bx, by, bw, bh = shape.base_rect
-    coverage[by:by + bh, bx:bx + bw] = 1.0
+    coverage[by : by + bh, bx : bx + bw] = 1.0
     # Mount pad (underneath)
     mx, my, mw, mh = shape.mount_pad_rect
-    coverage[my:my + mh, mx:mx + mw] = 1.0
+    coverage[my : my + mh, mx : mx + mw] = 1.0
 
     # Elliptical barrel (filled via analytic test for smooth edge)
     cx, cy, bw_, bh_ = shape.barrel_rect
@@ -96,7 +98,7 @@ def rasterize_shape(shape: ModuleShape) -> tuple[np.ndarray, np.ndarray]:
     rx = bw_ / 2.0
     ry = bh_ / 2.0
     ys, xs = np.mgrid[0:h, 0:w]
-    ellipse_mask = ((xs - ex) ** 2) / (rx ** 2) + ((ys - ey) ** 2) / (ry ** 2) <= 1.0
+    ellipse_mask = ((xs - ex) ** 2) / (rx**2) + ((ys - ey) ** 2) / (ry**2) <= 1.0
     coverage[ellipse_mask] = 1.0
 
     # Lighting: dot product of (approximate surface normal) with LIGHT_DIR.
@@ -122,6 +124,7 @@ def rasterize_shape(shape: ModuleShape) -> tuple[np.ndarray, np.ndarray]:
 # and fast enough for a 96x48 spike.
 # ---------------------------------------------------------------------------
 
+
 def value_noise(width: int, height: int, scale: float, seed: int) -> np.ndarray:
     """Return a noise field of shape (H, W) in [0, 1]."""
     # Low-res random grid, then upsample with bilinear-like smoothing.
@@ -133,9 +136,12 @@ def value_noise(width: int, height: int, scale: float, seed: int) -> np.ndarray:
     # Simple bilinear upsample.
     ys = np.linspace(0, grid_h - 1, height)
     xs = np.linspace(0, grid_w - 1, width)
-    y0 = np.floor(ys).astype(int); y1 = np.clip(y0 + 1, 0, grid_h - 1)
-    x0 = np.floor(xs).astype(int); x1 = np.clip(x0 + 1, 0, grid_w - 1)
-    dy = (ys - y0).reshape(-1, 1); dx = (xs - x0).reshape(1, -1)
+    y0 = np.floor(ys).astype(int)
+    y1 = np.clip(y0 + 1, 0, grid_h - 1)
+    x0 = np.floor(xs).astype(int)
+    x1 = np.clip(x0 + 1, 0, grid_w - 1)
+    dy = (ys - y0).reshape(-1, 1)
+    dx = (xs - x0).reshape(1, -1)
 
     top = low[y0][:, x0] * (1 - dx) + low[y0][:, x1] * dx
     bot = low[y1][:, x0] * (1 - dx) + low[y1][:, x1] * dx
@@ -145,6 +151,7 @@ def value_noise(width: int, height: int, scale: float, seed: int) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Rivet placement — Poisson-disc-lite via rejection sampling
 # ---------------------------------------------------------------------------
+
 
 def place_rivets(
     coverage: np.ndarray,
@@ -177,7 +184,7 @@ def place_rivets(
             continue
         too_close = False
         for px, py in placed:
-            if (px - x) ** 2 + (py - y) ** 2 < min_spacing_px ** 2:
+            if (px - x) ** 2 + (py - y) ** 2 < min_spacing_px**2:
                 too_close = True
                 break
         if not too_close:
@@ -189,6 +196,7 @@ def place_rivets(
 # Main render function
 # ---------------------------------------------------------------------------
 
+
 def snap_to_palette(surface: pygame.Surface) -> pygame.Surface:
     """Snap every opaque pixel to its nearest palette color.
 
@@ -198,6 +206,7 @@ def snap_to_palette(surface: pygame.Surface) -> pygame.Surface:
     the input surface for chaining.
     """
     from .palette import palette_array
+
     palette = palette_array()  # (N, 3)
     rgb = pygame.surfarray.pixels3d(surface)  # (W, H, 3) uint8
     orig_shape = rgb.shape
@@ -239,7 +248,7 @@ def render_module(
     # We use a piecewise blend to keep base color the anchor mid-tone.
     t = diffuse[..., None]  # (H, W, 1)
     # Low half: blend shadow -> base. High half: blend base -> highlight.
-    low_mix = lo + (base - lo) * (t * 2.0)          # for t in [0, 0.5]
+    low_mix = lo + (base - lo) * (t * 2.0)  # for t in [0, 0.5]
     high_mix = base + (hi - base) * ((t - 0.5) * 2.0)  # for t in [0.5, 1]
     lit = np.where(t < 0.5, low_mix, high_mix)
     # lit shape: (H, W, 3). Mask to coverage.
@@ -307,9 +316,7 @@ def render_module(
     return surface
 
 
-def _draw_debug_overlay(
-    surface: pygame.Surface, shape: ModuleShape, rivet_count: int
-) -> None:
+def _draw_debug_overlay(surface: pygame.Surface, shape: ModuleShape, rivet_count: int) -> None:
     """Small debug text showing rivet count — useful during spike iteration."""
     font = pygame.font.Font(None, 10)
     txt = font.render(f"r={rivet_count}", True, (255, 255, 255))

@@ -29,6 +29,7 @@ class ModuleType:
     a coverage mask at the given size). The size is nominal; variants
     can scale it up or down via manufacturer proportion_bias.
     """
+
     id: str
     category: ModuleCategory
     nominal_width: int
@@ -105,10 +106,12 @@ def rasterize(
             else:
                 half_w = w // 2 - 2
             cx = w // 2
-            coverage[y, max(0, cx - half_w):min(w, cx + half_w + 1)] = 1.0
+            coverage[y, max(0, cx - half_w) : min(w, cx + half_w + 1)] = 1.0
         # Glass viewport (emissive) — center front
-        vp_y0 = int(h * 0.20); vp_y1 = int(h * 0.45)
-        vp_x0 = int(w * 0.28); vp_x1 = int(w * 0.72)
+        vp_y0 = int(h * 0.20)
+        vp_y1 = int(h * 0.45)
+        vp_x0 = int(w * 0.28)
+        vp_x1 = int(w * 0.72)
         mask = coverage[vp_y0:vp_y1, vp_x0:vp_x1] > 0.5
         emissive[vp_y0:vp_y1, vp_x0:vp_x1][mask] = 1.0
         meta["emissive_color"] = "hud_cyan"
@@ -119,7 +122,7 @@ def rasterize(
         body_x0 = (w - body_w) // 2
         body_y0 = int(h * 0.15)
         body_y1 = int(h * 0.85)
-        coverage[body_y0:body_y1, body_x0:body_x0 + body_w] = 1.0
+        coverage[body_y0:body_y1, body_x0 : body_x0 + body_w] = 1.0
         # Thruster bell (rear, right side)
         bell_x0 = body_x0 + body_w - 4
         bell_x1 = w - 2
@@ -128,9 +131,9 @@ def rasterize(
             t = (y - body_y0 - 3) / max(1, body_y1 - body_y0 - 7)
             flare = int(3 * np.sin(np.pi * t))
             y_in_bell = y
-            coverage[y_in_bell, bell_x0:bell_x1 + 1] = 1.0
+            coverage[y_in_bell, bell_x0 : bell_x1 + 1] = 1.0
             # Emissive glow at the very tip
-            emissive[y_in_bell, bell_x1 - 3:bell_x1 + 1] = 1.0 - abs(2 * t - 1) * 0.3
+            emissive[y_in_bell, bell_x1 - 3 : bell_x1 + 1] = 1.0 - abs(2 * t - 1) * 0.3
         meta["emissive_color"] = "plasma_core"
         meta["exhaust_origin"] = (bell_x1, h // 2)
 
@@ -140,11 +143,11 @@ def rasterize(
         base_h = int(h * 0.70)
         base_y0 = (h - base_h) // 2
         base_w = int(w * 0.70)
-        coverage[base_y0:base_y0 + base_h, 2:base_w + 2] = 1.0
+        coverage[base_y0 : base_y0 + base_h, 2 : base_w + 2] = 1.0
         # Barrel — thin rectangle extending right
         bar_h = max(6, int(h * 0.30))
         bar_y0 = h // 2 - bar_h // 2
-        coverage[bar_y0:bar_y0 + bar_h, base_w:w - 2] = 1.0
+        coverage[bar_y0 : bar_y0 + bar_h, base_w : w - 2] = 1.0
 
     elif module_type.category == "structural":
         # Plain hex-like plate — gives connective tissue between modules.
@@ -154,6 +157,6 @@ def rasterize(
             rel = abs(y - cy) / max(cy, 1)  # 0 at center, 1 at edge
             width_at_y = int(w * (0.95 - rel * 0.25))
             half = width_at_y // 2
-            coverage[y, max(0, cx - half):min(w, cx + half + 1)] = 1.0
+            coverage[y, max(0, cx - half) : min(w, cx + half + 1)] = 1.0
 
     return coverage, emissive, meta

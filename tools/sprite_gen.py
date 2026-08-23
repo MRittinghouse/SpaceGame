@@ -111,10 +111,7 @@ def _gemini_generate(
         print(f"  ERROR: GEMINI_API_KEY not found in environment")
         return None
 
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/{model}:generateContent"
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -218,9 +215,9 @@ def _remove_background_flood(img: Image.Image, tolerance: int = 35) -> Image.Ima
     if not edge_colors:
         return img  # Already transparent edges
 
-    bg_color = Counter(
-        tuple((c // 16) * 16 for c in col) for col in edge_colors
-    ).most_common(1)[0][0]
+    bg_color = Counter(tuple((c // 16) * 16 for c in col) for col in edge_colors).most_common(1)[0][
+        0
+    ]
     # Use the actual average of the dominant bucket
     matching = [c for c in edge_colors if all(abs(a - b) < 24 for a, b in zip(c, bg_color))]
     if matching:
@@ -421,7 +418,9 @@ def generate_sprite(
             continue
 
         if dry_run:
-            print(f"  [DRY RUN] {category}/{filename} ({target_size[0]}x{target_size[1]}, {backend_name})")
+            print(
+                f"  [DRY RUN] {category}/{filename} ({target_size[0]}x{target_size[1]}, {backend_name})"
+            )
             results["generated"] += 1
             results["files"].append(str(output_path))
             continue

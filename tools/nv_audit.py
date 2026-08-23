@@ -214,9 +214,7 @@ def audit_dialogues(dialogues_path: Path) -> list[AuditEntry]:
         for node in dialogue.get("nodes", []):
             node_id = node["id"]
             for idx, resp in enumerate(node.get("responses", [])):
-                entry = _classify_response(
-                    dialogue_id, node_id, idx, resp, flag_setter_index
-                )
+                entry = _classify_response(dialogue_id, node_id, idx, resp, flag_setter_index)
                 if entry is not None:
                     entries.append(entry)
 
@@ -281,9 +279,7 @@ def _classify_response(
     elif any(text.startswith(p) for p in SKILL_TAG_PREFIXES):
         category = "orphan"
         inferred_skill = _infer_skill_from_prefix(text)
-        notes_parts.append(
-            "bracket prefix without skill_check — potential data integrity issue"
-        )
+        notes_parts.append("bracket prefix without skill_check — potential data integrity issue")
 
     if category is None:
         return None
@@ -390,15 +386,10 @@ def emit_markdown(entries: list[AuditEntry], path: Path) -> None:
     lines.append("**Dual-voice convention (loose):**")
     lines.append("")
     lines.append(
-        "- Speech skills (Persuasion, Intimidation, Deception) default to in-quote "
-        "spoken dialogue."
+        "- Speech skills (Persuasion, Intimidation, Deception) default to in-quote spoken dialogue."
     )
-    lines.append(
-        "- Observation skills (Perception, Observation) default to internal observation."
-    )
-    lines.append(
-        "- Hybrid skills (Technical, Piloting, Leadership) choose per line."
-    )
+    lines.append("- Observation skills (Perception, Observation) default to internal observation.")
+    lines.append("- Hybrid skills (Technical, Piloting, Leadership) choose per line.")
     lines.append("- Mix formats when the line serves both (observation → speech).")
     lines.append("")
     lines.append("## Summary")
@@ -436,13 +427,9 @@ def emit_markdown(entries: list[AuditEntry], path: Path) -> None:
         for dialogue_id in sorted(by_dialogue.keys()):
             lines.append(f"### `{dialogue_id}`")
             lines.append("")
-            lines.append(
-                "| Node | Idx | Skill | Diff | Words | Grade | Text |"
-            )
+            lines.append("| Node | Idx | Skill | Diff | Words | Grade | Text |")
             lines.append("|------|-----|-------|------|-------|-------|------|")
-            for e in sorted(
-                by_dialogue[dialogue_id], key=lambda x: (x.node_id, x.response_index)
-            ):
+            for e in sorted(by_dialogue[dialogue_id], key=lambda x: (x.node_id, x.response_index)):
                 safe_text = e.text.replace("|", "\\|").replace("\n", " ")
                 if len(safe_text) > 120:
                     safe_text = safe_text[:117] + "..."
@@ -455,9 +442,7 @@ def emit_markdown(entries: list[AuditEntry], path: Path) -> None:
                 if e.notes:
                     lines.append(f"|  |  |  |  |  |  | _note:_ {e.notes} |")
                 if e.required_flags:
-                    lines.append(
-                        f"|  |  |  |  |  |  | _flags:_ {', '.join(e.required_flags)} |"
-                    )
+                    lines.append(f"|  |  |  |  |  |  | _flags:_ {', '.join(e.required_flags)} |")
             lines.append("")
 
     path.write_text("\n".join(lines), encoding="utf-8")

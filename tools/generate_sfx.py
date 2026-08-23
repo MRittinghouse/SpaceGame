@@ -135,7 +135,7 @@ def reverb(signal: np.ndarray, decay: float = 0.3, delay_ms: float = 30) -> np.n
     result = signal.copy()
     for i in range(1, 5):
         offset = delay_samples * i
-        gain = decay ** i
+        gain = decay**i
         if offset < len(result):
             result[offset:] += signal[: len(result) - offset] * gain
     return np.clip(result, -1, 1)
@@ -143,7 +143,7 @@ def reverb(signal: np.ndarray, decay: float = 0.3, delay_ms: float = 30) -> np.n
 
 def bitcrush(signal: np.ndarray, bits: int = 4) -> np.ndarray:
     """Reduce bit depth for retro/glitch effect."""
-    levels = 2 ** bits
+    levels = 2**bits
     return np.round(signal * levels) / levels
 
 
@@ -298,7 +298,13 @@ def gen_mine_chain() -> tuple[np.ndarray, str, float]:
     pops = []
     for i in range(5):
         freq = 250 + i * 80
-        pop = adsr(sine(freq, 0.04) + noise(0.04) * 0.3, attack=0.002, decay=0.02, sustain=0.0, release=0.02)
+        pop = adsr(
+            sine(freq, 0.04) + noise(0.04) * 0.3,
+            attack=0.002,
+            decay=0.02,
+            sustain=0.0,
+            release=0.02,
+        )
         pops.append(pop)
         if i < 4:
             pops.append(np.zeros(int(0.03 * SAMPLE_RATE)))
@@ -470,7 +476,7 @@ def gen_nav_dock() -> tuple[np.ndarray, str, float]:
     hiss = highpass(noise(0.2), 3000) * 0.2
     hiss = fade_in(hiss, 0.05)
     hiss = fade_out(hiss, 0.1)
-    sig = mix(concat(mix(clunk, thud), hiss[:int(0.2 * SAMPLE_RATE)]))
+    sig = mix(concat(mix(clunk, thud), hiss[: int(0.2 * SAMPLE_RATE)]))
     return sig, "navigation", 0.7
 
 
@@ -484,10 +490,14 @@ def gen_ground_door() -> tuple[np.ndarray, str, float]:
     # Mechanical slide
     n = noise(0.3)
     n = lowpass(n, 2000)
-    env = np.concatenate([np.linspace(0, 0.5, int(0.1 * SAMPLE_RATE)),
-                          np.linspace(0.5, 0.3, int(0.1 * SAMPLE_RATE)),
-                          np.linspace(0.3, 0.0, int(0.1 * SAMPLE_RATE))])
-    sig = n[:len(env)] * env
+    env = np.concatenate(
+        [
+            np.linspace(0, 0.5, int(0.1 * SAMPLE_RATE)),
+            np.linspace(0.5, 0.3, int(0.1 * SAMPLE_RATE)),
+            np.linspace(0.3, 0.0, int(0.1 * SAMPLE_RATE)),
+        ]
+    )
+    sig = n[: len(env)] * env
     return sig, "ground", 0.6
 
 

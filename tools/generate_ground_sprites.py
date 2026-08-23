@@ -162,10 +162,22 @@ def _draw_drone(
 
     # Accent ring
     ring_pixels = [
-        (6, 4), (7, 4), (8, 4), (9, 4),  # top
-        (6, 12), (7, 12), (8, 12), (9, 12),  # bottom
-        (4, 6), (4, 7), (4, 8), (4, 9),  # left
-        (11, 6), (11, 7), (11, 8), (11, 9),  # right
+        (6, 4),
+        (7, 4),
+        (8, 4),
+        (9, 4),  # top
+        (6, 12),
+        (7, 12),
+        (8, 12),
+        (9, 12),  # bottom
+        (4, 6),
+        (4, 7),
+        (4, 8),
+        (4, 9),  # left
+        (11, 6),
+        (11, 7),
+        (11, 8),
+        (11, 9),  # right
     ]
     for x, y in ring_pixels:
         px[x, y] = _rgba(accent_color)
@@ -377,7 +389,7 @@ def generate_terminal(pal: dict[str, tuple[int, int, int]]) -> Image.Image:
         px[x, 7] = _rgba(screen_bright)
 
     # Status dots at bottom
-    px[6, 11] = _rgba((40, 200, 80))   # green dot
+    px[6, 11] = _rgba((40, 200, 80))  # green dot
     px[9, 11] = _rgba((200, 180, 40))  # yellow dot
 
     return img
@@ -512,9 +524,7 @@ def generate_all(preview: bool = False) -> None:
         print(f"  {sprite_id:25s} -> {out_path.relative_to(ASSETS_DIR)}")
 
         if preview:
-            preview_img = img.resize(
-                (128, 128), Image.Resampling.NEAREST
-            )
+            preview_img = img.resize((128, 128), Image.Resampling.NEAREST)
             preview_path = out_path.with_name(f"{sprite_id}_preview.png")
             preview_img.save(preview_path)
 
@@ -526,14 +536,14 @@ def generate_all(preview: bool = False) -> None:
         print(f"  {tile_id:25s} -> {out_path.relative_to(ASSETS_DIR)}")
 
         if preview:
-            preview_img = img.resize(
-                (128, 128), Image.Resampling.NEAREST
-            )
+            preview_img = img.resize((128, 128), Image.Resampling.NEAREST)
             preview_path = out_path.with_name(f"{tile_id}_preview.png")
             preview_img.save(preview_path)
 
     total = len(SPRITES) + len(TILE_SPRITES)
-    print(f"\nGenerated {total} ground sprites ({len(SPRITES)} characters, {len(TILE_SPRITES)} tiles).")
+    print(
+        f"\nGenerated {total} ground sprites ({len(SPRITES)} characters, {len(TILE_SPRITES)} tiles)."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -542,11 +552,10 @@ def generate_all(preview: bool = False) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate 16x16 ground character sprites."
-    )
+    parser = argparse.ArgumentParser(description="Generate 16x16 ground character sprites.")
     parser.add_argument(
-        "--preview", action="store_true",
+        "--preview",
+        action="store_true",
         help="Also generate 8x upscale preview images.",
     )
     args = parser.parse_args()

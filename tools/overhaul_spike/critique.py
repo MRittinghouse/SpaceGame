@@ -28,6 +28,7 @@ class CritiqueResult:
 # Palette compliance
 # ---------------------------------------------------------------------------
 
+
 def check_palette_compliance(
     surface: pygame.Surface,
     tolerance_rgb: float = 12.0,
@@ -47,13 +48,11 @@ def check_palette_compliance(
     diff = rgb[:, :, None, :] - palette[None, None, :, :]
     d2 = np.sum(diff * diff, axis=-1)
     min_d2 = d2.min(axis=-1)
-    within = min_d2 <= (tolerance_rgb ** 2)
+    within = min_d2 <= (tolerance_rgb**2)
     opaque = alpha > 16
     opaque_count = int(opaque.sum())
     if opaque_count == 0:
-        return CritiqueResult(
-            "palette_compliance", False, "no opaque pixels in surface"
-        )
+        return CritiqueResult("palette_compliance", False, "no opaque pixels in surface")
     compliant = int((within & opaque).sum())
     pct = compliant / opaque_count
     ok = pct >= min_pct
@@ -89,16 +88,14 @@ def check_palette_line_compliance(
     alpha = pygame.surfarray.pixels_alpha(surface)
     opaque = alpha > 16
     if not opaque.any():
-        return CritiqueResult(
-            "palette_line_compliance", False, "no opaque pixels"
-        )
+        return CritiqueResult("palette_line_compliance", False, "no opaque pixels")
     pixels = rgb[opaque]  # (P, 3)
 
     # Build all palette-to-palette segments: (M, 3) starts, (M, 3) ends.
     ia, ib = np.triu_indices(N, k=1)
     a = palette[ia]  # (M, 3)
     b = palette[ib]  # (M, 3)
-    ab = b - a       # (M, 3)
+    ab = b - a  # (M, 3)
     ab_len2 = np.sum(ab * ab, axis=-1)  # (M,)
     ab_len2 = np.where(ab_len2 == 0, 1e-9, ab_len2)  # guard
 
@@ -109,7 +106,7 @@ def check_palette_line_compliance(
     proj = a[None, :, :] + t[:, :, None] * ab[None, :, :]  # (P, M, 3)
     diff = pixels[:, None, :] - proj
     d2 = np.sum(diff * diff, axis=-1)  # (P, M)
-    min_d = np.sqrt(d2.min(axis=-1))   # (P,)
+    min_d = np.sqrt(d2.min(axis=-1))  # (P,)
     compliant = int((min_d <= tolerance_rgb).sum())
     pct = compliant / pixels.shape[0]
     ok = pct >= min_pct
@@ -123,6 +120,7 @@ def check_palette_line_compliance(
 # ---------------------------------------------------------------------------
 # Silhouette readability
 # ---------------------------------------------------------------------------
+
 
 def check_silhouette_readability(
     surface: pygame.Surface,
@@ -141,14 +139,11 @@ def check_silhouette_readability(
     # Shift and compare
     pad = np.pad(alpha, 1, constant_values=0)
     neighbors_low = (
-        (pad[:-2, 1:-1] < 64) | (pad[2:, 1:-1] < 64)
-        | (pad[1:-1, :-2] < 64) | (pad[1:-1, 2:] < 64)
+        (pad[:-2, 1:-1] < 64) | (pad[2:, 1:-1] < 64) | (pad[1:-1, :-2] < 64) | (pad[1:-1, 2:] < 64)
     )
     edge = core & neighbors_low
     if not edge.any():
-        return CritiqueResult(
-            "silhouette_readability", False, "no edge pixels detected"
-        )
+        return CritiqueResult("silhouette_readability", False, "no edge pixels detected")
     bg = np.array(background_rgb, dtype=np.int32)
     edge_pixels = rgb[edge]
     diff = edge_pixels - bg
@@ -165,6 +160,7 @@ def check_silhouette_readability(
 # ---------------------------------------------------------------------------
 # Alpha discipline
 # ---------------------------------------------------------------------------
+
 
 def check_alpha_discipline(surface: pygame.Surface) -> CritiqueResult:
     """Reject surfaces where a large band of pixels is mid-alpha (64..192).
@@ -189,6 +185,7 @@ def check_alpha_discipline(surface: pygame.Surface) -> CritiqueResult:
 # Determinism (by hash)
 # ---------------------------------------------------------------------------
 
+
 def hash_surface(surface: pygame.Surface) -> str:
     """SHA-256 of the raw pixel data. Used for determinism testing."""
     rgb = pygame.surfarray.pixels3d(surface)
@@ -199,9 +196,7 @@ def hash_surface(surface: pygame.Surface) -> str:
     return h.hexdigest()[:16]
 
 
-def check_determinism(
-    render_fn, *args, runs: int = 3, **kwargs
-) -> CritiqueResult:
+def check_determinism(render_fn, *args, runs: int = 3, **kwargs) -> CritiqueResult:
     """Render the same inputs N times; hash each; assert all identical."""
     hashes = []
     for _ in range(runs):
@@ -218,6 +213,7 @@ def check_determinism(
 # ---------------------------------------------------------------------------
 # Detail density (edge density via cheap Sobel)
 # ---------------------------------------------------------------------------
+
 
 def check_detail_density(
     surface: pygame.Surface,
@@ -239,9 +235,7 @@ def check_detail_density(
     opaque = alpha > 16
     opaque_count = int(opaque.sum())
     if opaque_count == 0:
-        return CritiqueResult(
-            "detail_density", False, "no opaque pixels"
-        )
+        return CritiqueResult("detail_density", False, "no opaque pixels")
     density = float((edges & opaque).sum()) / opaque_count
     lo, hi = target_range
     ok = lo <= density <= hi
@@ -256,6 +250,7 @@ def check_detail_density(
 # Variant distinctness — do N renders with different profiles differ?
 # ---------------------------------------------------------------------------
 
+
 def check_variant_distinctness(
     surfaces: list[pygame.Surface],
     min_mean_diff: float = 15.0,
@@ -267,21 +262,15 @@ def check_variant_distinctness(
     the metric toward zero for small subjects on a large canvas.
     """
     if len(surfaces) < 2:
-        return CritiqueResult(
-            "variant_distinctness", True, "only 1 variant — check skipped"
-        )
-    arrs = [
-        pygame.surfarray.pixels3d(s).astype(np.int32) for s in surfaces
-    ]
+        return CritiqueResult("variant_distinctness", True, "only 1 variant — check skipped")
+    arrs = [pygame.surfarray.pixels3d(s).astype(np.int32) for s in surfaces]
     # Union of opaque regions: any pixel that's opaque in at least one variant.
     alphas = [pygame.surfarray.pixels_alpha(s) for s in surfaces]
     union_opaque = np.zeros_like(alphas[0], dtype=bool)
     for a in alphas:
         union_opaque |= a > 16
     if not union_opaque.any():
-        return CritiqueResult(
-            "variant_distinctness", False, "no opaque pixels across any variant"
-        )
+        return CritiqueResult("variant_distinctness", False, "no opaque pixels across any variant")
     diffs = []
     for i in range(len(arrs)):
         for j in range(i + 1, len(arrs)):
@@ -299,6 +288,7 @@ def check_variant_distinctness(
 # ---------------------------------------------------------------------------
 # Report rendering
 # ---------------------------------------------------------------------------
+
 
 def format_report(asset_label: str, results: list[CritiqueResult]) -> str:
     lines = [f"CRITIQUE — {asset_label}"]

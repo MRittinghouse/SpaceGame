@@ -119,8 +119,8 @@ def main() -> None:
     report_sections.append("SPIKE: module render for 3 manufacturers")
     report_sections.append(f"Seed: {seed}")
     report_sections.append(
-        f"Render time: gradient {grad_elapsed*1000:.1f} ms, "
-        f"snapped {snap_elapsed*1000:.1f} ms (both for 3 modules)"
+        f"Render time: gradient {grad_elapsed * 1000:.1f} ms, "
+        f"snapped {snap_elapsed * 1000:.1f} ms (both for 3 modules)"
     )
     report_sections.append("")
 

@@ -92,13 +92,11 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
                 )
             if obj.type == ObjectiveType.REACH_SYSTEM and obj.target_id not in system_ids:
                 errors.append(
-                    f"Mission '{mission.id}': reach_system target "
-                    f"'{obj.target_id}' not in systems"
+                    f"Mission '{mission.id}': reach_system target '{obj.target_id}' not in systems"
                 )
             if obj.type == ObjectiveType.TALK_TO_NPC and obj.target_id not in npc_ids:
                 errors.append(
-                    f"Mission '{mission.id}': talk_to_npc target "
-                    f"'{obj.target_id}' not in NPCs"
+                    f"Mission '{mission.id}': talk_to_npc target '{obj.target_id}' not in NPCs"
                 )
         for cargo in mission.on_accept_cargo:
             if cargo.commodity_id not in commodity_ids:
@@ -108,9 +106,7 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
                 )
         for prereq in mission.prerequisites:
             if prereq not in mission_ids:
-                errors.append(
-                    f"Mission '{mission.id}': prerequisite '{prereq}' not in missions"
-                )
+                errors.append(f"Mission '{mission.id}': prerequisite '{prereq}' not in missions")
         if mission.available_after and mission.available_after not in mission_ids:
             errors.append(
                 f"Mission '{mission.id}': available_after "
@@ -137,21 +133,18 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
             )
         if npc.home_system_id and npc.home_system_id not in system_ids:
             errors.append(
-                f"NPC '{npc.id}' ({npc.name}): home_system_id "
-                f"'{npc.home_system_id}' not in systems"
+                f"NPC '{npc.id}' ({npc.name}): home_system_id '{npc.home_system_id}' not in systems"
             )
         if npc.faction_id and npc.faction_id not in faction_ids:
             errors.append(
-                f"NPC '{npc.id}' ({npc.name}): faction_id "
-                f"'{npc.faction_id}' not in factions"
+                f"NPC '{npc.id}' ({npc.name}): faction_id '{npc.faction_id}' not in factions"
             )
 
     # --- Dialogue node references ---
     for tree in loader.dialogue_trees.values():
         if tree.start_node_id not in tree.nodes:
             errors.append(
-                f"Dialogue '{tree.id}': start_node_id "
-                f"'{tree.start_node_id}' not in nodes"
+                f"Dialogue '{tree.id}': start_node_id '{tree.start_node_id}' not in nodes"
             )
         for node in tree.nodes.values():
             for resp in node.responses:
@@ -179,14 +172,15 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
                 if resp.next_node_id and resp.next_node_id not in visited:
                     queue.append(resp.next_node_id)
                 if resp.skill_check:
-                    for target in [resp.skill_check.success_node_id, resp.skill_check.failure_node_id]:
+                    for target in [
+                        resp.skill_check.success_node_id,
+                        resp.skill_check.failure_node_id,
+                    ]:
                         if target and target not in visited:
                             queue.append(target)
         orphans = set(tree.nodes.keys()) - visited
         if orphans:
-            warnings.append(
-                f"Dialogue '{tree.id}': unreachable nodes: {sorted(orphans)}"
-            )
+            warnings.append(f"Dialogue '{tree.id}': unreachable nodes: {sorted(orphans)}")
 
     # --- Node-level set_flag (silently ignored by parser) ---
     for filename in ["dialogues.json", "crew_quest_dialogues.json"]:
@@ -207,8 +201,11 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
     # --- Flag reachability ---
     settable = _collect_settable_flags(loader)
     engine_flags = {
-        "iron_ore_delivered", "iron_delivery_failed", "broker_ore_sold",
-        "talked_to_officer_larsen", "escape_combat_survived",
+        "iron_ore_delivered",
+        "iron_delivery_failed",
+        "broker_ore_sold",
+        "talked_to_officer_larsen",
+        "escape_combat_survived",
     }
     for mission in loader.missions:
         for flag in mission.required_flags:

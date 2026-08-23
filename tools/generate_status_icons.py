@@ -15,14 +15,7 @@ except ImportError:
     print("Requires Pillow: pip install Pillow")
     raise SystemExit(1)
 
-OUTPUT_DIR = (
-    Path(__file__).parent.parent
-    / "spacegame"
-    / "data"
-    / "assets"
-    / "sprites"
-    / "ui"
-)
+OUTPUT_DIR = Path(__file__).parent.parent / "spacegame" / "data" / "assets" / "sprites" / "ui"
 
 ICON_SIZE = 12
 

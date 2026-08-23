@@ -240,32 +240,24 @@ def _expression_tint(
     return result
 
 
-def expression_neutral(
-    img: Image.Image, num_frames: int = 2
-) -> list[Image.Image]:
+def expression_neutral(img: Image.Image, num_frames: int = 2) -> list[Image.Image]:
     """Neutral expression with breathing animation (same as base)."""
     return breathe(img, num_frames)
 
 
-def expression_happy(
-    img: Image.Image, num_frames: int = 2
-) -> list[Image.Image]:
+def expression_happy(img: Image.Image, num_frames: int = 2) -> list[Image.Image]:
     """Happy/confident expression: warmer, slightly brighter."""
     tinted = _expression_tint(img, r_shift=0.4, g_shift=0.2, b_shift=-0.2, brightness=1.06)
     return breathe(tinted, num_frames)
 
 
-def expression_angry(
-    img: Image.Image, num_frames: int = 2
-) -> list[Image.Image]:
+def expression_angry(img: Image.Image, num_frames: int = 2) -> list[Image.Image]:
     """Angry/stern expression: redder, slightly darker."""
     tinted = _expression_tint(img, r_shift=0.5, g_shift=-0.3, b_shift=-0.3, brightness=0.92)
     return breathe(tinted, num_frames)
 
 
-def expression_surprised(
-    img: Image.Image, num_frames: int = 2
-) -> list[Image.Image]:
+def expression_surprised(img: Image.Image, num_frames: int = 2) -> list[Image.Image]:
     """Surprised expression: brighter, especially around eyes."""
     tinted = _expression_tint(img, r_shift=0.1, g_shift=0.1, b_shift=0.3, brightness=1.1)
     return breathe(tinted, num_frames)
@@ -570,9 +562,24 @@ SHEET_CONFIGS: list[dict] = [
         "name": "Portraits",
         "category": "portraits",
         "transforms": [
-            {"transform": "expression_neutral", "num_frames": 2, "anim_name": "idle", "aliases": ["neutral"]},
-            {"transform": "expression_happy", "num_frames": 2, "anim_name": "happy", "aliases": ["confident"]},
-            {"transform": "expression_angry", "num_frames": 2, "anim_name": "angry", "aliases": ["stern"]},
+            {
+                "transform": "expression_neutral",
+                "num_frames": 2,
+                "anim_name": "idle",
+                "aliases": ["neutral"],
+            },
+            {
+                "transform": "expression_happy",
+                "num_frames": 2,
+                "anim_name": "happy",
+                "aliases": ["confident"],
+            },
+            {
+                "transform": "expression_angry",
+                "num_frames": 2,
+                "anim_name": "angry",
+                "aliases": ["stern"],
+            },
             {"transform": "expression_surprised", "num_frames": 2, "anim_name": "surprised"},
         ],
         "frame_duration": 0.8,
@@ -697,9 +704,7 @@ def generate_sheets(
         if only_ids:
             sprites = [(sid, sp) for sid, sp in sprites if sid in only_ids]
         if not sprites:
-            summary["details"].append(
-                f"  {config['name']}: no sprites found in {category}/"
-            )
+            summary["details"].append(f"  {config['name']}: no sprites found in {category}/")
             continue
 
         total_frames = sum(step["num_frames"] for step in transform_steps)
@@ -740,8 +745,7 @@ def generate_sheets(
 
         if not dry_run and generated > 0:
             summary["details"].append(
-                f"  {config['name']}: {generated} sheets "
-                f"({total_frames} frames, {transform_desc})"
+                f"  {config['name']}: {generated} sheets ({total_frames} frames, {transform_desc})"
             )
 
     # Write animation config files
@@ -783,9 +787,7 @@ def generate_sheets(
             with open(anim_path, "w") as f:
                 json.dump(anim_data, f, indent=2)
             summary["anim_configs_written"] += 1
-            summary["details"].append(
-                f"  Animation config: {anim_file}"
-            )
+            summary["details"].append(f"  Animation config: {anim_file}")
 
     return summary
 

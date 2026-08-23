@@ -37,12 +37,7 @@ from tools.pixel_pipeline import (
 def load_master_palette() -> list[tuple[int, int, int]]:
     """Load the master palette colors from JSON."""
     palette_path = (
-        PROJECT_ROOT
-        / "spacegame"
-        / "data"
-        / "assets"
-        / "palettes"
-        / "master_palette.json"
+        PROJECT_ROOT / "spacegame" / "data" / "assets" / "palettes" / "master_palette.json"
     )
     with open(palette_path) as f:
         data = json.load(f)
@@ -113,9 +108,7 @@ def main() -> None:
     # Define the trial sprite
     sprite_id = "iron_ore"
     target_size = (16, 16)
-    output_dir = (
-        PROJECT_ROOT / "spacegame" / "data" / "assets" / "sprites" / "commodities"
-    )
+    output_dir = PROJECT_ROOT / "spacegame" / "data" / "assets" / "sprites" / "commodities"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     prompt = (

@@ -35,6 +35,7 @@ LIGHT_DIR = np.array([0.707, -0.707], dtype=np.float32)
 @dataclass(frozen=True)
 class PlacedModule:
     """A module placed at (x, y) in ship canvas coordinates."""
+
     module_type_id: str
     x: int
     y: int
@@ -71,13 +72,17 @@ def compose_ship(
         )
         h, w = coverage_local.shape
         # Clip the module into the canvas bounds.
-        y0 = max(0, placed.y); y1 = min(ch, placed.y + h)
-        x0 = max(0, placed.x); x1 = min(cw, placed.x + w)
+        y0 = max(0, placed.y)
+        y1 = min(ch, placed.y + h)
+        x0 = max(0, placed.x)
+        x1 = min(cw, placed.x + w)
         if y1 <= y0 or x1 <= x0:
             continue
         # Corresponding slice into the local arrays
-        ly0 = y0 - placed.y; ly1 = ly0 + (y1 - y0)
-        lx0 = x0 - placed.x; lx1 = lx0 + (x1 - x0)
+        ly0 = y0 - placed.y
+        ly1 = ly0 + (y1 - y0)
+        lx0 = x0 - placed.x
+        lx1 = lx0 + (x1 - x0)
 
         silhouette[y0:y1, x0:x1] = np.maximum(
             silhouette[y0:y1, x0:x1], coverage_local[ly0:ly1, lx0:lx1]
@@ -87,12 +92,14 @@ def compose_ship(
         )
         emissive_color_roles[(y0, x0)] = meta.get("emissive_color", "plasma_core")
 
-        module_regions.append({
-            "placed": placed,
-            "meta": meta,
-            "coverage_slice": (slice(y0, y1), slice(x0, x1)),
-            "coverage_local": coverage_local[ly0:ly1, lx0:lx1],
-        })
+        module_regions.append(
+            {
+                "placed": placed,
+                "meta": meta,
+                "coverage_slice": (slice(y0, y1), slice(x0, x1)),
+                "coverage_local": coverage_local[ly0:ly1, lx0:lx1],
+            }
+        )
 
     # --- Phase 2: Per-module base pass ----------------------------------------
     # Fill each module region with the material's base color. Differentiate
@@ -225,10 +232,14 @@ def compose_ship(
             _, emissive_local, _ = rasterize(mt, proportion_bias=profile.proportion_bias)
             lh, lw = emissive_local.shape
             # Match slices
-            y0 = max(0, region["placed"].y); y1 = min(ch, region["placed"].y + lh)
-            x0 = max(0, region["placed"].x); x1 = min(cw, region["placed"].x + lw)
-            ly0 = y0 - region["placed"].y; ly1 = ly0 + (y1 - y0)
-            lx0 = x0 - region["placed"].x; lx1 = lx0 + (x1 - x0)
+            y0 = max(0, region["placed"].y)
+            y1 = min(ch, region["placed"].y + lh)
+            x0 = max(0, region["placed"].x)
+            x1 = min(cw, region["placed"].x + lw)
+            ly0 = y0 - region["placed"].y
+            ly1 = ly0 + (y1 - y0)
+            lx0 = x0 - region["placed"].x
+            lx1 = lx0 + (x1 - x0)
             em_slice = emissive_local[ly0:ly1, lx0:lx1]
             e_mask = em_slice > 0.3
             # Write emissive color directly.
@@ -252,9 +263,7 @@ def compose_ship(
     del alpha_arr
 
     # --- Rivets on silhouette -------------------------------------------------
-    rivets = _place_rivets_silhouette(
-        silhouette, mat.rivet_density, seed=seed + 9001
-    )
+    rivets = _place_rivets_silhouette(silhouette, mat.rivet_density, seed=seed + 9001)
     rivet_color = rgb("rivet")
     for rx, ry in rivets:
         # Skip rivets on emissive pixels.
@@ -279,9 +288,12 @@ def _value_noise(width: int, height: int, scale: float, seed: int) -> np.ndarray
     low = rng.random((grid_h, grid_w), dtype=np.float32)
     ys = np.linspace(0, grid_h - 1, height)
     xs = np.linspace(0, grid_w - 1, width)
-    y0 = np.floor(ys).astype(int); y1 = np.clip(y0 + 1, 0, grid_h - 1)
-    x0 = np.floor(xs).astype(int); x1 = np.clip(x0 + 1, 0, grid_w - 1)
-    dy = (ys - y0).reshape(-1, 1); dx = (xs - x0).reshape(1, -1)
+    y0 = np.floor(ys).astype(int)
+    y1 = np.clip(y0 + 1, 0, grid_h - 1)
+    x0 = np.floor(xs).astype(int)
+    x1 = np.clip(x0 + 1, 0, grid_w - 1)
+    dy = (ys - y0).reshape(-1, 1)
+    dx = (xs - x0).reshape(1, -1)
     top = low[y0][:, x0] * (1 - dx) + low[y0][:, x1] * dx
     bot = low[y1][:, x0] * (1 - dx) + low[y1][:, x1] * dx
     return (top * (1 - dy) + bot * dy).astype(np.float32)
@@ -327,10 +339,7 @@ def _place_rivets_silhouette(
         y = int(rng.integers(2, h - 2))
         if silhouette[y, x] < 0.5:
             continue
-        close = any(
-            (px - x) ** 2 + (py - y) ** 2 < min_spacing_px ** 2
-            for px, py in placed
-        )
+        close = any((px - x) ** 2 + (py - y) ** 2 < min_spacing_px**2 for px, py in placed)
         if not close:
             placed.append((x, y))
     return placed

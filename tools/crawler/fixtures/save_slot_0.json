@@ -1,11 +1,11 @@
 {
   "version": "1.0",
   "metadata": {
-    "name": "Save 2026-08-23T18:46:19.406350",
-    "timestamp": "2026-08-23T18:46:19.406350",
+    "name": "Save 2026-08-23T19:43:07.412709",
+    "timestamp": "2026-08-23T19:43:07.412709",
     "credits": 833000,
     "location": "Nexus Prime",
-    "playtime_seconds": 2,
+    "playtime_seconds": 3,
     "game_day": 220
   },
   "player": {
@@ -415,18 +415,18 @@
     "trades_completed": 0,
     "total_profit": 0,
     "systems_visited": [
-      "stellaris_port",
-      "verdant",
-      "nova_research",
-      "crimson_reach",
-      "herons_mark",
-      "nexus_prime",
       "havens_rest",
-      "the_fulcrum",
-      "forgeworks",
-      "axiom_labs",
+      "nova_research",
       "iron_depths",
-      "breakstone"
+      "verdant",
+      "crimson_reach",
+      "stellaris_port",
+      "forgeworks",
+      "breakstone",
+      "the_fulcrum",
+      "herons_mark",
+      "axiom_labs",
+      "nexus_prime"
     ],
     "credits_earned_lifetime": 0,
     "credits_spent_lifetime": 0,
@@ -1148,7 +1148,7 @@
     ],
     "tutorial_approach": "story"
   },
-  "playtime_seconds": 2,
+  "playtime_seconds": 3,
   "price_history": {
     "max_days": 7,
     "history": {}

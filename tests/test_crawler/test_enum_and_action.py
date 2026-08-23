@@ -137,3 +137,61 @@ class TestActionSelection:
         for _ in range(20):
             action = crawler._select_action()
             assert action[0] in ("keypress", "advance_time")
+
+
+class TestSelectableEscapeKeysIncludeDialogDismissal:
+    """AC-4: K_y, K_n, K_RETURN, K_ESCAPE always appear in selectable escape keys."""
+
+    def test_selectable_escape_keys_include_dialog_dismissal(self) -> None:
+        """K_y, K_n, K_RETURN, K_ESCAPE must always be selectable from MAIN_MENU."""
+        game = FakeGameWithUI()
+        from spacegame.config import GameState
+
+        game.state_manager.current_state = GameState.MAIN_MENU
+        crawler = _make_crawler(game)
+
+        selectable = crawler._selectable_escape_keys()
+
+        for key_name, key_const in [
+            ("K_y", pygame.K_y),
+            ("K_n", pygame.K_n),
+            ("K_RETURN", pygame.K_RETURN),
+            ("K_ESCAPE", pygame.K_ESCAPE),
+        ]:
+            assert key_const in selectable, (
+                f"pygame.{key_name} ({key_const}) must be in _selectable_escape_keys"
+            )
+
+
+class TestQuitGameButtonExcluded:
+    """Crawler never enumerates 'QUIT GAME' buttons — they call sys.exit()."""
+
+    def test_quit_game_button_excluded_from_enumerate_interactive(self) -> None:
+        """A UIButton with text 'QUIT GAME' must not appear in enumerate_interactive.
+
+        If included, the crawler would click it, calling sys.exit() and
+        terminating the Python process before coverage data is saved.
+        """
+        game = FakeGameWithUI()
+        pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(10, 10, 100, 30),
+            text="QUIT GAME",
+            manager=game.ui_manager,
+        )
+        normal_btn = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(150, 10, 100, 30),
+            text="RESUME",
+            manager=game.ui_manager,
+        )
+
+        crawler = _make_crawler(game)
+        interactive = crawler.enumerate_interactive()
+
+        texts = [getattr(e, "text", "") for e in interactive]
+        assert "QUIT GAME" not in texts, (
+            "QUIT GAME button must be excluded from enumerate_interactive "
+            "(clicking it calls sys.exit() and terminates the crawl)"
+        )
+        assert normal_btn in interactive, (
+            "Non-excluded buttons must still appear in enumerate_interactive"
+        )

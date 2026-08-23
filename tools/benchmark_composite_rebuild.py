@@ -70,7 +70,9 @@ def _benchmark_build(template_id: str, label: str) -> None:
 
 
 def main() -> None:
-    print("ShipComposite rebuild cost (InvalidationScope.ALL, N=%d samples each)" % SAMPLES_PER_BUILD)
+    print(
+        "ShipComposite rebuild cost (InvalidationScope.ALL, N=%d samples each)" % SAMPLES_PER_BUILD
+    )
     print("Gate thresholds: <15ms direct · 15-30ms lazy precompute · >30ms Option C")
     print()
     targets = [
