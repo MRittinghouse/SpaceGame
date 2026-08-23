@@ -5223,7 +5223,7 @@ surface).
 
 ### QF-3 — Ralph quality-gate integration
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: Spec A, Section 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-2 | **Blocks**: none
@@ -5434,6 +5434,7 @@ surface).
 - 2026-08-23 17:34 — harness: plan phase starting
 - 2026-08-23 17:40 — planning complete (commit 6efbdca); verified all 3 context docs exist and
 - 2026-08-23 17:41 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 17:56 — harness: review phase starting (rework cycle 0)
   added 4 references (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
   `tests/test_ralph/test_harness.py`) so implementer mirrors exact command shapes and existing
   test conventions; locked 7 decisions (gate scope, timing, pipe portability, DRY_RUN behavior,
@@ -5444,24 +5445,23 @@ surface).
 - 2026-08-23 — [implement] 12 tests added: TestRunQualityGates (6 unit) + TestExecuteSprintQualityGate (6 integration including DRY_RUN and non-OK-skips-gate). All 12 pass.
 - 2026-08-23 — [implement] Pre-existing lint issues in harness.py fixed (unused Path/PhaseResult imports, f-string/RUF005) to satisfy touched-file lint gate.
 - 2026-08-23 — [implement] Pre-commit hook (ruff + ruff-format + mypy baseline) passed on commit. Full suite: 10501 passed, 98 skipped (baseline 10489, +12). PHASE_OK
+- 2026-08-23 18:35 — [review] All 9 ACs verified. Plan audit: sound; D1-D7 all defensible. Gate placements confirmed correct (BEFORE should_stop() at plan/implement; FIRST inside review-OK branch before STATUS_DONE). 53 test_ralph tests pass. Full suite 10501 >= 10489. No critical findings. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-23 17:41
-- Completed: 2026-08-23 18:30
-- Files_changed: ralph/harness.py, tests/test_ralph/test_harness.py
-- Commits: 301d3a1
-- Tests_added: 12
-- Tests_baseline: 10489
+- Started: 2026-08-23 18:35
+- Completed: 2026-08-23 18:50
+- Files_changed: none
+- Commits: none
 - Tests_passing: 10501
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: _run_quality_gates() + 3-site wiring in execute_sprint. Pre-commit hook passed on commit. All 9 acceptance criteria satisfied (ACs 1-3: gate returns correct tuple; AC 4: activity-log names gate+error; AC 5: happy path unchanged; AC 6: gate skipped on non-OK phase; AC 7: DRY_RUN skips gate; AC 8: existing 41 tests pass; AC 9: 10501 >= 10489).
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: The nested `_run` helper inside `_run_quality_gates` uses `**kwargs: object` + `# type: ignore[arg-type]` to pass `input=` for the mypy_baseline call; an explicit `Optional[str] = None` parameter would be cleaner and type-safe, but the current shape is harmless.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; locked decisions D1-D7 all defensible. Gate wired correctly at all 3 sites; review-OK site places gate BEFORE update_status(STATUS_DONE) as required. 12 new tests (6 unit + 6 integration) cover all AC paths including DRY_RUN skip and non-OK-phase skip.
 ### QF-4 — Import-boundary guard
 
 **Status**: done
