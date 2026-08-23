@@ -4866,7 +4866,7 @@ tests/test_views/test_trading_actions.py
 
 ### QF-2 — MyPy baseline + population metrics
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 1
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-1 | **Blocks**: QF-3
@@ -4878,42 +4878,329 @@ and report the two population metrics that actually track progress.
 **Context to read.**
 - `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 1 and Section 4)
 - `pyproject.toml` `[tool.mypy]`
+- `.pre-commit-config.yaml` (QF-1 delivered; extend, do not rewrite)
+- `.github/workflows/quality.yml` (QF-1 delivered; a commented `types` job stub is already in place
+  for this sprint to fill in)
 
 **Touch zones.**
 ```
-mypy-baseline.txt                           (NEW)
-scripts/mypy_populations.py                 (NEW)
+mypy-baseline.txt                                    (NEW)
+scripts/mypy_populations.py                          (NEW)
+tests/test_scripts/test_mypy_populations.py          (NEW)
 .pre-commit-config.yaml
 .github/workflows/quality.yml
 pyproject.toml
+CLAUDE.md
 ```
 
 **Deliverables.**
 - `mypy-baseline` added as a dev dependency; `mypy-baseline.txt` generated and committed.
 - Baseline fingerprints on `(file, error-code, message-text)`, **never line number**, so unrelated
-  edits do not churn it.
+  edits do not churn it. `mypy-baseline` from PyPI defaults to this behavior; verify at install time.
 - `scripts/mypy_populations.py` printing the three populations from Spec A Section 4:
-  - Population A (union-attr + `"None" has no attribute`), currently 196, **excluding game.py's 72**
-    from the tracked figure, with the exclusion reason written in the script docstring.
+  - Population A (union-attr + `"None" has no attribute`), currently 196, **excluding game.py's 72
+    `union-attr` errors** from the tracked figure (see Decision 1 below for the precise exclusion
+    predicate), with the exclusion reason written in the script docstring.
   - Population B (`"object" has no attribute` + name-defined), currently 234.
   - Population C (everything else), currently 338.
-- `types` CI job wired; prints A and B on every run.
-- `mypy` added to the pre-commit hook (measured 0.4s warm, 13.8s cold).
+- Unit tests in `tests/test_scripts/test_mypy_populations.py` covering the classifier logic on
+  synthetic mypy output lines (do NOT depend on the real baseline file — that will drift).
+- `types` CI job wired into `quality.yml` (replacing the commented placeholder QF-1 left); prints A,
+  B, and C on every run.
+- `mypy` added to the pre-commit hook (measured 0.4s warm, 13.8s cold), using `language: system` so
+  the developer's dev-env mypy runs and stays in lockstep with the CLI.
 - A header comment in `mypy-baseline.txt` recording that regeneration is permitted ONLY in a commit
-  touching nothing but annotations and None-guards.
+  touching nothing but annotations and None-guards. If `mypy-baseline` overwrites file headers,
+  document the same rule in a short `CLAUDE.md` note and in the script docstring.
+- `CLAUDE.md` gets a brief pointer under Quick Commands (or a small "Type checking" subsection)
+  listing: `python -m mypy spacegame/ | python -m mypy_baseline filter`, `python scripts/mypy_populations.py`,
+  and the regeneration constraint. Prevents future contributors from silently re-syncing baseline
+  during feature work.
 
 **Acceptance criteria.**
-1. `mypy` with the baseline exits 0 on the current tree.
-2. Introducing a new type error in any file fails both the hook and the `types` CI job.
-3. `python scripts/mypy_populations.py` prints A=124 (excluding game.py), B=234, C=338.
-4. Full suite green.
+1. `python -m mypy spacegame/ | python -m mypy_baseline filter` exits 0 on the current tree
+   (baseline swallows all 768 errors).
+2. Introducing a new type error in any spacegame file causes:
+   - the pre-commit hook to exit non-zero and print the new error, AND
+   - the `types` CI job's `mypy | mypy_baseline filter` step to exit non-zero.
+   Demonstrate both locally and record the exact rejection output (offending error line + exit code)
+   in the Activity log. Do NOT commit the sentinel.
+3. `python scripts/mypy_populations.py` prints A=124 (excluding game.py's 72 `union-attr` errors),
+   B=234, C=338, TOTAL=768. If any of these numbers has drifted between planning (2026-08-23) and
+   implementation because of intervening spacegame edits, the implementer re-measures via
+   `python -m mypy spacegame/`, updates the numbers in this acceptance criterion in place, and
+   records both the pre-drift and post-drift values in the Activity log. The exclusion definition
+   (Decision 1) does NOT change.
+4. `pre-commit run --all-files` exits 0 on a clean tree.
+5. `python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"` succeeds
+   (workflow is valid YAML).
+6. Full suite green vs. baseline: pass count >= 10,463 (98 skips OK).
+
+**Plan.**
+
+1. **Add `mypy-baseline` to dev dependencies.** Edit `pyproject.toml`
+   `[project.optional-dependencies].dev` to include `"mypy-baseline>=0.7"`. Run `pip install -e ".[dev]"`
+   to confirm it resolves. Verify `python -m mypy_baseline --help` works.
+   - File: `pyproject.toml`.
+   - Test surface: none direct; validated in step 2 via `mypy_baseline sync`.
+   - Risk: unlikely; `mypy-baseline` is a small pure-Python package. If it conflicts with pinned deps,
+     relax the pin to `>=0.6` and try again.
+
+2. **Generate `mypy-baseline.txt`.** Run
+   `python -m mypy spacegame/ | python -m mypy_baseline sync`. Confirm this produces a
+   `mypy-baseline.txt` in the repo root, and that
+   `python -m mypy spacegame/ | python -m mypy_baseline filter` then exits 0 (all 768 errors
+   swallowed).
+   - Files: `mypy-baseline.txt` (NEW).
+   - Test surface: `mypy | mypy_baseline filter` exits 0 (AC 1).
+   - Risk: mypy-baseline needs to be told which fingerprint fields to include. Verify from its docs
+     that the default is `(file, error-code, message)` with **no line number**. If it defaults to
+     including line numbers, pass the appropriate flag to `sync` so the baseline is line-agnostic
+     (`mypy-baseline sync --sort-baseline` or an equivalent option; check `--help`).
+
+3. **Prepend a header comment to `mypy-baseline.txt`.** After `sync`, prepend:
+   ```
+   # mypy-baseline.txt -- MyPy error ratchet for Aurelia's QF arc.
+   #
+   # DO NOT regenerate as part of a feature commit. Regeneration is permitted
+   # ONLY in a commit that touches nothing but type annotations and None-guards.
+   # See requirements/roadmap/ROADMAP.md#qf-2 and
+   # docs/superpowers/specs/2026-08-23-quality-foundation-design.md Section 1.
+   ```
+   Run `mypy | mypy_baseline filter` again to confirm the header does not confuse the filter. If it
+   does (i.e., filter reads the whole file as fingerprint records), move the note to `CLAUDE.md`
+   only and note in the sprint's Activity log that the baseline file is comment-hostile.
+   - Files: `mypy-baseline.txt`.
+   - Test surface: filter exits 0 (AC 1).
+   - Risk: fallback path documented above.
+
+4. **Extend `.pre-commit-config.yaml` with a mypy hook.** Append a `repo: local` block:
+   ```yaml
+     - repo: local
+       hooks:
+         - id: mypy-baseline
+           name: mypy (against baseline)
+           language: system
+           entry: bash -c 'set -o pipefail; python -m mypy spacegame/ | python -m mypy_baseline filter'
+           pass_filenames: false
+           types_or: [python]
+   ```
+   Rationale for each choice is in Decisions 3-5.
+   - File: `.pre-commit-config.yaml`.
+   - Test surface: `pre-commit run --all-files` exits 0 (AC 4).
+   - Risk: pre-commit's `language: system` requires the user's dev env to have mypy + mypy-baseline;
+     that matches the CLAUDE.md `pip install -e ".[dev]"` convention. Document in the CLAUDE.md
+     Quick Commands entry that the hook needs a completed dev install.
+
+5. **Fill in the `types` CI job.** In `.github/workflows/quality.yml`, replace the commented
+   placeholder QF-1 left (lines 55-57 in the current file) with:
+   ```yaml
+     types:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-python@v5
+           with:
+             python-version: '3.13'
+             cache: 'pip'
+             cache-dependency-path: pyproject.toml
+         - run: pip install -e ".[dev]"
+         - name: MyPy against baseline
+           run: python -m mypy spacegame/ | python -m mypy_baseline filter
+         - name: Print population metrics
+           run: python scripts/mypy_populations.py
+   ```
+   GitHub Actions' default bash on ubuntu is `bash -e -o pipefail`, so the pipe's exit code
+   propagates without needing an explicit `set -o pipefail`. Belt-and-braces: if unsure, prefix each
+   piped step with `shell: bash` and an explicit pipefail (matches the pre-commit hook's approach).
+   - File: `.github/workflows/quality.yml`.
+   - Test surface: `python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"`
+     succeeds (AC 5). Note: full CI validation requires a push, which the harness does not do.
+   - Risk: same pipefail concern as the pre-commit hook. Choose one convention and use it in both.
+
+6. **Write `scripts/mypy_populations.py`.** Small, self-contained script. Docstring includes:
+   - The three population definitions (verbatim from Spec A Section 4).
+   - The game.py `union-attr` exclusion rule and its rationale (Decision 1).
+   - Sample output format.
+   Behavior: run `python -m mypy spacegame/` internally (capture stdout+stderr), classify each error
+   line, print `A=<n>`, `B=<n>`, `C=<n>`, `TOTAL=<n>` (one per line, newline-terminated). Exit 0
+   regardless of mypy's exit code — this script reports metrics, it does not gate anything (the
+   gate is `mypy | mypy_baseline filter`). Support `--stdin` optionally to read pre-captured mypy
+   output (useful for tests).
+   - File: `scripts/mypy_populations.py` (NEW).
+   - Test surface: unit tests in step 7.
+   - Risk: mypy output format is `path:line: <severity>: <message>  [error-code]`. Parser must
+     anchor on `[error-code]` (bracketed suffix) rather than message text, because message wording
+     can change between mypy versions.
+
+7. **Write unit tests for the population script.** In `tests/test_scripts/test_mypy_populations.py`,
+   cover:
+   - Parses a synthetic `[union-attr]` line as Population A.
+   - Parses a synthetic `[attr-defined]` line containing `"None" has no attribute` as Population A.
+   - EXCLUDES a `[union-attr]` line whose path ends in `engine/game.py` (or `engine\game.py`) from
+     Population A. Test with both path separators.
+   - INCLUDES a `[attr-defined]` `"None" has no attribute` line from `engine/game.py` in Population
+     A (per Decision 1).
+   - Classifies `[attr-defined]` lines containing `"object" has no attribute` as Population B.
+   - Classifies `[name-defined]` as Population B.
+   - Classifies `[return-value]`, `[no-untyped-def]`, `[arg-type]`, and other codes as Population C.
+   - Empty input yields A=0, B=0, C=0, TOTAL=0.
+   - Mixed synthetic input yields the expected counts (small fixture, ~20 lines).
+   - `--stdin` mode reads from stdin, non-stdin re-runs mypy.
+   - File: `tests/test_scripts/test_mypy_populations.py` (NEW).
+   - Risk: don't include the real 768-line baseline as a fixture — it drifts. Use small,
+     hand-authored synthetic fragments.
+
+8. **Verify the ratchet rejects a new type error.** Manually introduce a type error into any
+   spacegame file (e.g., a top-level `_qf2_sentinel: int = "string"  # type-sentinel` in
+   `spacegame/config.py`). Run:
+   - `python -m mypy spacegame/ | python -m mypy_baseline filter` — should exit non-zero, print the
+     new error.
+   - `python -m pre_commit run --files spacegame/config.py mypy-baseline` — should reject.
+   Record exit code + first line of output in the sprint's Activity log per AC 2. Delete the
+   sentinel; `git status` must show no residual sentinel before proceeding to step 9.
+   - Files: none permanent.
+   - Test surface: manual, recorded in Activity log.
+   - Risk: forgetting cleanup. Enforce with `git status` before commit.
+
+9. **Verify the population script prints A=124, B=234, C=338.** Run
+   `python scripts/mypy_populations.py`; record output in the Activity log. If drift has occurred
+   between planning and implementation, re-measure, update AC 3 in place, and log both values.
+   - Files: none written.
+   - Test surface: script exits 0 with expected output (AC 3).
+   - Risk: covered in AC 3 language.
+
+10. **Update `CLAUDE.md`.** Under "Quick Commands", add:
+    ```
+    python -m mypy spacegame/ | python -m mypy_baseline filter  # Type check against ratchet baseline
+    python scripts/mypy_populations.py                          # Print A/B/C population counts
+    ```
+    Add a one-paragraph "Type-check ratchet" note near the Quick Commands block noting that
+    `mypy-baseline.txt` regeneration is annotations-only. Keep it brief; do not duplicate Spec A.
+    - File: `CLAUDE.md`.
+    - Test surface: none.
+    - Risk: none.
+
+11. **Full-suite regression check.** Run `python -m pytest -n auto -q`. Confirm pass count >= 10,463
+    (baseline from pre-phase context). Record delta in Activity log per AC 6.
+    - Files: none written.
+    - Test surface: full pytest suite.
+    - Risk: none if steps 1-10 kept touch zones tight; the new tests in `tests/test_scripts/` add to
+      the pass count but never remove existing tests.
+
+12. **Commits and status.** Recommended commit sequence for recovery:
+    - `QF-2: add mypy-baseline dev dep + generated baseline`
+    - `QF-2: wire mypy into pre-commit hook`
+    - `QF-2: fill in types CI job`
+    - `QF-2: add scripts/mypy_populations.py + tests`
+    - `QF-2: document mypy ratchet in CLAUDE.md`
+    Then flip `Status: in-progress (planning)` → `Status: review`, append Activity log entry,
+    overwrite `**Last phase report.**` block. Do NOT push.
+
+**Cross-sprint reactions to author.** None (foundational quality infrastructure, no player-facing
+surface).
+
+**Decisions locked (with rationale).**
+
+1. **Exclusion rule for game.py: `union-attr` errors in `spacegame/engine/game.py` ONLY (72
+   today).** Rationale: Spec A Section 4 says "excluded from the Population A metric" for "game.py's
+   72" errors, and separately explains that Spec B's non-Optional `Player` accessor property will
+   erase 64 `Player | None` errors in one edit (the bulk of game.py's `union-attr` count). The 31
+   `"None" has no attribute" [attr-defined]` errors in game.py are individual code-fix cases, not
+   deletable by an accessor; they remain trackable in Population A and someone (likely QF-8) will
+   fix them. Measured today: total Population A = 196; game.py `union-attr` = 72; game.py
+   `"None" has no attribute` = 31; game.py total Population A = 103. Tracked A = 196 - 72 = **124**.
+   Predicate for the classifier: `"[union-attr]" in line AND ("engine/game.py" in normalized_path OR
+   "engine\\game.py" in raw_path)` -> excluded from Population A.
+2. **Baseline tool: `mypy-baseline` from PyPI, not a hand-rolled solution.** Rationale: Spec A
+   Section 1 says so explicitly ("adds a maintenance surface for no benefit"). Small dependency;
+   maintained; fingerprint-on-message-not-line-number is its default.
+3. **Pre-commit hook uses `language: system`, not `language: python`.** Rationale: mypy needs the
+   full project dependency graph to resolve types. `language: python` requires replicating every
+   runtime dep in `additional_dependencies`, which drifts from `pyproject.toml`. `language: system`
+   uses the developer's dev env — same mypy the CLI runs, zero version drift.
+4. **Pre-commit hook uses `pass_filenames: false`.** Rationale: mypy resolves cross-file types.
+   Running on staged files alone misses `Foo | None` errors whose `Foo` lives in a different module.
+   Matches how the CLI runs.
+5. **Pre-commit hook uses `bash -c 'set -o pipefail; ...'`.** Rationale: `mypy | mypy_baseline
+   filter` produces its diagnostic exit code from `filter`. Without pipefail, only `mypy`'s exit
+   code is reported — and mypy exits non-zero on errors even against baseline, so filter's clean
+   pass is masked. Explicit pipefail mirrors GitHub Actions' default and gives identical behavior
+   locally and in CI.
+6. **Script output format: `KEY=value` per line, one metric per line.** Rationale: readable in CI
+   logs, greppable by future automation (e.g., a Population A trend dashboard). Do NOT JSON-format
+   now — no consumer, and JSON in CI logs is noisier to eyeball. Format:
+   `A=124\nB=234\nC=338\nTOTAL=768\n`.
+7. **No total-count regression gate.** Rationale: Spec A Section 1 explicitly says fixing
+   Population B raises the total (mypy starts seeing code it was blind to). Any "total must never
+   rise" gate blocks the exact work this spec commissions. Ratchet only on baseline delta.
+8. **Populations script re-runs mypy internally by default; supports `--stdin` for composition.**
+   Rationale: standalone in CI (single command) but composable when a caller has already captured
+   mypy output. Cost: extra ~14s cold in CI — trivial in a job that already runs mypy for the
+   filter step. If CI runtime becomes a concern later, add `--stdin` piping in the workflow.
+9. **Header comment placement: `mypy-baseline.txt` if the tool preserves it; else `CLAUDE.md` note
+   plus script docstring.** Rationale: deliverables require the note be recorded prominently. First
+   choice is the baseline file itself (co-located with the artifact). Fallback: `CLAUDE.md` is
+   already touched in step 10 so the ratchet rule lives there too, ensuring future agents see it
+   when they open the project instructions.
+10. **`types` CI job placement: replace the commented QF-1 placeholder, keep the same file.**
+    Rationale: QF-1's plan explicitly reserved that slot with a `QF-2 will fill in this job` header
+    comment. No net structural change to the workflow file.
+11. **mypy scope stays `spacegame/` only, matching Spec A and QF-1's lint scope.** Rationale: Spec
+    A defers `tests/` cleanup out of the QF arc. Mixing tests/ into mypy would either flood the
+    baseline or block CI from day one. If someone later wants tests/ typed, that's a separate
+    sprint.
+
+**Polish items folded in.**
+- Unit tests for `scripts/mypy_populations.py` (step 7). The script is small but sole owner of a
+  metric that gates CI's reporting; the "quality-gate problem" this spec identifies means we test
+  it.
+- Script docstring includes exclusion rule, rationale, and definitions (step 6). Metric survives
+  handoff.
+- `CLAUDE.md` gets a Quick Commands pointer plus a one-paragraph ratchet note (step 10). Prevents
+  a future contributor from silently re-syncing the baseline during feature work.
+- `set -o pipefail` explicit in the pre-commit hook (step 4). Defensive against shell defaults.
+- Machine-readable `KEY=value` output (Decision 6). Greppable in CI logs.
+- Optional `--stdin` mode on the populations script (Decision 8, step 6). Costs a few lines,
+  composes with future automation.
+
+**Polish items deferred (no new sprint proposed).**
+- Per-module MyPy strictness tiers — Spec A Section 1 "Deliberately out of scope."
+- Historical Population trend dashboard — QF-9 territory or a future observability sprint.
+- Cleanup of `tests/` mypy findings — mypy scope stays `spacegame/` only, matching QF-1's lint
+  scope. Separate sprint if the user wants it.
 
 **Risks / open questions.**
 - Expect the TOTAL to rise later when Population B is fixed; the ratchet must not treat that as
-  regression. Spec A Section 1 says so explicitly. Do not add a total-count gate.
+  regression. Spec A Section 1 says so explicitly. Do not add a total-count gate. (Locked in
+  Decision 7.)
+- `mypy-baseline` file-header preservation not verified in the plan — the implementer confirms at
+  install time and applies the Decision 9 fallback if needed. Low-impact either way (CLAUDE.md
+  note remains authoritative).
+- Numbers may drift between planning (2026-08-23) and implementation if any spacegame commits land
+  in between. Today: TOTAL=768, A=196 (of which 72 are game.py `union-attr` = deferred), B=234,
+  C=338, tracked A=124. AC 3 has explicit re-measure language.
+- Game.py's 31 `"None" has no attribute" [attr-defined]` errors remain in the tracked Population A
+  by Decision 1. This is intentional: they are not deletable by Spec B's `Player` accessor
+  rewrite; they will need code-level fixes (likely under QF-8 or as opportunistic drive-bys). Not
+  a blocker for this sprint.
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 16:57 — harness: plan phase starting
+- 2026-08-23 17:20 — planning complete; verified both context docs exist (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md`, `pyproject.toml`) plus the two QF-1 outputs the sprint extends (`.pre-commit-config.yaml`, `.github/workflows/quality.yml` with its reserved commented `types` slot); re-measured mypy today at TOTAL=768, union-attr=165 (72 in game.py, 93 outside), "None" has no attribute=31 (all 31 in game.py), object-has-no-attribute=167, name-defined=67, so tracked A=196-72=124, B=234, C=338 matches spec; locked 11 decisions (chief: exclusion predicate = union-attr AND file ends in engine/game.py, only, so 31 game.py "None"-has-no-attribute errors stay tracked); folded in 6 polish items (unit tests for the populations script, CLAUDE.md ratchet pointer, explicit pipefail, machine-readable output, docstring exclusion rationale, optional --stdin mode); no new sprints proposed; cross-sprint reaction surface: none (foundational). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 16:57
+- Completed: 2026-08-23 17:20
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (will commit after this write)
+- New_sprints_proposed: none
+- Polish_items_folded_in: populations-script-unit-tests, claude-md-ratchet-pointer, explicit-pipefail-in-hook, machine-readable-key-value-output, docstring-exclusion-rationale, optional-stdin-mode
+- Decisions_locked: 11
+- Notes: Spec A Section 4's "excluded from the Population A metric" was ambiguous -- spec text says "game.py's 72" (union-attr only), but game.py also has 31 "None" has no attribute" errors. Locked the exclusion predicate as union-attr-in-game.py only, so tracked A = 196 - 72 = 124 matches the spec's acceptance criterion and the 31 game.py "None" errors remain trackable in Population A (they need code-level fixes, not deferrable to Spec B's Player accessor rewrite). Sprint expanded from 5 to 12 plan steps, added a test file to touch zones and a CLAUDE.md pointer; no new sprints proposed; no cross-sprint reactions (foundational infrastructure).
 
 ### QF-3 — Ralph quality-gate integration
 
