@@ -5122,7 +5122,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 - Notes: Plan audit: sound; D1/D2/D3 all defensible and correctly implemented. AST-based scanner is clean, deterministic, and fully self-verified. No regressions.
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: QF-6
@@ -5308,6 +5308,8 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - 2026-08-23 14:54 — harness: plan phase starting
 - 2026-08-23 14:58 — harness: plan phase outcome=error, marking blocked. agent exited cleanly;
 - 2026-08-23 15:25 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 15:34 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 15:38 — harness: review passed, marking done
   commits referencing QF-5: 2; no sentinel in ROADMAP.md or in agent stdout (root cause: wrapped
   activity-log entries hid the sentinel; sentinel detector later fixed in bfe1082)
 - 2026-08-23 15:20 — planning complete; 7 decisions locked, 8 implementation tasks defined,
@@ -5328,24 +5330,23 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
   run() to timing shell; added Game.seed_rngs(seed); added import random + numpy as np.
 - 2026-08-23 15:26 — all 9 tests green (3 prior + 6 new); full suite 10382 passed (baseline
   10375, +7); lint clean; format clean; touch zones respected. PHASE_OK
+- 2026-08-23 — review complete; all 7 AC verified, plan audit sound, lint/format clean, full suite 10382 passed. Zero critical findings. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-23 15:25
-- Completed: 2026-08-23 15:26
-- Files_changed: spacegame/engine/game.py, tests/test_engine/test_game.py
-- Commits: a27fe06, f9ebfb9, 8dadf7b
-- Tests_added: 6
-- Tests_baseline: 10375
+- Started: 2026-08-23
+- Completed: 2026-08-23
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 10382
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Game.step() extracted verbatim from Game.run(); run() reduced to timing shell; Game.seed_rngs(seed) added seeding both stdlib random and numpy.random. All 7 acceptance criteria satisfied.
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: test_step_determinism_with_seeded_events seeds after initialize_states(), so RNG consumed during state init is outside the seed coverage. Both instances mirror so the test is valid; but QF-6 crawler should seed before initialize_states() for full frame-zero determinism. Not a QF-5 blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; 7 locked decisions all defensible and correctly implemented. Pure verbatim extraction — run() body is exactly as AC#1 specifies. mypy error count unchanged at 353 (planner's "106" figure was mismeasured; no new errors introduced). Full suite 10382 >= baseline 10375.
 ### QF-6 — Play-harness crawler core
 
 **Status**: todo
