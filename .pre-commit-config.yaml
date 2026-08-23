@@ -1,0 +1,17 @@
+default_language_version:
+  python: python3.13
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
+    hooks:
+      - id: ruff
+        # Scope: spacegame/ only. tests/ has 874 pre-existing lint findings that are
+        # out of this sprint's scope (Decision 1 in QF-1 plan). Widening to tests/ would
+        # either fail the hook from day one or require an out-of-scope 874-item cleanup.
+        # See QF-1 Activity log for the full rationale; a follow-up sprint can address tests/.
+        args: [spacegame/]
+        pass_filenames: false
+      - id: ruff-format
+        args: [--check, spacegame/, tests/]
+        pass_filenames: false
