@@ -417,3 +417,54 @@ class TestBuildClaudeCmd:
         cmd = build_claude_cmd("implement", "S")
         idx = cmd.index("--model")
         assert cmd[idx + 1] == MODEL_IMPLEMENT_DEFAULT
+
+
+# ---------------------------------------------------------------------------
+# Sentinel detection across wrapped (multi-line) activity-log entries
+# ---------------------------------------------------------------------------
+
+_ROADMAP_WRAPPED_SENTINEL = """# Roadmap
+
+### SA-1 — Wrapped entry sprint
+
+**Status**: in-progress
+
+**Activity log.**
+- 2026-08-23 14:45 — harness: plan phase starting
+- 2026-08-23 15:15 — planning complete; verified all context docs exist; confirmed drifting
+  files (enumerated in touch zones); locked 8 decisions; no scope expansion, no new
+  sprints proposed; cross-sprint reaction surface: none. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+"""
+
+
+class TestWrappedActivityLogEntries:
+    """A sentinel on a wrapped continuation line must still be detected.
+
+    Regression: the activity-log regex matched only lines beginning with "- ",
+    so it stopped at the first continuation line. An agent that wrapped its
+    final entry put PHASE_OK out of reach and the harness reported
+    "no sentinel in ROADMAP.md", marking a successfully-planned sprint as
+    errored. Observed on UI-BOUNDS-1 (2026-04-29) and on QF-1/QF-4/QF-5
+    (2026-08-23).
+    """
+
+    def test_phase_ok_on_continuation_line_is_detected(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_WRAPPED_SENTINEL)
+        outcome, _reason = agents._detect_outcome("SA-1", returncode=0)
+        assert outcome == Outcome.OK
+
+    def test_wrapped_continuation_text_is_captured(self, roadmap_factory) -> None:
+        roadmap_factory(_ROADMAP_WRAPPED_SENTINEL)
+        log = agents._read_recent_activity_log("SA-1")
+        assert "PHASE_OK" in log
+        assert "locked 8 decisions" in log
+
+    def test_capture_stops_at_next_block_header(self, roadmap_factory) -> None:
+        """The Last phase report block must not bleed into the activity log."""
+        roadmap_factory(_ROADMAP_WRAPPED_SENTINEL)
+        log = agents._read_recent_activity_log("SA-1")
+        assert "Last phase report" not in log

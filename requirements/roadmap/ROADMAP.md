@@ -4648,7 +4648,7 @@ executing any QF sprint; it carries the evidence and the reasoning these sprints
 
 ### QF-1 — Quality gate infrastructure
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A, Sections 1 and 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: none | **Blocks**: QF-2
@@ -4959,7 +4959,7 @@ tests/test_ralph/
 
 ### QF-4 — Import-boundary guard
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A (additional deliverable)
 **Size**: S | **Effort**: half day
 **Depends on**: none | **Blocks**: none
@@ -5116,7 +5116,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
   lines). No cross-sprint reactions (foundational; no player-facing surface).
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: QF-6

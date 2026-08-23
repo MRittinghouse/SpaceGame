@@ -60,10 +60,17 @@ Four gates. Three go to zero tolerance immediately; MyPy is ratcheted.
 
 | Gate | Policy | State on 2026-08-23 |
 |---|---|---|
-| `ruff check` | zero tolerance, immediate | already clean |
+| `ruff check spacegame/` | zero tolerance, immediate | already clean |
 | `ruff format --check` | zero tolerance, immediate | 4 files drift (all in `tests/`) |
 | `pytest -n auto` | zero tolerance, immediate | 10,370 pass / 98 skip / 70.5s |
 | `mypy` | **ratcheted against baseline** | 768 errors |
+
+> **Correction (found by the QF-1 planning agent, 2026-08-23).** An earlier draft of this spec said
+> "`ruff check` already passes clean" without qualification. That is true for `spacegame/` only.
+> `ruff check tests/` reports **874 pre-existing findings** (512 auto-fixable). Lint is therefore
+> scoped to `spacegame/` in both the hook and CI. Cleaning `tests/` is deliberately **out of scope**
+> for the QF arc; it is a separate, mechanical, low-risk sweep that should not be bundled with
+> crash-risk work.
 
 ### Ratchet mechanics
 

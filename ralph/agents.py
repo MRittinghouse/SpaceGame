@@ -231,7 +231,18 @@ def _read_recent_activity_log(sprint_id: str) -> str:
     sprint = roadmap_state.get_sprint(sprint_id)
     content = ROADMAP_PATH.read_text(encoding="utf-8")
     section = content[sprint.section_start : sprint.section_end]
-    log_match = re.search(r"\*\*Activity log\.\*\*\s*\n((?:- .*\n)*)", section)
+    # Capture the whole Activity log block, not only lines starting with "- ".
+    # Agents wrap long entries onto continuation lines and the sentinel
+    # (PHASE_OK / PHASE_BLOCKED) frequently lands on the final wrapped line.
+    # A "- " only pattern stops at the first continuation line and loses the
+    # sentinel, so the harness reports "no sentinel in ROADMAP.md" and errors
+    # a sprint that actually succeeded. Stop at the next "**Header.**" block
+    # (e.g. "**Last phase report.**") or the end of the sprint section.
+    log_match = re.search(
+        r"\*\*Activity log\.\*\*[ \t]*\n(.*?)(?=\n\*\*[A-Z]|\Z)",
+        section,
+        re.DOTALL,
+    )
     if log_match is None:
         return ""
     return log_match.group(1)
