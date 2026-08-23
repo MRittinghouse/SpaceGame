@@ -6579,7 +6579,7 @@ dependencies, not narrative reactions.
 - Notes: Plan audit sound; 11 locked decisions all defensible. Fixed baseline.py mypy no-redef (entry loop var renamed to crash_entry). Nightly workflow correctly uses per-matrix artifact upload rather than the AC's aspirational "one combined artifact" (GitHub Actions matrix constraint). All 81 crawler tests pass. Gate is live: empty baseline means any future crash will fail CI immediately.
 ### QF-6B — Crawler reachability: event delivery, custom hit-rects, coverage floor
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A Section 3 gap found in post-QF-6 verification (2026-08-23)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6623,52 +6623,294 @@ pygame_gui widgets. The crawler's whole perception model is
 tools/crawler/crawler.py
 tools/crawler/hit_rects.py        (NEW)
 tests/test_crawler/
+spacegame/models/market.py        (line 298 + 307 — replace bare random.seed with local RNG)
+tests/test_models/test_market.py  (add determinism/no-global-mutation assertions)
 ```
 
 **Deliverables.**
-- **Event-cycle fix.** After dispatching synthetic events through `Game.step()`, drain
-  `pygame.event.get()` and feed the resulting events (notably `UI_BUTTON_PRESSED`) into the next
-  `step()` call, reproducing the frame cycle `run()` gets for free. Preserve determinism: the drain
-  must be ordered and must not introduce wall-clock or entropy dependence.
-- **Custom hit-rect registry** (`tools/crawler/hit_rects.py`): a per-`GameState` (or per-view)
-  mapping of named interactive rectangles for hand-drawn UI that pygame_gui cannot expose. Seed it
-  with the main-menu confirmation dialog's Yes/No rects. The registry must be data, extensible
-  without touching crawler internals, and must fail loudly if a registered rect no longer matches
-  the view's render geometry.
-- **Widened key repertoire**: confirmation and dismissal keys (`K_y`, `K_n`, `K_RETURN`, `K_ESCAPE`)
-  available as crawler actions, not just the single bound escape key.
-- **Coverage floor**: `Crawler` reports states-reached; a test fails when a standard seeded session
-  reaches fewer than the floor. Set the floor from measured post-fix reality, then ratchet it.
-- Re-run the determinism test now that deeper states are reachable.
+- **Event-cycle fix.** After `Game.step(dt, events)` returns, drain `pygame.event.get()` into a
+  buffer and pass those events into the *next* `step_once` call, exactly reproducing the frame
+  cycle `run()` gets for free (UI events emitted by `ui_manager.process_events` in frame N are
+  consumed by views in frame N+1). Determinism preserved because the drain is ordered by
+  pygame's queue and introduces no wall-clock or entropy source. Any events left in the queue at
+  session end are recorded in the run report (a leaked event queue is diagnostic).
+- **Custom hit-rect registry** (`tools/crawler/hit_rects.py`): a per-`GameState` typed mapping
+  colocated with the crawler, shaped like the existing `NAV_KEYWORDS` module-level dict so the
+  data and its consumer live together. Registry API:
+  ```python
+  @dataclass(frozen=True)
+  class HitRect:
+      name: str                                       # "confirm_new_game_yes"
+      rect_fn: Callable[[Any], pygame.Rect]           # (view) -> live Rect
+      dismissal_keys: tuple[int, ...] = ()            # keys that also dismiss this dialog
+      predicate: Callable[[Any], bool] = lambda v: True  # e.g. lambda v: v._confirm_new_game
+  HIT_RECTS: dict[GameState, list[HitRect]] = { GameState.MAIN_MENU: [...] }
+  ```
+  A resolver `hit_rects_for(game) -> list[tuple[HitRect, pygame.Rect]]` walks the registry for the
+  active state, filters by `predicate`, computes rects fresh each call (no stale geometry), and
+  raises a loud `HitRectDriftError` if `rect_fn` throws or the view instance is missing an
+  attribute the registry claims to depend on. Seeded with two entries for the main-menu
+  confirmation dialog (Yes / No). Any future hand-drawn dialog registers here; the crawler stays
+  data-driven.
+- **Widened key repertoire.** `_selectable_escape_keys` gains a fixed dialog-key tail: `K_y`,
+  `K_n`, `K_RETURN`, `K_ESCAPE` are always selectable (all four are safe under SDL_dummy;
+  `K_ESCAPE` toggles pause when a player is present but is a no-op otherwise). View-specific
+  `input_handler.key_callbacks` still layer on top. Softlock definition unchanged: F11 still
+  counts toward escape but is not synthesized.
+- **Coverage floor test.** `test_coverage_floor_reaches_min_states` runs a fixed-seed 2,000-action
+  session and asserts `len(reached) >= 8` (of 41). The reached set is logged on failure so a
+  regression names which states dropped. Floor value is a deliberate ratchet start; the sprint
+  measures post-fix reality and ratchets to `max(8, measured)` before shipping.
+- **Market RNG isolation fix.** Replace `random.seed(seed_string)` + `random.seed()` in
+  `Market._calculate_random_variance` (spacegame/models/market.py lines 298 and 307) with a local
+  `random.Random(seed_string).uniform(...)`. No mutation of the global RNG, no wall-clock reseed.
+  Two new assertions in `tests/test_models/test_market.py`: (a) two calls with equal `game_day`
+  and equal external `random.seed(1)` return the same variance, (b) the global RNG state before
+  and after the call is unchanged (`random.getstate()` equal before/after).
+- Re-run the crawler determinism test now that deeper states are reachable and no longer perturb
+  the global RNG. Two same-seed runs must produce byte-identical action traces + identical
+  trailing `random.random()` and `np.random.random()` samples.
+- **Triage log for false softlocks.** After the first real 2,000-action seeded run, walk the
+  crash records with `oracle == "softlock"` and record in the Activity log the count of each of:
+  (a) legitimate softlocks (real gaps to fix in a follow-up sprint), (b) hand-drawn-dialog false
+  positives (register them here in the same sprint), (c) other. A single-line per-state table is
+  sufficient — do not open a triage document.
 
 **Acceptance criteria.**
 1. A synthetic click on `New Game` flips `MainMenuView._confirm_new_game` to `True` **within the
-   crawl loop**, with no manual event re-feeding.
-2. The crawler can traverse the confirmation dialog and reach `GALAXY_MAP`.
+   crawl loop**, with no manual event re-feeding. Asserted by
+   `test_new_game_click_reaches_confirmation_dialog`.
+2. The crawler can traverse the confirmation dialog (either by synthesized click on the
+   registered Yes hit-rect or by `K_y`/`K_RETURN` keypress) and reach `GameState.GALAXY_MAP`.
+   Asserted by `test_crawler_reaches_galaxy_map_from_main_menu`.
 3. A seeded 2,000-action session reaches **at least 8 of 41** `GameState` values; the test fails
-   below that floor. (Floor chosen as a deliberate ratchet start, not a ceiling — raise it as
-   reachability improves, and `log()` the reached set so regressions are visible.)
-4. Determinism holds: two same-seed runs produce identical action traces, identical final state, and
-   identical trailing `random.random()` / `np.random.random()` samples.
-5. Full suite green.
+   below that floor and logs the reached set. Asserted by
+   `test_coverage_floor_reaches_min_states`. (Floor is a ratchet start; raise to
+   `max(8, measured)` before marking the sprint done.)
+4. Determinism holds after crossing the confirmation dialog: two same-seed runs produce identical
+   action traces, identical final `GameState`, and identical trailing `random.random()` and
+   `np.random.random()` samples. Asserted by an updated `test_crawler_determinism_across_two_runs`
+   whose seed is chosen so the run traverses `GALAXY_MAP` or deeper.
+5. `Market._calculate_random_variance` returns a deterministic value given equal inputs and does
+   NOT mutate the global `random` state. Asserted by
+   `test_calculate_random_variance_is_deterministic` and
+   `test_calculate_random_variance_does_not_mutate_global_rng`.
+6. `hit_rects.HIT_RECTS[GameState.MAIN_MENU]` contains a Yes and a No entry, and
+   `hit_rects_for(game)` returns them only when `_confirm_new_game` is truthy. A drift test that
+   mutates `MainMenuView._confirm_font` to break the rect-fn arithmetic raises
+   `HitRectDriftError` rather than returning a stale rect. Asserted by
+   `test_hit_rect_registry_returns_active_dialog_rects` and
+   `test_hit_rect_registry_raises_on_drift`.
+7. Full suite green; test count `>= 10501` (pre-phase baseline).
 
 **Risks / open questions.**
-- **`market.py:307` will now bite.** `_calculate_random_variance` calls bare `random.seed()`, which
-  reseeds Python's global RNG **from system entropy**, and it is the only such call in the codebase.
-  It was harmless while the crawler never reached trading. Once AC 3 is met the crawl will hit market
-  pricing and AC 4 will fail. Correct fix: replace the global seed/reset dance with a local
-  `random.Random(seed_string)` instance. That file is outside this sprint's touch zones — if the fix
-  is needed, extend touch zones to `spacegame/models/market.py` and say so in the Activity log rather
-  than working around it in the crawler. Do NOT make the crawler tolerate global-RNG perturbation;
-  that would hide a real determinism defect in the game.
-- **Oracle 3 will report false softlocks** on every hand-drawn dialog not yet in the hit-rect
-  registry, because such screens genuinely present zero enumerable elements. Expect a burst of
-  softlock reports; each one is either a registry gap or a real softlock. Triage them, register the
-  legitimate dialogs, and record in the Activity log how many of each were found.
+- ~~`market.py:307` bare `random.seed()`~~ — LOCKED (bundled into scope). Confirmed by grep as
+  the only such call in `spacegame/`. Replace both lines 298 and 307 with a local
+  `random.Random(seed_string)` instance. Touch zones expanded; no crawler-side workaround.
+- ~~Custom hit-rect registry format~~ — LOCKED: Python module with typed `HIT_RECTS: dict[GameState,
+  list[HitRect]]` populated at import (mirrors `NAV_KEYWORDS`). `rect_fn` re-computes each call so
+  window-resize / DPI-scale changes don't yield stale rects; `HitRectDriftError` on attribute miss
+  or fn exception.
+- ~~Dialog-key repertoire~~ — LOCKED: `K_y`, `K_n`, `K_RETURN`, `K_ESCAPE` appended to
+  `_selectable_escape_keys` always. F11 stays excluded (SDL_dummy crash on some platforms per
+  QF-6 activity log). `K_ESCAPE` is safe: `Game.step` intercepts it into the pause menu only
+  when a player is loaded and the state is non-exempt; otherwise it's a no-op.
+- ~~Coverage floor value~~ — LOCKED at 8 as a ratchet start; implementer measures actual reach
+  and ratchets to `max(8, measured)` before marking done. Reaching <8 is a blocker for this
+  sprint (real defect surfacing, not a floor to lower).
+- **Softlock report burst is expected.** Oracle 3 will fire on every hand-drawn dialog not yet in
+  the registry. Implementer triages each after the first crawl: register legitimate dialogs,
+  file real softlocks as a follow-up sprint (do NOT fix in QF-6B — this sprint fixes reachability
+  plumbing, not gameplay gaps). Triage count goes into Activity log per the deliverable above.
+
+**Plan.**
+
+Task 1 — Baseline reproduction of both blockers.
+- Files: `tests/test_crawler/test_bootstrap.py` (or a new
+  `tests/test_crawler/test_reachability.py` if the existing file is stuffed).
+- Failing tests first: `test_new_game_click_reaches_confirmation_dialog` (asserts
+  `game.state_manager.get_current_view()._confirm_new_game` is `True` after one crawler step that
+  synthesizes a click on the New Game button) and
+  `test_crawler_reaches_galaxy_map_from_main_menu` (asserts a bounded crawler run terminates in
+  `GameState.GALAXY_MAP`).
+- Both must fail against `master` — confirm the diagnosis quoted in the sprint header is exactly
+  reproduced. If either passes on master, stop and re-read; the model is wrong.
+- Gotcha: the confirmation dialog only appears when a save exists. The test either points the
+  crawler at a fresh `save_directory` and forces `MainMenuView` into confirmation mode directly,
+  or seeds with the `early` checkpoint fixture which guarantees a save. Prefer the fixture path so
+  the test is a real end-to-end.
+
+Task 2 — Event-cycle fix in `Crawler.step_once`.
+- Files: `tools/crawler/crawler.py`.
+- Add `self._pending_events: list[pygame.event.Event] = []`, initialized in `__init__`. In
+  `step_once`: prepend `self._pending_events` to `events` before `game.step(...)`, clear the list,
+  then after `game.step` returns drain `pygame.event.get()` into `self._pending_events` for the
+  next frame.
+- Order-preserving; no wall-clock; no entropy. This matches the frame cycle `Game.run()` inherits
+  from `pygame.event.get()` at the top of each iteration.
+- Update `synthesize_events` docstring / module docstring to name the two-frame handshake.
+- Task 1's `test_new_game_click_reaches_confirmation_dialog` should now pass.
+- Gotcha: existing tests that call `pygame.event.clear()` (see
+  `tests/test_crawler/test_event_synthesis.py:110`) still hold — the crawler owns the queue during
+  a session and expects only its own events. Add one assertion to `test_step_once_drains_ui_events`
+  proving `_pending_events` is non-empty after a click and empty after the following step.
+
+Task 3 — Hit-rect registry module + resolver.
+- Files: `tools/crawler/hit_rects.py` (NEW), `tests/test_crawler/test_hit_rects.py` (NEW).
+- Implement `HitRect` dataclass, `HIT_RECTS` module-level dict, `hit_rects_for(game)` resolver,
+  `HitRectDriftError` exception.
+- Seed `MAIN_MENU` with two entries. Their `rect_fn` copies the geometry math from
+  `MainMenuView.handle_event` (lines 168-177), keyed off `view._confirm_new_game` via
+  `predicate`. Because both view and registry compute from `scale_x` / `WINDOW_WIDTH`, keep the
+  imports parallel — a resolution or scale change hits both sites identically.
+- Failing tests: `test_hit_rect_registry_returns_active_dialog_rects` (asserts nothing returned
+  when `_confirm_new_game` is False, both returned when True) and
+  `test_hit_rect_registry_raises_on_drift` (patches `MainMenuView` to remove
+  `_confirm_new_game`, asserts `HitRectDriftError`).
+- Gotcha: importing view modules at the top of `hit_rects.py` triggers pygame font loading. Use
+  lazy imports inside `rect_fn` bodies to keep the module import cheap and avoid the
+  test-collection cost. Do not import pygame at module scope — only `pygame.Rect` via a lazy
+  import in `rect_fn`.
+
+Task 4 — Widened key repertoire.
+- Files: `tools/crawler/crawler.py`, `tests/test_crawler/test_enum_and_action.py` (extend).
+- Extend `_selectable_escape_keys` to append `[K_y, K_n, K_RETURN, K_ESCAPE]` deduplicated. Do
+  NOT change `bound_escape_keys` (the softlock oracle's escape set) — the dialog keys are
+  action-selection fodder, not escape guarantees. `K_ESCAPE` is a no-op on non-exempt states
+  without a player, so it's cheap; when a player is loaded and the state is non-exempt, it
+  opens the pause menu, which is desired coverage.
+- Failing test: `test_selectable_escape_keys_include_dialog_dismissal` — assert `K_y`, `K_n`,
+  `K_RETURN`, `K_ESCAPE` all in `_selectable_escape_keys()` from `MAIN_MENU`.
+
+Task 5 — Wire hit-rect clicks into action selection.
+- Files: `tools/crawler/crawler.py`.
+- In `enumerate_interactive`, after collecting pygame_gui elements, append a synthetic
+  "hit-rect element" wrapper per entry from `hit_rects_for(self.game)`. The wrapper carries a
+  `.rect` property so `synthesize_events(("click", wrapper))` works unchanged, plus a
+  `.text = hit_rect.name` so it shows up meaningfully in the action trace and in weighting.
+- `_describe_element` handles it by name (e.g., `"HitRect[confirm_new_game_yes]@(x,y)"`).
+- Failing test: `test_crawler_reaches_galaxy_map_from_main_menu` from Task 1 should now pass —
+  the crawler can pick either the Yes rect or `K_y`/`K_RETURN`, both lead to `GALAXY_MAP`.
+- Gotcha: the wrapper must NOT be an `isinstance` of `INTERACTIVE_TYPES` — bypass that filter by
+  adding hit-rect wrappers *after* the type filter. Also mark them enabled+visible.
+
+Task 6 — Market RNG isolation.
+- Files: `spacegame/models/market.py` (lines 298 + 307),
+  `tests/test_models/test_market.py` (append two tests).
+- Replace:
+  ```python
+  random.seed(f"{self.game_day}_{commodity.id}_{self.system.id}")
+  variance = random.uniform(-max_random, max_random)
+  random.seed()  # BUG: reseeds from system entropy
+  ```
+  with:
+  ```python
+  local_rng = random.Random(f"{self.game_day}_{commodity.id}_{self.system.id}")
+  variance = local_rng.uniform(-max_random, max_random)
+  ```
+- Failing tests: `test_calculate_random_variance_is_deterministic` (same inputs → same output,
+  regardless of external `random.seed(1)` before the call — because the local RNG is seeded from
+  the derived string, not the global) and
+  `test_calculate_random_variance_does_not_mutate_global_rng` (snapshot `random.getstate()`
+  before, call the method, assert unchanged after).
+- Gotcha: existing market tests may rely on `random.seed(...)` being called by the method as a
+  side effect. Search `tests/test_models/test_market.py` for `random.seed` before editing; if any
+  test threads a seed *through* this method, update it to seed the local RNG through a different
+  route or delete the assertion as no-longer-valid. Do not silently change the observable
+  behavior of the market prices — this fix is intentionally functionally equivalent for a fixed
+  game_day / commodity / system triple.
+
+Task 7 — Determinism test upgrade + coverage-floor test.
+- Files: `tests/test_crawler/test_integration.py`, add
+  `tests/test_crawler/test_reachability.py` (if not created in Task 1).
+- Rewrite / add `test_crawler_determinism_across_two_runs` so its seed provably reaches
+  `GALAXY_MAP` or deeper (pick a seed that traverses the confirmation dialog under the fixed
+  action RNG; verify by inspecting `coverage.states_reached`). Two runs must produce identical
+  action traces + identical trailing `random.random()` + `np.random.random()`. If the previous
+  QF-6 test already asserts this on a shallower seed, extend it rather than duplicating.
+- Add `test_coverage_floor_reaches_min_states`: runs seed=42 for 2,000 actions, asserts
+  `sum(states_reached.values()) >= 8`, and on failure `log()`s the full reached-state list so
+  regressions name which states dropped.
+- Gotcha: 2,000-action runs are ~30s (per Spec A Section 3). Mark with `pytest.mark.slow` if the
+  project uses that marker; otherwise accept ~30s.
+
+Task 8 — Softlock triage after first real crawl.
+- No new test file. In an ad-hoc CLI run
+  (`python -m tools.crawler --seed 42 --actions 2000 --verbose`), inspect `crashes.json` for
+  `oracle == "softlock"` entries. For each unique state:
+  - If the state has a hand-drawn dialog: register its rects in `hit_rects.py` (Task 3
+    extension). Re-run and confirm the softlock report vanishes.
+  - If the state is a genuine gap (no dismissal path exists in the game code): do NOT fix here.
+    Note it in the Activity log as a follow-up for a new gameplay sprint. The QF-6B
+    implementer does not touch view code.
+- Record a one-line per-state triage table in the Activity log: `STATE: dialogs_added=N,
+  real_softlocks=M`.
+- Then ratchet the coverage floor to `max(8, measured)` and re-run Task 7's floor test.
+
+Task 9 — Lint + type + format + full suite.
+- `ruff format tools/crawler/ tests/test_crawler/ spacegame/models/market.py
+  tests/test_models/test_market.py` (targeted per AGENT_GUIDE.md, not project-wide).
+- `ruff check` on the same set.
+- `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` — must
+  exit 0. Do NOT regenerate `mypy-baseline.txt` unless the diff is annotations-only per
+  CLAUDE.md.
+- `pytest -n auto -q`. Baseline is 10501 pass, 98 skip. New count must be `>=` 10501; the
+  sprint adds tests so should be higher.
+- Commit sequence (each references `QF-6B`):
+  - `QF-6B: reproduce blockers 1+2 (failing tests)`
+  - `QF-6B: fix event-cycle in Crawler.step_once (drain + carry-over)`
+  - `QF-6B: add tools/crawler/hit_rects.py registry + drift detection`
+  - `QF-6B: widen selectable escape keys to include dialog dismissal`
+  - `QF-6B: wire hit-rect clicks into enumerate_interactive`
+  - `QF-6B: isolate market variance RNG from global state`
+  - `QF-6B: coverage-floor test + updated determinism test`
+  - `QF-6B: softlock triage — register N hand-drawn dialogs`
+
+**Cross-sprint reactions to author.** none (foundational tooling; no player-facing surface, no
+dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not reactions per se):
+
+- **New view convention.** Any future view that ships a hand-drawn Yes/No/OK dialog outside
+  pygame_gui must register its rects in `tools/crawler/hit_rects.py`, or the crawler will report
+  the dialog as a softlock. QF-6B seeds the registry with MAIN_MENU only; other views (settings
+  confirmation, quit-to-menu, tutorial gates, etc.) get added incrementally as either
+  softlock-triage work in a later crawler sprint or opportunistically when the view is touched.
+  This convention belongs in a follow-up doc update, not this sprint's scope.
+- **QF-7 CI gate.** QF-7 already runs the crawler in CI. Its short-run coverage assertion may
+  jump upward once QF-6B lands — the CI job is designed to publish coverage, not to floor-gate
+  it. No QF-7 changes required from QF-6B; the QF-6B floor test is scoped to the crawler test
+  suite, not to QF-7's CI logic.
 
 **Activity log.**
 - 2026-08-23 — todo (created from post-QF-6 verification)
+- 2026-08-23 18:01 — harness: plan phase starting
+- 2026-08-23 — planning complete; verified all 4 Context-to-read docs exist and reproduce the
+  quoted diagnosis (event-cycle bug + hand-drawn dialog invisibility). Confirmed
+  `market.py:307` bare `random.seed()` is the only such call in `spacegame/`. Locked 4 open
+  decisions: bundled the market.py fix into scope (deterministic requirement of AC 4), locked
+  hit-rect registry format to a typed Python module with `HitRectDriftError`, locked dialog-key
+  set to K_y/K_n/K_RETURN/K_ESCAPE appended to `_selectable_escape_keys`, locked coverage floor
+  at 8 with a `max(8, measured)` ratchet gate. Added ACs 5-6 covering market-RNG isolation and
+  hit-rect drift detection. Expanded touch zones to include `spacegame/models/market.py` and
+  `tests/test_models/test_market.py`. Cross-sprint reactions: none (foundational tooling). Wrote
+  9-task Plan section. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 18:01
+- Completed: 2026-08-23 18:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (this phase)
+- New_sprints_proposed: none
+- Polish_items_folded_in: market-rng-isolation-fix, hit-rect-drift-detection, softlock-triage-log
+- Decisions_locked: 4
+- Notes: Verified all 4 context docs exist; sprint diagnosis reproduces from source (crawler
+  step_once never drains ui_manager-posted events; hand-drawn dialog rects invisible to
+  enumerate_interactive). Bundled market.py:298+307 fix into scope because AC 4 (determinism
+  after reaching trading) is unachievable without it. Registry uses colocated typed module
+  mirroring NAV_KEYWORDS; drift raises HitRectDriftError. Cross-sprint reactions correctly
+  noted none — this is foundational tooling with no player-facing surface. Baseline test
+  count 10501; new floor >=10501.
 ### QF-8 — Population A burndown outside game.py
 
 **Status**: blocked
