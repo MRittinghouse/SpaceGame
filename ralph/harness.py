@@ -489,6 +489,22 @@ def _run_quality_gates() -> Optional[tuple[str, str]]:
     if filter_result.returncode != 0:
         return (gate_name, (filter_result.stdout + filter_result.stderr)[:_GATE_ERROR_MAX_CHARS])
 
+    # Gate 4: mypy tools/crawler/ at zero tolerance (no baseline).
+    # The play harness was born with 0 errors under the QF arc; gate it from
+    # day one so it cannot accumulate debt the way spacegame/ did.
+    # --follow-imports=silent stops spacegame/'s 768 baselined errors from
+    # leaking in through the crawler's imports. Legacy tools/ scripts stay out
+    # of scope: build-time utilities, not shipped code.
+    gate_name = "mypy-crawler"
+    try:
+        crawler_result = _run(
+            [sys.executable, "-m", "mypy", "tools/crawler/", "--follow-imports=silent"]
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return (gate_name, f"{type(exc).__name__}: {exc}"[:_GATE_ERROR_MAX_CHARS])
+    if crawler_result.returncode != 0:
+        return (gate_name, (crawler_result.stdout + crawler_result.stderr)[:_GATE_ERROR_MAX_CHARS])
+
     return None
 
 

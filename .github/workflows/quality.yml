@@ -67,6 +67,10 @@ jobs:
         run: |
           set +o pipefail
           python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter
+      - name: MyPy tools/crawler (zero tolerance, no baseline)
+        # The play harness was born clean; keep it that way. --follow-imports=silent
+        # prevents spacegame/'s baselined errors leaking in via the crawler's imports.
+        run: python -m mypy tools/crawler/ --follow-imports=silent
       - name: Print population metrics
         run: python scripts/mypy_populations.py
 

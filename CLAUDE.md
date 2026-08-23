@@ -27,7 +27,17 @@ python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter  
 python scripts/mypy_populations.py              # Print A/B/C population counts
 uv sync --extra dev                              # Install all dependencies (preferred)
 pip install -e ".[dev]"                          # Install with dev dependencies (fallback)
+pre-commit install                               # REQUIRED once per clone -- activates the local gate
 ```
+
+### First-time setup (per clone)
+
+```bash
+uv sync --extra dev
+pre-commit install          # without this, commits are completely ungated
+```
+
+`pre-commit install` is **not optional and not idempotent across clones**. `.git/hooks/` is untracked, so committing `.pre-commit-config.yaml` activates nothing — a fresh clone has no gate until this is run. This already bit once: QF-1 shipped the config and the hook was never installed, so lint, format, and type checks ran on nothing while everyone assumed the gate was live. `tests/test_compliance/test_precommit_hook_installed.py` now fails the suite if the hook is missing, so you will be told rather than left guessing.
 
 ### Type-check ratchet
 

@@ -23,3 +23,15 @@ repos:
         entry: "bash -c 'python -m mypy spacegame/ | grep -v \": note:\" | python -m mypy_baseline filter'"
         pass_filenames: false
         types_or: [python]
+      - id: mypy-crawler-strict
+        name: mypy tools/crawler (zero tolerance, no baseline)
+        # tools/crawler/ was born clean (0 errors) under the QF arc. Gate it at
+        # zero from day one so the play harness cannot accumulate debt the way
+        # spacegame/ did. --follow-imports=silent stops mypy from dragging in
+        # spacegame/'s 768 baselined errors through the crawler's imports.
+        # The legacy tools/ scripts (~198 errors) stay out of scope: build-time
+        # utilities, not shipped code.
+        language: system
+        entry: "python -m mypy tools/crawler/ --follow-imports=silent"
+        pass_filenames: false
+        types_or: [python]
