@@ -6900,7 +6900,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 - Started: 2026-08-23 18:01
 - Completed: 2026-08-23 18:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this phase)
+- Commits: 0fa45e8
 - New_sprints_proposed: none
 - Polish_items_folded_in: market-rng-isolation-fix, hit-rect-drift-detection, softlock-triage-log
 - Decisions_locked: 4
