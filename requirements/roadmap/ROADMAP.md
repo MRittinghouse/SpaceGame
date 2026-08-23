@@ -4954,7 +4954,7 @@ tests/test_ralph/
 
 ### QF-4 — Import-boundary guard
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A (additional deliverable)
 **Size**: S | **Effort**: half day
 **Depends on**: none | **Blocks**: none
@@ -5090,6 +5090,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 14:50 — harness: plan phase starting
 - 2026-08-23 14:55 — planning complete (commit 470f2ad); verified both scan roots are pygame-free
+- 2026-08-23 15:14 — harness: implement phase starting (rework cycle 0)
   today; locked 3 decisions (TYPE_CHECKING banned, no allowlist, direct-import only); folded in
   scan-roots-live guard and synthetic-violation self-test as polish; no scope expansion needed
 - 2026-08-23 14:54 — harness: plan phase outcome=error, marking blocked. agent exited cleanly;
@@ -5099,26 +5100,25 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
   files, grep finds no pygame/pygame_gui imports under `models/` or `constants/`. Plan from prior
   run is still correct and complete; consolidated mangled activity log entries. No changes to
   Plan/Deliverables/Acceptance criteria. PHASE_OK
+- 2026-08-23 16:00 — implementation complete; 3 tests added (scan-roots guard, main assertion, synthetic self-test); all gates green; tests 10373→10376 (+3). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 15:12
-- Completed: 2026-08-23 15:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: bbc6b60
-- New_sprints_proposed: none
-- Polish_items_folded_in: (carried from prior plan run) scan-roots-live guard test,
-  synthetic-violation self-test, deterministic sorted output, submodule-and-alias coverage in
-  acceptance criteria
-- Decisions_locked: 3 (TYPE_CHECKING banned, no allowlist, direct-import only) — carried from
-  prior plan run, still valid
-- Notes: Prior plan run (commit 470f2ad, 14:55) produced a complete, correct plan but the harness
-  failed to detect the sentinel because a subsequent harness log entry was inserted mid-entry,
-  splitting the PHASE_OK marker across non-adjacent lines. This run re-verified all context (docs
-  exist, tree is still pygame-free under `models/` and `constants/`), confirmed the plan and
-  decisions remain valid, and consolidated the activity log so the sentinel sits on a single line
-  the harness can parse. No substantive Plan/Deliverables/Acceptance-criteria changes needed.
+- Started: 2026-08-23 15:30
+- Completed: 2026-08-23 16:00
+- Files_changed: tests/test_compliance/test_import_boundaries.py
+- Commits: dd7da8f
+- Tests_added: 3
+- Tests_baseline: 10373
+- Tests_passing: 10376
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Created AST-based import-boundary scanner with three tests covering all 7 acceptance criteria. No allowlist, no TYPE_CHECKING exception. All 8 banned import forms verified by in-memory synthetic fixture.
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
 **Status**: todo
