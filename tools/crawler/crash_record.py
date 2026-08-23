@@ -73,12 +73,14 @@ def _frame_tuples_from_tb(tb: Optional[TracebackType]) -> list[tuple[str, int, s
         tb: A traceback object, or None.
 
     Returns:
-        List of ``(file_basename, lineno, func_name)`` tuples.
+        List of ``(file_basename, lineno, func_name)`` tuples. A missing
+        lineno is coerced to 0 so the signature stays a stable tuple of
+        concrete ints.
     """
     if tb is None:
         return []
     frames = traceback.extract_tb(tb)
-    return [(os.path.basename(f.filename), f.lineno, f.name) for f in frames]
+    return [(os.path.basename(f.filename), f.lineno or 0, f.name) for f in frames]
 
 
 def normalized_signature(exception_class: str, frame_tuples: list[tuple[str, int, str]]) -> str:
