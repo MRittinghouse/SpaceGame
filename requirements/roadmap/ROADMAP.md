@@ -5631,7 +5631,7 @@ those are dependency wiring, not reactions.
 - Started: 2026-08-23
 - Completed: 2026-08-23
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (planner will commit after ROADMAP write)
+- Commits: 50b353c
 - New_sprints_proposed: none
 - Polish_items_folded_in: cli-entry-point, json-plus-text-coverage-output, checkpoint-regeneration-script, gitignore-crawler-runs
 - Decisions_locked: 8
