@@ -5349,7 +5349,7 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - Notes: Plan audit: sound; 7 locked decisions all defensible and correctly implemented. Pure verbatim extraction — run() body is exactly as AC#1 specifies. mypy error count unchanged at 353 (planner's "106" figure was mismeasured; no new errors introduced). Full suite 10382 >= baseline 10375.
 ### QF-6 — Play-harness crawler core
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 3
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: QF-5 | **Blocks**: QF-7, QF-8
@@ -5621,21 +5621,41 @@ those are dependency wiring, not reactions.
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 15:39 — harness: plan phase starting
 - 2026-08-23 — planning complete; 8 open questions locked, 15 implementation tasks defined,
+- 2026-08-23 15:45 — harness: implement phase starting (rework cycle 0)
   acceptance criteria tightened from 7 vague-ish to 8 mechanically verifiable (each names its test),
   polish items folded in (CLI entry point, JSON+text output, checkpoint regeneration script),
   no new sprints proposed, no cross-sprint reactions (foundational tooling). PHASE_OK
+- 2026-08-23 15:50 — implement: tools/crawler skeleton + argparse CLI landed (Task 1). 4 tests green (commit a065237).
+- 2026-08-23 15:55 — implement: bootstrap seeding + oracle 1 + oracle 4 + oracle 2 + oracle 3
+  + dedup + replay + coverage tracking (Tasks 2-10). 40 tests green cumulative (commit b35c778).
+- 2026-08-23 16:00 — implement: regression stub generator + checkpoint fixtures (early/mid/late)
+  + action weighting w/ word-boundary matching + debug credits hook (Tasks 11-13). 51 tests green (commit 9e52b2a).
+- 2026-08-23 16:05 — implement: 2000-action determinism integration passes with real Game;
+  split bound_escape_keys into softlock-detection (F11-inclusive per LOCKED spec) and
+  action-synthesis subsets (F11 excluded — display-mode switch crashes under
+  SDL_VIDEODRIVER=dummy on Windows) (commit deadcfd).
+- 2026-08-23 16:10 — implement: ruff format+lint + mypy fixes on tools/crawler (commits 83c6591, 29bdc64).
+  53 crawler tests green. Full suite 10435 pass, 98 skip (baseline was 10382 pass, 98 skip
+  -> +53 crawler tests). SI-3 dialogue integrity + Writing Bible scanners green.
+- 2026-08-23 16:15 — implementation complete, all gates green; tests 10382->10435 (+53). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23
-- Completed: 2026-08-23
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 50b353c
-- New_sprints_proposed: none
-- Polish_items_folded_in: cli-entry-point, json-plus-text-coverage-output, checkpoint-regeneration-script, gitignore-crawler-runs
-- Decisions_locked: 8
-- Notes: All 4 context docs verified present. Sprint scope is comprehensive as written; expanded acceptance criteria to name specific test functions, added Plan with 15 tasks and locked-decision references. Honored QF-5 reviewer's frame-zero seeding note in Task 2. No new sprints; scope stays within the sprint. Cross-sprint reactions: none, foundational tools/ package with no player-facing surface.
+- Started: 2026-08-23 15:45
+- Completed: 2026-08-23 16:15
+- Files_changed: .gitignore, tools/crawler/__init__.py, tools/crawler/__main__.py, tools/crawler/cli.py, tools/crawler/crawler.py, tools/crawler/crash_record.py, tools/crawler/coverage.py, tools/crawler/stub_generator.py, tools/crawler/fixtures/__init__.py, tools/crawler/fixtures/regenerate.py, tools/crawler/fixtures/save_slot_1.json, tools/crawler/fixtures/save_slot_2.json, tools/crawler/fixtures/save_slot_3.json, tests/test_crawler/__init__.py, tests/test_crawler/test_cli.py, tests/test_crawler/test_bootstrap.py, tests/test_crawler/test_enum_and_action.py, tests/test_crawler/test_event_synthesis.py, tests/test_crawler/test_oracles_exception_invariant.py, tests/test_crawler/test_oracles_leak_softlock.py, tests/test_crawler/test_dedup_and_replay.py, tests/test_crawler/test_coverage.py, tests/test_crawler/test_stub_generator.py, tests/test_crawler/test_checkpoints.py, tests/test_crawler/test_weighting_and_credits.py, tests/test_crawler/test_integration.py
+- Commits: a065237, b35c778, 9e52b2a, deadcfd, 83c6591, 29bdc64
+- Tests_added: 53
+- Tests_baseline: 10382
+- Tests_passing: 10435
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: All 8 acceptance criteria satisfied. AC1 (2000-action headless run) -> test_crawler_completes_2000_action_session_headless. AC2 (determinism) -> test_crawler_determinism_across_two_runs (identical trace + final state + trailing random.random + np.random samples). AC3 (replay by seed+index) -> test_crawler_replay_reproduces_crash. AC4 (softlock oracle) -> test_softlock_oracle_detects_dead_end. AC5 (41-state coverage report) -> test_coverage_report_lists_all_41_states. AC6 (dedup by signature) -> test_crash_dedup_collapses_identical_signatures. AC7 (regression stub generator) -> test_regression_stub_generator_produces_runnable_pytest (uses monkeypatched Crawler to avoid Game boot inside a unit test). AC8 (suite green) -> 10435 pass >= 10382 baseline. .gitignore touched (2-line append for crawler_runs/ + generated_stubs/), noted here per touch-zone respect rule.
 
 ### QF-7 — Crawler CI gate + state screenshots
 
