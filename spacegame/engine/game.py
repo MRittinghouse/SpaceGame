@@ -28,10 +28,13 @@ to the game state diagram. Both are kept in this file because they access
 15+ shared managers that don't cleanly extract without passing the world state.
 """
 
+import random
 import sys
 import time
 from pathlib import Path
 from typing import Any, Optional
+
+import numpy as np
 
 import pygame
 import pygame_gui
@@ -6240,34 +6243,23 @@ class Game:
         text_rect = text_surf.get_rect(center=(WINDOW_WIDTH // 2, banner_y + banner_height // 2))
         screen.blit(text_surf, text_rect)
 
-    def run(self) -> None:
+    def step(self, dt: float, events: list[pygame.event.Event]) -> None:
+        """Execute one game frame with the given timestep and event list.
+
+        Args:
+            dt: Frame time in seconds (caller supplies; enables deterministic testing).
+            events: pygame events for this frame (caller supplies via pygame.event.get()).
         """
-        Main game loop.
+        # Process input
+        self.input_handler.handle_events(events)
 
-        Handles:
-        - Input processing
-        - Game state updates
-        - Rendering
-        - Frame timing
-        """
-        logger.info("Starting main game loop...")
-        self.running = True
+        # Check for quit
+        if self.input_handler.quit_requested:
+            self.running = False
+            return
 
-        while self.running:
-            # Calculate delta time (in seconds)
-            dt = self.clock.tick(FPS_TARGET) / 1000.0
-
-            # Process input
-            events = pygame.event.get()
-            self.input_handler.handle_events(events)
-
-            # Check for quit
-            if self.input_handler.quit_requested:
-                self.running = False
-                break
-
-            # Pass events to UI manager and current state
-            for event in events:
+        # Pass events to UI manager and current state
+        for event in events:
                 # Tutorial overlay uses raw mouse events (not pygame_gui) so
                 # it can render on top of everything.  Intercept events here
                 # before they reach the UI manager to prevent click-through.
@@ -6352,183 +6344,200 @@ class Game:
                 else:
                     self.state_manager.handle_event(event)
 
-            # Update UI manager
-            self.ui_manager.update(dt)
-            if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
-                self.settings_view._own_ui_manager.update(dt)
+        # Update UI manager
+        self.ui_manager.update(dt)
+        if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
+            self.settings_view._own_ui_manager.update(dt)
 
-            # Update cockpit HUD visibility based on current state
-            if self._cockpit_hud and self.player:
-                # Pass current system's faction to HUD for station skin accent
-                faction_id = ""
-                if self.player.current_system_id:
-                    sys_data = self.data_loader.get_system(self.player.current_system_id)
-                    if sys_data:
-                        faction_id = sys_data.faction
-                self._cockpit_hud.update(
-                    dt, self.state_manager.current_state, faction_id=faction_id
-                )
+        # Update cockpit HUD visibility based on current state
+        if self._cockpit_hud and self.player:
+            # Pass current system's faction to HUD for station skin accent
+            faction_id = ""
+            if self.player.current_system_id:
+                sys_data = self.data_loader.get_system(self.player.current_system_id)
+                if sys_data:
+                    faction_id = sys_data.faction
+            self._cockpit_hud.update(
+                dt, self.state_manager.current_state, faction_id=faction_id
+            )
 
-            # Handle state transitions
-            self._handle_state_transitions()
-            self._check_tutorial_triggers()
-            self._update_audio_for_state()
+        # Handle state transitions
+        self._handle_state_transitions()
+        self._check_tutorial_triggers()
+        self._update_audio_for_state()
 
-            # Handle pause menu and dialogs
-            if self.paused:
-                self._handle_pause_menu()
+        # Handle pause menu and dialogs
+        if self.paused:
+            self._handle_pause_menu()
 
-            if self.save_load_view:
-                self.save_load_view.update(dt)
-                self._handle_save_load_dialog()
+        if self.save_load_view:
+            self.save_load_view.update(dt)
+            self._handle_save_load_dialog()
 
-            if self.settings_view:
-                self._handle_settings_dialog()
+        if self.settings_view:
+            self._handle_settings_dialog()
 
-            # Handle event notifications
-            self._handle_event_notifications(dt)
+        # Handle event notifications
+        self._handle_event_notifications(dt)
 
-            # Update game state (only if not paused)
-            if not self.paused:
-                self.state_manager.update(dt)
-                self._check_day_advance()
-                # Defer mission/achievement checks while dialogue is active
-                # to avoid notification banners overlapping the conversation
-                if (
-                    not (self.dialogue_view and self.dialogue_view.active)
-                    and not self.transition_manager.active
-                ):
-                    self.check_achievements()
-                    self.check_missions()
-                self.check_crew_xp()
-                self.check_attribute_milestones()
-                self.check_soft_break_retirement()
-
-            # Update achievement notification timer
-            if self._achievement_notify_timer > 0:
-                self._achievement_notify_timer = max(0.0, self._achievement_notify_timer - dt)
-
-            # Update mission notification timer
-            if self._mission_notify_timer > 0:
-                self._mission_notify_timer = max(0.0, self._mission_notify_timer - dt)
-
-            # Update celebration timer
-            if self._celebration_timer > 0:
-                self._celebration_timer = max(0.0, self._celebration_timer - dt)
-
-            # Update visual effects
-            self.transition_manager.update(dt)
-            self.screen_shake.update(dt)
-
-            # Update audio
-            self.audio_manager.update(dt)
-
-            # Render to intermediate surface for screen shake
-            render_surface = self.screen
-            self.screen.fill(Colors.BACKGROUND)
-
-            # Settings view replaces all other rendering when active
-            if self.settings_view:
-                self.settings_view.render(render_surface)
-            else:
-                self.state_manager.render(render_surface)
-
-                # Render pause menu overlay if paused
-                if self.paused and self.pause_menu_view:
-                    self.pause_menu_view.render(render_surface)
-
-                # Render save/load dialog on top of pause menu
-                if self.save_load_view:
-                    self.save_load_view.render(render_surface)
-
-            # Transition overlay (on top of game, under UI)
-            if self.transition_manager.active:
-                self.transition_manager.render(render_surface)
-
-            # Render event notification overlay if active
-            if self._event_notification_view and self._event_notification_view.active:
-                self._event_notification_view.render(render_surface)
-
-            # Vignette overlay
-            self.vignette.render(render_surface)
-
-            # Event banner (above vignette, below UI)
-            self._render_event_banner(render_surface)
-
-            # PT-K: drain faction-standing deltas into the notification queue
-            # so shifts surface to the player in-band with mission events.
-            # modify_reputation appends to player._pending_faction_deltas;
-            # we format and move them here each frame.
-            if self.player is not None:
-                pending = getattr(self.player, "_pending_faction_deltas", None)
-                if pending:
-                    for faction_id, delta in pending:
-                        sign = "+" if delta > 0 else ""
-                        label = faction_id.replace("_", " ").title()
-                        self._mission_notifications.append(f"{label}: {sign}{delta}")
-                    pending.clear()
-
-            # Mission notification banner (below UI)
-            self._render_mission_notification(render_surface)
-
-            # pygame_gui elements (game UI — skip when settings is covering everything)
-            if not self.settings_view:
-                self.ui_manager.draw_ui(render_surface)
-
-            # Settings has its own UIManager — draw it on top of everything
-            if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
-                self.settings_view._own_ui_manager.draw_ui(render_surface)
-
-            # View-level top-layer overlays (hover tooltips, etc.) go here
-            # so they sit ABOVE pygame_gui buttons/labels. Default is no-op;
-            # views override render_top when they need top-layer content.
-            current_state = self.state_manager.current_state
-            if current_state is not None:
-                current_view_obj = self.state_manager.states.get(current_state)
-                if current_view_obj is not None and hasattr(current_view_obj, "render_top"):
-                    current_view_obj.render_top(render_surface)
-
-            # Achievement notification — renders ABOVE all UI so it's never hidden
-            self._render_achievement_notification(render_surface)
-
-            # Milestone celebration overlay (topmost)
-            if self._celebration_timer > 0:
-                self._render_celebration(render_surface)
-
-            # Cockpit HUD renders AFTER pygame_gui so it sits on top of
-            # view UI, EXCEPT when a modal dialog (settings, save/load)
-            # is active — those use the full screen and the HUD bars
-            # would obscure the modal's bottom controls (e.g., Apply /
-            # Back buttons in the settings panel).
+        # Update game state (only if not paused)
+        if not self.paused:
+            self.state_manager.update(dt)
+            self._check_day_advance()
+            # Defer mission/achievement checks while dialogue is active
+            # to avoid notification banners overlapping the conversation
             if (
-                self._cockpit_hud
-                and self.player
-                and self.settings_view is None
-                and self.save_load_view is None
+                not (self.dialogue_view and self.dialogue_view.active)
+                and not self.transition_manager.active
             ):
-                self._cockpit_hud.render(render_surface)
+                self.check_achievements()
+                self.check_missions()
+            self.check_crew_xp()
+            self.check_attribute_milestones()
+            self.check_soft_break_retirement()
 
-            # Tutorial overlay renders AFTER HUD and ui_manager.draw_ui() so it
-            # covers all pygame_gui elements from the underlying view.
-            if self._tutorial_overlay and self._tutorial_overlay.active:
-                self._tutorial_overlay.render(render_surface)
+        # Update achievement notification timer
+        if self._achievement_notify_timer > 0:
+            self._achievement_notify_timer = max(0.0, self._achievement_notify_timer - dt)
 
-            # Apply screen shake offset
-            shake_x, shake_y = self.screen_shake.offset
-            if shake_x != 0 or shake_y != 0:
-                temp = render_surface.copy()
-                self.screen.fill((0, 0, 0))
-                self.screen.blit(temp, (shake_x, shake_y))
+        # Update mission notification timer
+        if self._mission_notify_timer > 0:
+            self._mission_notify_timer = max(0.0, self._mission_notify_timer - dt)
 
-            pygame.display.flip()
+        # Update celebration timer
+        if self._celebration_timer > 0:
+            self._celebration_timer = max(0.0, self._celebration_timer - dt)
 
-            # Optional: Display FPS in window title (debug)
-            if pygame.time.get_ticks() % 60 == 0:  # Update every 60 frames
-                fps = self.clock.get_fps()
-                pygame.display.set_caption(f"{WINDOW_TITLE} - FPS: {fps:.1f}")
+        # Update visual effects
+        self.transition_manager.update(dt)
+        self.screen_shake.update(dt)
 
+        # Update audio
+        self.audio_manager.update(dt)
+
+        # Render to intermediate surface for screen shake
+        render_surface = self.screen
+        self.screen.fill(Colors.BACKGROUND)
+
+        # Settings view replaces all other rendering when active
+        if self.settings_view:
+            self.settings_view.render(render_surface)
+        else:
+            self.state_manager.render(render_surface)
+
+            # Render pause menu overlay if paused
+            if self.paused and self.pause_menu_view:
+                self.pause_menu_view.render(render_surface)
+
+            # Render save/load dialog on top of pause menu
+            if self.save_load_view:
+                self.save_load_view.render(render_surface)
+
+        # Transition overlay (on top of game, under UI)
+        if self.transition_manager.active:
+            self.transition_manager.render(render_surface)
+
+        # Render event notification overlay if active
+        if self._event_notification_view and self._event_notification_view.active:
+            self._event_notification_view.render(render_surface)
+
+        # Vignette overlay
+        self.vignette.render(render_surface)
+
+        # Event banner (above vignette, below UI)
+        self._render_event_banner(render_surface)
+
+        # PT-K: drain faction-standing deltas into the notification queue
+        # so shifts surface to the player in-band with mission events.
+        # modify_reputation appends to player._pending_faction_deltas;
+        # we format and move them here each frame.
+        if self.player is not None:
+            pending = getattr(self.player, "_pending_faction_deltas", None)
+            if pending:
+                for faction_id, delta in pending:
+                    sign = "+" if delta > 0 else ""
+                    label = faction_id.replace("_", " ").title()
+                    self._mission_notifications.append(f"{label}: {sign}{delta}")
+                pending.clear()
+
+        # Mission notification banner (below UI)
+        self._render_mission_notification(render_surface)
+
+        # pygame_gui elements (game UI — skip when settings is covering everything)
+        if not self.settings_view:
+            self.ui_manager.draw_ui(render_surface)
+
+        # Settings has its own UIManager — draw it on top of everything
+        if self.settings_view and hasattr(self.settings_view, "_own_ui_manager"):
+            self.settings_view._own_ui_manager.draw_ui(render_surface)
+
+        # View-level top-layer overlays (hover tooltips, etc.) go here
+        # so they sit ABOVE pygame_gui buttons/labels. Default is no-op;
+        # views override render_top when they need top-layer content.
+        current_state = self.state_manager.current_state
+        if current_state is not None:
+            current_view_obj = self.state_manager.states.get(current_state)
+            if current_view_obj is not None and hasattr(current_view_obj, "render_top"):
+                current_view_obj.render_top(render_surface)
+
+        # Achievement notification — renders ABOVE all UI so it's never hidden
+        self._render_achievement_notification(render_surface)
+
+        # Milestone celebration overlay (topmost)
+        if self._celebration_timer > 0:
+            self._render_celebration(render_surface)
+
+        # Cockpit HUD renders AFTER pygame_gui so it sits on top of
+        # view UI, EXCEPT when a modal dialog (settings, save/load)
+        # is active — those use the full screen and the HUD bars
+        # would obscure the modal's bottom controls (e.g., Apply /
+        # Back buttons in the settings panel).
+        if (
+            self._cockpit_hud
+            and self.player
+            and self.settings_view is None
+            and self.save_load_view is None
+        ):
+            self._cockpit_hud.render(render_surface)
+
+        # Tutorial overlay renders AFTER HUD and ui_manager.draw_ui() so it
+        # covers all pygame_gui elements from the underlying view.
+        if self._tutorial_overlay and self._tutorial_overlay.active:
+            self._tutorial_overlay.render(render_surface)
+
+        # Apply screen shake offset
+        shake_x, shake_y = self.screen_shake.offset
+        if shake_x != 0 or shake_y != 0:
+            temp = render_surface.copy()
+            self.screen.fill((0, 0, 0))
+            self.screen.blit(temp, (shake_x, shake_y))
+
+        pygame.display.flip()
+
+        # Optional: Display FPS in window title (debug)
+        if pygame.time.get_ticks() % 60 == 0:  # Update every 60 frames
+            fps = self.clock.get_fps()
+            pygame.display.set_caption(f"{WINDOW_TITLE} - FPS: {fps:.1f}")
+
+    def run(self) -> None:
+        """Main game loop — timing shell that drives step() each frame."""
+        logger.info("Starting main game loop...")
+        self.running = True
+        while self.running:
+            dt = self.clock.tick(FPS_TARGET) / 1000.0
+            events = pygame.event.get()
+            self.step(dt, events)
         logger.info("Game loop ended")
         self.quit()
+
+    def seed_rngs(self, seed: int) -> None:
+        """Seed global random sources for deterministic replay.
+
+        Args:
+            seed: Integer seed applied to both stdlib random and numpy.random.
+        """
+        random.seed(seed)
+        np.random.seed(seed)
 
     def quit(self) -> None:
         """Clean shutdown of the game."""
