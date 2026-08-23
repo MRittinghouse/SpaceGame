@@ -4959,7 +4959,7 @@ tests/test_ralph/
 
 ### QF-4 — Import-boundary guard
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A (additional deliverable)
 **Size**: S | **Effort**: half day
 **Depends on**: none | **Blocks**: none
@@ -4969,8 +4969,11 @@ zero pygame imports. That property is the only reason a future engine port is co
 nothing enforces it. Enforce it.
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Additional deliverable)
-- `tests/test_compliance/test_flag_string_discipline.py` (follow this scanner's style)
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Additional deliverable, lines
+  303-311)
+- `tests/test_compliance/test_flag_string_discipline.py` (follow this scanner's style: module
+  docstring stating the WHY, module-level helpers, `TestX` class holding the assertions)
+- `tests/test_compliance/test_list_dict_content_discipline.py` (peer scanner for shape reference)
 
 **Touch zones.**
 ```
@@ -4979,20 +4982,137 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
 
 **Deliverables.**
 - An auto-discovering scanner test asserting no module under `spacegame/models/` or
-  `spacegame/constants/` imports pygame or pygame_gui, directly or via `from ... import`.
-- Failure message names the offending file and the import line.
-- Docstring explaining WHY the boundary exists (port optionality), so a future reader does not delete
-  it as pointless.
+  `spacegame/constants/` imports `pygame` or `pygame_gui`, directly or via `from ... import`,
+  including submodule and aliased forms (`import pygame.font`, `import pygame as pg`,
+  `from pygame_gui.elements import UIButton`).
+- Failure message names each offending file, line number, and the offending import statement.
+- Module docstring explaining WHY the boundary exists (engine-port optionality) so a future reader
+  does not delete the scanner as pointless.
+- A self-test proving the scanner detects a synthetic violation (constructed in memory, not written
+  to disk), so acceptance criterion 2 is machine-verified and permanent, not a one-time manual check.
+- A guard test asserting the scan roots exist and contain at least one `.py` file each — prevents a
+  future rename or refactor from silently turning the test into a vacuous pass.
 
 **Acceptance criteria.**
 1. Test passes on the current tree.
-2. Adding `import pygame` to any file under `models/` fails the test with a useful message.
-3. Uses AST parsing, not a regex over source text.
-4. Full suite green.
+2. Scanner catches all four import forms (`import pygame`, `import pygame.X`, `import pygame as pg`,
+   `from pygame import X`) and the same four for `pygame_gui`, verified by an in-memory synthetic
+   fixture in the same test module.
+3. Uses `ast.parse` and walks `ast.Import` / `ast.ImportFrom` nodes; does not rely on regex over
+   source text.
+4. Failure message format: `<repo-relative path>:<line>: <the import line, stripped>` — one line per
+   offender, sorted for deterministic diff output.
+5. Scan roots (`spacegame/models`, `spacegame/constants`) are asserted to exist and to be non-empty,
+   so a directory rename cannot silently disable the scanner.
+6. Module docstring documents the strategic rationale (engine-port optionality) and points at the
+   spec section (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md`,
+   "Additional deliverable: import-boundary guard").
+7. Full suite green (>= 10,370 passing, pre-existing 98 skips fine).
+
+**Plan.**
+
+*Sequenced tasks for the implementer:*
+
+1. **Author scanner module skeleton.** Create `tests/test_compliance/test_import_boundaries.py` with
+   the strategic-rationale module docstring (WHY: engine-port optionality; reference the spec
+   section). No allowlist, no `KNOWN_ORPHANS` constant — see Decision D2. Follow
+   `test_flag_string_discipline.py`'s layout: constants at top, module-level helpers, `TestX` class
+   at bottom.
+2. **Add scan roots and validation helper.** Define `SCAN_ROOTS = [SPACEGAME_ROOT / "models",
+   SPACEGAME_ROOT / "constants"]` and `BANNED_TOP_LEVEL = {"pygame", "pygame_gui"}`. Write
+   `_assert_scan_roots_valid()` helper that raises if any root is missing or contains zero `.py`
+   files. Test surface: covered by the guard test in step 6.
+3. **Write AST-based detector.** Function `_find_pygame_imports(py_path: Path) -> list[tuple[int,
+   str]]` that reads the file, calls `ast.parse`, walks `ast.Import` / `ast.ImportFrom` nodes, and
+   returns `[(lineno, offending_line_text), ...]`. For `ast.Import` nodes, check each `alias.name`'s
+   top-level segment (`"pygame.font".split(".")[0]` → `"pygame"`) against `BANNED_TOP_LEVEL`. For
+   `ast.ImportFrom` nodes, check `node.module`'s top-level segment (skip `node.module is None` — that
+   is a relative import). The offending line text is looked up from the source split by `\n` so the
+   failure message shows real code.
+4. **Write orchestrator function.** `_scan_all_offenders() -> list[str]` walks `SCAN_ROOTS` via
+   `rglob("*.py")`, sorted for deterministic output, and formats each hit as
+   `<repo-relative-path>:<line>: <stripped source line>`. Skip `__pycache__` implicitly (rglob does
+   not descend it for `.py`).
+5. **Write the main assertion test.** `TestImportBoundaries.test_no_pygame_imports_in_models_or_constants`
+   calls `_scan_all_offenders()`, asserts the list is empty, and on failure surfaces both the
+   offender lines and a one-sentence pointer at the docstring rationale (do not silently allowlist).
+6. **Write the scan-roots-live guard test.**
+   `TestImportBoundaries.test_scan_roots_exist_and_non_empty` — asserts each root is a directory
+   with at least one `.py` file. This is the "did somebody rename `models/` and quietly break me"
+   check.
+7. **Write the synthetic-violation self-test.**
+   `TestImportBoundaries.test_detector_flags_synthetic_violation` — construct an in-memory `ast`
+   tree (or a small string source parsed via `ast.parse`) containing every banned form
+   (`import pygame`, `import pygame.font`, `import pygame as pg`, `from pygame import Surface`,
+   plus the four `pygame_gui` equivalents), pass it through a variant of the detector that accepts
+   `ast.Module` + source text, and assert all eight are flagged. This is the permanent proof of AC #2
+   — no disk pollution required.
+8. **Run and commit.** `python -m pytest tests/test_compliance/test_import_boundaries.py -v`, then
+   `python -m pytest -n auto -q` for the full suite. Confirm baseline (>= 10,370 pass, 98 skip).
+   Ruff-format the new file only (`ruff format tests/test_compliance/test_import_boundaries.py`),
+   `ruff check` it, then commit with sprint ID.
+
+*Test surface.*
+- `tests/test_compliance/test_import_boundaries.py` (NEW): three tests total — the main assertion,
+  the scan-roots guard, and the synthetic-violation self-test. No production-code test surface.
+
+*Risks and gotchas.*
+- **Vacuous pass on rename.** If `models/` or `constants/` is renamed and the scanner is not updated,
+  `rglob("*.py")` returns nothing and the assertion trivially passes. Mitigated by task 6's
+  guard test.
+- **Relative imports.** `ast.ImportFrom` nodes with `node.module is None` (e.g., `from . import x`)
+  must be skipped in the top-level-segment check; otherwise a `None.split(".")` crashes.
+- **Aliased submodules.** `import pygame.font as pgf` still resolves to top-level `pygame` via
+  `alias.name.split(".")[0]` — no special case needed if the split is done first.
+- **Docstring compliance scanner scope.** The flag-string scanner reads every `.py` under
+  `spacegame/`, but *not* under `tests/`. Adding this new scanner does not change that. The new
+  scanner reads `.py` files under two subtrees of `spacegame/` only, so no interaction.
+- **Ordering flakiness.** `Path.rglob` order is platform-dependent; always sort before formatting
+  offender lines, or the failure diff is non-deterministic across Windows/Linux runs.
+
+*Decisions locked during planning.*
+- **D1: TYPE_CHECKING-guarded imports are banned.** The scanner does not special-case
+  `if TYPE_CHECKING: import pygame`. Rationale: TYPE_CHECKING imports still bind the name `pygame`
+  to models/constants at check-time and require pygame's type stubs to exist during any port,
+  defeating the strategic point. Type hints that reference pygame types must use string annotations
+  or move to the caller side.
+- **D2: No allowlist.** Unlike the flag-string scanner (which has `KNOWN_ORPHANS`), this scanner has
+  no exception mechanism. The whole strategic value of the boundary is its absoluteness — one
+  exception is a leak, and a "temporary" exception becomes permanent. A future sprint that needs to
+  intentionally open the boundary is welcome to modify the scanner explicitly; there is no soft
+  path.
+- **D3: Direct-import ban only, no transitive analysis.** The scanner does not walk the import graph
+  to detect models importing (say) `spacegame.utils.image_loader` (which does import pygame).
+  Rationale: the spec bounds this deliverable at ~20 lines and calls it "additional"; transitive
+  analysis is a materially different scope. Today no model imports from `engine/`, `views/`, or the
+  pygame-touching modules under `utils/`, so the direct-import ban is sufficient to lock the
+  invariant. A follow-up scanner (e.g., `QF-4-EXT-1`) could add transitive protection if the direct
+  ban proves insufficient in practice — not now.
+
+*Cross-sprint reactions to author.* None (foundational scanner, no player-facing surface).
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 14:50 — harness: plan phase starting
+- 2026-08-23 14:55 — planning complete; verified both scan roots are pygame-free today; locked 3
+  decisions (TYPE_CHECKING banned, no allowlist, direct-import only); folded in scan-roots-live
+  guard and synthetic-violation self-test as polish; no scope expansion needed. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 14:50
+- Completed: 2026-08-23 14:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (pending)
+- New_sprints_proposed: none
+- Polish_items_folded_in: scan-roots-live guard test, synthetic-violation self-test, deterministic
+  sorted output, submodule-and-alias coverage in acceptance criteria
+- Decisions_locked: 3 (TYPE_CHECKING banned, no allowlist, direct-import only)
+- Notes: Verified both context docs exist and read. Confirmed current tree is clean (grep finds no
+  pygame imports under models/ or constants/, and models/ does not transitively pull pygame via
+  engine/views/utils.image_loader). Sprint scope matches spec's "additional deliverable" bound (~20
+  lines). No cross-sprint reactions (foundational; no player-facing surface).
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
 **Status**: todo
