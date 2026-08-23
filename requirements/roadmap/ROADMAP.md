@@ -5349,13 +5349,13 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - Notes: Plan audit: sound; 7 locked decisions all defensible and correctly implemented. Pure verbatim extraction — run() body is exactly as AC#1 specifies. mypy error count unchanged at 353 (planner's "106" figure was mismeasured; no new errors introduced). Full suite 10382 >= baseline 10375.
 ### QF-6 — Play-harness crawler core
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 3
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: QF-5 | **Blocks**: QF-7, QF-8
 
 **Goal.** Build the deterministic headless crawler that drives the real `Game` object through real
-event dispatch. 10,370 tests pass while playtesters hit crashes in combat and trading; the suite has
+event dispatch. 10,382 tests pass while playtesters hit crashes in combat and trading; the suite has
 5,622 model tests and 34 integration tests. This closes that gap.
 
 **Context to read.**
@@ -5367,43 +5367,275 @@ event dispatch. 10,370 tests pass while playtesters hit crashes in combat and tr
 **Touch zones.**
 ```
 tools/crawler/                              (NEW package)
+tools/crawler/fixtures/                     (NEW; committed checkpoint saves for early/mid/late)
 tests/test_crawler/                         (NEW)
 ```
 
 **Deliverables.**
-- Headless crawler booting a real `Game`, seeding all RNG, stepping via `Game.step()`.
-- Element enumeration via `ui_manager.get_sprite_group().sprites()` filtered to interactive widgets.
-  Note `LayeredGUIGroup` is NOT directly iterable; `.sprites()` is required.
-- Seeded action selection: click an enabled element, press a bound key, or advance time. Synthesize
-  real `MOUSEBUTTONDOWN`/`MOUSEBUTTONUP` events (verified to produce `UI_BUTTON_PRESSED`).
+- Headless crawler booting a real `Game`, seeding all RNG **before** `initialize_states()` (per QF-5
+  review note; state-init consumes RNG and must be inside the seed for frame-zero determinism),
+  stepping via `Game.step()`.
+- Element enumeration via `ui_manager.get_sprite_group().sprites()` filtered to interactive widgets
+  (`UIButton`, `UITextEntryLine`, `UIDropDownMenu`, `UIHorizontalSlider`, `UISelectionList`,
+  `UITextEntryBox`). Note `LayeredGUIGroup` is NOT directly iterable; `.sprites()` is required.
+- Seeded action selection: click an enabled element, press a bound key, or advance time (extra
+  `step()` call with empty event list). Synthesize real `MOUSEBUTTONDOWN`/`MOUSEBUTTONUP` events (each
+  pair produces one `UI_BUTTON_PRESSED`, verified in Spec A Section 3).
 - **Four oracles**: unhandled exception; pygame_gui element leak on state exit; softlock (zero enabled
-  interactive elements and no keybind escape); invariant violation (negative credits,
-  `fuel > max_fuel`, cargo over capacity).
-- Crash records carrying `(seed, action_index)` and the full action trace; replay by seed.
-- Deduplication by normalized traceback signature.
-- Generator turning a deduped crash into a pytest regression stub.
-- Coverage report over the 41 `GameState` members and the transitions fired.
+  interactive elements AND no bound escape key on the current state); invariant violation (negative
+  credits, `fuel > max_fuel`, cargo over capacity).
+- Crash records carrying `(seed, action_index)` and the full action trace; replay by seed reruns the
+  same sequence deterministically.
+- Deduplication by normalized traceback signature (file:line pairs of each frame plus exception
+  class; message text and pointer literals stripped).
+- Generator turning a deduped crash into a pytest regression stub written to
+  `tools/crawler/generated_stubs/`, one file per unique traceback signature.
+- Coverage report over the 41 `GameState` members and the transitions fired, emitted as both JSON
+  (machine-readable, for QF-7 CI summary and QF-8 prioritization) and a plain-text human summary.
 - Reachability mitigations: checkpoint-save seeding (early/mid/late) via `save_manager.py`, action
-  weighting toward unvisited states, and a debug hook granting credits.
+  weighting toward unvisited states (weight boost for actions whose click enters a state not yet
+  visited this session), and a debug hook granting credits (CLI flag `--debug-credits N`).
+- CLI entry point: `python -m tools.crawler --seed S --actions N [--checkpoint early|mid|late]
+  [--debug-credits N] [--verbose]`. Prints coverage summary at end and writes crash records +
+  coverage JSON to a run directory.
 
 **Acceptance criteria.**
-1. Crawler runs headless with no display and completes a 2,000-action session.
-2. Same seed produces an identical action trace and identical final state across runs.
-3. Any crash it finds is reproducible from `(seed, action_index)` alone.
-4. A deliberately introduced softlock is detected by oracle 3.
-5. Coverage report names which of the 41 states were reached.
-6. Crash dedup collapses N occurrences of one traceback into one record.
-7. Full suite green.
+1. `python -m tools.crawler --seed 42 --actions 2000` runs headless with no display and completes
+   without raising in the crawler itself (crashes it discovers in the game are recorded, not
+   propagated).
+2. Two runs with the same seed produce byte-identical action traces and identical final `GameState`
+   plus identical `random.random()` and `np.random.random()` samples taken immediately after the
+   session. Asserted by `test_crawler_determinism`.
+3. Any recorded crash carries `(seed, action_index)` and the full prior action trace; a helper
+   `Crawler.replay(seed, up_to_action_index)` reproduces the crash. Asserted by
+   `test_crawler_replay_reproduces_crash` using a deliberately raised exception injected via a test
+   fixture patched into `Game.step`.
+4. A deliberately introduced softlock fixture (state with zero enabled interactive elements and no
+   bound escape key) is detected by oracle 3 within one action. Asserted by
+   `test_softlock_oracle_detects_dead_end`.
+5. Coverage report enumerates all 41 `GameState` members with a boolean per state indicating whether
+   it was reached this session, and a list of `(from_state, to_state)` transitions fired. Asserted
+   by `test_coverage_report_lists_all_41_states`.
+6. Given N recorded crashes with the same normalized traceback signature, the dedup layer collapses
+   them into one crash record with `occurrence_count = N` and preserves the earliest
+   `(seed, action_index)`. Asserted by `test_crash_dedup_collapses_identical_signatures`.
+7. Regression stub generator produces a pytest file that, when placed in `tests/`, would fail on a
+   codebase that still exhibits the crash and pass once fixed. Asserted by
+   `test_regression_stub_generator_produces_runnable_pytest` (generates a stub against a known
+   fixture, imports and runs it, confirms the expected assertion structure).
+8. Full suite green; test count >= baseline 10382.
 
 **Risks / open questions.**
-- Uniform-random exploration will not reach the late game; the reachability mitigations above are
-  mandatory scope, not optional polish.
-- The first real run may surface hundreds of distinct crashes. Do NOT attempt to fix them in this
-  sprint. Record them, dedup them, and hand them to QF-8. This sprint builds the instrument; it does
-  not do the repair work.
+- ~~Uniform-random exploration will not reach the late game~~ — LOCKED: reachability mitigations are
+  mandatory scope, not optional polish. Implemented via three checkpoint fixture saves committed to
+  `tools/crawler/fixtures/` (early: no ship built, in tutorial shop; mid: mid-tier ship, ~50k
+  credits, 3 systems visited; late: end-tier ship, ~500k credits, all systems visited, crew of 4),
+  action weighting toward unvisited states, and the `--debug-credits` CLI flag.
+- ~~The first real run may surface hundreds of distinct crashes~~ — LOCKED: do NOT attempt to fix
+  them in this sprint. Record, dedup, and hand to QF-8. This sprint builds the instrument. The
+  regression stub generator's output goes to `tools/crawler/generated_stubs/` (NOT `tests/`), so
+  discovered crashes do not fail the suite until a human triages and moves the stub into `tests/`.
+- ~~Definition of "interactive widget"~~ — LOCKED: types listed in Deliverables. Filter is
+  `isinstance(el, (UIButton, UITextEntryLine, UIDropDownMenu, UIHorizontalSlider, UISelectionList,
+  UITextEntryBox)) and el.is_enabled`. Labels, images, and disabled buttons are excluded.
+- ~~Definition of "advance time" action~~ — LOCKED: one extra `game.step(dt, [])` call at
+  `dt = 1/60.0`. This lets timers, notifications, and transition managers progress without
+  synthesizing input.
+- ~~Definition of "bound escape key"~~ — LOCKED: any of ESCAPE (opens pause menu when player is
+  active), F11 (fullscreen), or view-specific back-navigation keys the current view registers via
+  `InputHandler`. If the current state has none of these AND `state_stack` is empty, softlock is
+  reported. The main menu is exempt (STARTUP / MAIN_MENU / CHARACTER_CREATION / NAME_INPUT never
+  trigger softlock oracle because they intentionally have no escape).
+- ~~Traceback normalization scheme~~ — LOCKED: `(exception_class_name, tuple((file_basename, lineno,
+  func_name) for frame in traceback))`. Message text, memory addresses, and reprs of local variables
+  are excluded. This intentionally treats different messages of the same underlying exception as one
+  crash (matches Spec A's "hundreds" projection needing aggressive dedup).
+- ~~Checkpoint fixture format~~ — LOCKED: real JSON save files written by `SaveManager.save_game()`
+  once and committed. Regenerated by `tools/crawler/fixtures/regenerate.py` when the save format
+  changes (a Populist-B refactor might). Loaded via `SaveManager.load_game(slot)` pointed at a
+  `save_directory` overriding the default AppData path.
+- ~~Coverage report format~~ — LOCKED: JSON schema
+  `{"seed": int, "actions": int, "states_reached": {name: bool}, "transitions": [[from, to], ...],
+   "crashes": [{signature, occurrence_count, first_seed, first_action_index, trace}]}`.
+   Plain-text summary derived from the JSON.
+- ~~Run output directory~~ — LOCKED: `crawler_runs/<seed>-<utc_timestamp>/` under CWD. Contains
+  `coverage.json`, `crashes.json`, and (if `--verbose`) `action_trace.log`. Gitignored via a new
+  entry in `.gitignore`. QF-7 will consume these paths.
+
+**Plan.**
+
+Task 1 — Package skeleton and CLI entry point.
+- Create `tools/crawler/__init__.py`, `tools/crawler/__main__.py` (argparse CLI), `tools/crawler/
+  crawler.py` (main class stub), `tests/test_crawler/__init__.py`, `tests/test_crawler/
+  test_crawler.py`. Add `crawler_runs/` to `.gitignore`.
+- Failing test: `test_crawler_cli_has_expected_flags` — inspect argparse parser to verify `--seed`,
+  `--actions`, `--checkpoint`, `--debug-credits`, `--verbose` all present.
+- Gotcha: `tools/` is not currently a Python package. Verify no import-path conflicts with
+  `spacegame/`. Use `python -m tools.crawler` invocation only; no `sys.path` hacks.
+
+Task 2 — Bootstrap: Crawler class that constructs Game, seeds before init_states, applies checkpoint.
+- Implement `Crawler.__init__(seed, actions, checkpoint=None, debug_credits=0)`. Order:
+  `seed_rngs(seed)` → `Game()` → `game.seed_rngs(seed)` (belt-and-braces) → `game.initialize_states()`
+  → optional `game.save_manager = SaveManager(save_directory=tools/crawler/fixtures/)` +
+  `game._load_game(checkpoint_slot)` → optional `game.player.credits += debug_credits`.
+- Failing tests: `test_crawler_boot_uses_headless_sdl`, `test_crawler_boot_seeds_before_init_states`
+  (patch `game.initialize_states` and assert `random.random()` returns the same value inside the
+  patch call across two runs with the same seed).
+- Gotcha: `Game.__init__` calls `pygame.display.set_mode`. `SDL_VIDEODRIVER=dummy` must be set
+  before `import pygame` at the crawler module level, following the pattern in
+  `tests/test_scenarios/_view_harness.py`.
+
+Task 3 — Element enumeration and action selection.
+- Implement `Crawler._enumerate_interactive()` returning a list of live enabled interactive elements
+  from `game.ui_manager.get_sprite_group().sprites()`, filtered by the LOCKED type tuple.
+- Implement `Crawler._select_action(rng)` returning one of: `("click", element)`,
+  `("keypress", pygame_key_code)`, `("advance_time",)`. Weights: 60% click, 20% keypress, 20%
+  advance time; boost click-weight of an element by 2x if clicking it would enter an unvisited
+  state (best-effort via `element.text` matching known nav labels; fallback to uniform).
+- Failing tests: `test_enumerate_returns_only_enabled_interactive`,
+  `test_action_selection_is_deterministic_per_seed` (two RNGs from the same seed emit the same
+  action sequence over 100 draws).
+
+Task 4 — Event synthesis and step invocation.
+- Implement `Crawler._synthesize_events(action)` returning a list of `pygame.event.Event`. Click =
+  `[MOUSEBUTTONDOWN, MOUSEBUTTONUP]` both with `pos = element.rect.center` and `button = 1`. Keypress
+  = `[KEYDOWN, KEYUP]` with the code. Advance time = `[]`.
+- Implement `Crawler.step_once()` selecting action, synthesizing events, calling
+  `game.step(1/60.0, events)`, then invoking all four oracles.
+- Failing test: `test_click_synthesis_fires_ui_button_pressed` — install a
+  `UI_BUTTON_PRESSED` listener and assert the event fires after `step_once()` clicks a live button.
+
+Task 5 — Oracle 1 (unhandled exception) + Oracle 4 (invariant violation).
+- Wrap `game.step()` in a try/except; catch `Exception` (NOT `BaseException`; leave
+  `KeyboardInterrupt` alone). Convert to a `CrashRecord`. Record and continue (session does NOT
+  abort on crash; the crawler's job is to collect them, per Spec A).
+- Invariant check after each step: `player.credits < 0`, `ship.current_fuel > ship.max_fuel`,
+  `ship.cargo_used > ship.cargo_capacity`. Each violation produces a crash record with a synthetic
+  traceback signature so dedup still works.
+- Failing tests: `test_unhandled_exception_oracle_records_crash`,
+  `test_invariant_oracle_detects_negative_credits`,
+  `test_invariant_oracle_detects_fuel_overflow`,
+  `test_invariant_oracle_detects_cargo_overflow`.
+
+Task 6 — Oracle 2 (UI leak on state exit).
+- Adapt the pattern from `tests/test_scenarios/_view_harness.py`: capture element count before
+  `state_manager.change_state()`, capture after, flag if `after != before` on the OLD state's exit.
+  Instrument by monkey-patching `state_manager.change_state` on the crawler's Game instance.
+- Failing test: `test_ui_leak_oracle_flags_stateexit_leak` — install a fake view whose
+  `on_exit` deliberately fails to `.kill()` a button, assert oracle fires.
+
+Task 7 — Oracle 3 (softlock).
+- After each step, enumerate enabled interactive elements + bound escape keys per LOCKED definition.
+  If both are empty AND `state_manager.state_stack` is empty AND current state is not in the exempt
+  set, record softlock crash. Include the state name in the crash record for triage.
+- Failing test: `test_softlock_oracle_detects_dead_end` — register a synthetic view with no
+  buttons and no escape key at a non-exempt state, drive the crawler into it, assert crash record.
+
+Task 8 — Crash record schema + dedup.
+- `@dataclass CrashRecord`: `signature: str`, `exception_class: str`, `first_seed: int`,
+  `first_action_index: int`, `occurrence_count: int`, `action_trace: list[tuple]`,
+  `full_traceback: str`, `state_at_crash: str`.
+- Signature = `hashlib.sha1(f"{exception_class}|{tuple((path.basename, lineno, func) for frame in
+  traceback)}".encode()).hexdigest()[:16]`.
+- Dedup dict `{signature: CrashRecord}` accumulated by `Crawler.crashes`; second occurrence
+  increments `occurrence_count`, does not replace `first_*` fields.
+- Failing tests: `test_crash_dedup_collapses_identical_signatures`,
+  `test_crash_dedup_preserves_earliest_seed_action_index`.
+
+Task 9 — Replay.
+- Implement `Crawler.replay(seed, up_to_action_index) -> CrashRecord | None`: constructs a fresh
+  Crawler with the same seed, runs `up_to_action_index + 1` actions, returns the crash record at
+  that index (or None if no crash there).
+- Failing test: `test_crawler_replay_reproduces_crash` — inject a deterministic crash on the 17th
+  action via a `Game.step` monkeypatch, run once, verify `replay(seed, 17)` returns the same
+  crash record signature.
+
+Task 10 — Coverage tracking.
+- `CoverageTracker` records visited states (via `state_manager.change_state` hook) and transitions
+  as `(from, to)` tuples. Emit JSON per LOCKED schema at session end.
+- Failing tests: `test_coverage_report_lists_all_41_states`,
+  `test_coverage_report_records_transitions`.
+
+Task 11 — Regression stub generator.
+- Given a `CrashRecord`, emit a `.py` file to `tools/crawler/generated_stubs/` with a pytest
+  function that seeds, drives the crawler up to `first_action_index`, and asserts the same
+  signature is produced. File name: `test_regression_<signature>.py`.
+- Failing test: `test_regression_stub_generator_produces_runnable_pytest` — generate a stub
+  against a fixture crash, import via `importlib`, run the pytest function, assert it raises
+  `AssertionError` when the game is (fake) fixed.
+
+Task 12 — Reachability: checkpoint fixture saves.
+- Write `tools/crawler/fixtures/regenerate.py` that programmatically builds three players (early,
+  mid, late) and writes them via `SaveManager.save_game()`. Commit the resulting JSON files as
+  `save_slot_1.json`, `save_slot_2.json`, `save_slot_3.json` under
+  `tools/crawler/fixtures/`.
+- CLI flag `--checkpoint {early|mid|late}` maps to slot 1/2/3 respectively.
+- Failing test: `test_checkpoint_loads_expected_state` — load each checkpoint and assert player
+  credits, ship type, and visited systems match expected mid-game state.
+
+Task 13 — Action weighting toward unvisited + credits debug hook.
+- In `_select_action`, when eligible click targets exist, boost the weight of any whose
+  `element.text` (or `element.object_ids[-1]`) contains a known navigation keyword corresponding
+  to an unvisited state.
+- `--debug-credits N` adds N to `player.credits` after checkpoint load (or Game boot).
+- Failing tests: `test_action_weighting_prefers_unvisited_targets`,
+  `test_debug_credits_hook_adjusts_player_credits`.
+
+Task 14 — Integration: 2000-action session + determinism assertion.
+- End-to-end test: two `Crawler` instances with the same seed run 2000 actions each; assert
+  identical action traces, identical final `GameState`, identical trailing `random.random()`
+  sample. Assert crawler itself does not raise (game crashes are recorded, not propagated).
+- Failing tests: `test_crawler_completes_2000_action_session_headless`,
+  `test_crawler_determinism_across_two_runs`.
+- Gotcha: this test is slow (~30s per run per Spec A). Mark with `pytest.mark.slow` if the project
+  has that marker convention; otherwise leave and accept the extra CI time (still under a minute).
+  Confirm the current suite's convention before deciding.
+
+Task 15 — Voice-check + lint + final suite run + commit hygiene.
+- No player-facing strings introduced (crawler + fixtures are dev-only tooling). Writing Bible
+  scanner not applicable to `tools/` per convention, but confirm no banned phrases slipped into
+  logger messages or CLI help text.
+- Run `ruff format tools/crawler/ tests/test_crawler/` and `ruff check tools/crawler/
+  tests/test_crawler/`. Run `mypy tools/crawler/`. Run `pytest -n auto -q`. Baseline is 10382; new
+  count must be >= that (crawler adds tests, so should be higher).
+- Commit sequence (each references `QF-6`):
+  - `QF-6: add tools/crawler package skeleton and CLI stub`
+  - `QF-6: add Crawler bootstrap with seeded init and checkpoint loading`
+  - `QF-6: add element enumeration, action selection, event synthesis`
+  - `QF-6: add oracles 1+4 (exception, invariant)`
+  - `QF-6: add oracle 2 (UI leak on state exit)`
+  - `QF-6: add oracle 3 (softlock)`
+  - `QF-6: add crash record schema, dedup, replay`
+  - `QF-6: add coverage tracking (states + transitions)`
+  - `QF-6: add regression stub generator`
+  - `QF-6: add checkpoint fixture saves + regenerate script`
+  - `QF-6: add action weighting and debug credits hook`
+  - `QF-6: add 2000-action integration + determinism test`
+
+**Cross-sprint reactions to author.** none (foundational tools/ package; no player-facing surface,
+no dialogue, no NPCs, no crew impact). The direct downstream consumers are QF-7 (CI wiring +
+screenshots on top of the crawler) and QF-8 (uses crawler coverage output to prioritize burndown);
+those are dependency wiring, not reactions.
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 15:39 — harness: plan phase starting
+- 2026-08-23 — planning complete; 8 open questions locked, 15 implementation tasks defined,
+  acceptance criteria tightened from 7 vague-ish to 8 mechanically verifiable (each names its test),
+  polish items folded in (CLI entry point, JSON+text output, checkpoint regeneration script),
+  no new sprints proposed, no cross-sprint reactions (foundational tooling). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23
+- Completed: 2026-08-23
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (planner will commit after ROADMAP write)
+- New_sprints_proposed: none
+- Polish_items_folded_in: cli-entry-point, json-plus-text-coverage-output, checkpoint-regeneration-script, gitignore-crawler-runs
+- Decisions_locked: 8
+- Notes: All 4 context docs verified present. Sprint scope is comprehensive as written; expanded acceptance criteria to name specific test functions, added Plan with 15 tasks and locked-decision references. Honored QF-5 reviewer's frame-zero seeding note in Task 2. No new sprints; scope stays within the sprint. Cross-sprint reactions: none, foundational tools/ package with no player-facing surface.
 
 ### QF-7 — Crawler CI gate + state screenshots
 
