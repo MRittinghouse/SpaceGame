@@ -4648,7 +4648,7 @@ executing any QF sprint; it carries the evidence and the reasoning these sprints
 
 ### QF-1 — Quality gate infrastructure
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Sections 1 and 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: none | **Blocks**: QF-2
@@ -4850,7 +4850,7 @@ tests/test_views/test_trading_actions.py
 - 2026-08-23 15:15 — planning complete (commit e2e98c8); verified all 4 context docs exist; confirmed 4 drifting files (enumerated in touch zones); locked 8 decisions (chief: `ruff check` scoped to `spacegame/` only, since tests/ has 874 pre-existing findings and Spec A's "already clean" claim only holds for spacegame/); no scope expansion, no new sprints proposed; folded in 6 CI polish items; cross-sprint reaction surface: none. PHASE_OK
 - 2026-08-23 15:30 — harness: plan phase starting (re-verification after sentinel-detection fix)
 - 2026-08-23 15:35 — re-verified plan still valid: 4 drifting files unchanged, `.pre-commit-config.yaml` and `.github/workflows/quality.yml` still absent, `ruff check spacegame/` still clean, tests/ still has 874 findings; test baseline 10373/98 unchanged since prior plan; no scope changes needed, no new sprints proposed. PHASE_OK
-
+- 2026-08-23 15:07 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
