@@ -5660,42 +5660,384 @@ those are dependency wiring, not reactions.
 
 ### QF-7 — Crawler CI gate + state screenshots
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
 
-**Goal.** Make the crawler a standing gate rather than a tool someone remembers to run, and capture a
-screenshot of every reachable state as a build artifact. The screenshot gallery is the input to Spec
-C's legibility review; capture only, no review, in this sprint.
+**Goal.** Make the crawler a standing gate rather than a tool someone remembers to run, and capture
+a screenshot of every reachable state as a build artifact. The screenshot gallery is the input to
+Spec C's legibility review; capture only, no review, in this sprint. Also produce a checked-in
+crash-signature baseline so the gate fails on **new** crashes without failing on the corpus QF-6
+discovered.
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 3, Outputs)
-- `.github/workflows/quality.yml` (from QF-1)
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` — Section 3 (Play Harness) in
+  full; Section 2 (CI Topology) for the workflow job pattern established in QF-1.
+- `.github/workflows/quality.yml` (from QF-1) — existing `lint` / `test` / commented `types` /
+  tag-gated `build` structure. The `crawl_short` job installs alongside `test`; the
+  `crawl_nightly` job is a separate scheduled workflow entry.
+- `tools/crawler/crawler.py` (from QF-6) — `_instrument_state_manager` (line ~683), `step_once`
+  (line ~477), `write_reports` (line ~803) are the extension points. `report_dict` (line ~793)
+  emits the combined-schema JSON already; `write_reports` splits into `coverage.json` +
+  `crashes.json` (QF-6 review's "single tighten"). QF-7 consumes the two-file layout.
+- `tools/crawler/coverage.py` — `states_reached` dict is the source of the "first visit" boolean.
+- `tools/crawler/crash_record.py` — `CrashRecord.signature` is the 16-char SHA-1 prefix used as
+  the baseline key.
+- `tools/crawler/cli.py`, `tools/crawler/__main__.py` — where the `--screenshot-dir` and
+  `--crash-baseline` / `--write-crash-baseline` flags land.
+- `spacegame/config.py` — `GameState` enum, 41 members, used for both state naming and coverage.
 
 **Touch zones.**
 ```
-tools/crawler/
-.github/workflows/quality.yml
+tools/crawler/crawler.py                       (screenshot hook + baseline compare)
+tools/crawler/cli.py                           (new flags)
+tools/crawler/__main__.py                      (wire flags → Crawler + exit code)
+tools/crawler/crash_baseline.json              (NEW; committed baseline)
+tools/crawler/baseline.py                      (NEW; baseline load/compare/write helpers)
+tests/test_crawler/test_screenshots.py          (NEW)
+tests/test_crawler/test_baseline.py             (NEW)
+tests/test_crawler/test_cli.py                  (extend for new flags)
+.github/workflows/quality.yml                  (add crawl_short job)
+.github/workflows/crawl_nightly.yml            (NEW; scheduled multi-seed sweep)
 ```
 
 **Deliverables.**
-- A short seeded crawl (~2,000 actions, ~30s) as a push-triggered CI job.
-- Screenshot capture on first visit to each state (`pygame.image.save`, measured 20.6ms; roughly
-  0.85s for the whole game), uploaded as a CI artifact.
-- Nightly or dispatch-triggered long run with multi-seed sweep, failing loudly on new crash
-  signatures.
-- Coverage number surfaced in the CI summary.
+- A push-triggered `crawl_short` job in `quality.yml`: `python -m tools.crawler --seed 42
+  --actions 2000 --screenshot-dir screenshots --crash-baseline tools/crawler/crash_baseline.json`.
+  Uploads the run directory (coverage.json + crashes.json + screenshots/) as a CI artifact named
+  `crawler-short-<run>-<seed>`. Retention 30 days. Fails the job on any crash signature not
+  present in the checked-in baseline.
+- Screenshot capture on **first visit** to each `GameState` (per-run first-visit; measured
+  20.6ms per save in Spec A). Files land at `<run_dir>/screenshots/<STATE_NAME>.png` where
+  `STATE_NAME` is the `GameState` enum name (e.g., `STATION_HUB.png`, `SHIP_BUILDER.png`). Hook
+  fires at the end of `step_once()` after `game.step()` returns, so the rendered frame is on
+  `game.screen`.
+- A scheduled + `workflow_dispatch` `crawl_nightly.yml` workflow: multi-seed sweep across the
+  three committed checkpoints (early / mid / late) × 2 seeds each = 6 sessions, each 5,000
+  actions. Uploads all six run directories as one combined artifact
+  `crawler-nightly-<run_id>`. Uses the same baseline; fails on any new signature across any
+  session. Runs on `cron: '0 8 * * *'` UTC (nightly) and on manual `workflow_dispatch`.
+- Checked-in `tools/crawler/crash_baseline.json`: sorted list of `{signature, exception_class,
+  oracle, state_at_crash, first_seed, first_action_index, occurrence_count, note}` entries
+  representing the crash corpus discovered by QF-6's crawler. Generated once during this sprint's
+  implementation by running the crawler across the same 6 nightly sessions and calling the new
+  `--write-crash-baseline` flag; then hand-reviewed and committed.
+- CLI flags added: `--screenshot-dir DIR` (relative to run directory; empty/absent disables
+  screenshots), `--crash-baseline PATH` (compare-against; when a new signature appears, exit
+  code 1 and print the offending signatures to stderr), `--write-crash-baseline PATH` (write
+  current session's crashes to PATH, sorted; overwrites; used for baseline regeneration).
+- Coverage + baseline-delta summary written to `$GITHUB_STEP_SUMMARY` as a Markdown block:
+  reached / 41 state count, transition count, new-vs-baseline crash signature list.
+- Baseline regeneration is a **manual commit-only** operation: an entry in
+  `tools/crawler/crash_baseline.json` may only be added or removed in a commit whose diff
+  touches nothing but that file plus a matching Activity-log entry in this sprint's Notes. This
+  mirrors the mypy-baseline discipline from QF-2 and stops the baseline becoming a silent
+  escape hatch during feature work.
 
 **Acceptance criteria.**
-1. The crawl job runs on push and completes within its budget.
-2. Screenshot artifact contains one PNG per reached state, named by `GameState`.
-3. A newly introduced crash on a reachable path fails the job.
-4. Full suite green.
+1. Running `python -m tools.crawler --seed 42 --actions 2000 --screenshot-dir screenshots
+   --crash-baseline tools/crawler/crash_baseline.json` locally exits 0 against the committed
+   baseline and writes one PNG per reached state under `<run_dir>/screenshots/`. Asserted by
+   `test_screenshot_capture_writes_one_png_per_reached_state` (constructs a Crawler with a small
+   custom seed, drives ~200 actions, asserts every state whose `states_reached[name] == True`
+   has a matching PNG file and no unreached state does).
+2. The screenshot capture is scoped to **first visit only**: a state visited twice writes exactly
+   one PNG. Asserted by `test_screenshot_capture_is_first_visit_only` (drives the crawler into
+   a state twice; checks the PNG's mtime is from the first visit, not the second).
+3. `python -m tools.crawler --seed 42 --actions 2000 --crash-baseline <path>` exits 0 when every
+   crash signature discovered is present in the baseline, and exits 1 when at least one
+   signature is not. Asserted by `test_baseline_compare_passes_when_all_signatures_known` and
+   `test_baseline_compare_fails_on_novel_signature` (both use a synthetic baseline file).
+4. `python -m tools.crawler ... --write-crash-baseline <path>` writes a valid, deterministic
+   JSON file (sorted by signature; keys in a fixed order) that a fresh read via the compare
+   flag treats as covering the same crash set. Asserted by
+   `test_write_baseline_then_compare_roundtrips`.
+5. `crawl_short` job is present in `quality.yml`, valid YAML
+   (`python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"` exits 0),
+   depends on nothing (runs in parallel with `test`), uploads the run directory via
+   `actions/upload-artifact@v4` with 30-day retention, and passes the `--crash-baseline` flag
+   pointing at the committed baseline file.
+6. `crawl_nightly.yml` is present, valid YAML, has a `schedule.cron: '0 8 * * *'` entry AND a
+   `workflow_dispatch:` entry, runs 6 sessions (3 checkpoints × 2 seeds each) each with 5,000
+   actions, uses the same baseline, and uploads all six run directories under one artifact
+   name.
+7. `tools/crawler/crash_baseline.json` is a committed file. It is a JSON object with a
+   `generated_at` UTC timestamp, a `generated_from` field listing the (seed, checkpoint, actions)
+   tuples used to produce it, and a `signatures` array of dicts (see Deliverables). Asserted by
+   `test_baseline_file_is_wellformed`.
+8. Coverage + baseline summary is written to `$GITHUB_STEP_SUMMARY` in a Markdown format when
+   the environment variable is set. Asserted by `test_ci_summary_written_when_env_var_set`
+   (sets `GITHUB_STEP_SUMMARY` to a tmp path, runs a short session, asserts the file contains
+   both a state-coverage line and a crash-signature-count line).
+9. Full suite green: pass count >= 10,435 (98 skips OK).
+
+**Risks / open questions.**
+
+The following decisions were locked during this planning phase. The implementer follows them;
+the reviewer can challenge them.
+
+- ~~Where do screenshots land in the run directory?~~ **LOCKED**: `<run_dir>/screenshots/<STATE_NAME>.png`,
+  filename is the exact `GameState.name` (SCREAMING_SNAKE_CASE). Rationale: `GameState` names
+  are the canonical identifier used by the coverage tracker and the softlock oracle already.
+  A separate subdirectory keeps the artifact organized and lets CI upload it selectively.
+- ~~When is the screenshot captured — inside `change_state` or after `game.step()`?~~
+  **LOCKED**: after `game.step()` returns, inside `step_once()`, gated by a first-visit check
+  against `coverage.states_reached` **before** `record_visit` runs. Rationale: `change_state`
+  fires mid-step during event handling; the render pass has not happened yet at that point, so
+  `game.screen` still shows the previous frame. Capturing after `game.step()` gets the freshly
+  rendered new-state view.
+- ~~Does the push job gate on crashes, or only the nightly?~~ **LOCKED**: **both** gate on the
+  same `tools/crawler/crash_baseline.json`. Rationale: Spec A's whole point is that new crashes
+  should not land on master. A shared baseline gives the short push job real teeth (any newly
+  introduced signature reachable within 2,000 actions fails immediately) while the nightly's
+  longer runs catch deeper reachability. The alternative (push job artifact-only, nightly
+  gates) leaves an obvious hole: a PR that introduces a crash reachable in 2,000 actions would
+  merge before the nightly caught it.
+- ~~Nightly seed count and action count.~~ **LOCKED**: 3 checkpoints × 2 seeds = 6 sessions,
+  5,000 actions each. Rationale: at ~30s per 2,000 actions extrapolates to ~75s per session,
+  ~7.5 min total wall-clock for the sweep, well under GitHub Actions' free-tier friendliness
+  bar. Two seeds per checkpoint gives one primary + one variance check; going to three would
+  double cost for marginal additional coverage. Deliberately fewer seeds than a fuzzing project
+  would use — Aurelia's action space is bounded by enumerated interactive widgets, so seed
+  diversity has diminishing returns compared to action-count depth.
+- ~~Push-triggered short-run seed.~~ **LOCKED**: fixed `--seed 42`. Rationale: determinism is
+  the crawler's core promise; every push should exercise the same trace so a regression's
+  identity is stable across runs. Nightly's varying seeds cover breadth; push covers
+  reproducibility.
+- ~~Crash baseline format and location.~~ **LOCKED**: `tools/crawler/crash_baseline.json`,
+  a JSON object with `generated_at` (UTC ISO-8601), `generated_from` (list of `[seed,
+  checkpoint, actions]` tuples), and `signatures` (sorted list of dicts with `signature`,
+  `exception_class`, `oracle`, `state_at_crash`, `first_seed`, `first_action_index`,
+  `occurrence_count`, and an optional `note` field). Rationale: parallels the mypy-baseline
+  pattern — fingerprint-based, sorted for stable diffs, human-readable so PR reviewers can
+  reason about baseline changes. The `note` field lets a fix-in-flight commit hand-annotate
+  "fixed by QF-8 subtask X" while the baseline entry is still present pending verification.
+- ~~Baseline regeneration: automatic or manual?~~ **LOCKED**: **manual**, mirroring
+  mypy-baseline's rule. The `--write-crash-baseline PATH` flag exists so a human (or a
+  targeted follow-up commit under QF-8) can regenerate after fixes land, but CI never
+  regenerates it. Rationale: automatic regeneration turns the baseline into a silent escape
+  hatch — new crashes get folded into the baseline instead of surfacing as failures.
+- ~~Coverage summary format for `$GITHUB_STEP_SUMMARY`.~~ **LOCKED**: Markdown block, one
+  header + a two-line body: `**State coverage**: reached/41` and `**Crash signatures**: N total
+  (M new vs. baseline)`. When M > 0, list the offending signatures with their state and
+  oracle for triage without downloading the artifact. Rationale: minimal, greppable, actionable
+  in the CI UI.
+- ~~Screenshot artifact retention.~~ **LOCKED**: 30 days. Rationale: recent artifacts are what
+  matters for triage; keeping every push's artifacts for 90 days (GitHub default) balloons
+  storage. Spec C's legibility review will consume the most recent nightly artifact, which
+  stays available for a month.
+- ~~Screenshot capture in the push job vs. artifact upload cost.~~ **LOCKED**: capture in both
+  jobs. Spec A explicitly puts screenshot capture under Section 3 Outputs (not deferred to
+  Spec C — only *review* is Spec C). Upload only from the nightly if artifact cost becomes an
+  issue; for now, upload both since 41 states × ~50 KB ≈ 2 MB per run is well within reason.
+- ~~Do we also fail on softlocks and invariant violations, or only on unhandled exceptions?~~
+  **LOCKED**: all four oracles' crashes flow through the same signature/dedup path per QF-6.
+  All four gate against baseline. Rationale: a softlock the player can't recover from is as
+  bad as a hard crash; the whole point of the baseline is "no new failures of any kind."
+
+Open question (reviewer judgment, not blocking implementation):
+- The nightly workflow lives in its own `crawl_nightly.yml` rather than a `schedule` trigger
+  added to `quality.yml`. Rationale for the split: `quality.yml` is push-and-PR triggered; a
+  cron entry there would run every gate on schedule, wasting runner minutes on lint/types/test
+  that already ran on the last push. Reviewer may prefer the consolidated single-workflow
+  approach if the wasted-minutes concern is minor for this project's cadence.
+
+**Plan.**
+
+Task 1 — Screenshot capture hook in `Crawler`.
+- Add `screenshot_dir: Optional[str] = None` to `CrawlerConfig` and the `Crawler.__init__`
+  signature; propagate through `CrawlerFixtures` if a test needs to override.
+- In `step_once`, capture the state name **before** `coverage.record_visit`. After `game.step`
+  returns (regardless of exception — a crashed state can still be worth screenshotting for
+  triage, but skip if `game.screen` is missing), if `screenshot_dir` is set and the state was
+  not previously reached, compute `<run_dir>/<screenshot_dir>/<STATE_NAME>.png` and call
+  `pygame.image.save(self.game.screen, path)`. Ensure the parent directory exists (create on
+  first save; do not `mkdir` every step).
+- Track the resolved run-dir at Crawler construction so screenshot paths are known before
+  `write_reports` is called (right now `write_reports` computes the timestamp on demand — hoist
+  it to `boot()` or lazy-init on first screenshot).
+- Files: `tools/crawler/crawler.py`, `tools/crawler/cli.py` (config plumbing).
+- Tests: `tests/test_crawler/test_screenshots.py` — `test_screenshot_capture_writes_one_png_per_reached_state`,
+  `test_screenshot_capture_is_first_visit_only`, `test_screenshot_dir_none_disables_capture`.
+- Risk: `game.screen` may not be a `pygame.Surface` under some crash paths. Guard with
+  `isinstance(self.game.screen, pygame.Surface)` and silently skip if not — the crash record
+  already carries the state name.
+
+Task 2 — Baseline load / compare / write helpers.
+- New module `tools/crawler/baseline.py` with:
+  - `load_baseline(path: str) -> set[str]` → returns the set of known signature strings.
+    Missing file → empty set (with a stderr note "baseline not found; treating all crashes as
+    new"). Malformed JSON → raise; do not silently pass.
+  - `compare(crashes: dict[str, CrashRecord], known: set[str]) -> list[CrashRecord]` → returns
+    the crashes whose signature is not in `known`, sorted by signature for stable output.
+  - `write_baseline(path: str, crashes: dict[str, CrashRecord], generated_from:
+    list[tuple[int, Optional[str], int]]) -> None` → writes the locked JSON schema, sorted
+    by signature, keys in fixed order, `generated_at` as UTC ISO-8601 without microseconds.
+- Files: `tools/crawler/baseline.py` (NEW), no changes to `crash_record.py`.
+- Tests: `tests/test_crawler/test_baseline.py` — `test_load_missing_file_returns_empty_set`,
+  `test_load_malformed_json_raises`, `test_compare_returns_only_novel_signatures`,
+  `test_compare_output_is_sorted`, `test_write_baseline_is_deterministic`,
+  `test_write_baseline_then_load_roundtrips`, `test_baseline_file_is_wellformed`.
+- Risk: baseline schema drift. If a future field is added, older baselines must still load. Use
+  `dict.get(field, default)` on read; write the full schema on write.
+
+Task 3 — CLI wiring + exit-code contract.
+- Add three flags to `tools/crawler/cli.py`: `--screenshot-dir`, `--crash-baseline`,
+  `--write-crash-baseline`. All three are optional; the compare and write flags are mutually
+  exclusive (argparse `add_mutually_exclusive_group` is not strictly required but a manual
+  post-parse check is fine).
+- In `tools/crawler/__main__.py`, after `crawler.run()` and `crawler.write_reports()`:
+  - If `--write-crash-baseline` is set, call `baseline.write_baseline(...)` and exit 0.
+  - Elif `--crash-baseline` is set, call `baseline.compare(...)`; if the returned list is
+    non-empty, print each signature to stderr with `state_at_crash` and `oracle`, then exit 1.
+    Otherwise exit 0.
+  - Else (no baseline flag), print the coverage summary and exit 0 as today.
+- Tests: extend `tests/test_crawler/test_cli.py` — `test_cli_accepts_screenshot_dir`,
+  `test_cli_accepts_crash_baseline`, `test_cli_accepts_write_crash_baseline`,
+  `test_cli_rejects_both_baseline_flags`.
+- Risk: mutual-exclusion check must trigger before any Game boot (so a misused CLI does not
+  spin up a 30-second run and then error). Validate in `main()` prologue.
+
+Task 4 — `$GITHUB_STEP_SUMMARY` emission.
+- In `main()`, when `GITHUB_STEP_SUMMARY` is set in `os.environ`, append a Markdown block:
+  ```
+  ## Crawler run (seed=42, actions=2000)
+  - **State coverage**: 27/41 states reached
+  - **Transitions fired**: 143
+  - **Crash signatures**: 12 total (0 new vs. baseline)
+  ```
+  When `M > 0`, add a bulleted list under a `### New crash signatures` subheader with each
+  novel signature's `state_at_crash`, `oracle`, `exception_class`, and 16-char signature. Do
+  not include the traceback (too long); artifact carries the full record.
+- Tests: `test_ci_summary_written_when_env_var_set`,
+  `test_ci_summary_lists_new_signatures_when_baseline_stale`.
+
+Task 5 — `crawl_short` job in `quality.yml`.
+- Add a new job after `test`:
+  ```yaml
+  crawl_short:
+    runs-on: ubuntu-latest
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+      - name: Install SDL runtime
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
+      - run: pip install -e ".[dev]"
+      - name: Run crawler (seeded, short)
+        run: python -m tools.crawler --seed 42 --actions 2000 --screenshot-dir screenshots --crash-baseline tools/crawler/crash_baseline.json --output-dir crawler_runs
+      - name: Upload crawler artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crawler-short-${{ github.run_id }}-seed42
+          path: crawler_runs/
+          retention-days: 30
+  ```
+- `if: always()` on the upload step so failed runs still upload the artifact (that IS the
+  triage material).
+- Files: `.github/workflows/quality.yml`.
+- Tests: `python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))"` must
+  succeed. Manual inspection of the diff for structural correctness (no live GitHub validation
+  since harness policy is local-only).
+
+Task 6 — `crawl_nightly.yml` workflow.
+- New file `.github/workflows/crawl_nightly.yml`:
+  - `on: schedule: [{cron: '0 8 * * *'}]` + `workflow_dispatch:`
+  - Matrix strategy: `checkpoint: [early, mid, late]` × `seed: [42, 137]` (`fail-fast: false`),
+    each running `python -m tools.crawler --seed ${{ matrix.seed }} --actions 5000
+    --checkpoint ${{ matrix.checkpoint }} --screenshot-dir screenshots --crash-baseline
+    tools/crawler/crash_baseline.json --output-dir crawler_runs`
+  - Each matrix job uploads `crawler-nightly-${{ github.run_id }}-${{ matrix.checkpoint }}-${{
+    matrix.seed }}` artifact with 30-day retention.
+- Files: `.github/workflows/crawl_nightly.yml` (NEW).
+- Tests: YAML validity + `python -c "import yaml; d=yaml.safe_load(open('.github/workflows/crawl_nightly.yml')); assert 'schedule' in d.get(True, {}) or 'schedule' in d.get('on', {}); assert 'workflow_dispatch' in d.get(True, {}) or 'workflow_dispatch' in d.get('on', {})"` (yaml.safe_load parses `on:` as boolean True on older PyYAML; the assertion handles both).
+- Risk: the `on` key parsing pitfall on older PyYAML (`on: schedule` becomes `True: schedule`).
+  Not a blocker for GitHub Actions, but the local YAML validation must handle both keyings.
+
+Task 7 — Generate + commit `tools/crawler/crash_baseline.json`.
+- Add a helper script or manual sequence: for each of the 6 nightly sessions (checkpoints
+  early/mid/late × seeds 42, 137), run
+  `python -m tools.crawler --seed <S> --actions 5000 --checkpoint <C> --output-dir
+  /tmp/qf7_baseline_gen`. Aggregate the six `crashes.json` files into one signature set (a
+  small Python one-liner is fine), then feed that set into a **single** consolidated call:
+  `python -m tools.crawler --seed 42 --actions 5000 --checkpoint mid
+  --write-crash-baseline tools/crawler/crash_baseline.json`. That single call captures the
+  crashes it observes; the aggregation step is just to confirm the write covers the union of
+  what all 6 sessions found.
+- Actually simpler: extend `--write-crash-baseline` to accept multiple prior `crashes.json`
+  paths as additional inputs (`--include-crashes-json PATH ...`) so one command can aggregate
+  all six sessions into one baseline. Implement this in Task 2 as `write_baseline(...,
+  include_from: list[str] = [])` and expose in CLI.
+- Hand-review the resulting file: for each entry, add a `note` field describing (in one line)
+  the failure shape ("Sell All arity mismatch", "combat init NoneAttribute", etc.) so the
+  baseline reads as a triage document, not just a fingerprint dump.
+- Voice-check: the `note` fields are dev-only, not player-facing. Writing Bible scanner is not
+  applicable to `tools/`. But no em-dashes in notes anyway (project-wide convention).
+- Commit the baseline file as its own commit: `QF-7: seed crash baseline from 6 nightly-shape
+  sessions (N distinct signatures)`. This commit's diff must touch only `crash_baseline.json`
+  to establish the "manual, isolated commit" precedent for future baseline changes.
+- Risk: the six sessions may surface crashes the crawler ITSELF cannot survive (i.e., an
+  exception propagates out of `game.step` and terminates the crawler rather than being
+  recorded). QF-6 Task 5 wraps `game.step` in try/except, so this should not happen; but if it
+  does, that's a crawler bug to fix before the baseline can be trusted. Report and fix
+  in-sprint if seen.
+
+Task 8 — Voice-check + lint + full suite + commit sequence.
+- No player-facing strings introduced (crawler CLI help text is dev-only, but check for
+  em-dashes anyway). Writing Bible scanner not applicable to `tools/` or `.github/`.
+- Format + lint scoped to touched files:
+  `python -m ruff format tools/crawler/ tests/test_crawler/`,
+  `python -m ruff check tools/crawler/ tests/test_crawler/`.
+- Type check: `python -m mypy tools/crawler/`.
+- Full suite: `python -m pytest -n auto -q`. Baseline is 10,435 pass, 98 skip.
+- Commit sequence (each references `QF-7`):
+  - `QF-7: add screenshot-on-first-visit hook to Crawler` (Task 1)
+  - `QF-7: add crash-baseline load/compare/write helpers` (Task 2)
+  - `QF-7: wire CLI flags for screenshots and baseline` (Task 3)
+  - `QF-7: emit coverage+baseline summary to GITHUB_STEP_SUMMARY` (Task 4)
+  - `QF-7: add crawl_short job to quality.yml` (Task 5)
+  - `QF-7: add crawl_nightly.yml scheduled workflow` (Task 6)
+  - `QF-7: seed crash_baseline.json from 6-session sweep` (Task 7 — isolated commit)
+
+**Cross-sprint reactions to author.** none (foundational CI/tooling; no player-facing surface,
+no dialogue, no NPCs, no crew impact). The direct downstream consumers are Spec C's legibility
+review (will read the screenshot gallery from the nightly artifact) and QF-8 (will consume
+`crash_baseline.json` sorted by state/oracle to prioritize burndown). Those are data
+dependencies, not narrative reactions.
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 16:13 — harness: plan phase starting
+- 2026-08-23 20:15 — planning complete; verified both context docs (Spec A section 3 and
+  quality.yml from QF-1) exist; audited QF-6 crawler surfaces (`_instrument_state_manager`,
+  `step_once`, `write_reports`, `report_dict`) as extension points; expanded touch zones from
+  2 broad entries to 10 precise paths; expanded acceptance criteria from 4 vague to 9
+  mechanically verifiable (each names its test); locked 11 open decisions (chief: both push
+  and nightly gate on the same checked-in `crash_baseline.json`; baseline regenerates only via
+  manual `--write-crash-baseline` commits, never automatically); folded in 3 polish items
+  (`--write-crash-baseline` flag, `$GITHUB_STEP_SUMMARY` emission, `note` field for baseline
+  entries to double as a triage document); no new sprints proposed; cross-sprint reactions:
+  none (foundational tooling). PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 16:13
+- Completed: 2026-08-23 20:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (to be filled by commit step)
+- New_sprints_proposed: none
+- Polish_items_folded_in: --write-crash-baseline flag for manual baseline regen; GITHUB_STEP_SUMMARY markdown emission with new-signature callouts; per-entry `note` field on baseline entries so the file reads as a triage doc rather than a fingerprint dump; 30-day artifact retention (below the 90-day default); explicit `if: always()` on artifact upload so failed runs still surface their artifact
+- Decisions_locked: 11
+- Notes: Both context docs verified present. Sprint core scope (crawl_short + screenshots + nightly sweep + coverage-in-summary) matches Spec A Section 3 verbatim. Key expansion: introduced a checked-in `crash_baseline.json` (mypy-baseline pattern) as the mechanism for AC 3 ("newly introduced crash fails the job"), because without a baseline either every crash fails or none do — Spec A projected "hundreds" of crashes on first real run. Both push and nightly jobs gate on the same baseline so a PR can't slip a new reachable crash to master before the nightly catches it. Task 7 seeds the baseline in-sprint via a 6-session sweep so QF-8 has a concrete file to prioritize against.
 ### QF-8 — Population A burndown outside game.py
 
 **Status**: blocked
