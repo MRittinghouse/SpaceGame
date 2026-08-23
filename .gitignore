@@ -73,3 +73,7 @@ ralph/.running
 ralph/.write_probe
 ralph/.agency_probe
 STOP
+
+# Crawler runtime output (QF-6)
+crawler_runs/
+tools/crawler/generated_stubs/
