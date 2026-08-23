@@ -5116,7 +5116,7 @@ tests/test_compliance/test_import_boundaries.py     (NEW)
   lines). No cross-sprint reactions (foundational; no player-facing surface).
 ### QF-5 — Extract `Game.step()` from `Game.run()`
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 3
 **Size**: M | **Effort**: 2-3 days
 **Depends on**: none | **Blocks**: QF-6
@@ -5128,7 +5128,7 @@ and synthetic events. This is the ONLY place Spec A touches `game.py`.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 3)
-- `spacegame/engine/game.py` lines 6243-6400 (the run loop and its event cascade)
+- `spacegame/engine/game.py` lines 6243-6528 (the run loop and its event cascade)
 - `spacegame/engine/state_manager.py`
 
 **Touch zones.**
@@ -5138,17 +5138,30 @@ tests/test_engine/test_game.py
 ```
 
 **Deliverables.**
-- `Game.step(dt: float, events: list[pygame.event.Event]) -> None` containing the current loop body.
+- `Game.step(dt: float, events: list[pygame.event.Event]) -> None` containing the current loop body
+  verbatim (lines 6262-6528 lifted as-is; no cascade restructuring).
 - `Game.run()` reduced to the timing loop plus a `step()` call. Behaviour identical.
-- A seeding entry point that makes a session reproducible (global `random` plus numpy; 50 modules use
-  `random`, 2 use numpy random).
-- Tests driving `step()` directly with a fixed dt and synthetic events.
+- `Game.seed_rngs(seed: int) -> None` that seeds `random.seed(seed)` and `numpy.random.seed(seed)`.
+  Not called from `initialize_new_game()` — callers (crawler, tests) invoke it explicitly, so
+  live-play behaviour is unchanged.
+- Tests driving `step()` directly with a fixed dt and synthetic events, including a QUIT-event exit,
+  a headless smoke frame, and a determinism assertion using seeded RNG samples.
 
 **Acceptance criteria.**
-1. `run()` and `step()` produce identical behaviour; no gameplay change.
-2. `step()` is callable headless with a fixed dt and no wall-clock dependency.
-3. Two runs with the same seed and same synthetic event sequence produce identical state.
-4. Full suite green: 10,370 passed.
+1. `Game.step(dt: float, events: list[pygame.event.Event]) -> None` exists on `Game`; `Game.run()`'s
+   body is exactly `while self.running: dt = self.clock.tick(FPS_TARGET) / 1000.0; events =
+   pygame.event.get(); self.step(dt, events)` plus the pre-loop logger call and post-loop `quit()`.
+2. Calling `game.step(1/60.0, [])` on an initialized `Game` (with `initialize_states()` invoked)
+   completes without exception under `SDL_VIDEODRIVER=dummy` and `SDL_AUDIODRIVER=dummy`.
+3. Calling `game.step(1/60.0, [pygame.event.Event(pygame.QUIT)])` sets `game.running = False`.
+4. `Game.seed_rngs(seed)` makes `random.random()` and `np.random.random()` reproducible across two
+   independent `Game()` instances seeded with the same value.
+5. Two `Game()` instances, each seeded with `seed_rngs(42)`, `initialize_states()`, driven with an
+   identical synthetic event sequence of N `step()` calls, agree on `state_manager.current_state`
+   and on the next `random.random()` sample drawn after the final step.
+6. Full pytest suite pass count `>= 10370` (the pre-phase baseline). No new failures introduced.
+7. Existing tests in `tests/test_engine/test_game.py` continue to pass with no modification (parity
+   check for the extraction).
 
 **Risks / open questions.**
 - `game.py` is 6,549 lines and the event cascade in the loop has ~10 conditional branches. This is a
@@ -5157,9 +5170,157 @@ tests/test_engine/test_game.py
 - If the extraction cannot be done without behaviour change, mark `blocked` and explain. Do not
   improvise a partial refactor.
 
+**Locked decisions (planning phase, 2026-08-23).**
+1. **`pygame.event.get()` and `dt` calculation stay in `run()`, not `step()`.** Rationale: the sprint
+   goal is a caller that can supply synthetic events and a fixed timestep; if event-polling and
+   `clock.tick()` are inside `step()`, the caller cannot substitute them. Callers pass both in.
+2. **`pygame.display.flip()` stays inside `step()`.** Rationale: it is part of the loop body and is
+   a no-op under `SDL_VIDEODRIVER=dummy`. Removing it would count as behaviour change under the
+   pure-extraction rule.
+3. **Debug FPS caption update stays inside `step()`.** Rationale: same as #2 — pure extraction.
+   `pygame.time.get_ticks()` returns a monotonic value even under dummy driver; harmless in tests.
+4. **QUIT handling: `step()` sets `self.running = False` and returns early.** Rationale: preserves
+   the `break` semantics of the original loop. `run()`'s while-loop naturally exits on the next
+   iteration.
+5. **Seeding: `Game.seed_rngs(seed: int)` is a new public method; NOT called from
+   `initialize_new_game()`.** Rationale: calling it during normal initialization would change live
+   game behaviour (seeded RNG for market noise, ambient dialogue, etc. — currently unseeded). The
+   crawler and tests call it explicitly; live play is untouched.
+6. **Determinism verification uses observable surrogates, not full-state equality.** Rationale:
+   `Game`'s state graph is enormous. Compare `state_manager.current_state` plus a
+   `random.random()` sample drawn after the final step — this is sufficient to catch RNG divergence
+   without brittle deep-equality checks.
+7. **Only global `random` and `numpy.random` are seeded.** Rationale: audit shows
+   `ship_composite.py` is the only numpy-random consumer and it uses `np.random.default_rng(seed)`
+   with an explicit local seed (independent of global state). `random.seed()` covers 46 modules.
+   The market.py `random.seed(...)` / `random.seed()` reset-to-entropy pattern at lines 298 and 307
+   perturbs the global state — noted but out of scope; QF-6 or QF-8 addresses it if needed.
+
+**Plan.**
+
+Task 1 — Failing test scaffolding in `tests/test_engine/test_game.py`.
+- Add `test_game_step_exists_with_signature`: introspect `Game.step` for `(self, dt, events)` params
+  and `None` return annotation.
+- Add `test_game_step_headless_smoke`: initialize a `Game`, call `initialize_states()`, then
+  `game.step(1/60.0, [])` — must return without exception. Requires `SDL_VIDEODRIVER=dummy` and
+  `SDL_AUDIODRIVER=dummy` set in the test module (see `tests/test_ui_layout/conftest.py` for the
+  established pattern; add module-level `os.environ.setdefault(...)` if `tests/test_engine/` lacks
+  it).
+- Add `test_game_step_quit_event_stops_run`: instantiate `Game`, `initialize_states()`,
+  `game.running = True`, then `game.step(1/60.0, [pygame.event.Event(pygame.QUIT)])` — assert
+  `game.running is False`.
+- Test surface: `tests/test_engine/test_game.py`.
+- Gotcha: `Game.__init__` calls `pygame.init()`, `pygame.display.set_mode()`, and instantiates the
+  UI manager and audio. All of that must succeed under dummy drivers; the existing three tests
+  already prove it does.
+
+Task 2 — Failing tests for seeding entry point.
+- Add `test_seed_rngs_reproduces_random`: two fresh `Game()` instances, each `seed_rngs(42)`,
+  compare `random.random()` outputs — must be equal. Then compare `np.random.random()` — must be
+  equal.
+- Add `test_seed_rngs_signature`: introspect signature `(self, seed: int) -> None`.
+- Test surface: `tests/test_engine/test_game.py`.
+- Gotcha: seeding numpy globally requires `import numpy as np` in `game.py`; verify no import cycle
+  (numpy is already a project dep via `spacegame/engine/ship_composite.py`).
+
+Task 3 — Failing determinism test driving `step()` sequences.
+- Add `test_step_determinism_with_seeded_events`: build two `Game()` instances, each
+  `initialize_states()`, `seed_rngs(42)`. Construct a fixed synthetic event sequence (empty events
+  for N=5 frames, then one benign `KEYDOWN` for `K_ESCAPE` from `MAIN_MENU` — chosen because it
+  shouldn't crash from any state). Run `step()` N+1 times on each. Assert:
+  - `game1.state_manager.current_state == game2.state_manager.current_state`
+  - The next `random.random()` sample drawn after the sequence matches across instances.
+- Test surface: `tests/test_engine/test_game.py`.
+- Gotcha: some event handlers require a `Player`; keep the sequence in `MAIN_MENU` where no player
+  is required. `_handle_state_transitions` guards on `self.player` at several sites — harmless when
+  it's `None`.
+
+Task 4 — Implement `Game.step(dt, events)`.
+- Add `def step(self, dt: float, events: list[pygame.event.Event]) -> None:` to `Game`. Move
+  everything from the current `run()` body starting at `self.input_handler.handle_events(events)`
+  (line 6262) through the debug FPS caption update (line 6528) into `step()` verbatim. Change the
+  `break` at line 6267 to `return` (QUIT path).
+- Do NOT touch the pause/save-load/settings/event-notification cascade, the `_handle_*` calls, the
+  render sequence, or any conditional branch. Move code, change nothing else.
+- Test surface: parity check — all existing pytest suites must pass; the three new tests must go
+  green.
+- Gotcha: the assignment `self.running = False; break` becomes `self.running = False; return`; the
+  outer `run()` while-loop then exits on its next condition check.
+
+Task 5 — Rewrite `Game.run()` as the timing shell.
+- Replace `run()` body with:
+  ```
+  logger.info("Starting main game loop...")
+  self.running = True
+  while self.running:
+      dt = self.clock.tick(FPS_TARGET) / 1000.0
+      events = pygame.event.get()
+      self.step(dt, events)
+  logger.info("Game loop ended")
+  self.quit()
+  ```
+- Test surface: existing `test_game_initialization` still passes (Game constructs, `running is
+  False`); manual smoke: `python run.py` boots to main menu, mouse over a button reacts.
+- Gotcha: don't fold the debug FPS caption update into `run()` — it's in `step()` per locked
+  decision #3.
+
+Task 6 — Implement `Game.seed_rngs(seed)`.
+- Add `import random` and `import numpy as np` at the top of `game.py` (or module-local; module-top
+  is standard).
+- Add `def seed_rngs(self, seed: int) -> None:` with a one-line Google-style docstring, seeding
+  both `random.seed(seed)` and `np.random.seed(seed)`.
+- Test surface: `test_seed_rngs_reproduces_random`, `test_seed_rngs_signature`.
+
+Task 7 — Full-suite validation and behaviour parity.
+- Run `pytest -n auto -q` from repo root. Confirm pass count `>= 10370` (baseline). Any new failure
+  is a regression — fix or block.
+- Run `ruff format spacegame/engine/game.py tests/test_engine/test_game.py` and
+  `ruff check spacegame/engine/game.py tests/test_engine/test_game.py` (scoped, per AGENT_GUIDE
+  line 110).
+- Run `mypy spacegame/engine/game.py` — expect no new errors relative to the 106 already baselined.
+  Do NOT attempt to reduce that count in this sprint (Spec B).
+- Test surface: full suite.
+- Gotcha: `mypy-baseline` is not yet in place (QF-1/QF-2 blocked). Compare against the current
+  `mypy spacegame/engine/game.py` error count before and after; must be equal.
+
+Task 8 — Commit hygiene and hand-off.
+- Commit sequence, each referencing `QF-5`:
+  - `QF-5: add failing tests for Game.step and Game.seed_rngs`
+  - `QF-5: extract Game.step from Game.run`
+  - `QF-5: add Game.seed_rngs seeding entry point`
+- Update sprint Status to `review`, append Activity log entry, do NOT push.
+
+**Cross-sprint reactions to author.** none (foundational engine refactor, no player-facing surface).
+The direct downstream consumer is QF-6, which builds the crawler on top of `step()` and
+`seed_rngs()`; that's dependency wiring, not a reaction.
+
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 14:54 — harness: plan phase starting
+- 2026-08-23 15:20 — planning complete; 7 decisions locked, 8 implementation tasks defined,
+  acceptance criteria tightened from 4 vague to 7 mechanically verifiable, no new sprints
+  proposed, no polish items applicable (foundational refactor). PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 14:54
+- Completed: 2026-08-23 15:20
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (recorded post-commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (foundational engine refactor; no player-facing surface, no
+  narrative, no save/load, no tutorial, no achievements applicable)
+- Decisions_locked: 7
+- Notes: All three context docs verified present (spec, game.py, state_manager.py). Sprint scope
+  is a pure code extraction of ~270 lines from `Game.run()` into `Game.step(dt, events)` plus a
+  new `Game.seed_rngs(seed)` entry point. Locked decisions clarify signature, what stays in run
+  vs. step, quit-flag handling, and that seeding is opt-in (not called during
+  `initialize_new_game`) to preserve the "no gameplay change" acceptance criterion. Determinism
+  criterion uses observable surrogates (current_state + next random sample) rather than brittle
+  full-state equality. Acknowledged out-of-scope: `market.py:298,307`
+  `random.seed`/`random.seed()` pattern perturbs global state — noted for QF-6 or QF-8, not this
+  sprint. Cross-sprint reactions: none (no player-facing content).
 ### QF-6 — Play-harness crawler core
 
 **Status**: todo
