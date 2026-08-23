@@ -83,20 +83,20 @@ def write_baseline(
             continue
         with p.open("r", encoding="utf-8") as f:
             extra_data = json.load(f)
-        for entry in extra_data.get("crashes", []):
-            sig = entry["signature"]
+        for crash_entry in extra_data.get("crashes", []):
+            sig = crash_entry["signature"]
             if sig not in merged:
                 merged[sig] = CrashRecord(
                     signature=sig,
-                    exception_class=entry.get("exception_class", ""),
-                    first_seed=entry.get("first_seed", 0),
-                    first_action_index=entry.get("first_action_index", 0),
-                    occurrence_count=entry.get("occurrence_count", 1),
+                    exception_class=crash_entry.get("exception_class", ""),
+                    first_seed=crash_entry.get("first_seed", 0),
+                    first_action_index=crash_entry.get("first_action_index", 0),
+                    occurrence_count=crash_entry.get("occurrence_count", 1),
                     action_trace=[],
-                    full_traceback=entry.get("full_traceback", ""),
-                    state_at_crash=entry.get("state_at_crash", ""),
-                    oracle=entry.get("oracle", "exception"),
-                    extra=entry.get("extra", {}),
+                    full_traceback=crash_entry.get("full_traceback", ""),
+                    state_at_crash=crash_entry.get("state_at_crash", ""),
+                    oracle=crash_entry.get("oracle", "exception"),
+                    extra=crash_entry.get("extra", {}),
                 )
 
     # Produce entries sorted by signature for stable diffs.
