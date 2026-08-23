@@ -5223,7 +5223,7 @@ surface).
 
 ### QF-3 — Ralph quality-gate integration
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-2 | **Blocks**: none
@@ -5233,32 +5233,228 @@ of commit volume and it is ungated for types and lint. Give ralph the same gate 
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 2)
-- `ralph/harness.py` (particularly the pytest baseline capture and `_mark_terminal_outcome`)
+- `ralph/harness.py` (particularly the pytest baseline capture at `_capture_test_baseline`, the
+  `execute_sprint` phase loop, and `_mark_terminal_outcome`)
+- `ralph/agents.py` (understand `run_phase`'s sentinel cross-validation pattern — the gate is a
+  peer safety net that lives at a different layer, so the two must not step on each other)
 - `ralph/README.md`
+- `.pre-commit-config.yaml` (mirror this gate's exact command shape — scope, args, filter)
+- `.github/workflows/quality.yml` (CI parity reference: `lint` and `types` jobs)
+- `tests/test_ralph/test_harness.py` (follow the `isolated_roadmap` fixture pattern and existing
+  `TestMarkTerminalOutcome` shape)
 
 **Touch zones.**
 ```
 ralph/harness.py
-tests/test_ralph/
+tests/test_ralph/test_harness.py
 ```
 
 **Deliverables.**
-- Ralph's verify path runs `ruff check`, `ruff format --check`, and `mypy` against baseline in
-  addition to pytest.
-- A type or lint regression marks the sprint `blocked` through the existing `Outcome` enum and
-  `_mark_terminal_outcome`, exactly as a test failure does.
-- Failure reason recorded in the sprint's Activity log with the offending error text.
-- Tests in `tests/test_ralph/` covering: clean run passes, new type error blocks, new lint error blocks.
+- Ralph's post-PHASE_OK verify path runs `python -m ruff check spacegame/`,
+  `python -m ruff format --check spacegame/ tests/`, and
+  `python -m mypy spacegame/ | (":  note:" filter) | python -m mypy_baseline filter`
+  in addition to the existing pytest baseline capture, matching the pre-commit hook byte-for-byte.
+- A type or lint regression during any phase (plan/implement/review) overrides the agent's
+  `PHASE_OK` to `blocked` through the existing `Outcome` enum and `_mark_terminal_outcome`,
+  exactly as a test failure does.
+- Failure reason recorded in the sprint's Activity log with the offending gate name and the first
+  ~500 chars of the failing output (bounded so the activity log stays readable).
+- Tests in `tests/test_ralph/test_harness.py` covering: clean gate passes; new lint error blocks;
+  new format violation blocks; new mypy error blocks; gate does NOT run when the phase already
+  returned non-OK (no wasted subprocess time, no double-blocking); integration point in
+  `execute_sprint` overrides `PHASE_OK` to `BLOCKED` after plan/implement/review when the gate
+  fails, and happy-path stays happy when all three gates are clean.
 
 **Acceptance criteria.**
-1. A sprint whose implementation introduces a type error ends `blocked`, not `review`.
-2. The Activity log entry names the specific error.
-3. Existing ralph tests still pass.
-4. Full suite green.
+1. A sprint whose implementation introduces a mypy error not in the baseline ends `blocked`, not
+   `review`, not `done` (test-verified with mocked subprocess).
+2. A sprint whose implementation introduces a `ruff check spacegame/` error ends `blocked`.
+3. A sprint whose implementation introduces a `ruff format --check spacegame/ tests/` violation
+   ends `blocked`.
+4. The Activity log entry for a gate-triggered block names the failing gate (`ruff`,
+   `ruff-format`, or `mypy`) and includes the first ~500 chars of the offending output.
+5. When all three gates pass, `execute_sprint` behaves exactly as it does today — plan → implement
+   → review → `done` happy path is unchanged.
+6. Gates are NOT invoked when a phase's own outcome is already non-OK (no double-blocking, no
+   wasted subprocess time).
+7. Gates are skipped when `DRY_RUN` is true (parity with `_capture_test_baseline`'s DRY_RUN
+   handling).
+8. Existing ralph tests still pass.
+9. Full suite green: pass count >= 10,489 (pre-phase baseline), 98 skips fine.
+
+**Plan.**
+
+*Sequenced tasks for the implementer:*
+
+1. **Add `_run_quality_gates()` helper in `ralph/harness.py`.** Signature:
+   `def _run_quality_gates() -> Optional[tuple[str, str]]` — returns `None` on all-clean or
+   `(gate_name, error_text)` on the first regression. Runs three subprocesses in order, short-
+   circuiting on the first failure:
+   - a. `[sys.executable, "-m", "ruff", "check", "spacegame/"]` (matches `.pre-commit-config.yaml`
+     scope: `spacegame/` only, per QF-1 Decision 1 — `tests/` has ~874 pre-existing lint findings
+     out of scope).
+   - b. `[sys.executable, "-m", "ruff", "format", "--check", "spacegame/", "tests/"]` (matches
+     pre-commit and CI `lint` job).
+   - c. Mypy pipeline (no `shell=True`; see D6 in Decisions locked):
+     1. `subprocess.run([sys.executable, "-m", "mypy", "spacegame/"], capture_output=True, ...)`.
+     2. Filter mypy stdout in Python: drop any line containing `": note:"` (mirrors the `grep -v`
+        in `.pre-commit-config.yaml` and `.github/workflows/quality.yml`).
+     3. `subprocess.run([sys.executable, "-m", "mypy_baseline", "filter"], input=filtered,
+        capture_output=True, ...)`. Non-zero exit ⇒ mypy regression.
+   Each subprocess uses `cwd=str(PROJECT_ROOT)`, `capture_output=True`, `text=True`,
+   `timeout=300`, `encoding="utf-8"`, `errors="replace"`. On any subprocess exception
+   (`FileNotFoundError`, `TimeoutExpired`) the helper returns
+   `(gate_name, "<exception class>: <message>")` so a broken tool install surfaces as a gate
+   failure rather than crashing the harness. Truncate captured `stdout+stderr` to
+   `_GATE_ERROR_MAX_CHARS = 500` (module constant) for the returned error text.
+   *Test surface (`TestRunQualityGates`, 6 unit tests):* monkeypatch `subprocess.run` to return
+   controlled `CompletedProcess` objects for each stage: (a) all pass → `None`; (b) ruff fails →
+   `("ruff", ...)`; (c) ruff-format fails → `("ruff-format", ...)`; (d) mypy final stage exits
+   non-zero → `("mypy", ...)`; (e) 800-char stderr truncated to 500 in returned tuple; (f) mypy
+   subprocess raises `FileNotFoundError` → `("mypy", "FileNotFoundError: ...")` (no crash).
+
+2. **Wire the gate into `execute_sprint` after each PHASE_OK.** Three insertion points:
+   - a. After `plan_result.outcome == Outcome.OK` — BEFORE the `should_stop()` check that follows
+     it (so a gate failure produced by the plan phase's commits blocks the sprint even if a stop
+     was requested).
+   - b. After `impl_result.outcome == Outcome.OK` — BEFORE the `should_stop()` check.
+   - c. After `review_result.outcome == Outcome.OK` — this MUST be the FIRST statement inside the
+     `if review_result.outcome == Outcome.OK:` branch, BEFORE `update_status(STATUS_DONE)` and
+     BEFORE the `harness: review passed, marking done` activity-log write. Otherwise a
+     gate-failed sprint transiently shows `done` on disk.
+   Pattern (replicated at all three sites):
+   ```python
+   if not DRY_RUN:
+       gate = _run_quality_gates()
+       if gate is not None:
+           gate_name, err = gate
+           reason = f"quality-gate regression ({gate_name}): {err}"
+           _mark_terminal_outcome(sprint_id, "<phase>", Outcome.BLOCKED, reason)
+           return Outcome.BLOCKED
+   ```
+   The `<phase>` string differs per site (`"plan"`, `"implement"`, `"review"`) so the activity-log
+   line names the phase where the regression was introduced.
+   *Test surface (`TestExecuteSprintQualityGate`, 5 integration tests):* monkeypatch
+   `agents.run_phase` to synthesize `PhaseResult(Outcome.OK, ...)` and monkeypatch
+   `_run_quality_gates` to return `("mypy", "spacegame/x.py:12: error: incompatible type")`.
+   Cases: (a) plan-phase gate failure → `BLOCKED`, status is `blocked`, log names phase=plan +
+   gate=mypy + error text; (b) implement-phase gate failure → same after plan clean;
+   (c) review-phase gate failure → `BLOCKED`, status is `blocked`, `STATUS_DONE` is NOT written,
+   log names phase=review; (d) all three phases clean and gate clean at each site → happy path,
+   status is `done`, `_run_quality_gates` was called exactly 3 times; (e) plan phase returns
+   `BLOCKED` (non-OK) → gate spy is NOT called (test uses a spy that raises on invocation).
+
+3. **DRY_RUN guard at the call site, not inside the helper.** Keeps `_run_quality_gates` pure and
+   trivially unit-testable. Parity with `_capture_test_baseline`'s DRY_RUN handling in `main()`.
+
+4. **Run and commit.** `python -m pytest tests/test_ralph/ -v`, then `python -m pytest -n auto -q`
+   for the full suite. Confirm pass count >= 10,489 (baseline) with 98 skips. Format only the
+   touched files: `ruff format ralph/harness.py tests/test_ralph/test_harness.py`. `ruff check
+   spacegame/` (should be clean — we did not touch it). Commit with sprint ID `QF-3` in the
+   message and Co-Authored-By trailer.
+
+*Test surface summary.*
+- `tests/test_ralph/test_harness.py`: two new test classes — `TestRunQualityGates` (6 unit tests
+  for the helper in isolation) and `TestExecuteSprintQualityGate` (5 integration tests wiring the
+  helper into `execute_sprint`). Total delta: +11 tests. Existing tests unchanged.
+- No production-code test surface outside `ralph/`.
+
+*Risks and gotchas.*
+- **Windows pipe portability.** The CLAUDE.md and pre-commit-hook incantation
+  `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` relies on
+  bash pipes and the `grep` binary. Neither works reliably from `subprocess.run(..., shell=True)`
+  on Windows (project's primary dev + ship platform). Solution: chain the two subprocesses in
+  Python and do the ": note:" filter with `str.splitlines()` in between (see task 1c).
+- **mypy cache warmup.** Cold mypy is ~14s per Spec Section 1; warm is sub-second. The harness
+  runs in a single working tree so mypy's cache persists across phases within one harness run.
+  Only the first gate invocation per harness run pays the cold cost. Acceptable — phases are
+  minutes long each.
+- **Ordering at review.** The current review-OK path calls `update_status(STATUS_DONE)` and then
+  `append_activity_log("harness: review passed, marking done")`. The gate check MUST run BEFORE
+  either write. Insert the gate as the FIRST statement inside the `if review_result.outcome ==
+  Outcome.OK:` branch. Otherwise a gate-failed sprint transiently reports `done` on disk between
+  the write and the block override — a race that a concurrent harness read or a mid-flight
+  interrupt would expose.
+- **Activity-log truncation.** Full mypy error text can span dozens of lines. Cap at 500 chars in
+  the returned tuple so the activity-log line stays readable; the phase's log file (`ralph/logs/
+  <sprint>/...`) will already have the agent's own full mypy output for postmortem.
+- **Sentinel cross-validation interaction.** `agents.run_phase` already overrides `PHASE_OK` to
+  `Outcome.ERROR` when no commits reference the sprint ID. That override happens INSIDE
+  `run_phase` and returns before `execute_sprint` observes `Outcome.OK`, so the quality gate never
+  fires for the "agent claimed OK without committing" case. The two safety nets are orthogonal
+  and cannot race.
+- **`_capture_test_baseline` is not the same thing.** That helper captures a pytest number as an
+  informational input to agents' prompts; it is not a harness-level pytest gate. QF-3 does not
+  add such a gate — pytest stays deliberately outside the pre-commit-hook parity boundary per
+  Spec Section 2 ("70 seconds per commit is how hooks get bypassed").
+- **DRY_RUN mocking.** Tests should never let real ruff/mypy run inside the pytest process (that
+  would recursively spawn pytest and slow the suite by minutes). Always monkeypatch
+  `subprocess.run` at the module level (`ralph.harness.subprocess.run`) so no external tools are
+  actually invoked during tests.
+
+*Decisions locked during planning.*
+- **D1: Gate runs after every PHASE_OK (plan, implement, review), not only implement.** Rationale:
+  plan phase writes to ROADMAP.md, but planners occasionally add scaffolding files (helper module
+  stubs, empty test files) that could carry type or lint drift. Consistency > cleverness.
+  Warm-mypy cost per invocation is sub-second. If profiling ever shows this is expensive, a
+  follow-up can gate on "has-python-diff since `pre_phase_head`".
+- **D2: Regression is defined vs the `mypy-baseline.txt` file, not vs `pre_phase_head`.**
+  Rationale: this is exactly the human pre-commit behavior — the entire QF-2 ratchet concept is
+  "new errors vs baseline". Matches CI `types` job byte-for-byte. Comparing vs `pre_phase_head`
+  would miss regressions inherited across phases within one sprint.
+- **D3: Regression outcome is `Outcome.BLOCKED`, not `Outcome.ERROR`.** Rationale: goal wording
+  ("marks the sprint `blocked`... exactly as a test failure does") is explicit. BLOCKED demands
+  human review, which is the correct response to a regression the agent didn't self-catch.
+  `Outcome.ERROR` would go through the same `_mark_terminal_outcome` path (except INFRA_ERROR,
+  which resets to todo — wrong here). BLOCKED is semantically cleaner.
+- **D4: Gate uses full-project scope (`spacegame/` for ruff/mypy; `spacegame/ tests/` for
+  ruff-format), not changed-files-only.** Rationale: matches pre-commit and CI exactly. Warm mypy
+  is sub-second on this project; the "just changed files" optimization is a false economy that
+  would also miss cross-file regressions (e.g., a signature change in module A that breaks a
+  caller in module B mypy-wise). No premature optimization.
+- **D5: pytest is NOT added to the gate.** Explicit in Spec Section 2: "pytest is deliberately NOT
+  in the hook. 70 seconds per commit is how hooks get bypassed." The existing
+  `_capture_test_baseline` handles the pytest surface differently — as an informational input to
+  the agent's prompt, not as a harness-level gate. QF-3 achieves parity with the pre-commit hook,
+  not with a hypothetical "run pytest again after every phase".
+- **D6: mypy pipe is chained via Python subprocess wiring, not `shell=True`.** Rationale: Windows
+  portability. `grep` isn't native on Windows; PowerShell/cmd shell syntax differs from bash. The
+  harness must run on Windows (project ships on Windows and its primary dev machine is Windows).
+  Filter `": note:"` lines in Python between the two subprocesses.
+- **D7: Gate is skipped when `DRY_RUN` is true.** Parity with `_capture_test_baseline`'s DRY_RUN
+  handling (guarded at the caller). DRY_RUN is for smoke-testing the harness's control flow, not
+  for running real quality checks. Guard at the call site in `execute_sprint`, not inside
+  `_run_quality_gates` — keeps the helper pure and unit-testable.
+
+*Cross-sprint reactions to author.* None (foundational harness infrastructure, no player-facing
+surface).
 
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
+- 2026-08-23 17:34 — harness: plan phase starting
+- 2026-08-23 17:40 — planning complete; verified all 3 context docs exist and added 4 references
+  (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
+  `tests/test_ralph/test_harness.py`) so implementer mirrors exact command shapes and existing
+  test conventions; locked 7 decisions (gate scope, timing, pipe portability, DRY_RUN behavior,
+  BLOCKED-vs-ERROR, baseline-vs-HEAD, always-run-vs-changed-files); no scope expansion needed;
+  no new sprints proposed. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 17:34
+- Completed: 2026-08-23 17:40
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: gate-skipped-on-non-OK-phase test (prevents double-blocking); happy-path
+  guard test (asserts gate called exactly 3x on plan→implement→review clean); DRY_RUN skip parity
+  with `_capture_test_baseline`; activity-log truncation cap of 500 chars for readability;
+  FileNotFoundError surfaced as gate failure (broken tool install ≠ crash).
+- Decisions_locked: 7
+- Notes: Foundational harness sprint. No cross-sprint reactions. Added 4 reference context docs so
+  the implementer mirrors exact pre-commit / CI command shapes and existing `TestMarkTerminalOutcome`
+  test conventions. Test count delta is +11 (10,489 → 10,500 expected).
 ### QF-4 — Import-boundary guard
 
 **Status**: done
