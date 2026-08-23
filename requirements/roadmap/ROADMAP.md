@@ -5432,8 +5432,8 @@ surface).
 **Activity log.**
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 17:34 — harness: plan phase starting
-- 2026-08-23 17:40 — planning complete; verified all 3 context docs exist and added 4 references
-  (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
+- 2026-08-23 17:40 — planning complete (commit 6efbdca); verified all 3 context docs exist and
+  added 4 references (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
   `tests/test_ralph/test_harness.py`) so implementer mirrors exact command shapes and existing
   test conventions; locked 7 decisions (gate scope, timing, pipe portability, DRY_RUN behavior,
   BLOCKED-vs-ERROR, baseline-vs-HEAD, always-run-vs-changed-files); no scope expansion needed;
@@ -5445,7 +5445,7 @@ surface).
 - Started: 2026-08-23 17:34
 - Completed: 2026-08-23 17:40
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 6efbdca
 - New_sprints_proposed: none
 - Polish_items_folded_in: gate-skipped-on-non-OK-phase test (prevents double-blocking); happy-path
   guard test (asserts gate called exactly 3x on plan→implement→review clean); DRY_RUN skip parity
