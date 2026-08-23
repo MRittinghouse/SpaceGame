@@ -981,8 +981,7 @@ class TestTierAwareFailureRefund:
         _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
         expected = round(active.cost_paid * 0.50)
         assert payout == expected, (
-            f"Low-risk failure must refund 50% of cost_paid; "
-            f"expected {expected}, got {payout}"
+            f"Low-risk failure must refund 50% of cost_paid; expected {expected}, got {payout}"
         )
 
     def test_mid_risk_failure_refunds_30_percent(self) -> None:
@@ -991,8 +990,7 @@ class TestTierAwareFailureRefund:
         _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
         expected = round(active.cost_paid * 0.30)
         assert payout == expected, (
-            f"Mid-risk failure must refund 30% of cost_paid; "
-            f"expected {expected}, got {payout}"
+            f"Mid-risk failure must refund 30% of cost_paid; expected {expected}, got {payout}"
         )
 
     def test_high_risk_failure_refunds_20_percent(self) -> None:
@@ -1001,8 +999,7 @@ class TestTierAwareFailureRefund:
         _, payout = resolve_completion(template, active, "refund_tester", 0.0, 0.0)
         expected = round(active.cost_paid * 0.20)
         assert payout == expected, (
-            f"High-risk failure must refund 20% of cost_paid; "
-            f"expected {expected}, got {payout}"
+            f"High-risk failure must refund 20% of cost_paid; expected {expected}, got {payout}"
         )
 
     def test_mid_refund_matches_deprecation_alias(self) -> None:

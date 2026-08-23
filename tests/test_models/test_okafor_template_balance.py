@@ -120,9 +120,7 @@ class TestEachTemplate:
             f"not in {LEGAL_UNLOCK_TYPES}"
         )
 
-    def test_outcome_unlock_id_present_when_type_set(
-        self, template: OkaforProjectTemplate
-    ) -> None:
+    def test_outcome_unlock_id_present_when_type_set(self, template: OkaforProjectTemplate) -> None:
         if template.outcome_unlock_type:
             assert template.outcome_unlock_id, (
                 f"{template.id}: outcome_unlock_type is set but outcome_unlock_id is empty"
@@ -136,14 +134,10 @@ class TestEachTemplate:
         assert template.briefing.strip(), f"{template.id}: briefing must not be empty"
 
     def test_success_debrief_nonempty(self, template: OkaforProjectTemplate) -> None:
-        assert template.success_debrief.strip(), (
-            f"{template.id}: success_debrief must not be empty"
-        )
+        assert template.success_debrief.strip(), f"{template.id}: success_debrief must not be empty"
 
     def test_failure_debrief_nonempty(self, template: OkaforProjectTemplate) -> None:
-        assert template.failure_debrief.strip(), (
-            f"{template.id}: failure_debrief must not be empty"
-        )
+        assert template.failure_debrief.strip(), f"{template.id}: failure_debrief must not be empty"
 
 
 # ---------------------------------------------------------------------------
@@ -190,6 +184,4 @@ class TestTemplateTotals:
 
     def test_ethics_values_are_legal(self) -> None:
         for tid, tag in OKAFOR_PROJECT_ETHICS.items():
-            assert tag in LEGAL_ETHICS_TAGS, (
-                f"{tid}: ethics tag {tag!r} not in {LEGAL_ETHICS_TAGS}"
-            )
+            assert tag in LEGAL_ETHICS_TAGS, f"{tid}: ethics tag {tag!r} not in {LEGAL_ETHICS_TAGS}"

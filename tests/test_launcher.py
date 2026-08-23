@@ -36,9 +36,7 @@ class TestLoadRuntimeDependencies:
         deps = run.load_runtime_dependencies()
         for dist_name, _ in deps:
             for char in (">", "<", "=", "!", "~", " ", ";", "["):
-                assert char not in dist_name, (
-                    f"dist_name {dist_name!r} should not contain {char!r}"
-                )
+                assert char not in dist_name, f"dist_name {dist_name!r} should not contain {char!r}"
 
     def test_every_declared_dependency_imports_in_dev_env(self) -> None:
         # The dev environment installs every runtime dep, so each resolved
@@ -59,9 +57,7 @@ class TestLoadRuntimeDependencies:
             "Declared runtime dependencies failed to import. Either install "
             "them in your venv, or add a dist→import-name override to "
             "run._DIST_TO_IMPORT_NAME:\n"
-            + "\n".join(
-                f"  {dist}: tried `import {imp}` ({err})" for dist, imp, err in unresolved
-            )
+            + "\n".join(f"  {dist}: tried `import {imp}` ({err})" for dist, imp, err in unresolved)
         )
 
     def test_dist_to_import_overrides_resolve_to_known_packages(self) -> None:

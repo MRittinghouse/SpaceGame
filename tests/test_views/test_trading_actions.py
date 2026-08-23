@@ -132,15 +132,11 @@ class TestExecuteSellAll:
         view._execute_sell_all()
 
         # Each commodity gets its own record_sell call, with the quantity sold.
-        recorded = {
-            call.args[0]: call.args[1] for call in view.market.record_sell.call_args_list
-        }
+        recorded = {call.args[0]: call.args[1] for call in view.market.record_sell.call_args_list}
         assert recorded == {"food": 5, "water": 3}
 
     def test_no_op_with_empty_cargo(self) -> None:
-        view, player = _make_trading_view_with_real_player(
-            starting_cargo={}, starting_credits=1000
-        )
+        view, player = _make_trading_view_with_real_player(starting_cargo={}, starting_credits=1000)
 
         view._execute_sell_all()
 
