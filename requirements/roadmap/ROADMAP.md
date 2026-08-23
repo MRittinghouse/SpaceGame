@@ -4866,7 +4866,7 @@ tests/test_views/test_trading_actions.py
 
 ### QF-2 — MyPy baseline + population metrics
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Spec A, Section 1
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-1 | **Blocks**: QF-3
@@ -5204,7 +5204,7 @@ surface).
 - 2026-08-23 — [implement] Full suite: 10489 passed, 98 skipped (baseline 10463, +26 new tests). AC 6 satisfied. PHASE_OK
 - 2026-08-23 17:25 — harness: review phase starting (rework cycle 0)
 - 2026-08-23 17:35 — [review] Plan audit: sound. All 11 locked decisions defensible. The implementer correctly rejected Decision 5's flawed rationale (set -o pipefail would always fail the pipe because mypy exits 1 on baseline errors); dropping pipefail from the pre-commit hook was right. However, the CI types job inherited GitHub Actions' default bash -eo pipefail, making it always exit 1 on a clean tree -- the gate was broken. Fixed directly: added `set +o pipefail` to the CI step's run block. All 6 ACs verified. 26 new tests pass (suite 10489 >= baseline 10463). PHASE_OK
-
+- 2026-08-23 17:32 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
