@@ -35,7 +35,6 @@ from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
-
 import pygame
 import pygame_gui
 
@@ -6260,89 +6259,89 @@ class Game:
 
         # Pass events to UI manager and current state
         for event in events:
-                # Tutorial overlay uses raw mouse events (not pygame_gui) so
-                # it can render on top of everything.  Intercept events here
-                # before they reach the UI manager to prevent click-through.
-                if self._tutorial_overlay and self._tutorial_overlay.active:
-                    consumed = self._tutorial_overlay.handle_event(event)
-                    if consumed:
-                        # If the overlay just closed, add cooldown to prevent
-                        # immediate back-to-back dialogs (e.g. hint then tutorial)
-                        if not self._tutorial_overlay.active:
-                            self._tutorial_cooldown = 30  # ~0.5s at 60fps
-                        continue
-                    # Still let non-consumed events (e.g. KEYDOWN) through
-                    self.ui_manager.process_events(event)
+            # Tutorial overlay uses raw mouse events (not pygame_gui) so
+            # it can render on top of everything.  Intercept events here
+            # before they reach the UI manager to prevent click-through.
+            if self._tutorial_overlay and self._tutorial_overlay.active:
+                consumed = self._tutorial_overlay.handle_event(event)
+                if consumed:
+                    # If the overlay just closed, add cooldown to prevent
+                    # immediate back-to-back dialogs (e.g. hint then tutorial)
+                    if not self._tutorial_overlay.active:
+                        self._tutorial_cooldown = 30  # ~0.5s at 60fps
                     continue
-
-                # Cockpit HUD event handling (before pygame_gui)
-                if self._cockpit_hud and self._cockpit_hud.visible:
-                    hud_result = self._cockpit_hud.handle_event(event)
-                    if hud_result is not None:
-                        # Navigate to requested state
-                        self._ensure_view_for_state(hud_result)
-                        self.state_manager.change_state(hud_result)
-                        continue
-                    # Consume mouse clicks on the HUD bar to prevent click-through
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.pos[1] >= self._cockpit_hud.y:
-                        continue
-
-                # F11 — toggle fullscreen. PT-F: rebuild the display mode
-                # via build_display_flags so RESIZABLE is restored when
-                # returning to windowed (pygame.display.toggle_fullscreen's
-                # flag preservation varies by platform).
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
-                    current_flags = self.screen.get_flags()
-                    going_fullscreen = not bool(current_flags & pygame.FULLSCREEN)
-                    cur_size = self.screen.get_size()
-                    self._apply_display_settings(cur_size[0], cur_size[1], going_fullscreen)
-                    continue
-
-                # Check for ESC key to toggle pause (only during gameplay)
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    if (
-                        self.player
-                        and not self.paused
-                        and self.state_manager.current_state
-                        not in (
-                            GameState.MAIN_MENU,
-                            GameState.STARTUP,
-                            GameState.NAME_INPUT,
-                            GameState.CHARACTER_CREATION,
-                        )
-                    ):
-                        self._open_pause_menu()
-                        continue  # Consume ESC — don't leak to views
-                    elif self.paused:
-                        self._close_pause_menu()
-                        continue  # Consume ESC — don't leak to views
-
-                # PT-M: when the active view has a live first-time tip, the
-                # overlay consumes input before pygame_gui processes it.
-                # Prevents clicks on the tip's "Got it." button from leaking
-                # through to underlying UIButton elements.
-                active_view = self.state_manager.get_current_view()
-                active_tip = getattr(active_view, "_first_time_tip", None)
-                if active_tip is not None and not active_tip.dismissed:
-                    if active_tip.handle_event(event):
-                        continue
-
+                # Still let non-consumed events (e.g. KEYDOWN) through
                 self.ui_manager.process_events(event)
+                continue
 
-                # Route events to event notification, save/load, pause menu, or game state
-                if self.settings_view:
-                    # Process events through settings' own UIManager
-                    if hasattr(self.settings_view, "_own_ui_manager"):
-                        self.settings_view._own_ui_manager.process_events(event)
-                    self.settings_view.handle_event(event)
-                elif self._event_notification_view and self._event_notification_view.active:
-                    self._event_notification_view.handle_event(event)
-                elif self.save_load_view:
-                    self.save_load_view.handle_event(event)
-                elif self.paused and self.pause_menu_view:
-                    self.pause_menu_view.handle_event(event)
-                else:
-                    self.state_manager.handle_event(event)
+            # Cockpit HUD event handling (before pygame_gui)
+            if self._cockpit_hud and self._cockpit_hud.visible:
+                hud_result = self._cockpit_hud.handle_event(event)
+                if hud_result is not None:
+                    # Navigate to requested state
+                    self._ensure_view_for_state(hud_result)
+                    self.state_manager.change_state(hud_result)
+                    continue
+                # Consume mouse clicks on the HUD bar to prevent click-through
+                if event.type == pygame.MOUSEBUTTONDOWN and event.pos[1] >= self._cockpit_hud.y:
+                    continue
+
+            # F11 — toggle fullscreen. PT-F: rebuild the display mode
+            # via build_display_flags so RESIZABLE is restored when
+            # returning to windowed (pygame.display.toggle_fullscreen's
+            # flag preservation varies by platform).
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                current_flags = self.screen.get_flags()
+                going_fullscreen = not bool(current_flags & pygame.FULLSCREEN)
+                cur_size = self.screen.get_size()
+                self._apply_display_settings(cur_size[0], cur_size[1], going_fullscreen)
+                continue
+
+            # Check for ESC key to toggle pause (only during gameplay)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                if (
+                    self.player
+                    and not self.paused
+                    and self.state_manager.current_state
+                    not in (
+                        GameState.MAIN_MENU,
+                        GameState.STARTUP,
+                        GameState.NAME_INPUT,
+                        GameState.CHARACTER_CREATION,
+                    )
+                ):
+                    self._open_pause_menu()
+                    continue  # Consume ESC — don't leak to views
+                elif self.paused:
+                    self._close_pause_menu()
+                    continue  # Consume ESC — don't leak to views
+
+            # PT-M: when the active view has a live first-time tip, the
+            # overlay consumes input before pygame_gui processes it.
+            # Prevents clicks on the tip's "Got it." button from leaking
+            # through to underlying UIButton elements.
+            active_view = self.state_manager.get_current_view()
+            active_tip = getattr(active_view, "_first_time_tip", None)
+            if active_tip is not None and not active_tip.dismissed:
+                if active_tip.handle_event(event):
+                    continue
+
+            self.ui_manager.process_events(event)
+
+            # Route events to event notification, save/load, pause menu, or game state
+            if self.settings_view:
+                # Process events through settings' own UIManager
+                if hasattr(self.settings_view, "_own_ui_manager"):
+                    self.settings_view._own_ui_manager.process_events(event)
+                self.settings_view.handle_event(event)
+            elif self._event_notification_view and self._event_notification_view.active:
+                self._event_notification_view.handle_event(event)
+            elif self.save_load_view:
+                self.save_load_view.handle_event(event)
+            elif self.paused and self.pause_menu_view:
+                self.pause_menu_view.handle_event(event)
+            else:
+                self.state_manager.handle_event(event)
 
         # Update UI manager
         self.ui_manager.update(dt)
@@ -6357,9 +6356,7 @@ class Game:
                 sys_data = self.data_loader.get_system(self.player.current_system_id)
                 if sys_data:
                     faction_id = sys_data.faction
-            self._cockpit_hud.update(
-                dt, self.state_manager.current_state, faction_id=faction_id
-            )
+            self._cockpit_hud.update(dt, self.state_manager.current_state, faction_id=faction_id)
 
         # Handle state transitions
         self._handle_state_transitions()

@@ -10,7 +10,6 @@ import random
 
 import numpy as np
 import pygame
-import pytest
 
 # Headless SDL so Game() can be constructed without a physical display.
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
@@ -90,9 +89,11 @@ def test_game_step_exists_with_signature() -> None:
     params = list(sig.parameters.keys())
     assert "dt" in params, f"Game.step missing 'dt' parameter; got {params}"
     assert "events" in params, f"Game.step missing 'events' parameter; got {params}"
-    assert sig.return_annotation is None or sig.return_annotation == inspect.Parameter.empty or sig.return_annotation is type(None), (
-        f"Game.step return annotation should be None, got {sig.return_annotation}"
-    )
+    assert (
+        sig.return_annotation is None
+        or sig.return_annotation == inspect.Parameter.empty
+        or sig.return_annotation is type(None)
+    ), f"Game.step return annotation should be None, got {sig.return_annotation}"
 
 
 def test_game_step_headless_smoke() -> None:
@@ -140,9 +141,7 @@ def test_seed_rngs_reproduces_random() -> None:
     assert r1_stdlib == r2_stdlib, (
         f"stdlib random diverged after same seed: {r1_stdlib} != {r2_stdlib}"
     )
-    assert r1_numpy == r2_numpy, (
-        f"numpy random diverged after same seed: {r1_numpy} != {r2_numpy}"
-    )
+    assert r1_numpy == r2_numpy, f"numpy random diverged after same seed: {r1_numpy} != {r2_numpy}"
 
 
 def test_step_determinism_with_seeded_events() -> None:
@@ -163,9 +162,5 @@ def test_step_determinism_with_seeded_events() -> None:
     state1, sample1 = _run_sequence(42)
     state2, sample2 = _run_sequence(42)
 
-    assert state1 == state2, (
-        f"state_manager.current_state diverged: {state1} != {state2}"
-    )
-    assert sample1 == sample2, (
-        f"random.random() sample diverged: {sample1} != {sample2}"
-    )
+    assert state1 == state2, f"state_manager.current_state diverged: {state1} != {state2}"
+    assert sample1 == sample2, f"random.random() sample diverged: {sample1} != {sample2}"
