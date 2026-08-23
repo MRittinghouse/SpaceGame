@@ -4866,7 +4866,7 @@ tests/test_views/test_trading_actions.py
 
 ### QF-2 — MyPy baseline + population metrics
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 1
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-1 | **Blocks**: QF-3
@@ -5189,18 +5189,37 @@ surface).
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 16:57 — harness: plan phase starting
 - 2026-08-23 17:20 — planning complete; verified both context docs exist (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md`, `pyproject.toml`) plus the two QF-1 outputs the sprint extends (`.pre-commit-config.yaml`, `.github/workflows/quality.yml` with its reserved commented `types` slot); re-measured mypy today at TOTAL=768, union-attr=165 (72 in game.py, 93 outside), "None" has no attribute=31 (all 31 in game.py), object-has-no-attribute=167, name-defined=67, so tracked A=196-72=124, B=234, C=338 matches spec; locked 11 decisions (chief: exclusion predicate = union-attr AND file ends in engine/game.py, only, so 31 game.py "None"-has-no-attribute errors stay tracked); folded in 6 polish items (unit tests for the populations script, CLAUDE.md ratchet pointer, explicit pipefail, machine-readable output, docstring exclusion rationale, optional --stdin mode); no new sprints proposed; cross-sprint reaction surface: none (foundational). PHASE_OK
+- 2026-08-23 17:06 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 — [implement] mypy-baseline dev dep added to pyproject.toml; installed via pip install -e ".[dev]"; mypy_baseline --help confirmed available.
+- 2026-08-23 — [implement] mypy-baseline.txt generated via bash git pipeline (grep -v ": note:" to filter version-sensitive note lines before sync). 768 lines, BOM-free, stable. AC 1: mypy | grep -v ": note:" | mypy_baseline filter exits 0. Note filtering required: PowerShell-piped sync produced a BOM and note lines with overload signatures that differ between Python 3.13 and 3.14 stubs, causing spurious churn on filter.
+- 2026-08-23 — [implement] mypy-baseline.txt is comment-hostile (Decision 9 fallback applied). Regeneration rule documented in CLAUDE.md and populations script docstring.
+- 2026-08-23 — [implement] pre-commit hook added (language: system, pass_filenames: false). set -o pipefail dropped: mypy exits 1 on any error, which poisons the pipeline; filter is the last command, its exit code propagates naturally without pipefail.
+- 2026-08-23 — [implement] types CI job filled in. Uses block-scalar `|` for `run:` value to avoid YAML colon-in-value parsing error from ": note:" in grep argument.
+- 2026-08-23 — [implement] scripts/mypy_populations.py written. Excludes note-severity lines; game.py union-attr counted in TOTAL but not tracked A. TOTAL = A_tracked + excluded_game_py_union_attr + B + C = 768. Output verified: A=124, B=234, C=338, TOTAL=768. AC 3 satisfied.
+- 2026-08-23 — [implement] 26 unit tests in tests/test_scripts/test_mypy_populations.py. All pass. Both path separator variants tested. --stdin mode tested without subprocess. Decision 1 exclusion rule fully covered.
+- 2026-08-23 — [implement] AC 2 verified: introducing _qf2_sentinel: int = "string" causes filter to exit 1 and print "Your changes introduced new violations." Sentinel deleted; git diff confirms no residual.
+- 2026-08-23 — [implement] CLAUDE.md updated with ratchet quick commands and regeneration constraint paragraph.
+- 2026-08-23 — [implement] pre-commit run --all-files exits 0. AC 4 satisfied.
+- 2026-08-23 — [implement] python -c "import yaml; yaml.safe_load(open('.github/workflows/quality.yml'))" exits 0. AC 5 satisfied.
+- 2026-08-23 — [implement] Full suite: 10489 passed, 98 skipped (baseline 10463, +26 new tests). AC 6 satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 16:57
-- Completed: 2026-08-23 17:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 5074d0d
-- New_sprints_proposed: none
-- Polish_items_folded_in: populations-script-unit-tests, claude-md-ratchet-pointer, explicit-pipefail-in-hook, machine-readable-key-value-output, docstring-exclusion-rationale, optional-stdin-mode
-- Decisions_locked: 11
-- Notes: Spec A Section 4's "excluded from the Population A metric" was ambiguous -- spec text says "game.py's 72" (union-attr only), but game.py also has 31 "None" has no attribute" errors. Locked the exclusion predicate as union-attr-in-game.py only, so tracked A = 196 - 72 = 124 matches the spec's acceptance criterion and the 31 game.py "None" errors remain trackable in Population A (they need code-level fixes, not deferrable to Spec B's Player accessor rewrite). Sprint expanded from 5 to 12 plan steps, added a test file to touch zones and a CLAUDE.md pointer; no new sprints proposed; no cross-sprint reactions (foundational infrastructure).
+- Started: 2026-08-23 17:06
+- Completed: 2026-08-23 18:30
+- Files_changed: mypy-baseline.txt, scripts/mypy_populations.py, tests/test_scripts/__init__.py, tests/test_scripts/test_mypy_populations.py, .pre-commit-config.yaml, .github/workflows/quality.yml, pyproject.toml, CLAUDE.md
+- Commits: c1cbfe1, 0a4d86d, 890d457
+- Tests_added: 26
+- Tests_baseline: 10463
+- Tests_passing: 10489
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Decision 9 fallback applied (baseline is comment-hostile); note filtering (grep -v ": note:") added to both hook and CI after discovering Python 3.13 vs 3.14 type-stub differences cause note-message churn; set -o pipefail dropped from pipeline because mypy exits 1 on errors, which would poison the pipeline without changing the gate's semantics (filter is last command, its exit code propagates). TOTAL = A_tracked + excluded + B + C (124+72+234+338=768) rather than A+B+C because excluded game.py union-attr count toward raw error total.
 
 ### QF-3 — Ralph quality-gate integration
 
