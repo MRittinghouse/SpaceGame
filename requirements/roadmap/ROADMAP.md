@@ -5327,7 +5327,7 @@ The direct downstream consumer is QF-6, which builds the crawler on top of `step
 - Started: 2026-08-23 16:15
 - Completed: 2026-08-23 16:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this phase)
+- Commits: 126872a
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (foundational engine refactor; no player-facing surface, no
   narrative, no save/load, no tutorial, no achievements applicable)
