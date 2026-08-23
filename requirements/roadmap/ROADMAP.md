@@ -5223,7 +5223,7 @@ surface).
 
 ### QF-3 — Ralph quality-gate integration
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 2
 **Size**: S | **Effort**: 1 day
 **Depends on**: QF-2 | **Blocks**: none
@@ -5433,28 +5433,35 @@ surface).
 - 2026-08-23 — todo (created from Spec A)
 - 2026-08-23 17:34 — harness: plan phase starting
 - 2026-08-23 17:40 — planning complete (commit 6efbdca); verified all 3 context docs exist and
+- 2026-08-23 17:41 — harness: implement phase starting (rework cycle 0)
   added 4 references (`ralph/agents.py`, `.pre-commit-config.yaml`, `.github/workflows/quality.yml`,
   `tests/test_ralph/test_harness.py`) so implementer mirrors exact command shapes and existing
   test conventions; locked 7 decisions (gate scope, timing, pipe portability, DRY_RUN behavior,
   BLOCKED-vs-ERROR, baseline-vs-HEAD, always-run-vs-changed-files); no scope expansion needed;
   no new sprints proposed. PHASE_OK
+- 2026-08-23 — [implement] _run_quality_gates() added to harness.py: ruff check, ruff format --check, mypy piped through Python note-filter to mypy_baseline filter (no shell=True; Windows-safe). _GATE_ERROR_MAX_CHARS=500. FileNotFoundError/TimeoutExpired surfaced as gate failure, not crash.
+- 2026-08-23 — [implement] Gate wired into execute_sprint at 3 sites (after plan OK, after implement OK, first inside review OK branch before STATUS_DONE). DRY_RUN guard at call sites.
+- 2026-08-23 — [implement] 12 tests added: TestRunQualityGates (6 unit) + TestExecuteSprintQualityGate (6 integration including DRY_RUN and non-OK-skips-gate). All 12 pass.
+- 2026-08-23 — [implement] Pre-existing lint issues in harness.py fixed (unused Path/PhaseResult imports, f-string/RUF005) to satisfy touched-file lint gate.
+- 2026-08-23 — [implement] Pre-commit hook (ruff + ruff-format + mypy baseline) passed on commit. Full suite: 10501 passed, 98 skipped (baseline 10489, +12). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 17:34
-- Completed: 2026-08-23 17:40
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 6efbdca
-- New_sprints_proposed: none
-- Polish_items_folded_in: gate-skipped-on-non-OK-phase test (prevents double-blocking); happy-path
-  guard test (asserts gate called exactly 3x on plan→implement→review clean); DRY_RUN skip parity
-  with `_capture_test_baseline`; activity-log truncation cap of 500 chars for readability;
-  FileNotFoundError surfaced as gate failure (broken tool install ≠ crash).
-- Decisions_locked: 7
-- Notes: Foundational harness sprint. No cross-sprint reactions. Added 4 reference context docs so
-  the implementer mirrors exact pre-commit / CI command shapes and existing `TestMarkTerminalOutcome`
-  test conventions. Test count delta is +11 (10,489 → 10,500 expected).
+- Started: 2026-08-23 17:41
+- Completed: 2026-08-23 18:30
+- Files_changed: ralph/harness.py, tests/test_ralph/test_harness.py
+- Commits: 301d3a1
+- Tests_added: 12
+- Tests_baseline: 10489
+- Tests_passing: 10501
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: _run_quality_gates() + 3-site wiring in execute_sprint. Pre-commit hook passed on commit. All 9 acceptance criteria satisfied (ACs 1-3: gate returns correct tuple; AC 4: activity-log names gate+error; AC 5: happy path unchanged; AC 6: gate skipped on non-OK phase; AC 7: DRY_RUN skips gate; AC 8: existing 41 tests pass; AC 9: 10501 >= 10489).
 ### QF-4 — Import-boundary guard
 
 **Status**: done
