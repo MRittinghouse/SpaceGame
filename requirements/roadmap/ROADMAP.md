@@ -5196,7 +5196,7 @@ surface).
 - Started: 2026-08-23 16:57
 - Completed: 2026-08-23 17:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (will commit after this write)
+- Commits: 5074d0d
 - New_sprints_proposed: none
 - Polish_items_folded_in: populations-script-unit-tests, claude-md-ratchet-pointer, explicit-pipefail-in-hook, machine-readable-key-value-output, docstring-exclusion-rationale, optional-stdin-mode
 - Decisions_locked: 11
