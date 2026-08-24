@@ -6,7 +6,7 @@ Loads JSON data files and converts them to game model instances.
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from spacegame.models.achievement import Achievement
 from spacegame.models.ambient_dialogue import AmbientLine
@@ -52,6 +52,22 @@ from spacegame.models.ship_build import HullMaterial, HullShape
 from spacegame.models.system import Coordinates, Economy, StarSystem, Station
 from spacegame.models.upgrades import ShipUpgrade
 from spacegame.utils.logger import logger
+
+if TYPE_CHECKING:
+    from spacegame.models.captain_variant import CaptainVariant
+    from spacegame.models.combat_complication import CombatComplication
+    from spacegame.models.crew_interjection import CrewInterjection
+    from spacegame.models.deep_core import DeepCoreUpgrade
+    from spacegame.models.enemy_captain import EnemyCaptain
+    from spacegame.models.forge_upgrade import ForgeUpgrade
+    from spacegame.models.ground_equipment import GroundEquipment
+    from spacegame.models.politics_dispute import PoliticsDisputeTemplate
+    from spacegame.models.ship_module import ShipModule
+    from spacegame.models.ship_part import ShipPart
+    from spacegame.models.slot_definition import SlotDefinition
+    from spacegame.models.smuggling import FactionLaw
+    from spacegame.models.timed_thread import TimedThread
+    from spacegame.models.wreck_upgrade import WreckUpgrade
 
 
 class DataLoader:
