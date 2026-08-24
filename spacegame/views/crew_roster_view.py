@@ -299,7 +299,12 @@ class CrewRosterView(BaseView):
         # Attribute allocation buttons
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for attr_id, rect in self._attr_plus_rects.items():
-                if rect.collidepoint(event.pos) and self._selected_crew_id:
+                if (
+                    rect.collidepoint(event.pos)
+                    and self._selected_crew_id
+                    # QF-8: local guard for CrewRoster | None (long-tail LOCKED).
+                    and self.crew_roster is not None
+                ):
                     success, _msg = self.crew_roster.allocate_crew_attribute(
                         self._selected_crew_id, attr_id
                     )

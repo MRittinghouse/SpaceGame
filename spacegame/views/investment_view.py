@@ -325,8 +325,13 @@ class InvestmentView(BaseView):
             self.player.credits, self.system_id, self.player.game_day
         )
         if success:
-            tier_info = self.investment_manager.get_template(self.system_id).get_tier(1)
-            self.player.deduct_credits(tier_info.cost)
+            # QF-8: local guards for InvestmentTemplate / InvestmentTier
+            # Optionals — a successful invest() implies both exist, but
+            # narrow explicitly rather than assume it.
+            template = self.investment_manager.get_template(self.system_id)
+            tier_info = template.get_tier(1) if template is not None else None
+            if tier_info is not None:
+                self.player.deduct_credits(tier_info.cost)
             self.player.investments_owned += 1
             self.message = msg
             self.message_color = Colors.GREEN

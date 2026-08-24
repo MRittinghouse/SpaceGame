@@ -2537,8 +2537,12 @@ class CombatEngine:
 
             elif effect_type == "momentum_refund":
                 refund = value
-                player.momentum.add(refund)
-                messages.append(f"Momentum refunded to {int(player.momentum.current * 100)}%")
+                # QF-8: Player.momentum is Optional; local guard per Spec A
+                # LOCKED decision. If unset, silently skip the refund
+                # (momentum-refund on a player without momentum is a no-op).
+                if player.momentum is not None:
+                    player.momentum.add(refund)
+                    messages.append(f"Momentum refunded to {int(player.momentum.current * 100)}%")
 
             elif effect_type == "burn" and target == "single_enemy":
                 if surviving:
