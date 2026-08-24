@@ -22,7 +22,7 @@ Candidate for extraction: EQUIP mode (~300 lines) and RECOLOR mode (~150 lines)
 could be extracted into helper modules when file grows further.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -70,6 +70,9 @@ from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotD
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+if TYPE_CHECKING:
+    from spacegame.data_loader import DataLoader
 
 # Hull-only materials for the simplified hull pixel palette
 HULL_PIXEL_MATERIALS = ("light_alloy", "standard_plate", "heavy_armor", "stealth_composite")
@@ -246,7 +249,7 @@ class ShipBuilderView(BaseView):
         self,
         ui_manager: pygame_gui.UIManager,
         player: Player,
-        data_loader: object,
+        data_loader: "DataLoader",
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager

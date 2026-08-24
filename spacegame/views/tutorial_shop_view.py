@@ -15,7 +15,7 @@ equip).
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -42,6 +42,10 @@ from spacegame.engine.fonts import (
 )
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+
+if TYPE_CHECKING:
+    from spacegame.data_loader import DataLoader
+    from spacegame.models.player import Player
 
 
 @dataclass(frozen=True)
@@ -121,9 +125,9 @@ class TutorialShopView(BaseView):
 
     def __init__(
         self,
-        ui_manager: object,
-        player: object,
-        data_loader: object,
+        ui_manager: pygame_gui.UIManager,
+        player: "Player",
+        data_loader: "DataLoader",
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager

@@ -5,7 +5,7 @@ Displays protagonist attributes, progression summary, faction standing,
 and key statistics. Links to Skill Trees and Crew views.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -33,6 +33,9 @@ from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+if TYPE_CHECKING:
+    from spacegame.models.politics import PoliticsManager
 
 # Map tree types to their governing attribute for display
 _TREE_ATTRIBUTE_MAP = {
@@ -76,7 +79,7 @@ class CharacterView(BaseView):
         player: Player,
         attribute_sheet: AttributeSheet,
         social_manager: Optional[SocialManager] = None,
-        politics_manager: object = None,
+        politics_manager: Optional["PoliticsManager"] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager

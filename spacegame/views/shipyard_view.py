@@ -21,6 +21,8 @@ from spacegame.models.ship_build import (
     WEIGHT_CLASSES,
     ComputedShipStats,
     FrameRequirements,
+    PlacedSlot,
+    ShipBuild,
     ShipStatsComputer,
 )
 from spacegame.models.slot_definition import _SIZE_DISPLAY, _TYPE_DISPLAY, SlotDefinition
@@ -494,7 +496,7 @@ class ShipyardView(BaseView):
         "faction": "Faction Frame",
     }
 
-    def _get_frame_size_label(self, ship_type: object) -> str:
+    def _get_frame_size_label(self, ship_type: ShipType) -> str:
         """Get player-facing frame size label for a ship type."""
         return self._FRAME_SIZE_LABELS.get(
             ship_type.ship_class, ship_type.ship_class.replace("_", " ").title()
@@ -1540,7 +1542,7 @@ class ShipyardView(BaseView):
             "total_h": total_grid_h,
         }
 
-    def _get_slot_def_for_placed(self, placed_slot: object) -> Optional[SlotDefinition]:
+    def _get_slot_def_for_placed(self, placed_slot: PlacedSlot) -> Optional[SlotDefinition]:
         """Look up the SlotDefinition for a PlacedSlot."""
         from spacegame.data_loader import get_data_loader
 
@@ -1548,7 +1550,7 @@ class ShipyardView(BaseView):
         return dl.slot_definitions.get(placed_slot.slot_def_id)
 
     def _slot_screen_rect(
-        self, placed_slot: object, slot_def: SlotDefinition, gp: dict
+        self, placed_slot: PlacedSlot, slot_def: SlotDefinition, gp: dict
     ) -> pygame.Rect:
         """Get the screen-space rect for a placed slot on the grid.
 
@@ -1583,7 +1585,7 @@ class ShipyardView(BaseView):
         self._render_loadout_parts_panel(screen, build, gp)
         self._render_loadout_stats_bar(screen)
 
-    def _render_loadout_grid(self, screen: pygame.Surface, build: object, gp: dict) -> None:
+    def _render_loadout_grid(self, screen: pygame.Surface, build: ShipBuild, gp: dict) -> None:
         """Render the ship grid with hull pixels and clickable slots."""
         from spacegame.data_loader import get_data_loader
 
@@ -1655,7 +1657,9 @@ class ShipyardView(BaseView):
                 dot_y = rect.top + 5
                 pygame.draw.circle(screen, Colors.GREEN, (dot_x, dot_y), 3)
 
-    def _render_loadout_parts_panel(self, screen: pygame.Surface, build: object, gp: dict) -> None:
+    def _render_loadout_parts_panel(
+        self, screen: pygame.Surface, build: ShipBuild, gp: dict
+    ) -> None:
         """Render the right-side panel: slot info + compatible parts list."""
         panel_x = WINDOW_WIDTH // 2 + scale_x(20)
         panel_w = WINDOW_WIDTH // 2 - scale_x(40)

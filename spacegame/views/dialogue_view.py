@@ -178,7 +178,7 @@ class DialogueView(BaseView):
 
     def __init__(
         self,
-        ui_manager: object,
+        ui_manager: pygame_gui.UIManager,
         dialogue_manager: DialogueManager,
         data_loader: DataLoader,
         social_manager: Optional[SocialManager] = None,

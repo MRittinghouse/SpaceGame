@@ -44,7 +44,9 @@ from spacegame.views.layout import (
 )
 
 if TYPE_CHECKING:
+    from spacegame.data_loader import DataLoader
     from spacegame.models.mission import MissionObjective
+    from spacegame.models.player import Player
 
 TAB_HEIGHT = scale_y(36)
 TAB_WIDTH = scale_x(130)
@@ -229,8 +231,8 @@ class MissionLogView(BaseView):
         self,
         ui_manager: pygame_gui.UIManager,
         mission_manager: Optional[MissionManager],
-        data_loader: Optional[object] = None,
-        player: Optional[object] = None,
+        data_loader: Optional["DataLoader"] = None,
+        player: Optional["Player"] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager

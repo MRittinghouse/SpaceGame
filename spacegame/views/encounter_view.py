@@ -7,7 +7,7 @@ and rewards, then transitions back to the galaxy map or into combat.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -29,6 +29,9 @@ from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
+
+if TYPE_CHECKING:
+    from spacegame.models.journal import Journal
 
 
 class EncounterPhase(str, Enum):
@@ -63,7 +66,7 @@ class EncounterView(BaseView):
         encounter_ref: EncounterRef,
         player: Optional[Player] = None,
         social_manager: Optional[SocialManager] = None,
-        journal: Optional[object] = None,
+        journal: Optional[Journal] = None,
     ) -> None:
         super().__init__(ui_manager)
         self.encounter_def = encounter_def

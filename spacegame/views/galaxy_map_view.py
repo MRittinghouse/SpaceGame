@@ -36,6 +36,8 @@ from spacegame.views.base_view import BaseView
 
 if TYPE_CHECKING:
     from spacegame.models.journal import Journal
+    from spacegame.models.news_ticker import NewsTicker
+    from spacegame.models.politics import PoliticsManager
 
 # Standing pip color per reputation tier (None = no indicator)
 _STANDING_COLORS: dict[ReputationTier, Optional[tuple[int, int, int]]] = {
@@ -71,8 +73,8 @@ class GalaxyMapView(BaseView):
         player: Player,
         systems: Dict[str, StarSystem],
         active_events: Optional[Dict] = None,
-        politics_manager: object = None,
-        news_ticker: object = None,
+        politics_manager: Optional["PoliticsManager"] = None,
+        news_ticker: Optional["NewsTicker"] = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
