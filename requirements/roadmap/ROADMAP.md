@@ -6579,7 +6579,7 @@ dependencies, not narrative reactions.
 - Notes: Plan audit sound; 11 locked decisions all defensible. Fixed baseline.py mypy no-redef (entry loop var renamed to crash_entry). Nightly workflow correctly uses per-matrix artifact upload rather than the AC's aspirational "one combined artifact" (GitHub Actions matrix constraint). All 81 crawler tests pass. Gate is live: empty baseline means any future crash will fail CI immediately.
 ### QF-6B — Crawler reachability: event delivery, custom hit-rects, coverage floor
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A Section 3 gap found in post-QF-6 verification (2026-08-23)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6648,11 +6648,13 @@ pygame_gui widgets. The crawler's whole perception model is
 
 **Touch zones.**
 ```
-tools/crawler/crawler.py
-tools/crawler/hit_rects.py        (NEW)
-tests/test_crawler/
-spacegame/models/market.py        (line 298 + 307 — replace bare random.seed with local RNG)
-tests/test_models/test_market.py  (add determinism/no-global-mutation assertions)
+tools/crawler/crawler.py                       (extend NAV_KEYWORDS for cold-boot escape)
+tools/crawler/hit_rects.py                     (register any new hand-drawn dialogs from triage)
+tests/test_crawler/test_reachability.py        (cold-boot tests + AC-2 supplementary + floor ratchet)
+tests/test_crawler/test_hit_rects.py           (tests for any newly-registered dialogs)
+tests/test_crawler/test_weighting_and_credits.py (extend if NAV_KEYWORDS additions warrant it)
+spacegame/models/market.py                     (line 298 + 307 — replace bare random.seed with local RNG)
+tests/test_models/test_market.py               (add determinism/no-global-mutation assertions)
 ```
 
 **Deliverables.**
@@ -6751,148 +6753,178 @@ tests/test_models/test_market.py  (add determinism/no-global-mutation assertions
   file real softlocks as a follow-up sprint (do NOT fix in QF-6B — this sprint fixes reachability
   plumbing, not gameplay gaps). Triage count goes into Activity log per the deliverable above.
 
-**Plan.**
+**Plan.** (Rework cycle 1 — scope narrowed after the timed-out implement phase recovered Blockers 1+2.)
 
-Task 1 — Baseline reproduction of both blockers.
-- Files: `tests/test_crawler/test_bootstrap.py` (or a new
-  `tests/test_crawler/test_reachability.py` if the existing file is stuffed).
-- Failing tests first: `test_new_game_click_reaches_confirmation_dialog` (asserts
-  `game.state_manager.get_current_view()._confirm_new_game` is `True` after one crawler step that
-  synthesizes a click on the New Game button) and
-  `test_crawler_reaches_galaxy_map_from_main_menu` (asserts a bounded crawler run terminates in
-  `GameState.GALAXY_MAP`).
-- Both must fail against `master` — confirm the diagnosis quoted in the sprint header is exactly
-  reproduced. If either passes on master, stop and re-read; the model is wrong.
-- Gotcha: the confirmation dialog only appears when a save exists. The test either points the
-  crawler at a fresh `save_directory` and forces `MainMenuView` into confirmation mode directly,
-  or seeds with the `early` checkpoint fixture which guarantees a save. Prefer the fixture path so
-  the test is a real end-to-end.
+The prior 9-task plan is retained in `git log` for history; the tasks below reflect only the
+work that remains after commits `8524d75` (event-cycle fix), `c872c51` (hit-rect registry + key
+repertoire + reachability tests), and the on-disk state as of `abd592e`.
 
-Task 2 — Event-cycle fix in `Crawler.step_once`.
-- Files: `tools/crawler/crawler.py`.
-- Add `self._pending_events: list[pygame.event.Event] = []`, initialized in `__init__`. In
-  `step_once`: prepend `self._pending_events` to `events` before `game.step(...)`, clear the list,
-  then after `game.step` returns drain `pygame.event.get()` into `self._pending_events` for the
-  next frame.
-- Order-preserving; no wall-clock; no entropy. This matches the frame cycle `Game.run()` inherits
-  from `pygame.event.get()` at the top of each iteration.
-- Update `synthesize_events` docstring / module docstring to name the two-frame handshake.
-- Task 1's `test_new_game_click_reaches_confirmation_dialog` should now pass.
-- Gotcha: existing tests that call `pygame.event.clear()` (see
-  `tests/test_crawler/test_event_synthesis.py:110`) still hold — the crawler owns the queue during
-  a session and expects only its own events. Add one assertion to `test_step_once_drains_ui_events`
-  proving `_pending_events` is non-empty after a click and empty after the following step.
+Task 1 — AC verification pass (PRIMARY DELIVERABLE of this rework cycle).
+- No new files. Walk each of the 7 acceptance criteria; run the specific asserting test and
+  record `AC-N: PASS|PARTIAL|FAIL — <one line>` in the Activity log.
+- Expected findings against committed state (planner's audit; implementer confirms):
+  - AC-1: PASS — `tests/test_crawler/test_reachability.py::TestNewGameClickReachesConfirmationDialog`.
+  - AC-2: **PARTIAL** — `TestCrawlerReachesGalaxyMap` reaches `GALAXY_MAP` via the Continue
+    button (patched `_select_action`), not via the confirmation-dialog Yes hit-rect or
+    `K_y`/`K_RETURN`. The AC text says "either by synthesized click on the registered Yes
+    hit-rect or by `K_y`/`K_RETURN` keypress". Add one supplementary test —
+    `test_crawler_reaches_galaxy_map_via_confirmation_dialog_yes` — that points `save_manager`
+    at the fixtures dir (so New Game triggers the dialog), patches `_select_action` to click
+    New Game then click the Yes hit-rect, and asserts `GALAXY_MAP` is reached. Then AC-2 flips
+    to PASS.
+  - AC-3: PASS — `TestCoverageFloorReachesMinStates` with `COVERAGE_FLOOR = 8` and
+    `checkpoint="late"`.
+  - AC-4: PASS — `TestCrawlerIntegration::test_crawler_determinism_across_two_runs` uses
+    seed=99 checkpoint="late" (starts in `GALAXY_MAP`) and normalises save-slot timestamp
+    noise. Currently passes despite the market RNG mutation described in AC-5 — but AC-4's
+    guarantee is fragile until Task 3 lands. Do not tighten the AC's determinism-normalisation
+    just to hide market entropy.
+  - AC-5: **FAIL** — `spacegame/models/market.py:298` and `:307` still call `random.seed(...)`
+    against the global; no tests exist in `tests/test_models/test_market.py` for
+    determinism-or-global-mutation. Closed by Task 3.
+  - AC-6: PASS — `tests/test_crawler/test_hit_rects.py` has both the contents test and the
+    drift-error test.
+  - AC-7: `pytest -n auto -q` baseline post-recovery is **10520 pass, 98 skip** (see harness
+    pre-phase counters). New floor after this rework: pass count MUST be `>= 10520 + (added
+    tests)`.
+- Do NOT modify any test in this task — it is a pure read-and-report pass. Additive tests come
+  in Tasks 2-3.
+- Time budget: ~15 min. If a test the plan claims is PASS actually fails on master, STOP and
+  set `Status: blocked`; the recovery is not what the sprint header claims.
 
-Task 3 — Hit-rect registry module + resolver.
-- Files: `tools/crawler/hit_rects.py` (NEW), `tests/test_crawler/test_hit_rects.py` (NEW).
-- Implement `HitRect` dataclass, `HIT_RECTS` module-level dict, `hit_rects_for(game)` resolver,
-  `HitRectDriftError` exception.
-- Seed `MAIN_MENU` with two entries. Their `rect_fn` copies the geometry math from
-  `MainMenuView.handle_event` (lines 168-177), keyed off `view._confirm_new_game` via
-  `predicate`. Because both view and registry compute from `scale_x` / `WINDOW_WIDTH`, keep the
-  imports parallel — a resolution or scale change hits both sites identically.
-- Failing tests: `test_hit_rect_registry_returns_active_dialog_rects` (asserts nothing returned
-  when `_confirm_new_game` is False, both returned when True) and
-  `test_hit_rect_registry_raises_on_drift` (patches `MainMenuView` to remove
-  `_confirm_new_game`, asserts `HitRectDriftError`).
-- Gotcha: importing view modules at the top of `hit_rects.py` triggers pygame font loading. Use
-  lazy imports inside `rect_fn` bodies to keep the module import cheap and avoid the
-  test-collection cost. Do not import pygame at module scope — only `pygame.Rect` via a lazy
-  import in `rect_fn`.
+Task 2 — Cold-boot exploration reliability (the ONE remaining crawler-side gap).
+- Files: `tools/crawler/crawler.py` (extend `NAV_KEYWORDS`),
+  `tests/test_crawler/test_reachability.py` (add cold-boot tests),
+  `tests/test_crawler/test_weighting_and_credits.py` (extend weighting assertions if useful).
+- Diagnosis. `_weight_for_element` already gives a 2x boost when an element's text/object_ids
+  tokens match a `NAV_KEYWORDS` entry whose destination is unvisited. But `NAV_KEYWORDS` has
+  no entry that matches "New Game", "Continue", or the `confirm_new_game_yes` hit-rect object_id.
+  On cold-boot, all five main-menu buttons get weight 1.0, and the crawler wastes actions on
+  Settings / Exit / Load Game keypresses before happening to click the right escape path.
+- Fix. Extend `NAV_KEYWORDS` with three entries, all → `GameState.GALAXY_MAP`:
+  ```python
+  "new": GameState.GALAXY_MAP,        # matches "New Game" button (tokens: new, game)
+  "continue": GameState.GALAXY_MAP,   # matches "Continue" button
+  "yes": GameState.GALAXY_MAP,        # matches confirm_new_game_yes hit-rect object_id
+  ```
+  Because the boost only fires when `GALAXY_MAP` is unvisited, and `GALAXY_MAP` is one of the
+  first states reached after leaving `MAIN_MENU`, these entries are effectively bootstrap-only.
+  Collision analysis (grep-verified against master): "Continue" text appears in combat,
+  dispute, encounter, ground_result, okafor, wreckers views — but reaching those views
+  requires being past `MAIN_MENU`, which visits `GALAXY_MAP`, so the boost is inert in those
+  contexts. "New" also appears in salvage_view ("New Wreck") — same reasoning. "Yes" in dispute
+  Yes/No dialogs — same.
+- Failing tests (add to `test_reachability.py`):
+  - `test_cold_boot_reaches_galaxy_map_with_confirm_dialog_reliably`: uses seed range (three
+    seeds: 42, 99, 7) with `save_manager` pointed at fixtures (dialog appears), 500 actions each,
+    no `checkpoint` argument. Assert every seed reaches `GameState.GALAXY_MAP`. On master (before
+    the NAV_KEYWORDS extension) at least one seed should stay in MAIN_MENU — record which one in
+    the Activity log so the fix's effect is documented.
+  - `test_cold_boot_reaches_galaxy_map_without_saves`: uses `tmp_path` for `save_directory` so no
+    dialog appears; assert 200 actions with seed=42 reaches `GALAXY_MAP` (New Game → direct
+    transition).
+- Gotchas:
+  - The default `SaveManager` in a fresh `Game()` may point at the user's real save directory,
+    which is non-deterministic across dev machines. Cold-boot tests MUST override
+    `crawler.game.save_manager` AND `crawler.game.main_menu_view.save_manager` after `boot()`
+    (see the existing `test_new_game_click_reaches_confirmation_dialog` for the pattern).
+  - Do NOT add `"load"` or `"load_game"` — Load Game leads to a slot-picker view, not a state
+    on any GameState enum, and the boost would misfire.
+  - Do NOT re-tune the 0.6 / 0.8 click/keypress roll thresholds in `_select_action`. Changing
+    the mix changes the determinism baseline for every existing test and is out of scope.
 
-Task 4 — Widened key repertoire.
-- Files: `tools/crawler/crawler.py`, `tests/test_crawler/test_enum_and_action.py` (extend).
-- Extend `_selectable_escape_keys` to append `[K_y, K_n, K_RETURN, K_ESCAPE]` deduplicated. Do
-  NOT change `bound_escape_keys` (the softlock oracle's escape set) — the dialog keys are
-  action-selection fodder, not escape guarantees. `K_ESCAPE` is a no-op on non-exempt states
-  without a player, so it's cheap; when a player is loaded and the state is non-exempt, it
-  opens the pause menu, which is desired coverage.
-- Failing test: `test_selectable_escape_keys_include_dialog_dismissal` — assert `K_y`, `K_n`,
-  `K_RETURN`, `K_ESCAPE` all in `_selectable_escape_keys()` from `MAIN_MENU`.
-
-Task 5 — Wire hit-rect clicks into action selection.
-- Files: `tools/crawler/crawler.py`.
-- In `enumerate_interactive`, after collecting pygame_gui elements, append a synthetic
-  "hit-rect element" wrapper per entry from `hit_rects_for(self.game)`. The wrapper carries a
-  `.rect` property so `synthesize_events(("click", wrapper))` works unchanged, plus a
-  `.text = hit_rect.name` so it shows up meaningfully in the action trace and in weighting.
-- `_describe_element` handles it by name (e.g., `"HitRect[confirm_new_game_yes]@(x,y)"`).
-- Failing test: `test_crawler_reaches_galaxy_map_from_main_menu` from Task 1 should now pass —
-  the crawler can pick either the Yes rect or `K_y`/`K_RETURN`, both lead to `GALAXY_MAP`.
-- Gotcha: the wrapper must NOT be an `isinstance` of `INTERACTIVE_TYPES` — bypass that filter by
-  adding hit-rect wrappers *after* the type filter. Also mark them enabled+visible.
-
-Task 6 — Market RNG isolation.
+Task 3 — Market RNG isolation (closes AC-5).
 - Files: `spacegame/models/market.py` (lines 298 + 307),
   `tests/test_models/test_market.py` (append two tests).
 - Replace:
   ```python
   random.seed(f"{self.game_day}_{commodity.id}_{self.system.id}")
   variance = random.uniform(-max_random, max_random)
+  # ...
   random.seed()  # BUG: reseeds from system entropy
   ```
-  with:
+  with a scoped local RNG:
   ```python
   local_rng = random.Random(f"{self.game_day}_{commodity.id}_{self.system.id}")
   variance = local_rng.uniform(-max_random, max_random)
   ```
-- Failing tests: `test_calculate_random_variance_is_deterministic` (same inputs → same output,
-  regardless of external `random.seed(1)` before the call — because the local RNG is seeded from
-  the derived string, not the global) and
-  `test_calculate_random_variance_does_not_mutate_global_rng` (snapshot `random.getstate()`
-  before, call the method, assert unchanged after).
-- Gotcha: existing market tests may rely on `random.seed(...)` being called by the method as a
-  side effect. Search `tests/test_models/test_market.py` for `random.seed` before editing; if any
-  test threads a seed *through* this method, update it to seed the local RNG through a different
-  route or delete the assertion as no-longer-valid. Do not silently change the observable
-  behavior of the market prices — this fix is intentionally functionally equivalent for a fixed
-  game_day / commodity / system triple.
+- Failing tests to add:
+  - `test_get_random_variance_is_deterministic`: same `game_day` / `commodity` / `system`
+    triple returns the same variance across two calls, even after an external
+    `random.seed(1)` is called between them (proves the method no longer depends on the global).
+  - `test_get_random_variance_does_not_mutate_global_rng`: snapshot `random.getstate()` before
+    the call; call `_get_random_variance` once; assert `random.getstate()` equal after.
+- Voice note: no player-facing content changes; price values remain functionally equivalent
+  for a fixed triple (deterministic seed derived from the same string). Existing market tests
+  are unaffected.
+- Gotcha: search `tests/test_models/test_market.py` and `tests/test_models/test_prices.py` (if
+  present) for `random.seed` before editing. Any test that seeds the global expecting this
+  method to consume it must be updated (grep already confirms none exist as of `abd592e`, but
+  re-verify after `git pull` in the implement phase).
 
-Task 7 — Determinism test upgrade + coverage-floor test.
-- Files: `tests/test_crawler/test_integration.py`, add
-  `tests/test_crawler/test_reachability.py` (if not created in Task 1).
-- Rewrite / add `test_crawler_determinism_across_two_runs` so its seed provably reaches
-  `GALAXY_MAP` or deeper (pick a seed that traverses the confirmation dialog under the fixed
-  action RNG; verify by inspecting `coverage.states_reached`). Two runs must produce identical
-  action traces + identical trailing `random.random()` + `np.random.random()`. If the previous
-  QF-6 test already asserts this on a shallower seed, extend it rather than duplicating.
-- Add `test_coverage_floor_reaches_min_states`: runs seed=42 for 2,000 actions, asserts
-  `sum(states_reached.values()) >= 8`, and on failure `log()`s the full reached-state list so
-  regressions name which states dropped.
-- Gotcha: 2,000-action runs are ~30s (per Spec A Section 3). Mark with `pytest.mark.slow` if the
-  project uses that marker; otherwise accept ~30s.
+Task 4 — Coverage-floor ratchet + softlock triage.
+- Files: `tests/test_crawler/test_reachability.py` (update `COVERAGE_FLOOR` constant only if
+  measurement supports raising it), `tools/crawler/hit_rects.py` (register any hand-drawn
+  dialogs discovered in triage).
+- Measurement protocol (ad-hoc CLI, do NOT commit CLI output):
+  ```bash
+  python -m tools.crawler --seed 42 --actions 2000 --checkpoint late --verbose
+  python -m tools.crawler --seed 99 --actions 2000 --checkpoint late
+  python -m tools.crawler --seed 100 --actions 2000 --checkpoint late
+  python -m tools.crawler --seed 42 --actions 2000                # cold-boot
+  python -m tools.crawler --seed 99 --actions 2000                # cold-boot
+  ```
+  Record `states_reached` count and softlock-oracle crash entries per seed in the Activity log.
+- Ratchet: set `COVERAGE_FLOOR = max(8, min(late_checkpoint_measurements))`. Do NOT raise
+  the floor above the minimum across seeds — a floor that only one seed clears is a flaky test.
+  If cold-boot minimum is meaningfully high (>= 5 across three seeds), add a second constant
+  `COLD_BOOT_FLOOR` and a separate test that runs cold-boot 2000-action sessions across those
+  three seeds and asserts each reaches >= `COLD_BOOT_FLOOR`.
+- Softlock triage per unique state in `crashes.json`:
+  - Hand-drawn dialog (raw pygame.Rect collision in view.handle_event): register in
+    `tools/crawler/hit_rects.py` following the MAIN_MENU pattern (predicate keyed on the
+    dialog's open-flag, `rect_fn` mirroring the view's geometry math). Add a test to
+    `test_hit_rects.py` asserting the registry entry resolves under the open condition.
+  - Genuine gap (view has no dismissal path): do NOT fix here. Note as a follow-up under
+    `Notes.` in this sprint's section: `Follow-up: STATE_NAME softlock -- <one-line diagnosis>`.
+- Record a one-line per-state triage table in the Activity log:
+  `STATE: dialogs_added=N, real_softlocks=M`.
+- Time budget: each 2000-action run is ~5-30s depending on state depth reached. Total budget
+  ~5 min for measurement.
 
-Task 8 — Softlock triage after first real crawl.
-- No new test file. In an ad-hoc CLI run
-  (`python -m tools.crawler --seed 42 --actions 2000 --verbose`), inspect `crashes.json` for
-  `oracle == "softlock"` entries. For each unique state:
-  - If the state has a hand-drawn dialog: register its rects in `hit_rects.py` (Task 3
-    extension). Re-run and confirm the softlock report vanishes.
-  - If the state is a genuine gap (no dismissal path exists in the game code): do NOT fix here.
-    Note it in the Activity log as a follow-up for a new gameplay sprint. The QF-6B
-    implementer does not touch view code.
-- Record a one-line per-state triage table in the Activity log: `STATE: dialogs_added=N,
-  real_softlocks=M`.
-- Then ratchet the coverage floor to `max(8, measured)` and re-run Task 7's floor test.
+Task 5 — Quality gate.
+- Targeted lint + format (per AGENT_GUIDE.md — NEVER project-wide):
+  ```bash
+  ruff format tools/crawler/crawler.py tools/crawler/hit_rects.py \
+    tests/test_crawler/test_reachability.py tests/test_crawler/test_hit_rects.py \
+    tests/test_crawler/test_weighting_and_credits.py \
+    spacegame/models/market.py tests/test_models/test_market.py
+  ruff check tools/crawler/ tests/test_crawler/ spacegame/models/market.py tests/test_models/test_market.py
+  ```
+- Mypy against baseline (per CLAUDE.md — do NOT regenerate `mypy-baseline.txt`):
+  ```bash
+  python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter
+  ```
+  Must exit 0. `tools/crawler` is separately gated at zero errors (see commit `cd22557`) — run
+  `python -m mypy tools/crawler/` and confirm 0 errors as well.
+- Full suite: `pytest -n auto -q`. Baseline is **10520 pass, 98 skip** (per pre-phase counters).
+  New pass count must be `>= 10520 + <tests added by this rework>` (Task 1 adds 1, Task 2 adds 2,
+  Task 3 adds 2, Task 4 adds 0-2 depending on triage → expect `>= 10525`).
+- Commit sequence (each references `QF-6B`; keep commits small for recovery per
+  AGENT_GUIDE.md):
+  - `QF-6B: AC verification pass — 6 pass, 1 partial, 1 fail (baseline)` (Activity log
+    entry + one small supplementary AC-2 test)
+  - `QF-6B: extend NAV_KEYWORDS for cold-boot main-menu escape`
+  - `QF-6B: cold-boot reachability tests (three seeds)`
+  - `QF-6B: isolate market variance RNG from global state (+ tests)`
+  - `QF-6B: ratchet COVERAGE_FLOOR to <measured>` (only if measurement raises it)
+  - `QF-6B: register <state> hand-drawn dialog in hit_rects` (one per dialog discovered)
 
-Task 9 — Lint + type + format + full suite.
-- `ruff format tools/crawler/ tests/test_crawler/ spacegame/models/market.py
-  tests/test_models/test_market.py` (targeted per AGENT_GUIDE.md, not project-wide).
-- `ruff check` on the same set.
-- `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` — must
-  exit 0. Do NOT regenerate `mypy-baseline.txt` unless the diff is annotations-only per
-  CLAUDE.md.
-- `pytest -n auto -q`. Baseline is 10501 pass, 98 skip. New count must be `>=` 10501; the
-  sprint adds tests so should be higher.
-- Commit sequence (each references `QF-6B`):
-  - `QF-6B: reproduce blockers 1+2 (failing tests)`
-  - `QF-6B: fix event-cycle in Crawler.step_once (drain + carry-over)`
-  - `QF-6B: add tools/crawler/hit_rects.py registry + drift detection`
-  - `QF-6B: widen selectable escape keys to include dialog dismissal`
-  - `QF-6B: wire hit-rect clicks into enumerate_interactive`
-  - `QF-6B: isolate market variance RNG from global state`
-  - `QF-6B: coverage-floor test + updated determinism test`
-  - `QF-6B: softlock triage — register N hand-drawn dialogs`
+Task 6 — Status handoff.
+- Move `Status` from `in-progress` to `review`.
+- Append final Activity log entry summarising: total tests added, `COVERAGE_FLOOR` before/after,
+  cold-boot reach per seed (3 samples), softlock triage counts, any follow-up notes recorded.
+- Do NOT push to remote.
 
 **Cross-sprint reactions to author.** none (foundational tooling; no player-facing surface, no
 dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not reactions per se):
@@ -6912,8 +6944,6 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 - 2026-08-23 — todo (created from post-QF-6 verification)
 - 2026-08-23 18:01 — harness: plan phase starting
 - 2026-08-23 — planning complete; verified all 4 Context-to-read docs exist and reproduce the
-- 2026-08-23 18:07 — harness: implement phase starting (rework cycle 0)
-- 2026-08-23 19:37 — harness: implement phase outcome=timeout, marking blocked. phase timed out after 5400s
   quoted diagnosis (event-cycle bug + hand-drawn dialog invisibility). Confirmed
   `market.py:307` bare `random.seed()` is the only such call in `spacegame/`. Locked 4 open
   decisions: bundled the market.py fix into scope (deterministic requirement of AC 4), locked
@@ -6923,24 +6953,61 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
   hit-rect drift detection. Expanded touch zones to include `spacegame/models/market.py` and
   `tests/test_models/test_market.py`. Cross-sprint reactions: none (foundational tooling). Wrote
   9-task Plan section. PHASE_OK
+- 2026-08-23 18:07 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 19:37 — harness: implement phase outcome=timeout, marking blocked. phase timed out after 5400s
+- 2026-08-23 (post-timeout recovery) — human-driven recovery: cherry-picked / committed the
+  timed-out phase's work as `8524d75` (event-cycle fix — Blocker 1 closed), `c872c51`
+  (hit-rect registry + widened key repertoire + reachability tests + save_slot_0 fixture —
+  Blocker 2 closed), rescoped sprint header to reflect the narrower remaining work (see commit
+  `abd592e`). Sprint returned to `todo` status for a rework planning cycle.
+- 2026-08-23 20:09 — harness: plan phase starting (rework cycle 1)
+- 2026-08-23 — rework planning complete. Verified all 4 Context-to-read docs still exist and
+  read the on-disk state of `tools/crawler/crawler.py`, `tools/crawler/hit_rects.py`,
+  `tests/test_crawler/test_reachability.py`, `tests/test_crawler/test_hit_rects.py`,
+  `tests/test_crawler/test_integration.py`, and `spacegame/models/market.py` to audit each
+  AC against the committed recovery. Findings:
+  - AC-1 PASS (`test_new_game_click_reaches_confirmation_dialog`).
+  - AC-2 **PARTIAL** — test reaches GALAXY_MAP via the Continue button, not the dialog-Yes
+    hit-rect or `K_y`/`K_RETURN`; needs one supplementary test to fully satisfy the AC text.
+  - AC-3 PASS (`test_coverage_floor_reaches_min_states`, floor=8, checkpoint='late').
+  - AC-4 PASS (integration determinism test with checkpoint='late', normalised traces).
+  - AC-5 **FAIL** — `market.py:298,307` still call bare `random.seed(...)` and no
+    determinism-or-global-mutation tests exist in `test_market.py`.
+  - AC-6 PASS (`test_hit_rects.py` covers registry contents + drift).
+  - AC-7 pending post-implementation full-suite run; new baseline is 10520 pass / 98 skip.
+  Rewrote the Plan section to reflect the 6 remaining tasks (from the original 9): AC
+  verification pass, cold-boot NAV_KEYWORDS extension, market RNG isolation, coverage-floor
+  ratchet + softlock triage, quality gate, status handoff. Touch zones updated to drop the
+  "(NEW)" marker from `hit_rects.py` (exists), add per-file granularity, and keep market.py
+  in scope. No new sprints proposed. No new decisions locked — the four decisions from the
+  prior cycle remain in force. Cross-sprint reactions: still none (foundational tooling).
+  PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-23 18:01
-- Completed: 2026-08-23 18:35
+- Started: 2026-08-23 20:09
+- Completed: 2026-08-23 (rework cycle 1)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 0fa45e8
+- Commits: (this planning commit)
 - New_sprints_proposed: none
-- Polish_items_folded_in: market-rng-isolation-fix, hit-rect-drift-detection, softlock-triage-log
-- Decisions_locked: 4
-- Notes: Verified all 4 context docs exist; sprint diagnosis reproduces from source (crawler
-  step_once never drains ui_manager-posted events; hand-drawn dialog rects invisible to
-  enumerate_interactive). Bundled market.py:298+307 fix into scope because AC 4 (determinism
-  after reaching trading) is unachievable without it. Registry uses colocated typed module
-  mirroring NAV_KEYWORDS; drift raises HitRectDriftError. Cross-sprint reactions correctly
-  noted none — this is foundational tooling with no player-facing surface. Baseline test
-  count 10501; new floor >=10501.
+- Polish_items_folded_in: ac-2-dialog-yes-supplementary-test, cold-boot-nav-keyword-extension,
+  cold-boot-reachability-tests, softlock-triage-into-hit-rects-registry
+- Decisions_locked: 0 (four prior decisions from rework cycle 0 still in force)
+- Notes: The sprint's STARTING STATE (added by human after the implement phase timeout)
+  says "the ONE remaining gap is cold-boot exploration". Correct diagnostically but AC-5
+  (market RNG isolation) is also unmet and must ship for the sprint to close. Plan therefore
+  keeps both in scope. The cold-boot fix is a minimal NAV_KEYWORDS extension: adding "new",
+  "continue", "yes" all pointing to GALAXY_MAP. Because the 2x boost only fires when the
+  destination is unvisited, the extension is effectively bootstrap-only — grep-verified that
+  post-MAIN_MENU views using those tokens ("Continue" in combat / dispute / etc.) are
+  reachable only after GALAXY_MAP is visited, at which point the boost is inert. AC-2 gap
+  closed by a supplementary test that exercises the dialog Yes path directly rather than
+  the Continue-button shortcut. Coverage floor ratchet is measurement-driven and gated on
+  cross-seed minimum, not a single lucky seed. Softlock triage folds newly-discovered
+  hand-drawn dialogs into the same `hit_rects.py` registry rather than deferring to a
+  follow-up sprint (small enough to bundle per planner guidance).
+
 ### QF-8 — Population A burndown outside game.py
 
 **Status**: todo
