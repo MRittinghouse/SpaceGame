@@ -126,7 +126,10 @@ class MiningView(BaseView):
             mining_config = MiningConfig(system_id=player.current_system_id)
         self.mining_config = mining_config
 
-        self.session: Optional[MiningSession] = None
+        # QF-8: raising accessor pattern. Raw storage is Optional; the
+        # public `session` @property returns non-Optional and raises when
+        # accessed outside on_enter → on_exit (see docs/qf/accessor_pattern.md).
+        self._session: Optional[MiningSession] = None
         self.next_state: Optional[GameState] = None
 
         # Tutorial mode (set externally by game.py)
@@ -398,6 +401,24 @@ class MiningView(BaseView):
         self._rock_shapes[key] = points
         return points
 
+    # QF-8: lifecycle-scoped accessor (see docs/qf/accessor_pattern.md).
+    # Lifecycle checks use `_session` directly.
+    @property
+    def session(self) -> MiningSession:
+        """Return the live MiningSession for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` or after
+                ``on_exit()``.
+        """
+        if self._session is None:
+            raise RuntimeError(
+                "MiningView.session accessed before on_enter() "
+                "(or after on_exit()); session is created inside on_enter "
+                "and cleared on exit."
+            )
+        return self._session
+
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered mining mini-game")
@@ -446,7 +467,7 @@ class MiningView(BaseView):
         auto_drill_level = dc_state.get_level("auto_drill")
         ore_scanner_level = dc_state.get_level("ore_scanner")
 
-        self.session = MiningSession(
+        self._session = MiningSession(
             self.mining_config,
             click_power_bonus=click_power_bonus,
             passive_drill_bonus=passive_drill_bonus,
@@ -477,6 +498,8 @@ class MiningView(BaseView):
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._session = None
 
     def _create_ui(self) -> None:
         btn_h = scale_y(40)
@@ -540,7 +563,7 @@ class MiningView(BaseView):
 
     def _get_instruction_text(self) -> str:
         """Get contextual instruction text based on current game state."""
-        if not self.session:
+        if self._session is None:
             return ""
         if self.session.get_undepleted_count() == 0:
             return "All rocks mined! Click Regenerate Field to go deeper."
@@ -563,7 +586,7 @@ class MiningView(BaseView):
 
     def _handle_prestige(self) -> None:
         """Handle prestige button press: validate eligibility, then confirm."""
-        if not self.session:
+        if self._session is None:
             return
         level = self.player.mining_prestige_level
         if level >= self.PRESTIGE_MAX_LEVEL:
@@ -637,11 +660,11 @@ class MiningView(BaseView):
     def _end_session(self) -> None:
         """End mining: show transfer screen if silo has ore, otherwise go to summary."""
         # Save current depth for this system (persist between sessions)
-        if self.session:
+        if self._session is not None:
             self.player.mining_depth_per_system[self.mining_config.system_id] = self.session.depth
 
         # Update personal records
-        if self.session:
+        if self._session is not None:
             total_ore = sum(self.session.total_mined.values())
             if total_ore > self.player.best_mining_session_ore:
                 self.player.best_mining_session_ore = total_ore
@@ -664,7 +687,7 @@ class MiningView(BaseView):
     def _finalize_session(self) -> None:
         """Apply selected transfers, calculate XP, and show summary."""
         xp = 0
-        if self.session and self.progression:
+        if self._session is not None and self.progression:
             total = sum(self.session.total_mined.values())
             if total > 0:
                 from spacegame.config import XP_PER_MINING
@@ -878,7 +901,7 @@ class MiningView(BaseView):
             elif event.ui_element == self.prestige_button:
                 self._handle_prestige()
             elif event.ui_element == self.regen_button:
-                if not self.session:
+                if self._session is None:
                     pass
                 elif self.session.get_total_rocks() > 0:
                     total = self.session.get_total_rocks()
@@ -894,7 +917,7 @@ class MiningView(BaseView):
 
     def _perform_regen(self) -> None:
         """Regenerate the field and advance depth (shared by button and auto-regen)."""
-        if not self.session:
+        if self._session is None:
             return
         advance = self.session.regenerate_field()
         self.player.max_mining_depth = max(self.player.max_mining_depth, self.session.depth)
@@ -938,7 +961,7 @@ class MiningView(BaseView):
             self.player.prestige_hint_shown = True
 
     def _click_rock(self, gx: int, gy: int, empowered: bool = False) -> None:
-        if not self.session:
+        if self._session is None:
             return
 
         # Check silo capacity instead of cargo
@@ -1027,28 +1050,28 @@ class MiningView(BaseView):
                     if uid == "silo_expansion":
                         silo_bonus = int(dc_upgrades[uid].effect_per_level)
                         self.player.ore_silo_manager.upgrade_all_capacity(silo_bonus)
-                    elif uid == "energy_conduit" and self.session:
+                    elif uid == "energy_conduit" and self._session is not None:
                         energy_add = int(dc_upgrades[uid].effect_per_level)
                         self.session.max_energy += energy_add
                         self.session.energy = min(
                             self.session.energy + energy_add, self.session.max_energy
                         )
-                    elif uid == "seismic_pulse" and self.session:
+                    elif uid == "seismic_pulse" and self._session is not None:
                         self.session.chain_chance_bonus += dc_upgrades[uid].effect_per_level
                         # Level 3 grants +1 max chain depth
                         if self.player.deep_core_upgrades.get_level(uid) >= 3:
                             from spacegame.models.mining import CHAIN_MAX_DEPTH
 
                             self.session.max_chain_depth = CHAIN_MAX_DEPTH + 1
-                    elif uid == "core_resonance" and self.session:
+                    elif uid == "core_resonance" and self._session is not None:
                         self.session.click_power_bonus += dc_upgrades[uid].effect_per_level
-                    elif uid == "automaton_core" and self.session:
+                    elif uid == "automaton_core" and self._session is not None:
                         self.session.drone_speed_bonus += dc_upgrades[uid].effect_per_level
-                    elif uid == "auto_drill" and self.session:
+                    elif uid == "auto_drill" and self._session is not None:
                         self.session.auto_drill_level = self.player.deep_core_upgrades.get_level(
                             uid
                         )
-                    elif uid == "ore_scanner" and self.session:
+                    elif uid == "ore_scanner" and self._session is not None:
                         self.session.ore_scanner_level = self.player.deep_core_upgrades.get_level(
                             uid
                         )
@@ -1124,7 +1147,7 @@ class MiningView(BaseView):
                 get_audio_manager().play_sfx("mine_chain")
                 self._chain_pending.remove(entry)
 
-        if self.session:
+        if self._session is not None:
             # Emit spark particles for actively drilling rocks (player)
             if self.session.active_rock and self.session.active_rock.drilling:
                 rock = self.session.active_rock
@@ -1219,7 +1242,7 @@ class MiningView(BaseView):
 
     def _process_chain_results(self) -> None:
         """Handle chain-broken rocks: add cargo, emit particles, show feedback."""
-        if not self.session:
+        if self._session is None:
             return
         chain_count = len(self.session.chain_results)
         self.player.total_chains_triggered += chain_count
@@ -1252,7 +1275,7 @@ class MiningView(BaseView):
 
     def _process_milestones(self) -> None:
         """Apply rewards for newly completed milestones."""
-        if not self.session:
+        if self._session is None:
             return
         for ms in self.session.newly_completed_milestones:
             if ms.reward_xp > 0 and self.progression:
@@ -1284,7 +1307,7 @@ class MiningView(BaseView):
 
         # Find the rock that just broke for positioning
         fx, fy = WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2
-        if self.session:
+        if self._session is not None:
             for r in self.session.rocks:
                 if r.depleted and r.commodity_id == result.commodity_id:
                     fx = self.GRID_OFFSET_X + r.grid_x * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -1319,7 +1342,7 @@ class MiningView(BaseView):
             flavor = self.small_font.render(field_info[1], True, Colors.TEXT_SECONDARY)
             screen.blit(flavor, flavor.get_rect(center=(WINDOW_WIDTH // 2, 48)))
 
-        if not self.session:
+        if self._session is None:
             return
 
         # Contextual instructions
@@ -1426,7 +1449,7 @@ class MiningView(BaseView):
 
         # Build set of drone target rock positions for indicator rendering
         drone_target_positions = set()
-        if self.session:
+        if self._session is not None:
             for _idx, target in self.session.drone_targets.items():
                 if target and not target.depleted:
                     drone_target_positions.add((target.grid_x, target.grid_y))
@@ -1504,7 +1527,11 @@ class MiningView(BaseView):
                         pygame.draw.polygon(screen, (180, 180, 180), offset_points, 1)
 
                 # Ore Scanner overlay
-                if self.session and self.session.ore_scanner_level >= 1 and not rock.depleted:
+                if (
+                    self._session is not None
+                    and self.session.ore_scanner_level >= 1
+                    and not rock.depleted
+                ):
                     # L1+: Commodity-colored border glow
                     from spacegame.models.mining import ROCK_TYPE_CONFIGS
 
@@ -1523,11 +1550,18 @@ class MiningView(BaseView):
                     if self.session.ore_scanner_level >= 2 and is_hovered:
                         commodity = self.commodities.get(rock.commodity_id)
                         scan_name = commodity.name if commodity else rock.commodity_id
-                        if self.session.ore_scanner_level >= 3:
+                        # QF-8: ore_cfg is narrowed to non-None by the
+                        # `if ore_cfg:` guard above, but the nested branches
+                        # widen it back in mypy's analysis. Re-check locally
+                        # so the L3 access is type-safe.
+                        if self.session.ore_scanner_level >= 3 and ore_cfg is not None:
                             # L3: Also show yield estimate
-                            cfg = ore_cfg
-                            min_y = rock.yield_override if rock.yield_override else cfg.min_yield
-                            max_y = rock.yield_override if rock.yield_override else cfg.max_yield
+                            min_y = (
+                                rock.yield_override if rock.yield_override else ore_cfg.min_yield
+                            )
+                            max_y = (
+                                rock.yield_override if rock.yield_override else ore_cfg.max_yield
+                            )
                             scan_name += f" ({min_y}-{max_y})"
                         scan_surf = self.cell_font.render(scan_name, True, Colors.TEXT_HIGHLIGHT)
                         scan_x = rect.centerx - scan_surf.get_width() // 2
@@ -1636,7 +1670,7 @@ class MiningView(BaseView):
         panel_w = self.CARD_COL_W
 
         # Calculate height for background
-        active_drones = self.session.drones if self.session else []
+        active_drones = self.session.drones if self._session is not None else []
         content_h = 30 + max(1, len(active_drones)) * 38 + 10
         draw_panel(screen, (panel_x - 8, panel_y - 6, panel_w + 16, content_h), alpha=160)
 
@@ -1645,7 +1679,7 @@ class MiningView(BaseView):
         screen.blit(header, (panel_x, panel_y))
 
         y = panel_y + 28
-        active_drones = self.session.drones if self.session else []
+        active_drones = self.session.drones if self._session is not None else []
 
         if not active_drones:
             no_drones = self.small_font.render("No drones active", True, Colors.TEXT_SECONDARY)
@@ -1685,7 +1719,7 @@ class MiningView(BaseView):
             screen.blit(label_surf, (panel_x + icon_w, y))
 
             # Status: current target or idle
-            target = self.session.drone_targets.get(i) if self.session else None
+            target = self.session.drone_targets.get(i) if self._session is not None else None
             if target and not target.depleted:
                 status = f"Mining {target.rock_type.value}"
                 status_color = Colors.TEXT_SECONDARY
@@ -1710,7 +1744,7 @@ class MiningView(BaseView):
         panel_x = self.CARD_COL_LEFT_X
         panel_w = self.CARD_COL_W
         # Position below drone panel with consistent gap
-        active_drones = self.session.drones if self.session else []
+        active_drones = self.session.drones if self._session is not None else []
         drone_panel_height = max(65, 28 + max(1, len(active_drones)) * 38 + 10)
         panel_y = self.CARD_TOP_Y + drone_panel_height + self.CARD_PAD
 
@@ -1745,7 +1779,7 @@ class MiningView(BaseView):
 
     def _render_depth_panel(self, screen: pygame.Surface) -> None:
         """Render depth info and rock type legend (right column, top)."""
-        if not self.session:
+        if self._session is None:
             return
 
         from spacegame.models.mining import DEPTH_ROCK_THRESHOLDS
@@ -1833,7 +1867,7 @@ class MiningView(BaseView):
 
     def _render_energy_bar(self, screen: pygame.Surface) -> None:
         """Render energy bar below the mining grid."""
-        if not self.session:
+        if self._session is None:
             return
         bar_y = self.GRID_OFFSET_Y + self.mining_config.grid_height * self.CELL_SIZE + 10
         bar_width = self.mining_config.grid_width * self.CELL_SIZE
@@ -1875,7 +1909,7 @@ class MiningView(BaseView):
 
     def _render_milestones(self, screen: pygame.Surface) -> None:
         """Render milestone progress panel."""
-        if not self.session or not self.session.milestones:
+        if self._session is None or not self.session.milestones:
             return
 
         panel_x = self.GRID_OFFSET_X
@@ -1923,7 +1957,7 @@ class MiningView(BaseView):
 
     def _render_silo_bar(self, screen: pygame.Surface) -> None:
         """Render silo capacity bar below the energy bar."""
-        if not self.session:
+        if self._session is None:
             return
         energy_bar_y = self.GRID_OFFSET_Y + self.mining_config.grid_height * self.CELL_SIZE + 10
         bar_y = energy_bar_y + 28
@@ -2187,7 +2221,7 @@ class MiningView(BaseView):
 
     def _calculate_rating(self) -> None:
         """Calculate session performance rating."""
-        if self.session and self._session_elapsed > 0:
+        if self._session is not None and self._session_elapsed > 0:
             total_ore = sum(self.session.total_mined.values())
             ore_per_min = total_ore / (self._session_elapsed / 60.0)
             self._session_rating = calculate_rating(ore_per_min, MINING_THRESHOLDS)
@@ -2469,7 +2503,7 @@ class MiningView(BaseView):
     def _render_summary(self, screen: pygame.Surface) -> None:
         """Render session summary overlay."""
         stats: list[tuple[str, str]] = []
-        if self.session:
+        if self._session is not None:
             total_ore = sum(self.session.total_mined.values())
             completed = sum(1 for ms in self.session.milestones if ms.completed)
             stats = [
@@ -2500,7 +2534,7 @@ class MiningView(BaseView):
             if self.session.chain_chance_bonus > 0:
                 stats.append(("Chain Bonus", f"+{self.session.chain_chance_bonus * 100:.0f}%"))
         # Add per-commodity breakdown with icons
-        if self.session and self.session.total_mined:
+        if self._session is not None and self.session.total_mined:
             for cid, qty in self.session.total_mined.items():
                 commodity = self.commodities.get(cid)
                 cname = commodity.name if commodity else cid
