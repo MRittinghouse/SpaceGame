@@ -8121,26 +8121,84 @@ Downstream conventions worth flagging (not reactions per se):
   to 31 precise paths. Expanded ACs from 3 vague to 8 mechanically verifiable. Wrote 13-task
   Plan. No new sprints proposed. Cross-sprint reactions: none (foundational type-safety, no
   player-facing surface). Pre-phase test baseline: 10544 pass, 98 skip. PHASE_OK
+- 2026-08-23 — implementation Task 1 baseline snapshot: A=0, B=234, C=337, TOTAL=674;
+  mypy-baseline.txt 674 lines; name-defined=67; object-attr=167. Test suite 10544 pass /
+  98 skip. All expected counts match; proceeding with 13-task plan.
+- 2026-08-23 — Task 2: data_loader.py TYPE_CHECKING block for 14 forward-ref classes.
+  29 name-defined resolved. Baseline regenerated (annotation-only). Commit dd961d7.
+- 2026-08-23 — Task 3: engine/game.py TYPE_CHECKING block for 9 classes (MarketEvent,
+  CombatEngine, CombatEncounter, EncounterRef, EncounterDefinition, GroundMissionConfig,
+  GroundMissionResult, MapGenResult, CrewRoster). 18 name-defined resolved. Diff is
+  exclusively the TYPE_CHECKING block per plan; no other game.py changes. Baseline regen.
+  Verified A still 0 (excluded_a untouched). Commit 38f2bd1.
+- 2026-08-23 — Task 4: models forward-ref imports (ship.py, ship_module.py, combat.py,
+  player.py, combat_engine.py). 13 name-defined resolved. Commit bcd67df.
+- 2026-08-23 — Task 5: views forward-ref imports (cockpit_hud, skill_tree_view,
+  mission_log_view, galaxy_map_view, combat_view). 7 name-defined resolved.
+  Milestone: total name-defined count == 0 (all 67 forward refs resolved). Commit 77e1724.
+- 2026-08-23 — Task 6: combat_view.py bare-object annotations (social_manager, journal,
+  tutorial_helper, enemy, state, effect) replaced with real types. 41+1 errors resolved.
+  Also fixed Ship.composite return type from Optional[object] to Optional[ShipComposite]
+  (ship.py in-zone) to close the last combat_view attr-defined-object error. Commit a2a50ac.
+- 2026-08-23 — Task 7: station_hub_view.py (34), cantina_view.py (21+), station_layouts.py (20)
+  bare-object replaced with real types. StationZone.location: Location dataclass field
+  updated. Also fixed cantina_view._board_missions: dict[str, Mission] (in-zone).
+  Population B down to 51. Commit f34dcb5.
+- 2026-08-23 — Task 8: remaining views bare-object across shipyard_view, mission_log_view,
+  galaxy_map_view, tutorial_shop_view, ship_builder_view, encounter_view, character_view,
+  dialogue_view. All ~28 view errors resolved. All ": object" annotations in views now
+  cleared. Commit 480b792.
+- 2026-08-23 — Task 9: models bare-object (build_sharing, combat, combat_engine,
+  combat_tutorial_helper, dialogue, ship_build, ship_presets, smuggling, station_salience).
+  22 errors resolved. Also added missing pygame_gui import in dialogue_view.py to support
+  Task 8's ui_manager: pygame_gui.UIManager annotation. sub_reputation.py __ge__/__lt__
+  preserved. Population B is now 0. Population A remains 0. Commit 070e6fb.
+- 2026-08-23 — Task 10 verification: `python scripts/mypy_populations.py` returns
+  A=0, B=0, C=324, TOTAL=427. All 103 remaining union-attr / "None" has no attribute
+  errors are in engine/game.py and correctly classified as `excluded_a` per the QF-8
+  exclusion rule. Task 11 is a no-op: no newly-revealed lifecycle-A errors outside game.py
+  required accessor-pattern fixes. Rule-of-thumb prediction from Spec A ("expect small
+  numbers because bare-`object` sites were frequently correct logically") held: 0 A-shaped
+  errors surfaced outside the already-excluded game.py bucket.
+- 2026-08-23 — Task 12: sprint Notes appended with "Next flags to enable" subsection
+  recommending 4 flags (no_implicit_optional, warn_unused_ignores, strict_equality,
+  warn_redundant_casts) with rationale each, plus deferral note for check_untyped_defs
+  and disallow_incomplete_defs. pyproject.toml intentionally not modified. Commit 4f41259.
+- 2026-08-23 — Task 13 pre-verification: settings_view.py:105 comment "PT-H: objective
+  hint toggle" produced a false-positive match on AC 3's `grep -rn ": object"
+  spacegame/views/` because "PT-H: objective" contains the ": object" substring inside
+  the word "objective". Rephrased the comment to "PT-H toggle for the objective hint"
+  so AC 3 grep now returns 0 for views. Comment behavior unchanged; settings_view.py is
+  in the sprint's declared touch zones as a contingency file. Commit fcf68b4.
+- 2026-08-23 — Final verification: `python scripts/mypy_populations.py` A=0, B=0, C=324,
+  TOTAL=427. `python -m mypy spacegame/ | mypy_baseline filter` exit 0 (0 new). Full
+  test suite 10544 pass / 98 skip (== baseline). Lint clean on 29 touched files;
+  format clean. 0 new `# type: ignore` in the sprint diff. All 8 acceptance criteria
+  satisfied. Tests 10544 -> 10544 (+0, no new tests needed because Task 11 was a no-op).
+  Baseline shrank from 674 -> 427 lines (247 real errors closed net). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 22:15
-- Completed: 2026-08-23 23:15
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 664ec63
-- New_sprints_proposed: none
-- Polish_items_folded_in: model bare-object annotations (scope expansion beyond views-only
-  original text); game.py name-defined TYPE_CHECKING (in-sprint, not Spec B); per-task
-  baseline-regen discipline
-- Decisions_locked: 8
-- Notes: Verified 6 context docs exist. Reproduced Population B counts live (B=234 = 167
-  object + 67 name-defined). Expanded sprint scope to cover 15 model bare-object annotations
-  in addition to the 41 in views, because Population B target of 0 requires both surfaces.
-  Kept `sub_reputation.py` dunders out of scope per Python protocol. Locked per-task baseline
-  cadence matching QF-8 practice. Reused QF-8's accessor pattern for any newly-revealed
-  lifecycle-A errors; deferred any newly-revealed game.py A errors to Spec B via the existing
-  exclusion rule. No player-facing content, so no cross-sprint reactions to author.
+- Started: 2026-08-23 22:29
+- Completed: 2026-08-23 23:59
+- Files_changed: spacegame/data_loader.py, spacegame/engine/game.py, spacegame/models/build_sharing.py, spacegame/models/combat.py, spacegame/models/combat_engine.py, spacegame/models/combat_tutorial_helper.py, spacegame/models/dialogue.py, spacegame/models/player.py, spacegame/models/ship.py, spacegame/models/ship_build.py, spacegame/models/ship_module.py, spacegame/models/ship_presets.py, spacegame/models/smuggling.py, spacegame/models/station_salience.py, spacegame/views/cantina_view.py, spacegame/views/character_view.py, spacegame/views/cockpit_hud.py, spacegame/views/combat_view.py, spacegame/views/dialogue_view.py, spacegame/views/encounter_view.py, spacegame/views/galaxy_map_view.py, spacegame/views/mission_log_view.py, spacegame/views/settings_view.py, spacegame/views/ship_builder_view.py, spacegame/views/shipyard_view.py, spacegame/views/skill_tree_view.py, spacegame/views/station_hub_view.py, spacegame/views/station_layouts.py, spacegame/views/tutorial_shop_view.py, mypy-baseline.txt, requirements/roadmap/ROADMAP.md
+- Commits: dd961d7, 38f2bd1, bcd67df, 77e1724, a2a50ac, f34dcb5, 480b792, 070e6fb, 4f41259, fcf68b4
+- Tests_added: 0
+- Tests_baseline: 10544
+- Tests_passing: 10544
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Population B burned down from 234 to 0 across 10 commits. A=0 preserved
+  (no newly-revealed lifecycle-A errors outside the excluded game.py bucket).
+  Baseline shrank 674 -> 427 lines. Sprint Notes carry a 4-flag recommendation for a
+  follow-up. Ship.composite return type also fixed as an in-zone ripple. Task 11 was a
+  no-op per Spec A Section 4's "expect small numbers" prediction — bare-object callsites
+  were logically correct even when the annotation was invisible to mypy.
 
 ## Followups
 
