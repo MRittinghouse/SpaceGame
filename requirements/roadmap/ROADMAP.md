@@ -8106,7 +8106,7 @@ Downstream conventions worth flagging (not reactions per se):
 - Started: 2026-08-23 22:15
 - Completed: 2026-08-23 23:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: b602a6e
+- Commits: 664ec63
 - New_sprints_proposed: none
 - Polish_items_folded_in: model bare-object annotations (scope expansion beyond views-only
   original text); game.py name-defined TYPE_CHECKING (in-sprint, not Spec B); per-task
