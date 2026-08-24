@@ -495,6 +495,23 @@ class Game:
             )
         return self._player
 
+    @property
+    def has_player(self) -> bool:
+        """Whether a player exists yet.
+
+        External consumers (the crawler, tools/) legitimately run before
+        ``initialize_new_game()`` -- at the main menu, during character
+        creation, at startup. They CANNOT check with
+        ``getattr(game, "player", None)``: ``getattr``'s default only applies
+        when lookup raises ``AttributeError``, and the ``player`` property
+        raises ``RuntimeError``, which propagates straight through. That idiom
+        silently became a crash when SH-1 introduced the accessor.
+
+        This is the supported way to ask. Code inside this module uses
+        ``self._player`` directly.
+        """
+        return self._player is not None
+
     def _make_crew_commentary_fn(self):
         """Create a callable that returns crew commentary for mini-game events.
 

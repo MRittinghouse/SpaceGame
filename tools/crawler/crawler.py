@@ -65,6 +65,22 @@ INTERACTIVE_TYPES: tuple[type, ...] = (
 # "Exit (Esc)", "LEAVE", and "Leave", which are legitimate navigation).
 
 
+def _game_has_player(game: Any) -> bool:
+    """Is a player loaded? Safe across the real Game and test doubles.
+
+    ``getattr(game, "player", None)`` is NOT safe here: Game.player is a
+    raising accessor (SH-1) and getattr's default only covers AttributeError.
+    Real Game exposes ``has_player``; test fakes expose a plain ``player``
+    attribute, so both shapes are handled.
+    """
+    if hasattr(game, "has_player"):
+        return bool(game.has_player)
+    try:
+        return getattr(game, "player", None) is not None
+    except RuntimeError:
+        return False
+
+
 class HitRectElement:
     """Thin wrapper that makes a hit-rect feel like an interactive widget.
 
@@ -296,7 +312,7 @@ class Crawler:
 
         # Debug credits hook. Applied after checkpoint load so the checkpoint
         # baseline is not clobbered.
-        if self.config.debug_credits and getattr(self.game, "player", None) is not None:
+        if self.config.debug_credits and _game_has_player(self.game):
             self.game.player.credits += self.config.debug_credits
 
         # UI-leak baseline is captured on first change_state via the
@@ -428,7 +444,7 @@ class Crawler:
             return keys
         # ESC opens the pause menu whenever the player is loaded and the
         # state is not on the exempt list (main menu / character creation).
-        if getattr(self.game, "player", None) is not None and current not in (
+        if _game_has_player(self.game) and current not in (
             GameState.MAIN_MENU,
             GameState.STARTUP,
             GameState.NAME_INPUT,
@@ -741,7 +757,7 @@ class Crawler:
 
     def _check_invariants(self, action_index: int) -> None:
         """Check the three invariants; register synthetic crash for violations."""
-        player = getattr(self.game, "player", None)
+        player = self.game.player if _game_has_player(self.game) else None
         if player is None:
             return
         credits = getattr(player, "credits", 0)

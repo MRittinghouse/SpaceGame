@@ -110,7 +110,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 
 | ID | Title | Source | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | todo | none |
+| [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | todo | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | blocked | SH-1 |
 
@@ -8230,7 +8230,7 @@ scene-stack rewrite originally proposed; that framing was measured and rejected.
 
 ### SH-1 — `Game.player` raising accessor
 
-**Status**: in-progress
+**Status**: done
 **Source**: Spec B, SH-1
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SH-2, SH-3
@@ -8439,6 +8439,21 @@ player-facing content, NPC dialogue, journal, crew banter, or news-ticker surfac
 
 **Activity log.**
 - 2026-08-24 — todo (created from Spec B)
+- 2026-08-24 14:20 — manual review: the machine rebooted mid-implement, so the
+  review phase never ran. Implementation had already committed (0ecb2a4).
+  Verified by hand: `Player | None` errors in game.py 64 -> 0 (AC 1); game.py
+  crash-class 103 -> 39; project total 427 -> 342; suite 10,561 passing (AC 3);
+  2,000-action crawl from the `late` checkpoint raised zero accessors and hit
+  zero crashes (AC 4).
+  AC 2 WAS INCOMPLETE and is now fixed. The sprint correctly migrated
+  truth-tests inside game.py to `self._player`, but external consumers were not
+  considered: tools/crawler used `getattr(game, "player", None)` in three
+  places, and that idiom does NOT protect against a raising accessor --
+  getattr's default only applies when lookup raises AttributeError, while this
+  raises RuntimeError, which propagates. Every crawl died in `_check_invariants`
+  at the main menu, and under `-n auto` the resulting worker death wedged the
+  whole suite for 72 minutes with no output. Added `Game.has_player` as the
+  supported public check and migrated the three call sites. PHASE_OK
 - 2026-08-24 09:50 — harness: plan phase starting
 - 2026-08-24 09:55 — planning complete; 7 tasks scoped, legitimate null-player paths enumerated (6 identified), 3 decisions locked (isolated test file, atomic accessor commit, separate baseline-regen commit). PHASE_OK
 
