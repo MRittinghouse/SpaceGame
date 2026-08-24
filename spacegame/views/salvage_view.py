@@ -118,7 +118,11 @@ class SalvageView(BaseView):
         self._quality_burst = QualityBurst()
         self._mode_overlay = ModeOverlay(grid_rect)
 
-        self.session: Optional[SalvageSession] = None
+        # QF-8: raising accessor pattern. Raw storage is Optional; the
+        # public `session` @property returns non-Optional and raises when
+        # the view is used outside its on_enter → on_exit lifetime (see
+        # docs/qf/accessor_pattern.md).
+        self._session: Optional[SalvageSession] = None
         self.next_state: Optional[GameState] = None
         self.mode: str = "scan"
         self._selecting_derelict: bool = True  # Show selection before gameplay
@@ -263,6 +267,27 @@ class SalvageView(BaseView):
         # Exit confirmation state
         self._confirm_exit: bool = False
 
+    # QF-8: lifecycle-scoped accessor (see docs/qf/accessor_pattern.md).
+    # Callers that need to test lifecycle presence use `_session` directly.
+    @property
+    def session(self) -> SalvageSession:
+        """Return the live SalvageSession for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` establishes a
+                session (or after ``on_exit()`` clears it). Note: on_enter
+                itself starts in derelict-selection mode with no session
+                yet; the session is created by ``_start_with_derelict``.
+        """
+        if self._session is None:
+            raise RuntimeError(
+                "SalvageView.session accessed before on_enter() "
+                "(or before _start_with_derelict / after on_exit); "
+                "session is created inside the derelict-selection flow "
+                "and cleared on exit."
+            )
+        return self._session
+
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered salvage operations")
@@ -305,7 +330,7 @@ class SalvageView(BaseView):
         # Start in derelict selection mode
         self._selecting_derelict = True
         self._derelict_choice_rects = []
-        self.session = None
+        self._session = None
         self._session_intel = 0
         self._reveal_timers.clear()
         self._story_shown.clear()
@@ -314,6 +339,8 @@ class SalvageView(BaseView):
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._session = None
 
     # Derelict type -> background sprite ID
     DERELICT_BG_MAP: Dict[str, str] = {
@@ -331,7 +358,7 @@ class SalvageView(BaseView):
 
     def _load_derelict_background(self) -> None:
         """Load and scale derelict background sprite for the current session."""
-        if not self.session:
+        if self._session is None:
             self._derelict_bg = None
             return
         bg_id = self.DERELICT_BG_MAP.get(self.session.derelict_type.id)
@@ -357,8 +384,8 @@ class SalvageView(BaseView):
 
     def _get_theme_color(self) -> tuple:
         """Get the accent color for the current derelict type."""
-        if self.session:
-            return self.DERELICT_THEME.get(self.session.derelict_type.id, Colors.TEXT_HIGHLIGHT)
+        if self._session is not None:
+            return self.DERELICT_THEME.get(self._session.derelict_type.id, Colors.TEXT_HIGHLIGHT)
         return Colors.TEXT_HIGHLIGHT
 
     def _create_ui(self) -> None:
@@ -406,15 +433,15 @@ class SalvageView(BaseView):
         mx, my = mouse_pos
         gx = (mx - self.GRID_OFFSET_X) // self.CELL_SIZE
         gy = (my - self.GRID_OFFSET_Y) // self.CELL_SIZE
-        if self.session:
-            grid_size = self.session.derelict_type.grid_size
+        if self._session is not None:
+            grid_size = self._session.derelict_type.grid_size
             if 0 <= gx < grid_size and 0 <= gy < grid_size:
                 return (gx, gy)
         return None
 
     def _get_instruction_text(self) -> str:
         """Get contextual instruction text based on current game state."""
-        if not self.session:
+        if self._session is None:
             return ""
         if self.session.is_corrupted:
             return "Hull corrupted! Extract what you can. Tab: switch mode"
@@ -434,14 +461,14 @@ class SalvageView(BaseView):
     def _end_session(self) -> None:
         """End the salvage session: transfer, calculate XP, show summary."""
         # Update personal records
-        if self.session:
-            total_salvage = sum(self.session.session_total_salvaged.values())
+        if self._session is not None:
+            total_salvage = sum(self._session.session_total_salvaged.values())
             if total_salvage > self.player.best_salvage_haul:
                 self.player.best_salvage_haul = total_salvage
 
         xp = 0
-        if self.session and self.progression:
-            total = sum(self.session.session_total_salvaged.values())
+        if self._session is not None and self.progression:
+            total = sum(self._session.session_total_salvaged.values())
             if total > 0:
                 from spacegame.config import XP_PER_SALVAGE
 
@@ -522,8 +549,8 @@ class SalvageView(BaseView):
                 self._mode_overlay.set_mode(self.mode)
                 self._show_message("Extract mode: click scanned items to extract them")
             elif event.ui_element == self.next_deck_button:
-                if self.session:
-                    result = self.session.advance_deck()
+                if self._session is not None:
+                    result = self._session.advance_deck()
                     if result:
                         self.player.add_salvage_intel(result.intel_earned)
                         self._session_intel += result.intel_earned
@@ -532,7 +559,7 @@ class SalvageView(BaseView):
                         )
                         self._reveal_timers.clear()
                         # Sync VFX with new deck
-                        d_id = self.session.derelict_type.id
+                        d_id = self._session.derelict_type.id
                         self._vfx_atmosphere.set_deck(result.new_deck)
                         self._vfx_deck_meter.set_state(result.new_deck, d_id)
                         self._vfx_deck_trans.trigger(result.new_deck, d_id)
@@ -548,20 +575,20 @@ class SalvageView(BaseView):
                         self._show_message(f"Deck {result.new_deck}! +{result.intel_earned} Intel")
                     else:
                         # Check why it failed
-                        if self.session.current_deck >= self.session.derelict_type.max_decks:
+                        if self._session.current_deck >= self._session.derelict_type.max_decks:
                             self._show_message("Already at deepest deck!")
                         else:
                             self._show_message("Need 60% extraction to advance")
             elif event.ui_element == self.regen_button:
-                if self.session:
-                    self.session.regenerate_grid()
-                    self.session.current_deck = 1
-                    self.session.session_total_salvaged = {}
+                if self._session is not None:
+                    self._session.regenerate_grid()
+                    self._session.current_deck = 1
+                    self._session.session_total_salvaged = {}
                     self._reveal_timers.clear()
                     self._show_message("Found a new derelict hull!")
 
     def _click_cell(self, gx: int, gy: int) -> None:
-        if not self.session:
+        if self._session is None:
             return
 
         # Auto-detect intent based on cell state
@@ -650,7 +677,7 @@ class SalvageView(BaseView):
 
     def _start_with_derelict(self, derelict_type: DerelictType) -> None:
         """Create a salvage session with the chosen derelict type."""
-        self.session = SalvageSession(
+        self._session = SalvageSession(
             self.salvage_config,
             extract_speed_bonus=self._extract_bonus,
             extra_charges=self._extra_charges,
@@ -704,9 +731,9 @@ class SalvageView(BaseView):
         Returns a fragment ~30% of the time on scan, cycling through
         available stories without repeating until all shown.
         """
-        if not self.session or random.random() > 0.30:
+        if self._session is None or random.random() > 0.30:
             return None
-        derelict_id = self.session.derelict_type.id
+        derelict_id = self._session.derelict_type.id
         stories = self._derelict_stories.get(derelict_id, [])
         if not stories:
             return None
@@ -724,13 +751,13 @@ class SalvageView(BaseView):
 
         Cells appear from edges inward with staggered delays.
         """
-        if not self.session:
+        if self._session is None:
             return
         self._deck_transition.clear()
         self._deck_transition_pending.clear()
-        grid_size = self.session.derelict_type.grid_size
+        grid_size = self._session.derelict_type.grid_size
         center = grid_size / 2.0
-        for cell in self.session.grid:
+        for cell in self._session.grid:
             # Distance from center determines delay (edges appear first)
             dx = abs(cell.grid_x + 0.5 - center)
             dy = abs(cell.grid_y + 0.5 - center)
@@ -808,16 +835,20 @@ class SalvageView(BaseView):
         self._mode_overlay.update(dt)
 
         # Sync corruption ratio from session
-        if self.session and self.session.corruption_started:
-            max_time = self.session.corruption_seconds
+        if self._session is not None and self._session.corruption_started:
+            max_time = self._session.corruption_seconds
             if max_time > 0:
-                ratio = self.session.corruption_timer / max_time
+                ratio = self._session.corruption_timer / max_time
                 self._vfx_atmosphere.set_corruption(ratio)
                 self._vfx_corruption.set_ratio(ratio)
 
         # Corruption heartbeat (pulse at <15% timer)
-        if self.session and self.session.corruption_started and not self.session.is_corrupted:
-            pct = self.session.corruption_timer / max(1, self.session.corruption_seconds)
+        if (
+            self._session is not None
+            and self._session.corruption_started
+            and not self._session.is_corrupted
+        ):
+            pct = self._session.corruption_timer / max(1, self._session.corruption_seconds)
             if pct < 0.15:
                 # Fast heartbeat pulse
                 beat_speed = 6.0 + (1.0 - pct / 0.15) * 4.0
@@ -846,8 +877,8 @@ class SalvageView(BaseView):
             self._deck_transition_active = False
 
         # Emit extraction sparks
-        if self.session:
-            for cell in self.session.grid:
+        if self._session is not None:
+            for cell in self._session.grid:
                 if cell.state == CellState.EXTRACTING:
                     fx = self.GRID_OFFSET_X + cell.grid_x * self.CELL_SIZE + self.CELL_SIZE // 2
                     fy = self.GRID_OFFSET_Y + cell.grid_y * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -856,7 +887,7 @@ class SalvageView(BaseView):
 
             # Snapshot extracting cells before update (for positioning completed results)
             self._extracting_positions: Dict[str, tuple[int, int]] = {}
-            for cell in self.session.grid:
+            for cell in self._session.grid:
                 if cell.state == CellState.EXTRACTING and cell.config:
                     self._extracting_positions[cell.config.commodity_id] = (
                         cell.grid_x,
@@ -864,13 +895,13 @@ class SalvageView(BaseView):
                     )
 
             # Check if corruption just triggered (model handles logic, we add visual wave)
-            was_corrupted = self.session.is_corrupted
-            results = self.session.update(dt)
-            if self.session.is_corrupted and not was_corrupted:
+            was_corrupted = self._session.is_corrupted
+            results = self._session.update(dt)
+            if self._session.is_corrupted and not was_corrupted:
                 # Corruption just happened — the model already flipped cells,
                 # but we could have added a staggered wave before. For now,
                 # emit crackle particles on each corrupted cell staggered
-                for ci, cell in enumerate(self.session.grid):
+                for ci, cell in enumerate(self._session.grid):
                     if cell.state == CellState.CORRUPTED:
                         delay = ci * 0.03  # 30ms per cell
                         fx = self.GRID_OFFSET_X + cell.grid_x * self.CELL_SIZE + self.CELL_SIZE // 2
@@ -936,7 +967,7 @@ class SalvageView(BaseView):
             self._render_derelict_selection(screen)
             return
 
-        if not self.session:
+        if self._session is None:
             return
 
         theme_color = self._get_theme_color()
@@ -1279,7 +1310,10 @@ class SalvageView(BaseView):
                 if reveal_key in self._reveal_timers:
                     reveal_t = min(1.0, self._reveal_timers[reveal_key] / 0.2)
 
-                if cell.has_item:
+                if cell.has_item and cell.config is not None:
+                    # QF-8: has_item implies config is not None per the
+                    # salvage model contract; the explicit guard narrows
+                    # for mypy and defensively short-circuits.
                     # Item cell sprite or colored background
                     cell_spr = self._cell_sprites.get("item")
                     color = cell.config.color
@@ -1536,7 +1570,7 @@ class SalvageView(BaseView):
         wu_state = self.player.wreck_upgrades
 
         # Position below the grid on the left side (avoids right-side button conflicts)
-        grid_size = self.session.derelict_type.grid_size if self.session else 5
+        grid_size = self._session.derelict_type.grid_size if self._session is not None else 5
         panel_x = self.GRID_OFFSET_X
         panel_y = self.GRID_OFFSET_Y + grid_size * self.CELL_SIZE + scale_y(24)
         if panel_y > WINDOW_HEIGHT - scale_y(120):
@@ -1637,14 +1671,14 @@ class SalvageView(BaseView):
                         self._hold = self.player.salvage_hold_manager.get_hold(
                             self.salvage_config.system_id
                         )
-                    elif uid == "signal_amplifier" and self.session:
+                    elif uid == "signal_amplifier" and self._session is not None:
                         charge_add = int(wreck_upgrades[uid].effect_per_level)
-                        self.session.max_charges += charge_add
-                        self.session.charges = min(
-                            self.session.charges + charge_add, self.session.max_charges
+                        self._session.max_charges += charge_add
+                        self._session.charges = min(
+                            self._session.charges + charge_add, self._session.max_charges
                         )
-                    elif uid == "quick_extract" and self.session:
-                        self.session.extract_speed_bonus += wreck_upgrades[uid].effect_per_level
+                    elif uid == "quick_extract" and self._session is not None:
+                        self._session.extract_speed_bonus += wreck_upgrades[uid].effect_per_level
                 else:
                     self._show_message(msg)
                 break
@@ -1740,11 +1774,11 @@ class SalvageView(BaseView):
 
     def _calculate_rating(self) -> None:
         """Calculate session performance rating."""
-        if self.session:
-            total_items = self.session.get_item_count()
+        if self._session is not None:
+            total_items = self._session.get_item_count()
             if total_items > 0:
-                extracted = sum(self.session.session_total_salvaged.values())
-                ratio = min(1.0, extracted / max(1, total_items * self.session.current_deck))
+                extracted = sum(self._session.session_total_salvaged.values())
+                ratio = min(1.0, extracted / max(1, total_items * self._session.current_deck))
                 self._session_rating = calculate_rating(ratio, SALVAGE_THRESHOLDS)
                 if self._session_rating == "S":
                     self.player.s_ranks_earned += 1
@@ -1754,19 +1788,19 @@ class SalvageView(BaseView):
     def _render_summary(self, screen: pygame.Surface) -> None:
         """Render session summary overlay."""
         stats: list[tuple[str, str]] = []
-        if self.session:
-            total_items = sum(self.session.session_total_salvaged.values())
+        if self._session is not None:
+            total_items = sum(self._session.session_total_salvaged.values())
 
-            if self.session.is_corrupted:
+            if self._session.is_corrupted:
                 corruption_status = "Survived"
-            elif self.session.corruption_started:
+            elif self._session.corruption_started:
                 corruption_status = "Avoided"
             else:
                 corruption_status = "Not started"
 
             stats = [
-                ("Derelict Type", self.session.derelict_type.name),
-                ("Deepest Deck", str(self.session.current_deck)),
+                ("Derelict Type", self._session.derelict_type.name),
+                ("Deepest Deck", str(self._session.current_deck)),
                 ("Items Extracted", str(total_items)),
                 ("Intel Earned", str(self._session_intel)),
                 ("Transferred to Cargo", str(self._transfer_count)),

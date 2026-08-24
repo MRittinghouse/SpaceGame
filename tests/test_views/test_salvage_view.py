@@ -139,7 +139,7 @@ class TestSalvageSpriteWiring:
         view = _make_view()
         screen = pygame.display.get_surface()
         # Scan a few cells to exercise scanned cell rendering
-        if view.session:
+        if view._session is not None:
             for cell in view.session.grid[:3]:
                 view.session.scan_cell(cell.grid_x, cell.grid_y)
         view.render(screen)
@@ -149,7 +149,7 @@ class TestSalvageSpriteWiring:
         """Render should handle extracting cells correctly."""
         view = _make_view()
         screen = pygame.display.get_surface()
-        if view.session:
+        if view._session is not None:
             # Scan all cells, then start extracting any items found
             for cell in view.session.grid:
                 view.session.scan_cell(cell.grid_x, cell.grid_y)
@@ -165,7 +165,7 @@ class TestSalvageSpriteWiring:
         """Render should handle corrupted state visuals."""
         view = _make_view()
         screen = pygame.display.get_surface()
-        if view.session:
+        if view._session is not None:
             # Force corruption
             view.session.corruption_started = True
             view.session.corruption_timer = 0
@@ -178,7 +178,7 @@ class TestSalvageSpriteWiring:
         """Background sprite should correspond to derelict type."""
         view = _make_view()
         # The derelict type is random, but _derelict_bg should be set
-        if view.session and view._derelict_bg is not None:
+        if view._session is not None and view._derelict_bg is not None:
             assert isinstance(view._derelict_bg, pygame.Surface)
         view.on_exit()
 
@@ -198,7 +198,7 @@ class TestSalvageDeepPolish:
 
     def test_scan_creates_wave(self) -> None:
         view = _make_view()
-        if view.session:
+        if view._session is not None:
             cell = view.session.grid[0]
             view.session.scan_cell(cell.grid_x, cell.grid_y)
             # The click_cell method creates the wave, not scan_cell directly
@@ -248,7 +248,7 @@ class TestSalvageDeepPolish:
     def test_corruption_wave_queued_on_corruption(self) -> None:
         """Corruption should queue staggered particle wave."""
         view = _make_view()
-        if view.session:
+        if view._session is not None:
             # Trigger a scan to start corruption timer
             view.session.scan_cell(0, 0)
             # Force corruption
@@ -261,7 +261,7 @@ class TestSalvageDeepPolish:
         """Render with scan waves, glow, heartbeat, transition all active."""
         view = _make_view()
         screen = pygame.display.get_surface()
-        if view.session:
+        if view._session is not None:
             # Create active scan wave
             view._scan_waves.append([300.0, 300.0, 20.0, 200.0, 300.0])
             # Create excellent glow
@@ -337,7 +337,7 @@ class TestSalvageUIOverhaul:
         """Clicking a hidden cell should scan it regardless of mode."""
         view = _make_view()
         view.mode = "extract"  # Deliberately in extract mode
-        if view.session:
+        if view._session is not None:
             # Find a hidden cell
             hidden_cell = next((c for c in view.session.grid if c.state == CellState.HIDDEN), None)
             if hidden_cell:
@@ -350,7 +350,7 @@ class TestSalvageUIOverhaul:
         """Clicking a scanned item cell should extract it regardless of mode."""
         view = _make_view()
         view.mode = "scan"  # Deliberately in scan mode
-        if view.session:
+        if view._session is not None:
             # Scan all cells to find items
             for cell in view.session.grid:
                 view.session.scan_cell(cell.grid_x, cell.grid_y)
@@ -372,13 +372,14 @@ class TestSalvageUIOverhaul:
         view = SalvageView(ui_manager, player, _make_commodities(), salvage_config=config)
         view.on_enter()
         assert view._selecting_derelict, "Should start in selection mode"
-        assert view.session is None, "Session should not exist before selection"
+        # QF-8: check raw storage; the public `session` is a raising @property.
+        assert view._session is None, "Session should not exist before selection"
         # Select a derelict type
         from spacegame.models.salvage import DERELICT_TYPES
 
         view._start_with_derelict(DERELICT_TYPES[1])  # Lab Module
         assert not view._selecting_derelict
-        assert view.session is not None
+        assert view._session is not None
         assert view.session.derelict_type.id == "lab_module"
         view.on_exit()
 

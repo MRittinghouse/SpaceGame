@@ -492,6 +492,12 @@ class SalvageSession:
                 yield_amount = cell.update_extract(dt, self.extract_speed_bonus)
                 if yield_amount is not None:
                     yield_amount = self._apply_danger_multiplier(yield_amount)
+                    # QF-8: cell.config is Optional (returns None for EMPTY
+                    # cells); EXTRACTING implies non-empty in practice, but
+                    # guard defensively so a stray state doesn't attribute
+                    # -error.
+                    if cell.config is None:
+                        continue
                     commodity_id = cell.config.commodity_id
                     ingredient_drops = self._roll_salvage_ingredient_drops(cell.quality_tier)
                     results.append(
