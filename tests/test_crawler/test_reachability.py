@@ -20,7 +20,6 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
-from spacegame.config import GameState
 from spacegame.save_manager import SaveManager
 from tools.crawler.crawler import Crawler
 

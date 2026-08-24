@@ -4,7 +4,6 @@ Tests for market pricing system.
 
 import random
 
-import pytest
 from spacegame.data_loader import DataLoader
 from spacegame.models.market import Market, PriceHistory
 
