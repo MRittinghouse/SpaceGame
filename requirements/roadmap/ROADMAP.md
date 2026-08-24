@@ -6579,7 +6579,7 @@ dependencies, not narrative reactions.
 - Notes: Plan audit sound; 11 locked decisions all defensible. Fixed baseline.py mypy no-redef (entry loop var renamed to crash_entry). Nightly workflow correctly uses per-matrix artifact upload rather than the AC's aspirational "one combined artifact" (GitHub Actions matrix constraint). All 81 crawler tests pass. Gate is live: empty baseline means any future crash will fail CI immediately.
 ### QF-6B — Crawler reachability: event delivery, custom hit-rects, coverage floor
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Spec A Section 3 gap found in post-QF-6 verification (2026-08-23)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6946,6 +6946,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 - 2026-08-23 — planning complete; verified all 4 Context-to-read docs exist and reproduce the
 - 2026-08-23 20:20 — harness: implement phase starting (rework cycle 0)
 - 2026-08-23 20:59 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 21:10 — harness: review passed, marking done
   quoted diagnosis (event-cycle bug + hand-drawn dialog invisibility). Confirmed
   `market.py:307` bare `random.seed()` is the only such call in `spacegame/`. Locked 4 open
   decisions: bundled the market.py fix into scope (deterministic requirement of AC 4), locked
