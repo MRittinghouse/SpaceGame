@@ -8230,7 +8230,7 @@ scene-stack rewrite originally proposed; that framing was measured and rejected.
 
 ### SH-1 — `Game.player` raising accessor
 
-**Status**: todo
+**Status**: in-progress
 **Source**: Spec B, SH-1
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: SH-2, SH-3
@@ -8242,40 +8242,217 @@ what is left. Apply the raising-accessor pattern QF-8 proved and documented.
 **Context to read.**
 - `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`
 - `docs/qf/accessor_pattern.md` — the recipe; it names this sprint explicitly
-- `spacegame/engine/game.py` — `__init__`, `initialize_new_game`
+- `spacegame/engine/game.py` — `__init__` (line 191), `initialize_new_game`
+  (line 528), `_handle_state_transitions` (the MAIN_MENU / New Game / NAME_INPUT
+  branches at lines 1069-1130), `_start_intro_narration` (line 3384), the
+  pause-menu → MAIN_MENU path (line 4510).
+- `scripts/mypy_populations.py` — the game.py exclusion rule. SH-1 must NOT
+  change this file; only its `excluded_a` count moves.
+- `mypy-baseline.txt` — confirm `grep -c 'Item "None" of "Player | None"'` reports
+  64 today. Post-sprint it reports 0.
+- `tests/test_views/test_view_accessor_contracts.py` — shape reference for the
+  three-part contract test (raises-before, returns-after, raises-after-clear).
+- `requirements/agent_principles.md` — required reading per AGENT_GUIDE.md.
 
 **Touch zones.**
 ```
-spacegame/engine/game.py
-tests/test_engine/
-mypy-baseline.txt
+spacegame/engine/game.py                             (accessor + assignment + truth-test migration)
+tests/test_engine/test_game_player_accessor.py       (NEW — three-part contract test)
+mypy-baseline.txt                                    (regenerated in an annotation-only follow-up commit)
 ```
 
 **Deliverables.**
-- `Game._player` private field plus a `player` property raising `RuntimeError`
-  with a message naming the lifecycle violation.
-- **First, identify paths that legitimately run with no player** (main menu,
-  character creation, startup). Those need local guards, NOT the accessor.
-  `Game.player` differs from a view's `on_enter`/`on_exit` pair: its null window
-  is real. Applying the property blindly converts correct code into crashes.
-- Baseline shrinks by the number of errors fixed; never regenerate it wholesale.
+- `Game._player: Optional[Player]` private storage plus a `player` property
+  returning non-Optional `Player`, raising `RuntimeError` with a message that
+  names both the class and the two ways the field can be unset (before
+  `initialize_new_game()` and after the main-menu → New Game reset).
+- Two assignment sites migrated: `self.player = Player(...)` in
+  `initialize_new_game` (line 555) and `self.player = None` in the MAIN_MENU
+  → New Game closure (line 1076).
+- Every truth-test on the public name (`if self.player`, `if not self.player`,
+  `self.player is None`, `self.player is not None`, `... if self.player else ...`)
+  migrated to the raw `self._player`, per the pattern doc's migration rule.
+  Grep-verified after the migration; approximately 50 callsites.
+- Unguarded reads (`self.player.credits`, `self.player.game_day`, …) stay
+  textually unchanged; the property returns non-Optional, so mypy is satisfied.
+- The legitimate null-player paths enumerated and recorded in the sprint Notes:
+  - `Game.__init__` (before any state runs).
+  - `initialize_states()` and the MAIN_MENU state.
+  - The MAIN_MENU → New Game closure at line 1076 (`self._player = None` then
+    `_start_intro_narration(return_state=NAME_INPUT)`).
+  - DIALOGUE during the intro narration (`_start_intro_narration` runs before
+    NAME_INPUT with no player).
+  - NAME_INPUT and STARTUP states.
+  - The pause-menu → MAIN_MENU return path (does NOT clear the player, but the
+    pause menu itself does not touch `.player` — the ESC gate at line 6310
+    already excludes this state cluster).
+- Baseline regenerated in a separate annotation-only commit; the diff contains
+  ONLY removed lines (the 64 `Player | None` entries in game.py). Any added
+  lines mean the sprint touched a shape it should not have.
 
 **Acceptance criteria.**
-1. `union-attr` errors of shape `Player | None` in `game.py` reach 0 (from 64).
-2. Every path that runs without a player is guarded, and the sprint notes list
-   them explicitly.
-3. Full suite green, at or above 10,559 passing.
-4. A 2,000-action crawl from the `late` checkpoint raises zero accessors:
-   `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late`
-5. No `# type: ignore` without a one-line justification.
+1. `grep -c 'Item "None" of "Player | None"' mypy-baseline.txt` returns 0 after
+   the baseline regeneration commit (from 64).
+2. Every legitimate null-player path is guarded via `self._player is not None`
+   (or is upstream of `initialize_new_game()` such that no `.player` access is
+   possible), and the sprint Notes list every such path explicitly.
+3. Full suite green, at or above **10,559 passing / 98 skipped**.
+4. `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late` records
+   zero `RuntimeError` whose traceback originates in
+   `spacegame/engine/game.py` at the `player` property.
+5. `tests/test_engine/test_game_player_accessor.py` exists and covers three
+   states — raises before `initialize_new_game()`, returns after, raises after
+   `_player = None` reset — with the message-content assertions used in
+   `test_view_accessor_contracts.py`.
+6. `python scripts/mypy_populations.py` still reports `A=0` on the tracked
+   count. `excluded_a` drops by the fixed error count. SH-1 does NOT modify
+   `mypy_populations.py`.
+7. No new `# type: ignore` without the format `# type: ignore[code]  # why`.
+
+**Plan.**
+
+Task 1 — Enumerate legitimate null-player paths (measurement only).
+- Read the six touchpoints listed under Context (Game.__init__, initialize_states,
+  the MAIN_MENU / New Game / NAME_INPUT branches of `_handle_state_transitions`,
+  `_start_intro_narration`, and the pause-menu → MAIN_MENU path).
+- Grep for every assignment: `grep -n 'self\.player = ' spacegame/engine/game.py`.
+  Expect two hits (lines 555 and 1076 today). Any third hit is a state clear
+  this plan did not anticipate — record it before writing code.
+- Grep for every truth-test: `grep -nE '(if |and |or |else |not )self\.player\b' spacegame/engine/game.py`.
+  Record the count (~50 today). This is the Task 3 migration surface.
+- Record all findings in the sprint Notes. No code change. No commit.
+
+Task 2 — Write the three-part contract test (Red).
+- File: `tests/test_engine/test_game_player_accessor.py` (NEW). Model the
+  header and structure on `tests/test_engine/test_game.py` (headless SDL) and
+  `tests/test_views/test_view_accessor_contracts.py` (the assertion shape).
+- Tests:
+  - `test_game_player_raises_before_initialize_new_game`: fresh `Game()`.
+    Assert `game.player` raises `RuntimeError` and the message contains
+    `"Game"`, `"player"`, and `"initialize_new_game"`.
+  - `test_game_player_returns_after_initialize_new_game`: fresh `Game()`, call
+    `game.initialize_new_game(player_name="Test")`. Assert `game.player is not None`
+    and has `.credits`. (The `player_name="Debug"` shortcut also works but is
+    louder in the test log — prefer `"Test"`.)
+  - `test_game_player_raises_after_main_menu_reset`: after `initialize_new_game`,
+    do `game._player = None` (mirroring the line 1076 closure). Assert
+    `game.player` raises again with the same message.
+- Cleanup: call `pygame.quit()` per the existing test_game.py convention.
+- Run the three tests, confirm all FAIL (property does not exist yet).
+- No commit.
+
+Task 3 — Introduce the raising accessor + migrate assignments and truth-tests
+(single atomic Green commit).
+- File: `spacegame/engine/game.py`.
+- In `__init__` line 274, rename
+  `self.player: Optional[Player] = None` → `self._player: Optional[Player] = None`.
+- Add the `@property player -> Player` immediately after `__init__` (before
+  `_make_crew_commentary_fn`) with a QF-8-style docstring naming both lifecycle
+  points. Message text:
+  `"Game.player accessed before initialize_new_game(); the player is created "
+  "there and cleared on the main-menu → New Game reset."`
+- Migrate the two assignments: line 555 → `self._player = Player(...)`;
+  line 1076 → `self._player = None`.
+- Migrate every truth-test found in Task 1 to `self._player`. Ternaries follow
+  the pattern doc: `X if self.player else Y` → `X if self._player is not None else Y`.
+  Compound conditions (`if self.player and self.player.faction_assignments:` at
+  line 879) become `if self._player is not None and self._player.faction_assignments:`.
+  The rule from the pattern doc: **truth-tests use `_player`; field reads inside
+  the guarded block can use either — prefer `self.player` (the property) for
+  consistency with reads elsewhere in the file.**
+- Leave the ~400 unguarded reads (`self.player.credits` etc.) textually
+  unchanged; the property returns non-Optional so mypy is satisfied.
+- After migrating, run the audit grep:
+  `grep -nE '(if |and |or |else |not )self\.player\b' spacegame/engine/game.py`.
+  Every remaining hit must be a subsequent field access inside a `self._player is not None`
+  guarded block, not a truth-test. If any truth-test survived on the public name,
+  Task 2's `test_game_player_raises_before_initialize_new_game` will catch it
+  the first time a helper method runs on a fresh Game.
+- Run `pytest tests/test_engine/test_game_player_accessor.py -q` — the three
+  tests pass.
+- Run `pytest tests/test_engine/ tests/test_scenarios/ -q` — no regressions.
+- Commit: `SH-1: Game.player → raising accessor + truth-test migration (64 errors)`.
+
+Task 4 — Full suite + populations verification (measurement only).
+- Run `pytest -n auto -q`. Expect pass ≥ 10559, skip ≤ 98.
+- Run `python scripts/mypy_populations.py`. Expect `A=0` (unchanged) and
+  `excluded_a` drops by the fixed count. Record the exact before/after in the
+  activity log.
+- Run `python -m mypy spacegame/engine/game.py 2>&1 | grep -c 'Player | None'`.
+  Expect 0.
+- No commit; no code change. If the tracked `A` count moves at all, stop:
+  the sprint introduced a new Population A error somewhere and must fix it
+  before proceeding.
+
+Task 5 — Regenerate `mypy-baseline.txt` (annotation-only follow-up commit).
+- File: `mypy-baseline.txt`.
+- Run `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline sync`
+  per the CLAUDE.md ratchet-regeneration flow.
+- Verify the diff contains ONLY removed lines corresponding to the 64
+  `Player | None` union-attr entries in game.py. Any added line, or any diff
+  in another file's entries, is a stop condition: SH-1 is scoped to `Game.player`
+  and any collateral is out of scope.
+- Commit: `SH-1: regenerate mypy-baseline after Game.player accessor (64 fewer errors)`.
+
+Task 6 — Crawler check (independent live-state verification).
+- Run
+  `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late --output-dir crawler_runs/sh1_verify`.
+- Inspect the run directory (`crash_record.py` writes the crash log). Assert:
+  zero `RuntimeError` records whose traceback originates in
+  `spacegame/engine/game.py` at the `player` property.
+- If the crawler surfaces an accessor error, a code path implicitly relied on
+  `self.player` in a null-player state. Guard the callsite with
+  `if self._player is not None:` (or hoist the state check earlier). Do NOT
+  swallow with try/except. If found, commit
+  `SH-1: guard <path> against null-player crawler discovery`.
+- Record the crawler summary (states reached, actions completed, crash count,
+  any accessor errors observed) in the activity log.
+
+Task 7 — Sprint notes + hand off to review.
+- Append to the sprint Notes: the full null-player-path enumeration from Task
+  1, the before/after error-count numbers from Task 4, and the crawler summary
+  from Task 6.
+- Set `Status` to `review`.
+- Append the implement-phase-complete sentinel to the Activity log.
+- Commit: `SH-1: complete → review; Game.player accessor lands, 64 errors resolved`.
+
+**Cross-sprint reactions to author.** None (foundational engine refactor; no
+player-facing content, NPC dialogue, journal, crew banter, or news-ticker surface).
 
 **Risks / open questions.**
-- The null window is genuine. Criterion 2 exists because getting this wrong
-  turns a type error into a runtime crash on the main menu, which is the exact
-  opposite of the point.
+- ~~The null window is genuine.~~ Task 1 enumerates it; Task 3's `_player`-based
+  truth-test migration preserves it. Task 2's fresh-Game unit test catches any
+  missed migration before user paths hit it.
+- Truth-tests inside compound conditions and ternaries are the highest-risk
+  migration failures because the migration is textual. The audit grep at the
+  end of Task 3 is the mitigation.
+- `mypy_populations.py`'s `excluded_a` bucket drops, not the tracked `A`. If
+  tracked `A` moves at all, a new Population A error was introduced; investigate
+  and fix inside the sprint before regenerating the baseline.
+- **LOCKED decisions:** (a) new test file `tests/test_engine/test_game_player_accessor.py`
+  (not folded into `test_game.py`) mirrors QF-8's isolated contract file.
+  (b) Accessor migration is a single atomic commit — between renaming `self.player`
+  to `self._player` and adding the property, the code will crash on assignment,
+  so both must land together. (c) Baseline regeneration is a separate
+  annotation-only commit per the CLAUDE.md ratchet rule; interleaving with the
+  Task 3 code commit would violate the rule.
 
 **Activity log.**
 - 2026-08-24 — todo (created from Spec B)
+- 2026-08-24 09:50 — harness: plan phase starting
+- 2026-08-24 09:55 — planning complete; 7 tasks scoped, legitimate null-player paths enumerated (6 identified), 3 decisions locked (isolated test file, atomic accessor commit, separate baseline-regen commit). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-24 09:50
+- Completed: 2026-08-24 09:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: three-part contract test triplet (mirroring `test_view_accessor_contracts.py`); populations-metric before/after check; grep-audit gate after truth-test migration
+- Decisions_locked: 3
+- Notes: All 5 required context docs verified present. Sprint terrain confirmed: 64 `Player | None` union-attr in game.py baseline, 2 assignment sites, ~50 truth-test sites, ~400 unguarded reads. Legitimate null-player paths: Game.__init__, initialize_states, MAIN_MENU, New Game closure (line 1076 → intro narration → NAME_INPUT), STARTUP. No player-facing surface — no cross-sprint reaction work. Task ordering: measure → red test → single atomic accessor+migration commit → verify → regen baseline (separate commit per ratchet rule) → crawler check → review.
 
 ### SH-3 — Remaining game.py crash-class errors
 
