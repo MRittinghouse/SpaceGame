@@ -6989,7 +6989,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 - Started: 2026-08-23 20:09
 - Completed: 2026-08-23 (rework cycle 1)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (this planning commit)
+- Commits: b2d1b11
 - New_sprints_proposed: none
 - Polish_items_folded_in: ac-2-dialog-yes-supplementary-test, cold-boot-nav-keyword-extension,
   cold-boot-reachability-tests, softlock-triage-into-hit-rects-registry
