@@ -134,8 +134,6 @@ class TestHitRectRegistryRaisesOnDrift:
         We patch the predicate to return True (so the entry is active) but
         make the rect_fn raise AttributeError (simulating a renamed attr).
         """
-        import pygame
-
         from tools.crawler.hit_rects import HitRect
 
         def _bad_rect_fn(view: Any) -> Any:
@@ -155,7 +153,7 @@ class TestHitRectRegistryRaisesOnDrift:
         try:
             try:
                 hit_rects_for(game)
-                assert False, "Expected HitRectDriftError was not raised"
+                raise AssertionError("Expected HitRectDriftError was not raised")
             except HitRectDriftError as exc:
                 assert "drifted_entry" in str(exc), (
                     "HitRectDriftError message must name the offending entry"

@@ -105,7 +105,7 @@ class TestCrawlerIntegration:
         assert norm_a == norm_b, (
             "action traces diverged across identically-seeded runs "
             f"(first diff at index "
-            f"{next((i for i, (a, b) in enumerate(zip(norm_a, norm_b)) if a != b), '?')})"
+            f"{next((i for i, (a, b) in enumerate(zip(norm_a, norm_b, strict=False)) if a != b), '?')})"
         )
         # Identical final state.
         state_a = crawler_a.game.state_manager.current_state
