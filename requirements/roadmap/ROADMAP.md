@@ -7552,7 +7552,7 @@ Downstream conventions worth flagging (not reactions per se):
 
 ### QF-9 — Population B burndown (type blindness)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-8 | **Blocks**: none
@@ -8103,6 +8103,7 @@ Downstream conventions worth flagging (not reactions per se):
 - 2026-08-23 22:15 — harness: plan phase starting
 - 2026-08-23 23:15 — planning complete. Verified all Context-to-read paths exist
 - 2026-08-23 22:29 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 23:02 — harness: review phase starting (rework cycle 0)
   (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` Section 4 + Section 1,
   `docs/qf/accessor_pattern.md` from QF-8, `scripts/mypy_populations.py`, `mypy-baseline.txt`,
   `pyproject.toml`, `CLAUDE.md`). Reproduced live Population B breakdown: 167 attr-defined
@@ -8176,29 +8177,37 @@ Downstream conventions worth flagging (not reactions per se):
   format clean. 0 new `# type: ignore` in the sprint diff. All 8 acceptance criteria
   satisfied. Tests 10544 -> 10544 (+0, no new tests needed because Task 11 was a no-op).
   Baseline shrank from 674 -> 427 lines (247 real errors closed net). PHASE_OK
+- 2026-08-23 — review complete; all 8 acceptance criteria verified live. A=0 B=0 confirmed
+  by running `python scripts/mypy_populations.py`. name-defined=0 confirmed by mypy grep.
+  Both `: object` greps return 0. Full suite 10544 pass / 98 skip. pyproject.toml clean
+  (not modified). No new `# type: ignore`. 4 next-flag recommendations present with rationale.
+  AC 6 spot-checked: dd961d7 (data_loader, annotation+baseline only), a2a50ac (combat_view +
+  ship.py return type fix + baseline only), f34dcb5 (views + baseline only). settings_view.py
+  comment rephrase (fcf68b4) is comment-only, not logic; AC 3 grep returns 0. sub_reputation.py
+  object params preserved. Pre-existing ruff errors are project-wide, not introduced by sprint;
+  touched files all pass lint clean. Plan audit: sound; locked decisions all defensible (scope
+  includes both views+models, game.py TYPE_CHECKING-only, sub_reputation dunders preserved,
+  per-task regen, Union over Protocol). Single tighten: the settings_view.py comment workaround
+  (rephrasing "objective" to avoid `: object` false-positive) is a minor fragility — a
+  follow-up compliance scanner (proposed in Cross-sprint reactions) that greps annotation
+  positions rather than raw `: object` would eliminate this class of false positive entirely.
+  Not a blocker; flagging for QF-10 or WB arc. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-23 22:29
-- Completed: 2026-08-23 23:59
-- Files_changed: spacegame/data_loader.py, spacegame/engine/game.py, spacegame/models/build_sharing.py, spacegame/models/combat.py, spacegame/models/combat_engine.py, spacegame/models/combat_tutorial_helper.py, spacegame/models/dialogue.py, spacegame/models/player.py, spacegame/models/ship.py, spacegame/models/ship_build.py, spacegame/models/ship_module.py, spacegame/models/ship_presets.py, spacegame/models/smuggling.py, spacegame/models/station_salience.py, spacegame/views/cantina_view.py, spacegame/views/character_view.py, spacegame/views/cockpit_hud.py, spacegame/views/combat_view.py, spacegame/views/dialogue_view.py, spacegame/views/encounter_view.py, spacegame/views/galaxy_map_view.py, spacegame/views/mission_log_view.py, spacegame/views/settings_view.py, spacegame/views/ship_builder_view.py, spacegame/views/shipyard_view.py, spacegame/views/skill_tree_view.py, spacegame/views/station_hub_view.py, spacegame/views/station_layouts.py, spacegame/views/tutorial_shop_view.py, mypy-baseline.txt, requirements/roadmap/ROADMAP.md
-- Commits: dd961d7, 38f2bd1, bcd67df, 77e1724, a2a50ac, f34dcb5, 480b792, 070e6fb, 4f41259, fcf68b4
-- Tests_added: 0
-- Tests_baseline: 10544
+- Started: 2026-08-23 23:02
+- Completed: 2026-08-23 23:30
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: 1ef53a5
 - Tests_passing: 10544
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Population B burned down from 234 to 0 across 10 commits. A=0 preserved
-  (no newly-revealed lifecycle-A errors outside the excluded game.py bucket).
-  Baseline shrank 674 -> 427 lines. Sprint Notes carry a 4-flag recommendation for a
-  follow-up. Ship.composite return type also fixed as an in-zone ripple. Task 11 was a
-  no-op per Spec A Section 4's "expect small numbers" prediction — bare-object callsites
-  were logically correct even when the annotation was invisible to mypy.
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: The AC 3 grep-based `: object` compliance check is fragile against false positives from the word "objective" in comments; the cross-sprint reactions section proposes a proper compliance test that would eliminate this class of false positive — a QF-10 or WB follow-up candidate.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; locked decisions all defensible. B=0 confirmed live, A=0 preserved, all 67 forward refs resolved, no new type: ignore, pyproject.toml clean. Sprint delivered exactly what the plan specified with zero scope creep and no newly-revealed lifecycle-A errors.
 
 ## Followups
 
