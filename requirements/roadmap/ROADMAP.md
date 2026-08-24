@@ -7552,7 +7552,7 @@ Downstream conventions worth flagging (not reactions per se):
 
 ### QF-9 — Population B burndown (type blindness)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-8 | **Blocks**: none
@@ -8104,6 +8104,7 @@ Downstream conventions worth flagging (not reactions per se):
 - 2026-08-23 23:15 — planning complete. Verified all Context-to-read paths exist
 - 2026-08-23 22:29 — harness: implement phase starting (rework cycle 0)
 - 2026-08-23 23:02 — harness: review phase starting (rework cycle 0)
+- 2026-08-23 23:06 — harness: review passed, marking done
   (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` Section 4 + Section 1,
   `docs/qf/accessor_pattern.md` from QF-8, `scripts/mypy_populations.py`, `mypy-baseline.txt`,
   `pyproject.toml`, `CLAUDE.md`). Reproduced live Population B breakdown: 167 attr-defined
