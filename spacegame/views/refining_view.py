@@ -83,7 +83,10 @@ class RefiningView(BaseView):
         self._tutorial_mode: bool = False
         self._tutorial_step: int = 0
 
-        self.session: Optional[RefiningSession] = None
+        # QF-8: raising accessor pattern. Raw storage is Optional; the
+        # public `session` @property returns non-Optional and raises when
+        # accessed outside on_enter → on_exit (see docs/qf/accessor_pattern.md).
+        self._session: Optional[RefiningSession] = None
         self.next_state: Optional[GameState] = None
         self.selected_recipe_idx: int = 0
 
@@ -252,6 +255,24 @@ class RefiningView(BaseView):
         )
         self._mastery_levelup = MasteryLevelUp()
 
+    # QF-8: lifecycle-scoped accessor (see docs/qf/accessor_pattern.md).
+    # Lifecycle checks use `_session` directly.
+    @property
+    def session(self) -> RefiningSession:
+        """Return the live RefiningSession for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` or after
+                ``on_exit()``.
+        """
+        if self._session is None:
+            raise RuntimeError(
+                "RefiningView.session accessed before on_enter() "
+                "(or after on_exit()); session is created inside on_enter "
+                "and cleared on exit."
+            )
+        return self._session
+
     def on_enter(self) -> None:
         super().on_enter()
         logger.info("Entered refining")
@@ -285,7 +306,7 @@ class RefiningView(BaseView):
             self.player.forge_buffer_manager.upgrade_all_capacity(buffer_bonus)
             self._buffer = self.player.forge_buffer_manager.get_buffer(self.system_id)
 
-        self.session = RefiningSession(
+        self._session = RefiningSession(
             self.all_recipes,
             self.system_id,
             speed_bonus=speed_bonus,
@@ -323,6 +344,8 @@ class RefiningView(BaseView):
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._session = None
 
     def _create_ui(self) -> None:
         btn_h = scale_y(40)
@@ -360,7 +383,7 @@ class RefiningView(BaseView):
 
     def _get_instruction_text(self) -> str:
         """Get contextual instruction text based on current game state."""
-        if not self.session:
+        if self._session is None:
             return ""
         if self._buffer.is_full():
             return "Forge buffer full! Stop refining to transfer output to your ship."
@@ -378,14 +401,14 @@ class RefiningView(BaseView):
     def _end_session(self) -> None:
         """End the refining session: transfer, calculate XP, show summary."""
         # Update personal records
-        if self.session:
+        if self._session is not None:
             total_output = sum(self.session.total_refined.values())
             if total_output > self.player.best_refining_output:
                 self.player.best_refining_output = total_output
 
         self._transfer_count = self._transfer_buffer_to_cargo()
         xp = 0
-        if self.session and self.progression:
+        if self._session is not None and self.progression:
             total = sum(self.session.total_refined.values())
             if total > 0:
                 from spacegame.config import XP_PER_REFINE
@@ -437,7 +460,7 @@ class RefiningView(BaseView):
                 self._batch_hold_timer = 0.0
                 self._batch_hold_repeats = 0
             elif event.ui_element == self.batch_plus_button:
-                if self.session:
+                if self._session is not None:
                     max_batch = self.session.max_queue_size - self.session.get_queue_size()
                 else:
                     max_batch = RefiningSession.MAX_QUEUE_SIZE
@@ -482,7 +505,7 @@ class RefiningView(BaseView):
                     self._active_category = cat
                     # Select first recipe in new filter
                     filtered = self._get_filtered_recipes()
-                    if filtered and self.session:
+                    if filtered and self._session is not None:
                         self.selected_recipe_idx = self.session.available_recipes.index(filtered[0])
                     else:
                         self.selected_recipe_idx = 0
@@ -492,7 +515,7 @@ class RefiningView(BaseView):
         return False
 
     def _handle_recipe_click(self, pos: tuple) -> None:
-        if not self.session:
+        if self._session is None:
             return
         filtered = self._get_filtered_recipes()
         for i, recipe in enumerate(filtered):
@@ -534,7 +557,7 @@ class RefiningView(BaseView):
                     del cargo["schematic_data"]
                 self.player.discover_recipe(recipe.id)
                 # Add to session available recipes
-                if self.session and self.system_id in recipe.location_ids:
+                if self._session is not None and self.system_id in recipe.location_ids:
                     self.session.available_recipes.append(recipe)
                 # Remove from locked list
                 self._locked_recipes = [r for r in self._locked_recipes if r.id != recipe_id]
@@ -573,13 +596,13 @@ class RefiningView(BaseView):
                         bonus = int(forge_upgrades[uid].effect_per_level)
                         self.player.forge_buffer_manager.upgrade_all_capacity(bonus)
                         self._buffer = self.player.forge_buffer_manager.get_buffer(self.system_id)
-                    elif uid == "queue_expansion" and self.session:
+                    elif uid == "queue_expansion" and self._session is not None:
                         self.session.max_queue_size += 1
-                    elif uid == "thermal_efficiency" and self.session:
+                    elif uid == "thermal_efficiency" and self._session is not None:
                         self.session.forge_speed_bonus += forge_upgrades[uid].effect_per_level
-                    elif uid == "catalyst_resonance" and self.session:
+                    elif uid == "catalyst_resonance" and self._session is not None:
                         self.session.forge_yield_bonus += forge_upgrades[uid].effect_per_level
-                    elif uid == "material_insight" and self.session:
+                    elif uid == "material_insight" and self._session is not None:
                         self.session.token_earn_bonus += forge_upgrades[uid].effect_per_level
                 else:
                     self._show_message(msg)
@@ -587,7 +610,7 @@ class RefiningView(BaseView):
         return False
 
     def _start_selected_recipe(self) -> None:
-        if not self.session:
+        if self._session is None:
             return
         if not self.session.available_recipes:
             self._show_message("No recipes available at this location")
@@ -643,7 +666,7 @@ class RefiningView(BaseView):
         Args:
             forward: True for next recipe (Down), False for previous (Up).
         """
-        if not self.session:
+        if self._session is None:
             return
         filtered = self._get_filtered_recipes()
         if not filtered:
@@ -696,7 +719,7 @@ class RefiningView(BaseView):
 
     def _get_filtered_recipes(self) -> list[Recipe]:
         """Get recipes filtered by active category."""
-        if not self.session:
+        if self._session is None:
             return []
         if self._active_category == "all":
             return self.session.available_recipes
@@ -724,7 +747,7 @@ class RefiningView(BaseView):
         """Get current forge visual state based on queue and flash timer."""
         if self._forge_flash_timer > 0:
             return "complete"
-        if self.session and self.session.job_queue:
+        if self._session is not None and self.session.job_queue:
             return "active"
         return "idle"
 
@@ -779,7 +802,7 @@ class RefiningView(BaseView):
         # Forge atmosphere VFX
         self._forge_atmosphere.update(dt)
         self._discovery_hint.update(dt)
-        if self.session:
+        if self._session is not None:
             active_count = len(self.session.job_queue)
             max_tier = 1
             for job in self.session.job_queue:
@@ -788,7 +811,7 @@ class RefiningView(BaseView):
         else:
             self._forge_atmosphere.set_intensity(0)
         # Sync mastery bar from current processing job
-        if self.session and self.session.job_queue:
+        if self._session is not None and self.session.job_queue:
             current_job = self.session.job_queue[0]
             mastery = self.player.recipe_mastery.get_mastery(current_job.recipe.id)
             recipe_name = current_job.recipe.name
@@ -853,7 +876,7 @@ class RefiningView(BaseView):
                 if expected_repeats > self._batch_hold_repeats:
                     self._batch_hold_repeats = expected_repeats
                     if self._batch_hold_direction > 0:
-                        if self.session:
+                        if self._session is not None:
                             max_batch = self.session.max_queue_size - self.session.get_queue_size()
                         else:
                             max_batch = 5
@@ -863,7 +886,7 @@ class RefiningView(BaseView):
                         self.batch_count = max(1, self.batch_count - 1)
                     self._update_craft_button_text()
 
-        if self.session:
+        if self._session is not None:
             # Forge flame particles — intensity scales with active job count
             job_count = len(self.session.job_queue)
             flame_chance = min(0.05 + job_count * 0.05, 0.30)
@@ -945,7 +968,7 @@ class RefiningView(BaseView):
                     if not self.player.is_recipe_discovered(r.id):
                         self.player.discover_recipe(r.id)
                         # Add to session available recipes
-                        if self.session and r.id not in [
+                        if self._session is not None and r.id not in [
                             ar.id for ar in self.session.available_recipes
                         ]:
                             if self.system_id in r.location_ids:
@@ -1012,7 +1035,7 @@ class RefiningView(BaseView):
         title = self.title_font.render("REFINING", True, Colors.TEXT_HIGHLIGHT)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH // 2, 30)))
 
-        if not self.session:
+        if self._session is None:
             return
 
         # Forge tokens display (top right, animated counter)
@@ -1356,7 +1379,11 @@ class RefiningView(BaseView):
             fy = panel_y - 20
             screen.blit(forge_sprite, (fx, fy))
 
-        max_queue = self.session.max_queue_size if self.session else RefiningSession.MAX_QUEUE_SIZE
+        max_queue = (
+            self.session.max_queue_size
+            if self._session is not None
+            else RefiningSession.MAX_QUEUE_SIZE
+        )
         header = self.info_font.render(
             f"JOB QUEUE ({self.session.get_queue_size()}/{max_queue})",
             True,
@@ -1425,7 +1452,7 @@ class RefiningView(BaseView):
                 y += 50
 
         # Empty queue slot outlines
-        current_jobs = self.session.get_queue_size() if self.session else 0
+        current_jobs = self.session.get_queue_size() if self._session is not None else 0
         empty_slots = max_queue - current_jobs
         for _ in range(empty_slots):
             slot_rect = pygame.Rect(panel_x, y + 22, scale_x(300), scale_y(16))
@@ -1569,7 +1596,7 @@ class RefiningView(BaseView):
 
     def _calculate_rating(self) -> None:
         """Calculate session performance rating."""
-        if self.session and self._session_elapsed > 0:
+        if self._session is not None and self._session_elapsed > 0:
             total_output = sum(self.session.total_refined.values())
             output_per_min = total_output / (self._session_elapsed / 60.0)
             self._session_rating = calculate_rating(output_per_min, REFINING_THRESHOLDS)
@@ -1682,7 +1709,7 @@ class RefiningView(BaseView):
     def _render_summary(self, screen: pygame.Surface) -> None:
         """Render session summary overlay with forge sprite."""
         stats: list[tuple[str, str]] = []
-        if self.session:
+        if self._session is not None:
             total_output = sum(self.session.total_refined.values())
             speed_pct = f"{self.session.speed_bonus * 100:.0f}%"
             yield_pct = f"{self.session.yield_bonus * 100:.0f}%"
