@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from spacegame.models.progression import PlayerProgression
 
 
@@ -17,7 +15,7 @@ class TestGroundLootBonusApplication:
         with patch.object(Game, "__init__", lambda self: None):
             game = Game()
 
-        game.player = MagicMock()
+        game._player = MagicMock()
         game.player.credits = 1000
         game.player.progression = PlayerProgression()
         game.player.faction_reputation = MagicMock()

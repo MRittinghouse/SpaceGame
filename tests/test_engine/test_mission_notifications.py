@@ -47,7 +47,7 @@ def _make_game_with_prereq_completed(
     with patch.object(Game, "__init__", lambda self: None):
         game = Game()
 
-    game.player = MagicMock()
+    game._player = MagicMock()
     game.player.game_day = 1
     game.player.current_system_id = "nexus_prime"
     game.player.dialogue_flags = {}
@@ -239,12 +239,12 @@ class TestCB2CombatMarkerWiring:
             game = Game()
 
         game.ambient_dialogue = AmbientDialogueManager([])
-        game.player = MagicMock()
+        game._player = MagicMock()
         game.player.game_day = 3
         game.player.current_system_id = "nexus_prime"
 
         mock_state = MagicMock()
-        mock_state.result = CombatResult.DEFEAT  # Simple branch — no loot/XP logic
+        mock_state.result = CombatResult.DEFEAT  # Simple branch â€” no loot/XP logic
         mock_state.player.hull = 80
         mock_state.player.shields = 20
         game.combat_view = MagicMock()
@@ -317,7 +317,7 @@ class TestCB2WarpArrivalBanterWiring:
         game.ambient_dialogue = AmbientDialogueManager([ca_line])
         game.ambient_dialogue.mark_combat(0)  # Combat happened on day 0
 
-        game.player = MagicMock()
+        game._player = MagicMock()
         game.player.game_day = 1  # Within 3-day window of day-0 combat
         game.player.current_system_id = "breakstone"
         game.player.dialogue_flags = {}
@@ -336,7 +336,7 @@ class TestCB2WarpArrivalBanterWiring:
         game.data_loader = MagicMock()
         game.data_loader.get_system.return_value = MagicMock(faction="")
 
-        # Galaxy map view with an arrival message — simulates warp-arrival trigger
+        # Galaxy map view with an arrival message â€” simulates warp-arrival trigger
         game.galaxy_map_view = MagicMock()
         game.galaxy_map_view.active = True
         game.galaxy_map_view.save_requested = False

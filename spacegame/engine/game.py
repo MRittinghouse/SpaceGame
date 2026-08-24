@@ -271,7 +271,7 @@ class Game:
         timer.begin("data_loading")
         self.data_loader = get_data_loader()
         timer.end("data_loading")
-        self.player: Optional[Player] = None
+        self._player: Optional[Player] = None
 
         # Event generator (initialized after data is loaded)
         self.event_generator: Optional[EventGenerator] = None
@@ -480,6 +480,21 @@ class Game:
         logger.info(f"Target FPS: {FPS_TARGET}")
         timer.log_summary()
 
+    @property
+    def player(self) -> "Player":
+        """Return the active Player for this game session.
+
+        Raises:
+            RuntimeError: If accessed before ``initialize_new_game()`` (or after
+                the main-menu → New Game reset that clears ``_player`` to ``None``).
+        """
+        if self._player is None:
+            raise RuntimeError(
+                "Game.player accessed before initialize_new_game(); the player is created "
+                "there and cleared on the main-menu → New Game reset."
+            )
+        return self._player
+
     def _make_crew_commentary_fn(self):
         """Create a callable that returns crew commentary for mini-game events.
 
@@ -520,7 +535,7 @@ class Game:
             commodity: Commodity involved.
             amount: Amount or value string.
         """
-        if self.player:
+        if self._player is not None:
             self._pending_player_news.append(
                 self.player.make_news_context(detail, commodity, amount)
             )
@@ -552,7 +567,7 @@ class Game:
         # Debug mode: 1M credits when player name is "Debug"
         credits = 1_000_000 if player_name == "Debug" else STARTING_CREDITS
 
-        self.player = Player(
+        self._player = Player(
             name=player_name,
             credits=credits,
             current_system_id="nexus_prime",
@@ -837,7 +852,7 @@ class Game:
             self.politics_manager.set_faction_perks(self.data_loader.faction_perks)
 
         # Wire politics into dialogue system for faction_reputation_changes
-        if self.politics_manager and self.player:
+        if self.politics_manager and self._player is not None:
             self.dialogue_manager.set_politics_manager(self.politics_manager, self.player)
 
     def _initialize_galaxy_event_generator(self) -> None:
@@ -876,7 +891,7 @@ class Game:
         Sets each system's faction field to the assigned faction's display name.
         Called after new game creation and game loading.
         """
-        if not self.player or not self.player.faction_assignments:
+        if self._player is None or not self.player.faction_assignments:
             return
         for system_id, faction_id in self.player.faction_assignments.items():
             system = self.data_loader.systems.get(system_id)
@@ -886,7 +901,7 @@ class Game:
 
     def try_generate_market_event(self) -> None:
         """Try to generate a random market event for a system."""
-        if not self.event_generator or not self.player:
+        if not self.event_generator or self._player is None:
             return
 
         # Get commodity names for event descriptions
@@ -1016,7 +1031,7 @@ class Game:
 
         # Ambient — faction-aware when docked
         faction_id = ""
-        if self.player:
+        if self._player is not None:
             system = self.data_loader.get_system(self.player.current_system_id)
             if system:
                 faction_id = system.faction
@@ -1073,7 +1088,7 @@ class Game:
 
                 def _do():
                     # Always start fresh — clear existing player if loaded
-                    self.player = None
+                    self._player = None
                     self._start_intro_narration(return_state=GameState.NAME_INPUT)
 
                 self._start_transition(TransitionType.FADE, 0.5, _do)
@@ -1166,7 +1181,7 @@ class Game:
                 self.galaxy_map_view.arrival_message = None
 
                 # Travel log: first visit entry
-                if self.travel_log and self.journal and self.player:
+                if self.travel_log and self.journal and self._player is not None:
                     system_id = self.player.current_system_id
                     if len(self.player.systems_visited) > self._last_visited_count:
                         entry = self.travel_log.on_first_visit(system_id, self.player.game_day)
@@ -1175,7 +1190,7 @@ class Game:
                     self._last_visited_count = len(self.player.systems_visited)
 
                 # Trigger ambient crew dialogue on system arrival
-                if self.ambient_dialogue and self.crew_roster and self.player:
+                if self.ambient_dialogue and self.crew_roster and self._player is not None:
                     system_id = self.player.current_system_id
                     system = self.data_loader.get_system(system_id)
                     faction_id = system.faction if system else ""
@@ -1245,7 +1260,7 @@ class Game:
                 from spacegame.constants.flags import talked_to_npc
 
                 if (
-                    self.player
+                    self._player is not None
                     and self.player.current_system_id == "nexus_prime"
                     and not self.player.dialogue_flags.get(talked_to_npc("officer_larsen"), False)
                 ):
@@ -1472,7 +1487,7 @@ class Game:
                         mission = self.mission_manager.get_mission(accept_id)
                         name = mission.name if mission else accept_id
                         # Grant on-accept cargo
-                        if mission and self.player:
+                        if mission and self._player is not None:
                             for cargo in mission.on_accept_cargo:
                                 self.player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
                                 self._mission_notifications.append(
@@ -1489,7 +1504,7 @@ class Game:
                     if success:
                         name = mission.name if mission else abandon_id
                         # Remove on-accept cargo the mission granted
-                        if mission and self.player:
+                        if mission and self._player is not None:
                             for cargo in mission.on_accept_cargo:
                                 removed = self.player.ship.remove_cargo(
                                     cargo.commodity_id, cargo.quantity
@@ -1537,7 +1552,7 @@ class Game:
                 self.dialogue_view.next_state = None
 
                 # Sync dialogue flags and social state back to player
-                if self.player:
+                if self._player is not None:
                     self.player.dialogue_flags = self.dialogue_manager.get_flags()
                     self.player.social_state = self.social_manager.get_state()
 
@@ -1785,14 +1800,14 @@ class Game:
 
                     crew_bonuses = GroundCrewBonuses.compute(
                         crew_ids,
-                        self.attribute_sheet if self.player else None,
+                        self.attribute_sheet if self._player is not None else None,
                     )
 
                     gen_result = self._build_ground_map(config)
                     mission_state = gen_result.build_mission_state(
                         crew_bonuses,
-                        self.attribute_sheet if self.player else None,
-                        self.player.progression if self.player else None,
+                        self.attribute_sheet if self._player is not None else None,
+                        self.player.progression if self._player is not None else None,
                     )
                     from spacegame.views.ground_exploration_view import (
                         GroundExplorationView,
@@ -2043,7 +2058,7 @@ class Game:
                         self._ensure_mining_view()
                         # Activate tutorial mode on first mining after Marcus dialogue
                         if (
-                            self.player
+                            self._player is not None
                             and self.player.dialogue_flags.get(met_npc("marcus_jin"))
                             and not self.player.dialogue_flags.get("mining_tutorial_done")
                             and hasattr(self, "mining_view")
@@ -2061,7 +2076,7 @@ class Game:
                         self._ensure_salvage_view()
                         # Activate tutorial on first salvage visit
                         if (
-                            self.player
+                            self._player is not None
                             and not self.player.dialogue_flags.get("salvage_tutorial_done")
                             and hasattr(self, "salvage_view")
                             and self.salvage_view
@@ -2078,7 +2093,7 @@ class Game:
                         self._ensure_refining_view()
                         # Activate tutorial on first refining visit
                         if (
-                            self.player
+                            self._player is not None
                             and not self.player.dialogue_flags.get("refining_tutorial_done")
                             and hasattr(self, "refining_view")
                             and self.refining_view
@@ -2191,7 +2206,7 @@ class Game:
                 next_state = self.dispute_view.get_next_state()
                 if next_state == GameState.STATION_HUB:
                     self.dispute_view.next_state = None
-                    if self.politics_dispute_manager and self.player:
+                    if self.politics_dispute_manager and self._player is not None:
                         self.player.politics_dispute_state = self.politics_dispute_manager.to_dict()
 
                     def _do_dispute_back():
@@ -2450,7 +2465,7 @@ class Game:
         """
         from spacegame.views.sell_lot_view import SellLotView
 
-        if self.player is None:
+        if self._player is None:
             return
         self.sell_lot_view = SellLotView(
             ui_manager=self.ui_manager,
@@ -2465,7 +2480,7 @@ class Game:
         from spacegame.constants.flags import auction_first_listing_created
 
         def _on_listing_created() -> None:
-            if self.player is not None and self.journal is not None:
+            if self._player is not None and self.journal is not None:
                 self.journal.trigger_auto_entry(
                     auction_first_listing_created(),
                     self.player.game_day,
@@ -2594,7 +2609,7 @@ class Game:
         )
 
         def _on_player_lot_sold(archived: Optional[dict[str, Any]], sale_price: int) -> None:
-            if self.player is None or archived is None:
+            if self._player is None or archived is None:
                 return
             # Credit the player at the hammer price. The listing fee was
             # already deducted at create_listing time and is non-refundable.
@@ -2616,7 +2631,7 @@ class Game:
                 )
 
         def _on_player_lot_withdrawn(archived: Optional[dict[str, Any]]) -> None:
-            if self.player is None or archived is None:
+            if self._player is None or archived is None:
                 return
             # Return the item to inventory.
             kind = archived.get("item_kind")
@@ -2711,7 +2726,7 @@ class Game:
             make_salko,
         )
 
-        if self.player is None:
+        if self._player is None:
             return
         venue_id = "crimson_reach"
         state = self.player.auction_state
@@ -2802,7 +2817,7 @@ class Game:
             make_stellaris_speculator,
         )
 
-        if self.player is None:
+        if self._player is None:
             return
         venue_id = "stellaris"
         state = self.player.auction_state
@@ -2925,7 +2940,7 @@ class Game:
             politics_manager=self.politics_manager,
             news_ticker=self.news_ticker,
             crew_roster=self.crew_roster,
-            progression=self.player.progression if self.player else None,
+            progression=self.player.progression if self._player is not None else None,
             social_manager=self.social_manager,
             market_lookup=_market_lookup,
         )
@@ -2950,7 +2965,7 @@ class Game:
         )
         # SA-P3: outcome callback emits the first-time journal flags.
         self.politics_dispute_manager.set_outcome_callback(self._on_dispute_outcome)
-        if self.player is not None:
+        if self._player is not None:
             self.politics_dispute_manager.set_player(self.player)
             # SA-P2: restore any saved manager state (additive field;
             # older saves carry an empty dict per the migration rule).
@@ -2982,7 +2997,7 @@ class Game:
 
         Each flag is set at most once per save (idempotent).
         """
-        if self.player is None:
+        if self._player is None:
             return
         flags = self.player.dialogue_flags
         # First dispute attended (fires for any resolution).
@@ -3069,7 +3084,7 @@ class Game:
                 from spacegame.models.wreckers_guild import current_tier_id
 
                 player_tier = current_tier_id(
-                    self.player.sub_reputation if self.player is not None else {}
+                    self.player.sub_reputation if self._player is not None else {}
                 )
                 resolved_via_mediate = getattr(dispute, "resolved_via", None) == "mediate"
                 if player_tier == "master" and resolved_via_mediate:
@@ -3080,7 +3095,7 @@ class Game:
 
     def _maybe_set_tomas_congress_banter_flag(self) -> None:
         """SA-P4 → SA-X6 trigger. One-shot; SA-X6 consumes for banter."""
-        if self.player is None or self.crew_roster is None:
+        if self._player is None or self.crew_roster is None:
             return
         recruited = getattr(self.crew_roster, "recruited_ids", None)
         ids: set[str] = set()
@@ -3100,8 +3115,8 @@ class Game:
         """
         if self.journal is None:
             return
-        system_id = self.player.current_system_id if self.player is not None else ""
-        game_day = self.player.game_day if self.player is not None else 0
+        system_id = self.player.current_system_id if self._player is not None else ""
+        game_day = self.player.game_day if self._player is not None else 0
         self.journal.trigger_auto_entry(trigger_flag, game_day, system_id)
 
     def _ensure_dispute_view(self) -> None:
@@ -3277,8 +3292,8 @@ class Game:
         self.journal_view = JournalView(
             self.ui_manager,
             self.journal,
-            self.player.game_day if self.player else 1,
-            self.player.current_system_id if self.player else "",
+            self.player.game_day if self._player is not None else 1,
+            self.player.current_system_id if self._player is not None else "",
             mission_manager=self.mission_manager,
         )
         self.state_manager.register_state(GameState.JOURNAL, self.journal_view)
@@ -3290,7 +3305,7 @@ class Game:
         crew_slots = (
             self.player.ship.ship_type.crew_slots
             + int(self.player.progression.get_bonus("crew_slot_bonus"))
-            if self.player
+            if self._player is not None
             else 1
         )
         from spacegame.models.mission import MissionStatus as _MS
@@ -3322,7 +3337,7 @@ class Game:
 
         # Resolve active dialogue tree from NPC state machine
         active_dialogue_id = npc.get_active_dialogue_id(
-            self.player.dialogue_flags if self.player else {}
+            self.player.dialogue_flags if self._player is not None else {}
         )
         tree = self.data_loader.get_dialogue(active_dialogue_id)
         if not tree:
@@ -3436,7 +3451,7 @@ class Game:
             journal=self.journal,
         )
         self.combat_view._return_state = return_state
-        if self.player:
+        if self._player is not None:
             self.combat_view._bribe_credits_available = self.player.credits
         self.state_manager.register_state(GameState.COMBAT, self.combat_view)
 
@@ -3504,7 +3519,7 @@ class Game:
         self._ensure_combat_view(engine, return_state)
 
         # Activate combat tutorial on player's first fight
-        if self.player and not self.player.dialogue_flags.get("combat_tutorial_done"):
+        if self._player is not None and not self.player.dialogue_flags.get("combat_tutorial_done"):
             from spacegame.models.combat_tutorial_helper import CombatTutorialHelper
 
             self.combat_view._tutorial_helper = CombatTutorialHelper()
@@ -3599,7 +3614,7 @@ class Game:
         danger = "moderate"
         system_id = ""
         faction_id = ""
-        if self.player:
+        if self._player is not None:
             dest_id = getattr(self.galaxy_map_view, "_deferred_system_id", None)
             system_id = dest_id or self.player.current_system_id
             system = self.data_loader.systems.get(system_id)
@@ -3611,7 +3626,7 @@ class Game:
         # _is_eligible can filter out their encounters from random rolls.
         # Scripted encounters via encounter_def_id bypass this filter.
         resolved_caps: set[str] = set()
-        if self.player and hasattr(self.player, "captain_memory"):
+        if self._player is not None and hasattr(self.player, "captain_memory"):
             resolved_caps = {
                 cid for cid, mem in self.player.captain_memory.items() if mem.is_resolved
             }
@@ -3622,8 +3637,8 @@ class Game:
             seed=ref.encounter_seed,
             system_id=system_id,
             faction_id=faction_id,
-            player_level=self.player.progression.level if self.player else 1,
-            dialogue_flags=self.player.dialogue_flags if self.player else {},
+            player_level=self.player.progression.level if self._player is not None else 1,
+            dialogue_flags=self.player.dialogue_flags if self._player is not None else {},
             resolved_captain_ids=resolved_caps,
         )
 
@@ -3667,7 +3682,7 @@ class Game:
         Returns:
             True if bounty hunter encounter was triggered.
         """
-        if not self.player:
+        if self._player is None:
             return False
 
         # Check bounty immunity
@@ -3747,7 +3762,7 @@ class Game:
         Returns:
             True if inspection was triggered (caller should return early).
         """
-        if not self.player or not self.data_loader:
+        if self._player is None or not self.data_loader:
             return False
 
         system_id = self.player.current_system_id
@@ -3875,7 +3890,7 @@ class Game:
         Returns:
             True if a ground mission was triggered, False otherwise.
         """
-        if not self.player or not self.mission_manager:
+        if self._player is None or not self.mission_manager:
             return False
 
         trigger = self.mission_manager.get_ground_mission_trigger(
@@ -3935,7 +3950,7 @@ class Game:
 
     def _apply_encounter_result(self) -> None:
         """Apply rewards from a completed encounter to player state."""
-        if not self.encounter_view or not self.player:
+        if not self.encounter_view or self._player is None:
             return
 
         outcome = self.encounter_view.chosen_outcome
@@ -4040,7 +4055,7 @@ class Game:
         Syncs hull/shields, awards XP, generates and distributes loot,
         handles bribe costs, negotiation outcomes, or applies defeat penalties.
         """
-        if not self.combat_view or not self.player:
+        if not self.combat_view or self._player is None:
             return
 
         from spacegame.models.combat import CombatResult
@@ -4054,7 +4069,7 @@ class Game:
         self.player.ship.current_shields = state.player.shields
 
         # CB-2: record that combat occurred so combat_after banter can fire
-        if self.ambient_dialogue and self.player:
+        if self.ambient_dialogue and self._player is not None:
             self.ambient_dialogue.mark_combat(self.player.game_day)
 
         if result == CombatResult.VICTORY:
@@ -4227,7 +4242,7 @@ class Game:
         Returns:
             List of available GroundContract instances.
         """
-        if not self.player or not self.ground_contract_manager:
+        if self._player is None or not self.ground_contract_manager:
             return []
 
         system_id = self.player.current_system_id
@@ -4259,7 +4274,7 @@ class Game:
                 # MissionManager.accept_mission, so they need to record
                 # the TW interaction directly. Otherwise tomas_restless
                 # incorrectly drifts even when the player IS working.
-                if self.player:
+                if self._player is not None:
                     self.player.record_interaction("any_mission_accepted")
                 self.start_ground_mission(c.config)
                 return
@@ -4283,7 +4298,7 @@ class Game:
         Args:
             result: The completed mission result.
         """
-        if not self.player:
+        if self._player is None:
             return
 
         from spacegame.models.ground_mission import (
@@ -4663,7 +4678,7 @@ class Game:
         Args:
             slot: Save slot number (0-11)
         """
-        if not self.player:
+        if self._player is None:
             logger.warning("No active game to save")
             return
 
@@ -4746,7 +4761,7 @@ class Game:
             return
 
         # Restore player
-        self.player = save_data["player"]
+        self._player = save_data["player"]
 
         # Restore playtime
         self.total_playtime_seconds = save_data.get("playtime_seconds", 0)
@@ -4939,7 +4954,7 @@ class Game:
 
     def auto_save(self) -> None:
         """Auto-save to slot 0."""
-        if self.player:
+        if self._player is not None:
             self._save_game(slot=0)
             logger.info("Auto-save completed")
 
@@ -5024,13 +5039,13 @@ class Game:
         elif current_state == GameState.TRADING:
             trigger = "trading"
             # Check if player has completed a trade (for "after_first_trade" step)
-            if self.player and self.player.trades_completed > 0:
+            if self._player is not None and self.player.trades_completed > 0:
                 trigger = "after_first_trade"
         elif current_state in (GameState.MINING, GameState.SALVAGING, GameState.REFINING):
             trigger = "activity"
 
         # Check travel-based trigger
-        if self.player and self.player.jumps_traveled > 0:
+        if self._player is not None and self.player.jumps_traveled > 0:
             if self.tutorial_manager.should_show_step("after_first_travel"):
                 trigger = "after_first_travel"
 
@@ -5088,7 +5103,7 @@ class Game:
 
     def _check_salvage_discovery(self) -> None:
         """Check for shape discovery after completing a salvage run."""
-        if not self.player:
+        if self._player is None:
             return
         from spacegame.models.builder_discovery import check_salvage_discovery
 
@@ -5111,7 +5126,7 @@ class Game:
 
     def _check_mining_discovery(self) -> None:
         """Check for shape/material discovery after mining."""
-        if not self.player:
+        if self._player is None:
             return
         from spacegame.models.builder_discovery import check_mining_discovery
 
@@ -5140,7 +5155,7 @@ class Game:
 
     def _check_combat_trophy_drops(self) -> None:
         """Process boss trophy drops after combat victory."""
-        if not self.player or not hasattr(self, "combat_view"):
+        if self._player is None or not hasattr(self, "combat_view"):
             return
         combat_view = self.state_manager.states.get(GameState.COMBAT)
         if not combat_view or not hasattr(combat_view, "engine"):
@@ -5207,7 +5222,7 @@ class Game:
             tick_royalties,
         )
 
-        if not self.player or self.player.okafor_research_state is None:
+        if self._player is None or self.player.okafor_research_state is None:
             return
         state: OkaforResearchState = self.player.okafor_research_state
 
@@ -5261,7 +5276,7 @@ class Game:
         advance is detected, tries to generate a market event and cleans
         up expired events from active_events.
         """
-        if not self.player:
+        if self._player is None:
             return
         current_day = self.player.game_day
         if current_day == self._last_known_day:
@@ -5397,7 +5412,7 @@ class Game:
             self._pending_player_news = []
 
             # Auto-generate player news for notable stats
-            if self.player and self.player.trades_completed > 0:
+            if self._player is not None and self.player.trades_completed > 0:
                 # Chance to mention the player when they've been active
                 import random as _rng
 
@@ -5482,7 +5497,7 @@ class Game:
         - notification stream (so the player sees it in the log)
         Drift's flag_to_set is set by the evaluator itself.
         """
-        if not self.player or not self.data_loader.timed_threads:
+        if self._player is None or not self.data_loader.timed_threads:
             return
 
         from spacegame.models.timed_thread_evaluator import evaluate_threads
@@ -5505,7 +5520,7 @@ class Game:
 
     def check_achievements(self) -> None:
         """Check for newly unlocked achievements and queue notifications."""
-        if not self.player:
+        if self._player is None:
             return
         newly_unlocked = self.achievement_manager.check_achievements(self.player)
         for achievement in newly_unlocked:
@@ -5521,7 +5536,7 @@ class Game:
 
     def _apply_dock_rep_bonus(self) -> None:
         """Grant +1 faction rep on docking if Captain's Presence is active (once per visit)."""
-        if not self.player:
+        if self._player is None:
             return
         bonus = self.player.progression.get_bonus("dock_rep_bonus")
         if bonus <= 0:
@@ -5542,7 +5557,7 @@ class Game:
 
     def _sync_crew_leadership_bonuses(self) -> None:
         """Push leadership skill bonuses into the crew roster."""
-        if not self.player or not self.crew_roster:
+        if self._player is None or not self.crew_roster:
             return
         self.crew_roster.loyalty_floor = int(self.player.progression.get_bonus("loyalty_floor"))
         legendary = self.player.progression.get_bonus("legendary_captain")
@@ -5550,7 +5565,7 @@ class Game:
 
     def check_crew_xp(self) -> None:
         """Award crew XP when trades or jumps occur."""
-        if not self.player or not self.crew_roster:
+        if self._player is None or not self.crew_roster:
             return
 
         # Sync leadership skill bonuses into crew roster
@@ -5589,7 +5604,7 @@ class Game:
 
         Generates new contracts each game day, removing old unclaimed ones.
         """
-        if not self.player or not hasattr(self, "procedural_mission_gen"):
+        if self._player is None or not hasattr(self, "procedural_mission_gen"):
             return
 
         current_day = self.player.game_day
@@ -5613,7 +5628,7 @@ class Game:
 
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""
-        if not self.player or not self.mission_manager:
+        if self._player is None or not self.mission_manager:
             return
 
         # Snapshot progress before checking, for objective-level notifications
@@ -5909,14 +5924,14 @@ class Game:
         summary = ", ".join(parts)
         logger.debug(
             "Mission audit (day %d): %s [+%d newly available]",
-            self.player.game_day if self.player else 0,
+            self.player.game_day if self._player is not None else 0,
             summary,
             len(newly_available),
         )
 
     def _check_journal_triggers(self) -> None:
         """Scan dialogue flags for new journal auto-entries to trigger."""
-        if not self.journal or not self.player:
+        if not self.journal or self._player is None:
             return
         for flag, value in self.player.dialogue_flags.items():
             if value:
@@ -5928,7 +5943,7 @@ class Game:
 
     def _check_auto_triggers(self) -> None:
         """Check all NPCs for auto-trigger dialogues at current system."""
-        if not self.player:
+        if self._player is None:
             return
         for npc in self.data_loader.npcs.values():
             if not npc.auto_trigger_gate_flag:
@@ -5949,7 +5964,7 @@ class Game:
 
     def check_attribute_milestones(self) -> None:
         """Check and award attribute milestones and level-up points."""
-        if not self.player or not hasattr(self, "attribute_sheet"):
+        if self._player is None or not hasattr(self, "attribute_sheet"):
             return
 
         # Level-up attribute points: award at odd levels 3-25
@@ -5998,7 +6013,7 @@ class Game:
         Does nothing if the hint is already disabled (player's call trumps
         auto-retire).
         """
-        if not self.player or not self.mission_manager or not self._cockpit_hud:
+        if self._player is None or not self.mission_manager or not self._cockpit_hud:
             return
         if self.player.dialogue_flags.get("objective_hint_auto_retired", False):
             return  # Already fired
@@ -6309,7 +6324,7 @@ class Game:
             # Check for ESC key to toggle pause (only during gameplay)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 if (
-                    self.player
+                    self._player is not None
                     and not self.paused
                     and self.state_manager.current_state
                     not in (
@@ -6358,7 +6373,7 @@ class Game:
             self.settings_view._own_ui_manager.update(dt)
 
         # Update cockpit HUD visibility based on current state
-        if self._cockpit_hud and self.player:
+        if self._cockpit_hud and self._player is not None:
             # Pass current system's faction to HUD for station skin accent
             faction_id = ""
             if self.player.current_system_id:
@@ -6457,7 +6472,7 @@ class Game:
         # so shifts surface to the player in-band with mission events.
         # modify_reputation appends to player._pending_faction_deltas;
         # we format and move them here each frame.
-        if self.player is not None:
+        if self._player is not None:
             pending = getattr(self.player, "_pending_faction_deltas", None)
             if pending:
                 for faction_id, delta in pending:
@@ -6500,7 +6515,7 @@ class Game:
         # Back buttons in the settings panel).
         if (
             self._cockpit_hud
-            and self.player
+            and self._player is not None
             and self.settings_view is None
             and self.save_load_view is None
         ):

@@ -1,7 +1,7 @@
 """PT-L "Soft break" regression tests.
 
 When the player's completed mission count reaches 3, the cockpit objective
-hint auto-retires once. Silent — no banner, no announcement, just the
+hint auto-retires once. Silent â€” no banner, no announcement, just the
 line stops appearing. Flag persists so re-load doesn't re-fire.
 """
 
@@ -32,7 +32,7 @@ def _fake_game(completed_count: int, hint_on: bool, flag_already_set: bool = Fal
 
     game = Game.__new__(Game)
     # Player
-    game.player = MagicMock()
+    game._player = MagicMock()
     game.player.dialogue_flags = {
         "objective_hint_auto_retired": flag_already_set,
     }
@@ -43,7 +43,7 @@ def _fake_game(completed_count: int, hint_on: bool, flag_already_set: bool = Fal
     hud = MagicMock()
     hud.show_objective_hint = hint_on
     game._cockpit_hud = hud
-    # Save manager (for persistence path) — return empty, accept saves
+    # Save manager (for persistence path) â€” return empty, accept saves
     sm = MagicMock()
     sm.load_settings.return_value = {}
     game.save_manager = sm
@@ -71,14 +71,14 @@ class TestSoftBreakRetirement:
         hint has been manually re-enabled by the player."""
         game = _fake_game(completed_count=10, hint_on=True, flag_already_set=True)
         game.check_soft_break_retirement()
-        # Hint left alone — player has owned this setting since the retirement
+        # Hint left alone â€” player has owned this setting since the retirement
         assert game._cockpit_hud.show_objective_hint is True
         game.save_manager.save_settings.assert_not_called()
 
     def test_sets_flag_even_if_hint_already_off(self) -> None:
         """If the player has already manually disabled the hint before
         hitting 3 completions, we still set the flag so the check stops
-        running — but we don't call save_settings since the state didn't
+        running â€” but we don't call save_settings since the state didn't
         change."""
         game = _fake_game(completed_count=3, hint_on=False)
         game.check_soft_break_retirement()
@@ -92,7 +92,7 @@ class TestSoftBreakRetirement:
         from spacegame.engine.game import Game
 
         game = Game.__new__(Game)
-        game.player = MagicMock()
+        game._player = MagicMock()
         game.player.dialogue_flags = {}
         game.mission_manager = MagicMock()
         game.mission_manager.get_completed_ids.return_value = {"m1", "m2", "m3"}
@@ -104,7 +104,7 @@ class TestSoftBreakRetirement:
         from spacegame.engine.game import Game
 
         game = Game.__new__(Game)
-        game.player = None
+        game._player = None
         game.mission_manager = MagicMock()
         game._cockpit_hud = MagicMock()
         # Should not raise
@@ -113,7 +113,7 @@ class TestSoftBreakRetirement:
     def test_persistence_failure_does_not_crash(self) -> None:
         game = _fake_game(completed_count=3, hint_on=True)
         game.save_manager.save_settings.side_effect = OSError("disk full")
-        # Should not raise — persistence is best-effort
+        # Should not raise â€” persistence is best-effort
         game.check_soft_break_retirement()
         # In-memory state still flipped
         assert game._cockpit_hud.show_objective_hint is False
