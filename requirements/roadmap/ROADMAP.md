@@ -7024,7 +7024,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 
 ### QF-8 — Population A burndown outside game.py
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-6, QF-6B, QF-7 | **Blocks**: QF-9
@@ -7439,6 +7439,7 @@ Downstream conventions worth flagging (not reactions per se):
 - 2026-08-23 — blocked (created from Spec A; awaiting human review + QF-6 reachability data)
 - 2026-08-23 21:12 — harness: plan phase starting
 - 2026-08-23 21:45 — planning complete. Verified both Context-to-read paths
+- 2026-08-23 21:22 — harness: implement phase starting (rework cycle 0)
   exist (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` +
   crawler output via a live 500-action seed=42 late-checkpoint run). Confirmed
   current tracked A=124 (93 union-attr outside game.py + 31 attr-defined-None
@@ -7461,29 +7462,118 @@ Downstream conventions worth flagging (not reactions per se):
   8 mechanically verifiable. Wrote 10-task Plan. No new sprints proposed.
   Cross-sprint reactions: none (foundational; no player-facing surface). Test
   baseline 10530 pass, 98 skip. PHASE_OK
+- 2026-08-23 22:00 — Task 1 (reachability probe): three seeds (42, 99, 137)
+  x 2000 actions each; none of TRADING / MINING / SALVAGING / REFINING /
+  SETTINGS reachable on any seed. Weak signal confirmed; proceeding with
+  LOCKED priority order (playtester-first, then largest cluster).
+- 2026-08-23 22:05 — Task 2 (mypy_populations exclusion): 3 failing tests
+  first (forward + backslash game.py attr-defined-None, non-game.py stays
+  in A), then extended `classify_line` to route game.py attr-defined-None
+  to `excluded_a`. Live tracked A drops 124 -> 93. TOTAL unchanged 768.
+  Commit fd711fc.
+- 2026-08-23 22:10 — Task 3 (TradingView.market + quantity_input): raising
+  accessor pattern applied; 3 lifecycle guards migrated to `_market`; test
+  file `test_view_accessor_contracts.py` created with 3 tests for market
+  accessor. 3 existing tests that used `TradingView.__new__` bypass +
+  direct `view.market = MagicMock()` migrated to `view._market = ...`
+  (the raising @property has no setter, by design). 31 union-attr errors
+  eliminated. Commit 8078687.
+- 2026-08-23 22:15 — Task 4 (SalvageView.session + salvage.py guard):
+  session accessor applied; ~20 lifecycle guards migrated to `_session`
+  via targeted edits; test-migration in `test_salvage_view.py` (15
+  `if view.session:` guards + 2 is None/is not None assertions moved to
+  `_session`). Model-side fix at salvage.py:495 (local `if cell.config is
+  None: continue`) and salvage_view.py:1316 (`and cell.config is not None`
+  guard). 28 errors eliminated. Commit d16e9bf.
+- 2026-08-23 22:20 — Task 5 (MiningView.session + RockTypeConfig): session
+  accessor applied; 32 lifecycle guards bulk-migrated via a sed-style
+  Python one-liner; 2 RockTypeConfig | None errors fixed with a local
+  narrowing (`ore_cfg is not None`) since mypy widens the earlier
+  `if ore_cfg:` across nested branches. 13 errors eliminated. Commit b0893cc.
+- 2026-08-23 22:25 — Task 6 (RefiningView.session): session accessor
+  applied; 25 lifecycle guards bulk-migrated. 5 errors eliminated.
+  Commit 98c5796.
+- 2026-08-23 22:30 — Task 7 (UI element accessors + combat_view Rect
+  narrowing): raising accessors for SettingsView.apply_button (6 uses),
+  SettingsView.save_dir_display (2 uses), SaveLoadView.confirm_button
+  (2 uses). combat_view.py: 2 Rect | None fixed by binding getattr'd
+  attribute to a local (getattr'd truth-tests don't narrow through
+  attribute access); 1 Player | None fixed with local guard (long-tail
+  LOCKED decision). 12 errors eliminated. Commit 399e89f.
+- 2026-08-23 22:35 — Task 8 (long tail local guards): momentum guard in
+  combat_engine (2 errors, silent no-op if unset); investment_view
+  template/tier chain (2 errors); crew_roster_view allocate (1 error,
+  folded into existing condition). Live tracked A reaches 0. Commit 2312c02.
+- 2026-08-23 22:40 — Task 9 (accessor pattern doc): docs/qf/accessor_pattern.md
+  authored, 247 lines, 8 sections (Why / Recipe / Lifecycle-guard
+  migration / When to apply / When NOT to apply / Testing the contract /
+  Test-code migration note / Spec B cross-link). No em-dashes, no banned
+  phrases; Writing Bible scanner clean. Commit 3a8b978.
+- 2026-08-23 22:45 — Task 10 (final verification):
+  - `python scripts/mypy_populations.py` -> A=0, B=234, C=337, TOTAL=674 (AC 1).
+  - `python -m pytest -n auto -q` -> 10544 pass, 98 skip (from baseline
+    10530 pass; +14 = 12 accessor tests + 2 mypy_populations tests plus
+    net-zero elsewhere) (AC 8).
+  - Crawler seed 42/99/137 re-run: 0 crashes, 0 new signatures. High-error
+    views (TRADING/MINING/SALVAGING/REFINING/SETTINGS) still unreachable.
+  - `git diff 7c406cf..HEAD mypy-baseline.txt`: 94 deletions, 0 additions
+    (AC 6). Baseline synced per-commit as fixes landed.
+  - New `# type: ignore` count across diff: 0 (AC 5).
+  - Touch-zone respect: 15 of 15 declared paths touched. 5 additional
+    files touched outside declared zones: `mypy-baseline.txt` (mandatory
+    consequence of AC 6); 4 test files (`test_salvage_view.py`,
+    `test_trading_actions.py`, `test_trading_button_states.py`,
+    `test_trend_visibility.py`) whose 1-3-line migrations were necessary
+    consequences of the accessor pattern (raising @property has no
+    setter; tests using __new__ + direct assignment had to move to
+    `_storage`). All noted in commit messages (AC 8 note).
+  - SI3 dialogue integrity scanner: 19/19 pass (n/a, no flags added).
+  - Writing Bible scanner: 35/35 pass (dev doc no em-dashes).
+  All 8 acceptance criteria satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-23 21:12
-- Completed: 2026-08-23 21:45
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 64b126b
-- New_sprints_proposed: none
-- Polish_items_folded_in: accessor-pattern-doc, mypy_populations exclusion-rule fix, crawler reachability re-measurement task, regression-test contract per accessor (positive + negative + post-on_exit)
-- Decisions_locked: 9
-- Notes: The crux decision — extending `mypy_populations.py` to also exclude
-  game.py attr-defined-Nones — reconciles the sprint's "outside game.py" scope
-  with Spec A Section 4's unambiguous "excluded from the Population A metric"
-  language. Without this, AC 1 was unachievable (the 31 game.py attr-defined
-  errors would have to be either fixed in a file Spec B is decomposing, or
-  left in tracked A and the AC softened). Reviewer may challenge; the
-  alternative is worse. Reachability was verified as a weak signal (4/41
-  states reached; none are the high-error views), so prioritization defaults
-  to cluster-size + playtester-known crash surface. All five session-shaped
-  clusters plus the UI element Optionals collapse under one pattern (raising
-  accessor); the long tail uses local guards where accessor scaffolding is
-  overhead.
+- Started: 2026-08-23 21:22
+- Completed: 2026-08-23 22:45
+- Files_changed: scripts/mypy_populations.py, spacegame/views/trading_view.py,
+  spacegame/views/salvage_view.py, spacegame/views/mining_view.py,
+  spacegame/views/refining_view.py, spacegame/views/settings_view.py,
+  spacegame/views/save_load_view.py, spacegame/views/combat_view.py,
+  spacegame/views/investment_view.py, spacegame/views/crew_roster_view.py,
+  spacegame/models/combat_engine.py, spacegame/models/salvage.py,
+  tests/test_scripts/test_mypy_populations.py,
+  tests/test_views/test_view_accessor_contracts.py,
+  tests/test_views/test_salvage_view.py,
+  tests/test_views/test_trading_actions.py,
+  tests/test_views/test_trading_button_states.py,
+  tests/test_views/test_trend_visibility.py,
+  docs/qf/accessor_pattern.md, mypy-baseline.txt
+- Commits: fd711fc, 8078687, d16e9bf, b0893cc, 98c5796, 399e89f, 2312c02, 3a8b978
+- Tests_added: 14 (12 accessor-contract tests + 3 mypy_populations extension
+  tests, minus 1 modified mixed-fixture test = net +14)
+- Tests_baseline: 10530
+- Tests_passing: 10544
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no flags added)
+- Writing_bible_clean: yes (dev doc scanned; no em-dashes, no banned phrases)
+- Touch_zones_respected: yes (15/15 declared paths touched; 5 additional
+  files outside zones -- mypy-baseline.txt required by AC 6, and 4 test
+  files with 1-3-line accessor-pattern migrations noted in commit messages)
+- Notes: Tracked Population A driven from 124 to 0 per
+  scripts/mypy_populations.py (A=0, B=234, C=337, TOTAL=674). Achieved
+  by (a) extending the script's exclusion rule to cover game.py's 31
+  attr-defined-None errors per Spec A S4 (Task 2), and (b) landing 93
+  code fixes across 10 files (Tasks 3-8). Raising-accessor pattern
+  applied to 7 lifecycle-scoped attributes across 6 views; local
+  None-guards for 8 long-tail callsites; 1 salvage-model guard.
+  docs/qf/accessor_pattern.md captures the recipe for Spec B's
+  Game.player pass. Baseline synced per commit with removals only (94
+  total removed, 0 added). No new # type: ignore introduced. Crawler
+  re-run on the same three seeds surfaced 0 crash signatures. All 8
+  acceptance criteria satisfied.
 
 ### QF-9 — Population B burndown (type blindness)
 
