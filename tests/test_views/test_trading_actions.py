@@ -69,9 +69,10 @@ def _make_trading_view_with_real_player(
     view.systems = loader.systems
 
     # Stubbed market: every commodity sells for 50.
-    view.market = MagicMock()
-    view.market.get_sell_price.return_value = 50
-    view.market.record_sell = MagicMock()
+    # QF-8: TradingView.market is now a raising @property; set raw storage.
+    view._market = MagicMock()
+    view._market.get_sell_price.return_value = 50
+    view._market.record_sell = MagicMock()
 
     # View-internal helpers / state stubbed out so _execute_sell_all has
     # what it needs to run end-to-end.

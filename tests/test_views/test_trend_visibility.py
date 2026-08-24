@@ -40,12 +40,13 @@ class TestTrendVisibilityGating:
 
         commodity.legality = Legality.LEGAL
 
-        view.market = MagicMock()
-        view.market.commodities = {"ore": commodity}
-        view.market.get_price.return_value = 100
-        view.market.get_stock.return_value = 50
-        view.market.get_base_stock.return_value = 100
-        view.market.get_market_report.return_value = {
+        # QF-8: TradingView.market is now a raising @property; set raw storage.
+        view._market = MagicMock()
+        view._market.commodities = {"ore": commodity}
+        view._market.get_price.return_value = 100
+        view._market.get_stock.return_value = 50
+        view._market.get_base_stock.return_value = 100
+        view._market.get_market_report.return_value = {
             "trend": "Low",
             "is_specialty_export": False,
             "is_specialty_import": False,

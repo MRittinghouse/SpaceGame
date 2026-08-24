@@ -51,10 +51,11 @@ def _make_trading_view(
     view.player.ship.get_cargo_quantity.side_effect = lambda cid: cargo.get(cid, 0)
     view.player.ship.can_carry.return_value = True
 
-    view.market = MagicMock()
-    view.market.get_stock.return_value = 10 if stock_override is None else stock_override
-    view.market.get_base_stock.return_value = 10
-    view.market.get_price.return_value = 100
+    # QF-8: TradingView.market is now a raising @property; set raw storage.
+    view._market = MagicMock()
+    view._market.get_stock.return_value = 10 if stock_override is None else stock_override
+    view._market.get_base_stock.return_value = 10
+    view._market.get_price.return_value = 100
 
     view.commodities = {
         "food": MagicMock(id="food", legality=MagicMock(), volume_per_unit=1),

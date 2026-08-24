@@ -83,7 +83,10 @@ class TradingView(BaseView):
         self.player = player
         self.systems = systems
         self.commodities = commodities
-        self.market: Optional[Market] = None
+        # QF-8: raising accessor pattern. Raw storage is Optional; the public
+        # `market` @property below returns non-Optional and raises when the
+        # view is used outside its on_enter → on_exit lifetime.
+        self._market: Optional[Market] = None
         self.activity_registry = activity_registry
         self.active_events: dict = active_events or {}
         self.price_history = price_history
@@ -110,7 +113,10 @@ class TradingView(BaseView):
 
         # UI state
         self.selected_commodity: Optional[str] = None
-        self.quantity_input: Optional[pygame_gui.elements.UITextEntryLine] = None
+        # QF-8: raising accessor. Storage is `_quantity_input`, public
+        # `quantity_input` @property returns non-Optional and raises
+        # before on_enter / after on_exit.
+        self._quantity_input: Optional[pygame_gui.elements.UITextEntryLine] = None
         self.transaction_message: str = ""
         self.message_timer: float = 0.0
         self.next_state: Optional[GameState] = None
@@ -161,6 +167,40 @@ class TradingView(BaseView):
         # Particles
         self.particles = ParticlePool(100)
 
+    # QF-8: lifecycle-scoped accessors (see docs/qf/accessor_pattern.md).
+    # Callers that need to test lifecycle presence use the underscore
+    # storage directly (`if self._market is not None`).
+    @property
+    def market(self) -> Market:
+        """Return the live Market for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` or after
+                ``on_exit()``.
+        """
+        if self._market is None:
+            raise RuntimeError(
+                "TradingView.market accessed before on_enter() (or after on_exit()); "
+                "market is created inside on_enter and cleared on exit."
+            )
+        return self._market
+
+    @property
+    def quantity_input(self) -> pygame_gui.elements.UITextEntryLine:
+        """Return the quantity-input widget for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` or after
+                ``on_exit()``.
+        """
+        if self._quantity_input is None:
+            raise RuntimeError(
+                "TradingView.quantity_input accessed before on_enter() "
+                "(or after on_exit()); widget is created inside on_enter and "
+                "killed on exit."
+            )
+        return self._quantity_input
+
     def on_enter(self) -> None:
         super().on_enter()
         self._trade_rep_awarded = False
@@ -203,8 +243,8 @@ class TradingView(BaseView):
         """
         current_system = self.systems[self.player.current_system_id]
         all_commodities = list(self.commodities.values())
-        self.market = Market(current_system, all_commodities, self.player.game_day)
-        self.market.initialize_stock(current_system, all_commodities)
+        self._market = Market(current_system, all_commodities, self.player.game_day)
+        self._market.initialize_stock(current_system, all_commodities)
 
         # Resolve black market access for current system
         from spacegame.models.smuggling import get_black_market_name
@@ -235,6 +275,8 @@ class TradingView(BaseView):
     def on_exit(self) -> None:
         super().on_exit()
         self._destroy_ui()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._market = None
 
     def _create_ui(self) -> None:
         # Market table — fixed-column widget (not pygame_gui).
@@ -274,11 +316,11 @@ class TradingView(BaseView):
 
         self._refresh_tables()
 
-        self.quantity_input = pygame_gui.elements.UITextEntryLine(
+        self._quantity_input = pygame_gui.elements.UITextEntryLine(
             relative_rect=pygame.Rect(scale_x(650), scale_y(150), scale_x(100), scale_y(40)),
             manager=self.ui_manager,
         )
-        self.quantity_input.set_text("1")
+        self._quantity_input.set_text("1")
 
         self.buy_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(scale_x(650), scale_y(200), scale_x(100), scale_y(36)),
@@ -373,7 +415,7 @@ class TradingView(BaseView):
         self.cargo_table = None
 
         for elem in [
-            self.quantity_input,
+            self._quantity_input,
             self.buy_button,
             self.buy_max_button,
             self.sell_button,
@@ -389,6 +431,8 @@ class TradingView(BaseView):
         ]:
             if elem:
                 elem.kill()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._quantity_input = None
         for btn in self.activity_buttons.values():
             btn.kill()
         self.activity_buttons.clear()
@@ -408,7 +452,11 @@ class TradingView(BaseView):
         system_id = self.player.current_system_id
 
         # Use market's filtered commodity list (regional availability)
-        market_commodities = self.market.commodities if self.market else self.commodities
+        # QF-8: lifecycle guard uses underscore storage so callers before
+        # on_enter get the fallback rather than a RuntimeError.
+        market_commodities = (
+            self._market.commodities if self._market is not None else self.commodities
+        )
 
         for commodity_id, commodity in market_commodities.items():
             # Skip quest items (base_price=0) from market display
@@ -531,8 +579,9 @@ class TradingView(BaseView):
             avg_cost = self.player.ship.get_average_purchase_price(commodity_id)
 
             # Profit/loss vs current market sell price
-            if self.market and avg_cost > 0:
-                sell_price = self.market.get_sell_price(commodity_id)
+            # QF-8: lifecycle guard uses underscore storage.
+            if self._market is not None and avg_cost > 0:
+                sell_price = self._market.get_sell_price(commodity_id)
                 delta = sell_price - avg_cost
                 if delta > 0:
                     pnl_display: str | tuple[str, tuple] = (f"+{delta * quantity:,}", Colors.GREEN)
@@ -1470,8 +1519,9 @@ class TradingView(BaseView):
 
         # Player impact hint (only show when player has had an effect)
         has_impact = False
-        if self.market and hasattr(self.market, "_player_supply_demand"):
-            has_impact = any(abs(v) >= 0.01 for v in self.market._player_supply_demand.values())
+        # QF-8: lifecycle guard uses underscore storage.
+        if self._market is not None and hasattr(self._market, "_player_supply_demand"):
+            has_impact = any(abs(v) >= 0.01 for v in self._market._player_supply_demand.values())
         if has_impact:
             impact_hint = self.info_font.render(
                 "Your trades are affecting local prices", True, Colors.TEXT_SECONDARY
