@@ -2,6 +2,8 @@
 Tests for market pricing system.
 """
 
+import random
+
 import pytest
 from spacegame.data_loader import DataLoader
 from spacegame.models.market import Market, PriceHistory
@@ -305,3 +307,52 @@ class TestDynamicSupplyDemand:
         market.record_buy("metals", 10)
         assert market._player_supply_demand.get("metals", 0.0) > 0
         assert market._player_supply_demand.get("fuel_cells", 0.0) == 0
+
+
+class TestMarketRNGIsolation:
+    """AC-5: Market._get_random_variance must not mutate the global RNG state."""
+
+    def _make_market(self) -> Market:
+        loader = DataLoader()
+        loader.load_all()
+        nexus = loader.get_system("nexus_prime")
+        commodities = loader.get_all_commodities()
+        return Market(nexus, commodities, game_day=1)
+
+    def test_get_random_variance_is_deterministic(self) -> None:
+        """Same game_day / commodity / system triple returns the same variance.
+
+        An external random.seed() between calls must not affect the result,
+        because _get_random_variance now uses a local Random instance.
+        """
+        market = self._make_market()
+        commodities = list(market.commodities.values())
+        assert commodities, "Market must have at least one commodity"
+        commodity = commodities[0]
+
+        variance_a = market._get_random_variance(commodity)
+        # Perturb the global RNG; a correct implementation is unaffected.
+        random.seed(1)
+        variance_b = market._get_random_variance(commodity)
+
+        assert variance_a == variance_b, (
+            f"_get_random_variance must be deterministic for the same inputs: "
+            f"{variance_a!r} != {variance_b!r}"
+        )
+
+    def test_get_random_variance_does_not_mutate_global_rng(self) -> None:
+        """Calling _get_random_variance must leave the global RNG state unchanged."""
+        market = self._make_market()
+        commodities = list(market.commodities.values())
+        assert commodities, "Market must have at least one commodity"
+        commodity = commodities[0]
+
+        random.seed(42)
+        state_before = random.getstate()
+
+        market._get_random_variance(commodity)
+
+        state_after = random.getstate()
+        assert state_before == state_after, (
+            "_get_random_variance must not mutate the global random state"
+        )

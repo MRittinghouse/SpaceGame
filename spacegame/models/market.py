@@ -294,17 +294,14 @@ class Market:
         Returns:
             Small random modifier (-0.05 to +0.05 typically)
         """
-        # Seed random with game day and commodity for determinism
-        random.seed(f"{self.game_day}_{commodity.id}_{self.system.id}")
+        # Use a local RNG so the global random state is never mutated.
+        local_rng = random.Random(f"{self.game_day}_{commodity.id}_{self.system.id}")
 
         # Small variance: ±5% to ±10% depending on commodity volatility
         variance_range = abs(commodity.variance_max - commodity.variance_min)
         max_random = min(0.10, variance_range * 0.2)  # 20% of commodity's total range
 
-        variance = random.uniform(-max_random, max_random)
-
-        # Reset random seed
-        random.seed()
+        variance = local_rng.uniform(-max_random, max_random)
 
         return variance
 
