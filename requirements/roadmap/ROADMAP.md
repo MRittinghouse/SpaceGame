@@ -7552,38 +7552,573 @@ Downstream conventions worth flagging (not reactions per se):
 
 ### QF-9 — Population B burndown (type blindness)
 
-**Status**: todo
+**Status**: in-progress
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-8 | **Blocks**: none
 
-**Goal.** Close the 234 holes where type checking silently does nothing: 167 bare-`object`
-annotations and 67 unresolvable forward references. These are not bugs; they are the reason bugs like
-the Sell All arity mismatch can be authored without complaint.
+**Goal.** Close the 234 holes where type checking silently does nothing: 167 `attr-defined "object"
+has no attribute` errors from 56 bare-`object` annotations, and 67 unresolvable forward references.
+These are not bugs; they are the reason bugs like the Sell All arity mismatch can be authored
+without complaint.
 
-**Notes.** Deliberately `blocked`. Fixing these RAISES the total error count as MyPy begins seeing
-previously invisible code. That is expected and is not a regression; see Spec A Section 1. Unblock by
-hand once QF-8 is done.
+**Notes.** ~~Deliberately `blocked`.~~ Prerequisites met: QF-8 landed A=0 outside `engine/game.py`,
+extended `scripts/mypy_populations.py` to exclude game.py attr-defined-None per Spec A Section 4,
+and authored `docs/qf/accessor_pattern.md` as the pattern reference for lifecycle-scoped Optionals.
+Fixing Population B RAISES the total error count as MyPy begins seeing previously invisible code;
+that is expected and is NOT a regression (Spec A Section 1). Newly revealed A-shaped errors are
+fixed in-sprint using the QF-8 pattern; newly revealed C-shaped errors are added to
+`mypy-baseline.txt` per-task, respecting the CLAUDE.md ratchet rule ("regeneration permitted only
+in a commit whose diff contains nothing but type annotations and None-guards").
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 4)
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` — Section 4 (Burndown Triage)
+  in full, plus Section 1 (ratchet mechanics and Population B metric interpretation).
+- `docs/qf/accessor_pattern.md` — the raising-accessor pattern authored by QF-8. Reference for
+  any newly-revealed Population A error unearthed by Task 10 that happens to be
+  lifecycle-scoped (view constructor Optionals, session-shaped managers).
+- `scripts/mypy_populations.py` — Population B detection rule: `attr-defined` where the message
+  contains `"object" has no attribute` + all `name-defined` errors. No modification expected in
+  this sprint.
+- `mypy-baseline.txt` — current 674-line baseline (as of the post-QF-8 tree). Regeneration is
+  allowed in this sprint's commits per CLAUDE.md; each task's commit qualifies because the
+  diffs are annotation-only (TYPE_CHECKING imports, real type substitutions, `mypy-baseline.txt`
+  lines).
+- `pyproject.toml` `[tool.mypy]` block — currently three flags: `python_version="3.13"`,
+  `warn_return_any=true`, `warn_unused_configs=true`, `disallow_untyped_defs=true`. Task 12
+  proposes next flags without enabling them (a follow-up sprint or human patch decides).
+- Live-tree error surface as of the pre-sprint snapshot (from
+  `python -m mypy spacegame/ 2>&1 | grep -v ": note:"`):
+  - `spacegame/data_loader.py` lines 93-129, 505, 533, 561, 764, 799, 1544-1759, 2008, 2071 —
+    29 name-defined errors from quoted forward refs (`Dict[str, "EnemyCaptain"]` etc.) covering
+    14 distinct classes.
+  - `spacegame/engine/game.py` lines 269, 272, 3412, 3436, 3512-3632, 4181-4431 — 18
+    name-defined errors from quoted return types across 9 classes. Fixing via TYPE_CHECKING
+    imports is inside Spec A scope (only the 106 A-shaped errors in game.py are Spec B
+    terrain); this sprint does NOT touch game.py's A errors.
+  - `spacegame/models/ship.py` 6, `ship_module.py` 3, `combat.py` 1, `player.py` 1,
+    `combat_engine.py` 2 — 13 name-defined errors in models.
+  - `spacegame/views/cockpit_hud.py` 3, `skill_tree_view.py` 1, `mission_log_view.py` 1,
+    `galaxy_map_view.py` 1, `combat_view.py` 1 — 7 name-defined errors in views.
+  - `spacegame/views/combat_view.py` 41, `station_hub_view.py` 34, `cantina_view.py` 21,
+    `station_layouts.py` 20, `shipyard_view.py` 8, `mission_log_view.py` 7, `galaxy_map_view.py`
+    5, `tutorial_shop_view.py` 4, `ship_builder_view.py` 2, `encounter_view.py` 2 — 144
+    attr-defined `"object" has no attribute` errors in views from 41 bare-object annotations.
+  - `spacegame/models/ship_presets.py` 7, `combat_engine.py` 7, `build_sharing.py` 6,
+    `station_salience.py` 1, `dialogue.py` 1, `combat_tutorial_helper.py` 1 — 23 attr-defined
+    `"object"` errors in models from 15 bare-object annotations. Excludes 2 correct `object`
+    parameters in `sub_reputation.py.__ge__` / `__lt__` (Python dunder comparison protocol
+    requires `object`; do NOT change).
+- `CLAUDE.md` §"Type-check ratchet" — baseline regeneration policy; §"Cross-Cutting Concerns"
+  table for the model-field / to_dict / from_dict ripple.
+- `spacegame/views/CLAUDE.md` — view lifecycle contract. If Task 10 surfaces a lifecycle-scoped
+  A error and the accessor pattern is applied, the pattern must respect this contract.
+
+**Touch zones.**
+```
+spacegame/data_loader.py                            (add TYPE_CHECKING block; 29 name-defined resolved)
+spacegame/engine/game.py                            (TYPE_CHECKING block ONLY — no other changes;
+                                                     18 name-defined resolved, Spec B terrain untouched)
+spacegame/models/ship.py                            (Optional import + TYPE_CHECKING; 6 resolved)
+spacegame/models/ship_module.py                     (TYPE_CHECKING; 3 resolved)
+spacegame/models/combat.py                          (TYPE_CHECKING + dataclass field real types;
+                                                     1 name-defined + 3 bare-object resolved)
+spacegame/models/combat_engine.py                   (TYPE_CHECKING + social_manager real type;
+                                                     2 name-defined + 7 bare-object resolved)
+spacegame/models/combat_tutorial_helper.py          (state: CombatState real type; 1 bare-object)
+spacegame/models/dialogue.py                        (manager + player real types; 1 bare-object)
+spacegame/models/player.py                          (TYPE_CHECKING for HiddenCompartment; 1 resolved)
+spacegame/models/build_sharing.py                   (player: Player real type; 6 bare-object)
+spacegame/models/ship_presets.py                    (ship_type: ShipType real type; 7 bare-object)
+spacegame/models/ship_build.py                      (from_ship_type ship_type: ShipType; 0 errors today
+                                                     but same annotation-hygiene surface)
+spacegame/models/smuggling.py                       (set_progression Progression real type)
+spacegame/models/station_salience.py                (ship: Ship real type; 1 bare-object)
+spacegame/views/combat_view.py                      (social_manager, tutorial_helper, enemy, state,
+                                                     effect real types + TYPE_CHECKING; 41+1 resolved)
+spacegame/views/cockpit_hud.py                      (TYPE_CHECKING; 3 name-defined resolved)
+spacegame/views/cantina_view.py                     (data_loader, crew_roster, mission_manager, npc
+                                                     real types; 21 bare-object resolved)
+spacegame/views/character_view.py                   (politics_manager real type)
+spacegame/views/station_hub_view.py                 (5 constructor params + zone/npc real types;
+                                                     34 bare-object resolved)
+spacegame/views/station_layouts.py                  (StationZone.location + sprite_mgr real types;
+                                                     20 bare-object resolved)
+spacegame/views/shipyard_view.py                    (ship_type, build, placed_slot real types;
+                                                     8 bare-object resolved)
+spacegame/views/mission_log_view.py                 (data_loader real type + TYPE_CHECKING;
+                                                     7 bare-object + 1 name-defined resolved)
+spacegame/views/galaxy_map_view.py                  (politics_manager, news_ticker + Journal
+                                                     TYPE_CHECKING; 5 bare-object + 1 name-defined)
+spacegame/views/tutorial_shop_view.py               (ui_manager, player, data_loader real types;
+                                                     4 bare-object resolved)
+spacegame/views/ship_builder_view.py                (data_loader real type; 2 bare-object resolved)
+spacegame/views/encounter_view.py                   (2 real types resolved)
+spacegame/views/dialogue_view.py                    (ui_manager: pygame_gui.UIManager real type)
+spacegame/views/skill_tree_view.py                  (TYPE_CHECKING for Player; 1 resolved)
+spacegame/views/settings_view.py                    (touched only if Task 10 surfaces new A errors
+                                                     inside a QF-8 accessor; expected: none)
+mypy-baseline.txt                                    (regenerated per-task; annotation-only diffs)
+tests/test_views/test_view_accessor_contracts.py    (extended ONLY IF Task 10 surfaces a
+                                                     lifecycle-scoped A error requiring the accessor
+                                                     pattern; expected: minimal or none)
+requirements/roadmap/ROADMAP.md                      (this sprint's Notes: next-flag recommendation)
+```
 
 **Deliverables.**
-- The 41 bare-`object` annotations in `views/` replaced with real types (use `TYPE_CHECKING` imports
-  where a runtime import would be circular).
-- The 67 quoted forward references resolved by importing the referenced names.
-- Newly revealed errors triaged: crash-risk ones fixed, hygiene ones baselined.
-- `disallow_untyped_defs` reconsidered: it is currently the only strict flag and it is what created
-  the incentive to annotate as `object`. Propose the next flags to enable in the sprint notes; do NOT
-  enable them unilaterally.
+- All 41 bare-`object` annotations in `spacegame/views/` replaced with real types (using
+  `TYPE_CHECKING` imports where a runtime import would be circular). Includes the 8 additional
+  bare-`object` annotations in `dialogue_view.py`, `character_view.py`, and the various private
+  helpers (`_effect_badge_text`, `_find_move_name`, `_is_npc_available`, `_activate_zone`, etc.)
+  that share the same 41-count declaration surface.
+- All 15 bare-`object` annotations in `spacegame/models/` (across `ship_presets.py`,
+  `combat_engine.py`, `build_sharing.py`, `combat.py`, `dialogue.py`, `combat_tutorial_helper.py`,
+  `station_salience.py`, `ship_build.py`, `smuggling.py`) replaced with real types. Excludes the
+  2 correct `object` parameters in `sub_reputation.py.__ge__` / `__lt__` which stay per Python
+  dunder comparison protocol.
+- All 67 quoted forward references resolved by adding the referenced names to `TYPE_CHECKING`
+  import blocks (or, where the name is already runtime-imported, adding the missing
+  `Optional`/other typing name). Includes the 18 forward refs in `engine/game.py` — resolved
+  via TYPE_CHECKING-only import block, no other game.py changes.
+- Newly revealed errors triaged and classified per Spec A Section 4:
+  - Population A (union-attr, attr-defined-None) → fixed in-sprint using the raising-accessor
+    pattern from `docs/qf/accessor_pattern.md` (for lifecycle-scoped Optionals) or local
+    `if x is not None:` guards (for single-callsite issues). Post-sprint tracked A remains 0.
+  - Population C (hygiene: arg-type, no-any-return, no-untyped-def, misc) → added to
+    `mypy-baseline.txt` per-task.
+  - Same file boundary applies: any newly revealed A error inside `engine/game.py` is
+    excluded via the existing `mypy_populations.py` rule (extended in QF-8), NOT fixed here.
+- Sprint Notes recommend at least three next strict mypy flags to enable with one-sentence
+  rationale per flag. This sprint does NOT modify `pyproject.toml`; the reviewer or a
+  follow-up sprint decides which to enable.
+- `mypy-baseline.txt` regenerated at each type-cleanup task's commit. Every regeneration commit's
+  diff contains only type annotations, `TYPE_CHECKING` imports, `from typing import ...`
+  additions, and baseline lines — no logic changes — respecting the CLAUDE.md ratchet rule.
 
 **Acceptance criteria.**
-1. `scripts/mypy_populations.py` reports Population B = 0.
-2. Total error count may have risen; Population A (excluding game.py) has NOT risen.
-3. Full suite green.
+1. `python scripts/mypy_populations.py` prints `B=0` on the post-sprint tree. Verified by
+   the review phase running the script.
+2. `python scripts/mypy_populations.py` prints `A=0` (unchanged from the QF-8 post-sprint state);
+   the sprint did not raise tracked A above 0. If any newly revealed A error was left
+   unresolved, the sprint fails this criterion.
+3. `grep -rn ": object" spacegame/views/ | wc -l` returns 0 (all views bare-object annotations
+   replaced). `grep -rn ": object" spacegame/models/ | grep -v "sub_reputation.py" | wc -l`
+   returns 0 (all model bare-object annotations replaced except the two Python dunder
+   comparison methods in `sub_reputation.py` at lines 32 and 37, which stay per protocol).
+4. `python -m mypy spacegame/ 2>&1 | grep -c '\[name-defined\]'` returns 0 (all 67 forward
+   references resolved).
+5. No new bare `# type: ignore` in the sprint diff. Any `# type: ignore` added carries the form
+   `# type: ignore[code]  # <one-line justification>`. Asserted by a review-phase grep on the
+   full sprint diff (`git diff <sprint-base>..HEAD spacegame/`).
+6. Each `mypy-baseline.txt` regeneration commit's diff contains only type annotations,
+   `TYPE_CHECKING` imports, `from typing import ...` additions, and `mypy-baseline.txt` lines.
+   No logic changes in a baseline-regen commit. Verified by a review-phase inspection of each
+   regen commit's `git diff --stat` and `git diff` content.
+7. This sprint's Notes section names at least three next mypy flags to enable with a
+   one-sentence rationale per flag. The list must be picked from `no_implicit_optional`,
+   `warn_unused_ignores`, `disallow_incomplete_defs`, `check_untyped_defs`, `strict_equality`,
+   `warn_redundant_casts`, or a similarly scoped alternative the implementer justifies.
+   `pyproject.toml` `[tool.mypy]` block is NOT modified by this sprint.
+8. Full suite green: `pytest -n auto -q` reports pass count `>= 10544` (pre-phase baseline)
+   plus any new accessor-contract tests added by Task 11 for newly-revealed lifecycle-A
+   errors. No pre-existing test regresses.
+
+**Risks / open questions.**
+
+The following decisions were locked during this planning phase. The implementer follows them; the
+reviewer can challenge them.
+
+- ~~Does "close the 234 holes" include the 15 bare-`object` annotations in `models/`, or only
+  the 41 in `views/`?~~ **LOCKED**: includes both. Population B counts the 22 error-lines from
+  the 15 model annotations; excluding them would leave AC 1 unachievable (B stuck at 22).
+  The deliverable-line "41 in views/" from the pre-planning sprint text was accurate as a
+  declaration count for views alone; the actual Population B target of 0 requires both
+  surfaces plus the 67 name-defined refs.
+- ~~Does the sprint fix `engine/game.py`'s 18 name-defined errors, or leave them for Spec B?~~
+  **LOCKED**: fix in-sprint via a TYPE_CHECKING import block. Rationale: (a) name-defined
+  resolution is a 1-line-per-name mechanical change with no runtime impact; (b) Spec A
+  Section 4 defers game.py's 106 A-shaped errors because "fixing Player | None 72 times in a
+  file scheduled for decomposition is throwaway work" — that rationale is about repeated
+  Optional narrowing, not a single import block; (c) leaving 18 of the 67 name-defined errors
+  unfixed would make AC 1 and AC 4 unachievable. Spec B remains free to move the imports
+  around during decomposition. The game.py A-shaped exclusion rule in `mypy_populations.py`
+  stays untouched.
+- ~~Should `sub_reputation.py.__ge__` / `__lt__` `object` parameters be changed?~~ **LOCKED**:
+  no. Python's dunder comparison protocol requires `object` for the `other` parameter;
+  changing to a concrete type would break the `NotImplemented` return contract with mypy and
+  callers. These two annotations stay. AC 3's grep excludes `sub_reputation.py`.
+- ~~Cadence of `mypy-baseline.txt` regeneration: per-task or once at end-of-sprint?~~
+  **LOCKED**: per-task. Rationale: (a) each task's commit is annotation-only and qualifies
+  for regen under CLAUDE.md's ratchet rule; (b) per-task regen keeps the pre-commit hook
+  happy at every intermediate commit, so an implementer running the local gate on WIP
+  commits doesn't fight the ratchet; (c) matches the cadence QF-8 used ("Baseline synced
+  per-commit as fixes landed"). Each regen commit's diff must be inspectable — no interleaved
+  logic changes; a stray logic edit invalidates the regen for that commit.
+- ~~How to fix newly-revealed Population A errors (crash-risk None accesses that mypy couldn't
+  see through the `object` annotation)?~~ **LOCKED**: apply QF-8's raising-accessor pattern
+  (per `docs/qf/accessor_pattern.md`) for lifecycle-scoped Optionals; local `if x is not None:`
+  guards for single-callsite issues. Same triage QF-8 used. If a newly-revealed A error lives
+  in `engine/game.py`, defer to Spec B (the existing `mypy_populations.py` rule already
+  categorizes game.py A errors as `excluded_a` — no new script change needed).
+- ~~How to handle a bare-object annotation whose "real type" is genuinely polymorphic
+  (e.g., a method that accepts either `MissionManager` or a test mock)?~~ **LOCKED**: use
+  `Union` / `A | B` if the polymorphism is real. Do NOT introduce a `Protocol` unless multiple
+  concrete types share only a subset of methods (defer to a follow-up sprint; not
+  scope-worthy for Population B burndown). If a callsite passes genuinely untyped `Any` (e.g.,
+  pygame_gui internals reaching through), preserve `Any` explicitly (`x: Any`) rather than
+  `object`; that satisfies the ratchet without hiding intent.
+- ~~Should `docs/qf/accessor_pattern.md` grow a "TYPE_CHECKING imports" section?~~
+  **LOCKED**: no. The pattern doc scopes lifecycle-scoped accessor pattern only;
+  `TYPE_CHECKING` imports are a standard Python typing convention documented in `CLAUDE.md`'s
+  Type Hints section ("Use `TYPE_CHECKING` imports to break circular dependencies"). Adding
+  it to the pattern doc would bloat a doc whose focus is view-lifetime accessors.
+- ~~Do we enable any of the next strict flags in this sprint?~~ **LOCKED**: no. The sprint's
+  deliverable is a recommendation, not an enablement. Enabling a new flag would reveal
+  more errors than Population B alone, muddling the sprint's before/after counts and blowing
+  scope. A follow-up sprint (or human patch) enables flags one at a time so each's error
+  surface can be triaged individually.
+
+Open questions (reviewer judgment, not blocking implementation):
+
+- Task 12's proposed flag set: the implementer picks 3-5 from the candidate list. Reviewer
+  confirms the recommendation is reasonable; the actual flag-enable decision is deferred to
+  a follow-up (QF-10 candidate or a human patch).
+- If the newly-revealed error count is substantially larger than expected (say, >200 new
+  Population C errors), reviewer may split Task 11 into a dedicated follow-up sprint.
+  Rule-of-thumb expectation: ~50-100 new C errors, mostly `no-untyped-def` and `arg-type`
+  around freshly visible callsites.
+
+**Plan.**
+
+Task 1 — Baseline measurement and strategy calibration.
+- Snapshot the pre-sprint state and record in the Activity log:
+  ```bash
+  python scripts/mypy_populations.py       # expect A=0, B=234, C=337, TOTAL=674
+  wc -l mypy-baseline.txt                  # expect 674
+  python -m mypy spacegame/ 2>&1 | grep -c '\[name-defined\]'         # expect 67
+  python -m mypy spacegame/ 2>&1 | grep -c '"object" has no attribute' # expect 167
+  pytest -n auto -q --no-header 2>&1 | tail -3                        # expect 10544 pass, 98 skip
+  ```
+  If any count differs from expected, investigate before proceeding — an unexpected baseline
+  could indicate another sprint has landed and shifted the ground since planning.
+- Confirm `docs/qf/accessor_pattern.md` exists and is the reference for any newly-revealed
+  lifecycle-A fixes surfaced by Task 10.
+- Files: no changes; measurement only.
+- Test surface: none.
+- Time budget: ~5 min.
+- Risk: none.
+
+Task 2 — Resolve `data_loader.py` forward-ref name-defined errors (29 errors → 0).
+- File: `spacegame/data_loader.py`. Add `TYPE_CHECKING` to the existing typing import
+  (`from typing import Dict, List, Optional, TYPE_CHECKING`) and add a TYPE_CHECKING import
+  block for the 14 forward-ref classes: `CaptainVariant`, `CombatComplication`,
+  `CrewInterjection`, `DeepCoreUpgrade`, `EnemyCaptain`, `FactionLaw`, `ForgeUpgrade`,
+  `GroundEquipment`, `PoliticsDisputeTemplate`, `ShipModule`, `ShipPart`, `SlotDefinition`,
+  `TimedThread`, `WreckUpgrade`. Locations verified: models/captain_variant.py,
+  models/combat_complication.py, models/crew_interjection.py, models/deep_core.py,
+  models/enemy_captain.py, models/smuggling.py (FactionLaw), models/forge_upgrade.py,
+  models/ground_equipment.py, models/politics_dispute.py, models/ship_module.py,
+  models/ship_part.py, models/slot_definition.py, models/timed_thread.py,
+  models/wreck_upgrade.py.
+- Verify: `python -m mypy spacegame/data_loader.py 2>&1 | grep -c '\[name-defined\]'` → 0.
+- Regenerate baseline: `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline sync`.
+- Commit: `QF-9: data_loader.py forward-ref imports (29 name-defined resolved)`.
+- Test surface: no new tests; verification is via the mypy grep and full suite green.
+- Risk: circular imports at runtime. Because the imports are inside `if TYPE_CHECKING:`, they
+  never run at import time. If any of the target modules import back from `data_loader`,
+  that's a pre-existing chain outside sprint scope.
+
+Task 3 — Resolve `engine/game.py` forward-ref name-defined errors (18 errors → 0).
+- File: `spacegame/engine/game.py`. Add TYPE_CHECKING imports for `MarketEvent`,
+  `CombatEngine`, `CombatEncounter`, `EncounterRef`, `EncounterDefinition`,
+  `GroundMissionConfig`, `GroundMissionResult`, `MapGenResult`, `CrewRoster`. Locations:
+  models/event.py, models/combat_engine.py, models/combat.py (CombatEncounter, EnemyShip),
+  models/encounter.py (EncounterRef, EncounterDefinition), models/ground_mission.py,
+  models/ground_mapgen.py (MapGenResult), models/crew.py.
+- Explicit non-goals: this task's diff is EXCLUSIVELY the TYPE_CHECKING block. Do NOT fix any
+  union-attr or attr-defined-None errors in game.py — those are Spec B territory. Do NOT
+  touch any runtime imports, method bodies, or state.
+- Verify: `python -m mypy spacegame/engine/game.py 2>&1 | grep -c '\[name-defined\]'` → 0;
+  `python scripts/mypy_populations.py` still reports `A=0`.
+- Regenerate baseline. Commit: `QF-9: engine/game.py forward-ref imports (18 name-defined
+  resolved; no other changes)`.
+- Test surface: none.
+- Risk: adding a TYPE_CHECKING import for a name that shadows an already-imported symbol at
+  runtime. Grep existing imports before adding; if the name is already imported at runtime,
+  no TYPE_CHECKING entry is needed.
+
+Task 4 — Resolve models forward-ref name-defined errors (13 errors → 0).
+- Files: `spacegame/models/ship.py` (6), `ship_module.py` (3), `combat.py` (1), `player.py`
+  (1), `combat_engine.py` (2).
+- `ship.py`: `Optional` is used in quoted returns (`"Optional[ShipBuild]"`,
+  `"Optional[ComputedShipStats]"`, `"Optional[object]"`) but not imported at all. Add
+  `from typing import Dict, List, Optional, TYPE_CHECKING` (replacing the current
+  `from typing import Dict, List`). Add TYPE_CHECKING block for `ShipBuild`,
+  `ComputedShipStats` (from `spacegame.models.ship_build`).
+- `ship_module.py`: TYPE_CHECKING for `ShipBuild`, `HullMaterial` (from
+  `spacegame.models.ship_build`).
+- `combat.py:535`: TYPE_CHECKING for `MomentumGauge` (from `spacegame.models.momentum`).
+- `player.py:142`: TYPE_CHECKING for `HiddenCompartment` (from `spacegame.models.smuggling`).
+- `combat_engine.py:88,2424`: TYPE_CHECKING for `ActionQueue` (from
+  `spacegame.models.action_queue`) and `ShipUltimate` (from `spacegame.models.momentum` —
+  note `ShipUltimate` is already imported into `spacegame.data_loader.py`; verify the
+  correct source).
+- Regenerate baseline. Commit: `QF-9: models forward-ref imports (13 name-defined resolved)`.
+- Test surface: none.
+
+Task 5 — Resolve views forward-ref name-defined errors (7 errors → 0).
+- Files: `cockpit_hud.py` (3), `skill_tree_view.py` (1), `mission_log_view.py` (1),
+  `galaxy_map_view.py` (1), `combat_view.py` (1).
+- `cockpit_hud.py`: TYPE_CHECKING for `Player`, `MissionManager`, `CrewRoster`.
+- `skill_tree_view.py`: TYPE_CHECKING for `Player`.
+- `mission_log_view.py`: TYPE_CHECKING for `MissionObjective`.
+- `galaxy_map_view.py`: TYPE_CHECKING for `Journal`.
+- `combat_view.py:2995`: TYPE_CHECKING for `EnemyShip` (verify — may already be resolvable
+  via existing imports; if so, no change).
+- Regenerate baseline. Verify: `python -m mypy spacegame/ 2>&1 | grep -c '\[name-defined\]'` → 0.
+  This is the first milestone gate: after Task 5, all 67 name-defined errors are resolved and
+  Population B name-defined bucket = 0.
+- Commit: `QF-9: views forward-ref imports (7 name-defined resolved; B name-defined bucket → 0)`.
+- Test surface: none.
+
+Task 6 — Fix `combat_view.py` bare-`object` annotations (41 errors from 4 annotations).
+- File: `spacegame/views/combat_view.py`.
+- Replace annotations:
+  - `social_manager: object = None` (line 386) → `social_manager: Optional["SocialManager"] = None`
+    with TYPE_CHECKING import from `spacegame.models.social`.
+  - `_tutorial_helper: Optional[object] = None` (line 407) → `Optional["CombatTutorialHelper"]`
+    with TYPE_CHECKING import from `spacegame.models.combat_tutorial_helper`.
+  - `enemy: object` (lines 3246, 3537), `state: object` (3698, 3828), `effect: object` (3814)
+    in private helpers — read each callsite to identify the concrete type (`EnemyShip`,
+    `CombatState`, `CombatEffect` — the exact source may be `spacegame.models.combat` or
+    a nested type; grep to confirm) and replace with real types + TYPE_CHECKING imports.
+- Callsite audit: for each new type, `grep 'self.social_manager\.'` /
+  `grep 'self._tutorial_helper\.'` and confirm the methods called exist on the concrete type.
+  If a callsite accesses an attribute NOT on the concrete type (a genuine bug hiding behind
+  `object`), fix it here.
+- Regenerate baseline. Expect the 41 B errors to disappear; possibly some new A errors around
+  `social_manager` None-checks. If a newly-revealed A error is lifecycle-scoped, hold it for
+  Task 11 (do NOT fix mid-Task-6; keep the diff annotation-only for the ratchet).
+- Commit: `QF-9: combat_view.py bare-object → real types (41 errors)`.
+- Test surface: no new tests here; Task 11 adds accessor tests if lifecycle-A errors surface.
+
+Task 7 — Fix large-cluster views bare-`object` annotations (75 errors across 3 files).
+- Files: `station_hub_view.py` (34), `cantina_view.py` (21), `station_layouts.py` (20).
+- `station_hub_view.py:198-202`: `data_loader: DataLoader`,
+  `politics_manager: Optional["PoliticsManager"]`, `crew_roster: Optional["CrewRoster"]`,
+  `station_chatter: Optional["StationChatterManager"]`,
+  `mission_manager: Optional["MissionManager"]`. Also `_activate_zone(zone: StationZone)`
+  (line 944) and `_is_npc_available(npc: NPC)` (line 1570).
+- `cantina_view.py:63-65,617`: same three managers as station_hub, plus `_is_npc_available`.
+- `station_layouts.py`: `StationZone.location: Location` (line 104 dataclass), and
+  `sprite_mgr` typed correctly across ~10 `build_zones` methods and the module-level helper
+  (line 1066). Grep for the sprite_manager class (`SpriteManager` in
+  `spacegame.engine.sprites`) and confirm it can be imported. TYPE_CHECKING is preferred for
+  cross-package types.
+- Regenerate baseline after each file (three commits or one bundled — implementer's choice
+  as long as each commit's diff is annotation-only).
+- Commit: `QF-9: station_hub/cantina/station_layouts bare-object → real types (75 errors)`
+  (or split into three per-file commits).
+- Test surface: none.
+- Risk: importing `SpriteManager` into `station_layouts.py` at TYPE_CHECKING time — since
+  station_layouts is in `views/`, this is fine (views may import engine). Do NOT add a
+  runtime `SpriteManager` import if the file doesn't already have one — TYPE_CHECKING keeps
+  the runtime import graph unchanged.
+
+Task 8 — Fix remaining views bare-`object` annotations (28 errors across 8 files).
+- Files: `shipyard_view.py` (8), `mission_log_view.py` (7), `galaxy_map_view.py` (5),
+  `tutorial_shop_view.py` (4), `ship_builder_view.py` (2), `encounter_view.py` (2),
+  `character_view.py` (1), `dialogue_view.py` (1).
+- `shipyard_view.py:497,1543,1551,1586,1658`: `ship_type: ShipType`, `placed_slot: PlacedSlot`
+  (or the correct dataclass — verify), `build: ShipBuild`.
+- `mission_log_view.py`: `data_loader: DataLoader` in constructor + related helpers.
+- `galaxy_map_view.py:71-72`: `politics_manager: Optional["PoliticsManager"]`,
+  `news_ticker: Optional["NewsTicker"]`.
+- `tutorial_shop_view.py:124-126`: `ui_manager: pygame_gui.UIManager`, `player: Player`,
+  `data_loader: DataLoader`.
+- `ship_builder_view.py:249`: `data_loader: DataLoader`.
+- `encounter_view.py`: 2 params — audit callsites to identify concrete types.
+- `character_view.py:79`: `politics_manager: Optional["PoliticsManager"]`.
+- `dialogue_view.py:181`: `ui_manager: pygame_gui.UIManager`.
+- Regenerate baseline. Commit: `QF-9: remaining views bare-object → real types (28 errors)`.
+- Test surface: none.
+
+Task 9 — Fix models bare-`object` annotations (22 errors across 8 files; sub_reputation
+  dunders preserved).
+- Files (declaration count → error count):
+  - `ship_presets.py`: 4 annotations at lines 80, 104, 317, 428 → `ship_type: ShipType` each →
+    7 errors resolved. TYPE_CHECKING for `ShipType` from `spacegame.models.ship`.
+  - `combat_engine.py:986`: `social_manager: SocialManager` → 7 errors resolved. TYPE_CHECKING
+    for `SocialManager` from `spacegame.models.social`.
+  - `build_sharing.py:304`: `player: Player` → 6 errors resolved. TYPE_CHECKING for `Player`
+    from `spacegame.models.player`.
+  - `combat.py:539,542,688`: 3 dataclass field annotations. `_ship_build: Optional["ShipBuild"]`,
+    `_legendary: Optional["LegendaryState"]`, `progression: Optional["Progression"]` with
+    TYPE_CHECKING imports. NOTE: dataclass field types with `Optional` require careful
+    handling — the `Optional` symbol must be runtime-resolvable if the field is used at
+    runtime for `dataclasses.field(default=None)`. Since these are already `field(default=None,
+    repr=False)`, mypy needs the type name to resolve; TYPE_CHECKING + quoted strings works.
+  - `dialogue.py:169`: `set_politics_manager(manager: PoliticsManager, player: Player)` →
+    1 error resolved.
+  - `combat_tutorial_helper.py:21,33`: `on_round_start(state: CombatState)`,
+    `on_round_end(state: CombatState)` → 1 error resolved (only 1 error today because state
+    access is single-callsite each).
+  - `station_salience.py:131`: `_max_hull(ship: Ship)` → 1 error resolved. TYPE_CHECKING for
+    `Ship` from `spacegame.models.ship`.
+  - `ship_build.py:626`: `from_ship_type(cls, ship_type: ShipType)` → 0 errors today (no
+    attribute access after annotation) but the annotation is still hygiene work; include it
+    for consistency.
+  - `smuggling.py:1243`: `set_progression(progression: Progression)` → 0 errors today; same
+    hygiene note.
+- Do NOT change `sub_reputation.py:32,37` (`__ge__`/`__lt__` `object` parameters — Python
+  protocol requires this).
+- Watch for circular imports: `combat.py` referencing `ShipBuild`, `build_sharing.py`
+  referencing `Player`, `combat_engine.py` referencing `SocialManager` — all TYPE_CHECKING to
+  avoid runtime cycles.
+- Regenerate baseline. Commit: `QF-9: models bare-object → real types (22 errors;
+  sub_reputation dunders preserved)`.
+- Test surface: none.
+
+Task 10 — Verify Population B = 0 and inventory newly revealed errors.
+- Run `python scripts/mypy_populations.py`. Expect: `A=?`, `B=0`, `C=?`, `TOTAL=?`.
+- If `B != 0`: something was missed. Grep the raw mypy output for remaining `object` /
+  name-defined errors and return to the earlier tasks.
+- Diff A count against pre-sprint (0). Save the list of newly-revealed A errors to
+  `/tmp/qf9_newly_revealed_a.txt` via
+  `python -m mypy spacegame/ 2>&1 | grep -v ": note:" | grep -E '\[union-attr\]|"None" has no attribute'`.
+- Diff C count against pre-sprint (337). Save new C errors to
+  `/tmp/qf9_newly_revealed_c.txt`. (The `mypy_populations.py` script doesn't emit a per-error
+  list, so use a set-difference against the pre-sprint baseline: `diff` the previous
+  `mypy-baseline.txt` against the current mypy output for lines not present in the previous.)
+- Files: no changes; measurement + triage notes for Task 11.
+
+Task 11 — Fix newly revealed Population A errors.
+- Read `/tmp/qf9_newly_revealed_a.txt`. For each error:
+  - If it lives in `engine/game.py`: leave it. The existing `mypy_populations.py` game.py
+    exclusion rule handles it (attr-defined-None + union-attr both route to `excluded_a`).
+    Verify by re-running the population script — game.py A errors should classify as
+    `excluded_a`, not `A`.
+  - If it's a lifecycle-scoped Optional attribute (view constructor param, session-shaped
+    manager): apply the raising-accessor pattern from `docs/qf/accessor_pattern.md`. Add a
+    regression test in `tests/test_views/test_view_accessor_contracts.py` following the QF-8
+    convention (`test_<view>_<attr>_raises_before_on_enter`,
+    `test_<view>_<attr>_returns_after_on_enter`, `test_<view>_<attr>_raises_after_on_exit`).
+  - If it's a single-callsite None-guard opportunity: use a local `if x is not None:` guard.
+    No accessor scaffolding warranted.
+- After all fixes, re-run `python scripts/mypy_populations.py`. Expect `A=0`.
+- This is the ONLY task in the sprint whose commit MAY contain both annotation changes AND
+  logic changes (accessor properties, local guards, tests). Regenerate baseline in this
+  commit only if newly-revealed C errors accumulated during Task 6-9 that Task 10's per-task
+  baseline regens didn't catch (unlikely if per-task discipline held).
+- Commit: `QF-9: fix newly revealed Population A errors from Population B burndown`.
+- Test surface: `tests/test_views/test_view_accessor_contracts.py` extended with accessor
+  contract tests for each newly-revealed lifecycle-A error. Expected count: 0-6 new tests.
+- Risk: if the newly-revealed A count is > 20, the sprint may be materially larger than
+  planned; the implementer sets `Status: blocked` with a scope note and defers Task 11 to a
+  QF-10 follow-up rather than blowing the sprint. Rule-of-thumb from Spec A: expect small
+  numbers because bare-`object` sites were "frequently correct" logically per Section 4.
+
+Task 12 — Author sprint Notes with next-flag recommendation.
+- Edit this sprint's `**Notes.**` block (top of the section) to include a "Next flags to
+  enable" subsection. Recommend at least 3 flags from:
+  - `no_implicit_optional = true`: enforces that `x: str = None` is a type error. Currently
+    disabled; enabling would flush out `= None` defaults hiding an implicit Optional.
+    Expected new errors: low (most current code uses explicit Optional).
+  - `warn_unused_ignores = true`: flags `# type: ignore` comments that no longer apply.
+    Useful for keeping ignores honest as the type situation evolves. Zero-cost if the
+    sprint's diff contains no unnecessary ignores.
+  - `disallow_incomplete_defs = true`: companion to `disallow_untyped_defs`; forbids
+    partially-annotated defs. Likely uncovers ~10-30 legacy functions.
+  - `check_untyped_defs = true`: type-checks the bodies of untyped defs. Highest-signal flag;
+    likely reveals a large batch of C errors.
+  - `strict_equality = true`: flags `x == y` where the types can never be equal. Very-low-noise
+    flag; catches a real class of bugs (comparing `Enum` to `str`).
+  - `warn_redundant_casts = true`: flags `cast(X, y)` where `y` is already `X`. Zero-cost.
+- Do NOT edit `pyproject.toml`. That's a follow-up sprint's decision.
+- Commit: `QF-9: sprint notes with next-flag recommendation`.
+- Test surface: none.
+
+Task 13 — Final verification and status update.
+- Run and record:
+  - `python scripts/mypy_populations.py`: expect `A=0`, `B=0`, `C=?`, `TOTAL=?`.
+  - `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter`: expect
+    exit code 0 (no new violations vs. baseline).
+  - `pytest -n auto -q`: expect pass count `>= 10544` + any accessor tests from Task 11.
+  - `grep -rn ": object" spacegame/views/ | wc -l`: expect 0.
+  - `grep -rn ": object" spacegame/models/ | grep -v "sub_reputation.py" | wc -l`: expect 0.
+  - `python -m mypy spacegame/ 2>&1 | grep -c '\[name-defined\]'`: expect 0.
+- Grep the full sprint diff (`git diff <base>..HEAD spacegame/`) for new `# type: ignore`
+  occurrences; each must carry a `[code]` and one-line justification.
+- Inspect each baseline-regen commit's `git diff --stat` and content to confirm annotation-only
+  changes (AC 6).
+- Move `Status` from `in-progress` to `review`; append the final Activity log entry with test
+  count delta, tracked-A before/after, TOTAL before/after, C-baseline delta, number of
+  newly-revealed A errors triaged, and any notes for the reviewer.
+
+**Cross-sprint reactions to author.** none (foundational type-safety burndown; no player-facing
+content, no dialogue, no NPCs, no crew impact, no events, no world-state changes).
+
+Downstream conventions worth flagging (not reactions per se):
+
+- **New view / model convention (extension of QF-8's accessor-pattern convention).** Any
+  future view or model MUST NOT annotate a parameter as bare `object` to satisfy
+  `disallow_untyped_defs`. Use the real type; use `TYPE_CHECKING` imports if a runtime import
+  would be circular; use `Any` explicitly if the callsite is genuinely typed as such.
+  Enforcement candidate: a compliance test that greps `spacegame/views/` and
+  `spacegame/models/` for `: object` (excluding `sub_reputation.py.__ge__`/`__lt__` parameter
+  positions) and fails if any are found. Not automated in this sprint; may become a follow-up
+  if drift becomes a problem.
+- **Reference for Spec B.** Spec B decomposes `engine/game.py`. The 18 name-defined errors
+  this sprint resolves via TYPE_CHECKING imports do NOT block Spec B; Spec B's decomposition
+  can move those imports around as needed.
+- **Ratchet-baseline discipline.** This sprint regenerates `mypy-baseline.txt` per-task. That
+  cadence is legitimate ONLY because each task's diff is annotation-only. Future sprints that
+  fix types alongside logic changes MUST separate the two into distinct commits — one for
+  logic (no baseline regen), one for annotation cleanup (with regen). QF-8 and QF-9 have both
+  now used this pattern; it should become the norm.
 
 **Activity log.**
 - 2026-08-23 — blocked (created from Spec A; depends on QF-8)
+- 2026-08-23 22:15 — harness: plan phase starting
+- 2026-08-23 23:15 — planning complete. Verified all Context-to-read paths exist
+  (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` Section 4 + Section 1,
+  `docs/qf/accessor_pattern.md` from QF-8, `scripts/mypy_populations.py`, `mypy-baseline.txt`,
+  `pyproject.toml`, `CLAUDE.md`). Reproduced live Population B breakdown: 167 attr-defined
+  `"object"` errors from 41 views annotations + 15 models annotations (144 in views: combat 41,
+  station_hub 34, cantina 21, station_layouts 20, shipyard 8, mission_log 7, galaxy_map 5,
+  tutorial_shop 4, ship_builder 2, encounter 2; 23 in models: ship_presets 7, combat_engine 7,
+  build_sharing 6, station_salience 1, dialogue 1, combat_tutorial_helper 1). 67 name-defined
+  errors across data_loader 29, game.py 18, ship.py 6, ship_module.py 3, cockpit_hud 3,
+  combat_engine 2, plus 6 tail-end 1-error files. Confirmed `sub_reputation.py.__ge__`/`__lt__`
+  `object` params are correct Python dunder protocol and must NOT be changed. Locked 8 open
+  decisions: include model bare-object in scope (not just views); fix game.py name-defined
+  in-sprint via TYPE_CHECKING (mechanical, no Spec B overlap); preserve sub_reputation dunders;
+  per-task baseline regeneration cadence; QF-8 accessor pattern reused for newly-revealed
+  lifecycle-A; Union over Protocol for polymorphism; no accessor-pattern doc changes; no
+  strict-flag enablement in this sprint (recommendation only). Expanded Touch zones from empty
+  to 31 precise paths. Expanded ACs from 3 vague to 8 mechanically verifiable. Wrote 13-task
+  Plan. No new sprints proposed. Cross-sprint reactions: none (foundational type-safety, no
+  player-facing surface). Pre-phase test baseline: 10544 pass, 98 skip. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 22:15
+- Completed: 2026-08-23 23:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: b602a6e
+- New_sprints_proposed: none
+- Polish_items_folded_in: model bare-object annotations (scope expansion beyond views-only
+  original text); game.py name-defined TYPE_CHECKING (in-sprint, not Spec B); per-task
+  baseline-regen discipline
+- Decisions_locked: 8
+- Notes: Verified 6 context docs exist. Reproduced Population B counts live (B=234 = 167
+  object + 67 name-defined). Expanded sprint scope to cover 15 model bare-object annotations
+  in addition to the 41 in views, because Population B target of 0 requires both surfaces.
+  Kept `sub_reputation.py` dunders out of scope per Python protocol. Locked per-task baseline
+  cadence matching QF-8 practice. Reused QF-8's accessor pattern for any newly-revealed
+  lifecycle-A errors; deferred any newly-revealed game.py A errors to Spec B via the existing
+  exclusion rule. No player-facing content, so no cross-sprint reactions to author.
 
 ## Followups
 
