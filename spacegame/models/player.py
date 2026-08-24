@@ -5,7 +5,7 @@ Tracks player credits, location, ship, and game progress.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.bidding import AuctionState
 from spacegame.models.captain_memory import CaptainMemory
@@ -39,6 +39,9 @@ from spacegame.models.trade_route import PriceMemory, TradeRouteTracker
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.models.wreck_upgrade import WreckUpgradeState
 from spacegame.models.wreckers_guild import WreckersGuildState
+
+if TYPE_CHECKING:
+    from spacegame.models.smuggling import HiddenCompartment
 
 
 @dataclass

@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.crew import CrewRoster
+    from spacegame.models.momentum import MomentumGauge
     from spacegame.models.ship import Ship
     from spacegame.models.upgrades import ShipUpgradeManager
 

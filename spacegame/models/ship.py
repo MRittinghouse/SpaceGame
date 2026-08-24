@@ -5,7 +5,10 @@ Defines ship types, their capabilities, and player ship instances.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import TYPE_CHECKING, Dict, List, Optional
+
+if TYPE_CHECKING:
+    from spacegame.models.ship_build import ComputedShipStats, ShipBuild
 
 
 @dataclass

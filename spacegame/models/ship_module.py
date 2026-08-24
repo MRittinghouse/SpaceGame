@@ -13,9 +13,12 @@ Part of the Shipbuilder Upgrade — Phases 1-2.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.ship_build import PlacedPixel
+
+if TYPE_CHECKING:
+    from spacegame.models.ship_build import HullMaterial, ShipBuild
 
 # ============================================================================
 # Constants

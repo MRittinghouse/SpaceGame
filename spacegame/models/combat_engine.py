@@ -8,7 +8,7 @@ and end-of-round processing.
 from __future__ import annotations
 
 import random
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.combat import (
     CombatEffect,
@@ -33,6 +33,10 @@ from spacegame.models.momentum import (
     MOMENTUM_ON_KILL,
     MOMENTUM_ON_STATUS_APPLIED,
 )
+
+if TYPE_CHECKING:
+    from spacegame.models.action_queue import ActionQueue
+    from spacegame.models.momentum import ShipUltimate
 
 # Hit chance bounds
 HIT_CHANCE_MIN = 5
