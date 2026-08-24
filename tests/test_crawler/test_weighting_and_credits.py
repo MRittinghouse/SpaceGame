@@ -155,6 +155,76 @@ class TestActionWeighting:
         _ = statistics
 
 
+class TestColdBootNavKeywordWeights:
+    """Task 2: 'new', 'continue', 'yes' must boost buttons toward GALAXY_MAP."""
+
+    def _make_button(self, game: _WeightingGame, text: str, x: int) -> Any:
+        return pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(x, 10, 120, 30),
+            text=text,
+            manager=game.ui_manager,
+        )
+
+    def _make_crawler(self, game: _WeightingGame) -> Crawler:
+        crawler = Crawler(
+            seed=1,
+            actions=0,
+            fixtures=CrawlerFixtures(game_factory=lambda: game),
+        )
+        crawler.boot()
+        return crawler
+
+    def test_nav_keywords_contains_new_continue_yes(self) -> None:
+        """NAV_KEYWORDS must map 'new', 'continue', and 'yes' to GALAXY_MAP."""
+        from tools.crawler.crawler import NAV_KEYWORDS
+
+        for token in ("new", "continue", "yes"):
+            assert token in NAV_KEYWORDS, (
+                f"NAV_KEYWORDS missing '{token}' — cold-boot boost not present"
+            )
+            assert NAV_KEYWORDS[token] == GameState.GALAXY_MAP, (
+                f"NAV_KEYWORDS['{token}'] must target GALAXY_MAP"
+            )
+
+    def test_new_game_button_gets_boost_when_galaxy_map_unvisited(self) -> None:
+        """'New Game' button gets 2x weight when GALAXY_MAP has not been visited."""
+        game = _WeightingGame()
+        new_game_btn = self._make_button(game, "New Game", 10)
+        crawler = self._make_crawler(game)
+        # Default: GALAXY_MAP is unvisited.
+        assert not crawler.coverage.states_reached.get("GALAXY_MAP", False)
+        assert crawler._weight_for_element(new_game_btn) == 2.0
+
+    def test_continue_button_gets_boost_when_galaxy_map_unvisited(self) -> None:
+        """'Continue' button gets 2x weight when GALAXY_MAP has not been visited."""
+        game = _WeightingGame()
+        continue_btn = self._make_button(game, "Continue", 10)
+        crawler = self._make_crawler(game)
+        assert not crawler.coverage.states_reached.get("GALAXY_MAP", False)
+        assert crawler._weight_for_element(continue_btn) == 2.0
+
+    def test_yes_button_gets_boost_when_galaxy_map_unvisited(self) -> None:
+        """'Yes' button gets 2x weight when GALAXY_MAP has not been visited."""
+        game = _WeightingGame()
+        yes_btn = self._make_button(game, "Yes", 10)
+        crawler = self._make_crawler(game)
+        assert not crawler.coverage.states_reached.get("GALAXY_MAP", False)
+        assert crawler._weight_for_element(yes_btn) == 2.0
+
+    def test_boost_is_inert_after_galaxy_map_visited(self) -> None:
+        """No boost once GALAXY_MAP has been reached (boost must not misfire later)."""
+        game = _WeightingGame()
+        new_game_btn = self._make_button(game, "New Game", 10)
+        continue_btn = self._make_button(game, "Continue", 150)
+        yes_btn = self._make_button(game, "Yes", 290)
+        crawler = self._make_crawler(game)
+        # Simulate having already visited GALAXY_MAP.
+        crawler.coverage.states_reached["GALAXY_MAP"] = True
+        assert crawler._weight_for_element(new_game_btn) == 1.0
+        assert crawler._weight_for_element(continue_btn) == 1.0
+        assert crawler._weight_for_element(yes_btn) == 1.0
+
+
 class TestDebugCredits:
     def test_debug_credits_hook_adjusts_player_credits(self) -> None:
         game = _WeightingGame()

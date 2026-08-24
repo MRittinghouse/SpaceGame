@@ -103,6 +103,13 @@ SOFTLOCK_EXEMPT: frozenset[GameState] = frozenset(
 # whose text/object_id suggests entry into an unvisited state. Matched
 # case-insensitively against ``element.text`` or object_ids.
 NAV_KEYWORDS: dict[str, GameState] = {
+    # Cold-boot bootstrap: boost New Game / Continue / confirm-dialog Yes toward
+    # GALAXY_MAP when it has not been visited yet. The 2x boost is inert once
+    # GALAXY_MAP is reached, so these entries do not misfire in post-menu views
+    # that also use the words "new", "continue", or "yes".
+    "new": GameState.GALAXY_MAP,
+    "continue": GameState.GALAXY_MAP,
+    "yes": GameState.GALAXY_MAP,
     "shipyard": GameState.SHIPYARD,
     "cantina": GameState.CANTINA,
     "trading": GameState.TRADING,
