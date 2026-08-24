@@ -32,7 +32,7 @@ import random
 import sys
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import numpy as np
 import pygame
@@ -73,6 +73,15 @@ from spacegame.models.ship import Ship
 from spacegame.save_manager import SaveManager
 from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
+
+if TYPE_CHECKING:
+    from spacegame.models.combat import CombatEncounter
+    from spacegame.models.combat_engine import CombatEngine
+    from spacegame.models.crew import CrewRoster
+    from spacegame.models.encounter import EncounterDefinition, EncounterRef
+    from spacegame.models.event import MarketEvent
+    from spacegame.models.ground_mapgen import MapGenResult
+    from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
 
 
 def build_display_flags(fullscreen: bool) -> int:
