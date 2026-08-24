@@ -1235,14 +1235,17 @@ class CombatView(BaseView):
                 return
 
             # Legendary: Void Release
-            if getattr(self, "_void_release_rect", None) and self._void_release_rect.collidepoint(
-                pos
-            ):
+            # QF-8: bind the Optional[Rect] to a local so mypy narrows
+            # after the truth-test (getattr'd attribute access doesn't
+            # participate in narrowing).
+            vr_rect = getattr(self, "_void_release_rect", None)
+            if vr_rect is not None and vr_rect.collidepoint(pos):
                 self._activate_void_release()
                 return
 
             # Legendary: Overdrive
-            if getattr(self, "_overdrive_rect", None) and self._overdrive_rect.collidepoint(pos):
+            od_rect = getattr(self, "_overdrive_rect", None)
+            if od_rect is not None and od_rect.collidepoint(pos):
                 self._activate_overdrive()
                 return
 
@@ -3077,7 +3080,8 @@ class CombatView(BaseView):
             screen.blit(flash_surf, (px, py))
 
         # Ship name header
-        ship_name = self.player.display_ship_name
+        # QF-8: local guard for Player | None (long-tail LOCKED decision).
+        ship_name = self.player.display_ship_name if self.player is not None else ""
         name_surf = self.header_font.render(ship_name, True, Colors.TEXT_HIGHLIGHT)
         name_rect = name_surf.get_rect(centerx=px + PLAYER_PANEL_W // 2, top=py + 8)
         screen.blit(name_surf, name_rect)

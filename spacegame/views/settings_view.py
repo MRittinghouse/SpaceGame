@@ -76,12 +76,15 @@ class SettingsView(BaseView):
 
         # UI Elements — save directory
         self.save_dir_label: Optional[pygame_gui.elements.UILabel] = None
-        self.save_dir_display: Optional[pygame_gui.elements.UITextBox] = None
+        # QF-8: raising accessor pattern. Storage moves to underscore, the
+        # public names below become non-Optional @property accessors that
+        # raise if used outside on_enter → on_exit. See docs/qf/accessor_pattern.md.
+        self._save_dir_display: Optional[pygame_gui.elements.UITextBox] = None
         self.browse_button: Optional[pygame_gui.elements.UIButton] = None
         self.reset_button: Optional[pygame_gui.elements.UIButton] = None
         self.replay_tutorial_button: Optional[pygame_gui.elements.UIButton] = None
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
-        self.apply_button: Optional[pygame_gui.elements.UIButton] = None
+        self._apply_button: Optional[pygame_gui.elements.UIButton] = None
 
         # UI Elements — audio volume sliders
         self._master_slider: Optional[pygame_gui.elements.UIHorizontalSlider] = None
@@ -103,6 +106,39 @@ class SettingsView(BaseView):
         # they've found their footing.
         self._selected_objective_hint: bool = True
         self._restart_label: Optional[pygame_gui.elements.UILabel] = None
+
+    # QF-8: widget accessors — lifecycle-scoped (see docs/qf/accessor_pattern.md).
+    # Lifecycle tests use `_<name>` directly; call sites inside on_enter →
+    # on_exit use the public property, which returns non-Optional.
+    @property
+    def apply_button(self) -> pygame_gui.elements.UIButton:
+        """Return the Apply button for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` builds the UI
+                (or after ``on_exit()`` destroys it).
+        """
+        if self._apply_button is None:
+            raise RuntimeError(
+                "SettingsView.apply_button accessed before on_enter() "
+                "(or after on_exit()); widget is built inside _create_ui."
+            )
+        return self._apply_button
+
+    @property
+    def save_dir_display(self) -> pygame_gui.elements.UITextBox:
+        """Return the save-dir display widget for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` builds the UI
+                (or after ``on_exit()`` destroys it).
+        """
+        if self._save_dir_display is None:
+            raise RuntimeError(
+                "SettingsView.save_dir_display accessed before on_enter() "
+                "(or after on_exit()); widget is built inside _create_ui."
+            )
+        return self._save_dir_display
 
     def on_enter(self) -> None:
         """Create UI when entering settings view."""
@@ -237,7 +273,7 @@ class SettingsView(BaseView):
         y += 35
 
         save_dir_str = str(self.current_save_dir)
-        self.save_dir_display = pygame_gui.elements.UITextBox(
+        self._save_dir_display = pygame_gui.elements.UITextBox(
             html_text=f"<font size=4>{save_dir_str}</font>",
             relative_rect=pygame.Rect(panel_x, y, panel_width - scale_x(160), scale_y(50)),
             manager=self.ui_manager,
@@ -284,7 +320,7 @@ class SettingsView(BaseView):
             manager=self.ui_manager,
         )
 
-        self.apply_button = pygame_gui.elements.UIButton(
+        self._apply_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 panel_x + panel_width - scale_x(150),
                 WINDOW_HEIGHT - scale_y(110),
@@ -294,17 +330,17 @@ class SettingsView(BaseView):
             text="APPLY",
             manager=self.ui_manager,
         )
-        self.apply_button.disable()
+        self._apply_button.disable()
 
     def _destroy_ui(self) -> None:
         """Destroy all UI elements."""
         for elem in [
             self.save_dir_label,
-            self.save_dir_display,
+            self._save_dir_display,
             self.browse_button,
             self.reset_button,
             self.back_button,
-            self.apply_button,
+            self._apply_button,
             self._master_slider,
             self._music_slider,
             self._sfx_slider,
@@ -325,6 +361,9 @@ class SettingsView(BaseView):
         for label in getattr(self, "_misc_labels", []):
             label.kill()
         self._misc_labels = []
+        # QF-8: clear lifecycle-scoped storage so post-exit accessors raise.
+        self._save_dir_display = None
+        self._apply_button = None
 
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle settings view events."""
@@ -461,7 +500,7 @@ class SettingsView(BaseView):
 
                 # Update display
                 self.save_dir_display.kill()
-                self.save_dir_display = pygame_gui.elements.UITextBox(
+                self._save_dir_display = pygame_gui.elements.UITextBox(
                     html_text=f"<font size=4>{self.new_save_dir!s}</font>",
                     relative_rect=pygame.Rect(
                         (WINDOW_WIDTH - scale_x(800)) // 2, scale_y(160), scale_x(640), scale_y(60)
@@ -540,7 +579,7 @@ class SettingsView(BaseView):
         self.new_save_dir = default_dir
         panel_x = (WINDOW_WIDTH - scale_x(800)) // 2
         self.save_dir_display.kill()
-        self.save_dir_display = pygame_gui.elements.UITextBox(
+        self._save_dir_display = pygame_gui.elements.UITextBox(
             html_text=f"<font size=4>{self.new_save_dir!s}</font>",
             relative_rect=pygame.Rect(panel_x, scale_y(160), scale_x(640), scale_y(60)),
             manager=self.ui_manager,

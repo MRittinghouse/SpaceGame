@@ -59,7 +59,10 @@ class SaveLoadView(BaseView):
         # UI Elements
         self.slot_buttons: List[pygame_gui.elements.UIButton] = []
         self.back_button: Optional[pygame_gui.elements.UIButton] = None
-        self.confirm_button: Optional[pygame_gui.elements.UIButton] = None
+        # QF-8: raising accessor pattern. Storage moves to underscore; the
+        # public `confirm_button` @property returns non-Optional and raises
+        # if accessed before on_enter or after on_exit.
+        self._confirm_button: Optional[pygame_gui.elements.UIButton] = None
         self.delete_button: Optional[pygame_gui.elements.UIButton] = None
 
         # Slot metadata cache
@@ -70,6 +73,22 @@ class SaveLoadView(BaseView):
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
         self._bg_dim.set_alpha(120)
+
+    # QF-8: lifecycle-scoped accessor (see docs/qf/accessor_pattern.md).
+    @property
+    def confirm_button(self) -> pygame_gui.elements.UIButton:
+        """Return the confirm button for this view's lifecycle.
+
+        Raises:
+            RuntimeError: If accessed before ``on_enter()`` builds the UI
+                (or after ``on_exit()`` destroys it).
+        """
+        if self._confirm_button is None:
+            raise RuntimeError(
+                "SaveLoadView.confirm_button accessed before on_enter() "
+                "(or after on_exit()); widget is built inside _create_ui."
+            )
+        return self._confirm_button
 
     def on_enter(self) -> None:
         """Create UI when entering save/load view."""
@@ -142,14 +161,14 @@ class SaveLoadView(BaseView):
         else:
             confirm_text = "LOAD"
 
-        self.confirm_button = pygame_gui.elements.UIButton(
+        self._confirm_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 WINDOW_WIDTH - scale_x(350), WINDOW_HEIGHT - scale_y(70), scale_x(150), scale_y(50)
             ),
             text=confirm_text,
             manager=self.ui_manager,
         )
-        self.confirm_button.disable()  # Disabled until slot selected
+        self._confirm_button.disable()  # Disabled until slot selected
 
         # Delete button (only in load mode, only when slot selected)
         if self.mode == "load":
@@ -173,10 +192,12 @@ class SaveLoadView(BaseView):
 
         if self.back_button:
             self.back_button.kill()
-        if self.confirm_button:
-            self.confirm_button.kill()
+        if self._confirm_button:
+            self._confirm_button.kill()
         if self.delete_button:
             self.delete_button.kill()
+        # QF-8: clear lifecycle-scoped storage so post-exit accessor raises.
+        self._confirm_button = None
 
     def _format_slot_text(self, slot: int, metadata: Dict[str, Any]) -> str:
         """Format slot metadata as display text."""
