@@ -5,7 +5,7 @@ Displays active, available, and completed missions with objectives
 and rewards. Allows accepting available missions.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -42,6 +42,9 @@ from spacegame.views.layout import (
 from spacegame.views.layout import (
     LIST_ITEM_HEIGHT as ITEM_HEIGHT,
 )
+
+if TYPE_CHECKING:
+    from spacegame.models.mission import MissionObjective
 
 TAB_HEIGHT = scale_y(36)
 TAB_WIDTH = scale_x(130)

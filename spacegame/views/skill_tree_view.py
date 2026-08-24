@@ -6,7 +6,7 @@ Mode 2 (Detail): Individual tree with horizontal node layout by depth.
 """
 
 import math
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 import pygame
 import pygame_gui
@@ -21,6 +21,9 @@ from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.progression import PlayerProgression, SkillTreeType
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+if TYPE_CHECKING:
+    from spacegame.models.player import Player
 
 # Tree metadata for display
 _TREE_INFO: Dict[SkillTreeType, dict] = {

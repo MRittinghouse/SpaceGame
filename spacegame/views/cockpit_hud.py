@@ -8,7 +8,7 @@ chrome when docked.
 
 import math
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 
@@ -28,6 +28,11 @@ from spacegame.engine.fonts import (
 )
 from spacegame.models.mission import MissionStatus
 from spacegame.utils.logger import logger
+
+if TYPE_CHECKING:
+    from spacegame.models.crew import CrewRoster
+    from spacegame.models.mission import MissionManager
+    from spacegame.models.player import Player
 
 # Height of the cockpit HUD bar (at 720p base)
 HUD_BASE_HEIGHT = 90

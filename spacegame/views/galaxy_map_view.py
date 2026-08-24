@@ -6,7 +6,7 @@ Features animated background, procedural planet thumbnails, and pulsing highligh
 """
 
 import math
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 import pygame
 import pygame_gui
@@ -33,6 +33,9 @@ from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+
+if TYPE_CHECKING:
+    from spacegame.models.journal import Journal
 
 # Standing pip color per reputation tier (None = no indicator)
 _STANDING_COLORS: dict[ReputationTier, Optional[tuple[int, int, int]]] = {

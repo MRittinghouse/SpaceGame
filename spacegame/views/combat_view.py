@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from spacegame.engine.dual_tech_portraits import PortraitConfig
+    from spacegame.models.combat import EnemyShip
 
 import pygame
 import pygame_gui
