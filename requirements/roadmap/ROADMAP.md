@@ -7468,7 +7468,7 @@ Downstream conventions worth flagging (not reactions per se):
 - Started: 2026-08-23 21:12
 - Completed: 2026-08-23 21:45
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending after this write)
+- Commits: 64b126b
 - New_sprints_proposed: none
 - Polish_items_folded_in: accessor-pattern-doc, mypy_populations exclusion-rule fix, crawler reachability re-measurement task, regression-test contract per accessor (positive + negative + post-on_exit)
 - Decisions_locked: 9
