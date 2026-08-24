@@ -9,6 +9,7 @@ and pass/fail feedback for social skill checks.
 from typing import Optional
 
 import pygame
+import pygame_gui
 
 from spacegame.config import (
     DIALOGUE_PORTRAIT_SIZE,

@@ -17,6 +17,7 @@ from spacegame.models.faction import ReputationTier, get_reputation_tier
 
 if TYPE_CHECKING:
     from spacegame.models.encounter import EncounterDefinition
+    from spacegame.models.progression import PlayerProgression
 
 
 class Penalty(Enum):
@@ -1240,7 +1241,7 @@ class HiddenCompartment:
         if not hasattr(self, "_progression"):
             self._progression = None
 
-    def set_progression(self, progression: object) -> None:
+    def set_progression(self, progression: "PlayerProgression") -> None:
         """Link a progression for contraband_slots skill bonus."""
         self._progression = progression
 

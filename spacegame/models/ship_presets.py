@@ -10,7 +10,7 @@ Part of Shipyard Overhaul Phase A3.
 from __future__ import annotations
 
 import math
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.ship_build import (
     WEIGHT_CLASSES,
@@ -18,6 +18,9 @@ from spacegame.models.ship_build import (
     PlacedPixel,
     ShipBuild,
 )
+
+if TYPE_CHECKING:
+    from spacegame.models.ship import ShipType
 
 # Materials used for preset generation (these may not all be in the
 # starter JSON — presets represent pre-built ships with full access)
@@ -77,7 +80,7 @@ _PRESET_MATERIALS: dict[str, HullMaterial] = {
 }
 
 
-def _select_weight_class(ship_type: object) -> str:
+def _select_weight_class(ship_type: ShipType) -> str:
     """Pick an appropriate weight class for a ship type based on its stats.
 
     Args:
@@ -101,7 +104,7 @@ def _select_weight_class(ship_type: object) -> str:
 
 
 def _compute_pixel_counts(
-    ship_type: object,
+    ship_type: ShipType,
     weight_class: str,
 ) -> dict[str, int]:
     """Determine how many pixels of each material to place.
@@ -314,7 +317,7 @@ def _select_slot_def(slot_type: str, min_size: str, weight_class: str) -> tuple[
 
 
 def _generate_placed_slots(
-    ship_type: object,
+    ship_type: ShipType,
     pixels: list[PlacedPixel],
     canvas_w: int,
     canvas_h: int,
@@ -425,7 +428,7 @@ def _generate_placed_slots(
 
 
 def generate_preset_from_ship_type(
-    ship_type: object,
+    ship_type: ShipType,
     materials: Optional[dict[str, HullMaterial]] = None,
 ) -> ShipBuild:
     """Generate a preset ShipBuild from a legacy ShipType.

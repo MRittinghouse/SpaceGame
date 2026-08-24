@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from spacegame.models.location import Location
     from spacegame.models.mission import MissionManager
     from spacegame.models.player import Player
+    from spacegame.models.ship import Ship
 
 
 # SL-2 lifetime-credits floor for investment-card visibility.
@@ -128,7 +129,7 @@ def is_investment_unlocked(
     return bool(player.dialogue_flags.get(investment_introduced(), False))
 
 
-def _max_hull(ship: object) -> int:
+def _max_hull(ship: Ship) -> int:
     """Return the ship's effective max hull. Mirrors Ship's own logic."""
     cs = getattr(ship, "computed_stats", None)
     if cs is not None and getattr(cs, "hull", 0) > 0:

@@ -12,8 +12,11 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.crew import CrewRoster
+    from spacegame.models.legendary_effects import LegendaryState
     from spacegame.models.momentum import MomentumGauge
+    from spacegame.models.progression import PlayerProgression
     from spacegame.models.ship import Ship
+    from spacegame.models.ship_build import ShipBuild
     from spacegame.models.upgrades import ShipUpgradeManager
 
 
@@ -537,10 +540,10 @@ class PlayerCombatState:
     critical_hp_surge_fired: bool = field(default=False, repr=False)
     # Module combat state (Shipbuilder Upgrade Phase 9)
     module_states: list = field(default_factory=list)  # list[ModuleCombatState]
-    _ship_build: object = field(default=None, repr=False)  # ShipBuild reference
+    _ship_build: Optional["ShipBuild"] = field(default=None, repr=False)
     _module_catalog: dict = field(default_factory=dict, repr=False)
     # Legendary module state (Shipbuilder Upgrade — Boss Drops)
-    _legendary: object = field(default=None, repr=False)  # LegendaryState
+    _legendary: Optional["LegendaryState"] = field(default=None, repr=False)
     # Dual tech state (B8.2 / B8.3) — flags set on activation, cleared at
     # end of turn or end of combat depending on the tech.
     fire_at_will_active: bool = False
@@ -686,7 +689,7 @@ class CombatState:
     negotiate_rival_rep: bool = False
     revealed_bribe_cost: int = -1  # -1 = not revealed
     # Skill tree reference for per-round bonus checks (S2a)
-    progression: object = field(default=None, repr=False)
+    progression: Optional["PlayerProgression"] = field(default=None, repr=False)
 
     # ----------------------------------------------------------------------
     # CE-3: Combat complications

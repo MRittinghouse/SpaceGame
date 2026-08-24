@@ -10,7 +10,10 @@ Part of the Shipyard Overhaul — Phase A1.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from spacegame.models.ship import ShipType
 
 # ============================================================================
 # Weight Classes
@@ -623,7 +626,7 @@ class FrameRequirements:
         return (len(reasons) == 0, reasons)
 
     @classmethod
-    def from_ship_type(cls, ship_type: object) -> FrameRequirements:
+    def from_ship_type(cls, ship_type: ShipType) -> FrameRequirements:
         """Create FrameRequirements from a ShipType instance.
 
         Falls back to weight-class defaults if the ShipType has no

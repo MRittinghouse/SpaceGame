@@ -5,6 +5,11 @@ The combat view renders these in a non-blocking narration panel. Hints are
 contextual: if shields weren't hit, the shield hint never fires.
 """
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from spacegame.models.combat import CombatState
+
 
 class CombatTutorialHelper:
     """Generates contextual combat guidance based on actual battle events."""
@@ -18,7 +23,7 @@ class CombatTutorialHelper:
         """Get the current guidance text to display."""
         return self._current_hint
 
-    def on_round_start(self, state: object) -> None:
+    def on_round_start(self, state: "CombatState") -> None:
         """Called at the start of each player input phase."""
         self._round_count += 1
 
@@ -30,7 +35,7 @@ class CombatTutorialHelper:
             self._shown_hints.add("weapon")
             return
 
-    def on_round_end(self, state: object) -> None:
+    def on_round_end(self, state: "CombatState") -> None:
         """Called after enemy actions resolve. Check what happened and advise."""
         player = state.player
 

@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from spacegame.models.crew import CrewRoster
+    from spacegame.models.player import Player
+    from spacegame.models.politics import PoliticsManager
     from spacegame.models.social import SocialManager
 
 
@@ -149,8 +151,8 @@ class DialogueManager:
         self._current_npc_id: Optional[str] = None
         self._flags: dict[str, bool] = {}
         self._social_manager: Optional[SocialManager] = None
-        self._politics_manager: Optional[object] = None
-        self._player: Optional[object] = None
+        self._politics_manager: Optional[PoliticsManager] = None
+        self._player: Optional[Player] = None
         self._crew_roster: Optional[CrewRoster] = None
         self._last_check_result: Optional[tuple[bool, str]] = None
         # PT-K: short readout of the most recent check ("Persuasion 3 vs 2 PASS")
@@ -166,7 +168,7 @@ class DialogueManager:
         """Set the crew roster for crew loyalty changes in dialogue."""
         self._crew_roster = roster
 
-    def set_politics_manager(self, manager: object, player: object) -> None:
+    def set_politics_manager(self, manager: "PoliticsManager", player: "Player") -> None:
         """Set the politics manager and player for faction reputation changes."""
         self._politics_manager = manager
         self._player = player

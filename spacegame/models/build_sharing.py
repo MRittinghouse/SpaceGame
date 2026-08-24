@@ -23,7 +23,7 @@ from __future__ import annotations
 import base64
 import json
 import zlib
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.ship_build import (
     FRAME_VARIANTS,
@@ -33,6 +33,9 @@ from spacegame.models.ship_build import (
 )
 from spacegame.models.ship_module import ShipModule
 from spacegame.utils.logger import logger
+
+if TYPE_CHECKING:
+    from spacegame.models.player import Player
 
 # ============================================================================
 # Constants
@@ -301,7 +304,7 @@ def check_blueprint_availability(
 
 
 def purchase_module_blueprint(
-    player: object,
+    player: Player,
     module_id: str,
     module_catalog: dict[str, ShipModule],
     price_modifier: float = 1.0,

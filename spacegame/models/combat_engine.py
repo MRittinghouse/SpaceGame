@@ -37,6 +37,7 @@ from spacegame.models.momentum import (
 if TYPE_CHECKING:
     from spacegame.models.action_queue import ActionQueue
     from spacegame.models.momentum import ShipUltimate
+    from spacegame.models.social import SocialManager
 
 # Hit chance bounds
 HIT_CHANCE_MIN = 5
@@ -987,7 +988,7 @@ class CombatEngine:
     def attempt_negotiate(
         self,
         skill_id: str,
-        social_manager: object,
+        social_manager: Optional["SocialManager"],
         faction_reputation_tier: Optional[str] = None,
     ) -> tuple[bool, str, list[CombatLogEntry]]:
         """Attempt to negotiate with enemies.
