@@ -104,6 +104,16 @@ QF-8 and QF-9 are deliberately `blocked`, not `todo`. They change runtime behavi
 picked up before a human has reviewed Spec A and the crawler's reachability data exists. Unblock by
 hand.
 
+### SH Arc — Shell Architecture
+
+Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B).
+
+| ID | Title | Source | Size | Status | Depends on |
+|---|---|---|---|---|---|
+| [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | todo | none |
+| [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | todo | SH-1 |
+| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | blocked | SH-1 |
+
 ---
 
 ## SA Arc — Station Anchors
@@ -8209,6 +8219,140 @@ Downstream conventions worth flagging (not reactions per se):
 - Single_tighten: The AC 3 grep-based `: object` compliance check is fragile against false positives from the word "objective" in comments; the cross-sprint reactions section proposes a proper compliance test that would eliminate this class of false positive — a QF-10 or WB follow-up candidate.
 - Followup_sprints_added: none
 - Notes: Plan audit sound; locked decisions all defensible. B=0 confirmed live, A=0 preserved, all 67 forward refs resolved, no new type: ignore, pyproject.toml clean. Sprint delivered exactly what the plan specified with zero scope creep and no newly-revealed lifecycle-A errors.
+
+---
+
+## SH Arc — Shell Architecture
+
+Implements `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`.
+Read the spec before executing any SH sprint. Note it is deliberately NOT the
+scene-stack rewrite originally proposed; that framing was measured and rejected.
+
+### SH-1 — `Game.player` raising accessor
+
+**Status**: todo
+**Source**: Spec B, SH-1
+**Size**: M | **Effort**: 3-5 days
+**Depends on**: none | **Blocks**: SH-2, SH-3
+
+**Goal.** `Game.player` is `Optional[Player]`, and 64 of `game.py`'s 103
+remaining crash-class errors are unguarded accesses to it. One field, 62% of
+what is left. Apply the raising-accessor pattern QF-8 proved and documented.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`
+- `docs/qf/accessor_pattern.md` — the recipe; it names this sprint explicitly
+- `spacegame/engine/game.py` — `__init__`, `initialize_new_game`
+
+**Touch zones.**
+```
+spacegame/engine/game.py
+tests/test_engine/
+mypy-baseline.txt
+```
+
+**Deliverables.**
+- `Game._player` private field plus a `player` property raising `RuntimeError`
+  with a message naming the lifecycle violation.
+- **First, identify paths that legitimately run with no player** (main menu,
+  character creation, startup). Those need local guards, NOT the accessor.
+  `Game.player` differs from a view's `on_enter`/`on_exit` pair: its null window
+  is real. Applying the property blindly converts correct code into crashes.
+- Baseline shrinks by the number of errors fixed; never regenerate it wholesale.
+
+**Acceptance criteria.**
+1. `union-attr` errors of shape `Player | None` in `game.py` reach 0 (from 64).
+2. Every path that runs without a player is guarded, and the sprint notes list
+   them explicitly.
+3. Full suite green, at or above 10,559 passing.
+4. A 2,000-action crawl from the `late` checkpoint raises zero accessors:
+   `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late`
+5. No `# type: ignore` without a one-line justification.
+
+**Risks / open questions.**
+- The null window is genuine. Criterion 2 exists because getting this wrong
+  turns a type error into a runtime crash on the main menu, which is the exact
+  opposite of the point.
+
+**Activity log.**
+- 2026-08-24 — todo (created from Spec B)
+
+### SH-3 — Remaining game.py crash-class errors
+
+**Status**: todo
+**Source**: Spec B, SH-3
+**Size**: M | **Effort**: 3-5 days
+**Depends on**: SH-1 | **Blocks**: none
+
+**Goal.** Clear whatever crash-class errors survive SH-1 — roughly 39, spanning
+`MissionManager | None` (3), `MiningConfig | None` (3), `SalvageConfig | None`
+(2) and a long tail. Fix by root-cause cluster, not error by error.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`
+- `docs/qf/accessor_pattern.md`
+
+**Touch zones.**
+```
+spacegame/engine/game.py
+tests/test_engine/
+mypy-baseline.txt
+```
+
+**Deliverables.**
+- Population A reaches 0 **including game.py**.
+- The game.py exclusion is removed from `scripts/mypy_populations.py`, and its
+  justification comment deleted rather than left in place to mislead.
+
+**Acceptance criteria.**
+1. `python scripts/mypy_populations.py` reports `A=0` with no exclusion.
+2. Full suite green.
+3. Crawl check as in SH-1, criterion 4.
+
+**Activity log.**
+- 2026-08-24 — todo (created from Spec B)
+
+### SH-2 — Split `_handle_state_transitions`
+
+**Status**: blocked
+**Source**: Spec B, SH-2
+**Size**: L | **Effort**: 1-2 weeks
+**Depends on**: SH-1 | **Blocks**: none
+
+**Goal.** 1,197 lines, 185 branches, 66 nested function definitions, one method.
+Split by arc or state group into focused handlers behind a thin dispatcher.
+
+**Notes.** Deliberately `blocked`. This is structural surgery on a 6,564-line
+file and is the one piece of Spec B that should not run unattended before a
+human has read the spec. Unblock by hand. Same discipline QF-8/QF-9 were held
+to.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`
+- `spacegame/engine/game.py` — `_handle_state_transitions`
+- The QF-5 activity log: the `Game.step()` extraction is the model for a
+  behaviour-preserving move.
+
+**Deliverables.**
+- `_handle_state_transitions` under 200 lines; no resulting handler over 250.
+- **Move code. Change nothing else.** No behaviour changes, no drive-by type
+  fixes, no restructuring of the event cascade.
+- A written list of unreachable or duplicated branches discovered during the
+  split. Record them; do NOT fix them here.
+
+**Acceptance criteria.**
+1. `_handle_state_transitions` < 200 lines; no handler > 250.
+2. No behaviour change; full suite green.
+3. Crawl check as in SH-1, criterion 4.
+4. Findings list present in the activity log.
+
+**Risks / open questions.**
+- 185 branches accumulated over years almost certainly contain dead and
+  duplicated cases. Finding them is a benefit; fixing them inside this sprint
+  is scope creep that would make a behaviour-preserving move unverifiable.
+
+**Activity log.**
+- 2026-08-24 — blocked (created from Spec B; awaiting human review)
 
 ## Followups
 
