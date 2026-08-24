@@ -102,8 +102,8 @@ class SettingsView(BaseView):
         self._objective_hint_button: Optional[pygame_gui.elements.UIButton] = None
         self._selected_resolution: tuple[int, int] = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self._selected_fullscreen: bool = FULLSCREEN
-        # PT-H: objective hint toggle. Default on; player opts out when
-        # they've found their footing.
+        # PT-H toggle for the objective hint. Default on; player opts out
+        # when they've found their footing.
         self._selected_objective_hint: bool = True
         self._restart_label: Optional[pygame_gui.elements.UILabel] = None
 
