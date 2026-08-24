@@ -7,7 +7,7 @@ the direct galaxy-map-to-trading transition.
 
 import random
 import time
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -51,7 +51,20 @@ from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
 from spacegame.views.layout import FACTION_COLORS as _FACTION_COLORS
-from spacegame.views.station_layouts import SYSTEM_LAYOUT_MAP, create_station_layout
+from spacegame.views.station_layouts import (
+    SYSTEM_LAYOUT_MAP,
+    StationLayout,
+    StationZone,
+    create_station_layout,
+)
+
+if TYPE_CHECKING:
+    from spacegame.data_loader import DataLoader
+    from spacegame.models.crew import CrewRoster
+    from spacegame.models.dialogue import NPC
+    from spacegame.models.mission import MissionManager
+    from spacegame.models.politics import PoliticsManager
+    from spacegame.models.station_chatter import StationChatterManager
 
 # Location type → GameState mapping
 _LOCATION_STATE_MAP: dict[str, GameState] = {
@@ -195,11 +208,11 @@ class StationHubView(BaseView):
         system: StarSystem,
         locations: list[Location],
         activity_registry: ActivityRegistry,
-        data_loader: object,
-        politics_manager: object = None,
-        crew_roster: object = None,
-        station_chatter: object = None,
-        mission_manager: object = None,
+        data_loader: "DataLoader",
+        politics_manager: Optional["PoliticsManager"] = None,
+        crew_roster: Optional["CrewRoster"] = None,
+        station_chatter: Optional["StationChatterManager"] = None,
+        mission_manager: Optional["MissionManager"] = None,
     ) -> None:
         """Initialize station hub view.
 
@@ -332,7 +345,7 @@ class StationHubView(BaseView):
         )
 
         # Faction-specific station layout (created in _create_ui)
-        self._station_layout: Optional[object] = None
+        self._station_layout: Optional[StationLayout] = None
 
         # Background
         self.background = AnimatedBackground(
@@ -941,7 +954,7 @@ class StationHubView(BaseView):
                     self._activate_zone(zone)
                     return
 
-    def _activate_zone(self, zone: object) -> None:
+    def _activate_zone(self, zone: StationZone) -> None:
         """Activate a station zone (from click or keyboard shortcut)."""
         get_audio_manager().play_sfx("ui_confirm")
         self._select_location_type(zone.location.location_type)
@@ -1567,7 +1580,7 @@ class StationHubView(BaseView):
         all_npcs = self.data_loader.get_npcs_at_system(self.system.id)
         return [npc for npc in all_npcs if self._is_npc_available(npc)]
 
-    def _is_npc_available(self, npc: object) -> bool:
+    def _is_npc_available(self, npc: "NPC") -> bool:
         """Check if an NPC should appear in the cantina.
 
         Args:

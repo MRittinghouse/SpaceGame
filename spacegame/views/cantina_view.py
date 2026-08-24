@@ -4,7 +4,7 @@ After selecting the cantina/social location from the station hub, players
 see available NPCs to talk to, crew for hire, and station board contracts.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -28,6 +28,12 @@ from spacegame.models.system import StarSystem
 from spacegame.utils.logger import logger
 from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
+
+if TYPE_CHECKING:
+    from spacegame.data_loader import DataLoader
+    from spacegame.models.crew import CrewRoster
+    from spacegame.models.dialogue import NPC
+    from spacegame.models.mission import Mission, MissionManager
 
 # Layout constants
 HEADER_CARD_Y = 10
@@ -60,9 +66,9 @@ class CantinaView(BaseView):
         player: Player,
         system: StarSystem,
         location: Location,
-        data_loader: object,
-        crew_roster: object = None,
-        mission_manager: object = None,
+        data_loader: "DataLoader",
+        crew_roster: Optional["CrewRoster"] = None,
+        mission_manager: Optional["MissionManager"] = None,
     ) -> None:
         """Initialize cantina view.
 
@@ -109,7 +115,7 @@ class CantinaView(BaseView):
         self._rerecruit_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._hire_buttons: dict[str, pygame_gui.elements.UIButton] = {}
         self._contract_buttons: dict[str, pygame_gui.elements.UIButton] = {}
-        self._board_missions: dict[str, object] = {}  # mission_id -> Mission for tooltips
+        self._board_missions: dict[str, "Mission"] = {}  # mission_id -> Mission for tooltips
         self._tooltip = TooltipState(delay=0.3, fade_in=0.15)
 
         # Background
@@ -614,7 +620,7 @@ class CantinaView(BaseView):
                 return True
         return False
 
-    def _is_npc_available(self, npc: object) -> bool:
+    def _is_npc_available(self, npc: "NPC") -> bool:
         """Check if an NPC should appear in the cantina."""
         flags = self.player.dialogue_flags
         if npc.hide_after_flag and flags.get(npc.hide_after_flag, False):

@@ -13,7 +13,7 @@ they're in from the visual language alone.
 
 import math
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 
@@ -32,6 +32,10 @@ from spacegame.engine.fonts import (
     get_font,
 )
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
+
+if TYPE_CHECKING:
+    from spacegame.engine.sprites import SpriteManager
+    from spacegame.models.location import Location
 
 # Location type accent colors (shared across all layouts)
 LOCATION_COLORS: dict[str, tuple[int, int, int]] = {
@@ -101,7 +105,7 @@ _POI_STRIP_BOTTOM = _LAYOUT_BOTTOM
 class StationZone:
     """A clickable zone in the station layout."""
 
-    location: object  # Location dataclass
+    location: "Location"
     rect: pygame.Rect
     label: str
     accent_color: tuple[int, int, int]
@@ -164,12 +168,12 @@ class StationLayout:
         self._ambient_particles: list[dict] = []
         self._ambient_emit_timer: float = 0.0
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         """Build zone rects for all locations. Override in subclasses."""
         self.zones = []
         return self.zones
 
-    def build_strip_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_strip_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         """Build POI strip zones for demoted `unique`-typed locations.
 
         Strip styling is uniform across faction layouts (the design intent
@@ -512,7 +516,7 @@ class StationLayout:
     # populate `self.zones`. Faction-specific styling stays in
     # `_render_default_zone` overrides, ambient particles, background
     # rendering, and taglines — only zone *placement* is canonical now.
-    def _build_deck_grid(self, sprite_mgr: object) -> None:
+    def _build_deck_grid(self, sprite_mgr: "SpriteManager") -> None:
         """Populate `self.zones` and `self._deck_labels` using the canonical
         deck-by-deck arrangement (upper / service / industrial decks
         stacked vertically, zones in horizontal rows within each deck).
@@ -601,7 +605,7 @@ class GuildDeckLayout(StationLayout):
     bg_tint = (10, 15, 30, 15)
     faction_tagline = "Commerce. Order. Prosperity."
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         self.zones = []
         self._build_deck_grid(sprite_mgr)
         return self.zones
@@ -645,7 +649,7 @@ class UnionBlueprintLayout(StationLayout):
     bg_tint = (15, 10, 5, 12)
     faction_tagline = "Built by hands, not contracts."
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         # SL-4: canonical deck-by-deck grid. Union character ("Built by
         # hands, not contracts") reads through the riveted-panel
         # `_render_default_zone` styling, blueprint background grid lines,
@@ -772,7 +776,7 @@ class CollectiveRadialLayout(StationLayout):
     bg_tint = (5, 8, 18, 10)
     faction_tagline = "Through knowledge, understanding."
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         # SL-4: radial folded into the canonical deck grid. Collective
         # character (data-display, command center) reads through the
         # holographic-node `_render_default_zone` styling, the orbiting
@@ -880,7 +884,7 @@ class FrontierScatteredLayout(StationLayout):
     bg_tint = (8, 15, 8, 10)
     faction_tagline = "The frontier takes care of its own."
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         # SL-4: scatter folded into the canonical deck grid. Frontier
         # character ("the frontier takes care of its own") reads through
         # the colorful per-zone borders, the warm green pollen particles,
@@ -972,7 +976,7 @@ class ReachDarkLayout(StationLayout):
     bg_tint = (20, 5, 5, 15)
     faction_tagline = "No laws. No mercy. No refunds."
 
-    def build_zones(self, sprite_mgr: object) -> list[StationZone]:
+    def build_zones(self, sprite_mgr: "SpriteManager") -> list[StationZone]:
         # SL-4: asymmetric column folded into the canonical deck grid.
         # Reach character ("no laws, no mercy, no refunds") reads through
         # the dim-by-default `_render_default_zone` override — zones are
@@ -1063,7 +1067,7 @@ _LAYOUT_CLASSES: dict[str, type[StationLayout]] = {
 def create_station_layout(
     locations: list,
     system_id: str,
-    sprite_mgr: object,
+    sprite_mgr: "SpriteManager",
     elevated_location_ids: Optional[set[str]] = None,
 ) -> StationLayout:
     """Factory: create the appropriate layout for a system.
