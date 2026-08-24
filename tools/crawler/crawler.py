@@ -48,6 +48,7 @@ from tools.crawler.crash_record import (
     signature_from_exception,
 )
 from tools.crawler.hit_rects import hit_rects_for
+from tools.crawler.terminators import terminating_element_ids, terminating_keys
 
 INTERACTIVE_TYPES: tuple[type, ...] = (
     UIButton,
@@ -58,11 +59,10 @@ INTERACTIVE_TYPES: tuple[type, ...] = (
     UITextEntryBox,
 )
 
-# Buttons with these exact texts call sys.exit() and would terminate the
-# crawl process before coverage data is saved.  Exclude them from
-# enumeration so the crawler never clicks them.  Values are case-sensitive
-# and matched against element.text after stripping whitespace.
-_EXCLUDED_INTERACTIVE_TEXTS: frozenset[str] = frozenset({"QUIT GAME"})
+# Session-terminating interactions are excluded by OBJECT IDENTITY, not by
+# button text -- see tools/crawler/terminators.py for why a text blacklist is
+# both insufficient (it missed "Exit") and harmful (widening it would blacklist
+# "Exit (Esc)", "LEAVE", and "Leave", which are legitimate navigation).
 
 
 class HitRectElement:
@@ -224,6 +224,9 @@ class Crawler:
         self._fixtures = fixtures or CrawlerFixtures()
 
         self.action_trace: list[ActionTuple] = []
+        # Set when the session ends before the action budget is spent (the
+        # game quit). None means the run completed its full budget.
+        self.ended_early: Optional[str] = None
         self.crashes: dict[str, CrashRecord] = {}
         self.coverage = CoverageTracker()
 
@@ -305,6 +308,13 @@ class Crawler:
         if current is not None:
             self.coverage.record_visit(current)
 
+        # Game.__init__ sets running = False; only Game.run() sets it True
+        # (game.py:6531, after QF-5 extracted step() out of run()). The crawler
+        # replaces run() as the driver, so it must take on that responsibility.
+        # Without this the session-death oracle sees running == False on the
+        # very first action and aborts every crawl immediately.
+        self.game.running = True
+
         self._is_running_boot = False
 
     def _seed_process_rngs(self, seed: int) -> None:
@@ -323,6 +333,10 @@ class Crawler:
         Args:
             checkpoint: One of ``"early"``, ``"mid"``, ``"late"``.
         """
+        import atexit
+        import shutil
+        import tempfile
+
         from spacegame.save_manager import SaveManager
 
         fixtures_dir = Path(__file__).resolve().parent / "fixtures"
@@ -330,7 +344,17 @@ class Crawler:
         slot = slot_map.get(checkpoint)
         if slot is None:
             return
-        self.game.save_manager = SaveManager(save_directory=fixtures_dir)
+
+        # Copy the fixtures to scratch before handing them to a LIVE SaveManager.
+        # The game autosaves to slot 0 during play, so pointing it at the
+        # committed fixtures directory rewrites checked-in files on every crawl:
+        # the tree goes dirty, the "late" checkpoint drifts, and COVERAGE_FLOOR
+        # ends up measured against a moving target.
+        scratch = Path(tempfile.mkdtemp(prefix="crawler_saves_"))
+        for src in fixtures_dir.glob("save_slot_*.json"):
+            shutil.copy2(src, scratch / src.name)
+        atexit.register(shutil.rmtree, scratch, True)
+        self.game.save_manager = SaveManager(save_directory=scratch)
         if hasattr(self.game, "_load_game"):
             self.game._load_game(slot)
 
@@ -364,6 +388,7 @@ class Crawler:
         interact with ``isinstance`` checks on ``INTERACTIVE_TYPES``.
         """
         elements: list[Any] = []
+        terminating_ids = terminating_element_ids(self.game)
         for el in self._iter_ui_elements():
             if not isinstance(el, INTERACTIVE_TYPES):
                 continue
@@ -373,8 +398,7 @@ class Crawler:
                 continue
             if not visible:
                 continue
-            text = getattr(el, "text", "").strip()
-            if text in _EXCLUDED_INTERACTIVE_TEXTS:
+            if id(el) in terminating_ids:
                 continue
             elements.append(el)
 
@@ -435,8 +459,14 @@ class Crawler:
         is desired coverage; in exempt states (MAIN_MENU, CHARACTER_CREATION, etc.)
         it is a no-op.
         """
-        base = [k for k in self.bound_escape_keys() if k != pygame.K_F11]
-        dialog_keys = [pygame.K_y, pygame.K_n, pygame.K_RETURN, pygame.K_ESCAPE]
+        # StartupView quits on ESC, so the key repertoire is a second
+        # session-termination vector, not only the click repertoire.
+        current = getattr(self.game.state_manager, "current_state", None)
+        banned = terminating_keys(current)
+        base = [k for k in self.bound_escape_keys() if k != pygame.K_F11 and k not in banned]
+        dialog_keys = [
+            k for k in (pygame.K_y, pygame.K_n, pygame.K_RETURN, pygame.K_ESCAPE) if k not in banned
+        ]
         # Deduplicate while preserving order: base keys first, then dialog keys.
         seen: set[int] = set(base)
         for k in dialog_keys:
@@ -449,6 +479,49 @@ class Crawler:
     # Action selection
     # ------------------------------------------------------------------
 
+    def _bootstrap_action(self) -> Optional[ActionTuple]:
+        """Deterministically drive the front door, then hand over to randomness.
+
+        Cold-boot crawls have to cross MAIN_MENU and a hand-drawn new-game
+        confirmation before any real content is reachable. Random selection is
+        bad at this specific job: it must click "New Game" and then find the
+        "Yes" hit-rect before either of the two cancelling keys (K_n, K_ESCAPE)
+        closes the dialog. Measured escape rate with pure randomness was roughly
+        40-60% of seeds, which makes every coverage number a lottery.
+
+        So the crawler scripts the doorway and randomises everything past it.
+        This is the same principle as checkpoint seeding, which Spec A Section 3
+        already endorses as a legitimate reachability mitigation: the crawler
+        exists to explore the GAME, not to prove it can beat a menu by luck.
+
+        Returns None once GALAXY_MAP has been reached, after which selection is
+        fully random and this method never fires again.
+        """
+        if self.coverage.states_reached.get(GameState.GALAXY_MAP.name, False):
+            return None
+        current = getattr(self.game.state_manager, "current_state", None)
+        if current is not GameState.MAIN_MENU:
+            return None
+
+        view = getattr(self.game, "main_menu_view", None)
+        if view is None:
+            return None
+
+        # Confirmation dialog is up: take the "yes" hit-rect if present.
+        if getattr(view, "_confirm_new_game", False):
+            for el in self.enumerate_interactive():
+                name = getattr(el, "name", "") or ""
+                if "yes" in name.lower():
+                    return ("click", el)
+            # Dialog open but no hit-rect resolved — confirm by key instead.
+            return ("keypress", pygame.K_RETURN)
+
+        # Dialog not up yet: click New Game.
+        for el in self.enumerate_interactive():
+            if getattr(el, "text", "").strip().lower() == "new game":
+                return ("click", el)
+        return None
+
     def _select_action(self) -> ActionTuple:
         """Select the next action to execute, respecting the action RNG.
 
@@ -457,6 +530,9 @@ class Crawler:
             | ``("advance_time",)``. If no interactive element is available,
             defaults to keypress or advance_time.
         """
+        bootstrap = self._bootstrap_action()
+        if bootstrap is not None:
+            return bootstrap
         rng = self._action_rng
         interactive = self.enumerate_interactive()
         selectable_keys = self._selectable_escape_keys()
@@ -860,11 +936,24 @@ class Crawler:
     # ------------------------------------------------------------------
 
     def run(self) -> None:
-        """Boot (if needed) and step ``self.config.actions`` times."""
+        """Boot (if needed) and step until the budget is spent or the game quits.
+
+        Oracle 5 -- session death. ``Game.step`` early-returns once
+        ``running`` is False, so a terminated session would otherwise burn its
+        entire remaining budget on no-ops and report as a completed N-action
+        crawl that explored nothing. A run that ended early must never look
+        like a run that finished.
+        """
         if self.game is None:
             self.boot()
         for _ in range(self.config.actions):
             self.step_once()
+            if not getattr(self.game, "running", True):
+                self.ended_early = (
+                    f"session terminated after {len(self.action_trace)} of "
+                    f"{self.config.actions} actions: Game.running became False"
+                )
+                break
 
     def replay(self, seed: int, up_to_action_index: int) -> Optional[CrashRecord]:
         """Return the crash record produced at ``up_to_action_index`` in a fresh run.

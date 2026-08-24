@@ -111,12 +111,63 @@ def _make_main_menu_hit_rects() -> list[HitRect]:
     ]
 
 
+# Maximum response buttons the registry will expose for a dialogue node.
+# DialogueView builds these dynamically, so the registry declares fixed slots
+# and each entry's predicate skips itself when that index does not exist.
+_MAX_DIALOGUE_RESPONSES = 8
+
+
+def _make_dialogue_hit_rects() -> list[HitRect]:
+    """Hit-rects for DialogueView, which is entirely hand-drawn.
+
+    DialogueView has no pygame_gui widgets at all: it reveals text on any
+    MOUSEBUTTONDOWN and then routes clicks to ``_ResponseButton`` objects via
+    ``rect.collidepoint(event.pos)``. Without these entries the crawler sees
+    zero interactive elements and the intro narration is a hard wall on every
+    cold-boot run -- which is exactly what it was before this entry existed.
+    """
+    import pygame
+
+    from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
+
+    def _reveal_rect(view: Any) -> Any:
+        # Any click completes the text reveal; centre of the screen is safe.
+        return pygame.Rect(WINDOW_WIDTH // 2 - 20, WINDOW_HEIGHT // 2 - 20, 40, 40)
+
+    def _reveal_pending(view: Any) -> bool:
+        return not getattr(view, "_text_complete", True)
+
+    entries: list[HitRect] = [
+        HitRect(
+            name="dialogue_reveal_text",
+            rect_fn=_reveal_rect,
+            predicate=_reveal_pending,
+        )
+    ]
+
+    def _make_response(index: int) -> HitRect:
+        def rect_fn(view: Any, i: int = index) -> Any:
+            return view._response_buttons[i].rect
+
+        def predicate(view: Any, i: int = index) -> bool:
+            if not getattr(view, "_text_complete", False):
+                return False
+            buttons = getattr(view, "_response_buttons", [])
+            return i < len(buttons)
+
+        return HitRect(name=f"dialogue_response_{index}", rect_fn=rect_fn, predicate=predicate)
+
+    entries.extend(_make_response(i) for i in range(_MAX_DIALOGUE_RESPONSES))
+    return entries
+
+
 def _build_registry() -> dict[Any, list[HitRect]]:
     """Build the HIT_RECTS dict.  Called once at module import time."""
     from spacegame.config import GameState  # lazy import
 
     return {
         GameState.MAIN_MENU: _make_main_menu_hit_rects(),
+        GameState.DIALOGUE: _make_dialogue_hit_rects(),
     }
 
 

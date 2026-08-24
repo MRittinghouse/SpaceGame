@@ -8,6 +8,8 @@ from typing import Any
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
+from types import SimpleNamespace
+
 import pygame
 import pygame_gui
 
@@ -163,17 +165,20 @@ class TestSelectableEscapeKeysIncludeDialogDismissal:
             )
 
 
-class TestQuitGameButtonExcluded:
-    """Crawler never enumerates 'QUIT GAME' buttons — they call sys.exit()."""
+class TestSessionTerminatingButtonsExcluded:
+    """enumerate_interactive honours the identity-based terminator registry.
 
-    def test_quit_game_button_excluded_from_enumerate_interactive(self) -> None:
-        """A UIButton with text 'QUIT GAME' must not appear in enumerate_interactive.
+    Exclusion used to be text-based (``frozenset({"QUIT GAME"})``), which never
+    matched the main menu's ``"Exit"`` button and let cold-boot crawls quit
+    themselves. It is now keyed on object identity via
+    ``tools/crawler/terminators.py``; see ``test_terminators.py`` for the unit
+    coverage and the registry-completeness scan. This test covers the
+    integration: that enumeration actually consults the registry.
+    """
 
-        If included, the crawler would click it, calling sys.exit() and
-        terminating the Python process before coverage data is saved.
-        """
+    def test_registered_terminator_is_excluded(self) -> None:
         game = FakeGameWithUI()
-        pygame_gui.elements.UIButton(
+        quit_btn = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(10, 10, 100, 30),
             text="QUIT GAME",
             manager=game.ui_manager,
@@ -183,15 +188,33 @@ class TestQuitGameButtonExcluded:
             text="RESUME",
             manager=game.ui_manager,
         )
+        # Register it the way the real game exposes it.
+        game.pause_menu_view = SimpleNamespace(quit_button=quit_btn)
 
         crawler = _make_crawler(game)
         interactive = crawler.enumerate_interactive()
 
-        texts = [getattr(e, "text", "") for e in interactive]
-        assert "QUIT GAME" not in texts, (
-            "QUIT GAME button must be excluded from enumerate_interactive "
-            "(clicking it calls sys.exit() and terminates the crawl)"
+        assert quit_btn not in interactive, (
+            "A registered session-terminating button must not be enumerated; "
+            "clicking it ends the run."
         )
         assert normal_btn in interactive, (
-            "Non-excluded buttons must still appear in enumerate_interactive"
+            "Non-terminating buttons must still appear in enumerate_interactive"
         )
+
+    def test_lookalike_text_is_not_excluded(self) -> None:
+        """Text is deliberately NOT the signal.
+
+        ``"Exit (Esc)"``, ``"LEAVE"`` and ``"Leave"`` all exist in the view
+        layer and none of them terminate the session. A text blacklist wide
+        enough to catch the real ``"Exit"`` would blacklist these too and
+        shrink coverage while looking like a fix.
+        """
+        game = FakeGameWithUI()
+        lookalike = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(10, 60, 100, 30),
+            text="Exit (Esc)",
+            manager=game.ui_manager,
+        )
+        crawler = _make_crawler(game)
+        assert lookalike in crawler.enumerate_interactive()
