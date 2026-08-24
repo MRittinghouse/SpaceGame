@@ -7552,7 +7552,7 @@ Downstream conventions worth flagging (not reactions per se):
 
 ### QF-9 — Population B burndown (type blindness)
 
-**Status**: in-progress
+**Status**: in-progress (implementing)
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-8 | **Blocks**: none
@@ -7570,6 +7570,27 @@ that is expected and is NOT a regression (Spec A Section 1). Newly revealed A-sh
 fixed in-sprint using the QF-8 pattern; newly revealed C-shaped errors are added to
 `mypy-baseline.txt` per-task, respecting the CLAUDE.md ratchet rule ("regeneration permitted only
 in a commit whose diff contains nothing but type annotations and None-guards").
+
+**Next flags to enable (recommendation for a follow-up sprint or human patch).** This sprint
+does NOT modify `pyproject.toml`. The reviewer or a subsequent sprint decides the enable order.
+
+- `no_implicit_optional = true` — makes `x: str = None` an error instead of silently coercing to
+  `Optional[str]`. Enforces the "explicit Optional" style CLAUDE.md already asks for. Expected
+  new errors: low; most current code uses explicit `Optional[X]` after QF-8 and QF-9.
+- `warn_unused_ignores = true` — flags `# type: ignore` comments that no longer apply. Keeps the
+  ignore surface honest as the type situation evolves. Zero-cost given QF-9's diff added no bare
+  `# type: ignore`s.
+- `strict_equality = true` — flags `x == y` where mypy can prove the types can never be equal
+  (e.g. `Enum` vs `str`). Very-low-noise flag; catches a real class of bug that would otherwise
+  reach playtest.
+- `warn_redundant_casts = true` — flags `cast(X, y)` where `y` is already `X`. Zero-cost given the
+  small existing cast surface, and prevents drift as more real types replace `object`.
+
+Deferred to a scoped follow-up: `check_untyped_defs` and `disallow_incomplete_defs` are the
+highest-signal remaining flags but are also the most likely to reveal a large batch of C errors
+around still-untyped legacy code paths (e.g. `game.py` lambda callbacks, older test helpers).
+Enable those one at a time so each's error surface can be triaged individually rather than mixed
+with a QF-style burndown.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` — Section 4 (Burndown Triage)
@@ -8081,6 +8102,7 @@ Downstream conventions worth flagging (not reactions per se):
 - 2026-08-23 — blocked (created from Spec A; depends on QF-8)
 - 2026-08-23 22:15 — harness: plan phase starting
 - 2026-08-23 23:15 — planning complete. Verified all Context-to-read paths exist
+- 2026-08-23 22:29 — harness: implement phase starting (rework cycle 0)
   (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` Section 4 + Section 1,
   `docs/qf/accessor_pattern.md` from QF-8, `scripts/mypy_populations.py`, `mypy-baseline.txt`,
   `pyproject.toml`, `CLAUDE.md`). Reproduced live Population B breakdown: 167 attr-defined
