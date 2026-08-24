@@ -8448,7 +8448,7 @@ player-facing content, NPC dialogue, journal, crew banter, or news-ticker surfac
 - Started: 2026-08-24 09:50
 - Completed: 2026-08-24 09:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 56e6fea
 - New_sprints_proposed: none
 - Polish_items_folded_in: three-part contract test triplet (mirroring `test_view_accessor_contracts.py`); populations-metric before/after check; grep-audit gate after truth-test migration
 - Decisions_locked: 3
