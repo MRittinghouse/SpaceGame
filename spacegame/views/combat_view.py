@@ -41,7 +41,10 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from spacegame.engine.dual_tech_portraits import PortraitConfig
-    from spacegame.models.combat import EnemyShip
+    from spacegame.models.combat import CombatEffect, CombatState, EnemyShip
+    from spacegame.models.combat_tutorial_helper import CombatTutorialHelper
+    from spacegame.models.journal import Journal
+    from spacegame.models.social import SocialManager
 
 import pygame
 import pygame_gui
@@ -384,8 +387,8 @@ class CombatView(BaseView):
         ui_manager: pygame_gui.UIManager,
         combat_engine: CombatEngine,
         player: Optional[Player],
-        social_manager: object = None,
-        journal: Optional[object] = None,
+        social_manager: Optional["SocialManager"] = None,
+        journal: Optional["Journal"] = None,
     ) -> None:
         super().__init__()
         self.ui_manager = ui_manager
@@ -405,7 +408,7 @@ class CombatView(BaseView):
         self.animation_timer: float = 0.0
 
         # Tutorial helper (set externally when first combat tutorial is active)
-        self._tutorial_helper: Optional[object] = None
+        self._tutorial_helper: Optional["CombatTutorialHelper"] = None
 
         # Target selection
         self.selected_target_idx: int = 0
@@ -3244,7 +3247,7 @@ class CombatView(BaseView):
     def _render_enemy_card(
         self,
         screen: pygame.Surface,
-        enemy: object,
+        enemy: "EnemyShip",
         idx: int,
         x: int,
         y: int,
@@ -3535,7 +3538,7 @@ class CombatView(BaseView):
         bar_h: int,
         displayed_hull: float,
         max_hull: int,
-        enemy: object,
+        enemy: "EnemyShip",
     ) -> None:
         """Render a translucent ghost fill on the enemy hull bar showing projected damage."""
         move = self._hovered_move
@@ -3696,7 +3699,7 @@ class CombatView(BaseView):
         x: int,
         y: int,
         width: int,
-        state: object,
+        state: "CombatState",
     ) -> None:
         """Render the momentum gauge with gradient fill and threshold markers."""
         from spacegame.models.momentum import (
@@ -3812,7 +3815,7 @@ class CombatView(BaseView):
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _effect_badge_text(effect: object, turns_left: int) -> str:
+    def _effect_badge_text(effect: "CombatEffect", turns_left: int) -> str:
         """Format an active effect as a short badge string."""
         type_labels = {
             "evasion_mod": "EVA",
@@ -3826,7 +3829,7 @@ class CombatView(BaseView):
         return f"[{sign}{int(effect.value)} {label} {turns_left}t]"
 
     @staticmethod
-    def _find_move_name(move_id: str, state: object) -> str:
+    def _find_move_name(move_id: str, state: "CombatState") -> str:
         """Find move name by ID from player state."""
         for move in state.player.equipment_moves:
             if move.id == move_id:

@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 if TYPE_CHECKING:
+    from spacegame.engine.ship_composite import ShipComposite
     from spacegame.models.ship_build import ComputedShipStats, ShipBuild
 
 
@@ -188,7 +189,7 @@ class Ship:
         return self._computed_stats
 
     @property
-    def composite(self) -> "Optional[object]":
+    def composite(self) -> "Optional[ShipComposite]":
         """Ship composite renderer (set by view layer)."""
         return getattr(self, "_composite", None)
 
