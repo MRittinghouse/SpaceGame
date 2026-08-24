@@ -7024,37 +7024,466 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 
 ### QF-8 — Population A burndown outside game.py
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
-**Depends on**: QF-6 | **Blocks**: QF-9
+**Depends on**: QF-6, QF-6B, QF-7 | **Blocks**: QF-9
 
-**Goal.** Eliminate the 124 unguarded-None-access errors that live outside `game.py`. These are real
-crash risk in code Spec B will not touch.
+**Goal.** Drive tracked Population A to 0. Concretely: eliminate the 93 unguarded
+`union-attr` errors that live outside `spacegame/engine/game.py` (Market, SalvageSession,
+MiningSession, RefiningSession, UI element Optionals, and a small long tail) and
+extend `scripts/mypy_populations.py` so the 31 `attr-defined "None" has no attribute`
+errors that live inside `game.py` are correctly excluded per Spec A Section 4. These
+93 errors are real crash risk in code Spec B will not touch; the sell-all playtester
+crash is a Population C arg-type instance of the same pattern, and every
+`Market | None` line in `trading_view.py` is a nearby Sell-All-shaped hazard waiting
+for its own reproduction.
 
-**Notes.** Deliberately `blocked`, not `todo`. This sprint changes runtime behaviour and must not be
-picked up autonomously before (a) a human has reviewed Spec A and (b) QF-6 has produced reachability
-data so the fixes are ordered by what players actually hit. Unblock by hand.
+**Notes.** ~~Deliberately `blocked`, not `todo`.~~ Prerequisites met: Spec A approved
+(sections 1-4), QF-6 done (crawler core), QF-6B done (reachability fix), QF-7 done
+(CI gate + screenshots). Harness picked up under human intent.
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Section 4)
-- Crawler coverage output from QF-6
+- `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` — Section 4 (Burndown Triage)
+  in full, plus Section 1 (metrics: what "Population A" is and why game.py is deferred).
+- `scripts/mypy_populations.py` — the current exclusion rule. The docstring
+  explicitly notes: "The 31 ``"None" has no attribute`` [attr-defined] errors in game.py
+  remain in tracked Population A -- they need individual code-level fixes." That
+  interpretation conflicts with Spec A Section 4 ("These stay baselined and are
+  **excluded from the Population A metric**"); this sprint reconciles by extending
+  the exclusion. See LOCKED decision below.
+- `tools/crawler/crash_baseline.json` — 6-session sweep (early/mid/late × 2 seeds ×
+  5000 actions) found 0 crash signatures. No crawler-observed None crash exists in
+  the currently-reachable state set.
+- Crawler coverage output — verified 2026-08-23 via
+  `python -m tools.crawler --seed 42 --actions 500 --checkpoint late`: reaches
+  4 of 41 states (GALAXY_MAP, SHIPYARD, STATISTICS, ACHIEVEMENTS). **None of the
+  five high-error views (TRADING, MINING, SALVAGING, REFINING, plus SETTINGS via
+  OPTIONS overlay) are on the currently-reachable path.** Reachability is therefore
+  a weak prioritization signal for this sprint; see Plan Task 1.
+- `spacegame/views/trading_view.py` lines 86, 124, 206, 372, 411 — the `Market | None`
+  init/set/clear lifecycle. Line 411 uses `if self.market else self.commodities` as
+  a lifecycle guard; the fix pattern must preserve that.
+- `spacegame/views/salvage_view.py` lines 121, 308, 334, 360, 409, 417 —
+  `SalvageSession | None` lifecycle with existing `if self.session:` guards in some
+  methods.
+- `spacegame/views/mining_view.py` lines 129, 543, 566, 640, 644 — same shape for
+  `MiningSession | None`.
+- `spacegame/views/refining_view.py` lines 86, 363, 381, 440 — same shape for
+  `RefiningSession | None`.
+- `tests/test_scenarios/_view_harness.py` — headless view lifecycle harness used by
+  scenario tests. Reference for regression tests that exercise a view's `on_enter`
+  → method call → `on_exit` path deterministically.
+- `CLAUDE.md` §Common Pitfalls — "Views must call super().on_enter() / super().on_exit();
+  views must _destroy_ui() on exit." The accessor pattern this sprint introduces
+  strengthens the same lifetime contract.
+
+**Touch zones.**
+```
+scripts/mypy_populations.py                        (extend exclusion rule for game.py attr-defined)
+spacegame/views/trading_view.py                    (Market accessor + UITextEntryLine accessors)
+spacegame/views/salvage_view.py                    (SalvageSession accessor + SalvageItemConfig guard)
+spacegame/views/mining_view.py                     (MiningSession accessor + RockTypeConfig guard)
+spacegame/views/refining_view.py                   (RefiningSession accessor)
+spacegame/views/settings_view.py                   (UIButton + UITextBox accessors)
+spacegame/views/combat_view.py                     (UIButton + Rect accessors)
+spacegame/views/investment_view.py                 (InvestmentTemplate + InvestmentTier accessors)
+spacegame/views/save_load_view.py                  (UIButton accessor — 1 error)
+spacegame/views/crew_roster_view.py                (CrewRoster accessor — 1 error)
+spacegame/models/combat_engine.py                  (2 `Any | None` momentum errors)
+spacegame/models/salvage.py                        (1 SalvageItemConfig | None error)
+tests/test_views/test_view_accessor_contracts.py   (NEW; regression tests for accessor pattern)
+tests/test_scripts/test_mypy_populations.py        (extend for game.py attr-defined exclusion)
+docs/qf/accessor_pattern.md                        (NEW; short pattern doc for future views)
+```
 
 **Deliverables.**
-- Population A outside `game.py` driven to 0, prioritized by crawler reachability.
-- Fixes applied by root-cause cluster, not file by file: `Market | None` (26),
-  `SalvageSession | None` (25), UI element Optionals (14), `MiningSession | None` (11),
-  `RefiningSession | None` (5).
-- Regression tests for any fix on a crawler-reachable path.
-- `game.py`'s 72 remain baselined and untouched; that is Spec B's work.
+- Tracked Population A driven to 0 (per `scripts/mypy_populations.py`) by:
+  (a) fixing 93 `union-attr` errors outside `game.py`, and
+  (b) extending the population script's exclusion rule so game.py's 31 `attr-defined
+  "None"` errors are correctly excluded per Spec A Section 4 ("all 106 game.py errors
+  excluded from the Population A metric").
+- Uniform fix pattern per LOCKED decision below: **non-Optional accessor property
+  that raises `RuntimeError` if the underlying storage is unset**. Raw storage moves
+  to a leading-underscore attribute (`self._market: Optional[Market] = None`), the
+  public name becomes a `@property` returning the non-Optional type. Lifecycle
+  checks (`if self.market else ...`) migrate to the raw storage (`if self._market
+  is not None else ...`) so lifetime guards remain expressible.
+- Regression tests using the `tests/test_scenarios/_view_harness.py` pattern for
+  each of the four session-shaped views (trading, salvage, mining, refining):
+  each test drives on_enter → representative method call → on_exit and asserts
+  the accessor returns the live object (positive path) and raises `RuntimeError`
+  with a clear message if called on a fresh view instance without on_enter
+  (negative path).
+- A short `docs/qf/accessor_pattern.md` (~150-250 lines) documenting the pattern,
+  when to apply it, and the lifecycle-guard migration recipe. Purpose: future
+  views that add lifecycle-scoped managers know the pattern to reach for; Spec B
+  will apply the same pattern to `Game.player`.
+- No new `# type: ignore` comments introduced. If one is genuinely required (e.g.,
+  a callsite that pygame_gui itself types loosely), it must carry a one-line
+  justification per LOCKED decision.
+- `mypy-baseline.txt` NOT regenerated during this sprint (per CLAUDE.md's ratchet
+  discipline — regeneration is permitted only in a commit whose diff is nothing
+  but type annotations and None-guards; this sprint has behaviour changes via the
+  raising accessor and doesn't qualify). The 31 game.py attr-defined errors move
+  from tracked A to the excluded bucket via the script change, NOT by baseline
+  suppression.
+- `game.py`'s 106 errors (72 union-attr + 31 attr-defined + 3 others) remain
+  baselined and untouched; that is Spec B's work.
 
 **Acceptance criteria.**
-1. `scripts/mypy_populations.py` reports Population A (excluding game.py) = 0.
-2. No `# type: ignore` added without a one-line justification comment.
-3. Full suite green.
+1. `python scripts/mypy_populations.py` prints `A=0` on the post-sprint tree.
+   Total (A+B+C+excluded_a) equals the raw mypy error count minus 93.
+2. `scripts/mypy_populations.py`'s exclusion rule covers both `union-attr` AND
+   `attr-defined "None" has no attribute` errors when the path ends in
+   `engine/game.py` (or the Windows equivalent). Verified by
+   `tests/test_scripts/test_mypy_populations.py` with a fixture line-set
+   containing one game.py union-attr, one game.py attr-defined-None, one
+   non-game.py union-attr, and one non-game.py attr-defined-None; asserts
+   the classifier returns `excluded_a`, `excluded_a`, `A`, `A`.
+3. Each of the four session-shaped view accessors raises `RuntimeError` with
+   a message naming the view class and expected lifecycle when accessed on a
+   fresh view instance without `on_enter()`. Asserted by four tests in
+   `tests/test_views/test_view_accessor_contracts.py`:
+   `test_trading_view_market_raises_before_on_enter`,
+   `test_salvage_view_session_raises_before_on_enter`,
+   `test_mining_view_session_raises_before_on_enter`,
+   `test_refining_view_session_raises_before_on_enter`.
+4. Each of the four session-shaped view accessors returns the live object
+   after `on_enter()` and returns None-safely after `on_exit()`. Asserted by
+   four corresponding `test_<view>_<attr>_returns_after_on_enter` tests.
+5. No new `# type: ignore` in the diff without a one-line `# type: ignore[code]  # justification`
+   comment. Asserted by an ad-hoc grep in the review phase; if any bare
+   `# type: ignore` is added, the review fails.
+6. `mypy-baseline.txt` is byte-identical before and after this sprint's diff
+   (excluding any pre-existing hygiene errors that happen to be inside touched
+   files, which the ratchet naturally cleans). Assert via
+   `git diff --stat master -- mypy-baseline.txt` reporting no change in the
+   final commit's tree state; if the baseline changed, the diff must consist
+   only of removed lines (never added).
+7. `docs/qf/accessor_pattern.md` exists, references the four session-shaped
+   view fixes as canonical examples, and includes the lifecycle-guard
+   migration recipe (raw-underscore + property).
+8. Full suite green; pass count `>= 10530` (pre-phase baseline) plus the new
+   tests added by ACs 3-4 (expect `>= 10530 + 8 accessor tests + 4 mypy_populations
+   fixture tests ≈ 10542`). No pre-existing test regresses.
+
+**Risks / open questions.**
+
+The following decisions were locked during this planning phase. The implementer
+follows them; the reviewer can challenge them.
+
+- ~~Does "Population A outside `game.py`" (sprint goal) mean the tracked A metric
+  from `scripts/mypy_populations.py` (which currently INCLUDES 31 game.py
+  attr-defined errors), or the literal set of union-attr errors not in game.py?~~
+  **LOCKED**: literal set outside game.py. The script's current inclusion of
+  game.py attr-defined errors in tracked A is an incomplete implementation of
+  Spec A Section 4, which unambiguously says "These stay baselined and are
+  **excluded from the Population A metric**" referring to all 106 game.py
+  errors. This sprint extends the script's exclusion rule accordingly, so
+  fixing 93 non-game.py union-attr errors makes tracked A reach 0. Rationale
+  for not fixing the 31 game.py attr-defined errors here: they live in code
+  that Spec B will decompose; individual None-narrowing in a file scheduled for
+  breakup is the "throwaway work" Spec A Section 4 explicitly calls out.
+- ~~How to fix each cluster: raising accessor property, None-guard early return,
+  or `assert not None` local narrowing?~~ **LOCKED**: raising accessor property
+  with underscore-prefixed raw storage. Rationale: (a) matches the pattern Spec
+  A Section 4 names as the model for `Game.player` in Spec B ("A non-Optional
+  accessor property that raises if unset erases 64 errors in one edit"),
+  (b) collapses N callsite errors to 1 property definition per cluster,
+  (c) surfaces lifecycle violations as a specific `RuntimeError` at the
+  accessor rather than an anonymous `AttributeError` deep in the call chain
+  (strict runtime improvement), (d) preserves the lifecycle-guard idiom via the
+  underscore storage. Alternative considered and rejected: local `assert`
+  narrowing — verbose, no runtime improvement, doesn't compose.
+- ~~Should crawler reachability drive fix ordering?~~ **LOCKED**: no.
+  Verified 2026-08-23 that the crawler reaches 4 of 41 states from the late
+  checkpoint (GALAXY_MAP, SHIPYARD, STATISTICS, ACHIEVEMENTS); none of the
+  five high-error views (TRADING, MINING, SALVAGING, REFINING, SETTINGS) are
+  reachable. The reachability signal is currently too thin to prioritize with.
+  Order is instead: **playtester-known crash surface first (trading_view for
+  the Sell All crash) → largest clusters (Market 26 → SalvageSession 25 →
+  MiningSession 11 → RefiningSession 5) → UI element Optionals (14 across
+  settings/combat/save_load) → long tail (investment, crew_roster,
+  combat_engine, salvage-model)**. Crawler coverage is re-measured at the
+  end of the sprint per Plan Task 10; if newly reachable states surface a
+  crash signature, it goes into the crash_baseline.json follow-up per QF-7's
+  manual-regeneration discipline.
+- ~~How to handle `if self.market` lifecycle guards that already exist in the
+  code (e.g., trading_view.py line 411)?~~ **LOCKED**: migrate the guard to
+  the underscore-prefixed raw storage. The public `market` property is
+  non-Optional and raises; the raw `_market` remains Optional and can be
+  truth-tested for lifecycle presence. Grep for `if self.<attr>` /
+  `if not self.<attr>` / `self.<attr> is None` in each touched view and
+  migrate each to `_<attr>`. This is mechanical but must not be skipped;
+  missing a lifecycle guard would flip a defensive-code path into a
+  RuntimeError-raising path.
+- ~~Combat engine's `player.momentum` is typed `Any | None` (2 errors) — is
+  the fix a `player.momentum` accessor on Player or a local check?~~ **LOCKED**:
+  local None-guard early-return in `combat_engine.py`. Rationale: `Momentum` is
+  a Player field, not a combat engine field. Adding a raising accessor on Player
+  is Spec B's terrain (Player has many Optional-shaped attributes that Spec B's
+  Player accessor unification will address). For this sprint, the two combat_engine
+  callsites at lines 2540-2541 add `if player.momentum is not None:` guards
+  around the two `.add()` / `.current` accesses. Small, local, non-refactor.
+- ~~`spacegame/models/salvage.py` line 495 `SalvageItemConfig | None` (1 error) —
+  raising accessor or local guard?~~ **LOCKED**: local None-guard. Single
+  callsite in-model; no accessor overhead justified. Guard reads
+  `if item_config is None: continue` (or equivalent early-return depending on
+  the surrounding logic).
+- ~~UI element Optionals (14 errors across settings/combat/save_load) — one
+  accessor per element, or bulk pattern change?~~ **LOCKED**: raising accessor
+  per element, but grouped in a single "widget accessors" block near the view's
+  `on_enter`. Rationale: consistent with session accessors; UI elements have
+  identical lifecycle (created in `on_enter`, killed in `_destroy_ui`).
+  Alternative rejected: replacing `Optional[UIButton]` with `UIButton` and
+  a `# type: ignore[assignment]` on the `= None` init — adds ignore comments
+  and doesn't surface lifecycle violations at runtime.
+- ~~Should `docs/qf/accessor_pattern.md` be authored or deferred?~~ **LOCKED**:
+  authored in-sprint. Rationale: the pattern will be applied ~10 times across
+  this sprint plus once more by Spec B (Game.player). A short pattern doc
+  prevents copy-paste drift and gives Spec B a canonical reference. If the
+  doc turns out heavier than a page, split into `accessor_pattern.md`
+  (recipe) and a follow-up `accessor_rationale.md` (why raising over guarding).
+- ~~Does the sprint bundle the `Rect | None` errors in combat_view.py (2 errors)
+  and the `RockTypeConfig | None` errors in mining_view.py (2 errors) even
+  though they're not on the header's cluster list?~~ **LOCKED**: yes. Sprint
+  scope is "Population A tracked = 0"; leaving 4 errors unfixed to preserve
+  the header's cluster list would fail AC 1. The two `Rect | None` cases are
+  transient rects computed inside methods and fixed with local None-guards,
+  not accessors. The two `RockTypeConfig | None` cases are cache lookups; use
+  a local guard that logs and skips the frame's operation.
+- ~~Small-cluster items — `InvestmentTemplate | None` (1), `InvestmentTier | Any | None`
+  (1), `CrewRoster | None` (1), `SalvageItemConfig | None` (1), `Player | None` (1) —
+  each accessor or each guard?~~ **LOCKED**: local guards, no accessor. Rationale:
+  single callsite each, no pattern-collapse benefit; accessor scaffolding for a
+  one-shot error is overhead.
+
+Open questions (reviewer judgment, not blocking implementation):
+
+- The 31 game.py attr-defined errors migrate from "tracked A" to "excluded_a" via
+  the script change. That leaves them counted in TOTAL but not in tracked A. The
+  script's docstring must be updated to reflect the new rule; reviewer confirms
+  the docstring change reads as a documentation update, not a stealth relaxation.
+- If any of the four regression tests (ACs 3-4) surface a real bug in the accessor
+  pattern (e.g., a view whose `on_enter` re-entry doesn't reset the accessor
+  correctly), the fix is in-sprint; the test failure is treated as revealing a
+  latent bug the accessor pattern exposed, not as a reason to soften the accessor.
+
+**Plan.**
+
+Task 1 — Reachability re-measurement + prioritization baseline.
+- Run three short crawler sessions and log which of the five high-error views
+  become reachable if any:
+  ```bash
+  python -m tools.crawler --seed 42 --actions 2000 --checkpoint late --output-dir /tmp/qf8_probe
+  python -m tools.crawler --seed 99 --actions 2000 --checkpoint late --output-dir /tmp/qf8_probe
+  python -m tools.crawler --seed 137 --actions 2000 --checkpoint late --output-dir /tmp/qf8_probe
+  ```
+  Record the reached-states set per seed in the Activity log. If TRADING /
+  MINING / SALVAGING / REFINING / SETTINGS remain unreachable across all three,
+  proceed with the LOCKED priority order (playtester-first, then largest cluster).
+  If any of the five become reachable in >= 2 of 3 seeds, hoist that cluster's
+  fix earlier and note it in the log.
+- Files: no code changes; measurement only.
+- Time budget: ~2 min (three 30s runs plus log).
+- Gotcha: the crawler baseline (`tools/crawler/crash_baseline.json`) is empty.
+  New RuntimeError raises introduced by the accessor pattern SHOULD NOT be
+  reachable under a well-formed view lifecycle; if the crawler surfaces one,
+  that's a real bug (a view calling accessor before on_enter). Fix in-sprint
+  and file a triage note; do NOT add to `crash_baseline.json` (which would
+  hide the bug).
+
+Task 2 — Extend `mypy_populations.py` exclusion rule.
+- File: `scripts/mypy_populations.py` — extend the game.py exclusion in
+  `classify_line()` to cover both `union-attr` AND `attr-defined` with message
+  containing `'"None" has no attribute'` when the path ends in `engine/game.py`.
+  Update the module docstring to reflect the new rule and cite Spec A Section 4.
+- Failing test first: create/extend `tests/test_scripts/test_mypy_populations.py`
+  with:
+  - `test_game_py_attr_defined_none_is_excluded` — feed a fixture line
+    `spacegame\engine\game.py:100: error: "None" has no attribute "foo"  [attr-defined]`
+    and assert `classify_line()` returns `"excluded_a"` (currently returns `"A"`).
+  - `test_non_game_py_attr_defined_none_stays_in_a` — feed
+    `spacegame\views\trading_view.py:100: error: "None" has no attribute "foo"  [attr-defined]`
+    and assert `"A"`.
+  - `test_game_py_union_attr_still_excluded` — regression, currently passes.
+  - `test_non_game_py_union_attr_still_in_a` — regression, currently passes.
+- Implement the fix and rerun the tests. Then run `python scripts/mypy_populations.py`
+  on the live tree; expect the tracked A count to drop from 124 to 93 (the 31
+  game.py attr-defined errors migrate to `excluded_a`).
+- Commit: `QF-8: extend mypy_populations exclusion for game.py attr-defined-None per Spec A S4`.
+
+Task 3 — Trading view: Market accessor + UITextEntryLine accessors (31 errors).
+- File: `spacegame/views/trading_view.py`.
+- Rename `self.market: Optional[Market] = None` to `self._market: Optional[Market] = None`;
+  add `@property market -> Market` that raises
+  `RuntimeError("TradingView.market accessed before on_enter()")` if `_market is None`.
+  Do the same for the three `UITextEntryLine | None` fields (identify via grep
+  `Optional[UITextEntryLine]`).
+- Migrate lifecycle guards: `if self.market ...` → `if self._market is not None ...`
+  at line 411 and any others. Grep the file for `self\.market\b` and audit each
+  callsite: method call (use property, unchanged textually), lifecycle test
+  (use underscore).
+- Failing tests first (in `tests/test_views/test_view_accessor_contracts.py`):
+  `test_trading_view_market_raises_before_on_enter`,
+  `test_trading_view_market_returns_after_on_enter`,
+  `test_trading_view_market_raises_after_on_exit`.
+  Use `tests/test_scenarios/_view_harness.py`'s pygame init + factory pattern.
+- Implement, run `pytest tests/test_views/test_view_accessor_contracts.py -q`,
+  then `pytest tests/test_views/test_trading_view.py tests/test_scenarios/test_scenario_trading.py -q`
+  to catch regressions.
+- Commit: `QF-8: TradingView.market → raising accessor + UITextEntryLine accessors (31 errors)`.
+- Gotcha: line 411's `if self.market else self.commodities` idiom repeats
+  elsewhere in the file. Grep and migrate every one to `_market`. Missing a
+  guard flips defensive code to raise-code and could re-introduce the
+  Sell-All-shaped crash.
+
+Task 4 — Salvage view: SalvageSession accessor + salvage.py guard (26+1 errors).
+- Files: `spacegame/views/salvage_view.py`, `spacegame/models/salvage.py`.
+- Same pattern as Task 3 for `SalvageSession`: rename + property + guard migration.
+- In `spacegame/models/salvage.py` line 495, add a local `if item_config is None: continue`
+  (or equivalent — read surrounding context to determine correct control flow).
+- Failing tests: `test_salvage_view_session_raises_before_on_enter`,
+  `test_salvage_view_session_returns_after_on_enter`,
+  `test_salvage_view_session_raises_after_on_exit`.
+- Commit: `QF-8: SalvageView.session → raising accessor + salvage-model guard (27 errors)`.
+
+Task 5 — Mining view: MiningSession accessor + RockTypeConfig guard (11+2 errors).
+- File: `spacegame/views/mining_view.py`.
+- Same pattern for `MiningSession`. The 2 `RockTypeConfig | None` errors get
+  local guards (they're cache-lookup shaped, not lifecycle).
+- Failing tests: `test_mining_view_session_raises_before_on_enter`,
+  `test_mining_view_session_returns_after_on_enter`,
+  `test_mining_view_session_raises_after_on_exit`.
+- Commit: `QF-8: MiningView.session → raising accessor + RockTypeConfig guards (13 errors)`.
+
+Task 6 — Refining view: RefiningSession accessor (5 errors).
+- File: `spacegame/views/refining_view.py`.
+- Same pattern for `RefiningSession`.
+- Failing tests: `test_refining_view_session_raises_before_on_enter`,
+  `test_refining_view_session_returns_after_on_enter`,
+  `test_refining_view_session_raises_after_on_exit`.
+- Commit: `QF-8: RefiningView.session → raising accessor (5 errors)`.
+
+Task 7 — UI element Optionals: settings_view, combat_view, save_load_view (12 errors).
+- Files: `spacegame/views/settings_view.py` (8), `spacegame/views/combat_view.py`
+  (3), `spacegame/views/save_load_view.py` (1).
+- For each `UIButton | None` / `UITextBox | None` / `Rect | None` error, add a
+  raising accessor per element (settings has 6 UIButton + 2 UITextBox = 8 accessors;
+  combat has 1 UIButton + 2 Rect; save_load has 1 UIButton). Group the accessors
+  in a "widget accessors" block after `on_enter`.
+- For `Rect | None` in combat_view: local guards, not accessors (rects are
+  transient per-frame values).
+- No dedicated regression tests for these — the four ACs 3-4 tests cover the
+  session-shaped views (the pattern under test), and each accessor is a
+  one-liner. Reviewer may add coverage if judged necessary.
+- Commit: `QF-8: UI element accessors in settings/combat/save_load views (12 errors)`.
+
+Task 8 — Long tail: investment_view, crew_roster_view, combat_engine (5 errors).
+- Files: `spacegame/views/investment_view.py` (2), `spacegame/views/crew_roster_view.py`
+  (1), `spacegame/models/combat_engine.py` (2).
+- Local None-guards per LOCKED decision (single callsites, no cluster benefit).
+- `combat_engine.py` lines 2540-2541: wrap the `.add()` / `.current` accesses in
+  `if player.momentum is not None:`. Verify the surrounding effect-application
+  loop handles the skip correctly (i.e., if momentum is unset, the momentum-refund
+  effect is silently no-oped and the surrounding message logic still runs).
+- Commit: `QF-8: local None-guards in investment/crew_roster/combat_engine (5 errors)`.
+
+Task 9 — Pattern doc.
+- File: `docs/qf/accessor_pattern.md` (NEW).
+- Sections: (a) When to apply (lifecycle-scoped Optional attributes: sessions,
+  UI elements, per-view managers). (b) The recipe (underscore raw + @property
+  raising). (c) Lifecycle-guard migration (`if self.foo` → `if self._foo is not None`).
+  (d) Canonical examples (link to the four session-shaped accessors landed in
+  this sprint). (e) When NOT to apply (single-callsite None values, transient
+  per-frame values — use local guards).
+- Voice: dev-only doc, but no em-dashes, no banned phrases (Writing Bible floor
+  applies to all repo content).
+- Commit: `QF-8: add docs/qf/accessor_pattern.md`.
+
+Task 10 — Verification: `mypy_populations.py` → A=0, crawler re-run, full suite.
+- Run `python scripts/mypy_populations.py`; expect `A=0`.
+- Run `pytest -n auto -q`; expect pass count `>= 10530 + <new tests>`, no
+  regressions.
+- Re-run the crawler on the same three seeds as Task 1; verify no new crash
+  signatures appear. If any do, triage: (a) accessor mis-migration → fix
+  in-sprint, (b) genuine pre-existing bug the accessor surfaced → fix in-sprint
+  or file follow-up note in Notes section, DO NOT add to crash_baseline.json.
+- Grep the full diff for new `# type: ignore` occurrences; each must have a
+  one-line justification comment (`# type: ignore[code]  # <reason>`).
+- Confirm `git diff master -- mypy-baseline.txt` shows no additions (removals
+  from touched files' natural cleanup are fine; if any line was added, the
+  ratchet was regenerated and the commit is invalid — revert the baseline
+  file and try again).
+- Move `Status` from `in-progress` to `review`; append final Activity log
+  entry with test count delta, tracked-A before/after, and any triage notes.
+
+**Cross-sprint reactions to author.** none (foundational type-safety burndown;
+no player-facing content, no dialogue, no NPCs, no crew impact, no events).
+Downstream conventions worth flagging (not reactions per se):
+
+- **New view convention (goes into `docs/qf/accessor_pattern.md`).** Any future
+  view that declares a lifecycle-scoped `Optional[X]` attribute (session-shaped
+  manager, per-view UIElement, etc.) uses the raising-accessor pattern.
+  Enforcement: not automated in this sprint; if drift becomes a problem, a
+  future compliance test can grep for `Optional[UIButton]` / `Optional[UITextEntryLine]`
+  in `spacegame/views/` and flag missing accessors.
+- **Spec B reference.** Spec B's `Game.player` accessor should adopt the same
+  pattern documented here. Cross-linked from the doc.
+- **QF-9 baseline shift.** After this sprint, `mypy_populations.py` reports A=0
+  and TOTAL drops by 93. QF-9's success criterion 2 ("Population A ... has NOT
+  risen") remains meaningful because the baseline reference point is post-QF-8.
 
 **Activity log.**
 - 2026-08-23 — blocked (created from Spec A; awaiting human review + QF-6 reachability data)
+- 2026-08-23 21:12 — harness: plan phase starting
+- 2026-08-23 21:45 — planning complete. Verified both Context-to-read paths
+  exist (`docs/superpowers/specs/2026-08-23-quality-foundation-design.md` +
+  crawler output via a live 500-action seed=42 late-checkpoint run). Confirmed
+  current tracked A=124 (93 union-attr outside game.py + 31 attr-defined-None
+  in game.py). Cluster breakdown reproduces Spec A Section 4's numbers
+  exactly (Market 26 / SalvageSession 25 / MiningSession 11 / RefiningSession
+  5 / UI element Optionals 14) plus a documented long tail (Rect 2 /
+  RockTypeConfig 2 / momentum Any 2 / InvestmentTemplate 1 / InvestmentTier
+  1 / CrewRoster 1 / SalvageItemConfig 1 / Player 1). Crawler reaches 4 of
+  41 states from late checkpoint — none of the five high-error views. Locked
+  9 open decisions: extend `mypy_populations.py` exclusion rule so game.py
+  attr-defined-Nones are also excluded per Spec A S4 (this is the crux —
+  makes AC 1 achievable without touching game.py); raising accessor pattern
+  with underscore-prefixed raw storage; crawler reachability NOT used for
+  ordering (weak signal); priority is playtester-first (trading_view) then
+  largest cluster; lifecycle-guard migration to `_attr`; combat_engine
+  momentum uses local guards not accessor (Player-shaped, Spec B terrain);
+  models/salvage.py uses local guard (single callsite); UI element Optionals
+  get per-element accessors grouped; pattern doc authored in-sprint. Expanded
+  Touch zones from empty to 15 precise paths. Expanded ACs from 3 vague to
+  8 mechanically verifiable. Wrote 10-task Plan. No new sprints proposed.
+  Cross-sprint reactions: none (foundational; no player-facing surface). Test
+  baseline 10530 pass, 98 skip. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-23 21:12
+- Completed: 2026-08-23 21:45
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (pending after this write)
+- New_sprints_proposed: none
+- Polish_items_folded_in: accessor-pattern-doc, mypy_populations exclusion-rule fix, crawler reachability re-measurement task, regression-test contract per accessor (positive + negative + post-on_exit)
+- Decisions_locked: 9
+- Notes: The crux decision — extending `mypy_populations.py` to also exclude
+  game.py attr-defined-Nones — reconciles the sprint's "outside game.py" scope
+  with Spec A Section 4's unambiguous "excluded from the Population A metric"
+  language. Without this, AC 1 was unachievable (the 31 game.py attr-defined
+  errors would have to be either fixed in a file Spec B is decomposing, or
+  left in tracked A and the AC softened). Reviewer may challenge; the
+  alternative is worse. Reachability was verified as a weak signal (4/41
+  states reached; none are the high-error views), so prioritization defaults
+  to cluster-size + playtester-known crash surface. All five session-shaped
+  clusters plus the UI element Optionals collapse under one pattern (raising
+  accessor); the long tail uses local guards where accessor scaffolding is
+  overhead.
 
 ### QF-9 — Population B burndown (type blindness)
 
