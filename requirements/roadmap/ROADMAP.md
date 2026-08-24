@@ -6579,7 +6579,7 @@ dependencies, not narrative reactions.
 - Notes: Plan audit sound; 11 locked decisions all defensible. Fixed baseline.py mypy no-redef (entry loop var renamed to crash_entry). Nightly workflow correctly uses per-matrix artifact upload rather than the AC's aspirational "one combined artifact" (GitHub Actions matrix constraint). All 81 crawler tests pass. Gate is live: empty baseline means any future crash will fail CI immediately.
 ### QF-6B — Crawler reachability: event delivery, custom hit-rects, coverage floor
 
-**Status**: review
+**Status**: in-progress (reviewing)
 **Source**: Spec A Section 3 gap found in post-QF-6 verification (2026-08-23)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
@@ -6945,6 +6945,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
 - 2026-08-23 18:01 — harness: plan phase starting
 - 2026-08-23 — planning complete; verified all 4 Context-to-read docs exist and reproduce the
 - 2026-08-23 20:20 — harness: implement phase starting (rework cycle 0)
+- 2026-08-23 20:59 — harness: review phase starting (rework cycle 0)
   quoted diagnosis (event-cycle bug + hand-drawn dialog invisibility). Confirmed
   `market.py:307` bare `random.seed()` is the only such call in `spacegame/`. Locked 4 open
   decisions: bundled the market.py fix into scope (deterministic requirement of AC 4), locked
@@ -6999,34 +7000,26 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
   4, cold-boot integration: 2, market RNG: 2, AC-2 weighting inert: 1 → total +10).
   Full suite: 10530 pass, 98 skip (baseline was 10520; +10 exactly). Lint clean on all
   touched files. mypy at baseline (pre-commit passed). Commits: 44cbf80, 2111da1, fd61fc5. PHASE_OK
+- 2026-08-23 — review complete; 3 pre-existing lint violations in c872c51 recovery code
+  (test_hit_rects.py: unused pygame import, assert False; test_integration.py: zip without
+  strict=) fixed directly in commit 6b44fdb. All 7 ACs verified passing; plan audit sound.
+  Full suite: 10530 pass, 98 skip — meets AC-7 floor. PHASE_OK
 
 **Last phase report.**
-- Phase: implement (rework cycle 1)
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-23 20:40
-- Completed: 2026-08-23 21:10
-- Files_changed: spacegame/models/market.py, tests/test_models/test_market.py,
-  tools/crawler/crawler.py, tests/test_crawler/test_reachability.py,
-  tests/test_crawler/test_weighting_and_credits.py
-- Tests_added: 10 (total suite: 10530 pass, 98 skip)
-- Commits: 44cbf80, 2111da1, fd61fc5
-- New_sprints_proposed: none
-- Polish_items_folded_in: ac-2-dialog-yes-supplementary-test, cold-boot-nav-keyword-extension,
-  cold-boot-reachability-tests, softlock-triage-into-hit-rects-registry
-- Decisions_locked: 0 (four prior decisions from rework cycle 0 still in force)
-- Notes: The sprint's STARTING STATE (added by human after the implement phase timeout)
-  says "the ONE remaining gap is cold-boot exploration". Correct diagnostically but AC-5
-  (market RNG isolation) is also unmet and must ship for the sprint to close. Plan therefore
-  keeps both in scope. The cold-boot fix is a minimal NAV_KEYWORDS extension: adding "new",
-  "continue", "yes" all pointing to GALAXY_MAP. Because the 2x boost only fires when the
-  destination is unvisited, the extension is effectively bootstrap-only — grep-verified that
-  post-MAIN_MENU views using those tokens ("Continue" in combat / dispute / etc.) are
-  reachable only after GALAXY_MAP is visited, at which point the boost is inert. AC-2 gap
-  closed by a supplementary test that exercises the dialog Yes path directly rather than
-  the Continue-button shortcut. Coverage floor ratchet is measurement-driven and gated on
-  cross-seed minimum, not a single lucky seed. Softlock triage folds newly-discovered
-  hand-drawn dialogs into the same `hit_rects.py` registry rather than deferring to a
-  follow-up sprint (small enough to bundle per planner guidance).
+- Started: 2026-08-23 21:10
+- Completed: 2026-08-23 21:30
+- Files_changed: tests/test_crawler/test_hit_rects.py, tests/test_crawler/test_integration.py
+- Commits: 6b44fdb
+- Tests_passing: 10530
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: 4/4
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 3
+- Single_tighten: Task 2 plan called for multi-seed (42/99/7) random-walk cold-boot tests; implementation chose forced-click single-seed tests to avoid event-queue interference — more reliable, but the deviation isn't noted in the Activity log.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all four locked decisions (NAV_KEYWORDS approach, local RNG, hit-rect format, floor=8 ratchet) are defensible. AC-2 supplementary test asserts "leaves MAIN_MENU" rather than "reaches GALAXY_MAP" specifically, which is an intentional relaxation given the multi-step new-game flow — acceptable because the original AC-2 test already proves GALAXY_MAP reachability. Lint fixes committed; pre-commit gate passed.
 
 ### QF-8 — Population A burndown outside game.py
 
