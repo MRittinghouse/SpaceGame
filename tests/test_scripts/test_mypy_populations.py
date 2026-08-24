@@ -40,9 +40,26 @@ class TestClassifyLine:
         line = r'spacegame\engine\game.py:0: error: Item "None" of "Player | None" has no attribute "credits"  [union-attr]'
         assert classify_line(line) == "excluded_a"
 
-    def test_attr_defined_none_in_game_py_still_population_a(self) -> None:
-        """'None' has no attribute [attr-defined] in game.py stays in tracked Population A."""
+    def test_attr_defined_none_in_game_py_forward_slash_is_excluded_a(self) -> None:
+        """'None' has no attribute [attr-defined] in game.py is EXCLUDED from tracked A.
+
+        Per Spec A Section 4, ALL game.py errors of the union-attr / attr-defined-None
+        shape are excluded from the Population A metric because they will be erased
+        wholesale by Spec B's Game.player accessor. See QF-8 Plan Task 2.
+        """
         line = 'spacegame/engine/game.py:0: error: "None" has no attribute "health"  [attr-defined]'
+        assert classify_line(line) == "excluded_a"
+
+    def test_attr_defined_none_in_game_py_backslash_is_excluded_a(self) -> None:
+        """Same exclusion via Windows path separator."""
+        line = (
+            r'spacegame\engine\game.py:0: error: "None" has no attribute "health"  [attr-defined]'
+        )
+        assert classify_line(line) == "excluded_a"
+
+    def test_attr_defined_none_outside_game_py_stays_in_a(self) -> None:
+        """attr-defined-None in a non-game.py path stays in tracked Population A."""
+        line = 'spacegame/views/trading_view.py:0: error: "None" has no attribute "foo"  [attr-defined]'
         assert classify_line(line) == "A"
 
     def test_attr_defined_object_has_no_attribute_is_population_b(self) -> None:
@@ -155,10 +172,13 @@ class TestCountPopulations:
     def test_mixed_synthetic_fixture(self) -> None:
         """Fixture with known A/B/C/TOTAL distribution.
 
+        Post-QF-8 exclusion rule: BOTH union-attr AND attr-defined-None errors
+        in engine/game.py are excluded from tracked Population A (per Spec A S4).
+
         Errors:
           - 2 union-attr (non-game.py) -> A
           - 1 None-has-no-attr attr-defined (non-game.py) -> A
-          - 1 None-has-no-attr attr-defined (game.py) -> A (excluded_a rule is union-attr only)
+          - 1 None-has-no-attr attr-defined (game.py) -> excluded_a
           - 1 union-attr (game.py) -> excluded_a (not in A, not in C)
           - 1 object-has-no-attr attr-defined -> B
           - 2 name-defined -> B
@@ -167,13 +187,14 @@ class TestCountPopulations:
           - 1 summary line -> ignored
           - 1 blank -> ignored
 
-        Expected: A=4, B=3, C=4, TOTAL=4+1(excluded)+3+4=12
+        Expected: A=3, B=3, C=4, TOTAL=3+2(excluded)+3+4=12
         """
         lines = [
-            # Population A (4)
+            # Population A (3)
             'spacegame/models/foo.py:0: error: Item "None" of "Foo | None" has no attribute "x"  [union-attr]',
             'spacegame/models/foo.py:0: error: Item "None" of "Bar | None" has no attribute "y"  [union-attr]',
             'spacegame/models/bar.py:0: error: "None" has no attribute "z"  [attr-defined]',
+            # game.py attr-defined-None -> excluded_a (per extended rule)
             'spacegame/engine/game.py:0: error: "None" has no attribute "health"  [attr-defined]',
             # game.py union-attr -> excluded_a (in TOTAL but not in A or C)
             'spacegame/engine/game.py:0: error: Item "None" of "Player | None" has no attribute "credits"  [union-attr]',
@@ -193,10 +214,10 @@ class TestCountPopulations:
             "",
         ]
         a, b, c, total = count_populations(lines)
-        assert a == 4
+        assert a == 3
         assert b == 3
         assert c == 4
-        assert total == 12  # 4 A + 1 excluded_a + 3 B + 4 C
+        assert total == 12  # 3 A + 2 excluded_a + 3 B + 4 C
 
 
 # ── main / --stdin mode ────────────────────────────────────────────────────────
