@@ -12,13 +12,13 @@ from __future__ import annotations
 
 import re
 import subprocess
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+from ralph import roadmap_state
 from ralph.config import (
     AGENT_GUIDE_PATH,
     AGENT_OUTCOME_BLOCKED,
@@ -34,7 +34,6 @@ from ralph.config import (
     build_claude_cmd,
     timeout_for_phase,
 )
-from ralph import roadmap_state
 from ralph.roadmap_state import RoadmapValidationError
 
 
@@ -189,14 +188,14 @@ def _invoke_claude(
         return 0, "[dry-run no-op]", ""
 
     with log_path.open("w", encoding="utf-8") as f:
-        f.write(f"# Phase invocation\n")
+        f.write("# Phase invocation\n")
         f.write(f"# Started: {datetime.now().isoformat()}\n")
         f.write(f"# Phase: {phase.value} | Sprint size: {sprint_size or '(unknown)'}\n")
         f.write(f"# Command: {' '.join(base_cmd)} <prompt>\n")
         f.write(f"# Prompt length: {len(prompt)} chars\n")
         f.write(f"# Timeout: {timeout}s\n\n")
         f.write(f"--- PROMPT ---\n{prompt}\n--- END PROMPT ---\n\n")
-        f.write(f"--- AGENT OUTPUT ---\n")
+        f.write("--- AGENT OUTPUT ---\n")
         f.flush()
 
         try:
@@ -214,7 +213,7 @@ def _invoke_claude(
                 f.write(f"\n--- STDERR ---\n{result.stderr}\n")
             f.write(f"\n--- END (returncode {result.returncode}) ---\n")
             return result.returncode, result.stdout, result.stderr
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             f.write(f"\n--- TIMEOUT after {timeout}s ---\n")
             raise
 

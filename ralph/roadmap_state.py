@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from ralph.config import ROADMAP_PATH, STATUS_DONE, STATUS_TODO
 

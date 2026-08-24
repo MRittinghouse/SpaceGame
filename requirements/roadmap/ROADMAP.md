@@ -76,12 +76,12 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 
 | ID | Title | Source | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [CB-1](#cb-1--crew-banter-scope--scoping) | Crew Banter scope (scoping) | Living Universe Arc deferral | S | todo | none |
+| [CB-1](#cb-1--crew-banter-scope--scoping) | Crew Banter scope (scoping) | Living Universe Arc deferral | S | done | none |
 | [CB-2](#cb-2--crew-banter-implementation) | Crew Banter implementation | cb_scope.md (CB-1) | M | done | CB-1 |
-| [WB-1](#wb-1--station-tagline-scanner-coverage) | Station tagline scanner coverage | writing_bible_scanner_gaps.md | S | todo | none |
-| [WB-2](#wb-2--parallel-negation-regex-broadening) | Parallel-negation regex broadening | writing_bible_scanner_gaps.md | S | todo | WB-1 |
-| [SI3-FOLLOW-1](#si3-follow-1--no-arg-helper-introspection) | No-arg helper introspection (flag scanner) | SL-2 disclosure | S | todo | none |
-| [UI-BOUNDS-1](#ui-bounds-1--station_hub_view-in-bounds-harness) | station_hub_view in subprocess bounds harness | SL-1 deferral | S | todo | none |
+| [WB-1](#wb-1--station-tagline-scanner-coverage) | Station tagline scanner coverage | writing_bible_scanner_gaps.md | S | done | none |
+| [WB-2](#wb-2--parallel-negation-regex-broadening) | Parallel-negation regex broadening | writing_bible_scanner_gaps.md | S | done | WB-1 |
+| [SI3-FOLLOW-1](#si3-follow-1--no-arg-helper-introspection) | No-arg helper introspection (flag scanner) | SL-2 disclosure | S | done | none |
+| [UI-BOUNDS-1](#ui-bounds-1--station_hub_view-in-bounds-harness) | station_hub_view in subprocess bounds harness | SL-1 deferral | S | blocked | none |
 
 ### QF Arc — Quality Foundation
 
@@ -89,16 +89,16 @@ Source: `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Spec A
 
 | ID | Title | Source | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [QF-1](#qf-1--quality-gate-infrastructure) | Quality gate infrastructure | Spec A S1/S2 | S | todo | none |
-| [QF-2](#qf-2--mypy-baseline--population-metrics) | MyPy baseline + population metrics | Spec A S1 | S | todo | QF-1 |
-| [QF-3](#qf-3--ralph-quality-gate-integration) | Ralph quality-gate integration | Spec A S2 | S | todo | QF-2 |
-| [QF-4](#qf-4--import-boundary-guard) | Import-boundary guard (models/constants pygame-free) | Spec A | S | todo | none |
-| [QF-5](#qf-5--extract-gamestep-from-gamerun) | Extract `Game.step()` from `Game.run()` | Spec A S3 | M | todo | none |
-| [QF-6](#qf-6--play-harness-crawler-core) | Play-harness crawler core | Spec A S3 | L | todo | QF-5 |
-| [QF-7](#qf-7--crawler-ci-gate--state-screenshots) | Crawler CI gate + state screenshots | Spec A S3 | M | todo | QF-6 |
-| [QF-6B](#qf-6b--crawler-reachability-event-delivery-custom-hit-rects-coverage-floor) | Crawler reachability: event delivery, hit-rects, coverage floor | post-QF-6 verification | M | review | QF-6 |
-| [QF-8](#qf-8--population-a-burndown-outside-gamepy) | Population A burndown outside game.py | Spec A S4 | L | todo | QF-6 |
-| [QF-9](#qf-9--population-b-burndown-type-blindness) | Population B burndown (type blindness) | Spec A S4 | L | todo | QF-8 |
+| [QF-1](#qf-1--quality-gate-infrastructure) | Quality gate infrastructure | Spec A S1/S2 | S | done | none |
+| [QF-2](#qf-2--mypy-baseline--population-metrics) | MyPy baseline + population metrics | Spec A S1 | S | done | QF-1 |
+| [QF-3](#qf-3--ralph-quality-gate-integration) | Ralph quality-gate integration | Spec A S2 | S | done | QF-2 |
+| [QF-4](#qf-4--import-boundary-guard) | Import-boundary guard (models/constants pygame-free) | Spec A | S | done | none |
+| [QF-5](#qf-5--extract-gamestep-from-gamerun) | Extract `Game.step()` from `Game.run()` | Spec A S3 | M | done | none |
+| [QF-6](#qf-6--play-harness-crawler-core) | Play-harness crawler core | Spec A S3 | L | done | QF-5 |
+| [QF-7](#qf-7--crawler-ci-gate--state-screenshots) | Crawler CI gate + state screenshots | Spec A S3 | M | done | QF-6 |
+| [QF-6B](#qf-6b--crawler-reachability-event-delivery-custom-hit-rects-coverage-floor) | Crawler reachability: event delivery, hit-rects, coverage floor | post-QF-6 verification | M | done | QF-6 |
+| [QF-8](#qf-8--population-a-burndown-outside-gamepy) | Population A burndown outside game.py | Spec A S4 | L | done | QF-6 |
+| [QF-9](#qf-9--population-b-burndown-type-blindness) | Population B burndown (type blindness) | Spec A S4 | L | done | QF-8 |
 
 QF-8 and QF-9 are deliberately `blocked`, not `todo`. They change runtime behaviour and must not be
 picked up before a human has reviewed Spec A and the crawler's reachability data exists. Unblock by

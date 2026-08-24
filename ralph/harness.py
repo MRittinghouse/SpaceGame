@@ -1329,6 +1329,24 @@ def main() -> int:
             except Exception as e:
                 log(f"{picked.sprint_id}: index regen failed: {e}")
 
+            # regenerate_index() only rebuilds the SA-arc table (it works
+            # between the AUTO_GENERATED_SA_INDEX markers). The Followups and
+            # QF tables are hand-maintained and drift the moment a status
+            # changes -- on 2026-08-24 every QF row still read "todo" while all
+            # ten sprints were done, and the false picture caused real wasted
+            # time. Sync the Status cells of every other table too.
+            try:
+                from scripts.sync_roadmap_index import ROADMAP_PATH as _RM
+                from scripts.sync_roadmap_index import sync as _sync_index
+
+                _text = _RM.read_text(encoding="utf-8")
+                _new, _drift = _sync_index(_text)
+                if _drift:
+                    _RM.write_text(_new, encoding="utf-8")
+                    log(f"{picked.sprint_id}: synced {len(_drift)} index row(s)")
+            except Exception as e:
+                log(f"{picked.sprint_id}: index sync failed: {e}")
+
             # Commit harness bookkeeping (terminal status + index regen).
             # Captures the post-agent ROADMAP edits the harness writes
             # inline. Without this, those edits drift into the next

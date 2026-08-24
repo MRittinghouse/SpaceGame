@@ -21,9 +21,7 @@ SPAWN_FIXES = {
     "shakedown_medical_strongarm_01": "mercenary_ace",
 }
 
-PRESSURE_FILE = (
-    Path(__file__).parent.parent / "data" / "encounters" / "ce4_pressure.json"
-)
+PRESSURE_FILE = Path(__file__).parent.parent / "data" / "encounters" / "ce4_pressure.json"
 
 
 def _patch_outcome(outcome: dict, ship: str) -> bool:
@@ -48,9 +46,7 @@ def main() -> int:
         for choice in enc.get("choices", []):
             if "outcome" in choice and _patch_outcome(choice["outcome"], ship):
                 fixed += 1
-            if "failure_outcome" in choice and _patch_outcome(
-                choice["failure_outcome"], ship
-            ):
+            if "failure_outcome" in choice and _patch_outcome(choice["failure_outcome"], ship):
                 fixed += 1
     PRESSURE_FILE.write_text(
         json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
