@@ -97,8 +97,8 @@ Source: `docs/superpowers/specs/2026-08-23-quality-foundation-design.md` (Spec A
 | [QF-6](#qf-6--play-harness-crawler-core) | Play-harness crawler core | Spec A S3 | L | todo | QF-5 |
 | [QF-7](#qf-7--crawler-ci-gate--state-screenshots) | Crawler CI gate + state screenshots | Spec A S3 | M | todo | QF-6 |
 | [QF-6B](#qf-6b--crawler-reachability-event-delivery-custom-hit-rects-coverage-floor) | Crawler reachability: event delivery, hit-rects, coverage floor | post-QF-6 verification | M | todo | QF-6 |
-| [QF-8](#qf-8--population-a-burndown-outside-gamepy) | Population A burndown outside game.py | Spec A S4 | L | blocked | QF-6 |
-| [QF-9](#qf-9--population-b-burndown-type-blindness) | Population B burndown (type blindness) | Spec A S4 | L | blocked | QF-8 |
+| [QF-8](#qf-8--population-a-burndown-outside-gamepy) | Population A burndown outside game.py | Spec A S4 | L | todo | QF-6 |
+| [QF-9](#qf-9--population-b-burndown-type-blindness) | Population B burndown (type blindness) | Spec A S4 | L | todo | QF-8 |
 
 QF-8 and QF-9 are deliberately `blocked`, not `todo`. They change runtime behaviour and must not be
 picked up before a human has reviewed Spec A and the crawler's reachability data exists. Unblock by
@@ -6579,10 +6579,38 @@ dependencies, not narrative reactions.
 - Notes: Plan audit sound; 11 locked decisions all defensible. Fixed baseline.py mypy no-redef (entry loop var renamed to crash_entry). Nightly workflow correctly uses per-matrix artifact upload rather than the AC's aspirational "one combined artifact" (GitHub Actions matrix constraint). All 81 crawler tests pass. Gate is live: empty baseline means any future crash will fail CI immediately.
 ### QF-6B — Crawler reachability: event delivery, custom hit-rects, coverage floor
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A Section 3 gap found in post-QF-6 verification (2026-08-23)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: QF-6 | **Blocks**: none
+
+**STARTING STATE — READ THIS FIRST (updated 2026-08-23 after a phase timeout).**
+
+A prior implement phase hit ralph's 5400s cap. Its work was sound and has been
+recovered and committed. **Blockers 1 and 2 are already implemented.** Do NOT redo them.
+
+Committed already:
+- `8524d75` — event-cycle fix in `Crawler.step_once` (drain + carry-over). Blocker 1 CLOSED.
+- `c872c51` — `tools/crawler/hit_rects.py` (per-GameState registry of hand-drawn interactive
+  rects, seeded with the main-menu confirm dialog, wired into enumeration), widened key
+  repertoire, `save_slot_0` fixture, reachability tests. Blocker 2 CLOSED.
+
+Measured after those commits (cold boot, 1500 actions): seed 99 → 4 states
+(MAIN_MENU, GALAXY_MAP, STATION_HUB, CREW_ROSTER); seed 7 → 1 state. The `late`
+checkpoint path meets the ≥8 floor. 96 crawler tests pass; `tools/crawler` is at 0 mypy errors.
+
+**Your job is therefore narrower than the original scope below:**
+1. Verify every acceptance criterion against what is already committed. Report pass/fail per AC.
+   This sprint never received a review pass — that verification is the primary deliverable.
+2. Close the ONE remaining gap: **cold-boot exploration is high-variance.** Escaping MAIN_MENU
+   depends on the random walk happening to click New Game then Yes. Weight action selection
+   toward unvisited states so cold-boot coverage is reliable rather than lucky.
+3. Re-measure and, if warranted, raise `COVERAGE_FLOOR` above 8.
+
+**Avoiding another timeout.** The previous phase died because the inner loop is slow: every
+crawl boots a real `Game` and loads 2.27MB of JSON. Iterate with SHORT crawls (200-400
+actions) and run the full 2,000-action verification only once, at the end. Do not run the full
+pytest suite (120s) more than necessary — `pytest tests/test_crawler/ -q` is the fast signal.
 
 **Goal.** QF-6 delivered a well-built crawler that reaches **1 of 41 `GameState` values**. It passes
 every acceptance criterion in QF-6 because those criteria required a coverage *report*, not a
@@ -6915,7 +6943,7 @@ dialogue, no NPCs, no crew impact). Downstream conventions worth flagging (not r
   count 10501; new floor >=10501.
 ### QF-8 — Population A burndown outside game.py
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-6 | **Blocks**: QF-9
@@ -6949,7 +6977,7 @@ data so the fixes are ordered by what players actually hit. Unblock by hand.
 
 ### QF-9 — Population B burndown (type blindness)
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec A, Section 4
 **Size**: L | **Effort**: 2-3 weeks
 **Depends on**: QF-8 | **Blocks**: none
