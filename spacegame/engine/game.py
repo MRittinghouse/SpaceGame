@@ -82,6 +82,43 @@ if TYPE_CHECKING:
     from spacegame.models.event import MarketEvent
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
+    from spacegame.views.achievements_view import AchievementsView
+    from spacegame.views.auction_view import AuctionView
+    from spacegame.views.cantina_view import CantinaView
+    from spacegame.views.character_creation_view import CharacterCreationView
+    from spacegame.views.character_view import CharacterView
+    from spacegame.views.cockpit_hud import CockpitHUD
+    from spacegame.views.combat_view import CombatView
+    from spacegame.views.crew_roster_view import CrewRosterView
+    from spacegame.views.deep_shafts_view import DeepShaftsView
+    from spacegame.views.dialogue_view import DialogueView
+    from spacegame.views.dispute_view import DisputeView
+    from spacegame.views.encounter_view import EncounterView
+    from spacegame.views.event_notification_view import EventNotificationView
+    from spacegame.views.galaxy_map_view import GalaxyMapView
+    from spacegame.views.ground_briefing_view import GroundBriefingView
+    from spacegame.views.ground_exploration_view import GroundExplorationView
+    from spacegame.views.ground_result_view import GroundResultView
+    from spacegame.views.investment_view import InvestmentView
+    from spacegame.views.journal_view import JournalView
+    from spacegame.views.main_menu_view import MainMenuView
+    from spacegame.views.mining_view import MiningView
+    from spacegame.views.mission_log_view import MissionLogView
+    from spacegame.views.name_input_view import NameInputView
+    from spacegame.views.pause_menu_view import PauseMenuView
+    from spacegame.views.refining_view import RefiningView
+    from spacegame.views.repair_bay_view import RepairBayView
+    from spacegame.views.salvage_view import SalvageView
+    from spacegame.views.save_load_view import SaveLoadView
+    from spacegame.views.sell_lot_view import SellLotView
+    from spacegame.views.settings_view import SettingsView
+    from spacegame.views.shipyard_view import ShipyardView
+    from spacegame.views.skill_tree_view import SkillTreeView
+    from spacegame.views.station_hub_view import StationHubView
+    from spacegame.views.statistics_view import StatisticsView
+    from spacegame.views.trading_view import TradingView
+    from spacegame.views.tutorial_overlay import TutorialOverlay
+    from spacegame.views.wreckers_guild_view import WreckersGuildView
 
 
 def build_display_flags(fullscreen: bool) -> int:
@@ -282,7 +319,7 @@ class Game:
         self.event_log: list[dict] = []  # Last 15 events
         self.event_banner: str = ""
         self.event_banner_timer: float = 0.0
-        self._event_notification_view = None
+        self._event_notification_view: Optional["EventNotificationView"] = None
 
         # Banner/label fonts (created lazily to avoid pygame init order issues)
         self._banner_font: Optional[pygame.font.Font] = None
@@ -327,15 +364,15 @@ class Game:
 
         # Tutorial system
         self.tutorial_manager = TutorialManager()
-        self._tutorial_overlay = None
-        self._cockpit_hud = None
+        self._tutorial_overlay: Optional["TutorialOverlay"] = None
+        self._cockpit_hud: Optional["CockpitHUD"] = None
         self._tutorial_cooldown: int = 0  # frames to wait before next overlay
 
         # Pause menu state
         self.paused = False
-        self.pause_menu_view = None
-        self.save_load_view = None
-        self.settings_view = None
+        self.pause_menu_view: Optional["PauseMenuView"] = None
+        self.save_load_view: Optional["SaveLoadView"] = None
+        self.settings_view: Optional["SettingsView"] = None
 
         # Visual effects
         self.transition_manager = TransitionManager()
@@ -343,35 +380,38 @@ class Game:
         self.screen_shake = ScreenShake()
 
         # View references (for state transitions)
-        self.main_menu_view = None
-        self.galaxy_map_view = None
-        self.trading_view = None
-        self.mining_view = None
-        self.salvage_view = None
-        self.refining_view = None
-        self.skill_tree_view = None
-        self.shipyard_view = None
-        self.statistics_view = None
-        self.achievements_view = None
-        self.dialogue_view = None
-        self.name_input_view = None
-        self.character_creation_view = None
-        self.character_view = None
-        self.combat_view = None
-        self.encounter_view = None
-        self.ground_briefing_view = None
-        self.ground_exploration_view = None
-        self.ground_result_view = None
-        self.investment_view = None
-        self.cantina_view = None
-        self.wreckers_guild_view = None
-        self.deep_shafts_view = None
+        self.main_menu_view: Optional["MainMenuView"] = None
+        self.galaxy_map_view: Optional["GalaxyMapView"] = None
+        self.trading_view: Optional["TradingView"] = None
+        self.mining_view: Optional["MiningView"] = None
+        self.salvage_view: Optional["SalvageView"] = None
+        self.refining_view: Optional["RefiningView"] = None
+        self.skill_tree_view: Optional["SkillTreeView"] = None
+        self.shipyard_view: Optional["ShipyardView"] = None
+        self.statistics_view: Optional["StatisticsView"] = None
+        self.achievements_view: Optional["AchievementsView"] = None
+        self.dialogue_view: Optional["DialogueView"] = None
+        self.name_input_view: Optional["NameInputView"] = None
+        self.character_creation_view: Optional["CharacterCreationView"] = None
+        self.character_view: Optional["CharacterView"] = None
+        self.combat_view: Optional["CombatView"] = None
+        self.encounter_view: Optional["EncounterView"] = None
+        self.ground_briefing_view: Optional["GroundBriefingView"] = None
+        self.ground_exploration_view: Optional["GroundExplorationView"] = None
+        self.ground_result_view: Optional["GroundResultView"] = None
+        self.investment_view: Optional["InvestmentView"] = None
+        self.cantina_view: Optional["CantinaView"] = None
+        self.wreckers_guild_view: Optional["WreckersGuildView"] = None
+        self.deep_shafts_view: Optional["DeepShaftsView"] = None
         # SA-B2: lazy-instantiated by _ensure_auction_view().
-        self.auction_view = None
+        self.auction_view: Optional["AuctionView"] = None
         # SA-B5: lazy-instantiated by _ensure_sell_lot_view().
-        self.sell_lot_view = None
+        self.sell_lot_view: Optional["SellLotView"] = None
         # SA-P2: lazy-instantiated by _ensure_dispute_view().
-        self.dispute_view = None
+        self.dispute_view: Optional["DisputeView"] = None
+        # Lazy-instantiated by _ensure_station_hub_view() / _ensure_repair_bay_view().
+        self.station_hub_view: Optional["StationHubView"] = None
+        self.repair_bay_view: Optional["RepairBayView"] = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -393,7 +433,7 @@ class Game:
         from spacegame.models.mission import MissionManager
 
         self.mission_manager: Optional[MissionManager] = None
-        self.mission_log_view = None
+        self.mission_log_view: Optional["MissionLogView"] = None
 
         # Mission notification queue
         self._mission_notifications: list[str] = []
@@ -408,7 +448,7 @@ class Game:
         from spacegame.models.crew import CrewRoster
 
         self.crew_roster: Optional[CrewRoster] = None
-        self.crew_roster_view = None
+        self.crew_roster_view: Optional["CrewRosterView"] = None
         self._crew_last_trades: int = 0
         self._crew_last_jumps: int = 0
 
@@ -422,7 +462,7 @@ class Game:
         from spacegame.models.journal import Journal
 
         self.journal: Optional[Journal] = None
-        self.journal_view = None
+        self.journal_view: Optional["JournalView"] = None
         self._last_visited_count: int = 1  # Starting system is already visited
 
         # Ground contract system
@@ -1193,8 +1233,9 @@ class Game:
                 self._mission_notifications.append("Game Saved")
 
             # Handle arrival notification
-            if getattr(self.galaxy_map_view, "arrival_message", None):
-                self._mission_notifications.append(self.galaxy_map_view.arrival_message)
+            arrival_message = getattr(self.galaxy_map_view, "arrival_message", None)
+            if arrival_message:
+                self._mission_notifications.append(arrival_message)
                 self.galaxy_map_view.arrival_message = None
 
                 # Travel log: first visit entry
@@ -2226,7 +2267,7 @@ class Game:
                     if self.politics_dispute_manager and self._player is not None:
                         self.player.politics_dispute_state = self.politics_dispute_manager.to_dict()
 
-                    def _do_dispute_back():
+                    def _do_dispute_back() -> None:
                         self._ensure_station_hub_view()
                         self.state_manager.change_state(GameState.STATION_HUB)
 
@@ -2263,11 +2304,11 @@ class Game:
                 if next_state == GameState.STATION_HUB:
                     self.cantina_view.next_state = None
 
-                    def _do():
+                    def _do_cantina_hub() -> None:
                         self._ensure_station_hub_view()
                         self.state_manager.change_state(GameState.STATION_HUB)
 
-                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                    self._start_transition(TransitionType.FADE, 0.3, _do_cantina_hub)
                 elif next_state == GameState.DIALOGUE:
                     self.cantina_view.next_state = None
                     npc_id = getattr(self.cantina_view, "pending_npc_id", None)
@@ -2282,11 +2323,11 @@ class Game:
                 if next_state == GameState.STATION_HUB:
                     self.investment_view.next_state = None
 
-                    def _do():
+                    def _do_investment_hub() -> None:
                         self._ensure_station_hub_view()
                         self.state_manager.change_state(GameState.STATION_HUB)
 
-                    self._start_transition(TransitionType.FADE, 0.3, _do)
+                    self._start_transition(TransitionType.FADE, 0.3, _do_investment_hub)
 
     def _create_gameplay_views(self) -> None:
         """Create all gameplay views after new game or load."""
@@ -2296,7 +2337,7 @@ class Game:
         systems = self.data_loader.systems
         commodities = self.data_loader.commodities
 
-        self.galaxy_map_view = GalaxyMapView(
+        galaxy_map_view = GalaxyMapView(
             self.ui_manager,
             self.player,
             systems,
@@ -2304,9 +2345,10 @@ class Game:
             politics_manager=self.politics_manager,
             news_ticker=self.news_ticker,
         )
+        self.galaxy_map_view = galaxy_map_view
         # Wire journal for quick-add overlay
         if self.journal:
-            self.galaxy_map_view.journal = self.journal
+            galaxy_map_view.journal = self.journal
         self.trading_view = TradingView(
             self.ui_manager,
             self.player,
@@ -2484,14 +2526,15 @@ class Game:
 
         if self._player is None:
             return
-        self.sell_lot_view = SellLotView(
+        sell_lot_view = SellLotView(
             ui_manager=self.ui_manager,
             player=self.player,
         )
+        self.sell_lot_view = sell_lot_view
         # Voice templates for the empty-state line.
         if self.data_loader is not None:
             voices = self.data_loader.get_auction_voices("stellaris")
-            self.sell_lot_view.set_voice_templates(voices)
+            sell_lot_view.set_voice_templates(voices)
 
         # Journal callback fired on first successful listing (AC #14).
         from spacegame.constants.flags import auction_first_listing_created
@@ -2504,8 +2547,8 @@ class Game:
                     self.player.current_system_id,
                 )
 
-        self.sell_lot_view.on_listing_created = _on_listing_created
-        self.state_manager.register_state(GameState.SELL_LOT, self.sell_lot_view)
+        sell_lot_view.on_listing_created = _on_listing_created
+        self.state_manager.register_state(GameState.SELL_LOT, sell_lot_view)
 
     def _ensure_auction_view(self, venue_id: str = "stellaris") -> None:
         """SA-B2: create or recreate the auction venue view.
@@ -2531,7 +2574,7 @@ class Game:
         from spacegame.views.auction_view import AuctionView
 
         venue_display = "Stellaris Auction House" if venue_id == "stellaris" else "The Reach Floor"
-        self.auction_view = AuctionView(
+        auction_view = AuctionView(
             ui_manager=self.ui_manager,
             player=self.player,
             crew_roster=self.crew_roster,
@@ -2539,6 +2582,7 @@ class Game:
             venue_id=venue_id,
             venue_display_name=venue_display,
         )
+        self.auction_view = auction_view
         # Install lifecycle callbacks so journal entries, news headlines,
         # and the crew-banter / achievement flags fire at the right moments.
 
@@ -2672,13 +2716,13 @@ class Game:
                         self.player.current_system_id,
                     )
 
-        self.auction_view.on_session_complete = _on_session_complete
-        self.auction_view.on_lot_won = _on_lot_won
-        self.auction_view.on_rivalry_formed = _on_rivalry_formed
-        self.auction_view.on_headliner_sold = _on_headliner_sold
-        self.auction_view.on_headliner_withdrawn = _on_headliner_withdrawn
-        self.auction_view.on_player_lot_sold = _on_player_lot_sold
-        self.auction_view.on_player_lot_withdrawn = _on_player_lot_withdrawn
+        auction_view.on_session_complete = _on_session_complete
+        auction_view.on_lot_won = _on_lot_won
+        auction_view.on_rivalry_formed = _on_rivalry_formed
+        auction_view.on_headliner_sold = _on_headliner_sold
+        auction_view.on_headliner_withdrawn = _on_headliner_withdrawn
+        auction_view.on_player_lot_sold = _on_player_lot_sold
+        auction_view.on_player_lot_withdrawn = _on_player_lot_withdrawn
 
         # Mark each named rival who shows up this session — banter trigger.
         for persona_id in self.player.auction_state.session_personas:
@@ -2692,14 +2736,14 @@ class Game:
         # render display names and run ceiling math.
         live_personas = list(getattr(self.player.auction_state, "_live_personas", {}).values())
         if live_personas:
-            self.auction_view.set_active_personas(live_personas)
+            auction_view.set_active_personas(live_personas)
 
         # SA-B3: wire the data-loader voices into the view so the BID_WINDOW
         # header strip, post-session social UI, and PREVIEW empty-state can
         # read voice templates instead of hardcoded fallbacks.
-        self.auction_view.set_voice_templates(self.data_loader.get_auction_voices(venue_id))
+        auction_view.set_voice_templates(self.data_loader.get_auction_voices(venue_id))
 
-        self.state_manager.register_state(GameState.AUCTION, self.auction_view)
+        self.state_manager.register_state(GameState.AUCTION, auction_view)
 
     def _mark_auction_reach_debut_if_first(self, lot: Any) -> None:
         """SA-B4: register the achievement_auction_reach_debut stub on first Reach win.
@@ -2949,7 +2993,7 @@ class Game:
         from spacegame.models.politics_dispute import PoliticsDisputeManager
         from spacegame.models.verdant_council import VERDANT_COUNCIL_CONFIG
 
-        def _market_lookup(system_id: str):
+        def _market_lookup(system_id: str) -> Optional[Market]:
             return self.markets.get(system_id) if hasattr(self, "markets") else None
 
         self.politics_dispute_manager = PoliticsDisputeManager(
@@ -3164,6 +3208,12 @@ class Game:
         from spacegame.views.mining_view import MiningView
 
         mining_config = self.data_loader.get_mining_config(self.player.current_system_id)
+        if mining_config is None:
+            logger.warning(
+                f"No mining config for system {self.player.current_system_id!r}; "
+                "skipping mining view creation"
+            )
+            return
         system = self.data_loader.systems.get(self.player.current_system_id)
         if system:
             mining_config.danger_level = system.danger_level
@@ -3174,7 +3224,7 @@ class Game:
             mining_config.perk_wholesale_bonus = self.politics_manager.get_perk_bonus(
                 self.player, self.player.current_system_id, "wholesale_ore_bonus"
             )
-        self.mining_view = MiningView(
+        mining_view = MiningView(
             self.ui_manager,
             self.player,
             self.data_loader.commodities,
@@ -3182,14 +3232,21 @@ class Game:
             progression=self.player.progression,
             drone_fleet=self.player.drone_fleet,
         )
-        self.mining_view._get_crew_line = self._make_crew_commentary_fn()
-        self.state_manager.register_state(GameState.MINING, self.mining_view)
+        self.mining_view = mining_view
+        mining_view._get_crew_line = self._make_crew_commentary_fn()
+        self.state_manager.register_state(GameState.MINING, mining_view)
 
     def _ensure_salvage_view(self) -> None:
         """Create or recreate salvage view for current system."""
         from spacegame.views.salvage_view import SalvageView
 
         salvage_config = self.data_loader.get_salvage_config(self.player.current_system_id)
+        if salvage_config is None:
+            logger.warning(
+                f"No salvage config for system {self.player.current_system_id!r}; "
+                "skipping salvage view creation"
+            )
+            return
         system = self.data_loader.systems.get(self.player.current_system_id)
         if system:
             salvage_config.danger_level = system.danger_level
@@ -3197,21 +3254,22 @@ class Game:
             salvage_config.perk_yield_bonus = self.politics_manager.get_perk_bonus(
                 self.player, self.player.current_system_id, "salvage_yield_bonus"
             )
-        self.salvage_view = SalvageView(
+        salvage_view = SalvageView(
             self.ui_manager,
             self.player,
             self.data_loader.commodities,
             salvage_config=salvage_config,
             progression=self.player.progression,
         )
-        self.salvage_view._get_crew_line = self._make_crew_commentary_fn()
-        self.state_manager.register_state(GameState.SALVAGING, self.salvage_view)
+        self.salvage_view = salvage_view
+        salvage_view._get_crew_line = self._make_crew_commentary_fn()
+        self.state_manager.register_state(GameState.SALVAGING, salvage_view)
 
     def _ensure_refining_view(self) -> None:
         """Create or recreate refining view for current system."""
         from spacegame.views.refining_view import RefiningView
 
-        self.refining_view = RefiningView(
+        refining_view = RefiningView(
             self.ui_manager,
             self.player,
             self.data_loader.commodities,
@@ -3220,8 +3278,9 @@ class Game:
             progression=self.player.progression,
             social_manager=self.social_manager,
         )
-        self.refining_view._get_crew_line = self._make_crew_commentary_fn()
-        self.state_manager.register_state(GameState.REFINING, self.refining_view)
+        self.refining_view = refining_view
+        refining_view._get_crew_line = self._make_crew_commentary_fn()
+        self.state_manager.register_state(GameState.REFINING, refining_view)
 
     def _ensure_skill_tree_view(self) -> None:
         """Create or recreate skill tree view."""
@@ -3405,7 +3464,9 @@ class Game:
 
         self.dialogue_manager.start_dialogue(tree, npc_id=npc_id)
         self._ensure_dialogue_view()
-        self.dialogue_view._return_state = return_state
+        dialogue_view = self.dialogue_view
+        assert dialogue_view is not None  # _ensure_dialogue_view always creates it
+        dialogue_view._return_state = return_state
 
         def _do() -> None:
             self.state_manager.change_state(GameState.DIALOGUE)
@@ -3434,7 +3495,9 @@ class Game:
         self._dialogue_music = "dialogue_intimate"  # Narration is emotional
         self.dialogue_manager.start_dialogue(tree)
         self._ensure_dialogue_view()
-        self.dialogue_view._return_state = return_state
+        dialogue_view = self.dialogue_view
+        assert dialogue_view is not None  # _ensure_dialogue_view always creates it
+        dialogue_view._return_state = return_state
 
         def _do() -> None:
             self.state_manager.change_state(GameState.DIALOGUE)
@@ -3460,17 +3523,18 @@ class Game:
         """
         from spacegame.views.combat_view import CombatView
 
-        self.combat_view = CombatView(
+        combat_view = CombatView(
             self.ui_manager,
             engine,
             self.player,
             self.social_manager,
             journal=self.journal,
         )
-        self.combat_view._return_state = return_state
+        self.combat_view = combat_view
+        combat_view._return_state = return_state
         if self._player is not None:
-            self.combat_view._bribe_credits_available = self.player.credits
-        self.state_manager.register_state(GameState.COMBAT, self.combat_view)
+            combat_view._bribe_credits_available = self.player.credits
+        self.state_manager.register_state(GameState.COMBAT, combat_view)
 
     def start_combat(
         self,
@@ -3539,7 +3603,9 @@ class Game:
         if self._player is not None and not self.player.dialogue_flags.get("combat_tutorial_done"):
             from spacegame.models.combat_tutorial_helper import CombatTutorialHelper
 
-            self.combat_view._tutorial_helper = CombatTutorialHelper()
+            combat_view = self.combat_view
+            assert combat_view is not None  # _ensure_combat_view always creates it
+            combat_view._tutorial_helper = CombatTutorialHelper()
             self.player.dialogue_flags["combat_tutorial_done"] = True
             logger.info("Combat tutorial activated for first fight")
 
@@ -4515,8 +4581,9 @@ class Game:
 
         self.paused = True
         if not self.pause_menu_view:
-            self.pause_menu_view = PauseMenuView(self.ui_manager)
-            self.pause_menu_view.on_enter()
+            pause_menu_view = PauseMenuView(self.ui_manager)
+            pause_menu_view.on_enter()
+            self.pause_menu_view = pause_menu_view
         self.audio_manager.pause_music()
         logger.info("Game paused")
 
@@ -4570,16 +4637,18 @@ class Game:
         """Open save slot selection dialog."""
         from spacegame.views.save_load_view import SaveLoadView
 
-        self.save_load_view = SaveLoadView(self.ui_manager, self.save_manager, mode="save")
-        self.save_load_view.on_enter()
+        save_load_view = SaveLoadView(self.ui_manager, self.save_manager, mode="save")
+        save_load_view.on_enter()
+        self.save_load_view = save_load_view
         logger.info("Opened save dialog")
 
     def _open_load_dialog(self) -> None:
         """Open load slot selection dialog."""
         from spacegame.views.save_load_view import SaveLoadView
 
-        self.save_load_view = SaveLoadView(self.ui_manager, self.save_manager, mode="load")
-        self.save_load_view.on_enter()
+        save_load_view = SaveLoadView(self.ui_manager, self.save_manager, mode="load")
+        save_load_view.on_enter()
+        self.save_load_view = save_load_view
         logger.info("Opened load dialog")
 
     def _set_pause_buttons_visible(self, visible: bool) -> None:
@@ -4607,19 +4676,18 @@ class Game:
         """Open settings dialog."""
         from spacegame.views.settings_view import SettingsView
 
-        self.settings_view = SettingsView(
+        settings_view = SettingsView(
             self.ui_manager,
             self.save_manager.save_dir,
             tutorial_manager=self.tutorial_manager,
         )
         # PT-H: sync toggle state from the live HUD before UI builds.
         if self._cockpit_hud is not None:
-            self.settings_view.set_objective_hint(self._cockpit_hud.show_objective_hint)
+            settings_view.set_objective_hint(self._cockpit_hud.show_objective_hint)
         else:
-            self.settings_view.set_objective_hint(
-                getattr(self, "_persisted_show_objective_hint", True)
-            )
-        self.settings_view.on_enter()
+            settings_view.set_objective_hint(getattr(self, "_persisted_show_objective_hint", True))
+        settings_view.on_enter()
+        self.settings_view = settings_view
         logger.info("Opened settings dialog")
 
     def _open_settings_from_menu(self) -> None:
@@ -5621,7 +5689,11 @@ class Game:
 
         Generates new contracts each game day, removing old unclaimed ones.
         """
-        if self._player is None or not hasattr(self, "procedural_mission_gen"):
+        if (
+            self._player is None
+            or self.mission_manager is None
+            or not hasattr(self, "procedural_mission_gen")
+        ):
             return
 
         current_day = self.player.game_day
@@ -6067,10 +6139,11 @@ class Game:
         if self.pending_event_notification:
             from spacegame.views.event_notification_view import EventNotificationView
 
-            self._event_notification_view = EventNotificationView(
+            event_notification_view = EventNotificationView(
                 self.ui_manager, self.pending_event_notification
             )
-            self._event_notification_view.on_enter()
+            event_notification_view.on_enter()
+            self._event_notification_view = event_notification_view
             self.pending_event_notification = None
             return
 
