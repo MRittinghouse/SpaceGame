@@ -8898,7 +8898,7 @@ surface).
 - Started: 2026-08-25 14:40
 - Completed: 2026-08-25 15:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 5d34990
 - New_sprints_proposed: none
 - Polish_items_folded_in: test_mypy_populations.py inversion (was implicit in the deliverable, now an explicit Task 5 sub-item); crawler check acceptance criterion (mirrors SH-1's AC 4); baseline-diff added-lines gate (Task 6 verification catches new errors introduced by the typing pass).
 - Decisions_locked: 6
