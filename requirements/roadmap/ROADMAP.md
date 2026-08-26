@@ -112,7 +112,8 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 |---|---|---|---|---|---|
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
-| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | blocked | SH-1 |
+| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
+| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | todo | SH-2 |
 
 ---
 
@@ -9007,7 +9008,7 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 ### SH-2 — Split `_handle_state_transitions`
 
-**Status**: blocked
+**Status**: todo
 **Source**: Spec B, SH-2
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: SH-1 | **Blocks**: none
@@ -9046,6 +9047,77 @@ to.
 
 **Activity log.**
 - 2026-08-24 — blocked (created from Spec B; awaiting human review)
+- 2026-08-26 — unblocked: Spec B approved by Matt.
+
+### SUITE-1 — xdist worker-death flake (hang, not failure)
+
+**Status**: todo
+**Source**: observed 2026-08-24/26 during the SH arc
+**Size**: M | **Effort**: 3-5 days
+**Depends on**: SH-2 | **Blocks**: none
+
+**Goal.** Under `pytest -n auto` (32 workers on this machine) a worker
+occasionally dies with `[gw1] node down: Not properly terminated`. It is
+intermittent: reproduced on 2 of 3 consecutive runs, then a 32-worker run
+passed clean at 10,562. `-n 4` and `-n 8` have not reproduced it.
+
+**Why this is worse than a normal flake.** It does not fail, it HANGS. One
+observed instance ran **72 minutes with zero CPU movement and zero bytes of
+output** before being killed. A flake that fails is noise; a flake that hangs
+silently burns hours and looks like slow progress.
+
+It is live in two automated paths, both using `-n auto`:
+- `ralph/harness.py::_capture_test_baseline`
+- `.github/workflows/quality.yml`, the `test` job
+
+**Context to read.**
+- `tests/conftest.py` and `tests/test_ui_layout/conftest.py` — SDL driver setup
+- `ralph/harness.py::_capture_test_baseline`
+- `.github/workflows/quality.yml`
+- `tools/crawler/crawler.py` — the crawler tests boot real `Game` instances,
+  which is the heaviest per-worker setup in the suite and a prime suspect
+
+**Deliverables.**
+- **Reproduce it deliberately first.** Run `-n auto` in a loop and record the
+  crash rate before changing anything. A fix for an unreproduced intermittent
+  bug is a guess. Report the measured rate.
+- Identify the failing condition. Leading hypothesis is resource contention: 32
+  workers each calling `pygame.display.set_mode` / initialising SDL. The suite
+  already carries evidence that native crashes are possible here -- QF-6B
+  excluded F11 from the crawler's key repertoire because a display-mode switch
+  under `SDL_VIDEODRIVER=dummy` "can raise a native access violation on some
+  platforms."
+- **Make the failure mode loud regardless of whether the root cause is found.**
+  A hang must become a fast, legible failure. Options: a per-test timeout
+  (pytest-timeout), a wall-clock cap on the xdist run, or a bounded worker
+  count. Capping workers alone is acceptable ONLY if paired with something that
+  turns a future hang into a failure -- otherwise the next variant is silent
+  again.
+- **Fix the silent zero-baseline hazard.** `_capture_test_baseline` returns
+  `(0, 0)` on `TimeoutExpired` and the harness proceeds. Agents then run with no
+  baseline and cannot detect new failures, which is exactly the condition the
+  baseline exists to prevent. A failed baseline capture must be loud: log it
+  clearly and either abort the run or mark the sprint infra_error.
+
+**Acceptance criteria.**
+1. Measured crash rate reported, before and after.
+2. 20 consecutive `-n auto` runs complete without a worker death, OR the worker
+   count is capped with the measured justification recorded in the sprint notes.
+3. A deliberately hung test causes a FAILURE within a bounded time, not an
+   open-ended wait. Demonstrate it.
+4. A failed or timed-out baseline capture is logged explicitly and does not
+   silently proceed with a zero baseline.
+5. Full suite green.
+
+**Risks / open questions.**
+- May prove environment-specific (Windows, this CPU count, this SDL build). If
+  so, say so plainly and make the failure loud rather than chasing a fix that
+  cannot be verified. Criterion 3 matters more than criterion 2.
+- Do NOT simply lower the worker count and call it fixed. That hides the defect
+  and leaves CI exposed on a different runner shape.
+
+**Activity log.**
+- 2026-08-26 — todo (created from SH-arc observations)
 
 ## Followups
 
