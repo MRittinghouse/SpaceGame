@@ -111,7 +111,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | ID | Title | Source | Size | Status | Depends on |
 |---|---|---|---|---|---|
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
-| [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | in-progress | SH-1 |
+| [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | blocked | SH-1 |
 
 ---
@@ -8471,7 +8471,7 @@ player-facing content, NPC dialogue, journal, crew banter, or news-ticker surfac
 
 ### SH-3 — Remaining game.py crash-class errors
 
-**Status**: review
+**Status**: done
 **Source**: Spec B, SH-3
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: SH-1 | **Blocks**: none
@@ -8954,6 +8954,16 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 **Activity log.**
 - 2026-08-24 — todo (created from Spec B)
+- 2026-08-26 10:20 — manual review: the harness process died between the
+  implement and review phases (no timeout entry logged, ~19h silent). The
+  implementation had already committed (c4c4f85, b3c8c89, cf16f55). Verified by
+  hand, independently of scripts/mypy_populations.py: raw `mypy spacegame/`
+  reports union-attr = 0 and '"None" has no attribute' = 0 across the whole
+  codebase, and 0 in game.py specifically. The game.py exclusion is genuinely
+  removed from the metric (only a docstring reference remains). Suite: 10,561
+  passing. Crawl from the `late` checkpoint: 0 raising-accessor failures, 0
+  tracebacks, 7 states. TOTAL errors 768 -> 236 across the QF and SH arcs.
+  PHASE_OK
 - 2026-08-25 14:40 — harness: plan phase starting
 - 2026-08-25 15:15 — planning complete; 7 tasks scoped, 39 errors clustered
 - 2026-08-25 14:54 — harness: implement phase starting (rework cycle 0)
