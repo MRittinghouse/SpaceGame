@@ -9008,46 +9008,308 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 ### SH-2 — Split `_handle_state_transitions`
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec B, SH-2
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: SH-1 | **Blocks**: none
 
-**Goal.** 1,197 lines, 185 branches, 66 nested function definitions, one method.
-Split by arc or state group into focused handlers behind a thin dispatcher.
-
-**Notes.** Deliberately `blocked`. This is structural surgery on a 6,564-line
-file and is the one piece of Spec B that should not run unattended before a
-human has read the spec. Unblock by hand. Same discipline QF-8/QF-9 were held
-to.
+**Goal.** 1,197 lines, 185 branches, 66 nested function definitions, one
+method. Split by origin view into focused handlers behind a thin dispatcher.
+Behaviour-preserving.
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-24-shell-architecture-design.md`
-- `spacegame/engine/game.py` — `_handle_state_transitions`
-- The QF-5 activity log: the `Game.step()` extraction is the model for a
-  behaviour-preserving move.
+- `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B, SH-2 section)
+- `spacegame/engine/game.py` — `_handle_state_transitions` at line 1134
+  (spans through line 2330); called only from `Game.step` at line 6476 in
+  the pre-render section of the frame.
+- The QF-5 activity log (`### QF-5 — Extract Game.step()`): the pattern for a
+  behaviour-preserving move — extract verbatim, no cascade restructure, no
+  drive-by fixes.
+- The SH-1 sprint section (`### SH-1 — Game.player raising accessor`) and its
+  activity log: the property `self.player` returns non-Optional `Player`
+  post-SH-1, so `self.player.credits`-style reads inside the extracted
+  handlers keep type-checking without additional narrowing.
+- `tests/test_engine/test_mission_notifications.py::TestCB2WarpArrivalBanterWiring`
+  — the only test that directly invokes `_handle_state_transitions`. The
+  public method name and signature must not change.
+
+**Touch zones.**
+```
+spacegame/engine/game.py                                              (extract handlers, rewrite dispatcher)
+tests/test_engine/test_handle_state_transitions_dispatcher.py         (NEW — structure contract tests)
+```
 
 **Deliverables.**
-- `_handle_state_transitions` under 200 lines; no resulting handler over 250.
-- **Move code. Change nothing else.** No behaviour changes, no drive-by type
-  fixes, no restructuring of the event cascade.
-- A written list of unreachable or duplicated branches discovered during the
-  split. Record them; do NOT fix them here.
+- `_handle_state_transitions` reduced to a thin dispatcher: an early
+  return on `self.transition_manager.active` and 33
+  `if self._route_from_X(): return` lines in the same order the current
+  view-checking blocks appear.
+- 33 new `_route_from_X(self) -> bool` methods, each containing the
+  verbatim body of one existing view-checking block. Handlers return
+  `True` when the corresponding block currently short-circuits the method
+  (7 sites in the galaxy_map block, 2 sites in the encounter block) and
+  `False` otherwise (fall-through).
+- **Move code. Change nothing else.** No behaviour changes, no drive-by
+  type fixes, no restructuring of the event cascade, no cleanup of the
+  `hasattr(self, "X") and self.X` inconsistency, no de-duplication of
+  nested `_do()` closures.
+- A findings list of unreachable or duplicated branches discovered during
+  the split, appended to the sprint Activity log. Record them; do NOT
+  fix them here.
+- One-line update to the top-of-file section-map comment in `game.py`
+  (line 12 today references stale line numbers `~810-1690`); refresh to
+  point at the new dispatcher + handler layout. This documents the code
+  we just moved; it is not a semantic change.
 
 **Acceptance criteria.**
-1. `_handle_state_transitions` < 200 lines; no handler > 250.
-2. No behaviour change; full suite green.
-3. Crawl check as in SH-1, criterion 4.
-4. Findings list present in the activity log.
+1. `_handle_state_transitions` is under 200 lines and no resulting
+   `_route_from_*` handler exceeds 250 lines. Verified by an
+   `inspect.getsourcelines`-based test in
+   `tests/test_engine/test_handle_state_transitions_dispatcher.py`.
+2. The dispatcher's routing order matches the pre-split view-check
+   ordering exactly. Verified by an AST-parsing test that reads the
+   dispatcher's body and asserts the sequence of `self._route_from_*`
+   calls equals a fixture list of 33 handler names in original order.
+3. No behaviour change. Full suite green at or above the SUITE-1
+   post-fix baseline of 10,562 passing / 98 skipped. Pre-fix and
+   post-fix suite counts recorded in the Activity log.
+4. `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late
+   --output-dir crawler_runs/sh2_verify` records zero new `RuntimeError`
+   or `AttributeError` whose traceback originates in a `_route_from_*`
+   method or in the dispatcher. (Same seed/action budget as SH-1
+   criterion 4 for direct comparability.)
+5. Findings list of unreachable or duplicated branches discovered during
+   the split is appended to the Activity log. Empty list is a valid
+   outcome; the criterion is that the pass was made and recorded.
+6. `python scripts/mypy_populations.py` reports no change in Population
+   A or the tracked totals; `python -m mypy spacegame/engine/game.py |
+   grep -c 'error'` matches the pre-sprint count exactly. This is a pure
+   move — types don't change.
+7. `mypy-baseline.txt` is NOT regenerated in this sprint. The baseline
+   uses `:0:` line anchors, so line shifts from extraction don't create
+   spurious entries; regenerating during a move commit would violate
+   the ratchet rule (CLAUDE.md Type-check ratchet section).
+
+**Plan.**
+
+Task 1 — Enumerate view-check blocks and record baseline (measurement only).
+- Grep for every `# Check X view for transitions` and `# SA-N:`
+  comment-anchored block in `_handle_state_transitions` (lines 1134-2330).
+  Expect 33 blocks in this order: main_menu, name_input,
+  character_creation, tutorial_shop, galaxy_map, journal, crew_roster,
+  character, mission_log, trading, dialogue, mining, salvage, refining,
+  skill_tree, statistics, achievements, combat, encounter,
+  ground_briefing, ground_exploration, ground_result, shipyard,
+  ship_builder, station_hub, repair_bay, wreckers_guild, deep_shafts,
+  auction, sell_lot, dispute, cantina, investment.
+- For each block, record: origin view attribute, current line range,
+  next_states handled, and any inner `return` sites (7 in galaxy_map at
+  lines 1311, 1330, 1334, 1338, 1342, 1364, 1386; 2 in encounter at
+  lines 1825, 1840, per the pre-split reading).
+- Capture the current suite baseline: `python -m pytest -n auto -q`
+  pass/skip counts and `python -m mypy spacegame/engine/game.py 2>&1 |
+  grep -c 'error'` error count. Record in the Activity log.
+- No code change. No commit.
+
+Task 2 — Write the dispatcher-structure contract test (Red).
+- File: `tests/test_engine/test_handle_state_transitions_dispatcher.py`
+  (NEW). Header mirrors `tests/test_engine/test_game.py` (headless SDL
+  drivers) and `tests/test_engine/test_game_player_accessor.py` (the
+  contract-test shape from SH-1).
+- Tests:
+  - `test_dispatcher_under_200_lines`:
+    `inspect.getsourcelines(Game._handle_state_transitions)` returns a
+    body under 200 lines.
+  - `test_all_route_handlers_under_250_lines`: iterate every
+    `Game._route_from_*` attribute; each source length under 250 lines.
+  - `test_dispatcher_calls_routers_in_original_order`: parse the
+    dispatcher's source via `ast`; walk the top-level `If` nodes whose
+    body contains a bare `return`, extract the attribute name from each
+    condition, and assert the sequence equals a fixture list of the 33
+    expected handler names in original view-check order.
+  - `test_all_expected_route_handlers_exist`: for each of the 33
+    expected `_route_from_X` names, assert the attribute exists on
+    `Game` and is callable.
+  - `test_handle_state_transitions_public_signature_unchanged`: assert
+    `Game._handle_state_transitions(self) -> None` via
+    `inspect.signature`. Guards the one external call site in
+    `test_mission_notifications.py`.
+- Run the tests; confirm all five FAIL (no handlers exist yet;
+  dispatcher too long).
+- No commit.
+
+Task 3 — Extract handler methods (single atomic Green commit).
+- File: `spacegame/engine/game.py`.
+- Handler naming: strip `_view` suffix from the origin attribute,
+  prefix `_route_from_`. E.g., `main_menu_view` → `_route_from_main_menu`,
+  `station_hub_view` → `_route_from_station_hub`.
+- For each block: cut the block verbatim from
+  `_handle_state_transitions`, paste as a new method
+  `_route_from_X(self) -> bool` immediately BEFORE
+  `_handle_state_transitions` (all 33 handlers in one contiguous block
+  above the dispatcher — mirrors QF-5's `Game.step` / `Game.run`
+  adjacency).
+- Convert every inner `return` in an extracted block to `return True`
+  (9 sites total: 7 in galaxy_map, 2 in encounter). Append
+  `return False` at the end of every handler as the fall-through.
+- Preserve line-for-line: the `hasattr(self, "X") and self.X:`
+  inconsistency, nested `_do()` closures with their default-arg
+  captures (e.g., `def _do_auction(venue_id: str = pending_venue)`),
+  duplicated `_ensure_station_hub_view()` + `state_manager.change_state`
+  pairs, comment banners, blank lines.
+- Rewrite `_handle_state_transitions` as:
+  ```python
+  def _handle_state_transitions(self) -> None:
+      """Route pending view transitions to per-view handlers."""
+      if self.transition_manager.active:
+          return
+      if self._route_from_main_menu(): return
+      if self._route_from_name_input(): return
+      ...  (33 total, one per handler, in original order)
+  ```
+- Update the top-of-file section-map comment (line 12) to point at the
+  new dispatcher + handler layout. Do NOT change any other file-level
+  documentation.
+- Run `pytest tests/test_engine/ -q` — the new dispatcher-structure
+  tests plus the pre-existing engine suite must pass.
+- Run scoped format + lint: `ruff format spacegame/engine/game.py
+  tests/test_engine/test_handle_state_transitions_dispatcher.py` and
+  `ruff check` on the same paths (AGENT_GUIDE line 110).
+- Commit: `SH-2: split _handle_state_transitions into 33 per-view route
+  handlers`.
+- Risk: closures capture free variables from the enclosing scope. Each
+  `_do()` is defined AND called inside its own `if`/`elif` block, so
+  the capture chain does not cross block boundaries — the extraction
+  preserves it. Verify by reading each `_do()` for any free variable
+  not defined inside the block being extracted; there should be none.
+
+Task 4 — Full-suite validation and behaviour parity (measurement only).
+- Run `pytest -n auto -q`. Expect pass count at or above the SUITE-1
+  post-fix baseline (10,562 passing / 98 skipped). Any new failure is a
+  regression — fix or block.
+- Run `python scripts/mypy_populations.py`. Expect no change in
+  Population A or the tracked totals. Record before/after.
+- Run `python -m mypy spacegame/engine/game.py 2>&1 | grep -c 'error'`.
+  Expect equal to pre-sprint count. Record before/after.
+- No code change. No commit.
+
+Task 5 — Crawler check (independent live-state verification).
+- Run
+  `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late --output-dir crawler_runs/sh2_verify`.
+  Same seed/action budget as SH-1 for direct comparability.
+- Inspect the run directory (`crash_record.py` writes the crash log).
+  Assert: zero `RuntimeError` or `AttributeError` entries whose
+  traceback originates in any `_route_from_*` method or in the
+  dispatcher.
+- Record the crawler summary (states reached, actions completed, crash
+  count) in the Activity log.
+- Risk: a post-split crash indicates the extraction changed behaviour.
+  Do NOT patch by adding new guards. Diff the block pre-split against
+  the extracted handler to find the divergence; recommit with the fix
+  as an amended extraction, not as a new guard.
+
+Task 6 — Findings list of unreachable / duplicated branches (record only).
+- During Task 3 extraction, note any:
+  - Duplicated branch (same next_state handled twice under the same
+    view guard).
+  - Unreachable branch (guard that can never be True given elifs above,
+    or a next_state that the source view never emits).
+  - Dead code (blocks referring to view attributes that no longer
+    exist, or `_ensure_*_view` calls where the state is never entered).
+- Append the findings list to the sprint Activity log as a bulleted
+  table with columns: origin view, pre-split line number, description,
+  hazard type. Empty list is a valid outcome.
+- DO NOT fix any of them in this sprint. If any are safety-critical
+  (would cause a runtime crash today, not a latent hazard), set Status
+  to `blocked` and escalate.
+
+Task 7 — Sprint notes + hand off to review.
+- Append to Activity log: the full block-count inventory (Task 1), the
+  before/after pass and mypy numbers (Task 4), the crawler summary
+  (Task 5), and the findings list (Task 6).
+- Set `Status` to `review`.
+- Append the implement-phase-complete sentinel to the Activity log.
+- Commit: `SH-2: complete → review; 33 handlers extracted, dispatcher
+  under 200 lines`.
+
+**Cross-sprint reactions to author.** none (foundational engine
+refactor; no player-facing content, NPC dialogue, journal, crew banter,
+or news-ticker surface).
 
 **Risks / open questions.**
 - 185 branches accumulated over years almost certainly contain dead and
-  duplicated cases. Finding them is a benefit; fixing them inside this sprint
-  is scope creep that would make a behaviour-preserving move unverifiable.
+  duplicated cases. Finding them is a benefit; fixing them inside this
+  sprint is scope creep that would make a behaviour-preserving move
+  unverifiable. Task 6 records findings without fixing.
+- The 7 early-return sites in the galaxy_map block and 2 in the
+  encounter block are the only points where the current method
+  short-circuits mid-dispatch. Handlers must return `bool` and the
+  dispatcher must `return` on `True` to preserve this semantic. Any
+  handler that omits the early-exit conversion is a behaviour
+  regression the crawler pass (Task 5) is designed to catch.
+- Closures capture free variables from the enclosing method's scope.
+  Cross-block captures would silently break when handlers are
+  separated. Task 3's reading pass identifies any free variable that
+  isn't defined inside the block being extracted; none should exist
+  given the current view-check block structure, but verify explicitly.
+- **LOCKED decisions:**
+  1. **Split strategy: per-view handler methods** (one `_route_from_X`
+     per `# Check X view for transitions` block). Rationale: the
+     existing method is already organized this way in comments and
+     structure; the split is mechanical, requires no arbitrary grouping
+     judgment, and preserves original ordering exactly. The spec's
+     "split by arc or state group" wording admits this decomposition.
+  2. **Handler return type: `bool`.** `True` = short-circuit dispatch;
+     `False` = continue. Rationale: preserves the exact early-return
+     semantics of the 7 galaxy_map and 2 encounter sites without
+     introducing exception-based control flow.
+  3. **Single atomic commit for the split.** Between removing code from
+     the mega-method and adding handler methods, the file would be
+     broken. Mirrors QF-5 Task 4 and SH-1 Task 3 pattern.
+  4. **No mypy-baseline regeneration.** Baseline uses `:0:` line
+     anchors, so line shifts from extraction don't create spurious
+     entries. Regenerating during a move commit would violate the
+     ratchet rule (CLAUDE.md Type-check ratchet section).
+  5. **Findings list format: bulleted table in Activity log.** Not a
+     separate document; not a new sprint. Matches SH-1's post-hoc
+     reporting pattern; the log is the durable record.
+  6. **Handler placement: immediately before `_handle_state_transitions`
+     in `game.py`.** Keeps the dispatcher and its call targets visually
+     adjacent, mirroring QF-5's `Game.step` / `Game.run` layout. All 33
+     handlers live in one contiguous block.
+  7. **Test file: `tests/test_engine/test_handle_state_transitions_dispatcher.py`
+     (NEW).** Not folded into `test_game.py`. Matches SH-1's
+     `test_game_player_accessor.py` decision — isolated contract tests
+     are easier to find and evolve than accretions on the omnibus file.
+
+**Notes.** SH-2 was originally marked `blocked` awaiting human review;
+unblocked on 2026-08-26 after Matt approved Spec B. The "human review
+before unblock" precedent (QF-8/QF-9) applied because this is structural
+surgery on a 6,564-line file — the risk was that an unattended agent
+would over-scope. This plan preserves that discipline: move code, change
+nothing else, record findings without fixing.
 
 **Activity log.**
 - 2026-08-24 — blocked (created from Spec B; awaiting human review)
 - 2026-08-26 — unblocked: Spec B approved by Matt.
+- 2026-08-26 21:51 — harness: plan phase starting
+- 2026-08-26 22:00 — planning complete; 7 tasks scoped, 33 handler
+  extraction targets enumerated (view-check block inventory verified
+  against source lines 1140-2330), 7 decisions locked (split strategy,
+  handler return type, atomic commit, no baseline regen, findings
+  format, handler placement, test file). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-26 21:51
+- Completed: 2026-08-26 22:00
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending>
+- New_sprints_proposed: none
+- Polish_items_folded_in: dispatcher-order AST test (guards against silent reordering); crawler check with same seed/action budget as SH-1 for direct comparability; findings-list acceptance criterion so an "empty" pass is still valid; explicit no-mypy-baseline-regen AC to prevent ratchet violation
+- Decisions_locked: 7
+- Notes: All required context docs verified present (shell spec at docs/superpowers/specs/2026-08-24-shell-architecture-design.md, game.py, QF-5 activity log referenced by pointer, SH-1 sprint section, mission-notifications test). Method inventory: 33 view-check blocks between lines 1140-2330; largest is galaxy_map at 231 lines and station_hub at 191 lines — both fit under the 250-line handler cap. Only external caller of `_handle_state_transitions` is `TestCB2WarpArrivalBanterWiring` in `test_mission_notifications.py`; public method name and signature must be preserved. No cross-sprint reaction surface — pure internal restructure with no player-facing content.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
