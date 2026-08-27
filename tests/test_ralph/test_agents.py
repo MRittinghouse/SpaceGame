@@ -10,7 +10,8 @@ Covers:
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+import subprocess
+from unittest.mock import patch
 
 import pytest
 
@@ -479,23 +480,47 @@ class TestAgentInvocationUsesHardTimeout:
         subprocess.run(timeout=...) kills the direct child but keeps blocking in
         communicate() while grandchildren hold the pipe. SUITE-1 fixed that for
         baseline capture only; the agent path kept the broken construct.
+
+        The mock return value is a real ``subprocess.CompletedProcess`` (not an
+        unconfigured ``MagicMock``) so that ``_invoke_claude`` runs to
+        completion normally -- a revert that swaps back to ``subprocess.run``
+        while leaving the ``run_with_hard_timeout`` import in place must be
+        caught by the assertions below, not by an incidental ``TypeError``
+        from ``f.write()`` touching a mock attribute.
         """
-        from unittest.mock import MagicMock, patch
+        # Both mocks return a real, well-formed CompletedProcess -- not an
+        # unconfigured MagicMock. If either mock were left unconfigured, a
+        # revert to subprocess.run would crash on `f.write(result.stdout)`
+        # with a TypeError before any assertion below ever ran, which would
+        # make the test pass for the wrong reason (an accidental crash, not a
+        # deliberate check of which callable was used). Configuring both
+        # means the code under test always completes normally, so the
+        # assertions below -- not an incidental exception -- decide the
+        # outcome no matter which construct `_invoke_claude` actually calls.
+        fake_result = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout="PHASE_OK", stderr=""
+        )
 
-        from ralph import agents
-
-        fake = MagicMock()
-        fake.returncode = 0
-        fake.stdout = "PHASE_OK"
-        fake.stderr = ""
-
-        with patch("ralph.agents.run_with_hard_timeout", return_value=fake) as mock_run:
-            with patch("ralph.agents.subprocess.run") as mock_plain:
+        with patch("ralph.agents.run_with_hard_timeout", return_value=fake_result) as mock_run:
+            with patch("ralph.agents.subprocess.run", return_value=fake_result) as mock_plain:
                 agents._invoke_claude(
                     prompt="x", log_path=tmp_path / "l.log", phase=agents.Phase.PLAN
                 )
-        mock_run.assert_called_once()
+
         assert not mock_plain.called, (
             "the agent path must not use subprocess.run -- that is the construct "
             "that hung for 8.5 hours on 2026-08-26"
+        )
+        mock_run.assert_called_once()
+        call_args, call_kwargs = mock_run.call_args
+        called_cmd = call_args[0]
+        assert called_cmd == [*agents.build_claude_cmd("plan", ""), "x"], (
+            f"cmd passed to run_with_hard_timeout must be the built claude argv "
+            f"plus the prompt as the final element, got {called_cmd!r}"
+        )
+        assert call_kwargs["timeout_seconds"] == agents.timeout_for_phase("plan"), (
+            "timeout_seconds passed to run_with_hard_timeout must be the phase's configured timeout"
+        )
+        assert call_kwargs["cwd"] == str(agents.PROJECT_ROOT), (
+            "cwd passed to run_with_hard_timeout must be the project root"
         )
