@@ -9383,7 +9383,7 @@ Open question (reviewer judgment, not blocking implementation):
 - Started: 2026-08-26 21:12
 - Completed: 2026-08-26 22:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 22af499
 - New_sprints_proposed: none
 - Polish_items_folded_in: pytest-timeout as project-wide default (was implicit); kill-tree helper with direct test coverage (was implicit); CI-side workflow timeout as third safety net (was not scoped); project-wide `SDL_VIDEODRIVER=dummy` in `tests/conftest.py` (was implied by leading hypothesis but not called out); machine-readable repro-script summary line for pre/post comparability; documentation touch-up in `CLAUDE.md`.
 - Decisions_locked: 6
