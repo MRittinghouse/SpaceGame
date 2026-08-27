@@ -201,6 +201,38 @@ of filling the week.
 
 ---
 
+## Pre-deployment smoke test
+
+None of this ships to a seven-day run on the strength of the code reading
+correctly. Every failure mode in this spec is cheap to inject deliberately, so
+each one gets injected and observed before the operator leaves.
+
+The drill, run end to end against a live harness on a throwaway sprint:
+
+| # | Injected fault | Expected observable |
+|---|---|---|
+| 1 | `taskkill` the harness mid-implement | supervisor relaunches within backoff; sprint reclaimed or resumed with no hand repair |
+| 2 | Hard-kill the machine mid-write (or `taskkill /F` during a roadmap write) | `ROADMAP.md` and `state.json` still parse; no truncation |
+| 3 | Reboot | Scheduled Task starts the supervisor unprompted |
+| 4 | An agent subprocess that sleeps past its phase timeout | killed at the timeout by the kill-tree, phase marked `timeout` |
+| 5 | Freeze the heartbeat while leaving the process alive | supervisor detects staleness inside 10 minutes and restarts |
+| 6 | Empty the eligible queue | `STARVED` reported with blockers and stranded sprints named -- NOT "exiting cleanly" |
+| 7 | A sprint that fails once | retried once, then blocked -- not blocked on first failure |
+| 8 | A harness that dies instantly, repeatedly | stops after 3 consecutive failures rather than spinning |
+| 9 | Any of the above | `STATUS.md` reflects it, committed and visible on GitHub |
+
+Drill 4 is the one most worth doing properly. The 8.5-hour hang happened because
+a timeout that *looked* correct did not fire, and no amount of reading
+`subprocess.run(timeout=...)` reveals that -- only hanging something does.
+
+Drills 2 and 3 need a real power interruption to be fully honest. A `taskkill /F`
+mid-write approximates the write case well; the boot case genuinely requires a
+restart, so do one.
+
+**A drill that cannot be run is a criterion that will not hold.** If any fault
+above proves impractical to inject, say so and treat that component as unproven
+rather than quietly assuming it works.
+
 ## Success criteria
 
 1. Killing the harness process mid-phase results in the supervisor relaunching
