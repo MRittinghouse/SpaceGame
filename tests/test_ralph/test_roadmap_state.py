@@ -9,6 +9,7 @@ Covers:
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
@@ -377,7 +378,7 @@ class TestParseLastPhaseReport:
 
 
 class TestRoadmapWritesAreAtomic:
-    def test_write_roadmap_uses_atomic_write(self, tmp_path) -> None:
+    def test_write_roadmap_uses_atomic_write(self, tmp_path: Path) -> None:
         """A truncated ROADMAP.md loses every sprint definition.
 
         We cannot cut power in a test, so assert we never call the unsafe path.
@@ -388,4 +389,5 @@ class TestRoadmapWritesAreAtomic:
             with patch("ralph.roadmap_state.atomic_write") as mock_atomic:
                 roadmap_state._write_roadmap("new content")
         mock_atomic.assert_called_once()
+        assert mock_atomic.call_args[0][0] == target
         assert mock_atomic.call_args[0][1] == "new content"

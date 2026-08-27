@@ -39,6 +39,9 @@ def atomic_write(path: Path, text: str, encoding: str = "utf-8") -> None:
     If any step fails (e.g., disk full during write), the temp file is unlinked
     before the exception propagates, so no .tmp sibling is left behind.
 
+    Note: Uses ``newline=""`` to disable universal-newline translation, so output
+    is LF regardless of platform (unlike ``Path.write_text``).
+
     Args:
         path: Destination file.
         text: Full contents to write.

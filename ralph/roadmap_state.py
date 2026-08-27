@@ -194,8 +194,7 @@ def update_status(sprint_id: str, new_status: str) -> None:
     """Rewrite the Status line of a sprint section in place.
 
     Re-reads the file each call so we don't fight concurrent edits from
-    the agent. Atomic swap via write-temp + rename would be safer; for
-    now the harness is single-threaded so a direct write is fine.
+    the agent. Uses atomic_write to guarantee durability.
     """
     content = _read_roadmap()
     sprints = parse_sprints()
