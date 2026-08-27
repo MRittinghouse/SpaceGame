@@ -58,6 +58,12 @@ def main() -> None:
         default=900,
         help="Per-run wall-clock timeout in seconds before declaring a hang (default: 900)",
     )
+    parser.add_argument(
+        "--pytest-args",
+        nargs=argparse.REMAINDER,
+        default=[],
+        help="Extra args appended to the pytest invocation (e.g. -k 'crawler or engine')",
+    )
     args = parser.parse_args()
 
     hangs = 0
@@ -65,7 +71,9 @@ def main() -> None:
     passes = 0
     durations: list[float] = []
 
-    cmd = [sys.executable, "-m", "pytest", "-n", "auto", "-q", "--no-header"]
+    cmd = [sys.executable, "-m", "pytest", "-n", "auto", "-q", "--no-header"] + (
+        args.pytest_args or []
+    )
 
     print(
         f"SUITE1_REPRO: starting {args.runs} run(s) "
