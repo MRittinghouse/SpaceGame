@@ -9344,7 +9344,7 @@ nothing else, record findings without fixing.
 - Started: 2026-08-27 08:58
 - Completed: 2026-08-27 09:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this phase)
+- Commits: e32dccd
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (re-verification pass; polish already folded in on 2026-08-26 — dispatcher-order AST test, crawler check with same seed/action budget as SH-1, findings-list acceptance criterion, no-mypy-baseline-regen AC)
 - Decisions_locked: 7 (all previously locked; none re-opened)
