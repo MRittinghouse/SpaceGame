@@ -113,7 +113,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
-| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | todo | none |
+| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | in-progress | none |
 
 ---
 
@@ -9051,7 +9051,7 @@ to.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
-**Status**: todo
+**Status**: in-progress
 **Source**: observed 2026-08-24/26 during the SH arc
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -9077,6 +9077,18 @@ It is live in two automated paths, both using `-n auto`:
 - `tools/crawler/crawler.py` — the crawler tests boot real `Game` instances,
   which is the heaviest per-worker setup in the suite and a prime suspect
 
+**Touch zones.**
+```
+pyproject.toml                                        (add pytest-timeout dep + pytest ini config)
+tests/conftest.py                                     (extend: set SDL_VIDEODRIVER=dummy globally, mirror the audio-driver pattern)
+ralph/harness.py                                      (rework: _capture_test_baseline error semantics + kill-tree helper + startup abort path)
+scripts/repro_xdist_flake.py                          (NEW: bounded loop that runs `pytest -n auto -q` N times and records outcomes)
+tests/test_compliance/test_pytest_timeout_kills_hangs.py  (NEW: subprocess-based assertion that a sleeping test fails within a bounded wall clock)
+tests/test_ralph/test_harness.py                      (extend: baseline-capture error path tests + kill-tree helper tests)
+.github/workflows/quality.yml                         (add per-job step timeout to `test` job as the outermost safety net)
+CLAUDE.md                                             (note the new project-wide default per-test timeout under Quick Commands)
+```
+
 **Deliverables.**
 - **Reproduce it deliberately first.** Run `-n auto` in a loop and record the
   crash rate before changing anything. A fix for an unreproduced intermittent
@@ -9100,24 +9112,248 @@ It is live in two automated paths, both using `-n auto`:
   clearly and either abort the run or mark the sprint infra_error.
 
 **Acceptance criteria.**
-1. Measured crash rate reported, before and after.
+1. Measured crash rate reported, before and after. The repro script
+   (`scripts/repro_xdist_flake.py`) is committed and prints a machine-readable
+   summary line so future re-runs are apples-to-apples.
 2. 20 consecutive `-n auto` runs complete without a worker death, OR the worker
    count is capped with the measured justification recorded in the sprint notes.
 3. A deliberately hung test causes a FAILURE within a bounded time, not an
-   open-ended wait. Demonstrate it.
+   open-ended wait. Demonstrate it. The demonstration lives as a compliance
+   test (`tests/test_compliance/test_pytest_timeout_kills_hangs.py`) that
+   subprocess-invokes pytest against an inline hang and asserts pytest exits
+   non-zero within `bounded_wall_clock_seconds`.
 4. A failed or timed-out baseline capture is logged explicitly and does not
-   silently proceed with a zero baseline.
-5. Full suite green.
+   silently proceed with a zero baseline. `_capture_test_baseline` raises a
+   named exception (`BaselineCaptureError`) on timeout / subprocess error /
+   unparseable output, the main loop catches it, logs the failure mode, and
+   halts the harness run with a non-zero exit before any sprint is picked up.
+   Test coverage in `tests/test_ralph/test_harness.py` verifies each of the
+   three failure modes surfaces the exception.
+5. Full suite green. The pre-fix baseline number is recorded in the Activity
+   log so the post-fix delta is auditable.
+6. Cross-platform verification: the pytest-timeout demonstration passes on the
+   Windows and Ubuntu `test` matrix jobs in `.github/workflows/quality.yml`
+   (not only on the local Windows dev machine). If the pytest-timeout thread
+   method proves incompatible with any matrix row, that row is captured in
+   Notes with the fallback (`--timeout-method=thread` vs `signal`, or worker
+   cap on that row alone).
+7. The harness kill-tree helper is exercised by a test that Popen-launches a
+   subprocess spawning a grandchild sleeper; the helper terminates the tree
+   within its declared budget without waiting on `communicate()`. This is the
+   specific defect that produced the 8.5-hour hang, and it must have direct
+   test coverage.
+
+**Plan.**
+
+1. **Reproduce the flake and record a pre-fix baseline crash rate.**
+   Author `scripts/repro_xdist_flake.py`: takes `--runs N` (default 20), a
+   `--timeout-seconds` per run (default 900, generous enough for a full
+   passing run on the 32-worker machine), and prints a summary line
+   `SUITE1_REPRO runs=<N> hangs=<h> failures=<f> passes=<p> median_seconds=<m>`.
+   Each run launches `python -m pytest -n auto -q --no-header` in its own
+   process tree with the kill-tree helper (see task 3) so a hung run is
+   killed cleanly instead of stalling the loop. Run it on the dev machine and
+   record the pre-fix numbers in the Activity log; this is the "before"
+   measurement AC #1 requires.
+   - Touches: `scripts/repro_xdist_flake.py` (NEW).
+   - Test surface: no unit tests; the script IS the diagnostic. A tiny
+     smoke test (`tests/test_scripts/test_repro_xdist_flake_smoke.py` if the
+     agent chooses; not required) can verify the summary line format.
+   - Risk: the repro loop itself must not hang the sprint. Use the kill-tree
+     helper; do not use raw `subprocess.run(timeout=...)` which is exactly
+     the defect this sprint is fixing.
+
+2. **Force `SDL_VIDEODRIVER=dummy` project-wide before any pygame import.**
+   Currently `tests/conftest.py` sets `SDL_AUDIODRIVER=dummy` but leaves
+   `SDL_VIDEODRIVER` unset. `tools/crawler/crawler.py` sets it at module
+   import (line 30), and `tests/test_ui_layout/conftest.py` sets it too, but
+   nothing guarantees the `Game()`-constructing engine tests (14 files
+   located under `tests/test_engine/`, `tests/test_crawler/`) always see it.
+   Any worker that boots a `Game` without the dummy driver races on real
+   display init; that is the leading root-cause hypothesis. Add the setdefault
+   to `tests/conftest.py` alongside the existing audio-driver line, and add a
+   compliance assertion (extend an existing test in `tests/test_compliance/`)
+   that the env var is set when the session starts.
+   - Touches: `tests/conftest.py`, one file under `tests/test_compliance/`.
+   - Test surface: assert `os.environ["SDL_VIDEODRIVER"] == "dummy"` at
+     session start.
+   - Risk: this may fix the flake outright, may not. Task 4 pytest-timeout
+     is the load-bearing safety net regardless.
+
+3. **Build a kill-tree helper for hung subprocesses.**
+   New function in `ralph/harness.py` — `_run_pytest_with_hard_timeout(cmd,
+   timeout_seconds) -> subprocess.CompletedProcess`. On Windows: spawn with
+   `creationflags=CREATE_NEW_PROCESS_GROUP`; on timeout, run
+   `taskkill /F /T /PID <pid>` then join. On POSIX: `os.setsid` + `os.killpg`
+   with SIGKILL on timeout. Do NOT call `.communicate()` on a hung process;
+   read stdout/stderr via a background thread that drains pipes, and abandon
+   the drain thread if the process kill did not release its file handles
+   within a small tail-out (2 seconds). This is the specific defect that
+   produced the 8.5-hour hang.
+   - Touches: `ralph/harness.py` (add helper).
+   - Test surface: `tests/test_ralph/test_harness.py` gains
+     `TestRunPytestWithHardTimeout` — launches a Python subprocess that
+     `os.fork()`-equivalent spawns a grandchild sleeping for 300s, asserts
+     the helper returns non-zero within `timeout + 5s`, and asserts the
+     grandchild is gone (poll via `psutil.pid_exists` if available, else a
+     platform-appropriate check). AC #7.
+   - Risk: `psutil` is not a project dep. Use `taskkill` on Windows (ships
+     with the OS) and `os.killpg` on POSIX; verify no new dependency is
+     introduced. If `psutil` becomes necessary for the grandchild check in
+     the test, add it as a dev-only dep.
+
+4. **Add `pytest-timeout` and configure it globally.**
+   Add `pytest-timeout>=2.3` to `pyproject.toml` dev deps. Configure in
+   `[tool.pytest.ini_options]`: `timeout = 120`, `timeout_method = "thread"`
+   (LOCKED decision — signal-based timeouts don't work under xdist on
+   Windows). One hundred and twenty seconds is safely above the slowest
+   observed test (crawler seeded runs) and orders of magnitude below the
+   72-minute hang. Any legitimately slow test opts in with
+   `@pytest.mark.timeout(N)`.
+   - Touches: `pyproject.toml`.
+   - Test surface: covered by task 5's compliance test.
+   - Risk: some UI-matrix tests may bump against 120s at CI cold-start.
+     If so, mark them explicitly with a higher per-test timeout; do NOT
+     raise the global default (that defeats the purpose).
+
+5. **Add the deliberate-hang compliance test.**
+   `tests/test_compliance/test_pytest_timeout_kills_hangs.py`:
+   subprocess-invokes `python -m pytest --timeout=5` against a tiny inline
+   test file (in `tmp_path`) whose one test does `time.sleep(60)`. Asserts
+   the outer pytest exits non-zero within a bounded wall clock (30s
+   ceiling) AND the output mentions "Timeout" / "timeout". Uses the
+   kill-tree helper as its subprocess supervisor so a broken pytest-timeout
+   install does not itself hang the parent suite. AC #3.
+   - Touches: `tests/test_compliance/test_pytest_timeout_kills_hangs.py`
+     (NEW).
+   - Test surface: this IS a test.
+   - Risk: The test must not be flaky — a 30s wall-clock ceiling around a
+     5s timeout is generous, but if CI is slow, bump to 60s. Keep the
+     ceiling documented.
+
+6. **Rework `_capture_test_baseline` error semantics.**
+   In `ralph/harness.py`, replace the `(0, 0)`-on-error return with:
+   - Introduce `class BaselineCaptureError(RuntimeError)`.
+   - Use `_run_pytest_with_hard_timeout` from task 3 (not raw
+     `subprocess.run`). On any timeout, raise
+     `BaselineCaptureError("timeout after Ns")`.
+   - On subprocess non-zero exit or `FileNotFoundError`, raise
+     `BaselineCaptureError` with the tail of stderr.
+   - On success but no parseable "N passed" line, raise
+     `BaselineCaptureError("unparseable output")`. Do NOT silently return
+     `(0, 0)`.
+   In the harness main loop (around line 1252): wrap the initial baseline
+   capture in try/except; on `BaselineCaptureError`, log a full-context
+   error line (`log("Baseline capture FAILED: <reason>. Aborting run to
+   avoid running agents with no baseline.")`), record the failure in
+   `state.json` as `infra_error`, and return a non-zero exit code before
+   any sprint pickup. Similarly for the mid-run refresh (line 1311): on
+   failure, log but keep the old baseline; do NOT overwrite with `(0, 0)`.
+   AC #4.
+   - Touches: `ralph/harness.py`.
+   - Test surface: `tests/test_ralph/test_harness.py` gains
+     `TestCaptureTestBaseline` — mocks `_run_pytest_with_hard_timeout` for
+     the three failure modes and asserts `BaselineCaptureError` is raised
+     each time; separate test asserts the main-loop path aborts (via a
+     mocked baseline that raises).
+   - Risk: the mid-run refresh has different semantics from the startup
+     capture — the run is already underway, so aborting mid-loop is
+     harsher than keeping the stale baseline. Lock: mid-run refresh
+     failure logs loudly and keeps the previous baseline; startup failure
+     aborts.
+
+7. **Add outer CI-side timeout to the `test` job.**
+   In `.github/workflows/quality.yml`, the `test` job's
+   `python -m pytest -n auto` step gets `timeout-minutes: 30` (GitHub
+   Actions native timeout). Both matrix rows (`ubuntu-latest`,
+   `windows-latest`). This is the third safety net after pytest-timeout
+   and the harness kill-tree helper: if all else fails, CI kills the job
+   at 30 minutes instead of the 6-hour default. AC #6.
+   - Touches: `.github/workflows/quality.yml`.
+   - Test surface: none (declarative workflow).
+   - Risk: if the full suite ever legitimately approaches 30 minutes,
+     raise this. Today the suite runs in a few minutes.
+
+8. **Post-fix repro run + record the delta.**
+   Re-run `scripts/repro_xdist_flake.py --runs 20` on the dev machine with
+   all fixes applied. Record the post-fix summary line in the Activity log
+   alongside the pre-fix number from task 1. AC #1 and AC #2.
+   - Touches: none (measurement only).
+   - Risk: if 20 runs still produce a hang, but that hang is now a
+     pytest-timeout FAILURE (not a silent stall), that satisfies AC #3
+     without satisfying AC #2. Record it plainly and let the reviewer
+     decide whether AC #2's "or worker count is capped" branch applies.
+
+9. **Documentation touch-up.**
+   Update `CLAUDE.md` Quick Commands / Testing section: add a one-line
+   note that `pytest` inherits a project-wide 120s per-test timeout and
+   pointing at how to override it (`@pytest.mark.timeout(N)`). Do not
+   sprawl this into a subsection; one line is enough.
+   - Touches: `CLAUDE.md` (one-line note).
+   - Risk: none.
+
+**Cross-sprint reactions to author.**
+none (infrastructure sprint, no player-facing surface). SUITE-1 changes are
+confined to test configuration, the harness, and CI. No crew banter, no
+NPC dialogue, no news ticker, no mission reactions to author. The only
+cross-sprint side effect is that once `_capture_test_baseline` gains
+non-silent error semantics, any future sprint whose implement phase blows
+the test-suite baseline will surface the regression at capture time
+instead of during agent gate checks. That's a diffuse improvement, not a
+targeted authoring item.
 
 **Risks / open questions.**
-- May prove environment-specific (Windows, this CPU count, this SDL build). If
-  so, say so plainly and make the failure loud rather than chasing a fix that
-  cannot be verified. Criterion 3 matters more than criterion 2.
-- Do NOT simply lower the worker count and call it fixed. That hides the defect
-  and leaves CI exposed on a different runner shape.
+
+The following decisions were locked during this planning phase. The
+implementer follows them; the reviewer can challenge them.
+
+- ~~Should we cap workers below `-n auto`?~~ **LOCKED**: no, not as a fix
+  in itself. Capping workers hides the defect on this runner and leaves
+  CI's Ubuntu row exposed to a different worker count on a different
+  shape. The pytest-timeout + kill-tree combination is the load-bearing
+  safety net; if a specific runner needs a cap, cap that row alone in the
+  workflow matrix and document why. AC #2's "or worker count is capped"
+  escape clause stands, but the presumption is against using it.
+- ~~timeout_method: signal vs thread for pytest-timeout?~~ **LOCKED**:
+  thread. Signal-based timeouts don't work under xdist on Windows because
+  worker processes aren't the main process, so `signal.SIGALRM` isn't
+  delivered. Thread mode works cross-platform under xdist. Documented at
+  https://pypi.org/project/pytest-timeout/.
+- ~~Default per-test timeout value?~~ **LOCKED**: 120 seconds. Confirmed
+  no test in the current suite runs longer than a few tens of seconds at
+  worst; 120s is 2-3x the slowest observed, orders of magnitude below the
+  72-minute hang. Individual slow tests opt in with
+  `@pytest.mark.timeout(N)`.
+- ~~On `_capture_test_baseline` failure, abort or continue?~~ **LOCKED**:
+  startup failure aborts the harness run with non-zero exit; mid-run
+  refresh failure logs loudly and keeps the previous baseline. A run
+  without a baseline cannot detect new regressions, which defeats the
+  entire point of the baseline. A stale baseline mid-run is degraded but
+  not dangerous: agents still compare against the last-known-good number.
+- ~~Kill-tree strategy on Windows?~~ **LOCKED**:
+  `CREATE_NEW_PROCESS_GROUP` at spawn + `taskkill /F /T /PID <pid>` on
+  timeout. Do not add `psutil` as a runtime dep for this alone
+  (`taskkill` ships with Windows; `os.killpg` ships with POSIX). Grandchild
+  cleanup verification in tests may use `psutil` as a dev-only dep if
+  necessary.
+- ~~Environment-specific fix acceptable?~~ **LOCKED**: yes, if AC #3 is
+  met. If the flake proves specific to Windows + 32 workers + this SDL
+  build and the root cause cannot be pinned down, that is acceptable as
+  long as any future recurrence becomes a fast, legible failure via
+  pytest-timeout + kill-tree. AC #3 is load-bearing; AC #2 is best-effort.
+
+Open question (reviewer judgment, not blocking implementation):
+- If task 2 (project-wide `SDL_VIDEODRIVER=dummy`) alone eliminates the
+  flake in the pre-fix repro loop, tasks 4-7 still ship. The pytest-timeout
+  + kill-tree infrastructure is defense in depth: fixing the specific
+  root cause does not obviate the need to make future hangs loud. The
+  implementer should NOT skip tasks 4-7 on the strength of a clean repro
+  after task 2. If they believe skipping is justified, they escalate to
+  the reviewer.
 
 **Activity log.**
 - 2026-08-26 — todo (created from SH-arc observations)
+- 2026-08-26 21:12 — harness: plan phase starting
 - 2026-08-26 21:15 — PROMOTED ahead of SH-2. The dependency was ordering
   preference, not a real one, and the flake has now made itself urgent: it hung
   ralph's own baseline capture for 8.5 hours (controller alive at 302s CPU, all
@@ -9125,6 +9361,33 @@ It is live in two automated paths, both using `-n auto`:
   case where killing the direct child does not unblock communicate() because
   grandchildren still hold the pipe handles). The fix cannot be queued behind
   anything, because the bug prevents the harness from starting at all.
+- 2026-08-26 22:10 — planning complete. Verified all 4 context-to-read paths
+  exist; confirmed `tests/conftest.py` sets audio driver but NOT video driver
+  (the leading-hypothesis gap); confirmed `_capture_test_baseline` returns
+  `(0, 0)` on TimeoutExpired at `ralph/harness.py:390` and the main loop at
+  line 1252 proceeds without checking; confirmed the crawler tests import
+  `Crawler` from 13 test files under `tests/test_crawler/`, each of which
+  boots a real Game; confirmed CI's `test` job has NO step timeout today.
+  Locked 6 decisions (worker cap: no; timeout_method: thread; default timeout:
+  120s; baseline failure: startup abort / mid-run stale-keep; kill-tree:
+  CREATE_NEW_PROCESS_GROUP + taskkill; env-specific fix: acceptable if AC #3
+  met). Added Touch zones (8 files, 3 NEW) and 9-task Plan with test surface
+  and risk per task. Expanded acceptance criteria from 5 to 7 to cover the
+  kill-tree helper and the cross-platform CI verification — these were
+  implicit in the deliverables but not testable without explicit AC.
+  Cross-sprint reactions: none (infrastructure sprint). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-26 21:12
+- Completed: 2026-08-26 22:10
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: pytest-timeout as project-wide default (was implicit); kill-tree helper with direct test coverage (was implicit); CI-side workflow timeout as third safety net (was not scoped); project-wide `SDL_VIDEODRIVER=dummy` in `tests/conftest.py` (was implied by leading hypothesis but not called out); machine-readable repro-script summary line for pre/post comparability; documentation touch-up in `CLAUDE.md`.
+- Decisions_locked: 6
+- Notes: Sprint was well-scoped in the goal / deliverables; planning added Touch zones, a 9-task Plan, two acceptance criteria (kill-tree and cross-platform verification), and locked 6 decisions the deliverables assumed but didn't commit. Rejected the "cap workers and call it done" shortcut per the pre-existing sprint guidance. Explicit no-cross-sprint-reactions statement per infra-sprint convention.
 
 ## Followups
 
