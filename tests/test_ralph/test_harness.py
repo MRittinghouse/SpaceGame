@@ -50,7 +50,19 @@ _ROADMAP_WITH_STUCK = """\
 
 @pytest.fixture
 def isolated_roadmap(tmp_path, monkeypatch):
-    """Point ROADMAP_PATH at a temp file. Reset state.json + lock file."""
+    """Point ROADMAP_PATH at a temp file. Reset state.json + lock file + STOP file.
+
+    Patches harness.STOP_FILE and config.STOP_FILE to a per-test tmp path so
+    should_stop() never sees a real project-root STOP file. Without this patch,
+    running `pytest tests/test_ralph/` while a STOP file is present causes three
+    TestExecuteSprintQualityGate tests to fail spuriously (should_stop() returns
+    True after the plan phase, short-circuiting execute_sprint before the tests
+    can exercise implement/review behaviour).
+
+    harness.py imports STOP_FILE at module level (``from ralph.config import
+    STOP_FILE``), so should_stop() reads the module-local binding — patching
+    only config.STOP_FILE is not sufficient; both must be patched.
+    """
     roadmap_file = tmp_path / "ROADMAP.md"
     roadmap_file.write_text(_ROADMAP_WITH_STUCK, encoding="utf-8")
     monkeypatch.setattr(roadmap_state, "ROADMAP_PATH", roadmap_file)
@@ -62,6 +74,10 @@ def isolated_roadmap(tmp_path, monkeypatch):
     lock_file = tmp_path / ".running"
     monkeypatch.setattr(config, "LOCK_FILE", lock_file)
     monkeypatch.setattr(harness, "LOCK_FILE", lock_file)
+
+    stop_file = tmp_path / "STOP"
+    monkeypatch.setattr(config, "STOP_FILE", stop_file)
+    monkeypatch.setattr(harness, "STOP_FILE", stop_file)
 
     return tmp_path
 
@@ -803,6 +819,74 @@ class TestExecuteSprintQualityGate:
 
         assert result == Outcome.OK
         gate_spy.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# STOP-file isolation — regression guard
+# ---------------------------------------------------------------------------
+
+
+class TestExecuteSprintStopFileIsolation:
+    """Regression guard: tests/test_ralph/ must pass with a real project-root STOP file.
+
+    Before SUITE-2: isolated_roadmap did not patch STOP_FILE. With a STOP file at
+    PROJECT_ROOT, should_stop() returned True after the plan phase, causing
+    execute_sprint to short-circuit and leaving gate call counts / outcome
+    assertions wrong in three TestExecuteSprintQualityGate tests.
+
+    After SUITE-2: isolated_roadmap patches harness.STOP_FILE + config.STOP_FILE
+    to a per-test tmp_path, so should_stop() reads from a path that does not
+    exist by default — isolating every test that uses the fixture.
+    """
+
+    def _ok_result(self, phase: Phase, tmp_path: Path) -> PhaseResult:
+        return PhaseResult(
+            outcome=Outcome.OK,
+            phase=phase,
+            sprint_id="SA-2",
+            log_path=tmp_path / "test.log",
+            reason="",
+        )
+
+    def test_happy_path_unaffected_by_real_stop_file(self, isolated_roadmap, monkeypatch) -> None:
+        """Happy path completes all 3 phases even when PROJECT_ROOT/STOP exists.
+
+        Creates the real project-root STOP file, verifies execute_sprint still
+        runs plan + implement + review to completion because the fixture has
+        redirected harness.STOP_FILE away from the project root.
+        """
+        tmp = isolated_roadmap
+
+        # A prior SIGINT in this pytest process could set _stop_requested=True
+        # and leak into should_stop(). Reset it explicitly.
+        monkeypatch.setattr(harness, "_stop_requested", False)
+
+        real_stop = config.PROJECT_ROOT / "STOP"
+        real_stop.touch()
+        try:
+            phase_results = [
+                self._ok_result(Phase.PLAN, tmp),
+                self._ok_result(Phase.IMPLEMENT, tmp),
+                self._ok_result(Phase.REVIEW, tmp),
+            ]
+            mock_gate = MagicMock(return_value=None)
+
+            with patch.object(agents, "run_phase", side_effect=phase_results):
+                with patch.object(harness, "_run_quality_gates", mock_gate):
+                    result = harness.execute_sprint("SA-2", HarnessState())
+
+            assert result == Outcome.OK
+            assert mock_gate.call_count == 3, (
+                f"Gate should be called 3 times (plan+implement+review); "
+                f"got {mock_gate.call_count} — real STOP file must not reach "
+                f"should_stop() inside isolated tests"
+            )
+            content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+            assert "**Status**: done" in content
+        finally:
+            # Always clean up so the next harness run is not immediately stopped.
+            if real_stop.exists():
+                real_stop.unlink()
 
 
 # ---------------------------------------------------------------------------
