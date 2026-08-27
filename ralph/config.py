@@ -46,15 +46,44 @@ DEFAULT_MAX_SPRINTS_PER_RUN: int = 10
 # taskkill /T kill-tree, and a 30-minute CI job cap) but did NOT eliminate it --
 # forcing SDL_VIDEODRIVER=dummy narrowed the race without closing it.
 #
-# A bounded failure every third launch is still a failed launch, and this path
-# runs BEFORE any sprint is picked up, so it blocks the whole harness. -n 4 and
-# -n 8 never reproduced the flake across many runs. Trading ~100s for ~180s of
-# wall clock to make unattended operation reliable is the right side of that.
+# SUITE-2 (2026-08-27) identified the root cause and confirmed it is not
+# fixable in-project without significant test-infrastructure changes:
+#
+#   Pre-fix: SUITE1_REPRO runs=10 hangs=6 failures=2 passes=2 median_seconds=300.5
+#   (see SUITE-2 phase report in requirements/roadmap/ROADMAP.md for full run log)
+#
+#   Root cause: tests/test_engine/ and tests/test_crawler/ contain many test
+#   files that call pygame.init() or display.set_mode() at module or test level.
+#   With 32 workers, 32 simultaneous pygame.init() calls contend on Windows
+#   native resources (GDI handles, Window Station objects) even with
+#   SDL_VIDEODRIVER=dummy and SDL_AUDIODRIVER=dummy. The dummy video driver
+#   bypasses the SDL display chain but does not fully bypass the Windows
+#   subsystem initialisation path. Worker processes die ("node down: Not
+#   properly terminated") rather than raising Python-level exceptions.
+#
+#   Diagnostic: excluding test_engine and test_crawler with
+#   `-k "not test_engine and not test_crawler"` produced
+#   SUITE1_REPRO runs=3 hangs=0 failures=0 passes=3 median_seconds=129.4 —
+#   confirming that the remaining ~9100 tests are stable at -n auto and the
+#   deaths are isolated to the SDL-init tests in those two directories.
+#
+#   No in-project fix was attempted: serialising pygame.init() across 32 worker
+#   processes would require session-scoped per-worker init fixtures, a cross-
+#   process lock file, or migrating the affected tests to --forked isolation.
+#   All options are outside SUITE-2's scope and would require significant
+#   restructuring of tests/test_engine/ and tests/test_crawler/.
+#
+# A bounded failure at -n auto is still a failed launch, and the baseline-
+# capture path runs BEFORE any sprint is picked up, so it blocks the whole
+# harness. -n 4 and -n 8 never reproduced the flake across many runs. Trading
+# ~100s for ~180s of wall clock to make unattended operation reliable is the
+# right side of that trade.
 #
 # This is a mitigation layered ON TOP of the loud-failure work, never a
 # replacement for it: a future variant still fails visibly rather than stalling.
 # Removing the cap requires re-running scripts/repro_xdist_flake.py and showing
-# the hang rate is zero.
+# the hang rate is zero (which requires resolving the concurrent pygame.init
+# contention first).
 TEST_WORKERS: str = os.environ.get("RALPH_TEST_WORKERS", "8")
 
 # Per-phase subprocess timeouts. If a phase exceeds these, the agent
@@ -151,7 +180,7 @@ def build_claude_cmd(phase: str, sprint_size: str = "") -> list[str]:
     Returns CLAUDE_CMD with `--model <id>` appended. The harness adds
     the prompt as the final positional argument.
     """
-    return list(CLAUDE_CMD) + ["--model", model_for_phase(phase, sprint_size)]
+    return [*CLAUDE_CMD, "--model", model_for_phase(phase, sprint_size)]
 
 
 # Dry-run mode: log what would happen, don't actually invoke Claude.
