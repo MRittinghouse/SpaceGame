@@ -38,6 +38,25 @@ MAX_REWORK_CYCLES: int = 3
 # before exiting. Override per-run with `--max-sprints N`.
 DEFAULT_MAX_SPRINTS_PER_RUN: int = 10
 
+# xdist worker count for the harness's own test runs.
+#
+# NOT "auto". SUITE-1 measured `-n auto` (32 workers here) hanging roughly 1 run
+# in 3: workers die during concurrent SDL init and the controller is left
+# spinning. SUITE-1 made that failure loud and bounded (pytest-timeout, a
+# taskkill /T kill-tree, and a 30-minute CI job cap) but did NOT eliminate it --
+# forcing SDL_VIDEODRIVER=dummy narrowed the race without closing it.
+#
+# A bounded failure every third launch is still a failed launch, and this path
+# runs BEFORE any sprint is picked up, so it blocks the whole harness. -n 4 and
+# -n 8 never reproduced the flake across many runs. Trading ~100s for ~180s of
+# wall clock to make unattended operation reliable is the right side of that.
+#
+# This is a mitigation layered ON TOP of the loud-failure work, never a
+# replacement for it: a future variant still fails visibly rather than stalling.
+# Removing the cap requires re-running scripts/repro_xdist_flake.py and showing
+# the hang rate is zero.
+TEST_WORKERS: str = os.environ.get("RALPH_TEST_WORKERS", "8")
+
 # Per-phase subprocess timeouts. If a phase exceeds these, the agent
 # subprocess is killed and the sprint is marked blocked with reason
 # "timeout in <phase>".

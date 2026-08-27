@@ -52,9 +52,11 @@ jobs:
       - run: pip install -e ".[dev]"
       # Third safety net (SUITE-1): if pytest-timeout and the kill-tree helper
       # both fail, GitHub Actions kills the job at 30 minutes instead of 6 hours.
+      # Worker count is capped, not "auto" (SUITE-1): -n auto hung ~1 run in 3
+      # here. The safety nets below/around it stay in place regardless.
       - name: Run tests
         timeout-minutes: 30
-        run: python -m pytest -n auto
+        run: python -m pytest -n 8
 
   types:
     runs-on: ubuntu-latest

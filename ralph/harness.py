@@ -46,6 +46,7 @@ from ralph.config import (
     STATUS_REVIEWING,
     STATUS_TODO,
     STOP_FILE,
+    TEST_WORKERS,
 )
 
 # ---------------------------------------------------------------------------
@@ -491,7 +492,7 @@ def _capture_test_baseline() -> tuple[int, int]:
 
     try:
         result = _run_pytest_with_hard_timeout(
-            [sys.executable, "-m", "pytest", "-n", "auto", "-q", "--no-header"],
+            [sys.executable, "-m", "pytest", "-n", TEST_WORKERS, "-q", "--no-header"],
             timeout_seconds=600,
         )
     except subprocess.TimeoutExpired as exc:
