@@ -114,6 +114,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | in-progress | SH-1 |
 | [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
+| [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | todo | none |
 
 ---
 
@@ -9677,6 +9678,87 @@ Open question (reviewer judgment, not blocking implementation):
 - Single_tighten: Mid-run baseline refresh failure does not write infra_error to state.json (startup failure does); this asymmetry is correct per the locked semantics but a one-line comment at the harness catch site would make it explicit for future readers.
 - Followup_sprints_added: none
 - Notes: Plan audit sound; AC #2 escape clause accepted (1/3 post-fix hangs now bounded by kill-tree, not silent); all 14 new tests pass; SUITE-1 files lint-clean; 19 pre-existing ruff violations in test_agents.py/test_roadmap_state.py are out of scope.
+
+### SUITE-2 — Residual SDL worker-death race + test isolation from STOP
+
+**Status**: todo
+**Source**: SUITE-1 residual findings (2026-08-26)
+**Size**: M | **Effort**: 3-5 days
+**Depends on**: none | **Blocks**: none
+
+**Goal.** SUITE-1 made the xdist worker death loud and bounded; it did not fix
+it. Find the actual cause, or prove it unfixable here and record why. Also fix a
+test-isolation defect found alongside it.
+
+**Starting state — do not redo SUITE-1's work.**
+Already in place and working: `pytest-timeout` (120s, thread mode), the
+`taskkill /F /T` kill-tree helper in `ralph/harness.py`, `BaselineCaptureError`
+replacing the silent `(0, 0)` return, a CI 30-minute job cap, and
+`SDL_VIDEODRIVER=dummy` forced in `tests/conftest.py`. Worker count is now
+capped at 8 (`ralph.config.TEST_WORKERS`) in both the harness and CI.
+
+SUITE-1's measured post-fix result, `-n auto` (32 workers):
+```
+runs=3  hangs=1  failures=0  passes=2  median_seconds=73.1
+run 2 of 3 hung at 300s, killed by the kill-tree helper
+```
+So roughly a 1-in-3 hang at 32 workers, ~0 at 8. `SDL_VIDEODRIVER=dummy`
+narrowed the race without closing it.
+
+**Task 1 — find the residual cause.**
+The worker dies rather than raising: `[gw1] node down: Not properly terminated`
+is process death, so a Python-level exception is not the mechanism. Leading
+hypothesis remains concurrent SDL initialisation — even under the dummy driver,
+32 processes calling `pygame.init()` / `display.set_mode()` simultaneously may
+contend on a shared native resource. Worth checking whether the deaths cluster
+in tests that construct a real `Game` (`tests/test_engine/`, `tests/test_crawler/`).
+
+Use `scripts/repro_xdist_flake.py`. Raise the worker count deliberately to make
+the flake more frequent while diagnosing; do not diagnose at `-n 8` where it
+does not occur.
+
+**Acceptable outcomes, in order of preference:**
+1. Root cause found and fixed; `-n auto` runs 20 consecutive times clean.
+2. Root cause identified but not fixable in-project (e.g. an SDL or driver bug).
+   Document it precisely, keep the cap, and add a comment at
+   `ralph.config.TEST_WORKERS` linking to the finding.
+3. Not reproducible after reasonable effort. Say so plainly and stop. Do NOT
+   invent a speculative fix -- a change that cannot be shown to alter the
+   measured rate is not a fix, and the safety nets already bound the damage.
+
+**Task 2 — isolate the test suite from the real `STOP` file.**
+`tests/test_ralph/test_harness.py` calls `execute_sprint`, which consults
+`should_stop()`, which reads `STOP_FILE` at the real project root. With a `STOP`
+file present, **3 tests fail spuriously**:
+```
+TestExecuteSprintQualityGate::test_review_gate_failure_blocks_sprint_not_done
+TestExecuteSprintQualityGate::test_all_clean_happy_path_gate_called_three_times
+(plus one more in the same class)
+```
+Observed live on 2026-08-26 while gracefully stopping a run. Anyone using the
+documented stop mechanism gets three unexplained failures, which is a bad
+experience and actively misleading during a debugging session.
+
+Point `STOP_FILE` at a tmp path in a fixture for these tests, and add a test
+asserting the suite passes with a real `STOP` file present.
+
+**Acceptance criteria.**
+1. Measured hang rate reported at the worker count used for diagnosis, before
+   and after any change. If outcome 3, report the attempts and stop.
+2. `tests/test_ralph/` passes with a `STOP` file present at the project root.
+3. `ralph.config.TEST_WORKERS` either raised with evidence, or left at 8 with a
+   comment pointing at the documented finding.
+4. Full suite green.
+
+**Risks / open questions.**
+- Likely environment-specific (Windows, 32 logical CPUs, this SDL build). That
+  makes outcome 2 or 3 more likely than 1, and both are acceptable. The failure
+  is already bounded; this sprint buys understanding, not safety.
+- Do NOT remove the worker cap to "test the fix" in the harness or CI. Use the
+  repro script.
+
+**Activity log.**
+- 2026-08-26 — todo (created from SUITE-1 residual findings)
 
 ## Followups
 
