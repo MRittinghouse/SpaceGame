@@ -9,6 +9,7 @@ Covers:
 
 from __future__ import annotations
 
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -468,3 +469,33 @@ class TestWrappedActivityLogEntries:
         roadmap_factory(_ROADMAP_WRAPPED_SENTINEL)
         log = agents._read_recent_activity_log("SA-1")
         assert "Last phase report" not in log
+
+
+class TestAgentInvocationUsesHardTimeout:
+    def test_invoke_claude_uses_run_with_hard_timeout(self, tmp_path: Path) -> None:
+        """Agent phases are where the harness spends hours, so this is where a
+        days-long stall comes from.
+
+        subprocess.run(timeout=...) kills the direct child but keeps blocking in
+        communicate() while grandchildren hold the pipe. SUITE-1 fixed that for
+        baseline capture only; the agent path kept the broken construct.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from ralph import agents
+
+        fake = MagicMock()
+        fake.returncode = 0
+        fake.stdout = "PHASE_OK"
+        fake.stderr = ""
+
+        with patch("ralph.agents.run_with_hard_timeout", return_value=fake) as mock_run:
+            with patch("ralph.agents.subprocess.run") as mock_plain:
+                agents._invoke_claude(
+                    prompt="x", log_path=tmp_path / "l.log", phase=agents.Phase.PLAN
+                )
+        mock_run.assert_called_once()
+        assert not mock_plain.called, (
+            "the agent path must not use subprocess.run -- that is the construct "
+            "that hung for 8.5 hours on 2026-08-26"
+        )

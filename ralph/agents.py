@@ -34,6 +34,7 @@ from ralph.config import (
     build_claude_cmd,
     timeout_for_phase,
 )
+from ralph.proc import run_with_hard_timeout
 from ralph.roadmap_state import RoadmapValidationError
 
 
@@ -199,14 +200,10 @@ def _invoke_claude(
         f.flush()
 
         try:
-            result = subprocess.run(
+            result = run_with_hard_timeout(
                 cmd,
+                timeout_seconds=timeout,
                 cwd=str(PROJECT_ROOT),
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                encoding="utf-8",
-                errors="replace",
             )
             f.write(result.stdout)
             if result.stderr:
