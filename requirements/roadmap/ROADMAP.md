@@ -10164,6 +10164,23 @@ Open questions (reviewer judgment, not blocking implementation):
   with real STOP file present after fix). Committed 1e5c65d. Pre-fix repro
   measurement running at `-n auto` (10 runs, 300s timeout); run 1 already hung
   at 301s — confirming the SDL race is still present.
+- 2026-08-27 — Tasks 4, 5, 6 complete. Pre-fix repro finished:
+  `SUITE1_REPRO runs=10 hangs=6 failures=2 passes=2 median_seconds=300.5`
+  (run detail: 1=HANG, 2=HANG, 3=FAIL 232s, 4=FAIL 42s, 5=HANG, 6=HANG,
+  7=PASS 83s 10586 tests, 8=HANG, 9=PASS 155s 10586 tests, 10=HANG).
+  Diagnostic (-k "not test_engine and not test_crawler", 3 runs at -n auto):
+  `SUITE1_REPRO runs=3 hangs=0 failures=0 passes=3 median_seconds=129.4`
+  — confirms deaths cluster exclusively in tests/test_engine/ and
+  tests/test_crawler/, which contain many files calling pygame.init() or
+  display.set_mode() directly. Root cause: 32 simultaneous pygame.init() calls
+  contend on Windows native resources (GDI handles, Window Station objects)
+  even with SDL_VIDEODRIVER=dummy and SDL_AUDIODRIVER=dummy. No in-project fix:
+  serialising pygame.init() across 32 workers requires session-scoped per-worker
+  fixtures, a cross-process lock, or --forked isolation — all out of scope.
+  TEST_WORKERS docstring updated (ralph/config.py) with outcome 2 findings and
+  exact SUITE1_REPRO lines. Also added --pytest-args passthrough to
+  scripts/repro_xdist_flake.py. Final full suite verification at -n 8 in
+  progress (baseline >= 10580). Commits: 1e5c65d 7c0dd84 e4dfb36 326fcb2 b3fdfe2.
 
 **Last phase report.**
 - Phase: plan
