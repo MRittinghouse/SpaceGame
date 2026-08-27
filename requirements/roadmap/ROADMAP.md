@@ -9051,7 +9051,7 @@ to.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: observed 2026-08-24/26 during the SH arc
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -9356,6 +9356,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-08-26 21:12 — harness: plan phase starting
 - 2026-08-26 21:15 — PROMOTED ahead of SH-2. The dependency was ordering
 - 2026-08-26 21:17 — harness: implement phase starting (rework cycle 0)
+- 2026-08-26 21:47 — harness: review phase starting (rework cycle 0)
   preference, not a real one, and the flake has now made itself urgent: it hung
   ralph's own baseline capture for 8.5 hours (controller alive at 302s CPU, all
   32 workers dead, subprocess.run(timeout=600) never fired -- the known Windows
@@ -9385,24 +9386,33 @@ Open question (reviewer judgment, not blocking implementation):
   bounded (300s in repro, 600s in harness) vs the 8.5h pre-fix hang. AC #2 not
   fully met (escape clause: reviewer to decide on worker cap). All other ACs met.
   Commit: ab92f41. PHASE_OK
+- 2026-08-26 — review: plan audit sound; all 7 ACs verified; AC #2 escape clause
+  accepted -- 1/3 post-fix runs still hang but are now killed by the kill-tree
+  helper within 300s (not a silent stall), satisfying the plan's defense-in-depth
+  intent. Suite confirmed 10576 passed / 98 skipped. New SUITE-1 files
+  (test_harness.py extensions, test_sdl_drivers.py, test_pytest_timeout_kills_hangs.py,
+  scripts/repro_xdist_flake.py, ralph/harness.py) all lint-clean; 19 pre-existing
+  ruff violations in test_agents.py and test_roadmap_state.py are not SUITE-1's
+  responsibility. Single tighten: mid-run baseline refresh failure does not write
+  to state.json (startup failure does), which is correct per the locked semantics
+  but the asymmetry is invisible to a future reader -- a one-line comment at the
+  catch site would make the invariant explicit. Not a blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-26 21:17
-- Completed: 2026-08-26 (same session)
-- Files_changed: ralph/harness.py, tests/conftest.py, tests/test_ralph/test_harness.py, tests/test_compliance/test_sdl_drivers.py, tests/test_compliance/test_pytest_timeout_kills_hangs.py, scripts/repro_xdist_flake.py, pyproject.toml, .github/workflows/quality.yml, CLAUDE.md
-- Commits: ab92f41
-- Tests_added: 14
-- Tests_baseline: 10562
+- Started: 2026-08-26
+- Completed: 2026-08-26
+- Files_changed: none
+- Commits: none
 - Tests_passing: 10576
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: AC #1 (repro script) done; AC #2 escape clause applies -- 1/3 post-fix runs still hang (now bounded at kill-tree timeout vs 8.5h silent stall); AC #3 compliance test passes; AC #4 BaselineCaptureError raises on all 3 failure modes; AC #5 suite green; AC #6 CI timeout-minutes:30 added; AC #7 kill-tree grandchild test passes. Root cause of worker death not fully eliminated; SDL_VIDEODRIVER=dummy is a defense-in-depth improvement. Reviewer to judge whether worker-count cap is warranted.
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Mid-run baseline refresh failure does not write infra_error to state.json (startup failure does); this asymmetry is correct per the locked semantics but a one-line comment at the harness catch site would make it explicit for future readers.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; AC #2 escape clause accepted (1/3 post-fix hangs now bounded by kill-tree, not silent); all 14 new tests pass; SUITE-1 files lint-clean; 19 pre-existing ruff violations in test_agents.py/test_roadmap_state.py are out of scope.
 
 ## Followups
 
