@@ -9305,7 +9305,7 @@ nothing else, record findings without fixing.
 - Started: 2026-08-26 21:51
 - Completed: 2026-08-26 22:00
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 786f98e
 - New_sprints_proposed: none
 - Polish_items_folded_in: dispatcher-order AST test (guards against silent reordering); crawler check with same seed/action budget as SH-1 for direct comparability; findings-list acceptance criterion so an "empty" pass is still valid; explicit no-mypy-baseline-regen AC to prevent ratchet violation
 - Decisions_locked: 7
