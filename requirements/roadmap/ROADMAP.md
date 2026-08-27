@@ -9051,7 +9051,7 @@ to.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
-**Status**: in-progress
+**Status**: in-progress (implementing)
 **Source**: observed 2026-08-24/26 during the SH arc
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -9355,6 +9355,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-08-26 — todo (created from SH-arc observations)
 - 2026-08-26 21:12 — harness: plan phase starting
 - 2026-08-26 21:15 — PROMOTED ahead of SH-2. The dependency was ordering
+- 2026-08-26 21:17 — harness: implement phase starting (rework cycle 0)
   preference, not a real one, and the flake has now made itself urgent: it hung
   ralph's own baseline capture for 8.5 hours (controller alive at 302s CPU, all
   32 workers dead, subprocess.run(timeout=600) never fired -- the known Windows
@@ -9373,21 +9374,35 @@ Open question (reviewer judgment, not blocking implementation):
   CREATE_NEW_PROCESS_GROUP + taskkill; env-specific fix: acceptable if AC #3
   met). Added Touch zones (8 files, 3 NEW) and 9-task Plan with test surface
   and risk per task. Expanded acceptance criteria from 5 to 7 to cover the
-  kill-tree helper and the cross-platform CI verification — these were
+  kill-tree helper and the cross-platform CI verification -- these were
   implicit in the deliverables but not testable without explicit AC.
   Cross-sprint reactions: none (infrastructure sprint). PHASE_OK
+- 2026-08-26 — implementation: all 9 tasks complete. Tests baseline 10562 ->
+  10576 (+14 new tests). Pre-commit hooks green. See phase report for AC status.
+  Post-fix repro: SUITE1_REPRO runs=3 hangs=1 failures=0 passes=2 median_seconds=73.1
+  (run 2 of 3 hung at 300s -- killed by kill-tree helper, NOT a silent stall).
+  SDL_VIDEODRIVER=dummy did not fully eliminate the worker death; the hang is now
+  bounded (300s in repro, 600s in harness) vs the 8.5h pre-fix hang. AC #2 not
+  fully met (escape clause: reviewer to decide on worker cap). All other ACs met.
+  Commit: ab92f41. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-26 21:12
-- Completed: 2026-08-26 22:10
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 22af499
-- New_sprints_proposed: none
-- Polish_items_folded_in: pytest-timeout as project-wide default (was implicit); kill-tree helper with direct test coverage (was implicit); CI-side workflow timeout as third safety net (was not scoped); project-wide `SDL_VIDEODRIVER=dummy` in `tests/conftest.py` (was implied by leading hypothesis but not called out); machine-readable repro-script summary line for pre/post comparability; documentation touch-up in `CLAUDE.md`.
-- Decisions_locked: 6
-- Notes: Sprint was well-scoped in the goal / deliverables; planning added Touch zones, a 9-task Plan, two acceptance criteria (kill-tree and cross-platform verification), and locked 6 decisions the deliverables assumed but didn't commit. Rejected the "cap workers and call it done" shortcut per the pre-existing sprint guidance. Explicit no-cross-sprint-reactions statement per infra-sprint convention.
+- Started: 2026-08-26 21:17
+- Completed: 2026-08-26 (same session)
+- Files_changed: ralph/harness.py, tests/conftest.py, tests/test_ralph/test_harness.py, tests/test_compliance/test_sdl_drivers.py, tests/test_compliance/test_pytest_timeout_kills_hangs.py, scripts/repro_xdist_flake.py, pyproject.toml, .github/workflows/quality.yml, CLAUDE.md
+- Commits: ab92f41
+- Tests_added: 14
+- Tests_baseline: 10562
+- Tests_passing: 10576
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: AC #1 (repro script) done; AC #2 escape clause applies -- 1/3 post-fix runs still hang (now bounded at kill-tree timeout vs 8.5h silent stall); AC #3 compliance test passes; AC #4 BaselineCaptureError raises on all 3 failure modes; AC #5 suite green; AC #6 CI timeout-minutes:30 added; AC #7 kill-tree grandchild test passes. Root cause of worker death not fully eliminated; SDL_VIDEODRIVER=dummy is a defense-in-depth improvement. Reviewer to judge whether worker-count cap is warranted.
 
 ## Followups
 
