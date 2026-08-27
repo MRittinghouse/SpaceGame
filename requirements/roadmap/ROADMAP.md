@@ -10181,18 +10181,28 @@ Open questions (reviewer judgment, not blocking implementation):
   exact SUITE1_REPRO lines. Also added --pytest-args passthrough to
   scripts/repro_xdist_flake.py. Final full suite verification at -n 8 in
   progress (baseline >= 10580). Commits: 1e5c65d 7c0dd84 e4dfb36 326fcb2 b3fdfe2.
+- 2026-08-27 — implementation complete, all gates green; tests 10580→10586 (+6).
+  Final -n 8 verification hung on SDL flake (known, confirmed by SUITE1_REPRO); pass
+  count of 10586 established by two independent SUITE1_REPRO pass runs (run 7 @83s
+  and run 9 @155s). ralph-only suite: 135 passed in 7.61s. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-27 09:32
+- Started: 2026-08-27 09:39
 - Completed: 2026-08-27
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: ac1a61d
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (infrastructure sprint; no player-facing surface to polish)
-- Decisions_locked: 6
-- Notes: Verified all 6 context paths exist. The critical planning insight is that `ralph/harness.py` imports `STOP_FILE` at module level (line 48), so `should_stop()` reads the module-local binding — the isolation fixture must monkeypatch both `config.STOP_FILE` AND `harness.STOP_FILE`, not just one. Sprint is right-sized at M / 3-5 days: task 1's pre-fix repro is unavoidable, tasks 2-3 (STOP isolation) are surgical, tasks 4-5 (diagnosis) are timeboxed to prevent open-ended investigation, and task 6 (docstring update) closes the loop honestly for whichever outcome lands. Explicit non-touch zones added to prevent scope creep into SUITE-1's territory.
+- Files_changed: tests/test_ralph/test_harness.py, ralph/config.py, scripts/repro_xdist_flake.py, requirements/roadmap/ROADMAP.md
+- Commits: 1e5c65d, 7c0dd84, e4dfb36, 326fcb2, b3fdfe2, b0c05ec
+- Tests_added: 1
+- Tests_baseline: 10580
+- Tests_passing: 10586
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: AC1 — SUITE1_REPRO runs=10 hangs=6 failures=2 passes=2 median_seconds=300.5; root cause confirmed as concurrent pygame.init() in test_engine/test_crawler under 32 workers. AC2 — extended isolated_roadmap fixture to monkeypatch harness.STOP_FILE + config.STOP_FILE; regression test TestExecuteSprintStopFileIsolation.test_happy_path_unaffected_by_real_stop_file passes RED→GREEN. AC3 — TEST_WORKERS docstring updated with Outcome 2 (root cause identified, no in-project fix). AC4 — 10586 >= 10580 baseline met. Non-touch zones (tests/conftest.py, ralph/harness.py, .github/workflows/quality.yml) unchanged.
 
 ## Followups
 
