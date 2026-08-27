@@ -113,7 +113,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
-| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | in-progress | none |
+| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
 
 ---
 
@@ -9051,7 +9051,7 @@ to.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: observed 2026-08-24/26 during the SH arc
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -9357,6 +9357,7 @@ Open question (reviewer judgment, not blocking implementation):
 - 2026-08-26 21:15 — PROMOTED ahead of SH-2. The dependency was ordering
 - 2026-08-26 21:17 — harness: implement phase starting (rework cycle 0)
 - 2026-08-26 21:47 — harness: review phase starting (rework cycle 0)
+- 2026-08-26 21:51 — harness: review passed, marking done
   preference, not a real one, and the flake has now made itself urgent: it hung
   ralph's own baseline capture for 8.5 hours (controller alive at 302s CPU, all
   32 workers dead, subprocess.run(timeout=600) never fired -- the known Windows
