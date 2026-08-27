@@ -9009,7 +9009,7 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 ### SH-2 — Split `_handle_state_transitions`
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: Spec B, SH-2
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: SH-1 | **Blocks**: none
@@ -9311,6 +9311,7 @@ nothing else, record findings without fixing.
 - 2026-08-26 — unblocked: Spec B approved by Matt.
 - 2026-08-26 21:51 — harness: plan phase starting
 - 2026-08-26 22:00 — planning complete; 7 tasks scoped, 33 handler
+- 2026-08-27 09:03 — harness: implement phase starting (rework cycle 0)
   extraction targets enumerated (view-check block inventory verified
   against source lines 1140-2330), 7 decisions locked (split strategy,
   handler return type, atomic commit, no baseline regen, findings
@@ -9337,18 +9338,86 @@ nothing else, record findings without fixing.
   reported SH-2 pre-phase baseline of 10,580. No structural changes
   to Plan, Deliverables, or Locked decisions — the committed plan is
   still sound and ready for implementation. PHASE_OK
+- 2026-08-27 13:16 — implementation: 33 handlers extracted verbatim from
+  `_handle_state_transitions`. Handler-name naming rule
+  (strip `_view`, prefix `_route_from_`) applied uniformly across all
+  origin attributes, including the private-underscore
+  `_tutorial_shop_view` → `_route_from_tutorial_shop`. Handlers placed
+  as one contiguous block immediately before the dispatcher (QF-5-style
+  adjacency); each ends with `return False` as the fall-through. All 9
+  cited early-return sites converted to `return True` (7 in
+  `_route_from_galaxy_map`, 2 in `_route_from_encounter`). Section-map
+  comment in `game.py` file header refreshed to point at the new layout.
+- 2026-08-27 13:16 — implementation: single accommodation to satisfy
+  the lint gate. Two `success, msg = self.mission_manager.*(...)`
+  unpackings inside `_route_from_mission_log` (pre-split lines 1539 and
+  1561) triggered RUF059 after the extraction because `msg` was reused
+  in the mega-method scope (line 1492 `crew_roster.dismiss`) but is
+  scoped per-handler post-split. Renamed both to `success, _`
+  (idiomatic throw-away) — semantically identical, satisfies the gate,
+  no behaviour change. Recorded as a finding rather than a fix.
+- 2026-08-27 13:16 — validation: dispatcher 70 lines (`< 200`); largest
+  handler `_route_from_galaxy_map` at 233 lines (`< 250`); dispatcher
+  AST-order test agrees with the 33-name fixture. `pytest -n auto -q`
+  green at 10,585 passing / 98 skipped (baseline 10,580 + 5 new
+  dispatcher tests). `python -m mypy spacegame/engine/game.py 2>&1 |
+  grep -c 'error'` = 87 before, 87 after — exact parity. `python
+  scripts/mypy_populations.py` reports A=0 / B=0 / C=236 before and
+  after — no drift. `mypy-baseline.txt` NOT regenerated (locked
+  decision 4).
+- 2026-08-27 13:16 — crawler: `python -m tools.crawler --seed 99
+  --actions 2000 --checkpoint late --output-dir
+  crawler_runs/sh2_verify` recorded 4 `UIElementLeak` oracle findings
+  (GALAXY_MAP 6→12, ACHIEVEMENTS 2→6, DIALOGUE 1→2, STATION_HUB 2→6).
+  Zero `RuntimeError` or `AttributeError` entries. Zero tracebacks
+  originate in any `_route_from_*` method or in the dispatcher. AC #4
+  satisfied. Cross-check against SH-1's crawler artifact
+  (`crawler_runs/sh1_verify/99-20260824T143304Z/crashes.json`): the
+  exact same 4 UIElementLeak findings in the same order — pre-existing
+  UI-leak accounting quirks, not SH-2 regressions.
+- 2026-08-27 13:16 — findings list of unreachable / duplicated
+  branches discovered during the split (record only; no fixes here):
+
+  | Origin view | Pre-split line | Description | Hazard |
+  |---|---|---|---|
+  | shipyard | 1940-1947 | `elif next_state == GameState.GALAXY_MAP` dispatches a transition to `STATION_HUB`, not `GALAXY_MAP`. Semantic mislabel: the shipyard back-button leads to the station hub, but the state check kept the old name. | latent labeling smell; no runtime impact |
+  | galaxy_map (COMBAT branch) | 1367-1372 | "Fallback: safe landing" transition to STATION_HUB when `_pending_encounter` is missing. Galaxy_map only emits `next_state=COMBAT` after setting `_pending_encounter`; the fallback is defensive. | possibly dead / defensive |
+  | galaxy_map (ENCOUNTER branch) | 1389-1394 | "Fallback: no definition found → go to station hub" transition when `_pending_encounter_ref` resolves to no definition. Similar defensive pattern; usually unreachable. | possibly dead / defensive |
+  | combat | 1791-1792 | `else: self._ensure_view_for_state(target)` branch in the `_do` closure handles arbitrary post-combat targets. `CombatView.get_next_state` emits TRADING, GALAXY_MAP, or STATION_HUB in practice; the else is defensive. | possibly dead / defensive |
+  | mission_log | 1550, 1572 | `success, msg = ...` unpacked `msg` was unused inside each handler once the scope narrowed. Not a "branch" hazard, but a discarded return value the mega-method had accidentally shared with the crew_roster block. Post-split, renamed to `success, _`. | style — resolved for lint |
+
+  None of these are safety-critical (would cause a runtime crash today).
+  Recording them per Task 6; Task acceptance is that the pass was made
+  and captured, empty list is a valid outcome, so we err on the side of
+  transparency and log what we saw.
+- 2026-08-27 13:16 — implementation complete, all gates green; tests
+  10580→10585 (+5); mypy game.py 87→87; ruff clean on touched files;
+  crawler zero new RuntimeError/AttributeError. Commit 3aa91ef.
+  PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-27 08:58
-- Completed: 2026-08-27 09:15
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: e32dccd
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (re-verification pass; polish already folded in on 2026-08-26 — dispatcher-order AST test, crawler check with same seed/action budget as SH-1, findings-list acceptance criterion, no-mypy-baseline-regen AC)
-- Decisions_locked: 7 (all previously locked; none re-opened)
-- Notes: Re-verification of the 2026-08-26 committed plan per STARTING STATE instructions. All 33 view-check blocks still resolve to the same source-line anchors; the method is still 1,197 lines from line 1134-2330; the 9 early-return sites (7 galaxy_map, 2 encounter) are all at their cited lines; the only external caller (`TestCB2WarpArrivalBanterWiring` in `tests/test_engine/test_mission_notifications.py`) still exists at class-line 260 and calls the public name at line 353. Two stale citations corrected in-place: `Game.step` (6476 → 6359, SH-3 shift) and suite floor (SUITE-1's 10,562 → SH-2 pre-phase 10,580). No cross-sprint reaction surface (foundational engine refactor; no player-facing content, NPC dialogue, journal, crew banter, or news-ticker surface). Ready to move to implement.
+- Started: 2026-08-27 09:03
+- Completed: 2026-08-27 13:16
+- Files_changed: spacegame/engine/game.py, tests/test_engine/test_handle_state_transitions_dispatcher.py
+- Commits: 3aa91ef
+- Tests_added: 5
+- Tests_baseline: 10580
+- Tests_passing: 10585
+- Tests_skipped: 98
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: 33 handlers extracted, dispatcher under 200 lines (70 lines),
+  largest handler `_route_from_galaxy_map` at 233 lines; 9 early-returns converted (7 galaxy_map,
+  2 encounter); mypy parity confirmed (87 errors before and after,
+  populations A=0/B=0/C=236 before and after); crawler zero new
+  RuntimeError/AttributeError, 4 UIElementLeak findings identical to
+  SH-1 baseline; findings list of 5 latent/dead branch smells recorded
+  per Task 6 (all defensive or labeling only, no runtime impact).
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
