@@ -112,7 +112,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 |---|---|---|---|---|---|
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
-| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
+| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | in-progress | SH-1 |
 | [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
 | [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | todo | none |
 
@@ -9009,7 +9009,7 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 ### SH-2 — Split `_handle_state_transitions`
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: Spec B, SH-2
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: SH-1 | **Blocks**: none
@@ -9034,8 +9034,9 @@ Behaviour-preserving.
 **Context to read.**
 - `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B, SH-2 section)
 - `spacegame/engine/game.py` — `_handle_state_transitions` at line 1134
-  (spans through line 2330); called only from `Game.step` at line 6476 in
-  the pre-render section of the frame.
+  (spans through line 2330, 1197 lines); called only from `Game.step` at
+  line 6359 in the pre-render section of the frame (line 6476 pre-SH-3;
+  re-verified 2026-08-27, no other structural shifts).
 - The QF-5 activity log (`### QF-5 — Extract Game.step()`): the pattern for a
   behaviour-preserving move — extract verbatim, no cascade restructure, no
   drive-by fixes.
@@ -9084,9 +9085,10 @@ tests/test_engine/test_handle_state_transitions_dispatcher.py         (NEW — s
    ordering exactly. Verified by an AST-parsing test that reads the
    dispatcher's body and asserts the sequence of `self._route_from_*`
    calls equals a fixture list of 33 handler names in original order.
-3. No behaviour change. Full suite green at or above the SUITE-1
-   post-fix baseline of 10,562 passing / 98 skipped. Pre-fix and
-   post-fix suite counts recorded in the Activity log.
+3. No behaviour change. Full suite green at or above the SH-2 pre-phase
+   baseline of 10,580 passing / 98 skipped (per the harness pre-phase
+   readout on 2026-08-27; already above the SUITE-1 floor of 10,562).
+   Pre-fix and post-fix suite counts recorded in the Activity log.
 4. `python -m tools.crawler --seed 99 --actions 2000 --checkpoint late
    --output-dir crawler_runs/sh2_verify` records zero new `RuntimeError`
    or `AttributeError` whose traceback originates in a `_route_from_*`
@@ -9198,9 +9200,10 @@ Task 3 — Extract handler methods (single atomic Green commit).
   not defined inside the block being extracted; there should be none.
 
 Task 4 — Full-suite validation and behaviour parity (measurement only).
-- Run `pytest -n auto -q`. Expect pass count at or above the SUITE-1
-  post-fix baseline (10,562 passing / 98 skipped). Any new failure is a
-  regression — fix or block.
+- Run `pytest -n auto -q`. Expect pass count at or above the SH-2
+  pre-phase baseline (10,580 passing / 98 skipped, per the harness
+  readout on 2026-08-27). Any new failure is a regression — fix or
+  block.
 - Run `python scripts/mypy_populations.py`. Expect no change in
   Population A or the tracked totals. Record before/after.
 - Run `python -m mypy spacegame/engine/game.py 2>&1 | grep -c 'error'`.
@@ -9308,23 +9311,44 @@ nothing else, record findings without fixing.
 - 2026-08-26 — unblocked: Spec B approved by Matt.
 - 2026-08-26 21:51 — harness: plan phase starting
 - 2026-08-26 22:00 — planning complete; 7 tasks scoped, 33 handler
-- 2026-08-26 22:00 — harness: stop requested after plan phase
   extraction targets enumerated (view-check block inventory verified
   against source lines 1140-2330), 7 decisions locked (split strategy,
   handler return type, atomic commit, no baseline regen, findings
   format, handler placement, test file). PHASE_OK
+- 2026-08-26 22:00 — harness: stop requested after plan phase
+- 2026-08-27 08:58 — harness: plan phase starting
+- 2026-08-27 09:15 — re-verified committed plan against current
+  `game.py` (6,669 lines): `_handle_state_transitions` still at line
+  1134 spanning through line 2330 (1197 lines, unchanged); all 33
+  view-check blocks start at the same lines as originally cataloged
+  (main_menu 1141, name_input 1165, character_creation 1182,
+  tutorial_shop 1205, galaxy_map 1228, journal 1460, crew_roster 1471,
+  character 1502, mission_log 1530, trading 1594, dialogue 1607, mining
+  1672, salvage 1686, refining 1700, skill_tree 1712, statistics 1738,
+  achievements 1749, combat 1760, encounter 1797, ground_briefing 1849,
+  ground_exploration 1900, ground_result 1925, shipyard 1938,
+  ship_builder 1959, station_hub 1988, repair_bay 2180, wreckers_guild
+  2193, deep_shafts 2206, auction 2221, sell_lot 2247, dispute 2262,
+  cantina 2277, investment 2319); all 9 early-return sites in the
+  cited galaxy_map (7) and encounter (2) blocks still at the exact
+  cited lines. Updated two stale references: `Game.step` moved from
+  line 6476 to line 6359 (SH-3 shifted it), and the suite acceptance
+  floor rewritten from the SUITE-1 baseline of 10,562 to the harness-
+  reported SH-2 pre-phase baseline of 10,580. No structural changes
+  to Plan, Deliverables, or Locked decisions — the committed plan is
+  still sound and ready for implementation. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-26 21:51
-- Completed: 2026-08-26 22:00
+- Started: 2026-08-27 08:58
+- Completed: 2026-08-27 09:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 786f98e
+- Commits: pending (this phase)
 - New_sprints_proposed: none
-- Polish_items_folded_in: dispatcher-order AST test (guards against silent reordering); crawler check with same seed/action budget as SH-1 for direct comparability; findings-list acceptance criterion so an "empty" pass is still valid; explicit no-mypy-baseline-regen AC to prevent ratchet violation
-- Decisions_locked: 7
-- Notes: All required context docs verified present (shell spec at docs/superpowers/specs/2026-08-24-shell-architecture-design.md, game.py, QF-5 activity log referenced by pointer, SH-1 sprint section, mission-notifications test). Method inventory: 33 view-check blocks between lines 1140-2330; largest is galaxy_map at 231 lines and station_hub at 191 lines — both fit under the 250-line handler cap. Only external caller of `_handle_state_transitions` is `TestCB2WarpArrivalBanterWiring` in `test_mission_notifications.py`; public method name and signature must be preserved. No cross-sprint reaction surface — pure internal restructure with no player-facing content.
+- Polish_items_folded_in: none (re-verification pass; polish already folded in on 2026-08-26 — dispatcher-order AST test, crawler check with same seed/action budget as SH-1, findings-list acceptance criterion, no-mypy-baseline-regen AC)
+- Decisions_locked: 7 (all previously locked; none re-opened)
+- Notes: Re-verification of the 2026-08-26 committed plan per STARTING STATE instructions. All 33 view-check blocks still resolve to the same source-line anchors; the method is still 1,197 lines from line 1134-2330; the 9 early-return sites (7 galaxy_map, 2 encounter) are all at their cited lines; the only external caller (`TestCB2WarpArrivalBanterWiring` in `tests/test_engine/test_mission_notifications.py`) still exists at class-line 260 and calls the public name at line 353. Two stale citations corrected in-place: `Game.step` (6476 → 6359, SH-3 shift) and suite floor (SUITE-1's 10,562 → SH-2 pre-phase 10,580). No cross-sprint reaction surface (foundational engine refactor; no player-facing content, NPC dialogue, journal, crew banter, or news-ticker surface). Ready to move to implement.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
