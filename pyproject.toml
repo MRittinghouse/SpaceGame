@@ -24,6 +24,7 @@ dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "pytest-xdist>=3.5.0",
+    "pytest-timeout>=2.3",
     "ruff>=0.4.0",
     "mypy>=1.5.1",
     "pyinstaller>=6.0.0",
@@ -73,6 +74,11 @@ line-ending = "auto"
 testpaths = ["tests"]
 # Use -n auto for parallel execution (~2x faster); omit for debugging with --pdb
 # addopts = "-n auto"  # Uncomment to default to parallel
+# Project-wide per-test timeout (SUITE-1).  Thread mode works cross-platform
+# under xdist; signal mode does not (SIGALRM is not delivered to worker procs).
+# Any legitimately slow test opts in with @pytest.mark.timeout(N).
+timeout = 120
+timeout_method = "thread"
 
 [tool.mypy]
 python_version = "3.13"

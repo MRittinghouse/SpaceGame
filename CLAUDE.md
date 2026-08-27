@@ -16,7 +16,7 @@ It contains: layer diagrams, every module's purpose, all GameState transitions, 
 python run.py                                    # Run the game (with environment checks)
 python -m spacegame.main                         # Run directly
 pytest                                           # Run all tests
-pytest -n auto                                   # Run tests in parallel (~2x faster)
+pytest -n auto                                   # Run tests in parallel (~2x faster); 120s per-test timeout is active (override with @pytest.mark.timeout(N))
 pytest tests/test_models/test_market.py           # Run a single test file
 pytest --cov=spacegame --cov-report=html         # Tests with coverage report
 ruff format spacegame/ tests/                    # Format code (replaces black)

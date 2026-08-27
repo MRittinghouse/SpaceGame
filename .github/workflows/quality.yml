@@ -50,7 +50,11 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libsdl2-2.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-ttf-2.0-0
       - run: pip install -e ".[dev]"
-      - run: python -m pytest -n auto
+      # Third safety net (SUITE-1): if pytest-timeout and the kill-tree helper
+      # both fail, GitHub Actions kills the job at 30 minutes instead of 6 hours.
+      - name: Run tests
+        timeout-minutes: 30
+        run: python -m pytest -n auto
 
   types:
     runs-on: ubuntu-latest

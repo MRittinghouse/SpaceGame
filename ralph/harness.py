@@ -15,6 +15,7 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import time
 from dataclasses import asdict, dataclass, field
 from dataclasses import fields as dataclass_fields
@@ -365,35 +366,150 @@ def execute_sprint(
 # ---------------------------------------------------------------------------
 
 
+class BaselineCaptureError(RuntimeError):
+    """Raised when test-baseline capture fails in a way that prevents a safe run.
+
+    The three failure modes that surface this:
+    1. Timeout (subprocess killed but communicate() would have hung indefinitely).
+    2. Non-zero subprocess exit (pytest crashed or suite is broken).
+    3. Unparseable output (zero exit but no 'N passed' line found).
+
+    On startup, the harness must abort when it sees this; proceeding with a
+    zero baseline means agents cannot detect new regressions.
+    """
+
+
+def _run_pytest_with_hard_timeout(
+    cmd: list[str],
+    timeout_seconds: float,
+    cwd: Optional[str] = None,
+) -> subprocess.CompletedProcess:
+    """Run *cmd* with a hard process-tree kill on timeout.
+
+    Unlike ``subprocess.run(timeout=...)``, this helper does NOT block on
+    ``communicate()`` after killing the direct child — the root cause of the
+    8.5-hour hang where grandchildren held pipe handles open.
+
+    Stdout and stderr are drained by background threads; those threads are
+    abandoned (daemon) after a brief join window if the process kill did not
+    release their file handles.
+
+    Args:
+        cmd: Command to run (passed directly to ``subprocess.Popen``).
+        timeout_seconds: Wall-clock seconds before the tree is killed.
+        cwd: Working directory (defaults to ``PROJECT_ROOT``).
+
+    Returns:
+        A ``CompletedProcess`` with captured stdout/stderr (as decoded str).
+
+    Raises:
+        subprocess.TimeoutExpired: After killing the process tree on timeout.
+    """
+    effective_cwd = cwd or str(PROJECT_ROOT)
+
+    popen_kwargs: dict = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "cwd": effective_cwd,
+    }
+    if sys.platform == "win32":
+        # CREATE_NEW_PROCESS_GROUP lets taskkill /T kill the full tree.
+        popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        popen_kwargs["start_new_session"] = True  # os.setsid() equivalent
+
+    proc = subprocess.Popen(cmd, **popen_kwargs)
+
+    stdout_chunks: list[bytes] = []
+    stderr_chunks: list[bytes] = []
+
+    def _drain(pipe: object, buf: list[bytes]) -> None:
+        try:
+            for chunk in iter(lambda: pipe.read(4096), b""):  # type: ignore[attr-defined]
+                buf.append(chunk)
+        except Exception:
+            pass
+
+    t_out = threading.Thread(target=_drain, args=(proc.stdout, stdout_chunks), daemon=True)
+    t_err = threading.Thread(target=_drain, args=(proc.stderr, stderr_chunks), daemon=True)
+    t_out.start()
+    t_err.start()
+
+    timed_out = False
+    try:
+        proc.wait(timeout=timeout_seconds)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        if sys.platform == "win32":
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                capture_output=True,
+            )
+        else:
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            except (ProcessLookupError, OSError):
+                proc.kill()
+        # Brief window for drain threads to flush before abandoning.
+        t_out.join(timeout=2)
+        t_err.join(timeout=2)
+
+    if not timed_out:
+        t_out.join(timeout=2)
+        t_err.join(timeout=2)
+
+    stdout_str = b"".join(stdout_chunks).decode("utf-8", errors="replace")
+    stderr_str = b"".join(stderr_chunks).decode("utf-8", errors="replace")
+
+    if timed_out:
+        raise subprocess.TimeoutExpired(
+            cmd=cmd,
+            timeout=timeout_seconds,
+            output=stdout_str.encode(),
+            stderr=stderr_str.encode(),
+        )
+
+    return subprocess.CompletedProcess(
+        args=cmd,
+        returncode=proc.returncode,
+        stdout=stdout_str,
+        stderr=stderr_str,
+    )
+
+
 def _capture_test_baseline() -> tuple[int, int]:
     """Run pytest -q to capture the current test pass/skip baseline.
 
-    Returns (passing, skipped). On failure to run pytest, returns (0, 0)
-    and the prompt addendum is suppressed (the agent runs with no
-    baseline rather than a misleading one).
+    Returns:
+        ``(passing, skipped)`` counts extracted from pytest output.
 
-    This is item L: a known baseline so agents can detect NEW failures
-    without freaking out about pre-existing ones.
+    Raises:
+        BaselineCaptureError: On timeout, subprocess error, or unparseable output.
+            The harness main loop catches this and aborts before picking up any sprint.
     """
     import re as _re
 
     try:
-        result = subprocess.run(
+        result = _run_pytest_with_hard_timeout(
             [sys.executable, "-m", "pytest", "-n", "auto", "-q", "--no-header"],
-            cwd=str(PROJECT_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=600,
-            encoding="utf-8",
-            errors="replace",
+            timeout_seconds=600,
         )
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return 0, 0
+    except subprocess.TimeoutExpired as exc:
+        raise BaselineCaptureError("timeout after 600s — pytest run never finished") from exc
+    except FileNotFoundError as exc:
+        raise BaselineCaptureError(f"FileNotFoundError: {exc}") from exc
 
-    # Last "N passed, M skipped" line in pytest -q output.
+    if result.returncode != 0:
+        tail = (result.stderr or result.stdout)[-500:].strip()
+        raise BaselineCaptureError(
+            f"pytest exited {result.returncode}; tail: {tail or '(no output)'}"
+        )
+
+    # Extract the last "N passed[, M skipped]" line in pytest -q output.
     out = result.stdout + result.stderr
     pass_count = 0
     skip_count = 0
+    found = False
     for line in reversed(out.splitlines()):
         m = _re.search(r"(\d+) passed", line)
         if m:
@@ -401,7 +517,12 @@ def _capture_test_baseline() -> tuple[int, int]:
             m2 = _re.search(r"(\d+) skipped", line)
             if m2:
                 skip_count = int(m2.group(1))
+            found = True
             break
+
+    if not found:
+        raise BaselineCaptureError("unparseable output — no 'N passed' line in pytest output")
+
     return pass_count, skip_count
 
 
@@ -1249,7 +1370,14 @@ def main() -> int:
         test_baseline = (0, 0)
         if not args.dry_run and not DRY_RUN and not args.skip_baseline:
             log("Capturing test-suite baseline (this can take a minute)...")
-            test_baseline = _capture_test_baseline()
+            try:
+                test_baseline = _capture_test_baseline()
+            except BaselineCaptureError as exc:
+                log(
+                    f"Baseline capture FAILED: {exc}. "
+                    "Aborting run to avoid running agents with no baseline."
+                )
+                return 3
             log(f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped.")
 
         log(
@@ -1302,19 +1430,26 @@ def main() -> int:
             log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
 
             # Refresh baseline after a successful sprint (item L).
+            # Mid-run failure keeps the previous baseline rather than aborting —
+            # agents already running can still compare against the last-known-good count.
             if (
                 outcome == Outcome.OK
                 and not args.dry_run
                 and not DRY_RUN
                 and not args.skip_baseline
             ):
-                new_baseline = _capture_test_baseline()
-                if new_baseline[0] > 0:
+                try:
+                    new_baseline = _capture_test_baseline()
                     log(
                         f"Refreshed baseline: {new_baseline[0]} passing "
                         f"(was {test_baseline[0]}), {new_baseline[1]} skipped."
                     )
                     test_baseline = new_baseline
+                except BaselineCaptureError as exc:
+                    log(
+                        f"Mid-run baseline refresh FAILED: {exc}. "
+                        f"Keeping previous baseline ({test_baseline[0]}p/{test_baseline[1]}s)."
+                    )
 
             # Per-sprint summary (item G).
             try:

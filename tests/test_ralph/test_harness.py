@@ -13,7 +13,9 @@ helpers in isolation.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -801,3 +803,170 @@ class TestExecuteSprintQualityGate:
 
         assert result == Outcome.OK
         gate_spy.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Kill-tree helper — _run_pytest_with_hard_timeout
+# ---------------------------------------------------------------------------
+
+
+class TestRunPytestWithHardTimeout:
+    """The kill-tree helper terminates hung process trees within budget.
+
+    AC #7: A subprocess that spawns a grandchild sleeper is killed (along
+    with the grandchild) within ``timeout + overhead`` seconds without
+    blocking on communicate().
+    """
+
+    def test_clean_exit_returns_zero(self) -> None:
+        """A process that exits cleanly returns returncode=0."""
+        result = harness._run_pytest_with_hard_timeout(
+            [sys.executable, "-c", "import sys; sys.exit(0)"],
+            timeout_seconds=10,
+        )
+        assert result.returncode == 0
+
+    def test_failing_exit_returns_nonzero(self) -> None:
+        """A process that exits with error code returns that code."""
+        result = harness._run_pytest_with_hard_timeout(
+            [sys.executable, "-c", "import sys; sys.exit(42)"],
+            timeout_seconds=10,
+        )
+        assert result.returncode == 42
+
+    def test_stdout_captured(self) -> None:
+        """Stdout is captured in result.stdout."""
+        result = harness._run_pytest_with_hard_timeout(
+            [sys.executable, "-c", "print('hello')"],
+            timeout_seconds=10,
+        )
+        assert "hello" in result.stdout
+
+    def test_kills_hung_process_tree_within_budget(self, tmp_path: Path) -> None:
+        """Kill tree completes within timeout + 8s; grandchild also gone.
+
+        This is the specific defect that produced the 8.5-hour hang: killing
+        the direct child did not unblock communicate() because grandchildren
+        still held pipe handles. The helper must not block on communicate().
+        """
+        import time
+
+        pid_file = tmp_path / "grandchild.pid"
+        script = tmp_path / "hung.py"
+        script.write_text(
+            "import subprocess, sys, time\n"
+            f"gc = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(300)'])\n"
+            f"open({str(pid_file)!r}, 'w').write(str(gc.pid))\n"
+            "sys.stdout.flush()\n"
+            "time.sleep(300)\n"
+        )
+        start = time.monotonic()
+        with pytest.raises(subprocess.TimeoutExpired):
+            harness._run_pytest_with_hard_timeout(
+                [sys.executable, str(script)],
+                timeout_seconds=3,
+            )
+        elapsed = time.monotonic() - start
+        assert elapsed < 3 + 8, f"kill-tree took {elapsed:.1f}s — expected < 11s"
+
+        # Verify grandchild was also killed (best-effort; skip if PID file not written).
+        if pid_file.exists():
+            grandchild_pid = int(pid_file.read_text().strip())
+            time.sleep(0.5)  # allow OS to reap
+            if sys.platform == "win32":
+                tasklist = subprocess.run(
+                    ["tasklist", "/FI", f"PID eq {grandchild_pid}", "/NH"],
+                    capture_output=True,
+                    text=True,
+                )
+                assert str(grandchild_pid) not in tasklist.stdout, (
+                    f"Grandchild PID {grandchild_pid} still alive after kill-tree"
+                )
+            else:
+                try:
+                    os.kill(grandchild_pid, 0)
+                    pytest.fail(f"Grandchild PID {grandchild_pid} still alive after kill-tree")
+                except (ProcessLookupError, PermissionError):
+                    pass  # gone — good
+
+    def test_timeout_raises_timeout_expired(self) -> None:
+        """A hung process raises subprocess.TimeoutExpired (after killing tree)."""
+        with pytest.raises(subprocess.TimeoutExpired):
+            harness._run_pytest_with_hard_timeout(
+                [sys.executable, "-c", "import time; time.sleep(300)"],
+                timeout_seconds=2,
+            )
+
+
+# ---------------------------------------------------------------------------
+# BaselineCaptureError — _capture_test_baseline error semantics
+# ---------------------------------------------------------------------------
+
+
+class TestCaptureTestBaseline:
+    """_capture_test_baseline raises BaselineCaptureError on all three failure modes.
+
+    AC #4: timeout, subprocess error, and unparseable output all surface
+    as named exceptions; the caller (main loop) converts them to abort signals.
+    """
+
+    def _make_cp(
+        self,
+        returncode: int = 0,
+        stdout: str = "",
+        stderr: str = "",
+    ) -> subprocess.CompletedProcess:
+        return subprocess.CompletedProcess(
+            args=[], returncode=returncode, stdout=stdout, stderr=stderr
+        )
+
+    def test_timeout_raises_baseline_capture_error(self) -> None:
+        """TimeoutExpired from the helper → BaselineCaptureError."""
+        with patch.object(
+            harness,
+            "_run_pytest_with_hard_timeout",
+            side_effect=subprocess.TimeoutExpired(cmd=[], timeout=600),
+        ):
+            with pytest.raises(harness.BaselineCaptureError, match="timeout"):
+                harness._capture_test_baseline()
+
+    def test_nonzero_exit_raises_baseline_capture_error(self) -> None:
+        """Non-zero subprocess exit → BaselineCaptureError with stderr tail."""
+        with patch.object(
+            harness,
+            "_run_pytest_with_hard_timeout",
+            return_value=self._make_cp(returncode=2, stderr="worker crashed"),
+        ):
+            with pytest.raises(harness.BaselineCaptureError, match="worker crashed"):
+                harness._capture_test_baseline()
+
+    def test_file_not_found_raises_baseline_capture_error(self) -> None:
+        """FileNotFoundError (pytest missing) → BaselineCaptureError."""
+        with patch.object(
+            harness,
+            "_run_pytest_with_hard_timeout",
+            side_effect=FileNotFoundError("pytest not found"),
+        ):
+            with pytest.raises(harness.BaselineCaptureError, match="FileNotFoundError"):
+                harness._capture_test_baseline()
+
+    def test_unparseable_output_raises_baseline_capture_error(self) -> None:
+        """Zero exit but no 'N passed' line → BaselineCaptureError('unparseable')."""
+        with patch.object(
+            harness,
+            "_run_pytest_with_hard_timeout",
+            return_value=self._make_cp(returncode=0, stdout="no test results here"),
+        ):
+            with pytest.raises(harness.BaselineCaptureError, match="unparseable"):
+                harness._capture_test_baseline()
+
+    def test_parseable_output_returns_counts(self) -> None:
+        """Zero exit with 'N passed' line → (passing, skipped) tuple."""
+        output = "10 passed, 3 skipped in 5.00s"
+        with patch.object(
+            harness,
+            "_run_pytest_with_hard_timeout",
+            return_value=self._make_cp(returncode=0, stdout=output),
+        ):
+            result = harness._capture_test_baseline()
+        assert result == (10, 3)
