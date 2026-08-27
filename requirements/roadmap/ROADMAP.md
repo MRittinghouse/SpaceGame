@@ -114,7 +114,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | done | SH-1 |
 | [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
-| [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | todo | none |
+| [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | in-progress | none |
 
 ---
 
