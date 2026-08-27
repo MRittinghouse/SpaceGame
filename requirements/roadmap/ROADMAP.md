@@ -9793,14 +9793,16 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### SUITE-2 — Residual SDL worker-death race + test isolation from STOP
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Source**: SUITE-1 residual findings (2026-08-26)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
 
 **Goal.** SUITE-1 made the xdist worker death loud and bounded; it did not fix
 it. Find the actual cause, or prove it unfixable here and record why. Also fix a
-test-isolation defect found alongside it.
+test-isolation defect: `tests/test_ralph/test_harness.py` reads the real
+`STOP_FILE` at project root through `should_stop()` and 3 tests fail spuriously
+when the documented stop mechanism is in use.
 
 **Starting state — do not redo SUITE-1's work.**
 Already in place and working: `pytest-timeout` (120s, thread mode), the
@@ -9854,23 +9856,315 @@ experience and actively misleading during a debugging session.
 Point `STOP_FILE` at a tmp path in a fixture for these tests, and add a test
 asserting the suite passes with a real `STOP` file present.
 
+**Context to read.**
+- `requirements/roadmap/ROADMAP.md#suite-1` — the sibling sprint whose Plan +
+  phase reports establish everything SUITE-2 is NOT going to redo. Especially:
+  the pytest-timeout config, the kill-tree helper contract, the
+  `BaselineCaptureError` semantics. SUITE-2 must not regress any of these.
+- `ralph/config.py` (lines 26 for `STOP_FILE`, 44-58 for `TEST_WORKERS`).
+  The docstring at `TEST_WORKERS` is the current commit-message-quality record
+  of "why 8"; extend it if outcome 2 lands.
+- `ralph/harness.py` — `should_stop()` at line 135, `STOP_FILE` import at line
+  48, `_run_pytest_with_hard_timeout` at line 383, `_capture_test_baseline`
+  at line 481. Read the STOP handling in `should_stop`, `consume_stop_file`,
+  and the `should_stop()` guard sites at lines 258, 295, 347, 1394, 1501.
+- `tests/conftest.py` — sets `SDL_AUDIODRIVER=dummy` and `SDL_VIDEODRIVER=dummy`
+  via `setdefault` at module import. This is SUITE-1's fix; DO NOT touch it as
+  a "diagnostic" measure. Add task-2 fixtures elsewhere.
+- `tests/test_ralph/test_harness.py` — the `isolated_roadmap` fixture at line
+  52 is the pattern SUITE-2 extends for STOP isolation. The three failing
+  tests live in `TestExecuteSprintQualityGate` at line 674 (and adjacent
+  classes in the file that also drive `execute_sprint`).
+- `scripts/repro_xdist_flake.py` — the diagnostic harness. Takes `--runs N`
+  and `--timeout-seconds S`; prints a stable `SUITE1_REPRO ...` summary line.
+- `requirements/agent_principles.md` — honesty over rubber-stamping. Outcome 3
+  is a valid, honest endpoint; a speculative fix pretending to be a real one
+  is not.
+
+**Touch zones.**
+```
+ralph/config.py                                       (extend TEST_WORKERS docstring per outcome)
+tests/test_ralph/test_harness.py                      (extend isolated_roadmap fixture; add STOP-present regression test)
+scripts/repro_xdist_flake.py                          (OPTIONAL: only if task 2 diagnostics need a --pytest-args passthrough)
+```
+
+Explicit non-touch zones:
+- `tests/conftest.py` — do NOT modify. SUITE-1's `SDL_VIDEODRIVER=dummy` line
+  is the current mitigation floor; instrumentation belongs in the repro
+  script, not the session-wide conftest.
+- `ralph/harness.py` — do NOT modify `should_stop()`, `consume_stop_file()`,
+  `_run_pytest_with_hard_timeout`, `_capture_test_baseline`, or any other
+  harness function. The test-isolation defect is fixed on the test side by
+  patching `STOP_FILE`; there is nothing wrong with the harness code path
+  itself. Only touch harness code if outcome 1 lands and the fix requires it,
+  in which case the reviewer will challenge the touch-zone expansion.
+- `.github/workflows/quality.yml` — do NOT modify. CI-side timeouts and the
+  worker cap are already in place; the only reason to touch this file is if
+  outcome 1 lands and the cap is raised in code — even then, `TEST_WORKERS`
+  is read from env, so CI reads the new default automatically.
+
+**Deliverables.**
+- A recorded pre-fix repro reading at `-n auto` (32 workers) using the current
+  code, printed via `scripts/repro_xdist_flake.py`'s stable summary line, in
+  the sprint's Activity log. This is the "before" number.
+- One of: (outcome 1) a fix + a 20-run clean measurement at `-n auto` + a
+  `TEST_WORKERS` bump with justification; (outcome 2) a documented root cause
+  in the `TEST_WORKERS` docstring; (outcome 3) a plain statement that the
+  flake did not reproduce and that the cap stands, recorded in the docstring.
+- Extended `isolated_roadmap` fixture in `tests/test_ralph/test_harness.py`
+  that also monkeypatches `config.STOP_FILE` and `harness.STOP_FILE` to a
+  path inside `tmp_path`, so every test that uses the fixture (including all
+  three currently-spurious failures) is isolated from a real project-root
+  `STOP` file.
+- One new regression test in `tests/test_ralph/test_harness.py` that
+  demonstrates AC #2 directly: with a real (monkeypatched) `STOP_FILE`
+  existing on disk, the quality-gate happy path still passes.
+- Full suite green at the baseline (>= 10580 passed, 98 skipped).
+
 **Acceptance criteria.**
 1. Measured hang rate reported at the worker count used for diagnosis, before
-   and after any change. If outcome 3, report the attempts and stop.
+   and after any change. If outcome 3, report the attempts and stop. The
+   pre-fix and (if applicable) post-fix `SUITE1_REPRO` lines appear in the
+   Activity log verbatim.
 2. `tests/test_ralph/` passes with a `STOP` file present at the project root.
-3. `ralph.config.TEST_WORKERS` either raised with evidence, or left at 8 with a
-   comment pointing at the documented finding.
-4. Full suite green.
+   Demonstrated by: (a) extending the `isolated_roadmap` fixture, and (b) a
+   new test that asserts the happy path passes when `STOP_FILE.exists()`
+   returns True under isolation.
+3. `ralph.config.TEST_WORKERS` either raised with evidence (outcome 1) or
+   left at 8 with a docstring update pointing at the documented finding
+   (outcomes 2 and 3). Do not silently keep the docstring stale.
+4. Full suite green (>= 10580 passed, 98 skipped — the pre-phase baseline).
+
+**Plan.**
+
+1. **Pre-fix repro at `-n auto`.** Run
+   `python scripts/repro_xdist_flake.py --runs 10 --timeout-seconds 300`
+   with no code changes. Record the `SUITE1_REPRO runs=... hangs=... ...`
+   summary line in the Activity log. This is AC #1's "before" number.
+   If 10 runs show 0 hangs, bump to `--runs 20` before concluding outcome 3;
+   a 10/10 clean read at `-n auto` is suggestive but not decisive given
+   SUITE-1's measured 1-in-3 rate.
+   - Touches: none (measurement only).
+   - Test surface: none.
+   - Risk: the repro consumes wall-clock (~10-30 min per pass). Budget it.
+     Do NOT run at `-n 8` — the flake does not reproduce there per SUITE-1's
+     final measurement.
+
+2. **Extend `isolated_roadmap` to also isolate `STOP_FILE`.** In
+   `tests/test_ralph/test_harness.py`, add
+   `monkeypatch.setattr(config, "STOP_FILE", tmp_path / "STOP")` and
+   `monkeypatch.setattr(harness, "STOP_FILE", tmp_path / "STOP")` to the
+   existing `isolated_roadmap` fixture, mirroring the STATE_FILE / LOCK_FILE
+   pattern already there. This is the minimal, surgical fix: every test that
+   uses `isolated_roadmap` — including all three failing tests — inherits
+   STOP isolation immediately.
+   - Touches: `tests/test_ralph/test_harness.py` (fixture only).
+   - Test surface: the three failing tests should now pass with a real
+     project-root STOP file present. Verify by creating a real STOP file at
+     the project root, running `pytest tests/test_ralph/ -q`, and deleting
+     the file afterward. **Do not commit the STOP file.**
+   - Risk: `harness` imports `STOP_FILE` at module level (`from ralph.config
+     import STOP_FILE` at line 48), so `should_stop()` reads the
+     module-local binding, not `config.STOP_FILE`. Patching both is why the
+     fixture must set two paths, not one.
+
+3. **Add a regression test for AC #2.** Add
+   `TestExecuteSprintStopFileIsolation` (or a single method inside the
+   existing quality-gate class): the test uses `isolated_roadmap`, creates
+   the (now-monkeypatched) STOP file via `(tmp_path / "STOP").touch()`,
+   then drives the happy path through `execute_sprint` and asserts it
+   completes normally. This is AC #2's direct evidence — without this
+   test, a future regression could re-break the isolation and only the
+   integration hurt would surface it.
+   - Touches: `tests/test_ralph/test_harness.py` (one new test method).
+   - Test surface: the new test itself.
+   - Risk: `should_stop()` currently reads `STOP_FILE` fresh on every call
+     (no caching), so the touch/unlink dance inside the test is safe. But
+     the `_stop_requested` module-global (set by SIGINT handler) is
+     process-wide state; verify it is False at test entry, or reset it
+     explicitly with a `monkeypatch.setattr(harness, "_stop_requested",
+     False)`. Otherwise a prior SIGINT in the pytest process could leak in.
+
+4. **Diagnose the residual flake (only if task 1 shows a repro).** If
+   task 1's `SUITE1_REPRO` line reports `hangs > 0`, attempt to localize.
+   Options in preference order: (a) re-run repro with `-k
+   "not crawler and not engine"` and separately with `-k "crawler or
+   engine"` to see whether the deaths cluster in the heavy-`Game`-boot
+   tests; (b) attach `faulthandler.dump_traceback_later(60)` temporarily
+   inside the repro script's spawned pytest to catch a stalled worker's
+   Python-level state before the process death (this may return nothing —
+   the sprint notes explicitly say the death is not a Python exception);
+   (c) inspect any log lines the killed workers emitted just before death,
+   preserved by the kill-tree helper's drain-thread output. Report what
+   was learned (including "nothing conclusive") in the Activity log.
+   If task 1 showed `hangs == 0` (10/10 or 20/20 clean), SKIP this task
+   and go straight to task 6 with outcome 3 in hand.
+   - Touches: `scripts/repro_xdist_flake.py` may gain a `--pytest-args`
+     passthrough if the `-k` filter approach is used; otherwise none.
+   - Test surface: none (diagnostic).
+   - Risk: this task can eat the entire sprint budget. Timebox it to
+     ~4 hours. If nothing conclusive surfaces in 4 hours, fall through
+     to outcome 2 with a candid "hypothesis: concurrent SDL native
+     resource contention; unpinned in-project" or to outcome 3 if the
+     hang rate is at or near zero.
+
+5. **Attempt a targeted mitigation (only if task 4 pinpointed a
+   category).** If deaths cluster in a specific test module, try
+   `--dist=loadfile` or `--dist=loadscope` for that module via
+   `pyproject.toml`'s `[tool.pytest.ini_options]`, or bracket the
+   offending tests with `@pytest.mark.forked` under `pytest-forked` if
+   already available. Do NOT introduce new dependencies (per SUITE-1's
+   pattern of preferring native OS mechanisms). Re-run the repro and
+   record the delta. If the mitigation makes the flake worse, revert.
+   - Touches: possibly `pyproject.toml` (xdist grouping), possibly one
+     test module (add `@pytest.mark.forked` or a marker).
+   - Test surface: re-run repro to measure delta; full suite to check
+     nothing else broke.
+   - Risk: this is where the sprint most likely lands in outcome 2. Do
+     NOT ship a change that has not been measured against the repro.
+
+6. **Update `TEST_WORKERS` docstring per outcome.** Choose exactly one:
+   - **Outcome 1** — 20 consecutive `-n auto` runs clean under the fix.
+     Change `TEST_WORKERS` default from `"8"` to `"auto"` (or higher fixed
+     value if the repro at "auto" now measures 0 hangs across 20 runs).
+     Rewrite the docstring paragraph starting at line 44 to explain the
+     new posture, cite the post-fix `SUITE1_REPRO` line, and note that
+     removing the cap is now safe.
+   - **Outcome 2** — root cause identified but unfixable in-project.
+     Keep the cap at 8. Extend the docstring with a one-paragraph summary
+     of the finding (e.g., "As of 2026-08-27 the residual death was
+     traced to <X>; no in-project fix; SUITE-2 phase report has the full
+     analysis"). Point at the SUITE-2 phase report in the roadmap.
+   - **Outcome 3** — not reproducible in the sprint window. Keep the cap
+     at 8. Append one line: "As of 2026-08-27 SUITE-2 attempted to
+     reproduce with `-n auto` (10-20 runs) and could not; the cap
+     remains defensive." AC #3.
+   - Touches: `ralph/config.py` (docstring only, unless outcome 1).
+   - Test surface: none.
+   - Risk: the docstring is the only durable record of "why 8" for future
+     maintainers. Leaving it stale after this sprint is worse than
+     leaving the flake unfixed.
+
+7. **Manual AC #2 verification.** Create a real `STOP` file at
+   `ralph.config.PROJECT_ROOT / "STOP"` from the shell, run
+   `python -m pytest tests/test_ralph/ -q`, confirm all pass, then
+   **immediately delete the STOP file** so the next harness invocation
+   is not stopped instantly. Record the pass count and the sequence
+   (touch STOP -> pytest -> assert clean -> `rm STOP`) in the Activity
+   log. This is the shipped-behavior verification for AC #2.
+   - Touches: none (verification only).
+   - Test surface: manual verification.
+   - Risk: leaking a real STOP file into the working tree wastes the
+     next harness run. Delete before commit and before ending the phase.
+
+8. **Full suite verification and phase close-out.** Run
+   `python -m pytest -n 8 -q`. Confirm the pass count is >= 10580 and
+   skipped count is 98 (the pre-phase baseline). Any new failure is a
+   blocker per the harness rules; investigate and fix or escalate.
+   Record the count in the Activity log alongside the SUITE-1-style
+   pre/post SUITE1_REPRO lines.
+   - Touches: none.
+   - Test surface: full suite.
+   - Risk: task 5's mitigation (if any) could introduce a regression;
+     re-run the full suite after every code change, not just at the end.
+
+**Cross-sprint reactions to author.**
+none (infrastructure sprint, no player-facing surface). SUITE-2 changes are
+confined to test-fixture isolation, an optional test-distribution config,
+and a docstring update. No crew banter, NPC dialogue, news ticker, mission
+reactions, or journal entries to author. The only cross-sprint side effect
+is that once the STOP-file isolation lands, anyone using the documented
+stop mechanism during test-suite work no longer gets three unexplained
+failures — a small quality-of-life improvement for anyone else running the
+harness, not a targeted authoring item.
 
 **Risks / open questions.**
-- Likely environment-specific (Windows, 32 logical CPUs, this SDL build). That
-  makes outcome 2 or 3 more likely than 1, and both are acceptable. The failure
-  is already bounded; this sprint buys understanding, not safety.
-- Do NOT remove the worker cap to "test the fix" in the harness or CI. Use the
-  repro script.
+
+The following decisions were locked during this planning phase. The
+implementer follows them; the reviewer can challenge them.
+
+- ~~Diagnostic worker count for the repro?~~ **LOCKED**: `-n auto` (32
+  logical CPUs on this machine), and, if diagnosis needs load variation,
+  `-n 16`. Do NOT run the repro at `-n 8` — SUITE-1's final measurement
+  showed the flake does not surface there, so a clean `-n 8` reading is
+  measurement of the mitigation, not the residual defect.
+- ~~Repro sample size before declaring outcome 3?~~ **LOCKED**: 10 runs
+  as the first pass; if 10/10 clean, escalate to 20 runs. Outcome 3
+  requires ≥20 total clean runs at `-n auto`. SUITE-1 measured 1-in-3
+  hang rate over 3 runs; a 10-run silence is only 3.3 standard errors
+  from the null, which is not enough. Twenty runs is.
+- ~~STOP isolation mechanism?~~ **LOCKED**: extend the existing
+  `isolated_roadmap` fixture in `tests/test_ralph/test_harness.py` to
+  monkeypatch BOTH `config.STOP_FILE` and `harness.STOP_FILE`. Do not
+  introduce a new fixture; do not modify `should_stop()`. The fixture
+  pattern mirrors the existing STATE_FILE / LOCK_FILE isolation lines.
+- ~~Speculative fixes on outcome 3?~~ **LOCKED**: prohibited. If the
+  repro does not surface the flake and diagnosis produces no signal,
+  outcome 3 lands. Do NOT introduce a change that reduces SDL init
+  concurrency, splits test modules, or adds serialization directives
+  on speculation. A change that cannot be shown to alter the measured
+  rate is not a fix; it is future confusion.
+- ~~Worker cap changes?~~ **LOCKED**: only outcome 1 (20 consecutive
+  clean at `-n auto`) permits raising `TEST_WORKERS`. Outcomes 2 and
+  3 keep the cap at 8; only the docstring changes to reflect what was
+  learned. The cap is layered defense in depth per SUITE-1's design;
+  removing it without measurement re-opens the 8.5-hour-hang failure
+  mode.
+- ~~Can the sprint touch `ralph/harness.py`?~~ **LOCKED**: no, unless
+  outcome 1 lands and the fix demands it. The STOP-isolation defect
+  is a test-side fixture bug, not a harness code path bug —
+  `should_stop()` is behaving as designed. Any touch of harness code
+  outside outcome 1 requires reviewer approval.
+
+Open questions (reviewer judgment, not blocking implementation):
+- If task 4's diagnosis surfaces a Python-level exception in a worker
+  (not process death), that is a substantially different failure mode
+  and re-scopes the sprint. The implementer should record the finding
+  and escalate rather than fold it into this sprint's scope.
+- If the repro at `-n auto` shows a wildly different hang rate from
+  SUITE-1's 1-in-3 (e.g., 0/20 or 5/20), the implementer should note
+  the environmental change (Windows update, Python patch version, SDL
+  build) in the docstring, since the record of "1-in-3 at 32 workers"
+  becomes historically inaccurate.
 
 **Activity log.**
 - 2026-08-26 — todo (created from SUITE-1 residual findings)
+- 2026-08-27 09:32 — harness: plan phase starting
+- 2026-08-27 — planning complete; verified all 6 context-to-read paths
+  exist (`ralph/config.py`, `ralph/harness.py`, `tests/conftest.py`,
+  `tests/test_ralph/test_harness.py`, `scripts/repro_xdist_flake.py`,
+  `requirements/agent_principles.md`); confirmed `STOP_FILE` is imported
+  by `ralph/harness.py:48` as a module-local binding (patching only
+  `config.STOP_FILE` will not intercept `should_stop()`, hence the
+  two-target monkeypatch decision); confirmed the `isolated_roadmap`
+  fixture at `tests/test_ralph/test_harness.py:52` is the correct
+  extension point; confirmed `TEST_WORKERS` docstring at
+  `ralph/config.py:44-58` is the durable record for post-sprint update;
+  confirmed the current `TestExecuteSprintQualityGate` class contains
+  6 tests, of which the sprint identifies 3 as spuriously failing under
+  a real STOP file. Added Context to read (6 paths), Touch zones (3
+  files, 1 optional) plus explicit non-touch zones (`tests/conftest.py`,
+  `ralph/harness.py`, `.github/workflows/quality.yml`), Deliverables (5
+  items), Plan (8 tasks with test surface + risk each), Cross-sprint
+  reactions (none — infrastructure sprint). Locked 6 decisions
+  (diagnostic worker count: `-n auto` / `-n 16`; repro sample size:
+  10 → 20; STOP isolation: extend `isolated_roadmap` monkeypatching
+  both `config.STOP_FILE` and `harness.STOP_FILE`; speculative fixes:
+  prohibited; worker cap changes: only outcome 1; harness code
+  untouchable outside outcome 1). Reformed the acceptance criteria to
+  reference the concrete deliverables. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-27 09:32
+- Completed: 2026-08-27
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (infrastructure sprint; no player-facing surface to polish)
+- Decisions_locked: 6
+- Notes: Verified all 6 context paths exist. The critical planning insight is that `ralph/harness.py` imports `STOP_FILE` at module level (line 48), so `should_stop()` reads the module-local binding — the isolation fixture must monkeypatch both `config.STOP_FILE` AND `harness.STOP_FILE`, not just one. Sprint is right-sized at M / 3-5 days: task 1's pre-fix repro is unavoidable, tasks 2-3 (STOP isolation) are surgical, tasks 4-5 (diagnosis) are timeboxed to prevent open-ended investigation, and task 6 (docstring update) closes the loop honestly for whichever outcome lands. Explicit non-touch zones added to prevent scope creep into SUITE-1's territory.
 
 ## Followups
 
