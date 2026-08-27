@@ -21,7 +21,7 @@ from dataclasses import fields as dataclass_fields
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ralph import agents, roadmap_state
+from ralph import agents, heartbeat, roadmap_state
 from ralph.agents import Outcome, Phase, PhaseContext
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
@@ -153,6 +153,22 @@ def consume_stop_file() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Heartbeat context
+# ---------------------------------------------------------------------------
+
+# What the heartbeat thread reports each beat: (sprint_id, phase). Updated at
+# each phase transition inside execute_sprint and reset to (None, None) once
+# a sprint stops being actively worked (any exit path — done, blocked, error).
+_current_context: tuple[Optional[str], Optional[str]] = (None, None)
+
+
+def _set_context(sprint: Optional[str], phase: Optional[str]) -> None:
+    """Update what the heartbeat thread reports on its next beat."""
+    global _current_context
+    _current_context = (sprint, phase)
+
+
+# ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
 
@@ -216,7 +232,24 @@ def execute_sprint(
     failures (item L).
 
     Returns the final Outcome (OK, BLOCKED, TIMEOUT, ERROR).
+
+    Wrapped in try/finally so the heartbeat context (`_current_context`) is
+    reset to (None, None) no matter which of the many exit paths below is
+    taken -- otherwise the heartbeat would keep reporting a stale phase for
+    a sprint that has already finished.
     """
+    try:
+        return _run_sprint_phases(sprint_id, state, test_baseline)
+    finally:
+        _set_context(None, None)
+
+
+def _run_sprint_phases(
+    sprint_id: str,
+    state: HarnessState,
+    test_baseline: tuple[int, int],
+) -> Outcome:
+    """The actual plan → (implement → review) logic. See `execute_sprint`."""
     sprint_state = state.for_sprint(sprint_id)
     sprint_state.started_at = sprint_state.started_at or datetime.now().isoformat()
     sprint_state.last_touched_at = datetime.now().isoformat()
@@ -228,6 +261,7 @@ def execute_sprint(
     )
 
     # ---- Phase 1: Plan ----
+    _set_context(sprint_id, "plan")
     log(f"{sprint_id}: phase=plan starting")
     roadmap_state.update_status(sprint_id, STATUS_PLANNING)
     roadmap_state.append_activity_log(sprint_id, "harness: plan phase starting")
@@ -262,6 +296,7 @@ def execute_sprint(
     # ---- Phase 2 + 3: Implement → Review (with bounded rework) ----
     while sprint_state.rework_cycles < MAX_REWORK_CYCLES:
         # Implement
+        _set_context(sprint_id, "implement")
         log(f"{sprint_id}: phase=implement starting (rework cycle {sprint_state.rework_cycles})")
         roadmap_state.update_status(sprint_id, STATUS_IMPLEMENTING)
         roadmap_state.append_activity_log(
@@ -300,6 +335,7 @@ def execute_sprint(
             return Outcome.OK
 
         # Review
+        _set_context(sprint_id, "review")
         log(f"{sprint_id}: phase=review starting (rework cycle {sprint_state.rework_cycles})")
         roadmap_state.update_status(sprint_id, STATUS_REVIEWING)
         roadmap_state.append_activity_log(
@@ -433,6 +469,7 @@ def _capture_test_baseline() -> tuple[int, int]:
 _HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = (
     "ralph/.running",
     "ralph/state.json",
+    "ralph/heartbeat.json",
     "ralph/.write_probe",
     "ralph/.agency_probe",
     "STOP",
@@ -1256,10 +1293,17 @@ def main() -> int:
     if rc != 0:
         return rc
 
+    # Heartbeat (Task 5): starts as soon as pre-flight confirms it is safe to
+    # run, and is stopped on every exit path below. A stale or absent
+    # heartbeat then always means "something is wrong" -- never "the harness
+    # hasn't decided whether to run yet."
+    heartbeat_stop = heartbeat.start_heartbeat_thread(lambda: _current_context)
+
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Lock — refuse concurrent runs (paranoia / safety).
     if not _acquire_lock():
+        heartbeat_stop.set()
         return 2
 
     try:
@@ -1419,6 +1463,7 @@ def main() -> int:
         state.save()
         return 0
     finally:
+        heartbeat_stop.set()
         _release_lock()
 
 
