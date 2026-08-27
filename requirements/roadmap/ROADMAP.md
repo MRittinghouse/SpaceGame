@@ -10160,7 +10160,7 @@ Open questions (reviewer judgment, not blocking implementation):
 - Started: 2026-08-27 09:32
 - Completed: 2026-08-27
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: ac1a61d
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (infrastructure sprint; no player-facing surface to polish)
 - Decisions_locked: 6
