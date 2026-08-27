@@ -374,3 +374,18 @@ class TestParseLastPhaseReport:
         # Sprint that doesn't exist — should return empty dict, not raise.
         fields = roadmap_state.parse_last_phase_report("NONEXISTENT")
         assert fields == {}
+
+
+class TestRoadmapWritesAreAtomic:
+    def test_write_roadmap_uses_atomic_write(self, tmp_path) -> None:
+        """A truncated ROADMAP.md loses every sprint definition.
+
+        We cannot cut power in a test, so assert we never call the unsafe path.
+        """
+        target = tmp_path / "ROADMAP.md"
+        target.write_text("original", encoding="utf-8")
+        with patch.object(roadmap_state, "ROADMAP_PATH", target):
+            with patch("ralph.roadmap_state.atomic_write") as mock_atomic:
+                roadmap_state._write_roadmap("new content")
+        mock_atomic.assert_called_once()
+        assert mock_atomic.call_args[0][1] == "new content"

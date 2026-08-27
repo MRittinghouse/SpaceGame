@@ -958,3 +958,16 @@ class TestCaptureTestBaseline:
         ):
             result = harness._capture_test_baseline()
         assert result == (10, 3)
+
+
+class TestStateWritesAreAtomic:
+    def test_state_save_uses_atomic_write(self, tmp_path: Path) -> None:
+        """A truncated state.json means the harness cannot start."""
+        from unittest.mock import patch
+
+        target = tmp_path / "state.json"
+        state = harness.HarnessState()
+        with patch.object(harness, "STATE_FILE", target):
+            with patch("ralph.harness.atomic_write") as mock_atomic:
+                state.save()
+        mock_atomic.assert_called_once()

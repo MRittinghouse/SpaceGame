@@ -47,7 +47,7 @@ from ralph.config import (
     STOP_FILE,
     TEST_WORKERS,
 )
-from ralph.proc import run_with_hard_timeout
+from ralph.proc import atomic_write, run_with_hard_timeout
 
 # ---------------------------------------------------------------------------
 # Persistent state
@@ -110,7 +110,7 @@ class HarnessState:
             "total_sprints_processed": self.total_sprints_processed,
             "last_run_started_at": self.last_run_started_at,
         }
-        STATE_FILE.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        atomic_write(STATE_FILE, json.dumps(payload, indent=2, ensure_ascii=False))
 
     def for_sprint(self, sprint_id: str) -> SprintState:
         if sprint_id not in self.sprints:
@@ -1134,7 +1134,7 @@ def _write_sprint_summary(
         "`requirements/roadmap/ROADMAP.md` for the sprint section + "
         "Activity log."
     )
-    summary_path.write_text("\n".join(body), encoding="utf-8")
+    atomic_write(summary_path, "\n".join(body))
 
 
 def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> None:
@@ -1381,7 +1381,7 @@ def main() -> int:
                 _text = _RM.read_text(encoding="utf-8")
                 _new, _drift = _sync_index(_text)
                 if _drift:
-                    _RM.write_text(_new, encoding="utf-8")
+                    atomic_write(_RM, _new)
                     log(f"{picked.sprint_id}: synced {len(_drift)} index row(s)")
             except Exception as e:
                 log(f"{picked.sprint_id}: index sync failed: {e}")

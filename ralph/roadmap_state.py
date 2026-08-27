@@ -18,6 +18,7 @@ import re
 from dataclasses import dataclass, field
 
 from ralph.config import ROADMAP_PATH, STATUS_DONE, STATUS_TODO
+from ralph.proc import atomic_write
 
 # ---------------------------------------------------------------------------
 # Regex helpers
@@ -80,7 +81,7 @@ def _read_roadmap() -> str:
 
 
 def _write_roadmap(content: str) -> None:
-    ROADMAP_PATH.write_text(content, encoding="utf-8")
+    atomic_write(ROADMAP_PATH, content)
 
 
 def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
