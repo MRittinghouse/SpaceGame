@@ -112,7 +112,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 |---|---|---|---|---|---|
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
-| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
+| [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | in-progress | SH-1 |
 | [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
 
 ---
@@ -9294,6 +9294,7 @@ nothing else, record findings without fixing.
 - 2026-08-26 — unblocked: Spec B approved by Matt.
 - 2026-08-26 21:51 — harness: plan phase starting
 - 2026-08-26 22:00 — planning complete; 7 tasks scoped, 33 handler
+- 2026-08-26 22:00 — harness: stop requested after plan phase
   extraction targets enumerated (view-check block inventory verified
   against source lines 1140-2330), 7 decisions locked (split strategy,
   handler return type, atomic commit, no baseline regen, findings
