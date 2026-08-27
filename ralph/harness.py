@@ -1137,6 +1137,29 @@ def _write_sprint_summary(
     atomic_write(summary_path, "\n".join(body))
 
 
+def _sync_roadmap_index(sprint_id: str) -> None:
+    """Sync Status cells in non-auto-generated ROADMAP.md index tables.
+
+    regenerate_index() only rebuilds the SA-arc table (it works between the
+    AUTO_GENERATED_SA_INDEX markers). The Followups and QF tables are
+    hand-maintained and drift the moment a status changes. This helper syncs
+    the Status cells of every other table too, writing atomically.
+
+    Failure here is non-fatal and logged; the harness continues.
+    """
+    try:
+        from scripts.sync_roadmap_index import ROADMAP_PATH as _RM
+        from scripts.sync_roadmap_index import sync as _sync_index
+
+        _text = _RM.read_text(encoding="utf-8")
+        _new, _drift = _sync_index(_text)
+        if _drift:
+            atomic_write(_RM, _new)
+            log(f"{sprint_id}: synced {len(_drift)} index row(s)")
+    except Exception as e:
+        log(f"{sprint_id}: index sync failed: {e}")
+
+
 def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> None:
     """Push current branch to origin after sprint completion.
 
@@ -1368,23 +1391,8 @@ def main() -> int:
             except Exception as e:
                 log(f"{picked.sprint_id}: index regen failed: {e}")
 
-            # regenerate_index() only rebuilds the SA-arc table (it works
-            # between the AUTO_GENERATED_SA_INDEX markers). The Followups and
-            # QF tables are hand-maintained and drift the moment a status
-            # changes -- on 2026-08-24 every QF row still read "todo" while all
-            # ten sprints were done, and the false picture caused real wasted
-            # time. Sync the Status cells of every other table too.
-            try:
-                from scripts.sync_roadmap_index import ROADMAP_PATH as _RM
-                from scripts.sync_roadmap_index import sync as _sync_index
-
-                _text = _RM.read_text(encoding="utf-8")
-                _new, _drift = _sync_index(_text)
-                if _drift:
-                    atomic_write(_RM, _new)
-                    log(f"{picked.sprint_id}: synced {len(_drift)} index row(s)")
-            except Exception as e:
-                log(f"{picked.sprint_id}: index sync failed: {e}")
+            # Sync Status cells in hand-maintained index tables (item J).
+            _sync_roadmap_index(picked.sprint_id)
 
             # Commit harness bookkeeping (terminal status + index regen).
             # Captures the post-agent ROADMAP edits the harness writes

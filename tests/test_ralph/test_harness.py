@@ -963,9 +963,6 @@ class TestCaptureTestBaseline:
 class TestStateWritesAreAtomic:
     def test_state_save_uses_atomic_write(self, tmp_path: Path) -> None:
         """A truncated state.json means the harness cannot start."""
-        from unittest.mock import patch
-        import json
-
         target = tmp_path / "state.json"
         state = harness.HarnessState()
         with patch.object(harness, "STATE_FILE", target):
@@ -982,9 +979,6 @@ class TestStateWritesAreAtomic:
 
     def test_write_sprint_summary_uses_atomic_write(self, tmp_path: Path) -> None:
         """Per-sprint SUMMARY.md must survive a power cut."""
-        from unittest.mock import patch, MagicMock
-        from ralph.agents import Outcome
-
         summary_dir = tmp_path / "logs" / "SA-1"
         summary_path = summary_dir / "SUMMARY.md"
         state = harness.HarnessState()
@@ -999,31 +993,21 @@ class TestStateWritesAreAtomic:
         assert "SA-1" in call_args[1]
         assert "ok" in call_args[1]
 
-    def test_index_sync_write_uses_atomic_write(self, tmp_path: Path) -> None:
+    def test_sync_roadmap_index_uses_atomic_write(self) -> None:
         """Index sync must survive a power cut."""
-        from unittest.mock import patch, MagicMock
-        import sys
-
-        # Mock sync_roadmap_index to return mock output.
         mock_sync = MagicMock(return_value=("new content", ["SA-1"]))
-        mock_rm_path = tmp_path / "ROADMAP.md"
-        mock_rm_path.write_text("original", encoding="utf-8")
+        mock_rm_path = MagicMock()
+        mock_rm_path.read_text.return_value = "original"
 
-        # Patch both the sync function and the module's ROADMAP_PATH.
-        with patch.dict(sys.modules, {"scripts.sync_roadmap_index": MagicMock()}):
-            mock_module = sys.modules["scripts.sync_roadmap_index"]
-            mock_module.ROADMAP_PATH = mock_rm_path
-            mock_module.sync = mock_sync
+        with patch("ralph.harness.atomic_write") as mock_atomic:
+            with patch.dict(
+                "sys.modules", {"scripts.sync_roadmap_index": MagicMock()}
+            ) as mocked_modules:
+                mock_module = mocked_modules["scripts.sync_roadmap_index"]
+                mock_module.ROADMAP_PATH = mock_rm_path
+                mock_module.sync = mock_sync
 
-            with patch("ralph.harness.atomic_write") as mock_atomic:
-                # Import and execute the sync code path.
-                from ralph.harness import ROADMAP_PATH as harness_roadmap
-
-                # Simulate the sync code: read, call _sync_index, write if changed.
-                _text = mock_rm_path.read_text(encoding="utf-8")
-                _new, _drift = mock_sync(_text)
-                if _drift:
-                    harness.atomic_write(mock_rm_path, _new)
+                harness._sync_roadmap_index("SA-1")
 
         mock_atomic.assert_called_once()
         call_args = mock_atomic.call_args[0]
