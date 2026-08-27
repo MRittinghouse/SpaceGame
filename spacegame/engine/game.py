@@ -9,8 +9,8 @@ File structure:
   Lines ~80-350:   Game.__init__() — pygame init, manager creation, data loading
   Lines ~350-500:  Game.run() — main loop, event handling, render
   Lines ~500-810:  Game loop helpers — update, render, HUD, save/load
-  Lines ~810-1690: _handle_state_transitions() — 30-case router for all state changes
-  Lines ~1690-1745: Transition helpers — _start_transition, _do closures
+  Lines ~1130-2360: _route_from_*() handlers (33) + _handle_state_transitions() dispatcher
+  Lines ~2360-2415: Transition helpers — _start_transition, _do closures
   Lines ~1745-2100: View factories — 23 _ensure_*_view() methods (lazy view creation)
   Lines ~2100-2270: Combat setup — start_combat(), build encounters
   Lines ~2270-2500: Encounter processing — resolve encounters, post-combat rewards
@@ -1131,12 +1131,7 @@ class Game:
     # pending state. Cases are ordered by frequency of use.
     # ==================================================================
 
-    def _handle_state_transitions(self) -> None:
-        """Check for and handle state transitions."""
-        # Don't process new transitions while one is active
-        if self.transition_manager.active:
-            return
-
+    def _route_from_main_menu(self) -> bool:
         # Check main menu for transitions
         if self.main_menu_view and self.main_menu_view.active:
             next_state = self.main_menu_view.get_next_state()
@@ -1160,7 +1155,9 @@ class Game:
             elif next_state == "settings":
                 self.main_menu_view.next_state = None
                 self._open_settings_from_menu()
+        return False
 
+    def _route_from_name_input(self) -> bool:
         # Check name input view for transitions
         if self.name_input_view and self.name_input_view.active:
             next_state = self.name_input_view.get_next_state()
@@ -1177,7 +1174,9 @@ class Game:
                     self.state_manager.change_state(GameState.CHARACTER_CREATION)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_character_creation(self) -> bool:
         # Check character creation view for transitions
         if hasattr(self, "character_creation_view") and self.character_creation_view:
             if self.character_creation_view.active:
@@ -1200,7 +1199,9 @@ class Game:
                             self.state_manager.change_state(GameState.GALAXY_MAP)
 
                         self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_tutorial_shop(self) -> bool:
         # Check tutorial shop for transitions
         if hasattr(self, "_tutorial_shop_view") and self._tutorial_shop_view:
             if self._tutorial_shop_view.active:
@@ -1223,7 +1224,9 @@ class Game:
                         )
 
                     self._start_transition(TransitionType.FADE, 0.5, _do)
+        return False
 
+    def _route_from_galaxy_map(self) -> bool:
         # Check galaxy map for transitions
         if self.galaxy_map_view and self.galaxy_map_view.active:
             # Handle save button (not a state transition)
@@ -1308,7 +1311,7 @@ class Game:
             # Check for NPC auto-trigger dialogues at current system
             self._check_auto_triggers()
             if self.dialogue_view and self.dialogue_view.active:
-                return  # Auto-trigger fired, skip galaxy map processing
+                return True  # Auto-trigger fired, skip galaxy map processing
 
             next_state = self.galaxy_map_view.get_next_state()
             if next_state == GameState.TRADING:
@@ -1327,19 +1330,19 @@ class Game:
                     self.player.dialogue_flags[talked_to_npc("officer_larsen")] = True
                     self.dialogue_manager.set_flag(talked_to_npc("officer_larsen"))
                     self.start_dialogue("officer_larsen", return_state=GameState.STATION_HUB)
-                    return
+                    return True
 
                 # Check for bounty hunter encounter on arrival
                 if self._check_bounty_hunter_encounter():
-                    return
+                    return True
 
                 # Check for customs inspection on arrival
                 if self._check_customs_inspection():
-                    return
+                    return True
 
                 # Check for campaign ground mission trigger on arrival
                 if self._check_ground_mission_trigger():
-                    return
+                    return True
 
                 def _do():
                     self.auto_save()
@@ -1361,7 +1364,7 @@ class Game:
                             return_state=GameState.GALAXY_MAP,
                             transition_type=TransitionType.WARP,
                         )
-                        return
+                        return True
 
                 # Fallback: safe landing
                 def _do():
@@ -1383,7 +1386,7 @@ class Game:
                             self.state_manager.change_state(GameState.ENCOUNTER)
 
                         self._start_transition(TransitionType.FADE, 0.4, _do)
-                        return
+                        return True
 
                 # Fallback: no definition found → go to station hub
                 def _do():
@@ -1455,7 +1458,9 @@ class Game:
                     self.state_manager.change_state(GameState.JOURNAL)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_journal(self) -> bool:
         # Check journal view for transitions
         if self.journal_view and self.journal_view.active:
             next_state = self.journal_view.get_next_state()
@@ -1466,7 +1471,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_crew_roster(self) -> bool:
         # Check crew roster view for transitions
         if self.crew_roster_view and self.crew_roster_view.active:
             next_state = self.crew_roster_view.get_next_state()
@@ -1497,7 +1504,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_character(self) -> bool:
         # Check character view for transitions
         if hasattr(self, "character_view") and self.character_view:
             if self.character_view.active:
@@ -1525,7 +1534,9 @@ class Game:
                         self.state_manager.change_state(GameState.CREW_ROSTER)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_mission_log(self) -> bool:
         # Check mission log view for transitions
         if self.mission_log_view and self.mission_log_view.active:
             next_state = self.mission_log_view.get_next_state()
@@ -1536,7 +1547,7 @@ class Game:
                 accept_id = getattr(self.mission_log_view, "pending_accept_id", None)
                 if accept_id and self.mission_manager:
                     self.mission_log_view.pending_accept_id = None
-                    success, msg = self.mission_manager.accept_mission(
+                    success, _ = self.mission_manager.accept_mission(
                         accept_id,
                         game_day=self.player.game_day,
                         player=self.player,
@@ -1558,7 +1569,7 @@ class Game:
                 if abandon_id and self.mission_manager:
                     self.mission_log_view.pending_abandon_id = None
                     mission = self.mission_manager.get_mission(abandon_id)
-                    success, msg = self.mission_manager.abandon_mission(abandon_id)
+                    success, _ = self.mission_manager.abandon_mission(abandon_id)
                     if success:
                         name = mission.name if mission else abandon_id
                         # Remove on-accept cargo the mission granted
@@ -1589,7 +1600,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_trading(self) -> bool:
         # Check trading view for transitions
         if self.trading_view and self.trading_view.active:
             next_state = self.trading_view.get_next_state()
@@ -1602,7 +1615,9 @@ class Game:
                     self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_dialogue(self) -> bool:
         # Check dialogue view for transitions (generic — supports any return state)
         if self.dialogue_view and self.dialogue_view.active:
             next_state = self.dialogue_view.get_next_state()
@@ -1667,7 +1682,9 @@ class Game:
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_mining(self) -> bool:
         # Check mining view for transitions
         if self.mining_view and self.mining_view.active:
             next_state = self.mining_view.get_next_state()
@@ -1681,7 +1698,9 @@ class Game:
                     self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
+        return False
 
+    def _route_from_salvage(self) -> bool:
         # Check salvage view for transitions
         if self.salvage_view and self.salvage_view.active:
             next_state = self.salvage_view.get_next_state()
@@ -1695,7 +1714,9 @@ class Game:
                     self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
+        return False
 
+    def _route_from_refining(self) -> bool:
         # Check refining view for transitions
         if self.refining_view and self.refining_view.active:
             next_state = self.refining_view.get_next_state()
@@ -1707,7 +1728,9 @@ class Game:
                     self.state_manager.change_state(GameState.STATION_HUB)
 
                 self._start_transition(TransitionType.SLIDE, 0.3, _do)
+        return False
 
+    def _route_from_skill_tree(self) -> bool:
         # Check skill tree for transitions
         if self.skill_tree_view and self.skill_tree_view.active:
             next_state = self.skill_tree_view.get_next_state()
@@ -1733,7 +1756,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_statistics(self) -> bool:
         # Check statistics view for transitions
         if self.statistics_view and self.statistics_view.active:
             next_state = self.statistics_view.get_next_state()
@@ -1744,7 +1769,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_achievements(self) -> bool:
         # Check achievements view for transitions
         if self.achievements_view and self.achievements_view.active:
             next_state = self.achievements_view.get_next_state()
@@ -1755,7 +1782,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_combat(self) -> bool:
         # Check combat view for transitions
         if self.combat_view and self.combat_view.active:
             next_state = self.combat_view.get_next_state()
@@ -1792,7 +1821,9 @@ class Game:
                         self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_encounter(self) -> bool:
         # Check encounter view for transitions
         if self.encounter_view and self.encounter_view.active:
             next_state = self.encounter_view.get_next_state()
@@ -1822,7 +1853,7 @@ class Game:
                             return_state=_enc_return,
                             transition_type=TransitionType.WARP,
                         )
-                        return
+                        return True
                 # Non-combat: apply rewards and route appropriately
                 self._apply_encounter_result()
 
@@ -1837,14 +1868,16 @@ class Game:
                             return_state=_enc_return,
                             transition_type=TransitionType.WARP,
                         )
-                        return
+                        return True
 
                 def _do():
                     self.auto_save()
                     self.state_manager.change_state(_enc_return)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_ground_briefing(self) -> bool:
         # Check ground briefing for transitions
         if self.ground_briefing_view and self.ground_briefing_view.active:
             next_state = self.ground_briefing_view.get_next_state()
@@ -1895,7 +1928,9 @@ class Game:
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_ground_exploration(self) -> bool:
         # Check ground exploration for transitions
         if self.ground_exploration_view and self.ground_exploration_view.active:
             next_state = self.ground_exploration_view.get_next_state()
@@ -1920,7 +1955,9 @@ class Game:
                     self.state_manager.change_state(GameState.GALAXY_MAP)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_ground_result(self) -> bool:
         # Check ground result for transitions
         if self.ground_result_view and self.ground_result_view.active:
             next_state = self.ground_result_view.get_next_state()
@@ -1933,7 +1970,9 @@ class Game:
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_shipyard(self) -> bool:
         # Check shipyard for transitions
         if self.shipyard_view and self.shipyard_view.active:
             next_state = self.shipyard_view.get_next_state()
@@ -1954,7 +1993,9 @@ class Game:
                     self.state_manager.change_state(GameState.SHIP_BUILDER)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do_builder)
+        return False
 
+    def _route_from_ship_builder(self) -> bool:
         # Check ship builder for transitions
         if hasattr(self, "ship_builder_view") and self.ship_builder_view:
             if self.ship_builder_view.active:
@@ -1983,7 +2024,9 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.4, _do_builder_to_hub)
+        return False
 
+    def _route_from_station_hub(self) -> bool:
         # Check station hub view for transitions
         if hasattr(self, "station_hub_view") and self.station_hub_view:
             if self.station_hub_view.active:
@@ -2175,7 +2218,9 @@ class Game:
                     if npc_id:
                         self.station_hub_view.pending_npc_id = None
                         self.start_dialogue(npc_id, return_state=GameState.STATION_HUB)
+        return False
 
+    def _route_from_repair_bay(self) -> bool:
         # Check repair bay view for transitions
         if hasattr(self, "repair_bay_view") and self.repair_bay_view:
             if self.repair_bay_view.active:
@@ -2188,7 +2233,9 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do)
+        return False
 
+    def _route_from_wreckers_guild(self) -> bool:
         # SA-1: Wreckers' Guild Hall view returns to STATION_HUB on back.
         if hasattr(self, "wreckers_guild_view") and self.wreckers_guild_view:
             if self.wreckers_guild_view.active:
@@ -2201,7 +2248,9 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_wreckers_back)
+        return False
 
+    def _route_from_deep_shafts(self) -> bool:
         # SA-2: Deep Shafts memorial view returns to STATION_HUB on back.
         if hasattr(self, "deep_shafts_view") and self.deep_shafts_view:
             if self.deep_shafts_view.active:
@@ -2214,7 +2263,9 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_deep_shafts_back)
+        return False
 
+    def _route_from_auction(self) -> bool:
         # SA-B2: auction view returns to STATION_HUB on back. The
         # auction state lives on Player.auction_state directly, so no
         # snapshot is needed; the existing save_manager path handles it.
@@ -2240,7 +2291,9 @@ class Game:
                         self.state_manager.change_state(GameState.SELL_LOT)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_sell_lot_open)
+        return False
 
+    def _route_from_sell_lot(self) -> bool:
         # SA-B5: SellLotView routes back to GameState.AUCTION on confirm
         # or back. The AuctionView is still registered with its existing
         # session state, so we can flip back without re-preparing.
@@ -2255,7 +2308,9 @@ class Game:
                         self.state_manager.change_state(GameState.AUCTION)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_sell_lot_back)
+        return False
 
+    def _route_from_dispute(self) -> bool:
         # SA-P2: dispute view returns to STATION_HUB on back. Snapshot
         # the manager's pending / resolved disputes onto the player so a
         # mid-arc save survives session leave (round-boundary granularity).
@@ -2272,7 +2327,9 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_dispute_back)
+        return False
 
+    def _route_from_cantina(self) -> bool:
         # Check cantina view for transitions
         if hasattr(self, "cantina_view") and self.cantina_view:
             if self.cantina_view.active:
@@ -2315,7 +2372,9 @@ class Game:
                     if npc_id:
                         self.cantina_view.pending_npc_id = None
                         self.start_dialogue(npc_id, return_state=GameState.CANTINA)
+        return False
 
+    def _route_from_investment(self) -> bool:
         # Check investment view for transitions
         if self.investment_view:
             if self.investment_view.active:
@@ -2328,6 +2387,78 @@ class Game:
                         self.state_manager.change_state(GameState.STATION_HUB)
 
                     self._start_transition(TransitionType.FADE, 0.3, _do_investment_hub)
+        return False
+
+    def _handle_state_transitions(self) -> None:
+        """Route pending view transitions to per-view handlers."""
+        if self.transition_manager.active:
+            return
+        if self._route_from_main_menu():
+            return
+        if self._route_from_name_input():
+            return
+        if self._route_from_character_creation():
+            return
+        if self._route_from_tutorial_shop():
+            return
+        if self._route_from_galaxy_map():
+            return
+        if self._route_from_journal():
+            return
+        if self._route_from_crew_roster():
+            return
+        if self._route_from_character():
+            return
+        if self._route_from_mission_log():
+            return
+        if self._route_from_trading():
+            return
+        if self._route_from_dialogue():
+            return
+        if self._route_from_mining():
+            return
+        if self._route_from_salvage():
+            return
+        if self._route_from_refining():
+            return
+        if self._route_from_skill_tree():
+            return
+        if self._route_from_statistics():
+            return
+        if self._route_from_achievements():
+            return
+        if self._route_from_combat():
+            return
+        if self._route_from_encounter():
+            return
+        if self._route_from_ground_briefing():
+            return
+        if self._route_from_ground_exploration():
+            return
+        if self._route_from_ground_result():
+            return
+        if self._route_from_shipyard():
+            return
+        if self._route_from_ship_builder():
+            return
+        if self._route_from_station_hub():
+            return
+        if self._route_from_repair_bay():
+            return
+        if self._route_from_wreckers_guild():
+            return
+        if self._route_from_deep_shafts():
+            return
+        if self._route_from_auction():
+            return
+        if self._route_from_sell_lot():
+            return
+        if self._route_from_dispute():
+            return
+        if self._route_from_cantina():
+            return
+        if self._route_from_investment():
+            return
 
     def _create_gameplay_views(self) -> None:
         """Create all gameplay views after new game or load."""
