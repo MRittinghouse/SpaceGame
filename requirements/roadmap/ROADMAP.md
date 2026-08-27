@@ -9793,7 +9793,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### SUITE-2 — Residual SDL worker-death race + test isolation from STOP
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Source**: SUITE-1 residual findings (2026-08-26)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -10131,6 +10131,7 @@ Open questions (reviewer judgment, not blocking implementation):
 - 2026-08-26 — todo (created from SUITE-1 residual findings)
 - 2026-08-27 09:32 — harness: plan phase starting
 - 2026-08-27 — planning complete; verified all 6 context-to-read paths
+- 2026-08-27 09:39 — harness: implement phase starting (rework cycle 0)
   exist (`ralph/config.py`, `ralph/harness.py`, `tests/conftest.py`,
   `tests/test_ralph/test_harness.py`, `scripts/repro_xdist_flake.py`,
   `requirements/agent_principles.md`); confirmed `STOP_FILE` is imported
@@ -10153,6 +10154,16 @@ Open questions (reviewer judgment, not blocking implementation):
   prohibited; worker cap changes: only outcome 1; harness code
   untouchable outside outcome 1). Reformed the acceptance criteria to
   reference the concrete deliverables. PHASE_OK
+- 2026-08-27 09:45 — Task 2 + Task 3 complete. Extended `isolated_roadmap`
+  fixture to monkeypatch both `config.STOP_FILE` and `harness.STOP_FILE`
+  to `tmp_path / "STOP"` (does not exist by default). Added
+  `TestExecuteSprintStopFileIsolation::test_happy_path_unaffected_by_real_stop_file`
+  which creates the real project-root STOP file, drives execute_sprint through
+  all 3 phases, asserts gate called 3 times, then cleans up. TDD red
+  confirmed (gate called 1 time before fix); green confirmed (135 tests pass
+  with real STOP file present after fix). Committed 1e5c65d. Pre-fix repro
+  measurement running at `-n auto` (10 runs, 300s timeout); run 1 already hung
+  at 301s — confirming the SDL race is still present.
 
 **Last phase report.**
 - Phase: plan
