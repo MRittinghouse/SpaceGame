@@ -1,7 +1,7 @@
 """Repro script for the pytest -n auto worker-death flake (SUITE-1).
 
 Runs ``pytest -n auto -q --no-header`` in a bounded loop and records how many
-runs hang, fail, or pass.  Each run is supervised by the harness kill-tree
+runs hang, fail, or pass.  Each run is supervised by the shared kill-tree
 helper so a hung run is killed cleanly rather than stalling the loop itself.
 
 Usage:
@@ -26,11 +26,11 @@ import sys
 import time
 from pathlib import Path
 
-# Add project root to path so ralph.harness is importable.
+# Add project root to path so ralph.proc is importable.
 _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_PROJECT_ROOT))
 
-from ralph.harness import _run_pytest_with_hard_timeout  # noqa: E402
+from ralph.proc import run_with_hard_timeout  # noqa: E402
 
 
 def _parse_passed_count(output: str) -> int:
@@ -88,7 +88,7 @@ def main() -> None:
         stdout = ""
 
         try:
-            result = _run_pytest_with_hard_timeout(
+            result = run_with_hard_timeout(
                 cmd,
                 timeout_seconds=float(args.timeout_seconds),
                 cwd=str(_PROJECT_ROOT),

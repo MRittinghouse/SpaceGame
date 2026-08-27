@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
+import time
 from pathlib import Path
 
 import pytest
 
-from ralph.proc import atomic_write
+from ralph.proc import atomic_write, run_with_hard_timeout
 
 
 class TestAtomicWrite:
@@ -99,3 +102,48 @@ class TestAtomicWrite:
         assert "fsync" in call_order
         assert "replace" in call_order
         assert call_order.index("fsync") < call_order.index("replace")
+
+
+class TestRunWithHardTimeout:
+    def test_returns_completed_process_on_success(self) -> None:
+        result = run_with_hard_timeout([sys.executable, "-c", "print(1)"], timeout_seconds=30)
+        assert result.returncode == 0
+        assert "1" in result.stdout
+
+    def test_captures_stderr(self) -> None:
+        code = "import sys; sys.stderr.write('boom')"
+        result = run_with_hard_timeout([sys.executable, "-c", code], timeout_seconds=30)
+        assert "boom" in result.stderr
+
+    def test_raises_timeout_and_returns_promptly(self) -> None:
+        """The whole point: a hung child must not hold us past the timeout.
+
+        subprocess.run(timeout=...) kills the direct child but keeps blocking in
+        communicate() while grandchildren hold the pipe. That produced an
+        8.5-hour stall on 2026-08-26. This asserts WALL CLOCK, not just that the
+        exception is raised -- the exception was never the missing part.
+        """
+        started = time.monotonic()
+        with pytest.raises(subprocess.TimeoutExpired):
+            run_with_hard_timeout(
+                [sys.executable, "-c", "import time; time.sleep(60)"], timeout_seconds=3
+            )
+        elapsed = time.monotonic() - started
+        assert elapsed < 20, f"returned after {elapsed:.1f}s; the kill did not take effect"
+
+    def test_kills_grandchildren_not_just_the_child(self) -> None:
+        """A child that spawns a sleeping grandchild holding the pipe open.
+
+        This is the exact shape of the real failure. Without a process-tree kill
+        the grandchild keeps stdout open and the read never ends.
+        """
+        script = (
+            "import subprocess, sys, time; "
+            "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)']); "
+            "time.sleep(60)"
+        )
+        started = time.monotonic()
+        with pytest.raises(subprocess.TimeoutExpired):
+            run_with_hard_timeout([sys.executable, "-c", script], timeout_seconds=3)
+        elapsed = time.monotonic() - started
+        assert elapsed < 20, f"returned after {elapsed:.1f}s; grandchild held the pipe"

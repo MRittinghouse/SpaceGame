@@ -8,7 +8,7 @@ does time.sleep(60).  With --timeout=5 configured, pytest must exit non-zero
 within 30 seconds (generous ceiling around a 5-second timeout) and the output
 must mention the timeout.
 
-The outer pytest call is supervised by _run_pytest_with_hard_timeout so a broken
+The outer pytest call is supervised by run_with_hard_timeout so a broken
 pytest-timeout installation cannot itself hang the parent suite.
 """
 
@@ -21,9 +21,9 @@ from pathlib import Path
 
 import pytest
 
-# The kill-tree helper from the harness is reused here so a broken pytest-timeout
-# does not hang *this* test indefinitely.
-from ralph.harness import _run_pytest_with_hard_timeout
+# The kill-tree helper shared by the harness and the agent runner is reused
+# here so a broken pytest-timeout does not hang *this* test indefinitely.
+from ralph.proc import run_with_hard_timeout
 
 # Wall-clock ceiling for the outer subprocess call (seconds).
 # 5s timeout + 5s pytest startup + 20s CI headroom = 30s.
@@ -49,7 +49,7 @@ class TestPytestTimeoutKillsHangs:
 
         start = time.monotonic()
         try:
-            result = _run_pytest_with_hard_timeout(
+            result = run_with_hard_timeout(
                 [
                     sys.executable,
                     "-m",
