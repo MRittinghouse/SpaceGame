@@ -113,7 +113,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-1](#sh-1--gameplayer-raising-accessor) | `Game.player` raising accessor | Spec B SH-1 | M | done | none |
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | todo | SH-1 |
-| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | todo | SH-2 |
+| [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | todo | none |
 
 ---
 
@@ -9054,7 +9054,7 @@ to.
 **Status**: todo
 **Source**: observed 2026-08-24/26 during the SH arc
 **Size**: M | **Effort**: 3-5 days
-**Depends on**: SH-2 | **Blocks**: none
+**Depends on**: none | **Blocks**: none
 
 **Goal.** Under `pytest -n auto` (32 workers on this machine) a worker
 occasionally dies with `[gw1] node down: Not properly terminated`. It is
@@ -9118,6 +9118,13 @@ It is live in two automated paths, both using `-n auto`:
 
 **Activity log.**
 - 2026-08-26 — todo (created from SH-arc observations)
+- 2026-08-26 21:15 — PROMOTED ahead of SH-2. The dependency was ordering
+  preference, not a real one, and the flake has now made itself urgent: it hung
+  ralph's own baseline capture for 8.5 hours (controller alive at 302s CPU, all
+  32 workers dead, subprocess.run(timeout=600) never fired -- the known Windows
+  case where killing the direct child does not unblock communicate() because
+  grandchildren still hold the pipe handles). The fix cannot be queued behind
+  anything, because the bug prevents the harness from starting at all.
 
 ## Followups
 
