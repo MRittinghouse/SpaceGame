@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
@@ -10,6 +11,32 @@ from pathlib import Path
 import pytest
 
 from ralph.proc import atomic_write, run_with_hard_timeout
+
+
+def _pid_alive(pid: int) -> bool:
+    """Return True if a process with the given PID is currently running.
+
+    Mirrors ``ralph.harness._pid_alive``, duplicated here rather than imported
+    so this test file's only production dependency stays on the module under
+    test (``ralph.proc``).
+    """
+    if sys.platform == "win32":
+        try:
+            result = subprocess.run(
+                ["tasklist", "/FI", f"PID eq {pid}", "/NH"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            return str(pid) in result.stdout
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return False
+    else:
+        try:
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
 
 
 class TestAtomicWrite:
@@ -147,3 +174,37 @@ class TestRunWithHardTimeout:
             run_with_hard_timeout([sys.executable, "-c", script], timeout_seconds=3)
         elapsed = time.monotonic() - started
         assert elapsed < 20, f"returned after {elapsed:.1f}s; grandchild held the pipe"
+
+    def test_grandchild_process_is_actually_killed(self, tmp_path: Path) -> None:
+        """Wall clock alone cannot prove the tree died -- check the PID.
+
+        After ``proc.wait()`` raises ``TimeoutExpired``, the kill's own result is
+        never checked: ``taskkill``'s exit code is discarded, and the POSIX
+        branch swallows ``ProcessLookupError``/``OSError``. The drain-thread
+        joins that follow run on a fixed 2s schedule regardless of whether the
+        kill actually worked, so a wall-clock-only assertion (as in
+        ``test_kills_grandchildren_not_just_the_child`` above) would still pass
+        even if the kill silently no-op'd. This spawns a child that spawns a
+        grandchild, records the grandchild's PID to a file, lets the timeout
+        fire, and asserts the grandchild is verifiably dead -- not merely that
+        the call returned on schedule.
+        """
+        pid_file = tmp_path / "grandchild.pid"
+        script = tmp_path / "hung.py"
+        script.write_text(
+            "import subprocess, sys, time\n"
+            f"gc = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(300)'])\n"
+            f"open({str(pid_file)!r}, 'w').write(str(gc.pid))\n"
+            "sys.stdout.flush()\n"
+            "time.sleep(300)\n"
+        )
+        with pytest.raises(subprocess.TimeoutExpired):
+            run_with_hard_timeout([sys.executable, str(script)], timeout_seconds=3)
+
+        assert pid_file.exists(), "grandchild never started -- test setup is broken"
+        grandchild_pid = int(pid_file.read_text().strip())
+        time.sleep(0.5)  # give the OS a moment to reap the killed process
+        assert not _pid_alive(grandchild_pid), (
+            f"grandchild PID {grandchild_pid} is still alive after the timeout fired -- "
+            f"the process-tree kill silently failed"
+        )
