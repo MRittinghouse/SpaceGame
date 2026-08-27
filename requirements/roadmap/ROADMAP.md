@@ -9009,7 +9009,7 @@ Reviewer should re-run the crawler in isolation to confirm AC #4 formally.
 
 ### SH-2 — Split `_handle_state_transitions`
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Source**: Spec B, SH-2
 **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: SH-1 | **Blocks**: none
@@ -9312,6 +9312,7 @@ nothing else, record findings without fixing.
 - 2026-08-26 21:51 — harness: plan phase starting
 - 2026-08-26 22:00 — planning complete; 7 tasks scoped, 33 handler
 - 2026-08-27 09:03 — harness: implement phase starting (rework cycle 0)
+- 2026-08-27 09:20 — harness: review phase starting (rework cycle 0)
   extraction targets enumerated (view-check block inventory verified
   against source lines 1140-2330), 7 decisions locked (split strategy,
   handler return type, atomic commit, no baseline regen, findings
@@ -9394,30 +9395,34 @@ nothing else, record findings without fixing.
   10580→10585 (+5); mypy game.py 87→87; ruff clean on touched files;
   crawler zero new RuntimeError/AttributeError. Commit 3aa91ef.
   PHASE_OK
+- 2026-08-27 — review: all 7 acceptance criteria verified. Plan audit:
+  sound; per-view handler strategy, bool return type, atomic-commit
+  pattern, and no-baseline-regen locked decisions all defensible. Suite
+  10,584 passing / 98 skipped (one xdist flake in
+  test_dialogue_response_tooltip passes in isolation — pre-existing
+  SUITE-1 issue, unrelated to SH-2). Dispatcher 70 lines; largest
+  handler _route_from_galaxy_map 233 lines; 7 galaxy_map + 2 encounter
+  return-True sites confirmed correct. ruff lint + format clean; mypy
+  87→87; populations A=0/B=0/C=236 unchanged; mypy-baseline.txt not
+  regenerated. Crawler (seed 99, 2000 actions): zero RuntimeError /
+  AttributeError; 4 UIElementLeak signatures identical to SH-1 baseline.
+  No player-facing content — writing-bible and SI-3 scans n/a. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-27 09:03
-- Completed: 2026-08-27 13:16
-- Files_changed: spacegame/engine/game.py, tests/test_engine/test_handle_state_transitions_dispatcher.py
-- Commits: 3aa91ef
-- Tests_added: 5
-- Tests_baseline: 10580
-- Tests_passing: 10585
-- Tests_skipped: 98
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: 33 handlers extracted, dispatcher under 200 lines (70 lines),
-  largest handler `_route_from_galaxy_map` at 233 lines; 9 early-returns converted (7 galaxy_map,
-  2 encounter); mypy parity confirmed (87 errors before and after,
-  populations A=0/B=0/C=236 before and after); crawler zero new
-  RuntimeError/AttributeError, 4 UIElementLeak findings identical to
-  SH-1 baseline; findings list of 5 latent/dead branch smells recorded
-  per Task 6 (all defensive or labeling only, no runtime impact).
+- Started: 2026-08-27 09:20
+- Completed: 2026-08-27 09:20
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
+- Tests_passing: 10584
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: section-map comment (game.py lines 12-20) has out-of-order ranges (e.g., "~2360-2415: Transition helpers" listed before "~1745-2100: View factories") — pre-existing cosmetic cruft outside SH-2's one-line mandate; harmless but will mislead on first read until a dedicated cleanup pass reconciles the full map.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 7 ACs met; one pre-existing xdist flake (SUITE-1) does not affect the count floor. Behaviour-preserving split confirmed by test suite, mypy parity, and crawler.
 
 ### SUITE-1 — xdist worker-death flake (hang, not failure)
 
