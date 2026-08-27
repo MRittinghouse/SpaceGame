@@ -114,7 +114,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [SH-3](#sh-3--remaining-gamepy-crash-class-errors) | Remaining game.py crash-class errors | Spec B SH-3 | M | done | SH-1 |
 | [SH-2](#sh-2--split-_handle_state_transitions) | Split `_handle_state_transitions` | Spec B SH-2 | L | done | SH-1 |
 | [SUITE-1](#suite-1--xdist-worker-death-flake-hang-not-failure) | xdist worker-death flake (hang, not failure) | SH-arc observation | M | done | none |
-| [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | in-progress | none |
+| [SUITE-2](#suite-2--residual-sdl-worker-death-race--test-isolation-from-stop) | Residual SDL worker-death race + STOP test isolation | SUITE-1 residual | M | done | none |
 
 ---
 
@@ -9793,7 +9793,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 ### SUITE-2 — Residual SDL worker-death race + test isolation from STOP
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Source**: SUITE-1 residual findings (2026-08-26)
 **Size**: M | **Effort**: 3-5 days
 **Depends on**: none | **Blocks**: none
@@ -10133,6 +10133,7 @@ Open questions (reviewer judgment, not blocking implementation):
 - 2026-08-27 — planning complete; verified all 6 context-to-read paths
 - 2026-08-27 09:39 — harness: implement phase starting (rework cycle 0)
 - 2026-08-27 10:52 — harness: review phase starting (rework cycle 0)
+- 2026-08-27 10:59 — harness: review passed, marking done
   exist (`ralph/config.py`, `ralph/harness.py`, `tests/conftest.py`,
   `tests/test_ralph/test_harness.py`, `scripts/repro_xdist_flake.py`,
   `requirements/agent_principles.md`); confirmed `STOP_FILE` is imported
