@@ -10834,7 +10834,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 #### A2-1 — Lens data model and registry
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 1 week
 **Depends on**: none | **Blocks**: A2-4, A2-5, A2-6, A2-7
 
@@ -10935,24 +10935,24 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 - 2026-08-28 14:20 — data-integrity guard (test_lens_registry.py) written: 22 pass + 1 expected skip.
 - 2026-08-28 14:25 — ruff format+check clean on touched files; mypy baseline exit 0 (0 new violations); pre-commit hooks all pass.
 - 2026-08-28 14:28 — implementation complete, all gates green; tests 10882→10937 (+55). PHASE_OK
+- 2026-08-28 14:43 — harness: review phase starting (rework cycle 0)
+- 2026-08-28 15:10 — review complete; all 7 acceptance criteria verified, lint/format/mypy clean, 55+1 tests confirmed. Plan audit: sound. Single tighten noted (see report). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-28 14:05
-- Completed: 2026-08-28 14:28
-- Files_changed: spacegame/models/lens.py, data/narrative/lenses.json, spacegame/data_loader.py, tests/test_models/test_lens.py, tests/test_compliance/test_lens_registry.py
-- Commits: 8a399b7
-- Tests_added: 55
-- Tests_baseline: 10882
+- Started: 2026-08-28 14:43
+- Completed: 2026-08-28 15:10
+- Files_changed: none
+- Commits: none
 - Tests_passing: 10937
-- Tests_skipped: 99
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: 11-field frozen Lens dataclass + DataLoader integration + data-integrity guard. All 7 acceptance criteria satisfied. lenses.json ships empty; A2-5/A2-6 touch zones protected. 56 tests collected (55 pass, 1 skip -- expected empty-registry guard skip).
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `_REQUIRED_FIELDS` (private underscore name) is imported as a public test dependency in both test files — could be `REQUIRED_FIELDS` or accessed via `dataclasses.fields(Lens)`; not a blocker since the sprint plan named it explicitly.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; locked decisions on 11-field schema, empty stub, tuple types, no tag-format scope, no helper method are all defensible. All 7 acceptance criteria met; lint/format clean; mypy exit 0 (no new violations). 55 new tests pass, 1 expected skip (empty-registry guard). No player-facing content — Writing Bible n/a.
 
 #### A2-2 — Lens authoring guide
 
