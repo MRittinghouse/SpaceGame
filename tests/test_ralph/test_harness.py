@@ -34,6 +34,7 @@ from ralph import agents, config, harness, roadmap_state, triage
 from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.harness import HarnessState, SprintState
 from ralph.status import CrashInfo
+from ralph.supervisor import should_restart
 
 
 def _reap(pid: Optional[int]) -> None:
@@ -154,6 +155,49 @@ class TestStuckSprintRecovery:
         assert sprints["SA-2"].status == "todo"
         # Only SA-1 should have been recovered.
         assert recovered == 1
+
+    def test_review_sprint_is_recovered(self, isolated_roadmap) -> None:
+        """M2: `review` was reclaimed by nothing at all.
+
+        `review` is what a STOP honoured after the implement phase leaves
+        behind. Recovery matched only `in-progress`, and triage counted it as
+        neither todo nor eligible nor blocked -- so a sprint parked there was
+        simultaneously invisible to the mechanism that would reclaim it and to
+        the accounting that would report it. Forever.
+        """
+        roadmap = isolated_roadmap / "ROADMAP.md"
+        roadmap.write_text(
+            _ROADMAP_WITH_STUCK.replace(
+                "**Status**: in-progress (implementing)", "**Status**: review"
+            ),
+            encoding="utf-8",
+        )
+        assert roadmap_state.parse_sprints()["SA-1"].status == "review", "test setup"
+
+        state = HarnessState()
+        recovered = harness._recover_stuck_sprints(state)
+
+        assert recovered == 1, (
+            "a sprint parked at `review` with no live run is stuck, and stuck-sprint "
+            "recovery is the only thing that ever reclaims it"
+        )
+        assert roadmap_state.parse_sprints()["SA-1"].status == "todo"
+
+    def test_recent_review_sprint_is_skipped_like_any_other(self, isolated_roadmap) -> None:
+        """Recovering `review` must not become a way to steal a live sprint."""
+        roadmap = isolated_roadmap / "ROADMAP.md"
+        roadmap.write_text(
+            _ROADMAP_WITH_STUCK.replace(
+                "**Status**: in-progress (implementing)", "**Status**: review"
+            ),
+            encoding="utf-8",
+        )
+        state = HarnessState()
+        state.sprints["SA-1"] = SprintState(
+            sprint_id="SA-1", last_touched_at=datetime.now().isoformat()
+        )
+        assert harness._recover_stuck_sprints(state) == 0
+        assert roadmap_state.parse_sprints()["SA-1"].status == "review"
 
 
 # ---------------------------------------------------------------------------
@@ -2893,3 +2937,126 @@ class TestAnInfrastructureOutageStopsTheRunAndIsReported:
         assert rc == 0
         assert len(picked) == 4, f"the run stopped early on an isolated blip: {picked}"
         assert "INFRASTRUCTURE FAILING" not in content
+
+
+_ROADMAP_ONLY_WORK_IS_IN_FLIGHT = """\
+# Test
+
+### SA-1 — Finished sprint
+
+**Status**: done
+**Depends on**: none
+
+**Activity log.**
+- 2026-04-26 — todo (created)
+
+### SA-2 — The sprint nobody finished
+
+**Status**: in-progress (implementing)
+**Depends on**: none
+
+**Activity log.**
+- 2026-04-26 — todo (created)
+"""
+
+
+class TestStrandedSprintIsNotCompletion:
+    """M2, end to end: a sprint stranded in flight must not read as success.
+
+    Everything the old code counted reads zero in this roadmap -- todo 0,
+    eligible 0, blocked none -- so the harness logged "No eligible sprints; all
+    work complete. Exiting cleanly", `should_restart` returned
+    "stopping: all work complete", the supervisor recorded a DELIBERATE stop
+    (which the repeating Scheduled Task trigger refuses to override), and
+    STATUS.md rendered a calm, green, permanently-final page describing an
+    abandoned sprint.
+    """
+
+    @pytest.mark.timeout(120)
+    def test_the_harness_does_not_call_it_complete_and_says_so_in_status(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch, capsys
+    ) -> None:
+        roadmap = isolated_roadmap / "ROADMAP.md"
+        roadmap.write_text(_ROADMAP_ONLY_WORK_IS_IN_FLIGHT, encoding="utf-8")
+        status_file = isolated_roadmap / "STATUS.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        # A real heartbeat read would probe a live PID over PowerShell; this
+        # test is about the queue, not about liveness.
+        monkeypatch.setattr(harness.heartbeat, "read_heartbeat", lambda: None)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--dry-run",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+            ],
+        )
+
+        rc = harness.main()
+
+        assert rc == config.HARNESS_RC_OK
+        logged = capsys.readouterr().out
+        assert "all work complete" not in logged, (
+            "SA-2 is marked in-progress and nobody is working on it. Reporting that "
+            "as completion is the exact false statement Spec E was written to "
+            f"eliminate, reached through a different door. Log was:\n{logged}"
+        )
+        assert "STRANDED" in logged
+        assert "SA-2" in logged
+
+        # And the operator, who only ever sees STATUS.md, must be told.
+        assert status_file.exists(), "STATUS.md is the only window into an unattended run"
+        content = status_file.read_text(encoding="utf-8")
+        assert "## STRANDED" in content, (
+            "a stranded sprint has to be VISIBLE, not silently end the run"
+        )
+        assert "SA-2" in content
+        assert "in-progress (implementing)" in content
+
+    def test_the_supervisor_relaunches_rather_than_stopping_for_good(
+        self, isolated_roadmap
+    ) -> None:
+        """The same roadmap, through the supervisor's own decision function.
+
+        Driven from `parse_sprints` -> `triage.analyse` -> `should_restart`
+        rather than from a hand-built QueueState, so the three components have
+        to agree with each other and not merely with the test.
+        """
+        (isolated_roadmap / "ROADMAP.md").write_text(
+            _ROADMAP_ONLY_WORK_IS_IN_FLIGHT, encoding="utf-8"
+        )
+        queue = triage.analyse(roadmap_state.parse_sprints())
+
+        assert queue.eligible == 0 and queue.todo == 0 and queue.blocked_ids == [], (
+            "test setup: this must be the state that used to look like completion"
+        )
+        assert queue.in_flight == {"SA-2": "in-progress (implementing)"}
+        assert queue.is_complete is False
+
+        restart, reason = should_restart(
+            consecutive_failures=0,
+            eligible=queue.eligible,
+            starved=queue.is_starved,
+            consecutive_infra_failures=0,
+            in_flight=queue.in_flight_count,
+        )
+        assert restart is True, (
+            "stopping here records a deliberate stop, and a deliberate stop is what "
+            "keeps the repeating Scheduled Task trigger from ever bringing the "
+            "supervisor back -- the run is over, for a sprint nobody finished"
+        )
+        assert "complete" not in reason.lower()

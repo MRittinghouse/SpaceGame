@@ -31,7 +31,7 @@ from typing import Optional
 
 from ralph.config import HEARTBEAT_STALE_SECONDS, PROJECT_ROOT
 from ralph.proc import atomic_write
-from ralph.triage import QueueState, starvation_report
+from ralph.triage import QueueState, starvation_report, stranded_report
 
 STATUS_PATH = PROJECT_ROOT / "STATUS.md"
 
@@ -386,6 +386,22 @@ def render_status(
         lines += ["## Harness Did Not Run", "", decline_reason, ""]
     if queue.is_starved:
         lines += ["## STARVED", "", "```", starvation_report(queue), "```", ""]
+    if queue.is_stranded:
+        lines += [
+            "## STRANDED",
+            "",
+            "Sprints below are marked started and unfinished, and nothing is running "
+            "them. This page used to render exactly this state as a calm, green, "
+            "permanently-final summary reading `todo: 0, eligible: 0` -- because a "
+            "sprint at `in-progress` counted as neither todo nor eligible nor blocked, "
+            "so it counted as nothing at all, and the supervisor read that as "
+            "completion and stopped for the week.",
+            "",
+            "```",
+            stranded_report(queue),
+            "```",
+            "",
+        ]
     if pid_alive is False:
         lines += [
             "## NO LIVE HARNESS",
@@ -429,12 +445,22 @@ def render_status(
             lines.append(f"- Beat PID: {pid} -- {liveness}")
     lines.append("")
 
+    # `in flight` is listed alongside the other counts, always, even when the
+    # STRANDED banner does not fire: a sprint that is started and unfinished is
+    # a fact about the queue, and its absence from this list is what let
+    # `todo: 0 / eligible: 0` read as "finished" when it meant "abandoned".
+    in_flight_text = (
+        ", ".join(f"{sid} ({st})" for sid, st in sorted(queue.in_flight.items()))
+        if queue.in_flight
+        else "none"
+    )
     lines += [
         "## Queue",
         "",
         f"- total: {queue.total}",
         f"- todo: {queue.todo}",
         f"- eligible: {queue.eligible}",
+        f"- in flight: {in_flight_text}",
         f"- blocked: {', '.join(queue.blocked_ids) if queue.blocked_ids else 'none'}",
         "",
     ]

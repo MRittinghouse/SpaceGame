@@ -79,6 +79,47 @@ class TestShouldRestart:
         assert ok is False
         assert "complete" in reason.lower()
 
+    def test_in_flight_work_is_not_all_work_complete(self) -> None:
+        """M2, at the exact line that ended the week.
+
+        `eligible == 0` with a sprint still marked `in-progress` is stuck, not
+        finished. Returning False here recorded a deliberate stop, and a
+        deliberate stop is precisely what the repeating Scheduled Task trigger
+        refuses to override -- so the supervisor never came back, for a sprint
+        nobody had finished.
+        """
+        ok, reason = should_restart(consecutive_failures=0, eligible=0, starved=False, in_flight=1)
+        assert ok is True, (
+            "half-done work is a reason to relaunch -- stuck-sprint recovery runs "
+            "at launch and is the only thing that reclaims it"
+        )
+        assert "complete" not in reason.lower(), (
+            "this is the false statement Spec E was written to eliminate, reached "
+            f"through a different door: {reason!r}"
+        )
+        assert "in flight" in reason.lower()
+
+    def test_in_flight_work_outranks_starvation(self) -> None:
+        """A todo sprint waiting on a stranded in-progress one.
+
+        "restarting cannot help" is false here: restarting is the only thing
+        that CAN help, because recovery resets the stranded sprint to todo.
+        """
+        ok, reason = should_restart(consecutive_failures=0, eligible=0, starved=True, in_flight=1)
+        assert ok is True
+        assert "starved" not in reason.lower()
+
+    def test_failure_cap_still_wins_over_in_flight_work(self) -> None:
+        """The bounded restart policy is not negotiable.
+
+        In-flight work must not become a way around the 3-strike cap: a
+        harness crashing on the same sprint would relaunch forever, which is
+        the expensive-week failure the cap exists for.
+        """
+        ok, reason = should_restart(consecutive_failures=3, eligible=0, starved=False, in_flight=1)
+        assert ok is False
+        assert "consecutive" in reason.lower()
+
 
 class TestRestartPolicy:
     """A dumb counter, deliberately: consecutive failures reset on success

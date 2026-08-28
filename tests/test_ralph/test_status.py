@@ -694,3 +694,57 @@ class TestPidLivenessInStatus:
         finally:
             status_module.STATUS_PATH = original
         assert "Beat PID" in target.read_text(encoding="utf-8")
+
+
+class TestStrandedBanner:
+    """M2: a sprint in flight that nobody is working on must be VISIBLE.
+
+    The state below rendered as `todo: 0`, `eligible: 0`, `blocked: none`, no
+    banner of any kind -- a calm, green, permanently-final page describing an
+    abandoned sprint, on the one screen the operator has while away.
+    """
+
+    def _stranded(self) -> QueueState:
+        return QueueState(
+            total=2,
+            todo=0,
+            eligible=0,
+            in_flight={"SA-2": "in-progress (implementing)"},
+        )
+
+    def test_stranded_work_gets_its_own_heading(self) -> None:
+        text = render_status(self._stranded(), None, [])
+        assert "## STRANDED" in text, (
+            "not a line buried in the queue counts -- the operator is squinting at "
+            "a phone, and this is the difference between finished and abandoned"
+        )
+
+    def test_the_stranded_sprint_and_its_status_are_named(self) -> None:
+        text = render_status(self._stranded(), None, [])
+        assert "SA-2" in text
+        assert "in-progress (implementing)" in text
+
+    def test_in_flight_work_is_listed_in_the_queue_counts(self) -> None:
+        """Always, banner or not: it is a fact about the queue.
+
+        Its absence from this list is precisely what let `todo: 0 / eligible: 0`
+        read as "finished" when it meant "abandoned".
+        """
+        text = render_status(
+            QueueState(
+                total=3,
+                todo=1,
+                eligible=1,
+                in_flight={"SA-2": "in-progress (implementing)"},
+            ),
+            None,
+            [],
+        )
+        assert "- in flight: SA-2 (in-progress (implementing))" in text
+        assert "## STRANDED" not in text, "SA-1 can still start; the queue is not stuck"
+
+    def test_a_genuinely_finished_queue_has_no_stranded_banner(self) -> None:
+        """The distinction the whole fix is about: finished vs. stuck."""
+        text = render_status(QueueState(total=2, todo=0, eligible=0), None, [])
+        assert "## STRANDED" not in text
+        assert "- in flight: none" in text

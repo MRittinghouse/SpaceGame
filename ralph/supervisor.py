@@ -236,14 +236,23 @@ def should_restart(
     eligible: int,
     starved: bool,
     consecutive_infra_failures: int = 0,
+    in_flight: int = 0,
 ) -> tuple[bool, str]:
     """Decide whether to relaunch the harness.
 
     Returns (restart, reason). Reason is always populated so the log explains
-    itself without the reader inferring intent -- and it is now what STATUS.md
+    itself without the reader inferring intent -- and it is what STATUS.md
     prints inside the CRASH-LOOP banner, because "3 consecutive failures" and
     "6 consecutive infrastructure failures" call for entirely different
     responses from the operator.
+
+    *in_flight* is the count of sprints that are started but unfinished, and it
+    exists because without it this function could not tell finished from
+    abandoned (M2). ``eligible <= 0`` alone read a sprint stranded at
+    ``in-progress (implementing)`` as "all work complete", returned False, and
+    the supervisor recorded a deliberate stop -- ending the week over a sprint
+    nobody had finished. Half-done work is a reason to relaunch, not to stop:
+    the next run's stuck-sprint recovery is the thing that reclaims it.
     """
     if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
         return False, f"stopping: {consecutive_failures} consecutive failures"
@@ -252,6 +261,15 @@ def should_restart(
             f"stopping: {consecutive_infra_failures} consecutive infrastructure "
             "failures (agent CLI / network / auth). Restarting cannot help until "
             "that is fixed."
+        )
+    if eligible <= 0 and in_flight > 0:
+        # Checked before `starved`, deliberately: when a stranded in-flight
+        # sprint is what is holding the todo sprints back, "restarting cannot
+        # help" is false -- restarting is the only thing that CAN help, because
+        # stuck-sprint recovery runs at launch.
+        return True, (
+            f"restarting: 0 eligible but {in_flight} sprint(s) still in flight — "
+            "stuck, not finished; the next run's stuck-sprint recovery reclaims them"
         )
     if starved:
         return False, "stopping: queue is STARVED — restarting cannot help"
@@ -878,6 +896,7 @@ def main() -> int:
             queue.eligible,
             queue.is_starved,
             policy.consecutive_infra_failures,
+            queue.in_flight_count,
         )
         _log(f"supervisor: {reason}")
 

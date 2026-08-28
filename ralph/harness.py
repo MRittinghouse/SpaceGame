@@ -1377,12 +1377,23 @@ def _pid_alive(pid: int) -> bool:
 
 
 def _recover_stuck_sprints(state: "HarnessState") -> int:
-    """Reset sprints stuck in `in-progress (*)` Status from a prior run.
+    """Reset sprints left in flight by a prior run back to `todo`.
 
     A sprint is stale if:
-      - Its Status starts with "in-progress"
+      - `triage.is_in_flight` recognises its Status -- `in-progress (*)` OR
+        `review`
       - Its state.json `last_touched_at` is older than IN_PROGRESS_STALE_MINUTES
         (or there's no state for it at all)
+
+    `review` was added by M2, and its absence was not a detail: `review` is
+    what a STOP honoured after implement leaves behind, and NOTHING reclaimed
+    it. A sprint parked there was invisible to recovery and to triage at the
+    same time, so it sat outside every count the harness and the supervisor
+    make decisions from -- permanently.
+
+    The membership test is `triage.is_in_flight` rather than a second local
+    string comparison, so recovery and queue accounting cannot disagree about
+    what "in flight" means; disagreeing is precisely how `review` fell through.
 
     Stale sprints get their Status reset to `todo` with an Activity log
     note explaining the recovery. The sprint becomes eligible for the
@@ -1396,7 +1407,7 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
     recovered = 0
 
     for sprint_id, sprint in sprints.items():
-        if not sprint.status.lower().startswith("in-progress"):
+        if not triage.is_in_flight(sprint.status):
             continue
 
         sprint_state = state.sprints.get(sprint_id)
@@ -1412,8 +1423,8 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
         is_stale = last_touched is None or (now - last_touched) > stale_threshold
         if not is_stale:
             log(
-                f"Sprint {sprint_id} is in-progress but recently touched "
-                f"({last_touched_str}). Skipping recovery; another run may be active."
+                f"Sprint {sprint_id} is in flight (status={sprint.status!r}) but recently "
+                f"touched ({last_touched_str}). Skipping recovery; another run may be active."
             )
             continue
 
@@ -1901,10 +1912,17 @@ def main() -> int:
                 eligible = roadmap_state.eligible_sprints(sprints)
                 if not eligible:
                     queue = triage.analyse(sprints)
+                    # Three different situations, and the harness used to print
+                    # the same sentence for two of them. "all work complete" is
+                    # now conditional on `is_complete`, which requires nothing
+                    # todo, nothing eligible AND nothing in flight (M2).
                     if queue.is_starved:
                         log(triage.starvation_report(queue))
                         log("STARVED -- exiting. This is NOT completion.")
-                    else:
+                    if queue.is_stranded:
+                        log(triage.stranded_report(queue))
+                        log("STRANDED -- exiting. This is NOT completion.")
+                    if queue.is_complete:
                         log("No eligible sprints; all work complete. Exiting cleanly.")
                     break
                 picked = eligible[0]

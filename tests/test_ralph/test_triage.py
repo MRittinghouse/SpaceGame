@@ -10,7 +10,13 @@ success. Four months of a stalled arc followed from one ambiguous log line.
 from __future__ import annotations
 
 from ralph.roadmap_state import Sprint
-from ralph.triage import analyse, blocks_disagreements, starvation_report
+from ralph.triage import (
+    analyse,
+    blocks_disagreements,
+    is_in_flight,
+    starvation_report,
+    stranded_report,
+)
 
 
 def _sprint(sid: str, status: str, deps: list[str] | None = None, pos: int = 0) -> Sprint:
@@ -163,3 +169,109 @@ class TestBlocksConsistency:
         sprints = {"A": _sprint("A", "todo")}
         sprints["A"].blocks = ["GHOST"]
         assert any("GHOST" in p for p in blocks_disagreements(sprints))
+
+
+class TestInFlight:
+    """M2: a sprint someone started and nobody finished has to be counted.
+
+    `in-progress (implementing)` is not todo, not done and not blocked. Before
+    this existed it therefore counted toward NOTHING -- and an empty `eligible`
+    list was read as "all work complete", which stopped the supervisor for good
+    over a sprint that was never finished.
+    """
+
+    def test_in_progress_is_recognised_as_in_flight(self) -> None:
+        assert is_in_flight("in-progress (implementing)") is True
+        assert is_in_flight("in-progress (planning)") is True
+        assert is_in_flight("in-progress (reviewing)") is True
+
+    def test_review_is_recognised_as_in_flight(self) -> None:
+        assert is_in_flight("review") is True, (
+            "`review` is what a STOP honoured after implement leaves behind, and "
+            "nothing reclaimed it -- not recovery, not triage"
+        )
+
+    def test_terminal_statuses_are_not_in_flight(self) -> None:
+        for status in ("todo", "done", "blocked"):
+            assert is_in_flight(status) is False, f"{status} is not half-done work"
+
+    def test_analyse_counts_an_in_progress_sprint(self) -> None:
+        state = analyse({"A": _sprint("A", "in-progress (implementing)")})
+        assert state.in_flight == {"A": "in-progress (implementing)"}
+        assert state.in_flight_count == 1
+        assert state.todo == 0
+        assert state.eligible == 0
+
+    def test_a_lone_in_progress_sprint_is_not_completion(self) -> None:
+        """The exact M2 state: one sprint, abandoned mid-implement.
+
+        Everything the old code looked at reads zero here -- todo 0, eligible
+        0, blocked none -- so the harness said "all work complete" and the
+        supervisor stopped for the week.
+        """
+        state = analyse({"A": _sprint("A", "in-progress (implementing)")})
+        assert state.is_complete is False, (
+            "a sprint stranded at in-progress is abandoned work, not finished "
+            "work; calling it complete is the false statement Spec E exists to "
+            "eliminate, reached through a different door"
+        )
+        assert state.is_stranded is True
+        assert state.is_starved is False, "nothing is todo, so this is not starvation"
+
+    def test_a_lone_review_sprint_is_not_completion(self) -> None:
+        state = analyse({"A": _sprint("A", "review")})
+        assert state.is_complete is False
+        assert state.is_stranded is True
+
+    def test_everything_done_is_complete(self) -> None:
+        state = analyse({"A": _sprint("A", "done"), "B": _sprint("B", "done", pos=1)})
+        assert state.is_complete is True, "nothing todo, nothing eligible, nothing in flight"
+        assert state.is_stranded is False
+
+    def test_work_available_is_not_stranded(self) -> None:
+        state = analyse(
+            {
+                "A": _sprint("A", "in-progress (implementing)"),
+                "B": _sprint("B", "todo", pos=1),
+            }
+        )
+        assert state.eligible == 1
+        assert state.is_stranded is False, "B can start; the queue is not stuck"
+        assert state.is_complete is False
+        assert state.in_flight_count == 1, "A is still counted -- it is still half-done"
+
+
+class TestStrandedReport:
+    def test_report_names_the_sprint_and_its_status(self) -> None:
+        text = stranded_report(analyse({"A": _sprint("A", "in-progress (implementing)")}))
+        assert "STRANDED" in text
+        assert "A" in text
+        assert "in-progress (implementing)" in text
+        assert "NOT completion" in text
+
+    def test_report_is_empty_when_nothing_is_in_flight(self) -> None:
+        assert stranded_report(analyse({"A": _sprint("A", "todo")})) == ""
+        assert stranded_report(analyse({"A": _sprint("A", "done")})) == ""
+
+    def test_starvation_report_names_an_in_flight_blocker(self) -> None:
+        """The wrong-diagnosis case the reviewer called out.
+
+        B is todo and waiting on A, which is stranded mid-implement. Nothing is
+        `blocked`, no dependency id is a typo and there is no cycle -- so the
+        report fell through to "No blocked sprint explains this -- check
+        dependency IDs for typos" while the real cause sat in plain sight.
+        """
+        sprints = {
+            "A": _sprint("A", "in-progress (implementing)"),
+            "B": _sprint("B", "todo", ["A"], pos=1),
+        }
+        state = analyse(sprints)
+        assert state.is_starved is True
+        text = starvation_report(state)
+        assert "A is IN FLIGHT" in text, (
+            "the sprint holding B back must be named; it is the whole explanation"
+        )
+        assert "check dependency IDs for typos" not in text, (
+            "there is no typo -- sending the operator to hunt one is the wrong "
+            "diagnosis this test exists to prevent"
+        )

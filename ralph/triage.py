@@ -6,6 +6,16 @@ opposite outcomes. On 2026-08-27 the second was true: 15 todo, 0 eligible, five
 of them held by SA-F2, blocked since April on a transient bail. The harness
 called it clean and exited, and had been doing so for four months.
 
+The same false statement had a second door (M2). A sprint reading
+`in-progress (implementing)` or `review` is not `todo`, not `done` and not
+`blocked`, so until this module learned about it, it counted toward NOTHING:
+not `todo`, not `eligible`, not `blocked_ids`. A run killed mid-sprint left
+exactly that, and if it was the last outstanding item the harness announced
+"all work complete" and the supervisor stopped for good -- over a sprint nobody
+had finished. `in_flight` exists so that state has somewhere to be counted, and
+so "complete" can mean what it says: nothing todo, nothing eligible, and
+nothing left half-done.
+
 Pure functions over already-parsed sprints. No I/O, so it is cheap to call and
 cheap to test.
 """
@@ -14,8 +24,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ralph.config import STATUS_BLOCKED
+from ralph.config import STATUS_BLOCKED, STATUS_REVIEW
 from ralph.roadmap_state import Sprint, eligible_sprints
+
+# A sprint someone started and nobody finished. `in-progress (planning)`,
+# `in-progress (implementing)` and `in-progress (reviewing)` are all prefixed;
+# `review` (a STOP honoured after implement) is its own literal and, until M2,
+# was reclaimed by nothing at all -- not even `_recover_stuck_sprints`.
+_IN_FLIGHT_PREFIX = "in-progress"
+
+
+def is_in_flight(status: str) -> bool:
+    """True when *status* means "started, not finished, nobody obviously on it".
+
+    A single definition, because the harness's stuck-sprint recovery and this
+    module's queue accounting must agree about which statuses are in flight.
+    They did not: recovery matched `in-progress` only, so a sprint parked at
+    `review` was invisible to both the recovery that would reclaim it and the
+    triage that would report it.
+    """
+    normalised = status.strip().lower()
+    return normalised.startswith(_IN_FLIGHT_PREFIX) or normalised == STATUS_REVIEW
 
 
 @dataclass
@@ -32,6 +61,9 @@ class QueueState:
     unresolved_deps: dict[str, list[str]] = field(default_factory=dict)
     # sprint ids forming a dependency cycle (e.g. ["A", "B", "A"]), or []
     cycle: list[str] = field(default_factory=list)
+    # sprint id -> its status, for every sprint that is started but not
+    # finished (`in-progress (*)` or `review`). Work that belongs to nobody.
+    in_flight: dict[str, str] = field(default_factory=dict)
 
     @property
     def is_starved(self) -> bool:
@@ -41,6 +73,32 @@ class QueueState:
         success. Conflating the two is the original defect.
         """
         return self.todo > 0 and self.eligible == 0
+
+    @property
+    def in_flight_count(self) -> int:
+        """How many sprints are started but unfinished."""
+        return len(self.in_flight)
+
+    @property
+    def is_stranded(self) -> bool:
+        """True when the only outstanding work is half-done and nothing can start.
+
+        The counterpart to `is_starved`, and the reason "all work complete" is
+        no longer decidable from `eligible` alone: a sprint abandoned at
+        `in-progress (implementing)` makes `eligible` 0 without making the
+        queue finished.
+        """
+        return self.eligible == 0 and bool(self.in_flight)
+
+    @property
+    def is_complete(self) -> bool:
+        """True only when there is genuinely nothing left, anywhere.
+
+        Not "eligible == 0". That was M2: the supervisor read an empty eligible
+        list as completion and stopped permanently, with a sprint sitting at
+        `in-progress` that no run would ever come back for.
+        """
+        return self.todo == 0 and self.eligible == 0 and not self.in_flight
 
 
 def _transitively_stranded(blocker: str, sprints: dict[str, Sprint]) -> list[str]:
@@ -137,6 +195,11 @@ def analyse(sprints: dict[str, Sprint]) -> QueueState:
         stranded_by={b: _transitively_stranded(b, sprints) for b in blocked},
         unresolved_deps=_unresolved_dependencies(todo, sprints),
         cycle=_find_cycle(todo, sprints),
+        in_flight={
+            s.sprint_id: s.status.strip()
+            for s in sorted(sprints.values(), key=lambda s: s.sprint_id)
+            if is_in_flight(s.status)
+        },
     )
 
 
@@ -163,11 +226,25 @@ def blocks_disagreements(sprints: dict[str, Sprint]) -> list[str]:
     return sorted(problems)
 
 
+def _in_flight_lines(state: QueueState) -> list[str]:
+    """One line per started-but-unfinished sprint, for either report."""
+    return [
+        f"  {sprint_id} is IN FLIGHT ({status}) and nothing is running it"
+        for sprint_id, status in sorted(state.in_flight.items())
+    ]
+
+
 def starvation_report(state: QueueState) -> str:
     """Human-readable starvation summary, or empty string when healthy."""
     if not state.is_starved:
         return ""
     lines = [f"STARVED: {state.todo} todo, {state.eligible} eligible."]
+    # Named first, and on every path: an abandoned in-progress sprint is the
+    # most actionable thing this report can carry, and it used to be the one
+    # thing that could not appear in it at all -- a sprint stranded at
+    # `in-progress` while holding dependents produced the "check dependency IDs
+    # for typos" line below, with the real cause sitting in plain sight.
+    lines += _in_flight_lines(state)
     for blocker, stranded in state.stranded_by.items():
         if stranded:
             lines.append(f"  {blocker} (blocked) strands {', '.join(stranded)}")
@@ -186,5 +263,33 @@ def starvation_report(state: QueueState) -> str:
         lines.append(f"  dependency cycle: {' -> '.join(state.cycle)}")
         return "\n".join(lines)
 
+    if state.in_flight:
+        # Already named above. Falling through to the typo line would send the
+        # operator hunting a dependency bug that does not exist.
+        return "\n".join(lines)
+
     lines.append("  No blocked sprint explains this -- check dependency IDs for typos.")
+    return "\n".join(lines)
+
+
+def stranded_report(state: QueueState) -> str:
+    """Half-done work with nothing eligible, or empty string when not stranded.
+
+    The report that had nowhere to come from before M2. Its whole job is to be
+    what gets printed INSTEAD of "all work complete" when the queue looks empty
+    only because a sprint nobody is working on is still marked started.
+    """
+    if not state.is_stranded:
+        return ""
+    lines = [
+        f"STRANDED: {state.in_flight_count} sprint(s) started and unfinished, "
+        f"{state.eligible} eligible. This is NOT completion."
+    ]
+    lines += _in_flight_lines(state)
+    lines.append(
+        "  A run was killed or stopped mid-sprint. Stuck-sprint recovery resets "
+        "these to todo once they have gone untouched for IN_PROGRESS_STALE_MINUTES, "
+        "so the next harness launch reclaims them; nothing further happens until "
+        "then."
+    )
     return "\n".join(lines)
