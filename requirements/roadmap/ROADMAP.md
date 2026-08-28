@@ -10956,7 +10956,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 
 #### A2-2 — Lens authoring guide
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: none
 
@@ -10967,27 +10967,73 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 - `requirements/character_voices.md`
 - `requirements/cultural_guide.md` (year 2335, the Aurelia Expanse)
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md`
+- `requirements/aurelia_voice_examples.md` (30 paired examples + 16-item diagnostic checklist; the standard the guide models)
+- `spacegame/models/lens.py` (the `Lens` dataclass and its 11 required fields, from A2-1)
+- `spacegame/models/ambient_dialogue.py` (`AmbientLine.action_type` docstring — the vocabulary `investment_from` tags must reuse)
 
 **Touch zones.**
 - `requirements/lens_authoring_guide.md` (NEW)
+- `tests/test_compliance/test_lens_authoring_guide.py` (NEW — enforces AC5 and voice rules against the guide file)
 
 **Deliverables.**
-- Per-lens voice notes for all sixteen: what a character who reads the world this way sounds like.
-- NPC construction patterns per lens, including how a scar NPC (one who refused the player) differs from a hostile one.
-- How an authored location takes a per-lens reading without becoming sixteen locations.
-- Worked examples: one location read through three different lenses.
-- A written warning against the failure mode the spec names, sixteen shallow reskins, with concrete tells to check for.
+- Per-lens voice notes for all sixteen: what a character who reads the world this way sounds like. Compact one-screen entries (register + verbal habits + one NPC pattern + sample line at ladder grade B or A), not full Elena-Reeves-depth voice sheets.
+- NPC construction patterns per lens, including how a scar NPC (one who refused the player, still exists, will not deal) differs from a hostile one (opposed on principle, actively works against the player).
+- How an authored location takes a per-lens reading without becoming sixteen locations. Rule for the location paragraph itself: what it stays silent about so each lens can speak, what it must name so each lens has a hook.
+- Worked example: the derelict hauler from Spec F line 55-63, expanded to three fully written paragraphs under Preservation, Crime, Wealth, followed by a self-check paragraph showing the text is not swappable.
+- A written warning against the failure mode the spec names, sixteen shallow reskins, with concrete tells to check for and a self-audit checklist an author runs before submitting a new lens.
+- An `investment_from` vocabulary section: how action tags reuse `AmbientLine.action_type` shape and the existing procedural mission types (`bounty`, `delivery`, `smuggling`, `survey`, `salvage`), so downstream A2-5 and A2-6 lens definitions have a canonical vocabulary to pull from.
 
 **Acceptance criteria.**
-1. Every one of the sixteen lenses has voice notes and at least one NPC pattern.
-2. The worked example shows one location under three lenses, with text that could not be swapped between them.
+1. Every one of the sixteen lenses has voice notes and at least one NPC pattern. The canonical sixteen `lens_id` values are the ones enumerated in the "Conventions this file assumes from A2-1 through A2-4" block above (source: Spec F "The sixteen lenses" table): `vengeance`, `wealth`, `political_power`, `exploration`, `discovery`, `justice`, `crime`, `revolution`, `empire`, `community`, `legacy`, `faith`, `transcendence`, `connection`, `truth`, `preservation`.
+2. The worked example shows the Spec F derelict hauler under three lenses — Preservation, Crime, Wealth — with text that could not be swapped between them, followed by a self-check paragraph naming what each reading includes that the other two would not write.
 3. No banned NPC names appear (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose).
 4. No em-dashes, no "no X, no Y" constructions, per the project's anti-GenAI writing rules.
-5. A compliance test asserts the guide covers all sixteen `lens_id` values once A2-1's registry exists, or is skipped cleanly if it does not.
+5. `tests/test_compliance/test_lens_authoring_guide.py` scans `requirements/lens_authoring_guide.md` and fails the build if (a) any of the sixteen canonical `lens_id` tokens is missing, (b) any banned NPC name appears, or (c) any em-dash (U+2014) appears. Additionally, if `DataLoader().lenses` is non-empty (A2-5/A2-6 have landed and populated the registry), the test also asserts every registered `lens_id` is covered by the guide, catching drift the day the registry populates.
+6. Every sample dialogue line in the per-lens voice-notes section that voices a social skill (Persuasion, Intimidation, Observation, Deception, Leadership) clears grade B or A on the ladder in `dialogue_writing_guide.md` §8 "Grading Rubric — Skill Checks as Voice". Non-skill sample lines follow the diagnostic checklist in `aurelia_voice_examples.md`.
+
+**Risks / open questions.**
+- ~~Where does the guide live?~~ Locked: `requirements/lens_authoring_guide.md`, alongside the writing-guidance cluster (`dialogue_writing_guide.md`, `character_voices.md`, `cultural_guide.md`). Not under `docs/superpowers/specs/` because it is authoring reference, not a spec.
+- ~~Does the guide duplicate the Writing Bible?~~ Locked: extend, do not duplicate. Cross-reference `dialogue_writing_guide.md` for AI anti-patterns (§6), naming (§11), expression set and skill-check ladder (§7–§8). Introduce only lens-specific rules on top.
+- ~~Which three lenses does the worked example use?~~ Locked: Preservation, Crime, Wealth. Spec F line 55-63 already uses these three (among others) for the derelict hauler; extending the spec's own example is cheaper than inventing a new one and lets the guide sit adjacent to the spec that motivated it.
+- ~~How does the compliance test source the canonical sixteen `lens_id` values while `data/narrative/lenses.json` is empty?~~ Locked: hardcode the sixteen in the test file (source: Spec F "The sixteen lenses" table, mirrored in the ROADMAP "Conventions" block cited by AC1). If `DataLoader().lenses` is non-empty, additionally assert every registered `lens_id` is covered. This gates the guide the day it lands rather than waiting for A2-5/A2-6.
+- ~~Per-lens voice-note depth: full Elena-Reeves-style voice sheets, or compact one-screen entries?~~ Locked: compact. Each entry hits register + verbal habits + one NPC pattern + scar-vs-hostile distinction + one sample line, then stops. Full voice sheets at Elena depth would double the sprint effort and pre-empt the writing that the downstream lens-definition sprints (A2-5, A2-6) are meant to do. If authoring shows the compact form is not enough for a specific lens, a follow-up polish sprint can deepen it later.
+
+**Plan.** (6 tasks, docs-only, sequenced)
+
+1. **Skeleton and framing (Section 1 of the guide).** File: `requirements/lens_authoring_guide.md`. Establish the reader (a content author holding the `Lens` dataclass fields from `spacegame/models/lens.py`), the promise (author a place once, filter through sixteen lenses without writing sixteen places), and the failure mode the guide exists to prevent (sixteen shallow reskins, per Spec F Risks). Cross-reference `dialogue_writing_guide.md` §6 (AI anti-patterns), §7 (expression set), §8 (skill-check ladder), §11 (naming) rather than duplicating. *Risk*: guide grows into a second Writing Bible. Cap at ~600 lines total; each section fits one screen where possible.
+
+2. **Per-lens voice notes and NPC construction patterns (Section 2, largest section).** All sixteen lenses in the canonical order from Spec F. Each entry: register, verbal habits, one NPC pattern (title, one-line premise, one sample line), scar-NPC voice vs. hostile-NPC voice for this lens. Compact per the locked decision — one screen of markdown per lens. Voice-check each sample line against the ladder in `dialogue_writing_guide.md` §8 before writing the next lens. *Risk*: pattern drift between lenses that should feel adjacent (Wealth vs. Community, Vengeance vs. Justice) — write those pairs consecutively, not scattered, and re-read the adjacent entry before submitting the next.
+
+3. **The shared-world model (Section 3).** State the rule: one authored location plus one short paragraph per lens equals sixteen readings, not sixteen locations. Author guidance for the location paragraph itself: what it stays silent about (so each lens can speak), what it must name (so each lens has a hook to pull on). Explain how the `sees` field on each `Lens` record drives per-lens reading. *Risk*: reader concludes the location paragraph must therefore be bland to accommodate sixteen readings. Explicitly say it should be specific and grounded; the trick is what it leaves unsaid, not what it thins out.
+
+4. **Worked example: the derelict hauler through three lenses (Section 4).** Uses the Spec F line 55-63 hauler. Write three fully composed paragraphs (Preservation, Crime, Wealth) at authored-content quality, not sketches. Follow with a self-check paragraph naming what each reading includes that the other two would not touch (Preservation names the archival material and the loss of cultural memory; Crime names the hull-registration gap and the salvage-report window; Wealth names the tonnage arithmetic and the market gap being exploited). Anchors AC2. *Risk*: paragraphs read as different flavor over the same content — force each to name a specific object, actor, or number that only that lens would care about.
+
+5. **The reskin failure mode: concrete tells and self-audit (Section 5).** Checklist of concrete tells: two lenses whose `minigame_shape` collapses to the same loop; two NPCs whose voice paragraphs could swap without change; `wants` and `trades` that name only generic goods (credits, cargo, favours); sample lines at ladder grade C or D per the Writing Bible. Follow with a self-audit checklist an author runs before submitting a new lens or a per-lens reading. `investment_from` vocabulary section: how action tags reuse `AmbientLine.action_type` shape and the five existing procedural mission types (`bounty`, `delivery`, `smuggling`, `survey`, `salvage`), giving A2-5 and A2-6 a canonical vocabulary rather than each sprint inventing its own tag names. *Risk*: the vocabulary section falls out of sync when a downstream sprint adds a new mission type. Note in-section that it is a "starting palette to grow, not a closed set", so drift is expected and does not require a guide rewrite.
+
+6. **Compliance test (`tests/test_compliance/test_lens_authoring_guide.py`).** Following the pattern of `tests/test_compliance/test_lens_registry.py`. Primary check: scan `requirements/lens_authoring_guide.md` for each of the sixteen canonical `lens_id` tokens (hardcoded from Spec F, matching the "Conventions" block cited by AC1); fail with a message naming the missing id. Guard checks: no em-dash character (U+2014) anywhere in the file; none of the eight banned NPC names as whole-word matches. Registry-drift check: if `DataLoader().lenses` is non-empty, assert every registered `lens_id` is covered by the guide (this becomes live once A2-5/A2-6 land; until then it is a no-op branch). Skip cleanly with a stated reason if the guide file itself does not yet exist. *Gotcha*: the em-dash literal in the test source will trip `test_prose_anti_patterns.py` if that scan ever expands beyond `data/`; today it scans `data/` only, so a string-escape `"—"` in the test is safe. Use the escape anyway for future-proofing.
+
+**Voice-check pass (final, part of task 6).**
+Read the finished guide against the 16-item diagnostic checklist in `aurelia_voice_examples.md`. Any sample line in the voice-notes section that voices a social skill must clear ladder grade B or A per `dialogue_writing_guide.md` §8. Non-skill sample lines must survive the diagnostic (no universal-wisdom NPCs, no "Captain" default address unless the lens produces it, no reverence-of-the-ordinary register, no mysticism about the void).
+
+**Cross-sprint reactions to author.**
+None (foundational authoring guide; no player-facing content, no world events, no NPCs are authored here). Downstream sprints A2-5, A2-6, and every dilemma sprint from A2-12 to A2-19 depend on this guide as an input; the reaction surface lives in those sprints, not here.
 
 **Activity log.**
 - 2026-08-27 — todo (created)
+- 2026-08-28 15:59 — harness: plan phase starting
+- 2026-08-28 16:20 — planning complete; verified 4 context docs plus 3 added (aurelia_voice_examples.md, lens.py, ambient_dialogue.py); added compliance test file to Touch zones; folded in 2 polish items (investment_from vocabulary, reskin self-audit checklist); locked 5 decisions (guide location, no-duplication-of-Writing-Bible, three worked-example lenses, compliance-test canonical-source strategy, per-lens voice-note depth); tightened AC1/2/5 and added AC6 (voice-ladder gate on sample lines); drafted 6-task plan. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-28 15:59
+- Completed: 2026-08-28 16:20
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: 1a0af0c
+- New_sprints_proposed: none
+- Polish_items_folded_in: investment_from-vocabulary-section, reskin-self-audit-checklist, voice-ladder-gate-on-sample-lines (AC6)
+- Decisions_locked: 5
+- Notes: All 4 originally-listed context docs verified present. Added 3 more that the planner surfaced as load-bearing (aurelia_voice_examples.md for the voice standard the guide models, lens.py for the Lens field contract from A2-1, ambient_dialogue.py for the investment_from tag vocabulary). Compliance test moved from acceptance-criterion-only status to Touch zones with a named path. Decision on canonical-source strategy for the sixteen lens_ids: hardcode in the test from Spec F, layer a registry-drift check that activates when A2-5/A2-6 land — gates the guide immediately rather than waiting. Cross-sprint reaction surface: none, foundational docs-only sprint with no player-facing surface.
 #### A2-3 — Capstone format and hook contract
 
 **Status**: todo
