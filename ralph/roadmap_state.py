@@ -47,6 +47,12 @@ _SIZE_RE = re.compile(r"\*\*Size\*\*:\s*([SMLX]+)", re.MULTILINE)
 _DEPENDS_RE = re.compile(r"^\*\*Depends on\*\*:\s*(.+?)\s*\|", re.MULTILINE)
 _DEPENDS_RE_END = re.compile(r"^\*\*Depends on\*\*:\s*(.+?)\s*$", re.MULTILINE)
 
+# Blocks line. Always the field after `**Depends on**: ... | **Blocks**: ...`
+# on the same metadata line, so unlike Depends on it is never anchored to
+# line start. Declared on every sprint section; until now nothing parsed it.
+_BLOCKS_RE = re.compile(r"\*\*Blocks\*\*:\s*(.+?)\s*\|", re.MULTILINE)
+_BLOCKS_RE_END = re.compile(r"\*\*Blocks\*\*:\s*(.+?)\s*$", re.MULTILINE)
+
 # Activity log line. We append underneath the existing items.
 _ACTIVITY_LOG_HEADER_RE = re.compile(r"^\*\*Activity log\.\*\*\s*$", re.MULTILINE)
 
@@ -59,6 +65,7 @@ class Sprint:
     title: str
     status: str
     depends_on: list[str] = field(default_factory=list)
+    blocks: list[str] = field(default_factory=list)
     phase: str = ""
     size: str = ""
     section_start: int = 0  # byte offset of `### SA-1 ...`
@@ -122,6 +129,13 @@ def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
             if raw.lower() != "none":
                 depends_on = [tok.strip() for tok in raw.split(",") if tok.strip()]
 
+        blocks_match = _BLOCKS_RE.search(section_text) or _BLOCKS_RE_END.search(section_text)
+        blocks: list[str] = []
+        if blocks_match:
+            raw = blocks_match.group(1).strip()
+            if raw.lower() != "none":
+                blocks = [tok.strip() for tok in raw.split(",") if tok.strip()]
+
         phase_match = _PHASE_RE.search(section_text) or _PHASE_RE_END.search(section_text)
         phase = phase_match.group(1).strip() if phase_match else ""
 
@@ -133,6 +147,7 @@ def parse_sprints_from_text(content: str) -> dict[str, Sprint]:
             title=title,
             status=status,
             depends_on=depends_on,
+            blocks=blocks,
             phase=phase,
             size=size,
             section_start=section_start,

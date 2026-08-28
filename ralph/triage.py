@@ -140,6 +140,29 @@ def analyse(sprints: dict[str, Sprint]) -> QueueState:
     )
 
 
+def blocks_disagreements(sprints: dict[str, Sprint]) -> list[str]:
+    """Report `Blocks:` claims that the real dependency graph does not support.
+
+    `Blocks:` is declared on every sprint and, until now, parsed by nothing. It
+    reads as structural but was a comment, free to drift from `depends_on`
+    without anyone noticing. It is a CROSS-CHECK, never a second source of
+    truth -- eligibility still comes from `depends_on` alone, so there is only
+    one graph to keep correct.
+    """
+    problems: list[str] = []
+    for sprint in sprints.values():
+        for claimed in sprint.blocks:
+            target = sprints.get(claimed)
+            if target is None:
+                problems.append(f"{sprint.sprint_id}: Blocks names unknown sprint {claimed!r}")
+            elif sprint.sprint_id not in target.depends_on:
+                problems.append(
+                    f"{sprint.sprint_id}: Blocks claims {claimed}, but {claimed} "
+                    f"does not list {sprint.sprint_id} in Depends on"
+                )
+    return sorted(problems)
+
+
 def starvation_report(state: QueueState) -> str:
     """Human-readable starvation summary, or empty string when healthy."""
     if not state.is_starved:

@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from ralph import agents, heartbeat, roadmap_state, triage
-from ralph.agents import Outcome, Phase, PhaseContext
+from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
@@ -63,6 +63,10 @@ class SprintState:
     implement_runs: int = 0
     review_runs: int = 0
     rework_cycles: int = 0
+    # One retry before a failing phase (ERROR / TIMEOUT / INFRA_ERROR) becomes
+    # a permanent block. See `_should_retry`. BLOCKED never consumes this --
+    # it is a judgement, not a failure.
+    retry_count: int = 0
     last_phase: Optional[str] = None
     last_outcome: Optional[str] = None
     started_at: Optional[str] = None
@@ -220,6 +224,81 @@ def _mark_terminal_outcome(sprint_id: str, phase: str, outcome: Outcome, reason:
     )
 
 
+# ---------------------------------------------------------------------------
+# Retry grace (item: harness resilience) — one retry before a failure blocks
+# ---------------------------------------------------------------------------
+
+_RETRYABLE_OUTCOMES = frozenset({Outcome.ERROR, Outcome.TIMEOUT, Outcome.INFRA_ERROR})
+
+
+def _should_retry(sprint_state: SprintState, outcome: Outcome) -> bool:
+    """One retry before a failure becomes a block.
+
+    SA-F2 failed once in April with returncode 1 and 135 bytes of output -- a
+    transient bail -- and stayed blocked for four months, stranding five
+    sprints. A single retry absorbs that class entirely.
+
+    BLOCKED is never retried: an agent writing PHASE_BLOCKED made a judgement,
+    and repeating the phase will not change it.
+    """
+    if outcome not in _RETRYABLE_OUTCOMES:
+        return False
+    return sprint_state.retry_count < 1
+
+
+def _sprint_has_partial_commits(sprint_id: str, phase_context: PhaseContext) -> bool:
+    """True if a commit referencing `sprint_id` has landed since the sprint
+    started this attempt.
+
+    Reuses `agents._commits_since` -- the same signal `agents.run_phase`
+    already computes for PHASE_OK sentinel cross-validation -- rather than
+    re-deriving it. Retrying a phase that already committed risks
+    duplicating that work, so this gates the retry decision below.
+    """
+    if not phase_context.pre_phase_head:
+        return False
+    return bool(agents._commits_since(phase_context.pre_phase_head, sprint_id))
+
+
+def _handle_non_ok_phase(
+    sprint_id: str,
+    phase: str,
+    result: PhaseResult,
+    sprint_state: SprintState,
+    phase_context: PhaseContext,
+    state: HarnessState,
+) -> None:
+    """Decide retry vs. terminal block for a non-OK phase outcome.
+
+    If `_should_retry` allows it AND the phase left no commits behind, reset
+    the sprint to `todo` so the main loop picks it back up rather than
+    blocking on a single transient failure. If commits already exist, the
+    work is partially done -- retrying risks duplicating it, so this always
+    marks blocked instead, even on what would otherwise be the free retry.
+    """
+    outcome = result.outcome
+    if _should_retry(sprint_state, outcome):
+        if _sprint_has_partial_commits(sprint_id, phase_context):
+            _mark_terminal_outcome(
+                sprint_id,
+                phase,
+                Outcome.BLOCKED,
+                f"{result.reason} (not retrying -- a commit referencing {sprint_id} "
+                "already landed this attempt; re-running risks duplicating partial work)",
+            )
+            return
+        sprint_state.retry_count += 1
+        state.save()
+        roadmap_state.update_status(sprint_id, STATUS_TODO)
+        roadmap_state.append_activity_log(
+            sprint_id,
+            f"harness: {phase} phase outcome={outcome.value}, retrying "
+            f"(retry {sprint_state.retry_count}/1) rather than blocking. {result.reason}",
+        )
+        return
+    _mark_terminal_outcome(sprint_id, phase, outcome, result.reason)
+
+
 def execute_sprint(
     sprint_id: str,
     state: HarnessState,
@@ -278,7 +357,7 @@ def _run_sprint_phases(
     )
 
     if plan_result.outcome != Outcome.OK:
-        _mark_terminal_outcome(sprint_id, "plan", plan_result.outcome, plan_result.reason)
+        _handle_non_ok_phase(sprint_id, "plan", plan_result, sprint_state, phase_context, state)
         return plan_result.outcome
 
     if not DRY_RUN:
@@ -316,7 +395,9 @@ def _run_sprint_phases(
         )
 
         if impl_result.outcome != Outcome.OK:
-            _mark_terminal_outcome(sprint_id, "implement", impl_result.outcome, impl_result.reason)
+            _handle_non_ok_phase(
+                sprint_id, "implement", impl_result, sprint_state, phase_context, state
+            )
             return impl_result.outcome
 
         if not DRY_RUN:
@@ -389,7 +470,7 @@ def _run_sprint_phases(
             continue
 
         # BLOCKED, TIMEOUT, ERROR, INFRA_ERROR
-        _mark_terminal_outcome(sprint_id, "review", review_result.outcome, review_result.reason)
+        _handle_non_ok_phase(sprint_id, "review", review_result, sprint_state, phase_context, state)
         return review_result.outcome
 
     # Should be unreachable due to the cap-check above, but defend anyway.

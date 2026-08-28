@@ -10,7 +10,7 @@ success. Four months of a stalled arc followed from one ambiguous log line.
 from __future__ import annotations
 
 from ralph.roadmap_state import Sprint
-from ralph.triage import analyse, starvation_report
+from ralph.triage import analyse, blocks_disagreements, starvation_report
 
 
 def _sprint(sid: str, status: str, deps: list[str] | None = None, pos: int = 0) -> Sprint:
@@ -137,3 +137,29 @@ class TestBlockedPathUnchanged:
         text = starvation_report(analyse(sprints))
         assert "unknown sprint" not in text
         assert "cycle" not in text.lower()
+
+
+class TestBlocksConsistency:
+    def test_agreeing_blocks_and_depends_on_pass(self) -> None:
+        sprints = {
+            "A": _sprint("A", "done"),
+            "B": _sprint("B", "todo", ["A"], pos=1),
+        }
+        sprints["A"].blocks = ["B"]
+        assert blocks_disagreements(sprints) == []
+
+    def test_blocks_claiming_a_nonexistent_edge_is_reported(self) -> None:
+        """`Blocks:` was documentation nothing ever parsed, free to drift.
+
+        Every sprint declares it and no code has ever read it, so it can claim
+        an edge the real depends_on graph does not have and nobody would know.
+        """
+        sprints = {"A": _sprint("A", "done"), "B": _sprint("B", "todo", [], pos=1)}
+        sprints["A"].blocks = ["B"]
+        problems = blocks_disagreements(sprints)
+        assert any("A" in p and "B" in p for p in problems)
+
+    def test_blocks_referencing_unknown_sprint_is_reported(self) -> None:
+        sprints = {"A": _sprint("A", "todo")}
+        sprints["A"].blocks = ["GHOST"]
+        assert any("GHOST" in p for p in blocks_disagreements(sprints))

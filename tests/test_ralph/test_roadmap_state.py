@@ -101,6 +101,19 @@ class TestParseSprintsFromText:
         # SA-2 has "Depends on: SA-1 |"
         assert sprints["SA-2"].depends_on == ["SA-1"]
 
+    def test_blocks_extraction(self) -> None:
+        """`Blocks:` was declared on every sprint and parsed by nothing.
+
+        Task 7 wires it up as a cross-check against `depends_on`; this
+        confirms the parser actually reads the field rather than leaving
+        `Sprint.blocks` permanently empty.
+        """
+        sprints = roadmap_state.parse_sprints_from_text(_ROADMAP_TWO_SPRINTS)
+        # SA-1 has "**Blocks**: SA-2"
+        assert sprints["SA-1"].blocks == ["SA-2"]
+        # SA-2 has "**Blocks**: none" — literal "none" parses to empty list
+        assert sprints["SA-2"].blocks == []
+
     def test_phase_headers_not_parsed_as_sprints(self) -> None:
         """`### Phase 0 — Pre-arc Preparation` shouldn't be parsed as a sprint
         because the ID character class excludes lowercase like 'Phase'."""

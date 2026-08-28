@@ -17,12 +17,13 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from ralph import agents, config, harness, roadmap_state
-from ralph.agents import Outcome, Phase, PhaseResult
+from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.harness import HarnessState, SprintState
 
 _ROADMAP_WITH_STUCK = """\
@@ -1013,3 +1014,207 @@ class TestStateWritesAreAtomic:
         call_args = mock_atomic.call_args[0]
         assert call_args[0] == mock_rm_path
         assert call_args[1] == "new content"
+
+
+# ---------------------------------------------------------------------------
+# Retry grace — one retry before a failure becomes a permanent block
+# ---------------------------------------------------------------------------
+
+
+class TestRetryGrace:
+    def test_first_failure_retries_rather_than_blocking(self) -> None:
+        """SA-F2 died on returncode 1 with 135 bytes of output and stayed
+        blocked for four months. One retry absorbs that entire class."""
+        from ralph import harness
+        from ralph.agents import Outcome
+
+        state = harness.HarnessState()
+        sprint_state = state.for_sprint("T-1")
+        assert harness._should_retry(sprint_state, Outcome.ERROR) is True
+
+    def test_second_failure_blocks(self) -> None:
+        from ralph import harness
+        from ralph.agents import Outcome
+
+        state = harness.HarnessState()
+        sprint_state = state.for_sprint("T-1")
+        sprint_state.retry_count = 1
+        assert harness._should_retry(sprint_state, Outcome.ERROR) is False
+
+    def test_blocked_outcome_is_never_retried(self) -> None:
+        """A deliberate PHASE_BLOCKED is a judgement, not a failure."""
+        from ralph import harness
+        from ralph.agents import Outcome
+
+        state = harness.HarnessState()
+        sprint_state = state.for_sprint("T-1")
+        assert harness._should_retry(sprint_state, Outcome.BLOCKED) is False
+
+    def test_timeout_and_infra_error_are_retryable(self) -> None:
+        """TIMEOUT and INFRA_ERROR are transient-failure classes too."""
+        from ralph import harness
+        from ralph.agents import Outcome
+
+        state = harness.HarnessState()
+        sprint_state = state.for_sprint("T-1")
+        assert harness._should_retry(sprint_state, Outcome.TIMEOUT) is True
+        assert harness._should_retry(sprint_state, Outcome.INFRA_ERROR) is True
+
+    def test_needs_rework_is_not_retried_by_this_mechanism(self) -> None:
+        """NEEDS_REWORK has its own bounded rework-cycle loop; it is not
+        one of the outcomes this grace period governs."""
+        from ralph import harness
+        from ralph.agents import Outcome
+
+        state = harness.HarnessState()
+        sprint_state = state.for_sprint("T-1")
+        assert harness._should_retry(sprint_state, Outcome.NEEDS_REWORK) is False
+
+
+# ---------------------------------------------------------------------------
+# Retry grace — execute_sprint integration (safety against partial work)
+# ---------------------------------------------------------------------------
+
+
+class TestExecuteSprintRetryGrace:
+    """A retryable failure resets the sprint to `todo` instead of `blocked`,
+    UNLESS the failed phase already produced a commit referencing the
+    sprint -- retrying that would risk duplicating partial work.
+    """
+
+    def _err_run_phase(self, tmp_path: Path, reason: str = "no sentinel"):
+        """Build a `run_phase` replacement that mimics the real function's
+        one relevant side effect: populating `context.pre_phase_head`.
+
+        `agents.run_phase` is mocked wholesale in these tests (no real
+        subprocess), so nothing else sets `pre_phase_head`. Without this,
+        `_sprint_has_partial_commits` would short-circuit on an empty SHA
+        and the mocked `_commits_since` below would never actually run --
+        the exact "test that verifies nothing" failure mode.
+        """
+
+        def _run(
+            phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
+        ) -> PhaseResult:
+            if context is not None and not context.pre_phase_head:
+                context.pre_phase_head = "deadbeef"
+            return PhaseResult(
+                outcome=Outcome.ERROR,
+                phase=phase,
+                sprint_id=sprint_id,
+                log_path=tmp_path / "test.log",
+                reason=reason,
+            )
+
+        return _run
+
+    def test_first_error_resets_to_todo_not_blocked(self, isolated_roadmap) -> None:
+        tmp = isolated_roadmap
+        with patch.object(agents, "run_phase", side_effect=self._err_run_phase(tmp)):
+            with patch.object(agents, "_commits_since", return_value=[]) as mock_commits:
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert mock_commits.called, "the commit-safety check must actually run"
+        assert result == Outcome.ERROR
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "todo"
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "retrying" in content
+
+    def test_retry_count_increments_on_first_failure(self, isolated_roadmap) -> None:
+        tmp = isolated_roadmap
+        state = HarnessState()
+        with patch.object(agents, "run_phase", side_effect=self._err_run_phase(tmp)):
+            with patch.object(agents, "_commits_since", return_value=[]):
+                harness.execute_sprint("SA-2", state)
+
+        assert state.sprints["SA-2"].retry_count == 1
+
+    def test_second_error_blocks(self, isolated_roadmap) -> None:
+        tmp = isolated_roadmap
+        state = HarnessState()
+        state.sprints["SA-2"] = SprintState(sprint_id="SA-2", retry_count=1)
+        with patch.object(agents, "run_phase", side_effect=self._err_run_phase(tmp)):
+            with patch.object(agents, "_commits_since", return_value=[]):
+                result = harness.execute_sprint("SA-2", state)
+
+        assert result == Outcome.ERROR
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+
+    def test_commits_already_present_blocks_instead_of_retrying(self, isolated_roadmap) -> None:
+        """Partial completion signal: a commit already references the sprint.
+
+        Retrying would risk duplicating that work, so this must block on
+        the FIRST failure even though a retry would otherwise be available.
+        """
+        tmp = isolated_roadmap
+        state = HarnessState()
+        with patch.object(agents, "run_phase", side_effect=self._err_run_phase(tmp)):
+            with patch.object(
+                agents, "_commits_since", return_value=["abc123 SA-2 partial work"]
+            ) as mock_commits:
+                result = harness.execute_sprint("SA-2", state)
+
+        assert mock_commits.called, "the commit-safety check must actually run"
+        assert result == Outcome.ERROR
+        assert state.sprints["SA-2"].retry_count == 0, (
+            "a commit-guarded block is not a consumed retry -- retry_count must stay 0"
+        )
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "not retrying" in content or "commit" in content.lower()
+
+    def test_infra_error_with_commits_blocks_not_silently_resets(self, isolated_roadmap) -> None:
+        """INFRA_ERROR normally auto-resets to `todo` unconditionally via
+        `_mark_terminal_outcome` (the agent never meaningfully ran, so it is
+        always safe to re-run). But if a commit already landed this attempt,
+        that premise is false -- the commit-guard must win and actually
+        block, not fall through to the INFRA_ERROR auto-reset.
+        """
+
+        def _infra_run_phase(
+            phase: Phase, sprint_id: str, context: Optional[PhaseContext] = None
+        ) -> PhaseResult:
+            if context is not None and not context.pre_phase_head:
+                context.pre_phase_head = "deadbeef"
+            return PhaseResult(
+                outcome=Outcome.INFRA_ERROR,
+                phase=phase,
+                sprint_id=sprint_id,
+                log_path=isolated_roadmap / "test.log",
+                reason="auth 403 from CLI",
+            )
+
+        state = HarnessState()
+        with patch.object(agents, "run_phase", side_effect=_infra_run_phase):
+            with patch.object(agents, "_commits_since", return_value=["abc123 SA-2 partial work"]):
+                result = harness.execute_sprint("SA-2", state)
+
+        assert result == Outcome.INFRA_ERROR
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked", (
+            "a commit already landed -- INFRA_ERROR's usual auto-reset-to-todo "
+            "must be overridden, not silently applied"
+        )
+
+    def test_blocked_outcome_never_retries_even_on_first_failure(self, isolated_roadmap) -> None:
+        tmp = isolated_roadmap
+        blocked_result = PhaseResult(
+            outcome=Outcome.BLOCKED,
+            phase=Phase.PLAN,
+            sprint_id="SA-2",
+            log_path=tmp / "test.log",
+            reason="missing context doc",
+        )
+        with patch.object(agents, "run_phase", return_value=blocked_result):
+            with patch.object(agents, "_commits_since", return_value=[]) as mock_commits:
+                result = harness.execute_sprint("SA-2", HarnessState())
+
+        assert result == Outcome.BLOCKED
+        sprints = roadmap_state.parse_sprints()
+        assert sprints["SA-2"].status == "blocked"
+        assert not mock_commits.called, (
+            "BLOCKED is a judgement; the retry path (and its commit check) must not even run"
+        )
