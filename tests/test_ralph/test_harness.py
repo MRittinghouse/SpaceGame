@@ -1768,6 +1768,7 @@ class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
         "STATE_FILE": "ralph/state.json",
         "HEARTBEAT_PATH": "ralph/heartbeat.json",
         "PUSH_STATE_PATH": "ralph/push_state.json",
+        "SUPERVISOR_STOP_PATH": "ralph/supervisor_stop.json",
         "STATUS_PATH": "STATUS.md",
         "ROADMAP_PATH": "requirements/roadmap/ROADMAP.md",
         "_RM": "requirements/roadmap/ROADMAP.md",

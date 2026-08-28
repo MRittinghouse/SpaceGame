@@ -73,12 +73,36 @@
 
     Run that from an elevated ("Run as Administrator") PowerShell prompt.
 
+.LOGGING
+    The task redirects nothing, and it does not need to: both components write
+    their own files under ralph/logs/ (each rotated once at 5 MB).
+
+        ralph\logs\supervisor.log  -- the supervisor's own account: every
+                                       launch, every exit code, every restart
+                                       decision, every STATUS.md publish.
+        ralph\logs\harness.log     -- the harness's stdout and stderr,
+                                       captured by the supervisor's Popen.
+                                       This is where a PRE-FLIGHT FAILURE
+                                       message lands, and a pre-flight failure
+                                       is the most likely way an unattended
+                                       run dies.
+
+    Before this, both logged only via `print` and the task discarded that
+    stream, so nothing at all was written to disk.
+
 .VERIFYING
     After arming:
 
         Get-ScheduledTask -TaskName "RalphSupervisor"
         Start-ScheduledTask -TaskName "RalphSupervisor"   # to test without rebooting
         Get-ScheduledTaskInfo -TaskName "RalphSupervisor"  # LastRunTime / LastTaskResult
+
+    Confirm the two settings that killed the previous design:
+
+        (Get-ScheduledTask -TaskName "RalphSupervisor").Settings.ExecutionTimeLimit
+            # must be PT0S -- anything else is a deadline on the run
+        (Get-ScheduledTask -TaskName "RalphSupervisor").Triggers
+            # must include a repetition, not only the boot trigger
 
 .DISARMING
     To remove it later:
@@ -92,13 +116,58 @@ $action = New-ScheduledTaskAction -Execute "python" `
     -Argument "-m ralph.supervisor" `
     -WorkingDirectory $ProjectRoot
 
-$trigger = New-ScheduledTaskTrigger -AtStartup
+# TWO triggers, both load-bearing.
+#
+# At-startup resumes work after a power cut. On its own, though, it is the only
+# way this task can ever start again -- and a task that stops for any other
+# reason then waits for a reboot that may never come. Measured: the seven-day
+# run this exists for would have ended at hour 72 (see ExecutionTimeLimit
+# below) with nothing to restart it.
+#
+# So a second trigger repeats every 15 minutes, indefinitely, from midnight.
+# MultipleInstances = IgnoreNew (set explicitly below) means a firing while the
+# supervisor is already running is discarded, so the repetition costs nothing
+# in the normal case and heals a KILLED supervisor within a bounded window.
+#
+# It does NOT resurrect a supervisor that stopped on purpose: the 3-consecutive-
+# failure cap lives in an in-process counter, so relaunching a supervisor that
+# gave up would grant three fresh harness attempts every 15 minutes forever --
+# the unbounded spend the cap exists to prevent. `ralph/supervisor.py` records a
+# deliberate stop in `ralph/supervisor_stop.json` and a new instance that finds
+# it exits immediately. Delete that file to resume.
+$triggerAtBoot = New-ScheduledTaskTrigger -AtStartup
+$triggerRepeating = New-ScheduledTaskTrigger -Once -At (Get-Date).Date `
+    -RepetitionInterval (New-TimeSpan -Minutes 15) `
+    -RepetitionDuration ([TimeSpan]::MaxValue)
 
 # RestartCount/RestartInterval cover the supervisor itself dying (its own
 # crash-loop backoff, in ralph/supervisor.py, covers the harness dying
 # underneath it). Three restarts five minutes apart is deliberately modest --
 # a supervisor that keeps dying needs a human, not an ever-longer leash.
-$settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 5)
+#
+# -ExecutionTimeLimit ([TimeSpan]::Zero) => PT0S => run indefinitely. This is
+# the single most important argument here. The cmdlet's DEFAULT is PT72H, with
+# AllowHardTerminate True (both measured on this host), so without it the Task
+# Scheduler service hard-terminates the supervisor after exactly 72 hours --
+# the middle of day 3 of a seven-day trip -- and, with an At-startup-only
+# trigger, nothing ever brought it back. -RestartCount does not help: it
+# governs restart-on-failure, and a scheduler-imposed termination is not a
+# failure. The hard termination is also a `.tmp`-orphan trigger (see
+# harness._sweep_tmp_orphans), so it took the next launch with it.
+#
+# Battery settings: DisallowStartIfOnBatteries and StopIfGoingOnBatteries both
+# default True, so a UPS that presents itself as a battery would prevent the
+# task starting at boot -- the one moment it matters most. Overridden here
+# rather than left to a pre-arming check nobody will remember to run.
+#
+# -StartWhenAvailable so a repetition missed while the machine was asleep fires
+# on wake instead of being dropped.
+$settings = New-ScheduledTaskSettingsSet `
+    -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 5) `
+    -ExecutionTimeLimit ([TimeSpan]::Zero) `
+    -MultipleInstances IgnoreNew `
+    -StartWhenAvailable `
+    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
 # S4U: runs whether or not the user is logged on, without storing a
 # password -- see the DESCRIPTION's LOGON TYPE note above for why the
@@ -108,5 +177,6 @@ $settings = New-ScheduledTaskSettingsSet -RestartCount 3 -RestartInterval (New-T
 $principal = New-ScheduledTaskPrincipal -UserId "$env:COMPUTERNAME\$env:USERNAME" `
     -LogonType S4U -RunLevel Highest
 
-Register-ScheduledTask -TaskName "RalphSupervisor" -Action $action -Trigger $trigger `
+Register-ScheduledTask -TaskName "RalphSupervisor" -Action $action `
+    -Trigger $triggerAtBoot, $triggerRepeating `
     -Settings $settings -Principal $principal -Description "Ralph harness supervisor (Spec E)"

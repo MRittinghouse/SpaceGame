@@ -77,6 +77,8 @@ ralph/heartbeat.json.tmp
 ralph/state.json.tmp
 ralph/push_state.json
 ralph/push_state.json.tmp
+ralph/supervisor_stop.json
+ralph/supervisor_stop.json.tmp
 STATUS.md.tmp
 # ROADMAP.md itself is tracked -- only the atomic_write sibling is ignored.
 # Unlike the runtime files above it lives outside ralph/, so without this line

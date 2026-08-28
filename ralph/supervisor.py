@@ -48,6 +48,7 @@ Two failure modes drive most of this module's shape:
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import time
@@ -56,7 +57,8 @@ from pathlib import Path
 from typing import IO, Callable, Optional
 
 from ralph import heartbeat, status, triage
-from ralph.config import LOGS_DIR, PROJECT_ROOT
+from ralph.config import LOGS_DIR, PROJECT_ROOT, RALPH_DIR
+from ralph.proc import atomic_write
 from ralph.roadmap_state import parse_sprints
 
 # ---------------------------------------------------------------------------
@@ -439,6 +441,64 @@ def _report_silent_exit(rc: int, recent: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Terminal stop -- "decided to stop" is not the same as "was stopped"
+# ---------------------------------------------------------------------------
+
+# The Scheduled Task now has a repeating trigger, because an At-startup-only
+# task cannot recover from anything short of a reboot. That trigger is what
+# heals a supervisor that was KILLED -- by the 72-hour execution limit, by the
+# OOM killer, by a stray taskkill.
+#
+# On its own, though, it would also resurrect a supervisor that stopped on
+# purpose, and that would quietly destroy the bounded restart policy: the
+# 3-consecutive-failure cap lives in an in-process counter, so a relaunched
+# supervisor starts from zero and grants three more harness attempts every
+# repetition, forever. The cap and the exponential backoff are the difference
+# between a quiet week and an expensive one; a trigger that erases them is not
+# an improvement.
+#
+# So a deliberate stop is recorded, and a fresh supervisor that finds the
+# record exits without launching anything. A killed supervisor leaves no
+# record and is relaunched normally.
+SUPERVISOR_STOP_PATH: Path = RALPH_DIR / "supervisor_stop.json"
+
+
+def read_terminal_stop() -> Optional[dict[str, object]]:
+    """The recorded deliberate stop, or None if the supervisor may run.
+
+    A missing or corrupt file reads as None: failing open is right here,
+    because the alternative -- a parse bug silently preventing the supervisor
+    from ever starting again -- is the very failure this module exists to
+    prevent.
+    """
+    try:
+        raw = json.loads(SUPERVISOR_STOP_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return raw if isinstance(raw, dict) else None
+
+
+def record_terminal_stop(reason: str) -> None:
+    """Record that this supervisor stopped on purpose. Best-effort."""
+    try:
+        SUPERVISOR_STOP_PATH.parent.mkdir(parents=True, exist_ok=True)
+        atomic_write(
+            SUPERVISOR_STOP_PATH,
+            json.dumps({"reason": reason, "at": time.strftime("%Y-%m-%d %H:%M:%S")}, indent=2),
+        )
+    except OSError as exc:
+        _log(f"supervisor: could not record the stop reason: {exc}")
+
+
+def clear_terminal_stop() -> None:
+    """Forget a recorded stop, so the next launch runs. Best-effort."""
+    try:
+        SUPERVISOR_STOP_PATH.unlink(missing_ok=True)
+    except OSError:
+        pass
+
+
+# ---------------------------------------------------------------------------
 # Process loop
 # ---------------------------------------------------------------------------
 
@@ -552,6 +612,18 @@ def main() -> int:
     Deliberately thin: all the decisions above are pure functions, tested in
     isolation. This just wires them to real subprocesses and real time.
     """
+    stopped = read_terminal_stop()
+    if stopped is not None:
+        _log(
+            f"supervisor: a previous instance stopped deliberately "
+            f"({stopped.get('reason', 'reason not recorded')} at "
+            f"{stopped.get('at', 'unknown time')}); not relaunching. The repeating "
+            "Scheduled Task trigger exists to recover a supervisor that was "
+            "KILLED, not to grant a fresh 3-failure budget every few minutes to "
+            f"one that gave up. Delete {SUPERVISOR_STOP_PATH} to resume."
+        )
+        return 0
+
     policy = RestartPolicy()
     recent: list[str] = []
 
@@ -607,10 +679,22 @@ def main() -> int:
         if not restart:
             if policy.exhausted:
                 _write_crash_loop_status(recent)
+            # Recorded BEFORE returning, so the repeating trigger's next
+            # firing sees a deliberate stop rather than an absence.
+            record_terminal_stop(reason)
             return 0
 
         time.sleep(backoff_seconds(policy.consecutive_failures))
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except SystemExit:
+        raise
+    except BaseException as _exc:  # the supervisor's own death must not be silent
+        import traceback
+
+        _log(f"supervisor: DIED on {type(_exc).__name__}: {_exc}")
+        _log(traceback.format_exc())
+        raise

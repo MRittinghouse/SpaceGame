@@ -553,6 +553,7 @@ _HARNESS_MANAGED_RUNTIME_BASE: tuple[str, ...] = (
     "ralph/state.json",
     "ralph/heartbeat.json",
     "ralph/push_state.json",
+    "ralph/supervisor_stop.json",
     "ralph/.write_probe",
     "ralph/.agency_probe",
     "STOP",
@@ -590,6 +591,7 @@ _ATOMIC_WRITE_TARGETS: tuple[str, ...] = (
     "ralph/state.json",  # HarnessState.save
     "ralph/heartbeat.json",  # heartbeat.write_heartbeat
     "ralph/push_state.json",  # status.record_push
+    "ralph/supervisor_stop.json",  # supervisor.record_terminal_stop
     "STATUS.md",  # status.write_status
     "requirements/roadmap/ROADMAP.md",  # roadmap_state._write_roadmap, _sync_roadmap_index
     # ralph/logs/<sprint>/SUMMARY.md (_write_sprint_summary) is covered by

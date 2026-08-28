@@ -33,6 +33,18 @@ from ralph.supervisor import (
 from ralph.triage import QueueState
 
 
+@pytest.fixture(autouse=True)
+def _isolate_supervisor_stop_marker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """No test may read or write the real `ralph/supervisor_stop.json`.
+
+    `main()` refuses to launch when that marker exists, so a test that left one
+    behind would silently turn every later `main()` test into a no-op -- the
+    vacuous-test failure mode this branch keeps producing. Autouse so it cannot
+    be forgotten.
+    """
+    monkeypatch.setattr(supervisor, "SUPERVISOR_STOP_PATH", tmp_path / "supervisor_stop.json")
+
+
 class TestBackoff:
     def test_escalates(self) -> None:
         assert backoff_seconds(0) == 30
@@ -1015,3 +1027,178 @@ class TestSupervisorLogFile:
 
         assert not target.exists()
         assert (tmp_path / "supervisor.log.1").exists()
+
+
+class TestTerminalStopMarker:
+    """A repeating Scheduled Task trigger must heal a KILLED supervisor
+    without resurrecting one that deliberately gave up.
+
+    The 3-consecutive-failure cap and the exponential backoff live in an
+    in-process counter, so a relaunched supervisor starts from zero. Without
+    this marker the new repeating trigger would grant three fresh harness
+    attempts every repetition, forever -- turning the bounded restart policy
+    into exactly the unbounded spend it exists to prevent.
+    """
+
+    def _wire(
+        self, monkeypatch: pytest.MonkeyPatch, *, rc: int, eligible: int, todo: int = 5
+    ) -> list[object]:
+        launches: list[object] = []
+        monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
+        monkeypatch.setattr(
+            supervisor.subprocess,
+            "Popen",
+            lambda *a, **k: launches.append(a) or object(),
+        )
+        monkeypatch.setattr(supervisor.time, "sleep", lambda _s: None)
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
+        monkeypatch.setattr(supervisor, "_supervise", lambda proc: rc)
+        mtimes = iter([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
+        monkeypatch.setattr(supervisor, "parse_sprints", dict)
+        monkeypatch.setattr(
+            supervisor.triage,
+            "analyse",
+            lambda sprints: QueueState(total=5, todo=todo, eligible=eligible),
+        )
+        monkeypatch.setattr(supervisor.triage, "blocks_disagreements", lambda sprints: [])
+        monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
+        return launches
+
+    def test_a_deliberate_stop_is_recorded(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        self._wire(monkeypatch, rc=0, eligible=0, todo=0)
+
+        supervisor.main()
+
+        stopped = supervisor.read_terminal_stop()
+        assert stopped is not None, (
+            "the supervisor stopped on purpose and left no record, so the "
+            "repeating Scheduled Task trigger will relaunch it every "
+            "repetition and the bounded restart policy is gone"
+        )
+        assert "all work complete" in str(stopped.get("reason", ""))
+
+    def test_a_recorded_stop_prevents_a_relaunch(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        launches = self._wire(monkeypatch, rc=0, eligible=5)
+        supervisor.record_terminal_stop("stopping: 3 consecutive failures")
+
+        rc = supervisor.main()
+
+        assert rc == 0
+        assert launches == [], (
+            "a supervisor that had already given up launched the harness "
+            "again; every trigger firing would grant three more attempts"
+        )
+
+    def test_no_marker_means_a_killed_supervisor_relaunches(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The whole point of the repeating trigger: a supervisor terminated
+        by the 72-hour execution limit leaves no record and must resume."""
+        launches = self._wire(monkeypatch, rc=0, eligible=0, todo=0)
+        supervisor.clear_terminal_stop()
+
+        supervisor.main()
+
+        assert launches, (
+            "with no recorded stop the supervisor refused to launch, so a "
+            "killed supervisor would never resume and the run ends silently"
+        )
+
+    def test_a_corrupt_marker_fails_open(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A parse bug must not be able to permanently prevent a launch."""
+        supervisor.SUPERVISOR_STOP_PATH.write_text("{not json", encoding="utf-8")
+        launches = self._wire(monkeypatch, rc=0, eligible=0, todo=0)
+
+        supervisor.main()
+
+        assert supervisor.read_terminal_stop() is not None or launches
+        assert launches, "an unreadable marker stopped the supervisor forever"
+
+    def test_clear_removes_the_marker(self) -> None:
+        supervisor.record_terminal_stop("stopping: all work complete")
+        assert supervisor.read_terminal_stop() is not None
+
+        supervisor.clear_terminal_stop()
+
+        assert supervisor.read_terminal_stop() is None
+
+
+class TestInstallSupervisorTaskScript:
+    """The Scheduled Task's own settings, which no runtime test can reach.
+
+    `New-ScheduledTaskSettingsSet` defaults `ExecutionTimeLimit` to PT72H with
+    `AllowHardTerminate` True (measured). Seven days is 168 hours, so on the
+    middle of day 3 Windows hard-terminated the supervisor -- and since the
+    only trigger was At-startup, nothing ever resumed it. Neither the smoke
+    drill (minutes) nor any Python test can see a property of a default nobody
+    set, so it is asserted against the script text.
+    """
+
+    def _script(self) -> str:
+        """The script's EXECUTABLE lines only.
+
+        The comment block above each setting repeats the arguments verbatim, so
+        asserting against the raw file text passes even when the real call has
+        been stripped -- verified: deleting `-ExecutionTimeLimit` from the
+        settings left every assertion here green. Same self-confirming failure
+        class as the .tmp-orphan test; fixed the same way.
+        """
+        path = Path(supervisor.PROJECT_ROOT) / "scripts" / "install_supervisor_task.ps1"
+        raw = path.read_text(encoding="utf-8")
+        # Drop the <# ... #> comment-based help block.
+        if "<#" in raw and "#>" in raw:
+            raw = raw[raw.index("#>") + 2 :]
+        lines = [line for line in raw.splitlines() if not line.lstrip().startswith("#")]
+        return "\n".join(lines)
+
+    def test_the_helper_reads_real_code_not_comments(self) -> None:
+        """Guard on the guard: if the stripper ate everything, or ate nothing,
+        every assertion in this class would be meaningless."""
+        code = self._script()
+        assert "New-ScheduledTaskSettingsSet" in code, "the settings call was stripped away"
+        assert "load-bearing" not in code, (
+            "explanatory comments survived the strip, so these assertions can "
+            "again be satisfied by prose rather than by the actual arguments"
+        )
+
+    def test_execution_time_limit_is_unlimited(self) -> None:
+        text = self._script()
+        assert "-ExecutionTimeLimit" in text, (
+            "no -ExecutionTimeLimit argument: the cmdlet default is PT72H with "
+            "AllowHardTerminate, so Windows kills the supervisor on day 3 of a "
+            "seven-day run and the At-startup trigger never brings it back"
+        )
+        assert "[TimeSpan]::Zero" in text, (
+            "ExecutionTimeLimit must be PT0S (unlimited); any finite value is a "
+            "hard deadline on an unattended run"
+        )
+
+    def test_there_is_a_recurring_trigger_not_only_at_startup(self) -> None:
+        text = self._script()
+        assert "-RepetitionInterval" in text, (
+            "the only trigger is At-startup, so a supervisor that stops for any "
+            "reason short of a reboot never resumes and the week ends silently"
+        )
+        assert "-RepetitionDuration" in text
+
+    def test_the_task_still_refuses_concurrent_instances(self) -> None:
+        """A repeating trigger plus a running supervisor must not double-launch."""
+        assert "IgnoreNew" in self._script()
+
+    def test_battery_defaults_do_not_block_the_task(self) -> None:
+        """Both battery settings default True; a UPS presenting as a battery
+        would stop the task starting at boot."""
+        text = self._script()
+        assert "-AllowStartIfOnBatteries" in text
+        assert "-DontStopIfGoingOnBatteries" in text
+
+    def test_the_script_does_not_arm_itself_on_import(self) -> None:
+        """Registering a Scheduled Task is a system-level change and must stay
+        a deliberate human action -- reading this file must never arm it."""
+        text = self._script()
+        assert text.count("Register-ScheduledTask ") == 1, (
+            "exactly one registration call is expected, at the end of the script"
+        )
