@@ -262,10 +262,28 @@ MAX_CONSECUTIVE_INFRA_SPRINTS: int = 2
 # while the rest of the queue waited behind it.
 MAX_INFRA_ERRORS_PER_SPRINT: int = 3
 
-# An "in-progress" sprint older than this many minutes (no recent
-# Activity log entry, no recent state-file touch) is considered
-# abandoned by a previously-killed run. The startup recovery resets it
-# to `todo` so the next run can re-pick it up cleanly.
+# ---------------------------------------------------------------------------
+# Liveness thresholds (M1) -- three questions, three numbers
+# ---------------------------------------------------------------------------
+
+# "This heartbeat is too old for the process that wrote it to still be
+# working": the supervisor's kill threshold, and the same number STATUS.md
+# uses to decide whether to flag a beat as STALE.
+#
+# These used to disagree. The supervisor killed at 600s while STATUS.md
+# reused IN_PROGRESS_STALE_MINUTES (3600s), so for fifty minutes a run the
+# supervisor already considered dead rendered on the operator's phone with no
+# STALE banner at all -- and `status.py`'s own docstring cites "a reboot
+# mid-sprint leaves it behind" as its motivating case, which is exactly when
+# the leftover beat's age is small.
+HEARTBEAT_STALE_SECONDS: float = 600.0
+
+# A different question from HEARTBEAT_STALE_SECONDS, deliberately left at a
+# different (much larger) number: "this ROADMAP entry has said in-progress for
+# so long that no live run can plausibly still own it". It is compared against
+# Activity-log and state-file timestamps, not against the heartbeat, and it
+# gates a destructive action (resetting someone else's sprint to todo), so it
+# is the one threshold that should stay conservative.
 IN_PROGRESS_STALE_MINUTES: int = 60
 
 # ---------------------------------------------------------------------------

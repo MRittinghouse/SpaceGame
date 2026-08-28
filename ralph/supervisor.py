@@ -58,6 +58,7 @@ from typing import IO, Callable, Optional
 
 from ralph import heartbeat, status, triage
 from ralph.config import HARNESS_RC_INFRA_ERROR as _HARNESS_RC_INFRA_ERROR
+from ralph.config import HEARTBEAT_STALE_SECONDS as _HEARTBEAT_STALE_SECONDS
 from ralph.config import LOGS_DIR, PROJECT_ROOT, RALPH_DIR
 from ralph.proc import atomic_write
 from ralph.roadmap_state import parse_sprints
@@ -135,7 +136,12 @@ def _open_harness_log() -> Optional[IO[bytes]]:
 
 _BACKOFF_LADDER = (30.0, 120.0, 480.0)
 MAX_CONSECUTIVE_FAILURES = 3
-HEARTBEAT_STALE_SECONDS = 600.0
+
+# Re-exported from config so `status.py` renders STALE at exactly the age this
+# module kills at. Two modules answering the same question with two numbers is
+# how STATUS.md came to report a run as healthy for fifty minutes after the
+# supervisor had already decided it was dead.
+HEARTBEAT_STALE_SECONDS = _HEARTBEAT_STALE_SECONDS
 
 # Infrastructure failures get their own, much slower ladder and a higher cap.
 #

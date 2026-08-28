@@ -24,11 +24,12 @@ sprint runs next.
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import dataclass
 from typing import Optional
 
-from ralph.config import IN_PROGRESS_STALE_MINUTES, PROJECT_ROOT
+from ralph.config import HEARTBEAT_STALE_SECONDS, PROJECT_ROOT
 from ralph.proc import atomic_write
 from ralph.triage import QueueState, starvation_report
 
@@ -217,6 +218,38 @@ def _beat_age_seconds(beat: dict[str, object]) -> Optional[float]:
     return max(0.0, time.time() - float(ts))
 
 
+def beat_pid_liveness(beat: dict[str, object]) -> Optional[bool]:
+    """Is the process named by *beat* a live ralph harness? None = unknown.
+
+    Beat age alone cannot answer "is a run live" -- Ruling 16 established PID
+    liveness as the correct discriminator and `supervisor.heartbeat_pid_alive`
+    already implements it, but the one module whose entire job is telling the
+    operator whether a run is alive used only the signal the ledger ruled
+    insufficient. A heartbeat file outlives its process, so a machine that
+    rebooted two minutes ago renders a two-minute-old beat: fresh, unflagged,
+    and describing nothing that exists.
+
+    A beat naming *this* process is trivially alive and needs no probe -- which
+    also keeps the common case (the harness writing its own STATUS.md) free of
+    a PowerShell spawn.
+
+    Unknown rather than False on any failure: `supervisor` is imported lazily
+    (it imports this module), and a probe that cannot run must not be reported
+    as "dead".
+    """
+    pid = beat.get("pid")
+    if not isinstance(pid, int) or pid <= 0:
+        return None
+    if pid == os.getpid():
+        return True
+    try:
+        from ralph.supervisor import is_harness_alive
+
+        return is_harness_alive(pid)
+    except Exception:
+        return None
+
+
 def render_status(
     queue: QueueState,
     beat: Optional[dict[str, object]],
@@ -229,6 +262,7 @@ def render_status(
     gate_failure: Optional[str] = None,
     infra_failure: Optional[str] = None,
     crash_loop_reason: Optional[str] = None,
+    pid_alive: Optional[bool] = None,
 ) -> str:
     """Build the STATUS.md body.
 
@@ -266,6 +300,9 @@ def render_status(
             shown inside the CRASH-LOOP banner. "3 consecutive failures" and
             "6 consecutive infrastructure failures" call for entirely
             different responses from the operator.
+        pid_alive: Whether the heartbeat's PID is a live ralph process. None
+            means "not determined" and renders nothing, so a probe that could
+            not run never reads as "dead". `write_status` fills this in.
 
     Returns:
         The full Markdown text of STATUS.md.
@@ -278,7 +315,7 @@ def render_status(
     # health. Reuses IN_PROGRESS_STALE_MINUTES rather than a second
     # threshold constant.
     age: Optional[float] = _beat_age_seconds(beat) if beat is not None else None
-    beat_is_stale = age is not None and age >= IN_PROGRESS_STALE_MINUTES * 60
+    beat_is_stale = age is not None and age >= HEARTBEAT_STALE_SECONDS
 
     lines = ["# Ralph Status", ""]
     lines.append(f"_Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}_")
@@ -349,14 +386,26 @@ def render_status(
         lines += ["## Harness Did Not Run", "", decline_reason, ""]
     if queue.is_starved:
         lines += ["## STARVED", "", "```", starvation_report(queue), "```", ""]
+    if pid_alive is False:
+        lines += [
+            "## NO LIVE HARNESS",
+            "",
+            "The heartbeat names a process that is not running (or is no longer the "
+            "ralph harness). Beat age alone cannot see this: a heartbeat file outlives "
+            "the process that wrote it, so a machine that rebooted two minutes ago "
+            "leaves a two-minute-old beat that reads as perfectly healthy.",
+            "",
+        ]
     if beat_is_stale:
         assert age is not None  # narrows for mypy; beat_is_stale implies age is not None
         lines += [
             "## STALE HEARTBEAT",
             "",
-            f"No beat in over {IN_PROGRESS_STALE_MINUTES} minutes ({_humanize_age(age)}). "
-            "The harness process may have died, or the machine rebooted mid-sprint and left "
-            "this file behind -- its age alone does not mean a run is live.",
+            f"No beat in over {HEARTBEAT_STALE_SECONDS / 60:.0f} minutes "
+            f"({_humanize_age(age)}) -- past the age at which the supervisor kills a "
+            "harness as wedged. The process may have died, or the machine rebooted "
+            "mid-sprint and left this file behind; its age alone does not mean a run "
+            "is live.",
             "",
         ]
 
@@ -374,6 +423,10 @@ def render_status(
         lines.append(f"- Sprint: **{sprint}**")
         lines.append(f"- Phase: **{phase}**")
         lines.append(f"- Last beat: **{age_text}**{stale_suffix}")
+        if pid_alive is not None:
+            pid = beat.get("pid")
+            liveness = "alive" if pid_alive else "**NOT RUNNING**"
+            lines.append(f"- Beat PID: {pid} -- {liveness}")
     lines.append("")
 
     lines += [
@@ -439,6 +492,7 @@ def write_status(
     gate_failure: Optional[str] = None,
     infra_failure: Optional[str] = None,
     crash_loop_reason: Optional[str] = None,
+    pid_alive: Optional[bool] = None,
 ) -> None:
     """Write STATUS.md atomically.
 
@@ -446,6 +500,11 @@ def write_status(
     responsible for degrading a failure to a logged warning, so a rendering
     bug can never take down (or mask a real error ending) a week-long
     unattended run.
+
+    *pid_alive* likewise defaults to a live probe of the heartbeat's PID, for
+    the same reason: no call site is better placed to know, and the module
+    whose job is "tell the operator whether a run is live" must not answer it
+    from beat age alone.
 
     *push* defaults to whatever `record_push` last persisted. Every caller
     wants the real push state and none of them is in a position to know it
@@ -455,6 +514,8 @@ def write_status(
     """
     if push is None:
         push = read_push_state()
+    if pid_alive is None and beat is not None:
+        pid_alive = beat_pid_liveness(beat)
     atomic_write(
         STATUS_PATH,
         render_status(
@@ -469,5 +530,6 @@ def write_status(
             gate_failure=gate_failure,
             infra_failure=infra_failure,
             crash_loop_reason=crash_loop_reason,
+            pid_alive=pid_alive,
         ),
     )

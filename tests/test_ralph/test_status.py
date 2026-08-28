@@ -7,13 +7,15 @@ from a phone with no app, no service, and nothing new to keep running.
 
 from __future__ import annotations
 
+import os
 import time
 from pathlib import Path
 
 import pytest
 
 from ralph import status as status_module
-from ralph.config import IN_PROGRESS_STALE_MINUTES
+from ralph import supervisor as supervisor_module
+from ralph.config import HEARTBEAT_STALE_SECONDS, IN_PROGRESS_STALE_MINUTES
 from ralph.status import CrashInfo, render_status
 from ralph.triage import QueueState
 
@@ -105,12 +107,17 @@ class TestStaleHeartbeat:
     running. This project has already been bitten by an indistinguishable
     stale beat once (SH-3 sat unnoticed for 19 hours), so a stale beat must
     be as visually obvious as STARVED, not identical formatting to a fresh
-    one. Reuses `IN_PROGRESS_STALE_MINUTES` rather than a second threshold.
+    one.
+
+    The threshold is `HEARTBEAT_STALE_SECONDS` -- the SAME number the
+    supervisor kills at. It used to be `IN_PROGRESS_STALE_MINUTES` (3600s, six
+    times larger), so for fifty minutes a run the supervisor already considered
+    dead rendered here with no STALE banner at all (M1).
     """
 
     def test_stale_beat_is_flagged(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
-        stale_seconds = IN_PROGRESS_STALE_MINUTES * 60 + 60  # just past the threshold
+        stale_seconds = HEARTBEAT_STALE_SECONDS + 60  # just past the threshold
         beat = {
             "pid": 1,
             "timestamp": 1_000_000.0 - stale_seconds,
@@ -139,7 +146,7 @@ class TestStaleHeartbeat:
         phone squint rather than requiring the reader to parse a sentence.
         """
         monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
-        stale_seconds = IN_PROGRESS_STALE_MINUTES * 60 + 60
+        stale_seconds = HEARTBEAT_STALE_SECONDS + 60
         beat = {
             "pid": 1,
             "timestamp": 1_000_000.0 - stale_seconds,
@@ -155,7 +162,7 @@ class TestStaleHeartbeat:
         monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
         beat = {
             "pid": 1,
-            "timestamp": 1_000_000.0 - IN_PROGRESS_STALE_MINUTES * 60,
+            "timestamp": 1_000_000.0 - HEARTBEAT_STALE_SECONDS,
             "sprint": "SH-2",
             "phase": "implement",
         }
@@ -166,7 +173,7 @@ class TestStaleHeartbeat:
         monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
         beat = {
             "pid": 1,
-            "timestamp": 1_000_000.0 - (IN_PROGRESS_STALE_MINUTES * 60 - 1),
+            "timestamp": 1_000_000.0 - (HEARTBEAT_STALE_SECONDS - 1),
             "sprint": "SH-2",
             "phase": "implement",
         }
@@ -560,3 +567,130 @@ class TestInfrastructureBanner:
     def test_the_crash_loop_banner_still_renders_without_a_reason(self) -> None:
         text = render_status(QueueState(total=5, todo=5, eligible=5), None, [], crash_loop=True)
         assert "## CRASH-LOOP" in text
+
+
+class TestTheStaleThresholdIsTheSupervisorsThreshold:
+    """M1: one constant, three meanings.
+
+    `supervisor.HEARTBEAT_STALE_SECONDS` (600s, kill a wedged harness),
+    `status.py`'s STALE banner (was IN_PROGRESS_STALE_MINUTES * 60 = 3600s) and
+    `_recover_stuck_sprints` (60 minutes) all read as "how long is too long",
+    and the first two are the SAME question asked by two components. They now
+    share one constant; the third is a different question (how long may a
+    ROADMAP entry claim to be in-progress) and keeps its own.
+    """
+
+    def test_status_and_supervisor_agree(self) -> None:
+        assert status_module.HEARTBEAT_STALE_SECONDS == supervisor_module.HEARTBEAT_STALE_SECONDS, (
+            "STATUS.md flags a stale beat at a different age than the supervisor kills "
+            "at, so there is a window in which a run the supervisor has already given "
+            "up on renders on the operator's phone as healthy"
+        )
+
+    def test_a_beat_the_supervisor_would_kill_is_flagged_here(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The property, stated end to end rather than as a constant
+        comparison: any beat old enough to be killed must be flagged."""
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        age = supervisor_module.HEARTBEAT_STALE_SECONDS + 1
+        beat = {"pid": 1, "timestamp": 1_000_000.0 - age, "sprint": "SH-2", "phase": "implement"}
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "## STALE HEARTBEAT" in text
+
+    def test_the_recovery_threshold_is_deliberately_separate(self) -> None:
+        """Not merged: `_recover_stuck_sprints` gates a destructive action
+        (resetting a sprint another run may own) against Activity-log
+        timestamps, not against the heartbeat. Pinned so a future tidy-up
+        collapses them only on purpose."""
+        assert IN_PROGRESS_STALE_MINUTES * 60 > HEARTBEAT_STALE_SECONDS
+
+
+class TestPidLivenessInStatus:
+    """M1: `status.py` checked beat age but never beat PID.
+
+    Ruling 16 established PID liveness as the correct discriminator and
+    `supervisor.heartbeat_pid_alive()` already implements it, but the one
+    module whose job is "tell the operator whether a run is live" used the
+    signal the ledger ruled insufficient. `status.py`'s own docstring cites "a
+    reboot mid-sprint leaves it behind" -- and a reboot is exactly when the
+    leftover beat's age is SMALL, so the age guard never fires for it.
+    """
+
+    def test_a_dead_pid_is_a_banner_even_when_the_beat_is_fresh(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {"pid": 4321, "timestamp": 999_990.0, "sprint": "SH-2", "phase": "implement"}
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [], pid_alive=False)
+        assert "## NO LIVE HARNESS" in text, (
+            "a 10-second-old heartbeat naming a dead process rendered as a healthy run "
+            "-- which is precisely the post-reboot case this file claims to cover"
+        )
+        assert "NOT RUNNING" in text
+
+    def test_a_live_pid_is_stated_not_banner(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {"pid": 4321, "timestamp": 999_990.0, "sprint": "SH-2", "phase": "implement"}
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [], pid_alive=True)
+        assert "NO LIVE HARNESS" not in text
+        assert "alive" in text
+
+    def test_an_undetermined_pid_says_nothing(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A probe that could not run must never read as "dead" -- that would
+        put a false CRASHED-grade banner on a perfectly healthy run."""
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {"pid": 4321, "timestamp": 999_990.0, "sprint": "SH-2", "phase": "implement"}
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [], pid_alive=None)
+        assert "NO LIVE HARNESS" not in text
+        assert "Beat PID" not in text
+
+    def test_our_own_pid_needs_no_probe(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The harness writes STATUS.md from inside the process the beat names,
+        many times per run. Probing it would spawn a PowerShell per write for
+        an answer that is knowable for free."""
+        spawned: list[int] = []
+
+        def _boom(pid: int) -> bool:
+            spawned.append(pid)
+            raise AssertionError("should not have probed our own pid")
+
+        monkeypatch.setattr(supervisor_module, "is_harness_alive", _boom)
+        assert status_module.beat_pid_liveness({"pid": os.getpid()}) is True, (
+            "the render probed the process it is running inside, which spawns a "
+            "PowerShell per STATUS.md write for an answer that is knowable for free"
+        )
+        assert spawned == []
+
+    def test_an_unusable_pid_field_is_unknown(self) -> None:
+        assert status_module.beat_pid_liveness({}) is None
+        assert status_module.beat_pid_liveness({"pid": "nope"}) is None
+        assert status_module.beat_pid_liveness({"pid": 0}) is None
+
+    def test_a_probe_that_raises_is_unknown_not_dead(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def _raise(pid: int) -> bool:
+            raise OSError("WMI unavailable")
+
+        monkeypatch.setattr(supervisor_module, "is_harness_alive", _raise)
+        assert status_module.beat_pid_liveness({"pid": os.getpid() + 100_000}) is None, (
+            "a liveness probe that could not run reported the harness as DEAD, which "
+            "puts a NO LIVE HARNESS banner on a perfectly healthy run"
+        )
+
+    def test_write_status_fills_in_liveness_for_the_caller(self, tmp_path: Path) -> None:
+        """No call site is placed to know, so `write_status` must probe. If it
+        did not, the banner would be unreachable in production while every
+        render test above stayed green."""
+        target = tmp_path / "STATUS.md"
+        original = status_module.STATUS_PATH
+        status_module.STATUS_PATH = target
+        try:
+            status_module.write_status(
+                QueueState(total=1, todo=1, eligible=1),
+                {"pid": os.getpid(), "timestamp": time.time(), "sprint": "X", "phase": "plan"},
+                [],
+                push=None,
+            )
+        finally:
+            status_module.STATUS_PATH = original
+        assert "Beat PID" in target.read_text(encoding="utf-8")
