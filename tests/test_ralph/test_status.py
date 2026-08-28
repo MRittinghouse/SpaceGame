@@ -7,6 +7,7 @@ from a phone with no app, no service, and nothing new to keep running.
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import pytest
@@ -334,3 +335,139 @@ class TestWriteStatus:
         content = target.read_text(encoding="utf-8")
         assert "SH-1 ok" in content
         assert not target.with_name(target.name + ".tmp").exists()
+
+
+class TestPushStatusIsVisible:
+    """A `git push` that starts failing freezes the board, silently.
+
+    Push failure was handled correctly as non-fatal and then reported to a
+    stream that, under the Scheduled Task, goes nowhere: STATUS.md carried no
+    push field at all. The harness keeps working perfectly -- committing
+    locally, rendering STATUS.md locally -- while the GitHub copy the operator
+    reads from a beach is frozen at the moment of divergence. A frozen board
+    and a dead machine look identical from GitHub, so the file itself has to
+    say which one it is.
+    """
+
+    def _isolate(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+        target = tmp_path / "push_state.json"
+        monkeypatch.setattr(status_module, "PUSH_STATE_PATH", target)
+        return target
+
+    def test_successful_push_is_stated_not_assumed(self) -> None:
+        text = render_status(
+            QueueState(total=2, todo=1, eligible=1),
+            None,
+            [],
+            push=status_module.PushState(ok=True, timestamp=time.time()),
+        )
+        assert "## Push" in text
+        assert "**OK**" in text
+        assert "PUSH FAILING" not in text
+
+    def test_failing_push_is_a_loud_banner(self) -> None:
+        now = time.time()
+        text = render_status(
+            QueueState(total=2, todo=1, eligible=1),
+            None,
+            [],
+            push=status_module.PushState(
+                ok=False,
+                timestamp=now,
+                detail="! [rejected] master -> master (non-fast-forward)",
+                last_success_timestamp=now - 7200,
+                consecutive_failures=3,
+            ),
+        )
+        assert "## PUSH FAILING" in text, (
+            "a failing push freezes the GitHub copy of this file; without a "
+            "banner the operator reads a stale board as a healthy one"
+        )
+        assert "non-fast-forward" in text, (
+            "the failure reason must be in the file, not only in a log"
+        )
+        assert "2 hours ago" in text, (
+            "the file must say when anything last actually reached GitHub, not "
+            "merely that the last attempt failed"
+        )
+
+    def test_never_pushed_says_so_rather_than_implying_success(self) -> None:
+        text = render_status(
+            QueueState(total=2, todo=1, eligible=1),
+            None,
+            [],
+            push=status_module.PushState(ok=False, timestamp=time.time(), consecutive_failures=1),
+        )
+        assert "**never**" in text
+
+    def test_absent_push_state_is_stated_not_omitted(self) -> None:
+        text = render_status(QueueState(total=2, todo=1, eligible=1), None, [])
+        assert "no push recorded yet" in text
+
+    def test_record_and_read_round_trip(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._isolate(tmp_path, monkeypatch)
+
+        status_module.record_push(True, now=100.0)
+        state = status_module.read_push_state()
+
+        assert state is not None
+        assert state.ok and state.timestamp == 100.0
+        assert state.last_success_timestamp == 100.0
+
+    def test_failure_carries_the_last_success_forward(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The question that matters is 'when did anything last reach GitHub'."""
+        self._isolate(tmp_path, monkeypatch)
+
+        status_module.record_push(True, now=100.0)
+        status_module.record_push(False, detail="rejected", now=200.0)
+        status_module.record_push(False, detail="rejected", now=300.0)
+        state = status_module.read_push_state()
+
+        assert state is not None
+        assert not state.ok
+        assert state.last_success_timestamp == 100.0, (
+            "a run of failures erased the last-successful-push timestamp, so "
+            "STATUS.md can no longer say how stale the GitHub copy is"
+        )
+        assert state.consecutive_failures == 2
+
+    def test_success_after_failures_resets_the_streak(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._isolate(tmp_path, monkeypatch)
+
+        status_module.record_push(False, detail="rejected", now=100.0)
+        status_module.record_push(True, now=200.0)
+        state = status_module.read_push_state()
+
+        assert state is not None
+        assert state.ok and state.consecutive_failures == 0 and state.detail == ""
+
+    def test_corrupt_push_state_reads_as_none_not_a_crash(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        target = self._isolate(tmp_path, monkeypatch)
+        target.write_text("{not json", encoding="utf-8")
+
+        assert status_module.read_push_state() is None
+
+    def test_write_status_picks_up_the_recorded_push_state(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No call site is in a position to pass it: the harness writes
+        STATUS.md before it pushes, and the supervisor pushes after."""
+        self._isolate(tmp_path, monkeypatch)
+        monkeypatch.setattr(status_module, "STATUS_PATH", tmp_path / "STATUS.md")
+
+        status_module.record_push(False, detail="! [rejected] non-fast-forward")
+        status_module.write_status(QueueState(total=2, todo=1, eligible=1), None, [])
+
+        content = (tmp_path / "STATUS.md").read_text(encoding="utf-8")
+        assert "## PUSH FAILING" in content, (
+            "write_status ignored the recorded push state, so the one file the "
+            "operator reads cannot tell them the board is frozen"
+        )

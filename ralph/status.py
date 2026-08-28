@@ -23,6 +23,7 @@ sprint runs next.
 
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -36,6 +37,132 @@ STATUS_PATH = PROJECT_ROOT / "STATUS.md"
 # "the first few lines" of Blocks: drift -- enough to see the shape of the
 # problem without turning a five-second phone check into a scroll.
 _MAX_DISAGREEMENT_LINES = 5
+
+# Git's rejection text can be long; STATUS.md is a five-second phone read.
+_MAX_PUSH_DETAIL_CHARS = 300
+
+
+PUSH_STATE_PATH = PROJECT_ROOT / "ralph" / "push_state.json"
+
+
+@dataclass(frozen=True)
+class PushState:
+    """Outcome of the harness's last `git push`, persisted across runs.
+
+    STATUS.md is only a remote signal once it is pushed, so a push that starts
+    failing freezes the operator's view at the last good state while the
+    harness keeps working perfectly -- committing locally, rendering STATUS.md
+    locally, for the rest of the week. The realistic trigger is divergence, not
+    a network blip: one push to `master` from anywhere else makes every
+    subsequent `git push origin HEAD` a non-fast-forward, and the harness never
+    pulls, so it never recovers.
+
+    Nothing can make that visible on GitHub while push is broken -- the file
+    carrying the news is the file that cannot be sent. What this makes possible
+    is that the frozen board is self-evident from the file itself: the local
+    copy names the failure and its reason, and the moment push recovers the
+    pushed copy still says how long the gap was and when the last successful
+    push actually happened.
+
+    Attributes:
+        ok: Whether the most recent push attempt succeeded.
+        timestamp: Unix time of that most recent attempt.
+        detail: Git's failure text, empty on success.
+        last_success_timestamp: Unix time of the last SUCCESSFUL push, carried
+            forward across failures. None if this repo has never pushed.
+        consecutive_failures: Failed attempts since the last success.
+    """
+
+    ok: bool
+    timestamp: float
+    detail: str = ""
+    last_success_timestamp: Optional[float] = None
+    consecutive_failures: int = 0
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "ok": self.ok,
+            "timestamp": self.timestamp,
+            "detail": self.detail,
+            "last_success_timestamp": self.last_success_timestamp,
+            "consecutive_failures": self.consecutive_failures,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> "PushState":
+        last_success = data.get("last_success_timestamp")
+        return cls(
+            ok=bool(data.get("ok", False)),
+            timestamp=float(data.get("timestamp", 0.0)),  # type: ignore[arg-type]
+            detail=str(data.get("detail", "")),
+            last_success_timestamp=(
+                float(last_success) if isinstance(last_success, (int, float)) else None
+            ),
+            consecutive_failures=int(data.get("consecutive_failures", 0)),  # type: ignore[arg-type]
+        )
+
+
+def read_push_state() -> Optional[PushState]:
+    """The last recorded push outcome, or None if there is none to read.
+
+    A missing, unreadable, or corrupt file degrades to None ("no push
+    recorded") rather than raising: this feeds a status render whose whole
+    purpose is to still say something useful when things are broken.
+    """
+    try:
+        raw = json.loads(PUSH_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(raw, dict):
+        return None
+    try:
+        return PushState.from_dict(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def record_push(ok: bool, detail: str = "", now: Optional[float] = None) -> PushState:
+    """Persist the outcome of a `git push` attempt.
+
+    Carries `last_success_timestamp` forward across failures so STATUS.md can
+    answer the question that actually matters -- "when did anything I am
+    looking at last reach GitHub" -- rather than only "did the last attempt
+    work".
+
+    Args:
+        ok: Whether the push succeeded.
+        detail: Git's failure text; ignored when *ok*.
+        now: Injectable clock for tests.
+
+    Returns:
+        The state that was written.
+
+    Raises:
+        OSError: If the file cannot be written. Call sites degrade this to a
+            log line; it is deliberately not swallowed here so the failure is
+            observable in tests.
+    """
+    stamp = time.time() if now is None else now
+    previous = read_push_state()
+    if ok:
+        state = PushState(
+            ok=True,
+            timestamp=stamp,
+            detail="",
+            last_success_timestamp=stamp,
+            consecutive_failures=0,
+        )
+    else:
+        state = PushState(
+            ok=False,
+            timestamp=stamp,
+            detail=detail.strip()[:_MAX_PUSH_DETAIL_CHARS],
+            last_success_timestamp=(previous.last_success_timestamp if previous else None),
+            consecutive_failures=(previous.consecutive_failures + 1 if previous else 1),
+        )
+    PUSH_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write(PUSH_STATE_PATH, json.dumps(state.to_dict(), indent=2))
+    return state
 
 
 @dataclass(frozen=True)
@@ -98,6 +225,7 @@ def render_status(
     disagreements: Optional[list[str]] = None,
     crash: Optional[CrashInfo] = None,
     decline_reason: Optional[str] = None,
+    push: Optional[PushState] = None,
 ) -> str:
     """Build the STATUS.md body.
 
@@ -117,6 +245,11 @@ def render_status(
             forced-sprint validation failure, a baseline-capture failure).
             An intentional, clean abort -- not a crash -- but STATUS.md
             must still say why, not just exist with a generic snapshot.
+        push: Outcome of the last `git push`. Rendered as a PUSH FAILING
+            banner plus a Push section, because a push that starts failing
+            freezes this file's *remote* copy while the harness looks
+            perfectly healthy -- the operator would otherwise have no way
+            to tell a frozen board from a dead machine.
 
     Returns:
         The full Markdown text of STATUS.md.
@@ -137,6 +270,21 @@ def render_status(
 
     if crash_loop:
         lines += ["## CRASH-LOOP", "", "Supervisor stopped after repeated failures.", ""]
+    if push is not None and not push.ok:
+        last_ok = (
+            _humanize_age(max(0.0, time.time() - push.last_success_timestamp))
+            if push.last_success_timestamp is not None
+            else "never"
+        )
+        lines += [
+            "## PUSH FAILING",
+            "",
+            f"The last {push.consecutive_failures} `git push` attempt(s) failed, so the "
+            "copy of this file on GitHub is FROZEN at whatever it said when push last "
+            f"worked ({last_ok}). A frozen board is not a dead machine -- but from "
+            "GitHub alone the two look identical, which is why this says so here.",
+            "",
+        ]
     if crash is not None:
         if crash.sprint and crash.phase:
             in_flight = f"{crash.sprint} ({crash.phase})"
@@ -192,6 +340,27 @@ def render_status(
         "",
     ]
 
+    lines += ["## Push", ""]
+    if push is None:
+        lines.append("- no push recorded yet")
+    else:
+        attempt_age = _humanize_age(max(0.0, time.time() - push.timestamp))
+        if push.ok:
+            lines.append(f"- last push: **OK** ({attempt_age})")
+        else:
+            lines.append(
+                f"- last push: **FAILED** ({attempt_age}, "
+                f"{push.consecutive_failures} consecutive failure(s))"
+            )
+        if push.last_success_timestamp is None:
+            lines.append("- last successful push: **never** -- nothing has reached GitHub")
+        else:
+            success_age = _humanize_age(max(0.0, time.time() - push.last_success_timestamp))
+            lines.append(f"- last successful push: {success_age}")
+        if not push.ok and push.detail:
+            lines += ["- reason:", "", "```", push.detail, "```"]
+    lines.append("")
+
     lines += ["## Blocks drift", ""]
     if disagreements:
         lines.append(
@@ -220,6 +389,7 @@ def write_status(
     disagreements: Optional[list[str]] = None,
     crash: Optional[CrashInfo] = None,
     decline_reason: Optional[str] = None,
+    push: Optional[PushState] = None,
 ) -> None:
     """Write STATUS.md atomically.
 
@@ -227,7 +397,15 @@ def write_status(
     responsible for degrading a failure to a logged warning, so a rendering
     bug can never take down (or mask a real error ending) a week-long
     unattended run.
+
+    *push* defaults to whatever `record_push` last persisted. Every caller
+    wants the real push state and none of them is in a position to know it
+    (the harness writes STATUS.md before it pushes; the supervisor does not
+    push at all until after the write), so reading it here is what keeps the
+    three call sites from each having to remember.
     """
+    if push is None:
+        push = read_push_state()
     atomic_write(
         STATUS_PATH,
         render_status(
@@ -238,5 +416,6 @@ def write_status(
             disagreements,
             crash=crash,
             decline_reason=decline_reason,
+            push=push,
         ),
     )

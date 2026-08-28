@@ -1477,7 +1477,8 @@ def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> 
     Pushes on terminal outcomes (OK, BLOCKED, NEEDS_REWORK). Skips
     TIMEOUT and ERROR because state may be inconsistent. Push failures
     are logged but don't crash the harness — a network blip shouldn't
-    stop the loop.
+    stop the loop — and are recorded via `status.record_push` so the next
+    STATUS.md render can say the board is frozen.
     """
     if not push_enabled:
         return
@@ -1486,10 +1487,22 @@ def _push_after_sprint(sprint_id: str, outcome: Outcome, push_enabled: bool) -> 
         return
 
     rc, stdout, stderr = _run_git(["push", "origin", "HEAD"], timeout=PUSH_TIMEOUT_SECONDS)
+    detail = stderr.strip() or stdout.strip()
     if rc == 0:
         log(f"{sprint_id}: pushed to origin")
     else:
-        log(f"{sprint_id}: push failed (rc={rc}): {stderr.strip() or stdout.strip()}")
+        log(f"{sprint_id}: push failed (rc={rc}): {detail}")
+
+    # Record the outcome where the operator can see it. `log()` goes to a
+    # stdout the Scheduled Task discards, so without this a push that starts
+    # failing -- one push to `master` from anywhere else makes every later
+    # `git push origin HEAD` a non-fast-forward, and the harness never pulls --
+    # freezes the GitHub copy of STATUS.md while the harness looks healthy, and
+    # says so in no channel at all.
+    try:
+        status.record_push(rc == 0, detail=f"rc={rc}: {detail}" if rc != 0 else "")
+    except OSError as exc:
+        log(f"{sprint_id}: could not record push state: {exc}")
 
 
 def parse_args() -> argparse.Namespace:

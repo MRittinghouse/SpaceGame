@@ -1957,3 +1957,62 @@ class TestTmpOrphanSweep:
             "consider untracked orphans and registered destinations"
         )
         assert swept == []
+
+
+class TestPushOutcomeIsRecorded:
+    """`_push_after_sprint` must leave a trace outside stdout.
+
+    Under the Scheduled Task the harness's stdout is discarded, so a push
+    failure logged with `log()` reached no channel at all: the harness kept
+    working, the GitHub copy of STATUS.md froze, and nothing anywhere said so.
+    """
+
+    def _isolate_push_state(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+        target = tmp_path / "push_state.json"
+        monkeypatch.setattr(harness.status, "PUSH_STATE_PATH", target)
+        return target
+
+    def test_successful_push_is_recorded(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._isolate_push_state(tmp_path, monkeypatch)
+        monkeypatch.setattr(harness, "_run_git", lambda args, timeout=30: (0, "", ""))
+
+        harness._push_after_sprint("SA-1", harness.Outcome.OK, True)
+
+        state = harness.status.read_push_state()
+        assert state is not None and state.ok
+        assert state.last_success_timestamp is not None
+
+    def test_failed_push_records_the_reason(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._isolate_push_state(tmp_path, monkeypatch)
+        monkeypatch.setattr(
+            harness,
+            "_run_git",
+            lambda args, timeout=30: (1, "", "! [rejected] master -> master (non-fast-forward)"),
+        )
+
+        harness._push_after_sprint("SA-1", harness.Outcome.OK, True)
+
+        state = harness.status.read_push_state()
+        assert state is not None, (
+            "a failed push left no record, so STATUS.md cannot tell the "
+            "operator the board they are reading is frozen"
+        )
+        assert not state.ok
+        assert "non-fast-forward" in state.detail
+
+    def test_a_push_state_write_failure_does_not_crash_the_harness(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Recording is a reporting nicety; it must never end the run."""
+        monkeypatch.setattr(harness, "_run_git", lambda args, timeout=30: (0, "", ""))
+
+        def boom(*_args: object, **_kwargs: object) -> None:
+            raise OSError("disk full")
+
+        monkeypatch.setattr(harness.status, "record_push", boom)
+
+        harness._push_after_sprint("SA-1", harness.Outcome.OK, True)
