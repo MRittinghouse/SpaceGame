@@ -575,14 +575,89 @@ TEST_GATE_TIMEOUT_SECONDS: int = 900
 _TEST_GATE_TAIL_CHARS: int = 1200
 
 
-def _pytest_gate_cmd(*extra: str) -> list[str]:
+# OUTSIDE the repo, deliberately. A pytest temp root inside the working tree
+# would produce untracked files under exactly the clean-tree check that bricks
+# every future launch when it finds them -- the C1 failure class. It also has to
+# be somewhere the harness alone owns, so `%TEMP%\pytest-of-<user>` is out.
+PYTEST_BASETEMP: Path = (
+    Path(os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData" / "Local")))
+    / "Temp"
+    / "ralph-pytest"
+)
+SERIAL_RETRY_TIMEOUT_SECONDS: int = 2400
+
+
+def _pytest_gate_cmd(*extra: str, workers: Optional[str] = None) -> list[str]:
     """The gate's pytest argv.
 
     `-n TEST_WORKERS` (8), never `-n auto`: auto hung 6 runs in 10 on this
     host, and a gate that hangs is worse than no gate. See config.TEST_WORKERS
-    for the measurement.
+    for the measurement. `workers="0"` runs serially, used as the fallback when
+    a parallel run hangs -- see `_run_pytest_with_serial_fallback`.
+
+    `--basetemp` pins pytest's temp root inside `ralph/`, away from the shared
+    `%TEMP%\\pytest-of-<user>` root. Measured on the first armed run: that
+    shared root accumulated 30 directories, and a dangling `pytest-current`
+    directory symlink left there made EVERY pytest run in this repo crash
+    during startup cleanup, because pytest calls `unlink()` on it and Windows
+    refuses that for a directory symlink. Worse, the artifacts were created by
+    the Scheduled Task's S4U token, so an interactive session could not delete
+    them without elevation. A private root the harness owns end to end cannot
+    be poisoned by anything else on the machine.
     """
-    return [sys.executable, "-m", "pytest", "-n", TEST_WORKERS, "-q", "--no-header", *extra]
+    return [
+        sys.executable,
+        "-m",
+        "pytest",
+        "-n",
+        workers if workers is not None else TEST_WORKERS,
+        "-q",
+        "--no-header",
+        "--basetemp",
+        str(PYTEST_BASETEMP),
+        *extra,
+    ]
+
+
+def _run_pytest_with_serial_fallback(
+    *extra: str, timeout_seconds: int
+) -> "subprocess.CompletedProcess[str]":
+    """Run pytest in parallel; on a hang, run it again serially.
+
+    The first armed run died here. A suite that finishes in ~100s interactively
+    did not finish within 600s under the Scheduled Task, so baseline capture
+    aborted the whole seven-day run before a single sprint began.
+
+    F-007 in the findings register already records xdist worker death at high
+    worker counts as real and not understood. A single-attempt design turns
+    that intermittent fault into a terminal one, and the per-sprint gate runs
+    dozens more times across a week, so it would recur by construction.
+
+    Serial is slower but does not depend on worker processes, which is the part
+    that hangs. Trading minutes for a run that continues is obviously right
+    when nobody is watching.
+
+    Raises:
+        subprocess.TimeoutExpired: if the serial run also fails to finish, which
+            is a genuine hang rather than an xdist fault.
+    """
+    try:
+        return run_with_hard_timeout(
+            _pytest_gate_cmd(*extra),
+            timeout_seconds=timeout_seconds,
+            cwd=str(PROJECT_ROOT),
+        )
+    except subprocess.TimeoutExpired:
+        log(
+            f"pytest did not finish within {timeout_seconds}s with -n {TEST_WORKERS}. "
+            f"Retrying serially (-n 0, up to {SERIAL_RETRY_TIMEOUT_SECONDS}s) before "
+            "treating it as a failure."
+        )
+        return run_with_hard_timeout(
+            _pytest_gate_cmd(*extra, workers="0"),
+            timeout_seconds=SERIAL_RETRY_TIMEOUT_SECONDS,
+            cwd=str(PROJECT_ROOT),
+        )
 
 
 def _run_test_gate(test_baseline: tuple[int, int]) -> Optional[tuple[str, str]]:
@@ -620,17 +695,14 @@ def _run_test_gate(test_baseline: tuple[int, int]) -> Optional[tuple[str, str]]:
         return None
 
     try:
-        result = run_with_hard_timeout(
-            _pytest_gate_cmd(),
-            timeout_seconds=TEST_GATE_TIMEOUT_SECONDS,
-            cwd=str(PROJECT_ROOT),
-        )
+        result = _run_pytest_with_serial_fallback(timeout_seconds=TEST_GATE_TIMEOUT_SECONDS)
     except subprocess.TimeoutExpired:
         return (
             "pytest",
-            f"the test suite did not finish within {TEST_GATE_TIMEOUT_SECONDS}s. "
-            "Treated as a failure: an unbounded suite is indistinguishable from a "
-            "hung one, and neither may be built on.",
+            f"the test suite did not finish within {TEST_GATE_TIMEOUT_SECONDS}s in "
+            f"parallel, nor within {SERIAL_RETRY_TIMEOUT_SECONDS}s serially. Treated "
+            "as a failure: an unbounded suite is indistinguishable from a hung one, "
+            "and neither may be built on.",
         )
     except FileNotFoundError as exc:
         return ("pytest", f"could not run pytest: {exc}")
@@ -681,13 +753,13 @@ def _capture_test_baseline() -> tuple[int, int]:
             The harness main loop catches this and aborts before picking up any sprint.
     """
     try:
-        result = run_with_hard_timeout(
-            [sys.executable, "-m", "pytest", "-n", TEST_WORKERS, "-q", "--no-header"],
-            timeout_seconds=600,
-            cwd=str(PROJECT_ROOT),
-        )
+        result = _run_pytest_with_serial_fallback(timeout_seconds=600)
     except subprocess.TimeoutExpired as exc:
-        raise BaselineCaptureError("timeout after 600s — pytest run never finished") from exc
+        raise BaselineCaptureError(
+            f"pytest never finished: 600s in parallel, then "
+            f"{SERIAL_RETRY_TIMEOUT_SECONDS}s serially. This is a real hang, not an "
+            "xdist fault."
+        ) from exc
     except FileNotFoundError as exc:
         raise BaselineCaptureError(f"FileNotFoundError: {exc}") from exc
 

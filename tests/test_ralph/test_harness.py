@@ -1532,15 +1532,28 @@ class TestCaptureTestBaseline:
             args=[], returncode=returncode, stdout=stdout, stderr=stderr
         )
 
-    def test_timeout_raises_baseline_capture_error(self) -> None:
-        """TimeoutExpired from the helper → BaselineCaptureError."""
+    def test_timeout_raises_baseline_capture_error_only_after_the_serial_retry(self) -> None:
+        """Both attempts must time out before the run is aborted.
+
+        A parallel-only timeout is an xdist fault (F-007), not a broken suite,
+        and aborting on it ended the first real armed run before a single
+        sprint began. Only a serial run that also hangs is a genuine hang.
+        """
         with patch.object(
             harness,
             "run_with_hard_timeout",
             side_effect=subprocess.TimeoutExpired(cmd=[], timeout=600),
-        ):
-            with pytest.raises(harness.BaselineCaptureError, match="timeout"):
+        ) as runner:
+            with pytest.raises(harness.BaselineCaptureError, match="never finished"):
                 harness._capture_test_baseline()
+        assert runner.call_count == 2, (
+            "baseline capture must retry serially before aborting the whole run; "
+            f"it made {runner.call_count} attempt(s)"
+        )
+        assert (
+            runner.call_args_list[1].args[0][runner.call_args_list[1].args[0].index("-n") + 1]
+            == "0"
+        )
 
     def test_nonzero_exit_raises_baseline_capture_error(self) -> None:
         """Non-zero subprocess exit → BaselineCaptureError with stderr tail."""
@@ -2725,12 +2738,41 @@ class TestTestSuiteGate:
         assert "10500" in gate[1] and "10774" in gate[1]
 
     def test_a_hung_suite_is_a_failure_not_a_hang(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        self._fake_runner(monkeypatch, [subprocess.TimeoutExpired(cmd=["pytest"], timeout=900)])
+        """Only after BOTH attempts hang. A parallel-only timeout is retried."""
+        timeout = subprocess.TimeoutExpired(cmd=["pytest"], timeout=900)
+        seen = self._fake_runner(monkeypatch, [timeout, timeout])
 
         gate = harness._run_test_gate((10_774, 98))
 
         assert gate is not None
         assert "did not finish" in gate[1]
+        assert len(seen) == 2, f"the gate must retry serially before failing; saw {seen}"
+        assert seen[1][seen[1].index("-n") + 1] == "0", (
+            f"the retry must be serial, not another parallel run; got {seen[1]}"
+        )
+
+    def test_a_parallel_hang_alone_does_not_fail_the_gate(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An xdist hang that clears on a serial re-run must not block a sprint.
+
+        This is the case that killed the first real armed run: a suite finishing
+        in ~100s interactively did not finish within 600s under the Scheduled
+        Task, and the single-attempt design aborted the seven-day run outright.
+        """
+        seen = self._fake_runner(
+            monkeypatch,
+            [
+                subprocess.TimeoutExpired(cmd=["pytest"], timeout=900),
+                _FakeCompleted(0, "10774 passed, 98 skipped in 250s"),
+            ],
+        )
+
+        assert harness._run_test_gate((10_774, 98)) is None, (
+            "the serial retry passed, so the gate must pass; failing here would "
+            "block a sprint on an xdist fault the suite does not actually have"
+        )
+        assert len(seen) == 2
 
     def test_the_gate_declines_when_no_baseline_anchors_it(
         self, monkeypatch: pytest.MonkeyPatch
@@ -3279,3 +3321,64 @@ class TestStrandedSprintIsNotCompletion:
             "supervisor back -- the run is over, for a sprint nobody finished"
         )
         assert "complete" not in reason.lower()
+
+
+class TestPytestSerialFallbackOnHang:
+    """A hung xdist run must fall back to serial, not end the week.
+
+    Observed on the first real armed run: the suite that finishes in ~100s
+    interactively did not finish within 600s under the Scheduled Task's S4U
+    token. `_capture_test_baseline` had a single attempt and no fallback, so
+    one hang aborted the entire seven-day run before a single sprint began.
+
+    F-007 in the findings register already records xdist worker death at high
+    worker counts as real and not understood. The per-sprint gate runs ~36 more
+    times over a week, so a single-attempt design fails repeatedly by
+    construction.
+
+    Serial is slower but does not depend on worker processes, which is exactly
+    the thing that hangs.
+    """
+
+    def _timeout_then(self, second: object) -> object:
+        """First call times out; second returns `second`."""
+        calls: list[list[str]] = []
+
+        def _run(cmd: list[str], **kwargs: object) -> object:
+            calls.append(cmd)
+            if len(calls) == 1:
+                raise subprocess.TimeoutExpired(cmd, 600)
+            return second
+
+        _run.calls = calls  # type: ignore[attr-defined]
+        return _run
+
+    def test_baseline_capture_retries_serially_when_xdist_hangs(self) -> None:
+        ok = MagicMock(returncode=0, stdout="500 passed, 3 skipped in 210s", stderr="")
+        runner = self._timeout_then(ok)
+        with patch.object(harness, "run_with_hard_timeout", runner):
+            passing, skipped = harness._capture_test_baseline()
+        calls = runner.calls  # type: ignore[attr-defined]
+        assert len(calls) == 2, (
+            "a hung xdist baseline capture must be retried serially rather than "
+            f"aborting the whole run; got {len(calls)} attempt(s)"
+        )
+        assert "-n" in calls[0] and calls[0][calls[0].index("-n") + 1] != "0"
+        assert calls[1][calls[1].index("-n") + 1] == "0", (
+            "the retry must be SERIAL (-n 0) -- retrying with the same worker "
+            f"count repeats the hang; got {calls[1]}"
+        )
+        assert (passing, skipped) == (500, 3)
+
+    def test_test_gate_retries_serially_when_xdist_hangs(self) -> None:
+        ok = MagicMock(returncode=0, stdout="500 passed, 3 skipped in 210s", stderr="")
+        runner = self._timeout_then(ok)
+        with patch.object(harness, "run_with_hard_timeout", runner):
+            result = harness._run_test_gate((500, 3))
+        calls = runner.calls  # type: ignore[attr-defined]
+        assert len(calls) == 2, (
+            "a hung test gate must retry serially before failing the sprint; "
+            f"got {len(calls)} attempt(s)"
+        )
+        assert calls[1][calls[1].index("-n") + 1] == "0"
+        assert result is None, f"serial retry passed, so the gate must pass; got {result}"
