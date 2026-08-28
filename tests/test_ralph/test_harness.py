@@ -1887,32 +1887,71 @@ class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
         "summary_path": "ralph/logs/SA-1/SUMMARY.md",
     }
 
-    def _atomic_write_call_sites(self) -> list[tuple[str, int, str]]:
-        """Every `atomic_write(dest, ...)` call in ralph/ and scripts/.
+    @staticmethod
+    def _scan_source(source: str, rel: str) -> list[tuple[str, int, str]]:
+        """Every `atomic_write(dest, ...)` call in one module's source.
+
+        Resolves ALIASES. Matching only the literal name `atomic_write` meant
+        `from ralph.proc import atomic_write as _aw; _aw(Path('x'), '{}')`
+        registered nothing and the whole class stayed green -- a scan that
+        claimed a property it did not have, which is the eighth vacuous test
+        this plan produced. The local names bound to `atomic_write` are
+        collected first (import aliases, plus plain `name = atomic_write`
+        rebindings), then calls are matched against that set. Attribute calls
+        (`proc.atomic_write(...)`) are matched on the attribute name, which
+        covers `import ralph.proc as p` without needing to resolve the module.
 
         Returns (module path, line number, source of the first argument).
         """
+        tree = ast.parse(source)
+        local_names = {"atomic_write"}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    if alias.name == "atomic_write":
+                        local_names.add(alias.asname or alias.name)
+            elif isinstance(node, ast.Assign):
+                value = node.value
+                bound = (
+                    isinstance(value, ast.Name)
+                    and value.id in local_names
+                    or isinstance(value, ast.Attribute)
+                    and value.attr == "atomic_write"
+                )
+                if bound:
+                    for target in node.targets:
+                        if isinstance(target, ast.Name):
+                            local_names.add(target.id)
+
+        sites: list[tuple[str, int, str]] = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or not node.args:
+                continue
+            func = node.func
+            if isinstance(func, ast.Name):
+                matched = func.id in local_names
+            elif isinstance(func, ast.Attribute):
+                matched = func.attr == "atomic_write"
+            else:
+                matched = False
+            if matched:
+                sites.append((rel, node.lineno, ast.unparse(node.args[0])))
+        return sites
+
+    def _atomic_write_call_sites(self) -> list[tuple[str, int, str]]:
+        """Every `atomic_write(dest, ...)` call in ralph/ and scripts/."""
         root = Path(harness.PROJECT_ROOT)
         sites: list[tuple[str, int, str]] = []
         for source_dir in ("ralph", "scripts"):
             for module in sorted((root / source_dir).rglob("*.py")):
                 if "__pycache__" in module.parts:
                     continue
-                tree = ast.parse(module.read_text(encoding="utf-8"))
-                for node in ast.walk(tree):
-                    if not isinstance(node, ast.Call) or not node.args:
-                        continue
-                    func = node.func
-                    if isinstance(func, ast.Name):
-                        name: Optional[str] = func.id
-                    elif isinstance(func, ast.Attribute):
-                        name = func.attr
-                    else:
-                        name = None
-                    if name != "atomic_write":
-                        continue
-                    rel = module.relative_to(root).as_posix()
-                    sites.append((rel, node.lineno, ast.unparse(node.args[0])))
+                sites.extend(
+                    self._scan_source(
+                        module.read_text(encoding="utf-8"),
+                        module.relative_to(root).as_posix(),
+                    )
+                )
         return sites
 
     def test_the_ast_scan_finds_the_known_write_sites(self) -> None:
@@ -1930,6 +1969,37 @@ class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
             "the scan missed ralph/roadmap_state.py, the ROADMAP.md write site "
             f"whose orphan bricks preflight; found: {sorted(modules)}"
         )
+
+    def test_the_ast_scan_resolves_an_aliased_import(self) -> None:
+        """The scan was defeated by one `as` clause.
+
+        Fed a synthetic module rather than editing a real one, so the property
+        is asserted permanently instead of by a probe someone has to remember
+        to re-run.
+        """
+        aliased = (
+            "from pathlib import Path\n"
+            "from ralph.proc import atomic_write as _aw\n"
+            "_aw(Path('data/unregistered.json'), '{}')\n"
+        )
+        sites = self._scan_source(aliased, "fake/aliased.py")
+        assert [dest for _m, _line, dest in sites] == ["Path('data/unregistered.json')"], (
+            "an aliased `atomic_write` import evades the scan, so a new write "
+            "site can be added without registering its destination and the "
+            "registry test silently proves nothing; sites found: {}".format(sites)
+        )
+
+    def test_the_ast_scan_still_finds_the_plain_and_attribute_forms(self) -> None:
+        """Controls for the alias resolution: it must not have narrowed the
+        scan to aliases only."""
+        plain = (
+            "from ralph.proc import atomic_write\n"
+            "from ralph import proc\n"
+            "atomic_write(A, '')\n"
+            "proc.atomic_write(B, '')\n"
+        )
+        dests = [dest for _m, _line, dest in self._scan_source(plain, "fake/plain.py")]
+        assert dests == ["A", "B"], f"the unaliased forms stopped matching; got {dests}"
 
     def test_every_atomic_write_destination_is_registered(self) -> None:
         """A new `atomic_write` call site must declare where it writes.
