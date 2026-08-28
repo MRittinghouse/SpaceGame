@@ -11136,10 +11136,12 @@ every downstream Act II sprint reads from.
   the emotional origin of both Wealth (A2-5) and Community.
 - `spacegame/models/ambient_dialogue.py` and `spacegame/models/procedural_missions.py`, same
   reason as A2-5.
-- `requirements/character_voices.md` - Dr. Nadia Kweon (Okafor Institute Director) and
-  Sten Brygaard (Deep Shafts Caretaker) voice sheets; both are reused as dilemma-content NPCs
-  in later sprints (A2-16, A2-17) and their established voice should inform Legacy's and
-  Preservation's `voice` field so later sprints do not contradict this one.
+- Legacy and Preservation are voiced by new Act II figures authored downstream (A2-16, A2-17)
+  rather than an existing voice sheet, since `character_voices.md` is Act I's document:
+  Director Amrit Solheim (the Farrow Institute) for Legacy, and Junho Virtanen (the Long Yard's
+  caretaker) for Preservation. This sprint's `voice` field for both lenses should stay generic
+  enough that those later sprints' specific NPCs are consistent with it rather than
+  contradicted by it.
 
 **Touch zones.**
 - `data/narrative/lenses.json` (shared with A2-5 - see A2-5's touch-zone note; append only)
@@ -11615,8 +11617,12 @@ escaped ("leadership escapes... operations in uncharted space beyond the Expanse
 dilemma can reveal Senn was not who orchestrated what happened to their home galaxy - a
 scapegoat, a mid-level operative left behind on purpose. Vengeance's question stops being "how
 do I punish him" and becomes "does my rage transfer to whoever really did this, or does it
-have nowhere left to go." This sprint also does the minimal Act I seeding this dilemma needs,
-since no other sprint owns it.
+have nowhere left to go." Senn and the Ledger leadership who fled with him are, as far as
+anyone knows, the only people alive who were ever there - the crew remembers losing their
+galaxy, but nobody left breathing can say why it was chosen except the people who chose it.
+That asymmetry is what makes the pair sharp, not just costly: this sprint should keep it
+concrete rather than let it stay implicit. This sprint also does the minimal Act I seeding
+this dilemma needs, since no other sprint owns it.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
@@ -11675,7 +11681,10 @@ since no other sprint owns it.
   `dialogue_flags["lens_closed_vengeance"]`) shows him alive, changed, aware of what the
   player chose. If Vengeance wins, a scar chatter line (per A2-11's convention, or direct
   `NPC.dialogue_states` gating if A2-11 has not landed) has Priya declining to discuss Ledger
-  intelligence with the player going forward, gated on `dialogue_flags["lens_closed_truth"]`.
+  intelligence with the player going forward, gated on `dialogue_flags["lens_closed_truth"]`;
+  authored text for this branch should be explicit that it is also the outcome that forecloses
+  ever learning from Senn why the home galaxy was targeted, since he and the fled leadership
+  were the only witnesses and this path spends that permanently.
 - `tests/test_scenarios/test_scenario_dilemma_d4.py`: drives `truth` and `vengeance`
   investment to collision, resolves each outcome in a separate test, asserts the correct
   lens closes, the correct NPC dialogue state becomes reachable, and the flag from the
@@ -11729,8 +11738,13 @@ authored with the most care" of all eight.
   report) - this is the wound both lenses spring from and must be referenced, not restated
   generically.
 - `requirements/character_voices.md` - Marcus Jin voice sheet (direct, economical, dry dark
-  humor) for the telegraph; Hanna Voss (Union Dock Boss) for the Community pole; Aldous
-  Prentiss (Old-Money Collector) for the Wealth pole.
+  humor) for the telegraph.
+- This dilemma needs two new NPCs, voiced fresh in this sprint's own dialogue content (not
+  `character_voices.md`, which is Act I's document): **Thuy Kallio**, Cradlepoint's
+  dockmaster, for the Community pole, and **Broker Noor Castellano** of Kettlebridge's
+  Coinmark Exchange for the Wealth pole. Neither has ever set foot in the Aurelia Expanse; the
+  player's history reaches them, if at all, as secondhand talk about a wrecked system, not a
+  story either has any personal stake in.
 - `spacegame/models/dilemma.py`, `spacegame/models/dialogue.py`, `spacegame/models/investment.py`
   (the existing per-system investment-tier mechanic, distinct from `lens_investment` - do not
   confuse the two; `investment_tier_purchased` as an `investment_from` tag for `community` was
@@ -11738,7 +11752,7 @@ authored with the most care" of all eight.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d2_wealth_community.json` (NEW)
-- `data/dialogue/` - Marcus's telegraph lines, Hanna Voss's and Aldous Prentiss's
+- `data/dialogue/` - Marcus's telegraph lines, Thuy Kallio's and Noor Castellano's
   post-collision dialogue states.
 - `tests/test_scenarios/test_scenario_dilemma_d2.py` (NEW)
 
@@ -11752,18 +11766,18 @@ authored with the most care" of all eight.
   that they cannot keep both funding their own accumulation and funding the people who need
   it out of the same finite time and capital.
 - Two `DilemmaOutcome` entries:
-  - `winning_lens_id: "wealth"`: `closes: ["community"]`. `tier_unlocks`: e.g. `["Aldous
-    Prentiss introduces the player to buyers who do not ask where capital originated, raising
-    the ceiling on trade-route profit margins", "access to leveraged financing previously
-    withheld because the player's reputation read as unreliable"]`.
-  - `winning_lens_id: "community"`: `closes: ["wealth"]`. `tier_unlocks`: e.g. `["Hanna Voss
-    opens Union Dock Boss channels that were closed to a trader who had not proven they would
+  - `winning_lens_id: "wealth"`: `closes: ["community"]`. `tier_unlocks`: e.g. `["Broker Noor
+    Castellano introduces the player to buyers who do not ask where capital originated,
+    raising the ceiling on trade-route profit margins", "access to leveraged financing
+    previously withheld because the player's reputation read as unreliable"]`.
+  - `winning_lens_id: "community"`: `closes: ["wealth"]`. `tier_unlocks`: e.g. `["Thuy Kallio
+    opens Cradlepoint dock channels that were closed to a trader who had not proven they would
     reinvest rather than extract", "housing and logistics contracts with guaranteed demand,
     at lower margin than open trade but immune to market swings"]`.
-- Visible cost: Wealth-winning closes Community - a scar line has Hanna Voss's people doing,
+- Visible cost: Wealth-winning closes Community - a scar line has Thuy Kallio's people doing,
   without the player, the housing/triage work the player chose not to fund, gated on
-  `dialogue_flags["lens_closed_community"]`. Community-winning closes Wealth - Aldous
-  Prentiss stops extending credit, gated on `dialogue_flags["lens_closed_wealth"]`.
+  `dialogue_flags["lens_closed_community"]`. Community-winning closes Wealth - Noor
+  Castellano stops extending credit, gated on `dialogue_flags["lens_closed_wealth"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d2.py` covering both resolutions, mirroring
   A2-12's test shape.
 
@@ -11773,9 +11787,9 @@ authored with the most care" of all eight.
    `tier_unlocks` on both outcomes, `telegraph_threshold (55) < collision_threshold (80)`.
 3. Scenario test: driving only `wealth` to 90 does not collide; driving only `community` to
    90 does not collide; driving both to 85 collides.
-4. Resolving `wealth` closes `community` and makes Hanna Voss's scar content (or direct
-   dialogue-state gating) reachable; resolving `community` closes `wealth` and makes Aldous
-   Prentiss's declined-credit state reachable. Both verified explicitly, one per test.
+4. Resolving `wealth` closes `community` and makes Thuy Kallio's scar content (or direct
+   dialogue-state gating) reachable; resolving `community` closes `wealth` and makes Noor
+   Castellano's declined-credit state reachable. Both verified explicitly, one per test.
 5. Marcus Jin's telegraph line references the specific buried-report wound (via a shared
    constant or direct textual echo of "buried" / "report" / "recyclers"), not generic
    "you're choosing between two things" language - verified by a substring check in the test
@@ -11805,25 +11819,34 @@ reached, this dilemma simply never fires for that player (its collision check re
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D1, and "Vengeance vs Justice" note (lines 154-157).
-- `requirements/character_voices.md` - Captain Reva Sato (Guild Military, established Act I
-  contact via `met_reva_sato` flag per `act_one_reference.md` line 164) for the Justice pole
-  and telegraph; Elena Reeves voice sheet for an alternate telegraph consideration (this
-  sprint picks one, documented below).
+- `requirements/character_voices.md` - Elena Reeves voice sheet (she delivers the telegraph;
+  see Deliverables for why).
+- This dilemma needs a new NPC for the Justice pole, voiced fresh in this sprint's own dialogue
+  content (not `character_voices.md`): **Magistrate Behnaz Odusanya**, who rides circuit
+  between the region's new settlements holding hearings out of a converted courier ship. Years
+  before the player ever crossed her docket, a settlement council pardoned her for a killing
+  she committed and never disputed, because the victim was widely hated and nobody wanted the
+  paperwork; she has spent the years since making sure the mercy that saved her is not a
+  courtesy extended only to the sympathetic. She has never been near the Aurelia Expanse and
+  knows the supernova only as one more rumor drifting through the settlements she serves; what
+  she recognizes in the player is not grief, it is the shape of someone who wants a verdict
+  badly enough to skip the parts of the process that are inconvenient.
 - `spacegame/models/dilemma.py`, `spacegame/models/dialogue.py`.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d1_vengeance_justice.json` (NEW)
-- `data/dialogue/` - Elena's telegraph lines, Reva Sato's post-collision dialogue states.
+- `data/dialogue/` - Elena's telegraph lines, Magistrate Odusanya's post-collision dialogue
+  states, and her NPC record (new).
 - `tests/test_scenarios/test_scenario_dilemma_d1.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d1_vengeance_justice"`, `poles: ["vengeance", "justice"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
-  `telegraph_npc_id: "elena_reeves"` - Elena, not Reva, delivers the telegraph: she is the
-  one who watches the player across both systems (bounty work and lawful dispute resolution)
-  and per her voice sheet disagrees "with respect" rather than confronting directly, which
-  fits telling the player something they do not want to hear without becoming an antagonist
-  herself.
+  `telegraph_npc_id: "elena_reeves"` - Elena, not Magistrate Odusanya, delivers the telegraph:
+  she is the one who watches the player across both systems (bounty work and lawful dispute
+  resolution) and per her voice sheet disagrees "with respect" rather than confronting
+  directly, which fits telling the player something they do not want to hear without becoming
+  an antagonist herself.
 - The collision check for this dilemma additionally requires `vengeance` not already be in
   `player.dilemma_state.closed_lenses` (i.e. D4 has not already resolved it) - implemented as
   a guard in `Game`'s per-dilemma collision loop (from A2-8), generalized: any dilemma whose
@@ -11833,18 +11856,18 @@ reached, this dilemma simply never fires for that player (its collision check re
   this sprint's deliverable is just proving it against this specific pairing).
 - Two `DilemmaOutcome` entries:
   - `winning_lens_id: "vengeance"`: `closes: ["justice"]`. `tier_unlocks`: e.g. `["access to
-    methods Reva Sato's command would never sanction: coercion, off-books informants,
-    unauthorized use of Guild Military intelligence contacts the player burned this
+    methods Magistrate Odusanya's circuit would never sanction: coercion, off-books
+    informants, unauthorized use of the hearing record contacts the player burned this
     relationship to reach"]`.
-  - `winning_lens_id: "justice"`: `closes: ["vengeance"]`. `tier_unlocks`: e.g. `["Reva Sato
-    sponsors the player for a warrant-holding authority previously unavailable to a
-    civilian", "case-building contacts across factions who will testify for someone who has
-    proven they will use due process even when it costs them a target"]`.
+  - `winning_lens_id: "justice"`: `closes: ["vengeance"]`. `tier_unlocks`: e.g. `["Magistrate
+    Odusanya sponsors the player for a warrant-holding authority previously unavailable to a
+    civilian", "case-building contacts across the settlements who will testify for someone who
+    has proven they will use due process even when it costs them a target"]`.
 - Visible cost: Justice-winning closes Vengeance - the target(s) Vengeance would have pursued
   remain alive and known, occasionally referenced by name in ambient chatter as still out
   there, a permanent visible reminder of what was not done. Vengeance-winning closes
-  Justice - Reva Sato's post-collision dialogue state has her declining further cooperation,
-  gated on `dialogue_flags["lens_closed_justice"]`.
+  Justice - Magistrate Odusanya's post-collision dialogue state has her declining further
+  cooperation, gated on `dialogue_flags["lens_closed_justice"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d1.py` mirroring A2-12/A2-13's shape, plus a
   test proving the "already-closed pole is permanently ineligible" guard: close `vengeance`
   via a synthetic resolution first, then confirm this dilemma's collision never fires even
@@ -11858,7 +11881,7 @@ reached, this dilemma simply never fires for that player (its collision check re
    investment values - verified explicitly, not assumed.
 4. Absent that precondition, driving both poles to 85 collides; driving only one does not.
 5. Resolving `justice` closes `vengeance` and its scar (named targets still referenced in
-   ambient content); resolving `vengeance` closes `justice` and reaches Reva Sato's
+   ambient content); resolving `vengeance` closes `justice` and reaches Magistrate Odusanya's
    post-collision state.
 6. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
 7. Full suite green; no regression from baseline.
@@ -11885,32 +11908,39 @@ dilemma in this arc does.
   differentiation note (lines 145-147).
 - `spacegame/models/dilemma.py` - confirm `Dilemma.poles` and `collision_requires` support
   three entries with `collision_requires=2` (built in A2-8, criterion 6 there).
-- `requirements/character_voices.md` - Mayor Cressida Vance (Verdant Mayor) for Political
-  Power; Councillor Bram Wentworth (Alliance Congress, Haven's Rest) for Empire; Tomas
-  Drifter (Frontier Alliance-aligned, freedom-focused per his voice sheet) for the telegraph.
-  This dilemma needs a new NPC for Revolution - introduce **Organizer Sorcha Deng**, a Miners
-  Union labor organizer (not a banned name; not reused from any existing sheet). Write her a
-  short voice note in this sprint's own dialogue content (not a full character_voices.md
-  entry - that document is Act I's, this is Act II data) establishing her as direct,
-  impatient with process, distinct from Marcus Jin's dry resignation.
+- `requirements/character_voices.md` - Tomas Drifter (freedom-focused, distrustful of anyone
+  in a uniform per his voice sheet) for the telegraph.
+- This dilemma needs three new NPCs for its three poles, voiced fresh in this sprint's own
+  dialogue content (not `character_voices.md`, which is Act I's document): **Mayor Emiko
+  Owusu** of Verge Landing for Political Power; **Claims Administrator Idris Halvorsen**, also
+  of Verge Landing, for Empire; and **Organizer Sorcha Deng** for Revolution, not a banned
+  name and not reused from any existing sheet. Deng organizes indentured contract-crews
+  working off passage debt across Kettlebridge, Verge Landing, and the settlements between
+  them - a labor grievance native to this region, not an inheritance from a faction that no
+  longer exists. Write her a short voice note establishing her as direct, impatient with
+  process, distinct from Marcus Jin's dry resignation. None of the three has ever been to the
+  Aurelia Expanse; to the extent any of them has an opinion on the player's history, it is
+  secondhand and does not run deep.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d3_power_revolution_empire.json` (NEW)
-- `data/dialogue/` - Tomas's telegraph lines, Vance's/Deng's/Wentworth's post-collision
-  dialogue states, Deng's NPC record if she does not already exist.
+- `data/dialogue/` - Tomas's telegraph lines, Owusu's/Deng's/Halvorsen's post-collision
+  dialogue states, and NPC records for Owusu, Halvorsen, and Deng if they do not already
+  exist.
 - `tests/test_scenarios/test_scenario_dilemma_d3.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d3_power_revolution_empire"`,
   `poles: ["political_power", "revolution", "empire"]`, `collision_requires: 2`,
   `telegraph_threshold: 55`, `collision_threshold: 80`, `telegraph_npc_id: "tomas_drifter"`.
-- Telegraph: Tomas, who left the Commerce Guild's tariff system behind for gray-market trade
-  built on handshakes, notices the player is simultaneously courting Verdant's council,
-  funding labor unrest, and buying territorial claims, and says plainly that whichever two of
-  those the player is actually serious about, the third is about to become impossible.
+- Telegraph: Tomas, who has spent his life working gray-market trade built on handshakes and
+  distrusts anyone who needs a seal or a charter to make a deal stick, notices the player is
+  simultaneously courting Verge Landing's council, funding labor unrest, and buying
+  territorial claims, and says plainly that whichever two of those the player is actually
+  serious about, the third is about to become impossible.
 - Three `DilemmaOutcome` entries, each closing the other two:
   - `winning_lens_id: "political_power"`: `closes: ["revolution", "empire"]`.
-    `tier_unlocks`: e.g. `["Mayor Vance backs the player for a seat that does not exist yet,
+    `tier_unlocks`: e.g. `["Mayor Owusu backs the player for a seat that does not exist yet,
     created specifically because the player proved they would work inside the system rather
     than around or over it"]`.
   - `winning_lens_id: "revolution"`: `closes: ["political_power", "empire"]`.
@@ -11918,9 +11948,9 @@ dilemma in this arc does.
     through the player directly, access no negotiated council seat or claimed territory
     would have earned"]`.
   - `winning_lens_id: "empire"`: `closes: ["political_power", "revolution"]`.
-    `tier_unlocks`: e.g. `["Councillor Wentworth cedes administrative authority over a
+    `tier_unlocks`: e.g. `["Administrator Halvorsen cedes administrative authority over a
     contested border system, the first sovereign territory the player holds outright"]`.
-- Visible cost per outcome: whichever two lose, both get a scar. E.g. Empire wins: Vance's
+- Visible cost per outcome: whichever two lose, both get a scar. E.g. Empire wins: Owusu's
   post-collision state has her treating the player as an outside power now, not a peer
   seeking a council seat; Deng's scar chatter has her organizing against the player's new
   territory specifically.
@@ -11967,13 +11997,19 @@ just abstract lens investment.
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D5.
-- `requirements/character_voices.md` - Dr. Nadia Kweon (Okafor Institute Director) for
-  Legacy, established via SA-R2 "Dr. Okafor's Legacy Narrative Arc"; Elena Reeves for
-  Connection (established first-recruit, closest early confidante per
-  `requirements/act_one_reference.md`'s closing-state description).
-- `spacegame/models/okafor_research.py` - existing Legacy-adjacent system (research
-  patronage, institution-founding) this dilemma's Legacy pole should reference concretely
-  rather than invent a parallel system.
+- This dilemma needs a new NPC for Legacy, voiced fresh in this sprint's own dialogue content
+  (not `character_voices.md`, which is Act I's document): **Director Amrit Solheim** of the
+  Farrow Institute, this region's newest research-and-relief foundation. Solheim did not found
+  it and privately doubts she has earned the chair; the Okafor Institute's story is not hers
+  and the Aurelia Expanse is not a place she has ever had reason to think about.
+- `requirements/character_voices.md` - Elena Reeves for Connection (established first-recruit,
+  closest early confidante per `requirements/act_one_reference.md`'s closing-state
+  description).
+- `spacegame/models/okafor_research.py` - the existing research-patronage/institution-founding
+  system. Its current implementation names Dr. Kweon and the Okafor Institute directly (module
+  docstring, relationship-value key); this sprint must generalize those bindings to the Farrow
+  Institute and Director Solheim rather than leave Act I's names hardcoded in an Act
+  II-reachable code path, while keeping the underlying risk-tiered funding logic unchanged.
 - `spacegame/models/crew.py` - crew loyalty mechanics, for how Connection's investment and
   visible cost should hook into something already tracked (loyalty), not a new parallel stat.
 
@@ -11981,20 +12017,22 @@ just abstract lens investment.
 - `data/narrative/dilemmas/d5_legacy_connection.json` (NEW)
 - `data/dialogue/` - Marcus Jin's telegraph lines (chosen because Elena is one of this
   dilemma's poles, not its telegraph voice - using her would be a conflict of interest in the
-  fiction itself), Kweon's and Elena's post-collision dialogue states.
+  fiction itself), Solheim's and Elena's post-collision dialogue states, and an NPC record for
+  Solheim (new).
 - `tests/test_scenarios/test_scenario_dilemma_d5.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d5_legacy_connection"`, `poles: ["legacy", "connection"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
   `telegraph_npc_id: "marcus_jin"`.
-- Telegraph: Marcus, direct, notes the player has been funding institutions at Okafor and is
-  increasingly absent from the ship's actual day-to-day; says the crew notices captains who
-  are present and captains who are somewhere else even when they are on the bridge.
+- Telegraph: Marcus, direct, notes the player has been funding institutions at the Farrow
+  Institute and is increasingly absent from the ship's actual day-to-day; says the crew
+  notices captains who are present and captains who are somewhere else even when they are on
+  the bridge.
 - Two `DilemmaOutcome` entries:
-  - `winning_lens_id: "legacy"`: `closes: ["connection"]`. `tier_unlocks`: e.g. `["Dr. Kweon
-    names a wing of the Okafor Institute after the player while they are still alive to see
-    it, and grants the player standing authority over its research direction"]`.
+  - `winning_lens_id: "legacy"`: `closes: ["connection"]`. `tier_unlocks`: e.g. `["Director
+    Solheim names a wing of the Farrow Institute after the player while they are still alive
+    to see it, and grants the player standing authority over its research direction"]`.
   - `winning_lens_id: "connection"`: `closes: ["legacy"]`. `tier_unlocks`: e.g. `["crew
     loyalty ceilings across the whole roster rise permanently, and previously unavailable
     personal dialogue and relationship content opens for every recruited member, not just
@@ -12002,7 +12040,7 @@ just abstract lens investment.
 - Visible cost: Legacy-winning closes Connection - Elena's post-collision dialogue state has
   her professional and correct with the player in a way that reads as distance, not warmth,
   gated on `dialogue_flags["lens_closed_connection"]`. Connection-winning closes Legacy -
-  Kweon's scar content has the Institute's wing named after someone else, gated on
+  Solheim's scar content has the Institute's wing named after someone else, gated on
   `dialogue_flags["lens_closed_legacy"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d5.py` mirroring the established shape.
 
@@ -12033,26 +12071,36 @@ just abstract lens investment.
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
 **Goal.** Author "save what remains, or build over it?" This dilemma reuses the same Empire
-figure (Councillor Bram Wentworth) introduced in A2-15's D3, so a player who has already
-resolved D3 toward Empire meets the natural continuation of that choice here: having become a
-territorial power, they now face what that power does to the things Preservation would have
-protected.
+figure (Claims Administrator Idris Halvorsen) introduced in A2-15's D3, so a player who has
+already resolved D3 toward Empire meets the natural continuation of that choice here: having
+become a territorial power, they now face what that power does to the things Preservation
+would have protected.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D6.
-- `requirements/character_voices.md` - Sten Brygaard (Deep Shafts Caretaker, established via
-  SA-2 "Deep Shafts memorial/pilgrimage") for Preservation; Councillor Bram Wentworth for
-  Empire, same NPC as A2-15 - do not create a second Wentworth record, extend the existing
-  one's `dialogue_states` if A2-15 has already landed, or author it fresh (matching A2-15's
-  voice) if this sprint runs first, since both are siblings with no ordering guarantee.
-- `spacegame/models/deep_shafts.py` - existing Preservation-adjacent system this dilemma's
-  Preservation pole should reference.
+- This dilemma needs a new NPC for Preservation, voiced fresh in this sprint's own dialogue
+  content (not `character_voices.md`, which is Act I's document): **Junho Virtanen**,
+  caretaker of the Long Yard, a derelict-ship graveyard in this region. He was hired to strip
+  it for scrap years ago, found a logbook that told him who had died there and why, and never
+  finished the job. He has never been to the Aurelia Expanse and treats the player's history
+  the way he treats most passing traders' stories: politely, and without much curiosity.
+- Claims Administrator Idris Halvorsen for Empire, same NPC as A2-15 - do not create a second
+  Halvorsen record, extend the existing one's `dialogue_states` if A2-15 has already landed, or
+  author it fresh (matching A2-15's voice) if this sprint runs first, since both are siblings
+  with no ordering guarantee.
+- `spacegame/models/deep_shafts.py` - the existing pilgrimage/memorial-state mechanic (visit
+  tracking, cooldown-gated rep grants, threshold-gated journal unlocks). Its current
+  implementation is hardcoded to Breakstone, Miners Union faction rep, and Sora Takahashi's
+  journal entries - that Act I content is untouched and out of scope. This dilemma's
+  Preservation pole authors a second, parallel instance of the same pattern for the Long Yard
+  and Virtanen (a new state/journal chain, not a repurposing of the Act I one), so both sites
+  persist independently.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d6_preservation_empire.json` (NEW)
 - `data/dialogue/` - Priya Osei's telegraph lines (archivist-minded, fits Preservation
-  proximity without being one of its two poles), Brygaard's and Wentworth's post-collision
+  proximity without being one of its two poles), Virtanen's and Halvorsen's post-collision
   dialogue states.
 - `tests/test_scenarios/test_scenario_dilemma_d6.py` (NEW)
 
@@ -12064,15 +12112,15 @@ protected.
   inside the borders the player is also claiming, and that a claimed border eventually gets
   developed, mined, or garrisoned whether or not the claimant intends it personally.
 - Two `DilemmaOutcome` entries:
-  - `winning_lens_id: "preservation"`: `closes: ["empire"]`. `tier_unlocks`: e.g. `["Sten
-    Brygaard grants standing archival authority over Deep Shafts-class sites across the
-    Expanse, previously granted only after individual case-by-case review"]`.
+  - `winning_lens_id: "preservation"`: `closes: ["empire"]`. `tier_unlocks`: e.g. `["Junho
+    Virtanen grants standing archival authority over Long-Yard-class sites across the region,
+    previously granted only after individual case-by-case review"]`.
   - `winning_lens_id: "empire"`: `closes: ["preservation"]`. `tier_unlocks`: e.g. `["the
     territory the player holds generates resource yield other empire-track content can draw
     on, at the cost of the sites within it"]`.
-- Visible cost: Preservation-winning closes Empire - Wentworth's scar content has him
+- Visible cost: Preservation-winning closes Empire - Halvorsen's scar content has him
   administering the territory the player declined to claim, developing exactly the sites the
-  player protected elsewhere. Empire-winning closes Preservation - Brygaard's post-collision
+  player protected elsewhere. Empire-winning closes Preservation - Virtanen's post-collision
   state has him relocating what he can save away from the player's claimed territory,
   permanently reduced in scope, gated on `dialogue_flags["lens_closed_preservation"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d6.py` mirroring the established shape.
@@ -12081,9 +12129,9 @@ protected.
 1. `DataLoader.dilemmas["d6_preservation_empire"]` loads with both outcomes populated.
 2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
 3. Collision behavior matches the established pattern.
-4. If `data/dialogue/`'s Wentworth NPC record already exists (A2-15 landed first), this
+4. If `data/dialogue/`'s Halvorsen NPC record already exists (A2-15 landed first), this
    sprint extends it rather than duplicating the id - verified by a test asserting exactly
-   one NPC record with id `bram_wentworth` exists after `load_all()` regardless of which of
+   one NPC record with id `idris_halvorsen` exists after `load_all()` regardless of which of
    A2-15/A2-17 ran first.
 5. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
 6. Full suite green; no regression from baseline.
@@ -12107,42 +12155,49 @@ to build on, so it introduces one new location-appropriate NPC.
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D7.
-- `requirements/cultural_guide.md` - Haven's Rest ("The Hearth") system profile (around line
-  542) for tone/setting; Frontier Alliance cultural profile (line 281) since Haven's Rest is
-  Frontier Alliance territory per the character-voice cross-references.
-- `requirements/character_voices.md` - Dr. Iris Navarro (Okafor Institute Clinical Lead) for
-  Transcendence, an established biotech/irreversible-upgrade-adjacent figure.
-- `spacegame/models/okafor_research.py` - existing risk-tiered project system (`FAILURE_ODDS`,
-  high-risk tier) this dilemma's Transcendence pole should reference for "irreversible
-  upgrades with real costs" rather than invent a parallel risk mechanic.
+- This dilemma needs two new NPCs, neither of whom has ever been to the Aurelia Expanse, voiced
+  fresh in this sprint's own dialogue content (not `character_voices.md`, which is Act I's
+  document): **Chaplain Imre Solano**, based at Cradlepoint (introduced here; see below), for
+  Faith, and **Dr. Rasheeda Marchetti**, the Farrow Institute's applied research lead, for
+  Transcendence.
+- `spacegame/models/okafor_research.py` - the existing risk-tiered project system
+  (`FAILURE_ODDS`, high-risk tier). Per A2-16's note, this sprint's Transcendence pole reuses
+  the mechanic through the Farrow Institute framing established there, not the Okafor
+  Institute's Act I names, for "irreversible upgrades with real costs."
 
 **Touch zones.**
 - `data/narrative/dilemmas/d7_faith_transcendence.json` (NEW)
 - `data/dialogue/` - Tomas Drifter's telegraph lines (grounded skeptic-trader voice, distinct
-  from both poles), a new NPC record for **Chaplain Imre Solano** of Haven's Rest (Faith
-  pole), Navarro's post-collision dialogue state.
+  from both poles), a new NPC record for **Chaplain Imre Solano** of Cradlepoint (Faith pole),
+  and a new NPC record plus post-collision dialogue state for Dr. Rasheeda Marchetti
+  (Transcendence pole).
 - `tests/test_scenarios/test_scenario_dilemma_d7.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d7_faith_transcendence"`, `poles: ["faith", "transcendence"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
   `telegraph_npc_id: "tomas_drifter"`.
-- Chaplain Imre Solano: a short voice note authored in this sprint (not
-  `character_voices.md`, which is Act I's document) establishing a grounded, non-mystical
-  register consistent with the writing guide's anti-GenAI-trope rules - he does not speak in
-  vague cosmic pronouncements; per `requirements/dialogue_writing_guide.md`'s register rules,
-  Haven's Rest speech is plain and handshake-direct (per the cultural guide's Frontier
-  Alliance profile), so Solano's faith voice should sound like a person who works with his
-  hands and thinks the universe rewards attention, not a priest reciting doctrine.
+- Chaplain Imre Solano: a short voice note authored in this sprint establishing a grounded,
+  non-mystical register consistent with the writing guide's anti-GenAI-trope rules - he does
+  not speak in vague cosmic pronouncements. He works Cradlepoint's docks half the week and
+  keeps a small chapel the other half, and per `requirements/dialogue_writing_guide.md`'s
+  register rules his faith voice should sound like a person who works with his hands and
+  thinks the universe rewards attention, not a priest reciting doctrine.
+- Dr. Rasheeda Marchetti: a short voice note authored in this sprint. She took the Farrow
+  Institute's signature irreversible procedure herself years ago, for an unglamorous practical
+  reason (a crushed hand, a contract that required full mobility within a month), not out of
+  conviction - she is professionally obligated to make the philosophical case for
+  transcendence and privately unconvinced by her own pitch more often than she would ever say
+  out loud in a consult.
 - Two `DilemmaOutcome` entries:
   - `winning_lens_id: "faith"`: `closes: ["transcendence"]`. `tier_unlocks`: e.g. `["Solano
-    grants the player standing invitation into Haven's Rest's closed pilgrimage sites,
+    grants the player standing invitation into Cradlepoint's closed pilgrimage sites,
     previously open only to residents"]`.
   - `winning_lens_id: "transcendence"`: `closes: ["faith"]`. `tier_unlocks`: e.g. `["Dr.
-    Navarro authorizes an experimental procedure tier previously withheld pending the
+    Marchetti authorizes an experimental procedure tier previously withheld pending the
     Institute's ethics review, on the strength of the player having already proven willing to
     accept irreversible personal cost"]`.
-- Visible cost: Faith-winning closes Transcendence - Navarro's scar content has her
+- Visible cost: Faith-winning closes Transcendence - Marchetti's scar content has her
   proceeding with the procedure on another volunteer instead, referenced in passing. Faith
   losing to Transcendence - Solano's post-collision state has him treating the player as
   someone who chose to stop looking, gated on `dialogue_flags["lens_closed_faith"]`.
@@ -12172,30 +12227,33 @@ to build on, so it introduces one new location-appropriate NPC.
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
 **Goal.** Author "your organisation, or the people it preys on?" This is the last of the
-eight and reuses Hanna Voss (Union Dock Boss) as the Community pole, the same NPC used in
-A2-13's D2 - the design intent is that Voss represents the same community the player either
-builds, profits distantly from, or preys on, and whichever dilemma fires first for a given
-player determines which way that relationship goes.
+eight and reuses Thuy Kallio (Cradlepoint's dockmaster) as the Community pole, the same NPC
+used in A2-13's D2 - the design intent is that Kallio represents the same community the player
+either builds, profits distantly from, or preys on, and whichever dilemma fires first for a
+given player determines which way that relationship goes.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D8.
-- `requirements/character_voices.md` - Vex Tarn (Reach Floor Manager, Crimson Reach) for
-  Crime; Hanna Voss (Union Dock Boss) for Community, same record as A2-13.
-- A2-13's sprint section (this file) for exactly how Hanna Voss's `DialogueState`s are
-  structured, so this sprint extends rather than conflicts with them.
+- This dilemma needs a new NPC for Crime, voiced fresh in this sprint's own dialogue content
+  (not `character_voices.md`, which is Act I's document): **Wulan Doyle**, who runs the
+  Understair, Kettlebridge's under-floor trade, because she inherited the ledger and the debts
+  that came with it and has never found a clean way to walk away from either. Thuy Kallio
+  (Cradlepoint's dockmaster) is reused for Community, same record as A2-13.
+- A2-13's sprint section (this file) for exactly how Kallio's `DialogueState`s are structured,
+  so this sprint extends rather than conflicts with them.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d8_crime_community.json` (NEW)
-- `data/dialogue/` - Elena Reeves's telegraph lines, Vex Tarn's post-collision dialogue
-  state, Hanna Voss's post-collision dialogue state (a second gated state on the same NPC
+- `data/dialogue/` - Elena Reeves's telegraph lines, Wulan Doyle's post-collision dialogue
+  state, Thuy Kallio's post-collision dialogue state (a second gated state on the same NPC
   record A2-13 touches - if A2-13 has already landed, confirm the flag-gating key does not
   collide with A2-13's `dialogue_flags["lens_closed_community"]` state; this dilemma's
   Community-losing state is gated on a distinct flag since it is a different dilemma
   resolving against the same lens for the same underlying reason. Use
   `dialogue_flags["lens_closed_community"]` for both - the lens itself is what closes, not
   the dilemma, so both D2 and D8 closing Community should converge on the same flag and the
-  same Voss dialogue state rather than authoring two redundant ones. If A2-13 has already
+  same Kallio dialogue state rather than authoring two redundant ones. If A2-13 has already
   authored that state, reuse it; do not duplicate.)
 - `tests/test_scenarios/test_scenario_dilemma_d8.py` (NEW)
 
@@ -12204,27 +12262,27 @@ player determines which way that relationship goes.
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
   `telegraph_npc_id: "elena_reeves"`.
 - Telegraph: Elena, precise and disapproving in her characteristic "with respect" register,
-  notes that the black-market routes the player runs through Crimson Reach touch the same
-  supply lines Hanna Voss's people depend on, and that "helping" a community while also
+  notes that the black-market routes the player runs through the Understair touch the same
+  supply lines Thuy Kallio's people depend on, and that "helping" a community while also
   running product through its docks is not a position that holds indefinitely.
 - Two `DilemmaOutcome` entries:
-  - `winning_lens_id: "crime"`: `closes: ["community"]`. `tier_unlocks`: e.g. `["Vex Tarn
-    grants standing access to Crimson Reach's floor operations without per-run negotiation,
+  - `winning_lens_id: "crime"`: `closes: ["community"]`. `tier_unlocks`: e.g. `["Wulan Doyle
+    grants standing access to the Understair's floor operations without per-run negotiation,
     previously earned only run by run"]`.
   - `winning_lens_id: "community"`: `closes: ["crime"]`. `tier_unlocks`: reuse/align with
     A2-13's `community`-winning `tier_unlocks` where the underlying unlock is the same
-    (Hanna Voss's channels) - do not author a second, contradictory description of what
+    (Thuy Kallio's channels) - do not author a second, contradictory description of what
     resolving `community` grants; if A2-13 has already landed, read its `tier_unlocks` text
     and match it exactly or extend it, do not diverge.
-- Visible cost: reuses A2-13's Voss scar/dialogue-state content if it exists (see Touch zones
-  note above); Crime-winning's Community-side visible cost is Voss's people doing without
-  the player, same convention as A2-13. Community-winning closes Crime - Vex Tarn's
-  post-collision state has him treating the player as someone no longer welcome on the floor,
-  gated on `dialogue_flags["lens_closed_crime"]`.
+- Visible cost: reuses A2-13's Kallio scar/dialogue-state content if it exists (see Touch
+  zones note above); Crime-winning's Community-side visible cost is Kallio's people doing
+  without the player, same convention as A2-13. Community-winning closes Crime - Wulan
+  Doyle's post-collision state has her treating the player as someone no longer welcome on the
+  floor, gated on `dialogue_flags["lens_closed_crime"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d8.py` mirroring the established shape, plus a
   test confirming that if both this dilemma and A2-13's D2 resolve `community` as the winner
   for the same player (in either order), `dialogue_flags["lens_closed_community"]` is set
-  exactly once with no conflicting duplicate flag, and Voss's dialogue state is the same one
+  exactly once with no conflicting duplicate flag, and Kallio's dialogue state is the same one
   both dilemmas reference.
 
 **Acceptance criteria.**
