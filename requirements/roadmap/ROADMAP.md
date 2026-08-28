@@ -10936,7 +10936,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 - Started: 2026-08-28 13:58
 - Completed: 2026-08-28
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 84e519d
 - New_sprints_proposed: none
 - Polish_items_folded_in: full-schema-alignment (Lens gets 11 fields, not 5), all-required-fields-guard (criterion 2 extended beyond `minigame_shape`), snake_case-lens_id-guard (new criterion 6), scan-guard-against-empty-registry (matches `test_findings_register.py` pattern), empty-stub `lenses.json` (protects A2-5/A2-6 touch zones)
 - Decisions_locked: 5
