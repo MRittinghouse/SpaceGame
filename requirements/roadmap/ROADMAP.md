@@ -11180,7 +11180,7 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - Started: 2026-08-28 18:08
 - Completed: 2026-08-28 18:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (to be filled after commit)
+- Commits: 836626d
 - New_sprints_proposed: none
 - Polish_items_folded_in: empty-stub scan guard on the `test_findings_register.py` pattern; module-import-hygiene structural test (Capstone must not reach into engine/views)
 - Decisions_locked: 7
