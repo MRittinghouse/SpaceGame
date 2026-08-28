@@ -61,6 +61,7 @@ if TYPE_CHECKING:
     from spacegame.models.enemy_captain import EnemyCaptain
     from spacegame.models.forge_upgrade import ForgeUpgrade
     from spacegame.models.ground_equipment import GroundEquipment
+    from spacegame.models.lens import Lens
     from spacegame.models.politics_dispute import PoliticsDisputeTemplate
     from spacegame.models.ship_module import ShipModule
     from spacegame.models.ship_part import ShipPart
@@ -150,6 +151,8 @@ class DataLoader:
         # so SA-B2's synthetic-fixture tests keep working unchanged.
         self.auction_lots: Dict[str, list] = {}
         self.auction_voices: Dict[str, dict] = {}
+        # A2-1: lens registry keyed by lens_id.
+        self.lenses: Dict[str, "Lens"] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -225,6 +228,7 @@ class DataLoader:
         self._safe_load("news_templates", self.load_news_templates)
         self._safe_load("travel_log_templates", self.load_travel_log_templates)
         self._safe_load("balance_config", self.load_balance_config)
+        self._safe_load("lenses", self.load_lenses)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -726,6 +730,36 @@ class DataLoader:
             reward_value=data["reward_value"],
             hidden=data.get("hidden", False),
         )
+
+    def load_lenses(self) -> Dict[str, "Lens"]:
+        """Load lens registry from data/narrative/lenses.json.
+
+        Returns:
+            Dict mapping lens_id to Lens instance (empty when file is absent).
+
+        Raises:
+            ValueError: If any lens in the file is invalid (missing fields,
+                duplicate ids, bad lens_id format, wrong collection type).
+        """
+        from spacegame.models.lens import Lens
+
+        file_path = self.data_dir / "narrative" / "lenses.json"
+        if not file_path.exists():
+            logger.warning(f"Lenses not found: {file_path}")
+            return self.lenses
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.lenses.clear()
+        for raw in data.get("lenses", []):
+            lens = Lens.from_dict(raw)
+            if lens.lens_id in self.lenses:
+                raise ValueError(f"Duplicate lens_id '{lens.lens_id}' in {file_path}.")
+            self.lenses[lens.lens_id] = lens
+
+        logger.info(f"Loaded {len(self.lenses)} lenses")
+        return self.lenses
 
     def load_factions(self) -> Dict[str, Faction]:
         """Load faction definitions from JSON."""
