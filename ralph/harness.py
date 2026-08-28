@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -444,6 +445,23 @@ def _run_sprint_phases(
                     reason = f"quality-gate regression ({gate_name}): {err}"
                     _mark_terminal_outcome(sprint_id, "review", Outcome.BLOCKED, reason)
                     return Outcome.BLOCKED
+
+                # The test gate runs here and nowhere else: the last moment
+                # before the sprint is marked done, the bookkeeping is
+                # committed, and the work is PUSHED. Gating here is what stops
+                # a break being authored, pushed, and then built on for days.
+                # Once per sprint rather than once per phase -- a sprint runs
+                # up to seven agent phases, so per-phase would cost seven
+                # full-suite runs to protect against intermediate red trees the
+                # review agent exists to resolve.
+                log("Running test-suite gate before marking the sprint done...")
+                test_gate = _run_test_gate(test_baseline)
+                if test_gate is not None:
+                    _gate_name, err = test_gate
+                    reason = f"test-suite gate FAILED: {err}"
+                    _mark_terminal_outcome(sprint_id, "review", Outcome.BLOCKED, reason)
+                    _set_red_tree(f"{sprint_id}: {reason}")
+                    return Outcome.BLOCKED
             roadmap_state.update_status(sprint_id, STATUS_DONE)
             roadmap_state.append_activity_log(sprint_id, "harness: review passed, marking done")
             return Outcome.OK
@@ -498,6 +516,124 @@ class BaselineCaptureError(RuntimeError):
     """
 
 
+def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
+    """(passed, skipped) from a pytest summary line, or None if absent.
+
+    Shared by the startup baseline capture and the per-sprint test gate so the
+    two can never disagree about what pytest said.
+    """
+    for line in reversed(output.splitlines()):
+        m = re.search(r"(\d+) passed", line)
+        if m:
+            skipped = re.search(r"(\d+) skipped", line)
+            return int(m.group(1)), int(skipped.group(1)) if skipped else 0
+    return None
+
+
+# The full suite is ~100s at -n 8. 15 minutes is a wide margin for a loaded
+# machine while still being a bound: a pytest run that never finishes must not
+# become the harness's new way of hanging.
+TEST_GATE_TIMEOUT_SECONDS: int = 900
+
+# Characters of pytest output carried into the block reason / STATUS.md.
+_TEST_GATE_TAIL_CHARS: int = 1200
+
+
+def _pytest_gate_cmd(*extra: str) -> list[str]:
+    """The gate's pytest argv.
+
+    `-n TEST_WORKERS` (8), never `-n auto`: auto hung 6 runs in 10 on this
+    host, and a gate that hangs is worse than no gate. See config.TEST_WORKERS
+    for the measurement.
+    """
+    return [sys.executable, "-m", "pytest", "-n", TEST_WORKERS, "-q", "--no-header", *extra]
+
+
+def _run_test_gate(test_baseline: tuple[int, int]) -> Optional[tuple[str, str]]:
+    """Run the test suite as a quality gate. None means pass.
+
+    `_run_quality_gates` runs ruff, ruff-format and mypy -- not pytest. So
+    "tests still pass" was enforced only by a paragraph in the agent's prompt
+    and by whatever the review agent chose to check, and the sequence
+    "implement breaks the suite -> PHASE_OK -> lint/format/types pass because
+    they do not run tests -> sprint marked done -> pushed to origin -> repeat,
+    up to 10 sprints per invocation" was fully available. During an unattended
+    week authoring game content, later sprints would be built on the break for
+    days before the next launch's baseline capture aborted with rc 3.
+
+    Called once per sprint, at the last moment before the sprint is marked
+    done and the harness commits and pushes -- see `_run_sprint_phases`.
+
+    Absolute green, not a delta, and that is safe *because* of the baseline:
+    `_capture_test_baseline` hard-aborts the whole run (rc 3) when the suite is
+    red at startup, so a run only exists if the tree was green when it began.
+    Any red seen here therefore belongs to this run. Where that guarantee is
+    absent -- `--skip-baseline`, `--dry-run` -- the gate declines rather than
+    inventing an anchor it does not have.
+
+    A first failure is re-run with `--last-failed` before it counts. A single
+    flaky test must not block a sprint, and the retry is cheap because it only
+    happens on failure and only re-runs what failed.
+
+    Returns:
+        None when the suite passes (or the gate legitimately declines to run),
+        or ``(gate_name, error_text)`` describing the failure.
+    """
+    if test_baseline == (0, 0):
+        # No known-good anchor was captured (--skip-baseline / --dry-run).
+        return None
+
+    try:
+        result = run_with_hard_timeout(
+            _pytest_gate_cmd(),
+            timeout_seconds=TEST_GATE_TIMEOUT_SECONDS,
+            cwd=str(PROJECT_ROOT),
+        )
+    except subprocess.TimeoutExpired:
+        return (
+            "pytest",
+            f"the test suite did not finish within {TEST_GATE_TIMEOUT_SECONDS}s. "
+            "Treated as a failure: an unbounded suite is indistinguishable from a "
+            "hung one, and neither may be built on.",
+        )
+    except FileNotFoundError as exc:
+        return ("pytest", f"could not run pytest: {exc}")
+
+    combined = result.stdout + result.stderr
+
+    if result.returncode != 0:
+        log("Test gate: suite FAILED; re-running the failures once before blocking.")
+        try:
+            retry = run_with_hard_timeout(
+                _pytest_gate_cmd("--last-failed"),
+                timeout_seconds=TEST_GATE_TIMEOUT_SECONDS,
+                cwd=str(PROJECT_ROOT),
+            )
+        except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+            return ("pytest", f"{combined[-_TEST_GATE_TAIL_CHARS:]}\n(retry failed: {exc})")
+        if retry.returncode != 0:
+            return ("pytest", combined[-_TEST_GATE_TAIL_CHARS:].strip())
+        log("Test gate: the failure did not reproduce on re-run; treating it as a flake.")
+        return None
+
+    counts = _parse_pytest_counts(combined)
+    if counts is None:
+        return (
+            "pytest",
+            "pytest exited 0 but printed no 'N passed' summary line, so the gate "
+            "cannot tell whether the suite actually ran.",
+        )
+    passed, _skipped = counts
+    if passed < test_baseline[0]:
+        return (
+            "pytest",
+            f"the suite passes but the passing count fell from {test_baseline[0]} to "
+            f"{passed}. Tests were deleted or skipped rather than fixed -- which is "
+            "exactly how a red suite is made green when nobody is watching.",
+        )
+    return None
+
+
 def _capture_test_baseline() -> tuple[int, int]:
     """Run pytest -q to capture the current test pass/skip baseline.
 
@@ -508,8 +644,6 @@ def _capture_test_baseline() -> tuple[int, int]:
         BaselineCaptureError: On timeout, subprocess error, or unparseable output.
             The harness main loop catches this and aborts before picking up any sprint.
     """
-    import re as _re
-
     try:
         result = run_with_hard_timeout(
             [sys.executable, "-m", "pytest", "-n", TEST_WORKERS, "-q", "--no-header"],
@@ -527,25 +661,10 @@ def _capture_test_baseline() -> tuple[int, int]:
             f"pytest exited {result.returncode}; tail: {tail or '(no output)'}"
         )
 
-    # Extract the last "N passed[, M skipped]" line in pytest -q output.
-    out = result.stdout + result.stderr
-    pass_count = 0
-    skip_count = 0
-    found = False
-    for line in reversed(out.splitlines()):
-        m = _re.search(r"(\d+) passed", line)
-        if m:
-            pass_count = int(m.group(1))
-            m2 = _re.search(r"(\d+) skipped", line)
-            if m2:
-                skip_count = int(m2.group(1))
-            found = True
-            break
-
-    if not found:
+    counts = _parse_pytest_counts(result.stdout + result.stderr)
+    if counts is None:
         raise BaselineCaptureError("unparseable output — no 'N passed' line in pytest output")
-
-    return pass_count, skip_count
+    return counts
 
 
 _HARNESS_MANAGED_RUNTIME_BASE: tuple[str, ...] = (
@@ -618,6 +737,25 @@ TMP_ORPHAN_MIN_AGE_SECONDS: float = 60.0
 # Maximum characters of gate output captured in the activity-log entry.
 # Full output lives in the phase log; this keeps the ROADMAP readable.
 _GATE_ERROR_MAX_CHARS: int = 500
+
+# Set when the per-sprint test gate fails. Module-level for the same reason as
+# `_current_context`: it is produced deep inside `_run_sprint_phases` and
+# consumed by `main()`, which must stop the run rather than author further
+# sprints on top of a red tree, and must say so in STATUS.md.
+_red_tree_reason: Optional[str] = None
+
+
+def _set_red_tree(reason: str) -> None:
+    """Record that the test suite is failing, for `main()` to act on."""
+    global _red_tree_reason
+    _red_tree_reason = reason
+
+
+def _consume_red_tree() -> Optional[str]:
+    """Read and clear the red-tree reason."""
+    global _red_tree_reason
+    reason, _red_tree_reason = _red_tree_reason, None
+    return reason
 
 
 def _run_quality_gates() -> Optional[tuple[str, str]]:
@@ -1314,6 +1452,7 @@ def _write_status_snapshot(
     recent_outcomes: list[str],
     exit_reason: Optional[str] = None,
     crash_info: Optional[status.CrashInfo] = None,
+    gate_failure: Optional[str] = None,
 ) -> None:
     """Write STATUS.md so progress is visible from a phone.
 
@@ -1334,6 +1473,9 @@ def _write_status_snapshot(
         exit_reason: Set when the harness declined to run at all (a forced-
             sprint validation failure, a baseline-capture failure).
         crash_info: Set when an unhandled exception escaped the main loop.
+        gate_failure: Set when the per-sprint test gate found a red tree. The
+            operator must be able to see that from GitHub -- a gate whose
+            failure only reaches a discarded stdout is not a gate.
     """
     try:
         sprints_now = roadmap_state.parse_sprints()
@@ -1344,6 +1486,7 @@ def _write_status_snapshot(
             disagreements=triage.blocks_disagreements(sprints_now),
             crash=crash_info,
             decline_reason=exit_reason,
+            gate_failure=gate_failure,
         )
     except Exception as e:
         log(f"{sprint_id}: STATUS.md write failed: {e}")
@@ -1622,6 +1765,8 @@ def main() -> int:
     crashed_sprint_id: Optional[str] = None
     exit_reason: Optional[str] = None
     crash_info: Optional[status.CrashInfo] = None
+    gate_failure: Optional[str] = None
+    _consume_red_tree()  # a previous in-process run must not leak into this one
 
     try:
         state = HarnessState.load()
@@ -1734,6 +1879,15 @@ def main() -> int:
             log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
             recent_outcomes.append(f"{picked.sprint_id} {outcome.value}")
 
+            # A red tree ends the run. Continuing would author the next sprint
+            # on top of a broken one, and the loop allows up to 10 per
+            # invocation. Recorded before the STATUS.md write below so the
+            # reason reaches GitHub with the same commit.
+            gate_failure = _consume_red_tree()
+            if gate_failure is not None:
+                recent_outcomes.append(f"{picked.sprint_id} TEST-GATE FAILED")
+                log(f"Stopping the run: {gate_failure}")
+
             # Refresh baseline after a successful sprint (item L).
             # Mid-run failure keeps the previous baseline rather than aborting —
             # agents already running can still compare against the last-known-good count.
@@ -1751,10 +1905,15 @@ def main() -> int:
                     )
                     test_baseline = new_baseline
                 except BaselineCaptureError as exc:
+                    # Keep going (agents can still compare against the last
+                    # known-good count) but do not let it be swallowed: this
+                    # used to be a log line to a stdout the Scheduled Task
+                    # discards. `## Recent` in STATUS.md is pushed.
                     log(
                         f"Mid-run baseline refresh FAILED: {exc}. "
                         f"Keeping previous baseline ({test_baseline[0]}p/{test_baseline[1]}s)."
                     )
+                    recent_outcomes.append(f"{picked.sprint_id} baseline-refresh FAILED ({exc})")
 
             # Per-sprint summary (item G).
             try:
@@ -1775,7 +1934,7 @@ def main() -> int:
             # STATUS.md (Task 8) -- the operator's only window into the run
             # while away. Written before the bookkeeping commit below so it
             # rides along with it.
-            _write_status_snapshot(picked.sprint_id, recent_outcomes)
+            _write_status_snapshot(picked.sprint_id, recent_outcomes, gate_failure=gate_failure)
 
             # Commit harness bookkeeping (terminal status + index regen).
             # Captures the post-agent ROADMAP edits the harness writes
@@ -1791,6 +1950,9 @@ def main() -> int:
 
             # Auto-push (item A) after sprint completion.
             _push_after_sprint(picked.sprint_id, outcome, push_enabled)
+
+            if gate_failure is not None:
+                break
 
             if should_stop():
                 consume_stop_file()
@@ -1841,6 +2003,7 @@ def main() -> int:
             recent_outcomes,
             exit_reason=exit_reason,
             crash_info=crash_info,
+            gate_failure=gate_failure,
         )
         try:
             _commit_harness_bookkeeping("harness-exit", "final status snapshot")

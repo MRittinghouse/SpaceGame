@@ -471,3 +471,48 @@ class TestPushStatusIsVisible:
             "write_status ignored the recorded push state, so the one file the "
             "operator reads cannot tell them the board is frozen"
         )
+
+
+class TestGateFailureBanner:
+    """H3: a red tree is the one state where the correct response is to stop
+    authoring, so it must be as loud as STARVED and it must reach GitHub.
+
+    Without this the harness stops on a red tree and STATUS.md renders the same
+    calm queue summary a clean exit produces -- and the only other channel,
+    `log()`, writes to a stdout the Scheduled Task discards.
+    """
+
+    def test_a_gate_failure_is_a_loud_banner_naming_what_broke(self) -> None:
+        text = render_status(
+            QueueState(total=5, todo=3, eligible=3),
+            None,
+            [],
+            gate_failure="SA-7: test-suite gate FAILED: 3 failed in tests/test_models/test_market.py",
+        )
+        assert "## TEST SUITE FAILING" in text
+        assert "SA-7" in text, "the banner does not name the sprint whose gate failed"
+        assert "test_market" in text, "the banner does not say which tests broke"
+
+    def test_no_banner_when_the_suite_is_green(self) -> None:
+        """Control: this banner must mean something. If it rendered
+        unconditionally the operator would learn to ignore it."""
+        text = render_status(QueueState(total=5, todo=3, eligible=3), None, [])
+        assert "TEST SUITE FAILING" not in text
+
+    def test_write_status_carries_the_gate_failure_through(self, tmp_path: Path) -> None:
+        """`render_status` is the pure function; `write_status` is what the
+        harness actually calls, and a parameter dropped in between would make
+        the banner unreachable in production while every render test passed."""
+        target = tmp_path / "STATUS.md"
+        status_module.STATUS_PATH = target
+        try:
+            status_module.write_status(
+                QueueState(total=1, todo=1, eligible=1),
+                None,
+                [],
+                gate_failure="SA-9: test-suite gate FAILED: 1 failed",
+                push=None,
+            )
+        finally:
+            status_module.STATUS_PATH = status_module.PROJECT_ROOT / "STATUS.md"
+        assert "## TEST SUITE FAILING" in target.read_text(encoding="utf-8")

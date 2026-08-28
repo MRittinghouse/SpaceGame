@@ -226,6 +226,7 @@ def render_status(
     crash: Optional[CrashInfo] = None,
     decline_reason: Optional[str] = None,
     push: Optional[PushState] = None,
+    gate_failure: Optional[str] = None,
 ) -> str:
     """Build the STATUS.md body.
 
@@ -250,6 +251,11 @@ def render_status(
             freezes this file's *remote* copy while the harness looks
             perfectly healthy -- the operator would otherwise have no way
             to tell a frozen board from a dead machine.
+        gate_failure: Set when the per-sprint test gate found the suite red
+            and the run stopped. Louder than the queue summary on purpose:
+            a red tree is the one state where the correct response is to
+            stop authoring, and it must not be reported only to a log the
+            Scheduled Task discards.
 
     Returns:
         The full Markdown text of STATUS.md.
@@ -283,6 +289,19 @@ def render_status(
             "copy of this file on GitHub is FROZEN at whatever it said when push last "
             f"worked ({last_ok}). A frozen board is not a dead machine -- but from "
             "GitHub alone the two look identical, which is why this says so here.",
+            "",
+        ]
+    if gate_failure is not None:
+        lines += [
+            "## TEST SUITE FAILING",
+            "",
+            "The harness stopped: the test-suite gate found a red tree, so no further "
+            "sprint will be authored on top of it. Nothing is broken about the harness "
+            "itself -- this is it refusing to build on a break.",
+            "",
+            "```",
+            gate_failure,
+            "```",
             "",
         ]
     if crash is not None:
@@ -390,6 +409,7 @@ def write_status(
     crash: Optional[CrashInfo] = None,
     decline_reason: Optional[str] = None,
     push: Optional[PushState] = None,
+    gate_failure: Optional[str] = None,
 ) -> None:
     """Write STATUS.md atomically.
 
@@ -417,5 +437,6 @@ def write_status(
             crash=crash,
             decline_reason=decline_reason,
             push=push,
+            gate_failure=gate_failure,
         ),
     )

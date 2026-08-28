@@ -507,6 +507,7 @@ class TestWriteStatusSnapshot:
             disagreements: Optional[list[str]] = None,
             crash: Optional[CrashInfo] = None,
             decline_reason: Optional[str] = None,
+            gate_failure: Optional[str] = None,
         ) -> None:
             calls.append(
                 {
@@ -549,6 +550,7 @@ class TestWriteStatusSnapshot:
             disagreements: Optional[list[str]] = None,
             crash: Optional[CrashInfo] = None,
             decline_reason: Optional[str] = None,
+            gate_failure: Optional[str] = None,
         ) -> None:
             calls.append(recent)
 
@@ -2333,3 +2335,370 @@ class TestHeartbeatIsWrittenOnlyByTheLockHolder:
         assert payload["pid"] == os.getpid(), (
             "the heartbeat must carry the pid of the process that holds the lock"
         )
+
+
+_TWO_TODO_ROADMAP = """\
+# Test Two Sprints
+
+### RED-1 — First sprint
+
+**Status**: todo
+**Depends on**: none
+
+**Activity log.**
+- 2026-01-01 — todo (created)
+
+### RED-2 — Second sprint
+
+**Status**: todo
+**Depends on**: none
+
+**Activity log.**
+- 2026-01-01 — todo (created)
+"""
+
+
+class _FakeCompleted:
+    """Stand-in for `subprocess.CompletedProcess` from `run_with_hard_timeout`."""
+
+    def __init__(self, returncode: int, stdout: str = "", stderr: str = "") -> None:
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+
+
+class TestTestSuiteGate:
+    """H3: the test suite is a harness-enforced gate, not a prompt paragraph.
+
+    `_run_quality_gates` runs ruff, ruff-format and mypy. It does not run
+    pytest. So the full sequence "implement breaks the suite -> agent writes
+    PHASE_OK -> lint/format/type gates pass because they never run tests ->
+    review agent may or may not notice -> sprint marked done -> harness commits
+    and PUSHES -> next sprint picked up, up to 10 per invocation" was
+    available, and the only machine backstop was the *next* launch's baseline
+    capture -- several sprints and one supervisor shutdown later.
+    """
+
+    def _fake_runner(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        results: list[object],
+    ) -> list[list[str]]:
+        """Replace `run_with_hard_timeout`; return the list of argvs it saw."""
+        seen: list[list[str]] = []
+        queue = list(results)
+
+        def _run(cmd: list[str], timeout_seconds: float, cwd: Optional[str] = None) -> object:
+            seen.append(list(cmd))
+            assert queue, f"the gate ran more pytest invocations than the test expected: {seen}"
+            outcome = queue.pop(0)
+            if isinstance(outcome, BaseException):
+                raise outcome
+            return outcome
+
+        monkeypatch.setattr(harness, "run_with_hard_timeout", _run)
+        return seen
+
+    def test_a_green_suite_passes_the_gate(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        self._fake_runner(monkeypatch, [_FakeCompleted(0, "10774 passed, 98 skipped in 100s")])
+        assert harness._run_test_gate((10_774, 98)) is None
+
+    def test_a_red_suite_blocks(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        failure = _FakeCompleted(1, "FAILED tests/test_models/test_market.py::test_price\n1 failed")
+        self._fake_runner(monkeypatch, [failure, failure])
+
+        gate = harness._run_test_gate((10_774, 98))
+
+        assert gate is not None, (
+            "a red test suite passed the gate. The harness will now mark the sprint "
+            "done, commit it, push it, and author the next sprint on top of the break"
+        )
+        name, detail = gate
+        assert name == "pytest"
+        assert "test_market" in detail, (
+            f"the block reason does not name what failed: {detail!r} -- the operator "
+            "reads this from STATUS.md, not from a log the Scheduled Task discards"
+        )
+
+    def test_a_failure_that_does_not_reproduce_is_treated_as_a_flake(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A single flaky test must not strand a week of unattended work.
+
+        The retry is cheap because it only happens on failure and only re-runs
+        what failed.
+        """
+        seen = self._fake_runner(
+            monkeypatch,
+            [_FakeCompleted(1, "1 failed, 10773 passed"), _FakeCompleted(0, "1 passed")],
+        )
+
+        assert harness._run_test_gate((10_774, 98)) is None
+        assert len(seen) == 2, "the gate blocked without re-running the failure"
+        assert "--last-failed" in seen[1], (
+            f"the retry re-ran the whole suite instead of the failures: {seen[1]}"
+        )
+
+    def test_a_dropped_passing_count_blocks_even_though_the_suite_is_green(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Deleting the failing test is how a red suite is made green when
+        nobody is watching."""
+        self._fake_runner(monkeypatch, [_FakeCompleted(0, "10500 passed, 98 skipped")])
+
+        gate = harness._run_test_gate((10_774, 98))
+
+        assert gate is not None, (
+            "274 tests disappeared and the gate passed, so a sprint that deletes "
+            "tests instead of fixing them is indistinguishable from one that works"
+        )
+        assert "10500" in gate[1] and "10774" in gate[1]
+
+    def test_a_hung_suite_is_a_failure_not_a_hang(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        self._fake_runner(monkeypatch, [subprocess.TimeoutExpired(cmd=["pytest"], timeout=900)])
+
+        gate = harness._run_test_gate((10_774, 98))
+
+        assert gate is not None
+        assert "did not finish" in gate[1]
+
+    def test_the_gate_declines_when_no_baseline_anchors_it(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """`--skip-baseline` / `--dry-run` means the tree was never proven
+        green at startup, so "absolute green" would be asserting against an
+        anchor that does not exist. Declining is honest; blocking on a
+        pre-existing failure would strand the whole week."""
+        seen = self._fake_runner(monkeypatch, [])
+        assert harness._run_test_gate((0, 0)) is None
+        assert seen == [], "the gate ran pytest with no known-good baseline to compare against"
+
+    def test_the_gate_never_uses_dash_n_auto(self) -> None:
+        """`-n auto` hung 6 runs in 10 on this host (see config.TEST_WORKERS).
+        A gate that hangs is worse than no gate: it wedges the harness inside
+        a sprint, where a hang is hardest to attribute."""
+        cmd = harness._pytest_gate_cmd()
+        assert "auto" not in cmd, f"the test gate uses -n auto: {cmd}"
+        assert "-n" in cmd and cmd[cmd.index("-n") + 1] == config.TEST_WORKERS
+
+
+class TestTestGateIsWiredIntoTheSprint:
+    """Unit-testing `_run_test_gate` proves the rule; this proves it is
+    consulted at the one moment that matters -- before `done`, before the
+    bookkeeping commit, before the push."""
+
+    def _ok_result(self, phase: Phase, tmp_path: Path) -> PhaseResult:
+        return PhaseResult(
+            outcome=Outcome.OK,
+            phase=phase,
+            sprint_id="SA-2",
+            log_path=tmp_path / "test.log",
+            reason="",
+        )
+
+    def test_a_red_tree_blocks_the_sprint_and_it_is_not_marked_done(
+        self, isolated_roadmap: Path
+    ) -> None:
+        tmp = isolated_roadmap
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+            self._ok_result(Phase.REVIEW, tmp),
+        ]
+
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", return_value=None):
+                with patch.object(
+                    harness,
+                    "_run_test_gate",
+                    return_value=("pytest", "3 failed in tests/test_models/test_market.py"),
+                ):
+                    result = harness.execute_sprint(
+                        "SA-2", HarnessState(), test_baseline=(10_774, 98)
+                    )
+
+        assert result == Outcome.BLOCKED
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "**Status**: done" not in content, (
+            "a sprint that broke the test suite was marked done -- the harness will "
+            "commit and push it and then build the next sprint on top of it"
+        )
+        assert "test-suite gate FAILED" in content
+        assert "test_market" in content
+
+    def test_the_gate_is_given_the_real_baseline(self, isolated_roadmap: Path) -> None:
+        """The gate's whole safety argument rests on the startup baseline
+        having proven the tree green. Handing it (0, 0) would make it decline
+        silently on every sprint."""
+        tmp = isolated_roadmap
+        seen: list[tuple[int, int]] = []
+
+        def _spy(baseline: tuple[int, int]) -> None:
+            seen.append(baseline)
+            return None
+
+        phase_results = [
+            self._ok_result(Phase.PLAN, tmp),
+            self._ok_result(Phase.IMPLEMENT, tmp),
+            self._ok_result(Phase.REVIEW, tmp),
+        ]
+        with patch.object(agents, "run_phase", side_effect=phase_results):
+            with patch.object(harness, "_run_quality_gates", return_value=None):
+                with patch.object(harness, "_run_test_gate", _spy):
+                    harness.execute_sprint("SA-2", HarnessState(), test_baseline=(10_774, 98))
+
+        assert seen == [(10_774, 98)], f"the gate was called with {seen}"
+
+
+class TestARedTreeStopsTheRunAndReachesStatusMd:
+    """The gate must end the run, not merely block one sprint.
+
+    Blocking one sprint and continuing would spend the remaining nine sprint
+    slots authoring work on top of a tree already known to be broken -- and
+    each one would fail its own gate, burning an implement phase apiece. And a
+    gate whose failure is only logged is not a gate: `log()` writes to a stdout
+    the Scheduled Task discards.
+    """
+
+    def _drive(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> tuple[int, str, list[str]]:
+        (isolated_roadmap / "ROADMAP.md").write_text(_TWO_TODO_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", False)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_gate.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+
+        picked: list[str] = []
+
+        def fake_execute(
+            sprint_id: str, state: object, test_baseline: tuple[int, int] = (0, 0)
+        ) -> Outcome:
+            picked.append(sprint_id)
+            harness._set_red_tree(f"{sprint_id}: test-suite gate FAILED: 3 failed")
+            return Outcome.BLOCKED
+
+        monkeypatch.setattr(harness, "execute_sprint", fake_execute)
+        monkeypatch.setattr(harness, "_capture_test_baseline", lambda: (10_774, 98))
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "3",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-agency-probe",
+            ],
+        )
+        try:
+            rc = harness.main()
+            content = status_file.read_text(encoding="utf-8") if status_file.exists() else ""
+        finally:
+            status_file.unlink(missing_ok=True)
+        return rc, content, picked
+
+    def test_the_run_stops_after_the_first_red_sprint(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _rc, _content, picked = self._drive(isolated_roadmap, monkeypatch)
+
+        assert picked == ["RED-1"], (
+            f"the harness picked up {picked} -- it kept authoring sprints on a tree "
+            "it already knew was red, and each one burns a full implement phase"
+        )
+
+    def test_the_gate_failure_reaches_status_md(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _rc, content, _picked = self._drive(isolated_roadmap, monkeypatch)
+
+        assert "## TEST SUITE FAILING" in content, (
+            "the run stopped on a red tree and STATUS.md says nothing about it. "
+            "STATUS.md is the only channel that reaches the operator's phone; a "
+            "gate failure reported only to stdout is reported nowhere"
+        )
+        assert "RED-1" in content, "STATUS.md does not name the sprint whose gate failed"
+        assert "TEST-GATE FAILED" in content, (
+            "the outcome list does not distinguish a gate failure from any other block"
+        )
+
+
+class TestMidRunBaselineRefreshFailureIsVisible:
+    """The mid-run baseline refresh failure was caught and downgraded to a log
+    line ("Keeping previous baseline") -- and `log()` writes to a stdout the
+    Scheduled Task discards.
+
+    Keeping the run going on the last known-good count is right; making the
+    failure invisible is not. `## Recent` in STATUS.md is pushed, so that is
+    where it goes.
+    """
+
+    def test_a_failed_refresh_appears_in_status_md(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_TWO_TODO_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", False)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_refresh.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        monkeypatch.setattr(
+            harness,
+            "_run_git",
+            lambda args, timeout=30: (0, "true\n", "")
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]
+            else (0, "", ""),
+        )
+        monkeypatch.setattr(
+            harness,
+            "execute_sprint",
+            lambda sprint_id, state, test_baseline=(0, 0): Outcome.OK,
+        )
+
+        calls = {"n": 0}
+
+        def flaky_baseline() -> tuple[int, int]:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return (10_774, 98)
+            raise harness.BaselineCaptureError("pytest exited 2; tail: INTERNALERROR")
+
+        monkeypatch.setattr(harness, "_capture_test_baseline", flaky_baseline)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-agency-probe",
+            ],
+        )
+        try:
+            rc = harness.main()
+            content = status_file.read_text(encoding="utf-8") if status_file.exists() else ""
+        finally:
+            status_file.unlink(missing_ok=True)
+
+        assert rc == 0
+        assert "baseline-refresh FAILED" in content, (
+            "the mid-run baseline refresh failed and STATUS.md does not mention it. "
+            "The only other record is a log line on a stdout the Scheduled Task "
+            "discards, so the operator sees a green board while the harness has "
+            "stopped being able to measure the suite at all"
+        )
+        assert "INTERNALERROR" in content, "STATUS.md does not carry the reason"
