@@ -4,9 +4,11 @@ Ralph already pushes to origin, so a committed markdown file is readable on
 GitHub from a phone: no app, no service, no port to expose, nothing extra that
 can itself fail. The bar is "can the operator tell from a beach whether it is
 working" in five seconds of squinting: STARVED is the loudest word in the
-file, an absent heartbeat is stated rather than silently omitted, and a
-heartbeat's age is spelled out in words instead of a raw timestamp the reader
-has to do arithmetic on.
+file, an absent heartbeat is stated rather than silently omitted, a stale one
+is flagged rather than left indistinguishable from a fresh one (a heartbeat
+file can outlive the process that wrote it -- a reboot mid-sprint leaves it
+behind), and a heartbeat's age is spelled out in words instead of a raw
+timestamp the reader has to do arithmetic on.
 
 Everything here is derived from state that already exists (the queue, the
 heartbeat, the roadmap's own `Blocks:` claims). This module adds no new
@@ -20,7 +22,7 @@ from __future__ import annotations
 import time
 from typing import Optional
 
-from ralph.config import PROJECT_ROOT
+from ralph.config import IN_PROGRESS_STALE_MINUTES, PROJECT_ROOT
 from ralph.proc import atomic_write
 from ralph.triage import QueueState, starvation_report
 
@@ -90,6 +92,15 @@ def render_status(
         The full Markdown text of STATUS.md.
     """
     disagreements = disagreements or []
+    # Computed once up front so the banner and the "Now" line agree on the
+    # same age -- and so a stale beat gets flagged, not rendered as if a run
+    # were live. A heartbeat file can outlive the process that wrote it (a
+    # reboot mid-sprint leaves it behind); its age alone must not read as
+    # health. Reuses IN_PROGRESS_STALE_MINUTES rather than a second
+    # threshold constant.
+    age: Optional[float] = _beat_age_seconds(beat) if beat is not None else None
+    beat_is_stale = age is not None and age >= IN_PROGRESS_STALE_MINUTES * 60
+
     lines = ["# Ralph Status", ""]
     lines.append(f"_Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}_")
     lines.append("")
@@ -98,6 +109,16 @@ def render_status(
         lines += ["## CRASH-LOOP", "", "Supervisor stopped after repeated failures.", ""]
     if queue.is_starved:
         lines += ["## STARVED", "", "```", starvation_report(queue), "```", ""]
+    if beat_is_stale:
+        assert age is not None  # narrows for mypy; beat_is_stale implies age is not None
+        lines += [
+            "## STALE HEARTBEAT",
+            "",
+            f"No beat in over {IN_PROGRESS_STALE_MINUTES} minutes ({_humanize_age(age)}). "
+            "The harness process may have died, or the machine rebooted mid-sprint and left "
+            "this file behind -- its age alone does not mean a run is live.",
+            "",
+        ]
 
     lines.append("## Now")
     lines.append("")
@@ -106,13 +127,13 @@ def render_status(
             "- **no heartbeat** -- harness is not running, or died without stopping cleanly"
         )
     else:
-        age = _beat_age_seconds(beat)
         sprint = beat.get("sprint") or "(between sprints)"
         phase = beat.get("phase") or "-"
         age_text = _humanize_age(age) if age is not None else "unknown"
+        stale_suffix = " -- **STALE**" if beat_is_stale else ""
         lines.append(f"- Sprint: **{sprint}**")
         lines.append(f"- Phase: **{phase}**")
-        lines.append(f"- Last beat: **{age_text}**")
+        lines.append(f"- Last beat: **{age_text}**{stale_suffix}")
     lines.append("")
 
     lines += [

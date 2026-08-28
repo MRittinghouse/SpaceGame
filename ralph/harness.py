@@ -1591,6 +1591,22 @@ def main() -> int:
 
             time.sleep(INTER_SPRINT_SLEEP)
 
+        # STATUS.md must be written and committed on EVERY exit path, not
+        # just after a sprint completes. Every `break` above -- starved at
+        # launch, starvation discovered mid-run, normal completion with an
+        # empty queue, a STOP file honored before pickup -- lands here
+        # without ever reaching the per-sprint write inside the loop body.
+        # A starved-at-launch run is exactly the vacation scenario this file
+        # exists for: the operator leaves, the harness finds nothing
+        # eligible, exits, and without this the one file that would have
+        # told them so is never created (Task 8 Finding 1).
+        _write_status_snapshot("harness-exit", recent_outcomes)
+        try:
+            _commit_harness_bookkeeping("harness-exit", "final status snapshot")
+        except Exception as e:
+            log(f"harness-exit: harness bookkeeping commit failed: {e}")
+        _push_after_sprint("harness-exit", Outcome.OK, push_enabled)
+
         log(f"Harness done. Sprints processed this run: {sprints_processed}.")
         state.save()
         return 0

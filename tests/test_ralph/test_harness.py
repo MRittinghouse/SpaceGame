@@ -5,9 +5,13 @@ Covers:
   - Lock acquisition / release
   - State persistence
 
-We don't test the full main loop end-to-end (that requires real
-subprocess invocations); instead we exercise the recovery + lock
-helpers in isolation.
+Mostly we exercise the recovery + lock helpers in isolation rather than the
+full main loop (which normally means real subprocess invocations). The one
+exception is `TestStatusMdWrittenOnEveryExitPath`: a starved-at-launch run
+breaks out of the loop before ever reaching a sprint, and the only way to
+prove STATUS.md still gets written on that path is to drive `harness.main()`
+for real, with agent/baseline/probe subprocess calls skipped via CLI flags
+and `_run_git` faked so nothing touches the real repo.
 """
 
 from __future__ import annotations
@@ -15,6 +19,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable, Optional
@@ -471,7 +476,13 @@ class TestWriteStatusSnapshot:
     ) -> None:
         calls: list[dict] = []
 
-        def fake_write_status(queue, beat, recent, crash_loop=False, disagreements=None):
+        def fake_write_status(
+            queue: triage.QueueState,
+            beat: Optional[dict[str, object]],
+            recent: list[str],
+            crash_loop: bool = False,
+            disagreements: Optional[list[str]] = None,
+        ) -> None:
             calls.append(
                 {
                     "queue": queue,
@@ -502,11 +513,17 @@ class TestWriteStatusSnapshot:
         self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         calls: list[list[str]] = []
-        monkeypatch.setattr(
-            harness.status,
-            "write_status",
-            lambda queue, beat, recent, crash_loop=False, disagreements=None: calls.append(recent),
-        )
+
+        def fake_write_status(
+            queue: triage.QueueState,
+            beat: Optional[dict[str, object]],
+            recent: list[str],
+            crash_loop: bool = False,
+            disagreements: Optional[list[str]] = None,
+        ) -> None:
+            calls.append(recent)
+
+        monkeypatch.setattr(harness.status, "write_status", fake_write_status)
         monkeypatch.setattr(harness.heartbeat, "read_heartbeat", lambda: None)
 
         long_history = [f"S-{i} ok" for i in range(8)]
@@ -517,7 +534,7 @@ class TestWriteStatusSnapshot:
     def test_a_rendering_failure_is_logged_not_raised(
         self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        def boom(*args, **kwargs):
+        def boom(*args: object, **kwargs: object) -> None:
             raise RuntimeError("rendering exploded")
 
         monkeypatch.setattr(harness.status, "write_status", boom)
@@ -530,6 +547,104 @@ class TestWriteStatusSnapshot:
         assert any("STATUS.md write failed" in m and "rendering exploded" in m for m in messages), (
             f"expected a logged warning naming the failure, got: {messages}"
         )
+
+
+_STARVED_ROADMAP = """\
+# Test Starved Roadmap
+
+### BLOCK-1 — Blocker sprint
+
+**Status**: blocked
+**Depends on**: none
+
+**Activity log.**
+- 2026-01-01 — todo (created)
+
+### WAIT-1 — Waiting sprint
+
+**Status**: todo
+**Depends on**: BLOCK-1
+
+**Activity log.**
+- 2026-01-01 — todo (created)
+"""
+
+
+class TestStatusMdWrittenOnEveryExitPath:
+    """Finding 1 (Task 8 review round 1): the main loop `break`s out on a
+    starved-at-launch (or already-complete) queue BEFORE it ever reaches a
+    sprint, and `_write_status_snapshot` was only ever called after a sprint
+    finished. That is exactly the vacation scenario STATUS.md exists for:
+    the operator leaves, the harness finds nothing eligible, exits, and the
+    one file that would have told them so was never created.
+
+    This drives `harness.main()` for real (not just `_write_status_snapshot`
+    in isolation) because a mock proves the function was *called*; the
+    operator needs the file *written*, and only an end-to-end run proves
+    that every break site reaches it, not just the one this test thinks of.
+    """
+
+    def test_status_md_exists_and_shows_starved_after_a_starved_at_launch_run(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_STARVED_ROADMAP, encoding="utf-8")
+
+        # The heartbeat thread beats immediately on start; keep it off the
+        # real project file rather than writing ralph/heartbeat.json.
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+
+        # DRY_RUN short-circuits the real `claude --version` check and the
+        # agency probe inside _preflight_checks -- neither is relevant to
+        # whether STATUS.md gets written on a starved queue, and both would
+        # otherwise spawn real subprocesses.
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        # STATUS.md must be a real subpath of PROJECT_ROOT:
+        # _commit_harness_bookkeeping does STATUS_PATH.relative_to(PROJECT_ROOT),
+        # which raises for an unrelated tmp_path. ralph/logs/ is gitignored
+        # scratch space, cleaned up in the finally block below.
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_e2e_starved.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            if args and args[0] == "status":
+                return (0, " M requirements/roadmap/ROADMAP.md\n?? STATUS.md\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+            ],
+        )
+
+        try:
+            rc = harness.main()
+            assert rc == 0
+
+            assert status_file.exists(), (
+                "STATUS.md must exist after a starved-at-launch run -- this is "
+                "the exact vacation scenario it exists to report on"
+            )
+            content = status_file.read_text(encoding="utf-8")
+            assert "## STARVED" in content
+            # Names the real blocker from the crafted roadmap, not a generic
+            # placeholder -- proves this came from a live analyse(), not a
+            # stub.
+            assert "BLOCK-1" in content
+        finally:
+            status_file.unlink(missing_ok=True)
 
 
 # ---------------------------------------------------------------------------

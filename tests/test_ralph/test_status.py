@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from ralph import status as status_module
+from ralph.config import IN_PROGRESS_STALE_MINUTES
 from ralph.status import render_status
 from ralph.triage import QueueState
 
@@ -51,6 +52,20 @@ class TestRenderStatus:
         assert "SH-2 ok" in text and "SUITE-2 ok" in text
 
 
+class TestStarvedBannerIsADistinctHeading:
+    """`starvation_report()`'s own embedded text contains the word "STARVED",
+    so a plain `assert "STARVED" in text` is satisfied even if the banner's
+    own `## STARVED` heading is renamed or removed -- the embedded body text
+    alone would still pass it. This asserts on the heading specifically, so a
+    regression that quietly demotes the banner's prominence is caught.
+    """
+
+    def test_starved_heading_is_its_own_section(self) -> None:
+        state = QueueState(total=2, todo=2, eligible=0)
+        text = render_status(state, None, [])
+        assert "## STARVED" in text
+
+
 class TestHeartbeatAgeInHumanTerms:
     """A raw timestamp or a bare seconds count makes the reader do arithmetic
     on a phone. STATUS.md must do that arithmetic itself.
@@ -81,6 +96,90 @@ class TestHeartbeatAgeInHumanTerms:
         text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
         # Must still render the rest of the picture rather than raising.
         assert "SH-2" in text
+
+
+class TestStaleHeartbeat:
+    """A heartbeat file can outlive the process that wrote it -- a reboot
+    mid-sprint leaves it behind, and its age keeps climbing while nothing is
+    running. This project has already been bitten by an indistinguishable
+    stale beat once (SH-3 sat unnoticed for 19 hours), so a stale beat must
+    be as visually obvious as STARVED, not identical formatting to a fresh
+    one. Reuses `IN_PROGRESS_STALE_MINUTES` rather than a second threshold.
+    """
+
+    def test_stale_beat_is_flagged(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        stale_seconds = IN_PROGRESS_STALE_MINUTES * 60 + 60  # just past the threshold
+        beat = {
+            "pid": 1,
+            "timestamp": 1_000_000.0 - stale_seconds,
+            "sprint": "SH-2",
+            "phase": "implement",
+        }
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "STALE" in text
+
+    def test_fresh_beat_is_not_flagged_stale(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {
+            "pid": 1,
+            "timestamp": 1_000_000.0 - 240,  # 4 minutes -- nowhere near stale
+            "sprint": "SH-2",
+            "phase": "implement",
+        }
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "STALE" not in text
+
+    def test_stale_beat_gets_a_distinct_banner_section(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Not just inline text on the "Last beat" line -- a `##` section
+        with the same prominence STARVED gets, so it survives a five-second
+        phone squint rather than requiring the reader to parse a sentence.
+        """
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        stale_seconds = IN_PROGRESS_STALE_MINUTES * 60 + 60
+        beat = {
+            "pid": 1,
+            "timestamp": 1_000_000.0 - stale_seconds,
+            "sprint": "SH-2",
+            "phase": "implement",
+        }
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "## STALE" in text
+
+    def test_boundary_exactly_at_threshold_counts_as_stale(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {
+            "pid": 1,
+            "timestamp": 1_000_000.0 - IN_PROGRESS_STALE_MINUTES * 60,
+            "sprint": "SH-2",
+            "phase": "implement",
+        }
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "STALE" in text
+
+    def test_just_under_threshold_is_not_stale(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(status_module.time, "time", lambda: 1_000_000.0)
+        beat = {
+            "pid": 1,
+            "timestamp": 1_000_000.0 - (IN_PROGRESS_STALE_MINUTES * 60 - 1),
+            "sprint": "SH-2",
+            "phase": "implement",
+        }
+        text = render_status(QueueState(total=1, todo=1, eligible=1), beat, [])
+        assert "STALE" not in text
+
+    def test_no_heartbeat_is_not_confused_with_stale(self) -> None:
+        """Absent and stale are different failure modes -- absent means the
+        harness (or its heartbeat thread) never wrote one this run; stale can
+        mean the box rebooted mid-sprint and left the old file behind. They
+        must stay visually distinguishable, not collapse into one signal.
+        """
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [])
+        assert "STALE" not in text
 
 
 class TestCrashLoopBanner:
