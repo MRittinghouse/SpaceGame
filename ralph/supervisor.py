@@ -139,6 +139,40 @@ HEARTBEAT_STALE_SECONDS = 600.0
 # How often the supervisor checks the heartbeat while the harness runs.
 HEARTBEAT_POLL_SECONDS = 30.0
 
+# How long a freshly launched harness may go without producing a heartbeat of
+# its own before the supervisor kills it.
+#
+# "No heartbeat" used to mean "no information, keep waiting" -- forever. That
+# is defensible in isolation (do not kill a harness before it has had a chance
+# to beat) but it has no upper bound, and there is a real window in which it
+# applies: the heartbeat thread starts only once pre-flight has passed AND the
+# lock is held, and pre-flight ends with a real claude invocation. A hang there
+# with no heartbeat on disk produced total, indefinite silence -- harness
+# blocked, supervisor polling on a condition that could never become true,
+# nothing written anywhere, ever. The 15-minute repeating Scheduled Task
+# trigger does not rescue it either: the supervisor process is alive, so
+# `MultipleInstances = IgnoreNew` discards the firing.
+#
+# The bound must clear the slowest legitimate pre-first-beat path: pre-flight's
+# git checks, the `claude --version` probe (10s), and the agency probe
+# (PROBE_TIMEOUT_SECONDS = 240s), plus the sweep and lock acquisition. 15
+# minutes is roughly triple that -- generous enough that a slow-but-working
+# launch is never killed, short enough that a wedged one costs minutes rather
+# than a week.
+FIRST_BEAT_GRACE_SECONDS = 900.0
+
+# A heartbeat older than the harness we just launched cannot have been written
+# by it: it is a leftover from a previous run, and must be treated as "no beat
+# yet" rather than as "this harness has been silent for 9 minutes".
+#
+# Without this, the backoff ladder kills healthy harnesses. After two failures
+# the supervisor sleeps 480s; heartbeat.json from the previous run is then
+# already ~8 minutes old, so the *first* poll of the newly launched harness --
+# still in pre-flight, entirely healthy -- reads an age past the 600s stale
+# threshold and hard-kills it. Which records another failure. The slack absorbs
+# the wall-clock/monotonic mismatch between the two clocks being compared.
+LEFTOVER_BEAT_SLACK_SECONDS = 60.0
+
 # Upper bound on the `taskkill` in `_kill_tree`. The kill is the supervisor's
 # only recovery action; an unbounded one could wedge the supervisor itself.
 KILL_TIMEOUT_SECONDS = 60.0
@@ -542,20 +576,60 @@ def _supervise(
     *,
     poll_interval: float = HEARTBEAT_POLL_SECONDS,
     stale_seconds: float = HEARTBEAT_STALE_SECONDS,
+    first_beat_grace_seconds: float = FIRST_BEAT_GRACE_SECONDS,
     sleep: Callable[[float], None] = time.sleep,
     beat_age: Callable[[], Optional[float]] = heartbeat.seconds_since_beat,
     kill: Callable[[int], None] = _kill_tree,
+    monotonic: Callable[[], float] = time.monotonic,
 ) -> int:
-    """Wait for *proc* to exit, hard-killing it if its heartbeat goes stale.
+    """Wait for *proc* to exit, hard-killing it if it stops (or never starts)
+    beating.
 
-    Dependency-injected (poll interval, sleep, beat age, kill) so the
+    Two kill conditions, because "no heartbeat" and "an old heartbeat" are
+    different failures with different right answers:
+
+    1. **Stale beat.** The harness beat, then stopped. Wedged -- kill at
+       *stale_seconds*.
+    2. **No beat at all, past the grace window.** The harness never got as far
+       as starting its heartbeat thread. Before this, that was an unbounded
+       wait: a pre-flight hang with no heartbeat file on disk blocked the
+       harness forever while the supervisor polled a condition that could
+       never become true, with nothing written anywhere. Kill at
+       *first_beat_grace_seconds*, which relaunches under the normal restart
+       policy and so becomes visible via backoff and, eventually, CRASH-LOOP.
+
+    A beat whose age exceeds the time since launch belongs to a PREVIOUS run
+    and is folded into case 2. Treating it as this harness's own beat is how a
+    perfectly healthy launch got hard-killed during its first poll whenever the
+    preceding backoff was long enough to age the leftover file past
+    *stale_seconds*.
+
+    Dependency-injected (poll interval, sleep, beat age, kill, clock) so the
     decision logic -- when to kill -- is testable without a real 600-second
     wait and without a real hung subprocess.
     """
+    launched_at = monotonic()
     while proc.poll() is None:
         sleep(poll_interval)
+        elapsed = monotonic() - launched_at
         age = beat_age()
-        if age is not None and age > stale_seconds:
+        if age is None or age > elapsed + LEFTOVER_BEAT_SLACK_SECONDS:
+            # No beat from THIS harness yet (absent file, or one left behind
+            # by an earlier run).
+            if elapsed > first_beat_grace_seconds:
+                _log(
+                    f"supervisor: harness pid={proc.pid} produced no heartbeat of its own "
+                    f"within {first_beat_grace_seconds:.0f}s of launch; killing. A pre-flight "
+                    "hang with no heartbeat is otherwise indefinite silence."
+                )
+                kill(proc.pid)
+                break
+            continue
+        if age > stale_seconds:
+            _log(
+                f"supervisor: harness pid={proc.pid} heartbeat is {age:.0f}s stale "
+                f"(threshold {stale_seconds:.0f}s); killing."
+            )
             kill(proc.pid)
             break
     return proc.wait()

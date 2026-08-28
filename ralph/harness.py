@@ -1592,18 +1592,26 @@ def main() -> int:
     if rc != 0:
         return rc
 
-    # Heartbeat (Task 5): starts as soon as pre-flight confirms it is safe to
-    # run, and is stopped on every exit path below. A stale or absent
-    # heartbeat then always means "something is wrong" -- never "the harness
-    # hasn't decided whether to run yet."
-    heartbeat_stop = heartbeat.start_heartbeat_thread(lambda: _current_context)
-
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Lock — refuse concurrent runs (paranoia / safety).
     if not _acquire_lock():
-        heartbeat_stop.set()
         return 2
+
+    # Heartbeat (Task 5): started only once pre-flight has passed AND the lock
+    # is held, and stopped on every exit path below. A stale or absent
+    # heartbeat then always means "something is wrong" -- never "the harness
+    # hasn't decided whether to run yet."
+    #
+    # AFTER the lock, not before (M3): `heartbeat._loop` beats immediately,
+    # before its first `stop.wait()`, so starting it first meant an instance
+    # that correctly LOST the lock race stamped heartbeat.json with its own
+    # PID -- dead moments later -- and then exited rc 2. For up to 30s (until
+    # the real harness's next beat) `supervisor.heartbeat_pid_alive()` then
+    # read "no live run" while a healthy harness was working, so the
+    # supervisor would double-launch, the new instance would lose the lock,
+    # and each such rc 2 burns a strike off the 3-failure budget.
+    heartbeat_stop = heartbeat.start_heartbeat_thread(lambda: _current_context)
 
     # Declared before `try` (not at first use inside it) so `finally` can
     # always reference them, no matter how early an exception strikes --

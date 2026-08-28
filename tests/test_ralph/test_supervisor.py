@@ -18,9 +18,9 @@ from typing import Callable, Optional
 
 import pytest
 
+from ralph import harness, supervisor
 from ralph import heartbeat as heartbeat_module
 from ralph import status as status_module
-from ralph import supervisor
 from ralph.supervisor import (
     RestartPolicy,
     backoff_seconds,
@@ -368,6 +368,14 @@ class _FakeProc:
 
 class TestSupervise:
     def test_kills_on_stale_heartbeat(self) -> None:
+        """A harness that beat and then stopped is wedged: kill it.
+
+        The injected clock is load-bearing. A beat older than the harness has
+        existed belongs to a PREVIOUS run and is deliberately not treated as
+        staleness (see `TestSuperviseIgnoresAPreviousRunsHeartbeat`), so this
+        must place the poll far enough past launch for a 700s-old beat to be
+        genuinely this harness's own.
+        """
         proc = _FakeProc(pid=4321, exit_after_polls=10_000)
         killed: list[int] = []
         supervisor._supervise(
@@ -377,6 +385,7 @@ class TestSupervise:
             sleep=lambda _seconds: None,
             beat_age=lambda: 700.0,  # always past the 600s threshold
             kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=1000.0),
         )
         assert killed == [4321]
         assert proc.wait_called is True
@@ -395,10 +404,15 @@ class TestSupervise:
         assert killed == []
         assert rc == 0
 
-    def test_absent_heartbeat_never_triggers_kill(self) -> None:
+    def test_absent_heartbeat_does_not_trigger_an_immediate_kill(self) -> None:
         """`beat_age` returning None (no heartbeat file at all) must not be
-        misread as "infinitely stale" -- that would kill a harness before
-        its heartbeat thread has even written its first beat."""
+        misread as "infinitely stale" -- that would kill a harness before its
+        heartbeat thread has even written its first beat.
+
+        It is bounded rather than unbounded, though: past
+        FIRST_BEAT_GRACE_SECONDS an absent beat IS a kill. See
+        `TestSuperviseStartupGrace`.
+        """
         proc = _FakeProc(pid=4321, exit_after_polls=3)
         killed: list[int] = []
         supervisor._supervise(
@@ -1202,3 +1216,168 @@ class TestInstallSupervisorTaskScript:
         assert text.count("Register-ScheduledTask ") == 1, (
             "exactly one registration call is expected, at the end of the script"
         )
+
+
+def _stepping_clock(step: float, start: float = 0.0) -> Callable[[], float]:
+    """A monotonic clock that advances *step* seconds on every read.
+
+    `_supervise` reads it once at launch and once per poll, so the Nth poll
+    sees ``elapsed == N * step``. Injecting it is what makes the startup
+    grace and the leftover-beat rule testable without real 15-minute waits.
+    """
+    state = {"t": start - step}
+
+    def _now() -> float:
+        state["t"] += step
+        return state["t"]
+
+    return _now
+
+
+class TestSuperviseStartupGrace:
+    """H2(b): "no heartbeat" must not mean "wait forever".
+
+    `_supervise` treated an absent beat as "no information, keep waiting" with
+    no upper bound. There is a real window in which that applies: the harness's
+    heartbeat thread starts only after pre-flight passes and the lock is held,
+    and pre-flight ends with a real claude invocation. A hang there, on a run
+    with no heartbeat.json on disk, meant: harness blocked forever, supervisor
+    polling a condition that could never become true, no STATUS.md ever
+    written, nothing pushed, no log entry. Total silence, indefinitely -- and
+    the 15-minute repeating Scheduled Task trigger does not rescue it, because
+    the supervisor process is alive so `MultipleInstances = IgnoreNew` discards
+    the firing.
+    """
+
+    def test_a_harness_that_never_beats_is_killed_once_the_grace_expires(self) -> None:
+        proc = _FakeProc(pid=4321, exit_after_polls=10_000)
+        killed: list[int] = []
+
+        supervisor._supervise(
+            proc,  # type: ignore[arg-type]
+            poll_interval=0.0,
+            stale_seconds=600.0,
+            first_beat_grace_seconds=900.0,
+            sleep=lambda _seconds: None,
+            beat_age=lambda: None,  # the harness never wrote a first beat
+            kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=100.0),
+        )
+
+        assert killed == [4321], (
+            "a harness that produced no heartbeat at all was never killed, so a "
+            "pre-flight hang blocks the supervisor forever with nothing written "
+            "anywhere -- the purest 'dead run indistinguishable from a working "
+            "one' path in the system"
+        )
+
+    def test_no_kill_before_the_grace_expires(self) -> None:
+        """The rule the grace must not break: a harness in a legitimately slow
+        pre-flight (the agency probe alone is allowed 240s) must be left
+        alone."""
+        proc = _FakeProc(pid=4321, exit_after_polls=5)
+        killed: list[int] = []
+
+        supervisor._supervise(
+            proc,  # type: ignore[arg-type]
+            poll_interval=0.0,
+            stale_seconds=600.0,
+            first_beat_grace_seconds=900.0,
+            sleep=lambda _seconds: None,
+            beat_age=lambda: None,
+            kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=30.0),  # 5 polls == 150s elapsed
+        )
+
+        assert killed == []
+
+    def test_a_first_beat_disarms_the_grace(self) -> None:
+        """Once the harness beats, the grace is irrelevant and only staleness
+        matters -- a 90-minute implement phase must not be killed at 15."""
+        proc = _FakeProc(pid=4321, exit_after_polls=40)
+        killed: list[int] = []
+
+        supervisor._supervise(
+            proc,  # type: ignore[arg-type]
+            poll_interval=0.0,
+            stale_seconds=600.0,
+            first_beat_grace_seconds=900.0,
+            sleep=lambda _seconds: None,
+            beat_age=lambda: 20.0,  # beating happily
+            kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=30.0),  # 40 polls == 1200s, past the grace
+        )
+
+        assert killed == [], (
+            "a harness that IS beating was killed once the startup grace elapsed; "
+            "the grace must apply only while no beat of this harness's own exists"
+        )
+
+    def test_the_grace_is_wider_than_the_slowest_legitimate_preflight(self) -> None:
+        """The bound is only correct if it clears the real pre-flight cost.
+
+        Derived from the harness's own probe timeout rather than restated, so
+        raising the probe timeout cannot silently make the grace too tight.
+        """
+        assert supervisor.FIRST_BEAT_GRACE_SECONDS > harness.PROBE_TIMEOUT_SECONDS * 2, (
+            f"the startup grace ({supervisor.FIRST_BEAT_GRACE_SECONDS}s) leaves too "
+            f"little room over the agency probe alone "
+            f"({harness.PROBE_TIMEOUT_SECONDS}s); a slow but healthy pre-flight "
+            "would be hard-killed, and each kill costs a strike off the 3-failure "
+            "budget"
+        )
+
+
+class TestSuperviseIgnoresAPreviousRunsHeartbeat:
+    """A leftover beat is not this harness's beat.
+
+    heartbeat.json survives the process that wrote it. After two failures the
+    supervisor sleeps 480s before relaunching, so by the time the new harness
+    starts, the previous run's file is already ~8 minutes old. Judged as if it
+    belonged to the new harness, it crosses the 600s stale threshold about two
+    minutes into a pre-flight that is working perfectly -- and the supervisor
+    hard-kills a healthy run, records another failure, and moves one step
+    closer to ending the week.
+    """
+
+    def test_a_stale_leftover_beat_does_not_kill_a_healthy_new_harness(self) -> None:
+        proc = _FakeProc(pid=4321, exit_after_polls=5)
+        killed: list[int] = []
+
+        supervisor._supervise(
+            proc,  # type: ignore[arg-type]
+            poll_interval=0.0,
+            stale_seconds=600.0,
+            first_beat_grace_seconds=900.0,
+            sleep=lambda _seconds: None,
+            # 700s old at the first poll: older than this harness has existed,
+            # so it cannot be this harness's beat.
+            beat_age=lambda: 700.0,
+            kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=30.0),
+        )
+
+        assert killed == [], (
+            "the supervisor hard-killed a harness that had been running for 30 "
+            "seconds because of a heartbeat left behind by the PREVIOUS run -- "
+            "after an 8-minute backoff that happens on every relaunch"
+        )
+
+    def test_a_leftover_beat_still_leaves_the_startup_grace_armed(self) -> None:
+        """Ignoring the leftover must not reintroduce the unbounded wait: a
+        harness that never beats is still killed, leftover file or not."""
+        proc = _FakeProc(pid=4321, exit_after_polls=10_000)
+        killed: list[int] = []
+
+        supervisor._supervise(
+            proc,  # type: ignore[arg-type]
+            poll_interval=0.0,
+            stale_seconds=600.0,
+            first_beat_grace_seconds=900.0,
+            sleep=lambda _seconds: None,
+            beat_age=lambda: 700.0,
+            kill=lambda pid: killed.append(pid),
+            monotonic=_stepping_clock(step=100.0),
+        )
+
+        assert killed == [4321]

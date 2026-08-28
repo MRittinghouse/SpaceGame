@@ -2238,3 +2238,98 @@ class TestNoBareSubprocessRunTimeoutOnAgenticCommands:
             "Nothing supervises the supervisor; an unbounded call there is an "
             "unbounded wait with nobody left to break it."
         )
+
+
+class TestHeartbeatIsWrittenOnlyByTheLockHolder:
+    """M3: an instance that loses the lock race must not stamp the heartbeat.
+
+    `heartbeat._loop` beats immediately, before its first `stop.wait()`. The
+    thread used to be started before `_acquire_lock()`, so a second harness
+    that correctly LOST the race wrote heartbeat.json with its OWN pid -- a pid
+    that was dead moments later, since it then returned rc 2.
+
+    For up to 30 seconds (until the real harness's next beat)
+    `supervisor.heartbeat_pid_alive()` therefore read "no live run" while a
+    healthy harness was working in the repo. A supervisor sampling in that
+    window double-launches; the new instance loses the lock and exits rc 2;
+    and `main()` counts rc 2 as a failure. Three of those consume the entire
+    3-strike budget and stop the supervisor for the week while a perfectly
+    healthy harness is running.
+    """
+
+    def _drive_main(
+        self,
+        isolated_roadmap: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        lock_granted: bool,
+    ) -> tuple[int, Path]:
+        beat_path = isolated_roadmap / "hb.json"
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", beat_path)
+        (isolated_roadmap / "ROADMAP.md").write_text(_STARVED_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_m3.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        if not lock_granted:
+            monkeypatch.setattr(harness, "_acquire_lock", lambda: False)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+            ],
+        )
+        try:
+            rc = harness.main()
+        finally:
+            status_file.unlink(missing_ok=True)
+        # A heartbeat thread started at the wrong moment beats immediately;
+        # give it more than enough time to land on disk before asserting.
+        time.sleep(0.3)
+        return rc, beat_path
+
+    def test_losing_the_lock_writes_no_heartbeat(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rc, beat_path = self._drive_main(isolated_roadmap, monkeypatch, lock_granted=False)
+
+        assert rc == 2, f"expected the lock-conflict exit code, got {rc}"
+        assert not beat_path.exists(), (
+            "an instance that lost the lock race still stamped heartbeat.json with "
+            "its own (about-to-be-dead) pid. For up to 30s the supervisor then reads "
+            "'no live run' while a healthy harness is working, double-launches, and "
+            "burns a strike off its 3-failure budget on every such collision. Start "
+            "the heartbeat thread only after _acquire_lock() succeeds."
+        )
+
+    def test_holding_the_lock_does_write_a_heartbeat(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Positive control: without this, the assertion above would pass just
+        as happily if the heartbeat never worked at all."""
+        rc, beat_path = self._drive_main(isolated_roadmap, monkeypatch, lock_granted=True)
+
+        assert rc == 0
+        assert beat_path.exists(), (
+            "the lock holder wrote no heartbeat, so the harness is invisible to the "
+            "supervisor's liveness check for its entire run"
+        )
+        payload = json.loads(beat_path.read_text(encoding="utf-8"))
+        assert payload["pid"] == os.getpid(), (
+            "the heartbeat must carry the pid of the process that holds the lock"
+        )
