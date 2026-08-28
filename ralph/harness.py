@@ -44,6 +44,7 @@ from ralph.config import (
     PROJECT_ROOT,
     PUSH_ON_SPRINT_COMPLETE,
     PUSH_TIMEOUT_SECONDS,
+    RALPH_DIR,
     REQUIRE_CLEAN_WORKING_TREE,
     ROADMAP_PATH,
     STATE_FILE,
@@ -1169,7 +1170,13 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
     """
     from ralph.config import CLAUDE_CMD
 
-    probe_dir = LOGS_DIR.parent  # ralph/
+    # RALPH_DIR, not `LOGS_DIR.parent`: the probe file must land inside
+    # PROJECT_ROOT because the prompt names it by a repo-relative path. Deriving
+    # it from LOGS_DIR silently coupled the probe's location to the log
+    # directory, so redirecting the logs anywhere else made `relative_to`
+    # raise -- inside a thread, where the failure surfaced as a hang rather
+    # than as an error.
+    probe_dir = RALPH_DIR
     probe_dir.mkdir(parents=True, exist_ok=True)
     probe_path = probe_dir / PROBE_FILENAME
     log_path = LOGS_DIR / "_agency_probe.log"

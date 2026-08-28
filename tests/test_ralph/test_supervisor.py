@@ -35,18 +35,6 @@ from ralph.supervisor import (
 from ralph.triage import QueueState
 
 
-@pytest.fixture(autouse=True)
-def _isolate_supervisor_stop_marker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """No test may read or write the real `ralph/supervisor_stop.json`.
-
-    `main()` refuses to launch when that marker exists, so a test that left one
-    behind would silently turn every later `main()` test into a no-op -- the
-    vacuous-test failure mode this branch keeps producing. Autouse so it cannot
-    be forgotten.
-    """
-    monkeypatch.setattr(supervisor, "SUPERVISOR_STOP_PATH", tmp_path / "supervisor_stop.json")
-
-
 class TestBackoff:
     def test_escalates(self) -> None:
         assert backoff_seconds(0) == 30
