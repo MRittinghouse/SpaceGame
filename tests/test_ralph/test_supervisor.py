@@ -11,6 +11,7 @@ deliberately thin.
 from __future__ import annotations
 
 import ast
+import itertools
 import subprocess
 import sys
 import time
@@ -33,6 +34,16 @@ from ralph.supervisor import (
     silent_exit_reason,
 )
 from ralph.triage import QueueState
+
+
+class _LoopBound(BaseException):
+    """Test-double sentinel that stops an unbounded supervisor relaunch loop.
+
+    Derives from `BaseException`, not `Exception`, so `main()`'s own crash
+    guard cannot swallow it -- a sentinel the code under test could catch would
+    turn "relaunched forever" into a quietly passing test, which is the exact
+    failure class this branch keeps producing.
+    """
 
 
 class TestBackoff:
@@ -1291,19 +1302,42 @@ class TestTerminalStopMarker:
     """
 
     def _wire(
-        self, monkeypatch: pytest.MonkeyPatch, *, rc: int, eligible: int, todo: int = 5
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        rc: int,
+        eligible: int,
+        todo: int = 5,
+        max_launches: int = 4,
     ) -> list[object]:
+        """Drive `main()` against fakes, with the relaunch loop BOUNDED.
+
+        The bound matters. This helper used to hand `_status_mtime` a
+        six-element iterator, so a supervisor that relaunched when it should
+        not have died of `StopIteration` two iterations later -- detected, but
+        via an incidental error rather than the test's own assertion, and the
+        error named the fixture rather than the defect. `_LoopBound` is raised
+        instead, caught by the test, and the assertion that follows says what
+        actually went wrong.
+
+        `_LoopBound` derives from `BaseException` deliberately: `main()`'s
+        crash guard catches `Exception`, and a sentinel it could swallow would
+        silently turn an unbounded relaunch into a passing test.
+        """
         launches: list[object] = []
+
+        def _popen(*args: object, **_kwargs: object) -> object:
+            launches.append(args)
+            if len(launches) > max_launches:
+                raise _LoopBound(f"main() launched the harness {len(launches)} times")
+            return object()
+
         monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
-        monkeypatch.setattr(
-            supervisor.subprocess,
-            "Popen",
-            lambda *a, **k: launches.append(a) or object(),
-        )
+        monkeypatch.setattr(supervisor.subprocess, "Popen", _popen)
         monkeypatch.setattr(supervisor.time, "sleep", lambda _s: None)
         monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
         monkeypatch.setattr(supervisor, "_supervise", lambda proc: rc)
-        mtimes = iter([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        mtimes = itertools.cycle([1.0, 2.0])
         monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
         monkeypatch.setattr(supervisor, "parse_sprints", dict)
         monkeypatch.setattr(
@@ -1332,13 +1366,19 @@ class TestTerminalStopMarker:
         launches = self._wire(monkeypatch, rc=0, eligible=5)
         supervisor.record_terminal_stop("stopping: 3 consecutive failures")
 
-        rc = supervisor.main()
+        rc: Optional[int] = None
+        try:
+            rc = supervisor.main()
+        except _LoopBound:
+            # The bound fired, so `main()` did relaunch. Fall through: the
+            # assertion below is the one that should report it.
+            pass
 
-        assert rc == 0
         assert launches == [], (
             "a supervisor that had already given up launched the harness "
             "again; every trigger firing would grant three more attempts"
         )
+        assert rc == 0, f"a supervisor that found a recorded stop returned {rc}"
 
     def test_no_marker_means_a_killed_supervisor_relaunches(
         self, monkeypatch: pytest.MonkeyPatch
@@ -1374,6 +1414,192 @@ class TestTerminalStopMarker:
         supervisor.clear_terminal_stop()
 
         assert supervisor.read_terminal_stop() is None
+
+
+class TestASupervisorCrashIsBoundedRecordedAndPublished:
+    """N3: the stop marker guarded only a *deliberate* stop.
+
+    `main()`'s `Popen`, `parse_sprints()` and `triage.analyse()` were outside
+    every guard, and `roadmap_state.parse_sprints` is a bare `read_text` -- so
+    a missing, renamed or non-UTF-8 `ROADMAP.md` raised out of `main()` on
+    EVERY iteration. The task result went non-zero, `-RestartCount 3
+    -RestartInterval 5m` and the new `PT15M` repetition brought a fresh
+    supervisor back with `RestartPolicy()` at zero, and each one launched the
+    harness again: roughly 96 launches a day, each with a fresh three-strike
+    budget, nothing published, no marker, no cap. The operator sees a frozen
+    board while the machine spends the week.
+    """
+
+    def _wire(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        *,
+        raiser: Callable[[], object],
+        max_launches: int = 12,
+    ) -> tuple[list[object], list[str]]:
+        """Drive `main()` with `parse_sprints` raising, bounded by `_LoopBound`."""
+        launches: list[object] = []
+        published: list[str] = []
+
+        def _popen(*args: object, **_kwargs: object) -> object:
+            launches.append(args)
+            if len(launches) > max_launches:
+                raise _LoopBound(f"main() launched the harness {len(launches)} times")
+            return object()
+
+        monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
+        monkeypatch.setattr(supervisor.subprocess, "Popen", _popen)
+        monkeypatch.setattr(supervisor.time, "sleep", lambda _s: None)
+        monkeypatch.setattr(supervisor, "_supervise", lambda proc: 0)
+        # A fresh mtime every call, so `harness_exited_silently` is False and
+        # the silent-exit report never fires: this class is about the crash
+        # path, not the report path.
+        mtimes = itertools.count(1.0)
+        monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
+        monkeypatch.setattr(supervisor, "parse_sprints", raiser)
+        monkeypatch.setattr(supervisor.triage, "blocks_disagreements", lambda sprints: [])
+        monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
+        monkeypatch.setattr(
+            supervisor,
+            "_publish_status",
+            lambda label: bool(published.append(label)) or True,
+        )
+        return launches, published
+
+    @staticmethod
+    def _unreadable_roadmap() -> object:
+        raise FileNotFoundError("requirements/roadmap/ROADMAP.md")
+
+    @staticmethod
+    def _run_main() -> tuple[Optional[int], Optional[BaseException]]:
+        """`main()`'s result, plus anything that escaped it.
+
+        Escapes are RETURNED rather than allowed to fail the test, so every
+        assertion below reports the launch storm in its own words instead of
+        re-raising a `FileNotFoundError` that names the fixture.
+        """
+        try:
+            return supervisor.main(), None
+        except _LoopBound:
+            return None, None
+        except Exception as exc:
+            return None, exc
+
+    _ESCAPED = (
+        "the exception escaped main(). The Scheduled Task result goes "
+        "non-zero, and -RestartCount 3 plus the PT15M repetition each bring a "
+        "fresh supervisor back with RestartPolicy() at zero -- roughly 96 "
+        "harness launches a day, each with a new three-strike budget, nothing "
+        "published, no marker and no cap. Escaped: "
+    )
+
+    def test_a_reproducible_crash_stops_instead_of_relaunching_forever(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        launches, _published = self._wire(monkeypatch, raiser=self._unreadable_roadmap)
+
+        rc, escaped = self._run_main()
+
+        assert escaped is None, f"{self._ESCAPED}{escaped!r}"
+        assert len(launches) == supervisor.MAX_CONSECUTIVE_SUPERVISOR_CRASHES, (
+            f"the supervisor launched the harness {len(launches)} time(s) on a "
+            "reproducible exception; the crash counter is meant to cap that at "
+            f"{supervisor.MAX_CONSECUTIVE_SUPERVISOR_CRASHES}"
+        )
+        assert rc == supervisor.SUPERVISOR_RC_CRASH_LOOP
+
+    def test_a_supervisor_crash_reaches_github(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Written is not enough. C2 exists because a message the operator
+        cannot read is not a message: GitHub keeps serving the last STATUS.md
+        the harness pushed, whose beat age is re-rendered at read time, so it
+        reads as a healthy run forever."""
+        _launches, published = self._wire(monkeypatch, raiser=self._unreadable_roadmap)
+
+        _rc, escaped = self._run_main()
+
+        assert escaped is None, f"{self._ESCAPED}{escaped!r}"
+        assert "supervisor-crash-loop" in published, (
+            "the supervisor crashed itself out of existence and published "
+            f"nothing; publishes seen: {published}"
+        )
+        body = status_module.STATUS_PATH.read_text(encoding="utf-8")
+        assert "## CRASH-LOOP" in body
+        assert "FileNotFoundError" in body, (
+            "the CRASH-LOOP banner does not name what actually went wrong, so "
+            f"the operator cannot tell a crash from a cap; body:\n{body}"
+        )
+
+    def test_a_supervisor_crash_records_a_terminal_stop(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Without the marker the repeating trigger simply starts it again."""
+        self._wire(monkeypatch, raiser=self._unreadable_roadmap)
+
+        _rc, escaped = self._run_main()
+
+        assert escaped is None, f"{self._ESCAPED}{escaped!r}"
+        stopped = supervisor.read_terminal_stop()
+        assert stopped is not None, (
+            "a supervisor that gave up after repeated crashes left no marker, "
+            "so the PT15M repetition relaunches it with a fresh budget every "
+            "15 minutes for the rest of the week"
+        )
+        assert "crashed" in str(stopped.get("reason", ""))
+
+    def test_a_one_off_crash_does_not_end_the_week(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Counted consecutively, so a transient fault is forgiven.
+
+        A crash cap that never forgave would make one momentary file lock as
+        fatal as a renamed roadmap.
+        """
+        calls = {"n": 0}
+
+        def _one_bad_read() -> object:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise OSError("the roadmap was locked by another process")
+            return {}
+
+        launches, _published = self._wire(monkeypatch, raiser=_one_bad_read)
+        monkeypatch.setattr(
+            supervisor.triage,
+            "analyse",
+            lambda sprints: QueueState(total=1, todo=0, eligible=0),
+        )
+
+        rc, escaped = self._run_main()
+
+        assert escaped is None, f"{self._ESCAPED}{escaped!r}"
+        assert rc == 0, (
+            f"one transient roadmap read error ended the run with rc={rc}; the "
+            "crash counter must reset on the next clean iteration"
+        )
+        assert len(launches) == 2, (
+            f"expected the crashing iteration plus one clean one; got {len(launches)} launches"
+        )
+
+    def test_the_crash_report_survives_the_unreadable_roadmap_that_caused_it(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The report used to fetch the queue inside the same `try` as the
+        write, so the very fault being reported suppressed the report."""
+        recent = ["harness exit rc=0"]
+        monkeypatch.setattr(supervisor, "parse_sprints", self._unreadable_roadmap)
+        published: list[str] = []
+        monkeypatch.setattr(
+            supervisor,
+            "_publish_status",
+            lambda label: bool(published.append(label)) or True,
+        )
+        monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
+
+        supervisor._write_crash_loop_status(recent, "supervisor crashed on FileNotFoundError")
+
+        assert published == ["supervisor-crash-loop"], (
+            "an unreadable roadmap silenced the crash report entirely -- the "
+            "one message that says nothing will resume"
+        )
+        assert "## CRASH-LOOP" in status_module.STATUS_PATH.read_text(encoding="utf-8")
 
 
 class TestInstallSupervisorTaskScript:

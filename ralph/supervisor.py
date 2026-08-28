@@ -167,6 +167,31 @@ HEARTBEAT_STALE_SECONDS = _HEARTBEAT_STALE_SECONDS
 _INFRA_BACKOFF_LADDER = (300.0, 900.0, 1800.0, 3600.0)
 MAX_CONSECUTIVE_INFRA_FAILURES = 6
 
+# How many times `main()`'s own loop body may raise before the supervisor
+# stops for good.
+#
+# A separate counter from the restart policy on purpose: a supervisor crash is
+# not a harness failure, and folding the two together would let a crashing
+# supervisor consume the harness's budget (or vice versa). Counted
+# CONSECUTIVELY, so a one-off (a transient file lock while reading the roadmap)
+# is forgiven by the next clean iteration, while a reproducible fault -- a
+# missing, renamed or non-UTF-8 ROADMAP.md, which `parse_sprints` raises on
+# every single iteration -- reaches the cap in minutes and stops.
+#
+# Without this, the new PT15M repetition turns one such exception into roughly
+# 96 harness launches a day, each with a fresh three-strike budget, with
+# nothing published and no stop marker: the board freezes while the machine
+# spends the week's API budget.
+MAX_CONSECUTIVE_SUPERVISOR_CRASHES = 3
+
+# The supervisor's own exit code when it gives up on repeated crashes of its
+# own. Deliberately NOT one of the harness codes in `config.HARNESS_EXIT_CODES`
+# (those describe a child process, and confusing the two is what M4 fixed), and
+# deliberately non-zero: a Scheduled Task's `LastTaskResult` is one of the few
+# things an operator can read without the repo, and "stopped because it kept
+# crashing" must not look the same as "finished the work".
+SUPERVISOR_RC_CRASH_LOOP: int = 1
+
 # How often the supervisor checks the heartbeat while the harness runs.
 HEARTBEAT_POLL_SECONDS = 30.0
 
@@ -579,6 +604,33 @@ def _publish_status(label: str) -> bool:
     return False
 
 
+def _queue_snapshot() -> tuple[triage.QueueState, list[str]]:
+    """The current queue, or an empty one if the roadmap cannot be read.
+
+    Every message the supervisor sends needs a queue to render alongside it,
+    and every one of them used to fetch that queue inside the same ``try`` as
+    the write -- so an unreadable ``ROADMAP.md`` meant the supervisor said
+    NOTHING, on exactly the paths that exist because the harness already
+    cannot speak. A missing, renamed or non-UTF-8 roadmap is a
+    ``FileNotFoundError`` / ``UnicodeDecodeError`` straight out of
+    ``parse_sprints``, and it is also a *likely* cause of the stop being
+    reported.
+
+    Degrading to an empty queue keeps the banner and the reason -- the parts
+    the operator actually needs -- rather than trading them for a queue
+    summary.
+    """
+    try:
+        sprints = parse_sprints()
+        return triage.analyse(sprints), triage.blocks_disagreements(sprints)
+    except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
+        _log(
+            f"supervisor: the roadmap could not be read while reporting ({exc!r}); "
+            "reporting with an empty queue rather than saying nothing at all."
+        )
+        return triage.QueueState(), []
+
+
 def _report_silent_exit(rc: int, recent: list[str]) -> None:
     """Write, commit and push STATUS.md's decline_reason for a silent harness
     exit, unless the silence is a normal lock conflict (see
@@ -597,13 +649,13 @@ def _report_silent_exit(rc: int, recent: list[str]) -> None:
     reason = silent_exit_reason(rc)
     if reason is None:
         return
+    queue, disagreements = _queue_snapshot()
     try:
-        sprints = parse_sprints()
         status.write_status(
-            triage.analyse(sprints),
+            queue,
             heartbeat.read_heartbeat(),
             recent[-5:],
-            disagreements=triage.blocks_disagreements(sprints),
+            disagreements=disagreements,
             decline_reason=reason,
         )
     except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
@@ -783,14 +835,14 @@ def _write_crash_loop_status(recent: list[str], reason: Optional[str] = None) ->
     the operator's only window into a week-long unattended run, so a bug
     producing it must never mask the real stop condition.
     """
+    queue, disagreements = _queue_snapshot()
     try:
-        sprints = parse_sprints()
         status.write_status(
-            triage.analyse(sprints),
+            queue,
             heartbeat.read_heartbeat(),
             recent[-5:],
             crash_loop=True,
-            disagreements=triage.blocks_disagreements(sprints),
+            disagreements=disagreements,
             crash_loop_reason=reason,
         )
     except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
@@ -828,12 +880,40 @@ def _wait_for_foreign_harness(
             return
 
 
+def _report_supervisor_crash(exc: BaseException, recent: list[str], crashes: int) -> str:
+    """Log, and describe, a crash inside the supervisor's own loop.
+
+    Returns the one-line reason used for the log, ``## Recent`` and -- if this
+    was the last one allowed -- the CRASH-LOOP banner.
+    """
+    import traceback
+
+    reason = (
+        f"supervisor crashed on {type(exc).__name__}: {exc} "
+        f"({crashes}/{MAX_CONSECUTIVE_SUPERVISOR_CRASHES} consecutive)"
+    )
+    _log(f"supervisor: {reason}")
+    _log(traceback.format_exc())
+    recent.append(f"supervisor error: {type(exc).__name__}: {exc}")
+    return reason
+
+
 def main() -> int:
     """Relaunch the harness under a bounded restart policy until there is no
     more work, the queue is starved, or failures exceed the cap.
 
     Deliberately thin: all the decisions above are pure functions, tested in
     isolation. This just wires them to real subprocesses and real time.
+
+    The loop body is guarded because the crash-loop cap used to survive only a
+    *deliberate* stop. ``supervisor_stop.json`` is written on the ``not
+    restart`` path; ``Popen``, ``parse_sprints()`` and ``triage.analyse()``
+    were not covered by anything. ``roadmap_state.parse_sprints`` is a bare
+    ``read_text``, so a missing, renamed or non-UTF-8 ``ROADMAP.md`` raises out
+    of ``main()`` on EVERY iteration -- and with the new PT15M repetition plus
+    ``-RestartCount 3``, one reproducible exception becomes roughly 96 harness
+    launches a day, each with a fresh 3-strike budget, nothing published, and
+    no marker. An expensive silence rather than a quiet one.
     """
     stopped = read_terminal_stop()
     if stopped is not None:
@@ -849,80 +929,101 @@ def main() -> int:
 
     policy = RestartPolicy()
     recent: list[str] = []
+    crashes = 0
 
     while True:
-        live_pid = heartbeat_pid_alive()
-        if live_pid is not None:
-            _log(
-                f"supervisor: harness already alive (pid={live_pid}); "
-                "adopting rather than double-launching."
-            )
-            _wait_for_foreign_harness(live_pid)
-            continue
-
-        mtime_before = _status_mtime()
-        _log(f"supervisor: launching {' '.join(HARNESS_CMD)} (stdout -> {HARNESS_LOG_PATH})")
-        # The harness logs via `print`. Without these handles it inherits the
-        # supervisor's, which a Scheduled Task discards -- so a pre-flight
-        # failure, the most likely way this run dies, would be written down
-        # nowhere at all.
-        harness_log = _open_harness_log()
         try:
-            proc = subprocess.Popen(
-                list(HARNESS_CMD),
-                cwd=str(PROJECT_ROOT),
-                stdout=harness_log,
-                stderr=subprocess.STDOUT if harness_log is not None else None,
+            live_pid = heartbeat_pid_alive()
+            if live_pid is not None:
+                _log(
+                    f"supervisor: harness already alive (pid={live_pid}); "
+                    "adopting rather than double-launching."
+                )
+                _wait_for_foreign_harness(live_pid)
+                crashes = 0  # an adoption is a completed iteration, not a crash
+                continue
+
+            mtime_before = _status_mtime()
+            _log(f"supervisor: launching {' '.join(HARNESS_CMD)} (stdout -> {HARNESS_LOG_PATH})")
+            # The harness logs via `print`. Without these handles it inherits
+            # the supervisor's, which a Scheduled Task discards -- so a
+            # pre-flight failure, the most likely way this run dies, would be
+            # written down nowhere at all.
+            harness_log = _open_harness_log()
+            try:
+                proc = subprocess.Popen(
+                    list(HARNESS_CMD),
+                    cwd=str(PROJECT_ROOT),
+                    stdout=harness_log,
+                    stderr=subprocess.STDOUT if harness_log is not None else None,
+                )
+            finally:
+                # Popen duplicates the handle into the child; the parent's copy
+                # is dead weight and would keep the rotated file open.
+                if harness_log is not None:
+                    harness_log.close()
+            rc = _supervise(proc)
+            mtime_after = _status_mtime()
+            _log(f"supervisor: harness exited rc={rc}")
+
+            if harness_exited_silently(mtime_before, mtime_after):
+                _report_silent_exit(rc, recent)
+
+            if rc == 0:
+                policy.record_success()
+            elif rc == HARNESS_RC_INFRA_ERROR:
+                policy.record_infra_failure()
+            else:
+                policy.record_failure()
+            recent.append(
+                f"harness exit rc={rc}"
+                + (" (infrastructure down)" if rc == HARNESS_RC_INFRA_ERROR else "")
             )
-        finally:
-            # Popen duplicates the handle into the child; the parent's copy is
-            # dead weight and would keep the rotated file open.
-            if harness_log is not None:
-                harness_log.close()
-        rc = _supervise(proc)
-        mtime_after = _status_mtime()
-        _log(f"supervisor: harness exited rc={rc}")
 
-        if harness_exited_silently(mtime_before, mtime_after):
-            _report_silent_exit(rc, recent)
+            sprints = parse_sprints()
+            queue = triage.analyse(sprints)
+            restart, reason = should_restart(
+                policy.consecutive_failures,
+                queue.eligible,
+                queue.is_starved,
+                policy.consecutive_infra_failures,
+                queue.in_flight_count,
+            )
+            _log(f"supervisor: {reason}")
 
-        if rc == 0:
-            policy.record_success()
-        elif rc == HARNESS_RC_INFRA_ERROR:
-            policy.record_infra_failure()
-        else:
-            policy.record_failure()
-        recent.append(
-            f"harness exit rc={rc}"
-            + (" (infrastructure down)" if rc == HARNESS_RC_INFRA_ERROR else "")
-        )
+            if not restart:
+                if policy.exhausted:
+                    _write_crash_loop_status(recent, reason)
+                # Recorded BEFORE returning, so the repeating trigger's next
+                # firing sees a deliberate stop rather than an absence.
+                record_terminal_stop(reason)
+                return 0
 
-        sprints = parse_sprints()
-        queue = triage.analyse(sprints)
-        restart, reason = should_restart(
-            policy.consecutive_failures,
-            queue.eligible,
-            queue.is_starved,
-            policy.consecutive_infra_failures,
-            queue.in_flight_count,
-        )
-        _log(f"supervisor: {reason}")
-
-        if not restart:
-            if policy.exhausted:
+            delay = (
+                infra_backoff_seconds(policy.consecutive_infra_failures)
+                if rc == HARNESS_RC_INFRA_ERROR
+                else backoff_seconds(policy.consecutive_failures)
+            )
+            _log(f"supervisor: sleeping {delay:.0f}s before the next launch")
+            time.sleep(delay)
+        except Exception as exc:
+            # An unexpected exception in here is not a harness failure, so it
+            # gets its own counter rather than borrowing the restart policy's.
+            # Counted CONSECUTIVELY: a reproducible fault (an unreadable
+            # roadmap) hits the cap and stops the machine; a one-off is
+            # forgiven by the next clean iteration below.
+            crashes += 1
+            reason = _report_supervisor_crash(exc, recent, crashes)
+            if crashes >= MAX_CONSECUTIVE_SUPERVISOR_CRASHES:
+                # Published, not just written: the whole point of C2 is that a
+                # stop the harness cannot report has to reach GitHub somehow,
+                # and this is one the harness never even hears about.
                 _write_crash_loop_status(recent, reason)
-            # Recorded BEFORE returning, so the repeating trigger's next
-            # firing sees a deliberate stop rather than an absence.
-            record_terminal_stop(reason)
-            return 0
-
-        delay = (
-            infra_backoff_seconds(policy.consecutive_infra_failures)
-            if rc == HARNESS_RC_INFRA_ERROR
-            else backoff_seconds(policy.consecutive_failures)
-        )
-        _log(f"supervisor: sleeping {delay:.0f}s before the next launch")
-        time.sleep(delay)
+                record_terminal_stop(reason)
+                return SUPERVISOR_RC_CRASH_LOOP
+            time.sleep(backoff_seconds(crashes - 1))
+            continue
+        crashes = 0
 
 
 if __name__ == "__main__":
