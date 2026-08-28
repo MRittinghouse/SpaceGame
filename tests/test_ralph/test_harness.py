@@ -21,6 +21,7 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -33,6 +34,25 @@ from ralph import agents, config, harness, roadmap_state, triage
 from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.harness import HarnessState, SprintState
 from ralph.status import CrashInfo
+
+
+def _reap(pid: Optional[int]) -> None:
+    """Hard-kill *pid* if it is still alive, so a probe test leaves no orphan.
+
+    The fake CLI the agency-probe tests spawn sleeps for 300 seconds. A test
+    that failed before the harness killed the tree would otherwise leave that
+    tree running for the rest of the suite.
+    """
+    if pid is None or not harness._pid_alive(pid):
+        return
+    if sys.platform == "win32":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True, timeout=30)
+    else:
+        try:
+            os.kill(pid, 9)
+        except OSError:
+            pass
+
 
 _ROADMAP_WITH_STUCK = """\
 # Test
@@ -2017,3 +2037,204 @@ class TestPushOutcomeIsRecorded:
         monkeypatch.setattr(harness.status, "record_push", boom)
 
         harness._push_after_sprint("SA-1", harness.Outcome.OK, True)
+
+
+class TestAgencyProbeCannotHangIndefinitely:
+    """H2(a): the pre-flight agency probe must be bounded by a process-tree kill.
+
+    This is the worst failure shape in the system, and it is a *call-site*
+    property, not a `proc.run_with_hard_timeout` property (which
+    `tests/test_ralph/test_proc.py` already covers in isolation). The probe
+    runs an agentic CLI whose own prompt asks it to spawn a Task subagent and
+    a WebFetch -- grandchildren, holding the stdout pipe. With
+    `subprocess.run(timeout=...)` the timeout kills the direct child and then
+    `communicate()` blocks for as long as any grandchild holds that pipe: the
+    measured 8.5-hour hang.
+
+    And it happens BEFORE the heartbeat thread starts, so the supervisor has
+    no beat age to judge and (before H2(b)) would wait forever. A hang here is
+    total, indefinite silence: no STATUS.md, nothing pushed, no banner.
+
+    So this drives the real `_probe_claude_write_permission` against a real
+    process tree with a real pipe-holding grandchild.
+    """
+
+    def _run_probe_bounded(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+        *,
+        probe_timeout: float,
+        wait_seconds: float,
+    ) -> tuple[bool, Optional[tuple[bool, str]], Optional[int]]:
+        """Drive the probe against a hanging process tree, in a daemon thread.
+
+        Returning rather than asserting keeps the assertions in the test
+        bodies. The thread is a daemon so a genuine hang fails this test on
+        its own assertion instead of wedging the whole suite.
+
+        Returns (finished, probe_result, grandchild_pid).
+        """
+        pid_file = tmp_path / "grandchild.pid"
+        script = tmp_path / "fake_claude.py"
+        # argv[1] is the prompt the harness appends; ignored on purpose.
+        script.write_text(
+            "import subprocess, sys, time\n"
+            "gc = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(300)'])\n"
+            f"open({str(pid_file)!r}, 'w').write(str(gc.pid))\n"
+            "sys.stdout.flush()\n"
+            "time.sleep(300)\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(config, "CLAUDE_CMD", (sys.executable, str(script)))
+        monkeypatch.setattr(harness, "PROBE_TIMEOUT_SECONDS", probe_timeout)
+
+        box: dict[str, tuple[bool, str]] = {}
+
+        def _call() -> None:
+            box["result"] = harness._probe_claude_write_permission()
+
+        thread = threading.Thread(target=_call, name="agency-probe-under-test", daemon=True)
+        started = time.monotonic()
+        thread.start()
+        thread.join(timeout=wait_seconds)
+        elapsed = time.monotonic() - started
+        finished = not thread.is_alive()
+
+        grandchild_pid: Optional[int] = None
+        if pid_file.exists():
+            try:
+                grandchild_pid = int(pid_file.read_text(encoding="utf-8").strip())
+            except ValueError:
+                grandchild_pid = None
+        assert elapsed <= wait_seconds + 5, "join() overran its own bound"
+        return finished, box.get("result"), grandchild_pid
+
+    @pytest.mark.timeout(180)
+    def test_probe_returns_bounded_when_a_grandchild_holds_the_pipe(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        finished, result, grandchild_pid = self._run_probe_bounded(
+            monkeypatch, tmp_path, probe_timeout=3.0, wait_seconds=45.0
+        )
+        _reap(grandchild_pid)
+
+        assert finished, (
+            "the agency probe did not return within 45s of its own 3s timeout. "
+            "A grandchild is holding the stdout pipe open, so this call site is "
+            "still using subprocess.run(timeout=...) -- which kills the direct "
+            "child and then blocks in communicate() until the grandchild exits "
+            "(the measured 8.5-hour hang). Pre-flight runs before the heartbeat "
+            "thread starts, so this hang is indefinite silence with no rescue: "
+            "route it through ralph.proc.run_with_hard_timeout."
+        )
+        assert result is not None
+        ok, reason = result
+        assert not ok, f"a hung CLI must fail the probe, got {reason!r}"
+        assert "timed out" in reason, (
+            f"the probe returned but did not report a timeout: {reason!r} -- "
+            "the operator must be told which pre-flight check failed and why"
+        )
+
+    @pytest.mark.timeout(180)
+    def test_the_pipe_holding_grandchild_is_actually_killed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Returning on time is not the same as having killed the tree.
+
+        A probe that returned while leaving a live agent tree behind would
+        leak one such tree per launch for seven days, each holding an API
+        session open. Wall clock alone cannot see that; the PID can.
+        """
+        finished, _result, grandchild_pid = self._run_probe_bounded(
+            monkeypatch, tmp_path, probe_timeout=3.0, wait_seconds=45.0
+        )
+        assert finished, "probe hung; see the sibling test for the diagnosis"
+        assert grandchild_pid is not None, "grandchild never started -- test setup is broken"
+        time.sleep(0.5)  # let the OS reap it
+        still_alive = harness._pid_alive(grandchild_pid)
+        _reap(grandchild_pid)
+        assert not still_alive, (
+            f"grandchild PID {grandchild_pid} survived the probe's timeout -- the "
+            f"process-tree kill did not reach it, so every launch leaks a live "
+            f"agent tree"
+        )
+
+
+class TestNoBareSubprocessRunTimeoutOnAgenticCommands:
+    """H2 audit: no `subprocess.run(timeout=...)` may run the claude CLI.
+
+    The distinction that matters is not "does it have a timeout" but "can it
+    spawn grandchildren that hold the stdout pipe". `git`, `tasklist`,
+    `taskkill` and `powershell -Command` cannot; an agentic CLI, which spawns
+    subagents by design, can -- and `subprocess.run(timeout=...)` has no
+    defence against it.
+
+    Walks the AST rather than grepping so a reformatted call site cannot slip
+    past, and so it keeps holding for call sites that do not exist yet.
+    """
+
+    _AGENTIC_MARKERS = ("claude_cmd", "harness_cmd")
+
+    def _subprocess_run_calls(self, path: Path) -> list[tuple[int, str, bool]]:
+        """(lineno, unparsed positional args, has a `timeout=` keyword)."""
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        found: list[tuple[int, str, bool]] = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            if not (
+                isinstance(func, ast.Attribute)
+                and func.attr == "run"
+                and isinstance(func.value, ast.Name)
+                and func.value.id == "subprocess"
+            ):
+                continue
+            args_src = " ".join(ast.unparse(a) for a in node.args)
+            has_timeout = any(kw.arg == "timeout" for kw in node.keywords)
+            found.append((node.lineno, args_src, has_timeout))
+        return found
+
+    def _ralph_modules(self) -> list[Path]:
+        return sorted(Path(harness.__file__).parent.glob("*.py"))
+
+    def test_the_ast_scan_finds_the_known_call_sites(self) -> None:
+        """Guards the guard: if the scan matched nothing, both assertions
+        below would be vacuously green."""
+        total = sum(len(self._subprocess_run_calls(p)) for p in self._ralph_modules())
+        assert total >= 5, (
+            f"the AST scan found only {total} subprocess.run call sites in ralph/; "
+            "it has stopped matching real code, which would make the assertions "
+            "below prove nothing"
+        )
+
+    def test_no_subprocess_run_invokes_an_agentic_cli(self) -> None:
+        offenders: list[str] = []
+        for module in self._ralph_modules():
+            for lineno, args_src, _bounded in self._subprocess_run_calls(module):
+                lowered = args_src.lower()
+                if any(marker in lowered for marker in self._AGENTIC_MARKERS):
+                    offenders.append(f"{module.name}:{lineno} -> {args_src}")
+        assert not offenders, (
+            "these subprocess.run call sites launch an agentic CLI: "
+            f"{offenders}. subprocess.run(timeout=...) kills only the direct "
+            "child and then blocks in communicate() while a grandchild holds "
+            "the stdout pipe -- the 8.5-hour hang. Use "
+            "ralph.proc.run_with_hard_timeout instead."
+        )
+
+    def test_every_subprocess_run_in_ralph_is_bounded(self) -> None:
+        """A `subprocess.run` with no timeout at all can block forever even
+        without a grandchild -- and both such calls were on kill paths: the
+        supervisor's only recovery action, and the hard timeout's own kill."""
+        unbounded: list[str] = []
+        for module in self._ralph_modules():
+            for lineno, _args_src, has_timeout in self._subprocess_run_calls(module):
+                if not has_timeout:
+                    unbounded.append(f"{module.name}:{lineno}")
+        assert not unbounded, (
+            f"subprocess.run without a timeout in ralph/: {unbounded}. "
+            "Nothing supervises the supervisor; an unbounded call there is an "
+            "unbounded wait with nobody left to break it."
+        )

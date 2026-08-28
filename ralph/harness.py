@@ -916,11 +916,13 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
 
     if not DRY_RUN:
         try:
-            result = subprocess.run(
+            # Same reasoning as the agency probe below: the claude CLI is the
+            # one pre-flight subprocess that can leave grandchildren holding
+            # the stdout pipe, and pre-flight runs before the heartbeat exists.
+            result = run_with_hard_timeout(
                 [CLAUDE_CMD[0], "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10,
+                timeout_seconds=10,
+                cwd=str(PROJECT_ROOT),
             )
             if result.returncode != 0:
                 log(
@@ -1040,14 +1042,22 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
             f.flush()
 
             try:
-                result = subprocess.run(
+                # `run_with_hard_timeout`, NOT `subprocess.run(timeout=...)`.
+                # This is the one pre-flight call that runs an agentic CLI, and
+                # the prompt explicitly asks it to spawn a Task subagent and a
+                # WebFetch -- i.e. grandchildren. `subprocess.run(timeout=)`
+                # kills only the direct child and then blocks in
+                # `communicate()` for as long as any grandchild holds the
+                # stdout pipe: the measured 8.5-hour hang this whole module
+                # exists because of. Worse, this call happens BEFORE the
+                # heartbeat thread starts, so a hang here produces a harness
+                # the supervisor has no beat to judge -- total silence, with
+                # no rescue. `run_with_hard_timeout` kills the whole tree with
+                # `taskkill /F /T` and never re-reads the pipe afterwards.
+                result = run_with_hard_timeout(
                     cmd,
+                    timeout_seconds=PROBE_TIMEOUT_SECONDS,
                     cwd=str(PROJECT_ROOT),
-                    capture_output=True,
-                    text=True,
-                    timeout=PROBE_TIMEOUT_SECONDS,
-                    encoding="utf-8",
-                    errors="replace",
                 )
             except FileNotFoundError as e:
                 f.write(f"\n--- claude CLI not found: {e} ---\n")

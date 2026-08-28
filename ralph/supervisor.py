@@ -139,6 +139,10 @@ HEARTBEAT_STALE_SECONDS = 600.0
 # How often the supervisor checks the heartbeat while the harness runs.
 HEARTBEAT_POLL_SECONDS = 30.0
 
+# Upper bound on the `taskkill` in `_kill_tree`. The kill is the supervisor's
+# only recovery action; an unbounded one could wedge the supervisor itself.
+KILL_TIMEOUT_SECONDS = 60.0
+
 # argv used to launch the harness. A list, not a string, so no shell is
 # ever invoked.
 HARNESS_CMD: tuple[str, ...] = (sys.executable, "-m", "ralph.harness")
@@ -512,7 +516,17 @@ def _kill_tree(pid: int) -> None:
     only: this supervisor is a Windows-only deployment.
     """
     if sys.platform == "win32":
-        subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True)
+        # Bounded: this is the supervisor's only recovery action, and it had no
+        # timeout at all. A `taskkill` that blocked would wedge the supervisor
+        # itself, in the one moment it is the last thing still working.
+        try:
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(pid)],
+                capture_output=True,
+                timeout=KILL_TIMEOUT_SECONDS,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            _log(f"supervisor: taskkill on pid={pid} did not complete: {exc!r}")
         return
     import os
     import signal

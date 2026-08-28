@@ -28,6 +28,11 @@ from pathlib import Path
 # repeating a literal that could drift away from it.
 ATOMIC_WRITE_TMP_SUFFIX = ".tmp"
 
+# Upper bound on the `taskkill` that implements the hard timeout below. The
+# kill is the mechanism, so it must itself be bounded: an unbounded kill would
+# reintroduce the unbounded wait this module exists to remove.
+_KILL_TIMEOUT_SECONDS = 30.0
+
 
 def tmp_sibling(path: Path) -> Path:
     """The temp file `atomic_write` uses while writing *path*."""
@@ -138,10 +143,18 @@ def run_with_hard_timeout(
     except subprocess.TimeoutExpired:
         timed_out = True
         if sys.platform == "win32":
-            subprocess.run(
-                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
-                capture_output=True,
-            )
+            # Bounded and swallowed: this helper's entire promise is "returns
+            # within `timeout_seconds` + a small constant". A `taskkill` that
+            # blocked (or was missing) would break exactly that promise on the
+            # path that exists to keep it.
+            try:
+                subprocess.run(
+                    ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                    capture_output=True,
+                    timeout=_KILL_TIMEOUT_SECONDS,
+                )
+            except (OSError, subprocess.TimeoutExpired):
+                proc.kill()
         else:
             try:
                 os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
