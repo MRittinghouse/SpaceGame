@@ -28,30 +28,29 @@
     password (unlike `-LogonType Password`, which needs `-User`/`-Password`
     at registration and would store a real credential for the task to use).
 
-    KNOWN OPEN RISK, must be settled by the smoke drill before relying on
-    this: the harness does `git push` after each sprint so STATUS.md is
-    readable from a phone. This repo authenticates to `origin`
-    (https://github.com/MRittinghouse/SpaceGame.git) via Git Credential
-    Manager (`credential.helper=manager`), which stores its token in the
-    Windows Credential Manager -- a per-user store protected by DPAPI,
-    which in turn is normally unprotected using material tied to an
-    interactive logon session. An S4U token is explicitly documented by
-    Microsoft as having "restricted access to network resources" and does
-    NOT carry the user's password, so whether it can load enough of the
-    user's profile/DPAPI context to read that stored token -- specifically
-    in the "nobody is logged on" case this task exists for -- is NOT
-    confirmed. If it cannot, `git push` silently fails, STATUS.md is never
-    updated, and the operator sees nothing for seven days -- the exact
-    failure this whole task exists to prevent. The smoke drill (step 2
-    below) MUST include triggering this task (`Start-ScheduledTask`) while
-    genuinely logged off (or via `psexec -u <user>` / a second remote
-    session, not just an unlocked desktop) and confirming a real `git push`
-    succeeds, not just that the harness launches. If it fails, the fallback
-    is `-LogonType Password` (stores the password, but gets a full
-    interactive-equivalent token) or switching the credential store to one
-    that isn't DPAPI/session-bound (e.g. GCM's plaintext store, or a
-    machine-scoped rather than per-user secret) -- both are a deliberate,
-    separate decision, not made here.
+    UNATTENDED PUSH: SETTLED, and how. This used to be recorded here as an
+    open risk, on the reasoning that `origin` was
+    https://github.com/MRittinghouse/SpaceGame.git, authenticated by Git
+    Credential Manager out of the Windows Credential Manager -- a per-user
+    store protected by DPAPI, which is normally unprotected using material
+    tied to an interactive logon session. S4U is documented by Microsoft as
+    having "restricted access to network resources" and carries no password,
+    so whether it could reach that token with nobody logged on was genuinely
+    unknown, and the fallback on the table was `-LogonType Password`.
+
+    Commit 81a6af8 settled it by removing the dependency rather than
+    testing it: `origin` is now git@github.com:MRittinghouse/SpaceGame.git.
+    SSH reads a key file, not a DPAPI-protected credential. The operator
+    then ran `scripts\probe_s4u_push.ps1` from an elevated prompt -- it
+    registers a throwaway task under this same LogonType, attempts a real
+    push, and unregisters itself -- with nobody logged on. It authenticated
+    and pushed: exit code 0.
+
+    So: no DPAPI question, no `-LogonType Password`, and the smoke drill
+    below does not need to settle this. Re-run `probe_s4u_push.ps1` if
+    `origin` ever moves back to HTTPS, if the SSH key is moved or
+    passphrase-protected, or if the account this task runs under changes --
+    those are the conditions under which the answer would change.
 
 .NOTES
     Run once, elevated (Run as Administrator), after you have:
@@ -59,9 +58,9 @@
       2. Run a smoke drill: `python -m ralph.supervisor` in a foreground
          terminal, confirm it launches the harness, watch a full sprint
          cycle (or a deliberate --dry-run / --max-sprints 1 pass) complete,
-         confirm STATUS.md updates as expected, AND -- separately, after
-         arming -- confirm `git push` succeeds when the task runs under S4U
-         with nobody logged on (see the DESCRIPTION's KNOWN OPEN RISK).
+         and confirm STATUS.md updates as expected. Unattended `git push`
+         is already settled and is NOT part of this drill -- see the
+         DESCRIPTION's UNATTENDED PUSH note.
       3. Confirmed `claude` (the CLI) and `git` are on PATH for the SAME
          account this task will run under -- a Scheduled Task's PATH can
          differ from an interactive shell's.
@@ -171,9 +170,10 @@ $settings = New-ScheduledTaskSettingsSet `
 
 # S4U: runs whether or not the user is logged on, without storing a
 # password -- see the DESCRIPTION's LOGON TYPE note above for why the
-# cmdlet's own default (InteractiveToken) is wrong here, and the KNOWN
-# OPEN RISK note for what the smoke drill must still verify (git push
-# reading a DPAPI-protected credential with nobody logged on).
+# cmdlet's own default (InteractiveToken) is wrong here. The question of
+# whether an S4U token can push was settled by probe_s4u_push.ps1 (exit
+# code 0 with nobody logged on, against an SSH origin); see UNATTENDED
+# PUSH above.
 $principal = New-ScheduledTaskPrincipal -UserId "$env:COMPUTERNAME\$env:USERNAME" `
     -LogonType S4U -RunLevel Highest
 

@@ -1630,6 +1630,18 @@ class TestInstallSupervisorTaskScript:
         lines = [line for line in raw.splitlines() if not line.lstrip().startswith("#")]
         return "\n".join(lines)
 
+    def _help_block(self) -> str:
+        """The `<# ... #>` comment-based help ONLY -- the inverse of `_script`.
+
+        Used by exactly one assertion, and only because what it guards IS
+        prose: the operator reads this block immediately before arming, and a
+        warning that has since been settled sends them to fix a problem that no
+        longer exists.
+        """
+        path = Path(supervisor.PROJECT_ROOT) / "scripts" / "install_supervisor_task.ps1"
+        raw = path.read_text(encoding="utf-8")
+        return raw[raw.index("<#") : raw.index("#>") + 2]
+
     def test_the_helper_reads_real_code_not_comments(self) -> None:
         """Guard on the guard: if the stripper ate everything, or ate nothing,
         every assertion in this class would be meaningless."""
@@ -1638,6 +1650,25 @@ class TestInstallSupervisorTaskScript:
         assert "load-bearing" not in code, (
             "explanatory comments survived the strip, so these assertions can "
             "again be satisfied by prose rather than by the actual arguments"
+        )
+
+    def test_the_unattended_push_question_is_recorded_as_settled(self) -> None:
+        """Commit 81a6af8 moved origin to SSH and an operator-run elevated S4U
+        probe pushed successfully with nobody logged on (exit code 0). The
+        block that still called that an open risk pointed the last reader
+        before arming at a solved problem, and at a "fix" (`-LogonType
+        Password`) that would store a real credential for no reason."""
+        help_text = self._help_block()
+        assert "KNOWN OPEN RISK" not in help_text, (
+            "the DPAPI / Git Credential Manager risk note is still here. It was "
+            "settled by moving origin to SSH (81a6af8) and confirmed by an "
+            "elevated S4U push probe with nobody logged on. This file is the "
+            "last thing read before arming; a stale warning here costs the "
+            "operator the drill they cannot run from a phone"
+        )
+        assert "probe_s4u_push.ps1" in help_text, (
+            "the note does not say how the question was settled, so the next "
+            "reader has to re-derive it"
         )
 
     def test_execution_time_limit_is_unlimited(self) -> None:
