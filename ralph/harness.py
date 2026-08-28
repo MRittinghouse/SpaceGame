@@ -21,7 +21,7 @@ from dataclasses import fields as dataclass_fields
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ralph import agents, heartbeat, roadmap_state, triage
+from ralph import agents, heartbeat, roadmap_state, status, triage
 from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
@@ -1108,7 +1108,7 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
 
 
 def _commit_harness_bookkeeping(sprint_id: str, summary: str) -> bool:
-    """Commit any pending harness-authored ROADMAP.md changes.
+    """Commit any pending harness-authored ROADMAP.md (and STATUS.md) changes.
 
     The harness writes to ROADMAP.md at phase transitions (status updates,
     activity-log entries, index regeneration). When those writes happen
@@ -1117,19 +1117,31 @@ def _commit_harness_bookkeeping(sprint_id: str, summary: str) -> bool:
     commits them with a `ralph(harness)` prefix so they're distinguishable
     from agent commits.
 
+    STATUS.md rides along here too, on purpose: it is only visible from a
+    phone once it is committed and pushed, and this is the commit/push path
+    the harness already uses -- Task 8 deliberately does not invent a
+    second mechanism. STATUS.md is staged only if it already exists on disk
+    (i.e. `status.write_status` has succeeded at least once): `git add` on a
+    pathspec matching nothing exits non-zero, which would otherwise sink an
+    unrelated, legitimate ROADMAP.md commit on the very first run before
+    STATUS.md has ever been written.
+
     Best-effort: returns True if a commit was made, False if there was
     nothing to commit or the operation failed (logged on failure, never
     raised).
     """
-    roadmap_rel = ROADMAP_PATH.relative_to(PROJECT_ROOT).as_posix()
-    rc, status, _stderr = _run_git(["status", "--porcelain", "--", roadmap_rel], timeout=10)
+    paths = [ROADMAP_PATH.relative_to(PROJECT_ROOT).as_posix()]
+    if status.STATUS_PATH.exists():
+        paths.append(status.STATUS_PATH.relative_to(PROJECT_ROOT).as_posix())
+
+    rc, porcelain, _stderr = _run_git(["status", "--porcelain", "--", *paths], timeout=10)
     if rc != 0:
         log(f"{sprint_id}: harness bookkeeping git status failed; skipping commit")
         return False
-    if not status.strip():
+    if not porcelain.strip():
         return False  # nothing to commit
 
-    rc, _stdout, stderr = _run_git(["add", "--", roadmap_rel], timeout=10)
+    rc, _stdout, stderr = _run_git(["add", "--", *paths], timeout=10)
     if rc != 0:
         log(f"{sprint_id}: harness bookkeeping git add failed: {stderr.strip()}")
         return False
@@ -1142,6 +1154,31 @@ def _commit_harness_bookkeeping(sprint_id: str, summary: str) -> bool:
 
     log(f"{sprint_id}: committed harness bookkeeping ({summary})")
     return True
+
+
+def _write_status_snapshot(sprint_id: str, recent_outcomes: list[str]) -> None:
+    """Write STATUS.md so progress is visible from a phone.
+
+    Best-effort: any failure here -- a roadmap-parsing bug, a rendering bug,
+    a disk error -- is logged and swallowed. STATUS.md is the operator's only
+    window into a week-long unattended run; a bug in producing it must never
+    be allowed to end the run it is trying to report on.
+
+    `blocks_disagreements` is a cross-check on the `Blocks:` field, reported
+    here so it resurfaces without a human remembering to run a command. It
+    never influences `sprints_now` or which sprint gets picked -- reporting
+    only.
+    """
+    try:
+        sprints_now = roadmap_state.parse_sprints()
+        status.write_status(
+            triage.analyse(sprints_now),
+            heartbeat.read_heartbeat(),
+            recent_outcomes[-5:],
+            disagreements=triage.blocks_disagreements(sprints_now),
+        )
+    except Exception as e:
+        log(f"{sprint_id}: STATUS.md write failed: {e}")
 
 
 def _reconcile_stale_state(state: "HarnessState") -> int:
@@ -1441,6 +1478,9 @@ def main() -> int:
             log(f"Forced sprint pickup: {args.sprint}")
 
         sprints_processed = 0
+        # STATUS.md's "Recent" section (Task 8) -- trimmed to the last 5 at
+        # write time, kept growing here so nothing is lost across sprints.
+        recent_outcomes: list[str] = []
         while sprints_processed < args.max_sprints:
             if should_stop():
                 log("Stop signal honored before sprint pickup.")
@@ -1485,6 +1525,7 @@ def main() -> int:
             state.total_sprints_processed += 1
             state.save()
             log(f"Sprint {picked.sprint_id} finished with outcome={outcome.value}")
+            recent_outcomes.append(f"{picked.sprint_id} {outcome.value}")
 
             # Refresh baseline after a successful sprint (item L).
             # Mid-run failure keeps the previous baseline rather than aborting —
@@ -1523,6 +1564,11 @@ def main() -> int:
 
             # Sync Status cells in hand-maintained index tables (item J).
             _sync_roadmap_index(picked.sprint_id)
+
+            # STATUS.md (Task 8) -- the operator's only window into the run
+            # while away. Written before the bookkeeping commit below so it
+            # rides along with it.
+            _write_status_snapshot(picked.sprint_id, recent_outcomes)
 
             # Commit harness bookkeeping (terminal status + index regen).
             # Captures the post-agent ROADMAP edits the harness writes

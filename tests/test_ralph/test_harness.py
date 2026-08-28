@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ralph import agents, config, harness, roadmap_state
+from ralph import agents, config, harness, roadmap_state, triage
 from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.harness import HarnessState, SprintState
 
@@ -401,6 +401,135 @@ class TestCommitHarnessBookkeeping:
         with patch.object(harness, "_run_git", side_effect=responses):
             committed = harness._commit_harness_bookkeeping("SA-1", "test")
             assert committed is False
+
+    def test_stages_status_md_when_present_on_disk(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """STATUS.md is invisible from a phone unless it rides along with the
+        bookkeeping commit that already gets pushed. Task 8's ruling: extend
+        the existing commit helper rather than invent a second mechanism.
+
+        `relative_to(PROJECT_ROOT)` requires a real subpath of the project,
+        so the scratch file lives under the gitignored `ralph/logs/` rather
+        than an unrelated tmp_path.
+        """
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_scratch.md"
+        status_file.write_text("# Ralph Status\n", encoding="utf-8")
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        try:
+            responses = [
+                (0, " M requirements/roadmap/ROADMAP.md\n?? STATUS.md\n", ""),  # status
+                (0, "", ""),  # add
+                (0, "", ""),  # commit
+            ]
+            with patch.object(harness, "_run_git", side_effect=responses) as mock_git:
+                committed = harness._commit_harness_bookkeeping("SA-1", "finalize sprint")
+            assert committed is True
+            status_call_paths = mock_git.call_args_list[0].args[0]
+            add_call_paths = mock_git.call_args_list[1].args[0]
+            assert "ralph/logs/_test_status_scratch.md" in status_call_paths
+            assert "ralph/logs/_test_status_scratch.md" in add_call_paths
+        finally:
+            status_file.unlink(missing_ok=True)
+
+    def test_skips_status_md_when_not_yet_written(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Before the first successful write_status() -- e.g. the very first
+        harness run ever -- STATUS.md does not exist on disk yet. `git add`
+        on a pathspec matching nothing is fatal (exit 128), which would
+        otherwise sink the ROADMAP.md commit it rides along with.
+        """
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_scratch_absent.md"
+        assert not status_file.exists()  # precondition: nothing was left behind
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        responses = [
+            (0, " M requirements/roadmap/ROADMAP.md\n", ""),  # status
+            (0, "", ""),  # add
+            (0, "", ""),  # commit
+        ]
+        with patch.object(harness, "_run_git", side_effect=responses) as mock_git:
+            committed = harness._commit_harness_bookkeeping("SA-1", "finalize sprint")
+        assert committed is True
+        status_call_paths = mock_git.call_args_list[0].args[0]
+        assert "ralph/logs/_test_status_scratch_absent.md" not in status_call_paths
+
+
+# ---------------------------------------------------------------------------
+# STATUS.md sprint-boundary snapshot
+# ---------------------------------------------------------------------------
+
+
+class TestWriteStatusSnapshot:
+    """STATUS.md is the operator's only window into a week-long unattended
+    run. A bug producing it must degrade to a logged warning, never take
+    down the run it is trying to report on.
+    """
+
+    def test_writes_using_live_queue_heartbeat_and_recent_outcomes(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        calls: list[dict] = []
+
+        def fake_write_status(queue, beat, recent, crash_loop=False, disagreements=None):
+            calls.append(
+                {
+                    "queue": queue,
+                    "beat": beat,
+                    "recent": recent,
+                    "disagreements": disagreements,
+                }
+            )
+
+        monkeypatch.setattr(harness.status, "write_status", fake_write_status)
+        monkeypatch.setattr(harness.heartbeat, "read_heartbeat", lambda: {"sprint": "SA-1"})
+
+        harness._write_status_snapshot("SA-1", ["SA-0 ok", "SA-1 ok"])
+
+        assert len(calls) == 1
+        call = calls[0]
+        # isolated_roadmap's fixture roadmap has SA-1 (in-progress) and SA-2
+        # (todo, no deps) -- SA-2 is eligible, so this is a healthy queue.
+        assert isinstance(call["queue"], triage.QueueState)
+        assert call["queue"].total == 2
+        assert call["beat"] == {"sprint": "SA-1"}
+        assert call["recent"] == ["SA-0 ok", "SA-1 ok"]
+        # blocks_disagreements() was actually computed against the live
+        # roadmap, not skipped or hardcoded.
+        assert call["disagreements"] == []
+
+    def test_only_the_last_five_recent_outcomes_are_kept(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        calls: list[list[str]] = []
+        monkeypatch.setattr(
+            harness.status,
+            "write_status",
+            lambda queue, beat, recent, crash_loop=False, disagreements=None: calls.append(recent),
+        )
+        monkeypatch.setattr(harness.heartbeat, "read_heartbeat", lambda: None)
+
+        long_history = [f"S-{i} ok" for i in range(8)]
+        harness._write_status_snapshot("SA-1", long_history)
+
+        assert calls == [long_history[-5:]]
+
+    def test_a_rendering_failure_is_logged_not_raised(
+        self, isolated_roadmap, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        def boom(*args, **kwargs):
+            raise RuntimeError("rendering exploded")
+
+        monkeypatch.setattr(harness.status, "write_status", boom)
+        monkeypatch.setattr(harness.heartbeat, "read_heartbeat", lambda: None)
+
+        with patch.object(harness, "log") as mock_log:
+            harness._write_status_snapshot("SA-1", [])  # must not raise
+
+        messages = [call.args[0] for call in mock_log.call_args_list]
+        assert any("STATUS.md write failed" in m and "rendering exploded" in m for m in messages), (
+            f"expected a logged warning naming the failure, got: {messages}"
+        )
 
 
 # ---------------------------------------------------------------------------
