@@ -124,7 +124,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 |---|---|---|---|---|---|
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | blocked | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
-| [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | todo | none |
+| [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | in-progress | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
@@ -11044,38 +11044,147 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - Notes: Plan audit: sound; locked decisions on guide location, no-Bible-duplication, three worked-example lenses, compliance-test canonical-source strategy, compact voice-note depth are all defensible. All 16 lenses have voice notes and NPC patterns; derelict hauler worked example is non-swappable across all three lenses; compliance test gates on 16 IDs, banned names, em-dash, and registry drift (currently skipped, activates when A2-5/A2-6 land). One minor attribution fix committed.
 #### A2-3 — Capstone format and hook contract
 
-**Status**: todo
+**Status**: in-progress
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: A2-20
 
 **Goal.** Define what a capstone IS as data and where it fires, without authoring any capstone content. Aurelia has no hard ending, so a capstone is punctuation rather than a terminus and the contract must make continuing play the default rather than an afterthought.
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` ("Endings are capstones, and the game does not stop")
-- `spacegame/engine/transitions.py` (existing cutscene and transition hooks)
-- `spacegame/config.py` (`GameState` enum)
+- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` ("Endings are capstones, and the game does not stop"; Success Criterion 8)
+- `docs/superpowers/specs/2026-08-27-act-two-decomposition.md` (Q3: no hard cap; the dilemma graph enforces it — the trigger is per-lens investment crossing a threshold, nothing else)
+- `spacegame/engine/transitions.py` (existing cutscene and transition hooks — read for shape only; A2-3 authors no engine code)
+- `spacegame/config.py` (`GameState` enum — A2-20 adds `CAPSTONE`; A2-3 does not)
+- `spacegame/models/lens.py` (A2-1's reference pattern: frozen dataclass, `_REQUIRED_FIELDS`, snake_case validation, JSON round-trip)
+- `spacegame/data_loader.py` (`load_lenses()` at lines 734-762 and its `_safe_load` registration in `load_all()` at line 231 — line-for-line template for the capstone loader)
+- `tests/test_compliance/test_lens_registry.py` and `tests/test_compliance/test_findings_register.py` (the "guard against scanning nothing" compliance pattern to copy)
+- `requirements/roadmap/ROADMAP.md` §"Conventions this file assumes" (lines 11125-11146) and §A2-20 (lines 12440-12520) — read for the shape A2-20 assumes so this sprint ships a compatible contract; A2-20 explicitly says it adapts to whatever A2-3 actually ships
 
 **Touch zones.**
 - `spacegame/models/capstone.py` (NEW)
-- `data/narrative/capstones.json` (NEW, schema plus one fixture entry only)
+- `data/narrative/capstones.json` (NEW; ships as empty stub `{"capstones": []}` — A2-20 populates the sixteen real entries)
+- `spacegame/data_loader.py` (extend: `self.capstones` field in `__init__`, `load_capstones()` method mirroring `load_lenses()`, register in `load_all()`)
 - `tests/test_models/test_capstone.py` (NEW)
+- `tests/test_compliance/test_capstone_registry.py` (NEW; on the `test_lens_registry.py` pattern)
 
 **Deliverables.**
-- `Capstone` dataclass: `capstone_id`, `lens_id`, `trigger_condition`, `cutscene_ref`.
-- The hook contract: what the engine calls, what it passes, and what it guarantees afterward.
-- An explicit statement in the module docstring that firing a capstone MUST NOT end the session.
-- One fixture capstone for tests. No authored narrative content.
+- `Capstone` frozen `@dataclass` in `spacegame/models/capstone.py` with the schema:
+  - `capstone_id: str` — stable snake_case identifier.
+  - `lens_id: str` — the single lens this capstone punctuates.
+  - `capstone_threshold: int` — investment value at or above which the capstone becomes eligible to fire.
+  - `cutscene_ref: Optional[str] = None` — reference to a cutscene or narration asset; may be null so the format is usable before any cutscene exists (AC3). When null, A2-20 renders a generated template narration; when non-null, it points at a cutscene id for future authoring. The nullability is what lets this sprint ship the format before any content exists.
+- `to_dict()` / `from_dict()` on the dataclass, with a JSON-serializable dict. Null `cutscene_ref` emits as JSON null; `from_dict` accepts the field absent (defaults to None) or explicitly null.
+- `should_fire(capstone: Capstone, current_investment: int, closed_lenses: set[str], capstones_reached: set[str]) -> bool` — pure module-level predicate function. Returns True iff `current_investment >= capstone.capstone_threshold` AND `capstone.lens_id not in closed_lenses` AND `capstone.capstone_id not in capstones_reached`. This is the whole hook contract on the model side; A2-20 wires it into the engine loop.
+- Module docstring stating the hook contract in prose: the engine (A2-20) calls `should_fire()` on every action that raises lens investment; when True, the engine transitions to `GameState.CAPSTONE` and adds `capstone_id` to `player.capstones_reached`; when the player acknowledges, the engine pops back to the prior state. **The docstring states explicitly that firing a capstone MUST NOT end the session** (AC1). The module imports nothing from `spacegame.engine.*` or `spacegame.views.*`; that zero coupling is the structural enforcement of the invariant.
+- `data/narrative/capstones.json` shipped as `{"capstones": []}` (empty stub). A2-20 appends the sixteen real capstones per its own scope. All A2-3 tests use `tmp_path` fixtures so the shipped file stays a clean touch zone for A2-20.
+- `DataLoader` extended: `self.capstones: Dict[str, "Capstone"] = {}` in `__init__` (alongside `self.lenses` at line ~155), `load_capstones()` method mirroring `load_lenses()`, registered via `self._safe_load("capstones", self.load_capstones)` in `load_all()` (immediately after the lenses registration on line 231).
+- `tests/test_compliance/test_capstone_registry.py` on the `test_lens_registry.py` pattern: fails the build on missing required field, duplicate `capstone_id`, non-snake_case `capstone_id`, non-snake_case `lens_id`, negative `capstone_threshold`, or `cutscene_ref` that is neither `None` nor a string. Carries the "guard against scanning nothing" skip-with-reason for the empty-stub case.
 
 **Acceptance criteria.**
-1. The contract states, in code and in tests, that play continues after a capstone fires.
-2. A capstone declares exactly one `lens_id` and a test rejects one that declares none or several.
-3. `cutscene_ref` may be null so the format is usable before any cutscene exists.
-4. Schema round-trips through save/load.
-5. 10+ new tests.
+1. The contract states, in the module docstring, that play continues after a capstone fires; a test scans the module docstring for the invariant statement and fails if it is absent. Additionally, a test asserts by import-inspection that `spacegame/models/capstone.py` imports nothing from `spacegame.engine.*` or `spacegame.views.*` (structural enforcement of the invariant).
+2. A capstone declares exactly one `lens_id`: a test rejects `from_dict({..., "lens_id": []})`, `from_dict({..., "lens_id": ["a", "b"]})`, and `from_dict({...})` (missing `lens_id`) — each raises `ValueError` naming the offending `capstone_id`.
+3. `cutscene_ref` may be null: `Capstone.from_dict({..., "cutscene_ref": None})` succeeds and `capstone.cutscene_ref is None`; a dict with `cutscene_ref` absent defaults to `None`.
+4. Round-trip: `Capstone.from_dict(Capstone.to_dict(c))` preserves every field for both null and non-null `cutscene_ref` cases; JSON serialization of a null `cutscene_ref` round-trips through `json.dumps` / `json.loads` to `None`.
+5. `should_fire()` returns True when investment meets or exceeds threshold AND lens is not closed AND capstone not already reached; returns False in each of the three negative branches (below threshold, lens closed, capstone already reached) and False when investment is one below threshold (proves `>=`, not `>`). One test per branch.
+6. `get_data_loader().capstones` is a `dict[str, Capstone]` after `load_all()`; the shipped empty stub loads without crashing.
+7. A synthetic malformed capstone (missing field, duplicate id, non-snake-case id, negative threshold, non-string non-null `cutscene_ref`) written to `tmp_path/narrative/capstones.json` raises `ValueError` from `DataLoader(data_dir=tmp_path).load_capstones()`.
+8. 15+ new tests across `test_capstone.py` and `test_capstone_registry.py` (target overshoots the AC5-declared 10-test minimum by half to leave headroom for the per-branch predicate tests and the structural-import guard).
+
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing test(s) to write first, and any gotchas.
+
+1. **Create `spacegame/models/capstone.py` — the `Capstone` frozen dataclass with 4 fields and the hook-contract module docstring.**
+   - Files: `spacegame/models/capstone.py` (NEW).
+   - Tests (`tests/test_models/test_capstone.py::TestCapstoneSchema`):
+     - `test_field_set_matches_spec` — assert every field name (`capstone_id`, `lens_id`, `capstone_threshold`, `cutscene_ref`) is on the dataclass; assert frozen (mutation raises `FrozenInstanceError`); assert `cutscene_ref` default is `None`.
+     - `test_module_docstring_states_session_continues_invariant` — read `spacegame.models.capstone.__doc__`, assert it contains the phrase asserting firing MUST NOT end the session (case-insensitive match on the exact contract phrase to prevent silent drift). Anchors AC1.
+     - `test_module_does_not_import_engine_or_views` — parse the module source (`inspect.getsource` or `pathlib` + regex), assert no `from spacegame.engine` and no `from spacegame.views` imports. Structural guard against future coupling drift; anchors AC1.
+   - Gotchas: `@dataclass(frozen=True)` — copy the pattern from `spacegame/models/lens.py`. `cutscene_ref: Optional[str] = None` must be the last field (Python dataclass rule: no non-default field after a default field). Use `Optional[str]` per CLAUDE.md nullable-parameter convention. Import from `typing` for 3.13 compat with the codebase's existing style.
+
+2. **Implement `Capstone.to_dict()` / `Capstone.from_dict()` with null-preserving round-trip and required-field validation.**
+   - Files: `spacegame/models/capstone.py`.
+   - Tests (`TestCapstoneRoundtrip`):
+     - `test_roundtrip_preserves_all_fields_non_null_cutscene` — construct with `cutscene_ref="cutscene_vengeance_01"`, `to_dict`, `json.dumps` → `json.loads`, `from_dict`, assert equality field-by-field.
+     - `test_roundtrip_preserves_null_cutscene_ref` — same but with `cutscene_ref=None`; assert `to_dict()["cutscene_ref"] is None`; assert JSON serialization produces `null`; `from_dict` restores to `None`. Anchors AC3/AC4.
+     - `test_from_dict_missing_cutscene_ref_defaults_to_none` — dict without the `cutscene_ref` key succeeds; result has `cutscene_ref is None`. Anchors AC3.
+     - `test_from_dict_missing_required_field_raises` — parametrised over `capstone_id`, `lens_id`, `capstone_threshold`; each missing → `ValueError` naming the offending `capstone_id` (or `<unknown>` when `capstone_id` itself is what's missing, mirroring the Lens pattern).
+     - `test_from_dict_rejects_list_lens_id` — `lens_id: []` and `lens_id: ["a", "b"]` both → `ValueError`. Anchors AC2.
+     - `test_from_dict_rejects_non_int_threshold` — `capstone_threshold: "high"` or `capstone_threshold: 3.14` → `ValueError` (guard against JSON that stringifies the field or picks up a float).
+   - Gotchas: JSON round-trip is trivial here (no tuple/list fields), but the null case needs an explicit test — a subtle bug would be to accidentally omit `cutscene_ref` from `to_dict()` when it's None (which would then round-trip through `from_dict`'s defaulting, hiding the omission). Emit the field explicitly, as null when None. Do NOT use `dataclasses.asdict` — hand-write for symmetry with `Lens` and to keep null semantics explicit. Validation shape mirrors `spacegame/models/lens.py::_validate_lens_dict`.
+
+3. **Implement the `should_fire()` pure predicate in the same module.**
+   - Files: `spacegame/models/capstone.py`.
+   - Tests (`TestShouldFire`):
+     - `test_fires_when_all_conditions_met` — investment at threshold, empty `closed_lenses`, empty `capstones_reached` → True.
+     - `test_fires_when_investment_exceeds_threshold` — investment 100, threshold 95 → True (confirms `>=` not `==`).
+     - `test_does_not_fire_below_threshold` — investment 94, threshold 95 → False (confirms `>=` not `>`; the boundary case).
+     - `test_does_not_fire_when_lens_closed` — investment at threshold, `closed_lenses={capstone.lens_id}` → False. This is the invariant A2-20 relies on to prevent a capstone firing on a lens the dilemma engine closed.
+     - `test_does_not_fire_when_already_reached` — investment at threshold, `capstones_reached={capstone.capstone_id}` → False. Guards against re-firing on subsequent actions after the first fire.
+     - `test_signature_takes_primitives_not_player` — introspect via `inspect.signature`; assert the four parameters have annotations `Capstone`, `int`, `set[str]`, `set[str]` (or equivalent). This anchors the "no dependency on Player/LensInvestment" contract that keeps A2-3's `Depends on: none` promise honest.
+   - Anchors AC5. Gotchas: `should_fire()` takes `set[str]` (not `frozenset[str]`) to match how A2-20 declares `player.capstones_reached: set[str]`. Keep it a module-level function, not a Capstone method — this makes A2-20 free to wire it wherever it wants without touching Capstone internals, and makes the pure-function nature obvious at the call site.
+
+4. **Create `data/narrative/capstones.json` as `{"capstones": []}` (empty stub).**
+   - Files: `data/narrative/capstones.json` (NEW).
+   - Test: no direct test; verified via task 5's loader integration.
+   - Gotchas: the `data/narrative/` directory already exists (A2-1 added it for `lenses.json`). No README — CLAUDE.md forbids unrequested docs. Ensure trailing newline (repo convention).
+
+5. **Extend `DataLoader`: `self.capstones`, `load_capstones()`, wire into `load_all()` via `_safe_load`.**
+   - Files: `spacegame/data_loader.py`.
+   - Tests (`TestCapstoneRegistry`):
+     - `test_load_from_tmp_path` — write `{"capstones": [{one complete capstone}]}` to `tmp_path/narrative/capstones.json`, call `DataLoader(data_dir=tmp_path).load_capstones()`, assert one Capstone in `loader.capstones` keyed by its id.
+     - `test_singleton_exposes_capstones` — `get_data_loader().capstones` is a `dict[str, Capstone]` (may be empty). Anchors AC6.
+     - `test_empty_stub_loads_without_error` — the shipped `data/narrative/capstones.json` (empty stub) loads without crashing.
+     - `test_duplicate_capstone_id_raises` — two capstones with the same `capstone_id` in the same JSON file → `ValueError` naming the duplicate id.
+     - `test_missing_capstones_file_is_warning_not_error` — file absent → returns empty dict, logs warning (mirrors `load_lenses()` behaviour when the file is missing; keeps the "runs without every JSON file present" invariant other tests rely on).
+   - Gotchas: follow the `load_lenses` pattern at `spacegame/data_loader.py:734-762` line-for-line — check file exists, log warning + return on absence, else parse. Initialise `self.capstones: Dict[str, "Capstone"] = {}` at line ~155 (next to `self.lenses`). Register via `self._safe_load("capstones", self.load_capstones)` on the line immediately after `self._safe_load("lenses", self.load_lenses)` (line 231). Local-import `from spacegame.models.capstone import Capstone` inside `load_capstones()` to avoid circular imports (matches `load_lenses()`).
+
+6. **Write `tests/test_compliance/test_capstone_registry.py` — the data-integrity guard.**
+   - Files: `tests/test_compliance/test_capstone_registry.py` (NEW).
+   - Tests (`TestCapstoneRegistryIntegrity`, mirroring `test_lens_registry.py` shape):
+     - `test_missing_required_field_raises` — parametrised over `capstone_id`, `lens_id`, `capstone_threshold` (the three required fields; `cutscene_ref` is optional).
+     - `test_non_snake_case_capstone_id_raises` — `Vengeance`, `capstone-vengeance`, `1capstone` all rejected.
+     - `test_non_snake_case_lens_id_raises` — same shape (A2-1's snake-case regex applies to `lens_id` too since these ids reference each other).
+     - `test_negative_threshold_raises` — `-1`, `-100` → `ValueError` naming the capstone id and the invalid value.
+     - `test_non_string_non_null_cutscene_ref_raises` — `0`, `[]`, `{}`, `False` → `ValueError`. Guards against silently coercing.
+     - `test_scan_guard_is_not_silent_on_empty_registry` — asserts the compliance scan is skipped-with-reason when zero capstones are present (matches `test_findings_register.py`'s guard). Because A2-3 ships the file empty, a scan that silently passes is exactly the bug this pattern exists to catch.
+   - Gotchas: use `tmp_path` for every negative test — do NOT construct malformed capstones in the real `data/narrative/capstones.json`. Pattern: write bad JSON to `tmp_path/narrative/capstones.json`, expect `ValueError` from `DataLoader(data_dir=tmp_path).load_capstones()`. Anchors AC7.
+
+7. **Sweep: run `ruff format` + `ruff check` on touched files only; run mypy on touched files against baseline; run `pytest -n auto -q`; validate acceptance criteria one-by-one.**
+   - Files: none (verification).
+   - Command scope: `ruff format spacegame/models/capstone.py spacegame/data_loader.py tests/test_models/test_capstone.py tests/test_compliance/test_capstone_registry.py` — per AGENT_GUIDE.md's "scope formatting to touched files" rule; project-wide format is banned during sprint work.
+   - Type check: `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` — must exit 0 (no new violations vs. the 768-error baseline).
+   - Test suite: pass count ≥ 10937 (pre-phase baseline). New test count target: 15+ (10 in `test_capstone.py`, 5+ in `test_capstone_registry.py`).
+   - Gotchas: `mypy-baseline.txt` MUST NOT be regenerated — this sprint adds new module code, so any new mypy error is on this sprint to fix, not on the baseline to absorb. If the parallel test suite hangs (the failure mode that blocked A2-1's review), fall back to `pytest -q --timeout=120` and record the wall-clock in the Activity log; do not silently loosen the ratchet.
+
+**Cross-sprint reactions to author.**
+None (foundational typed module, no player-facing surface). A2-3 authors zero capstone content, zero cutscenes, zero NPC lines, zero missions. The only observable surface is `get_data_loader().capstones` (empty until A2-20) and the `should_fire()` predicate. Cross-sprint reactions belong to A2-20 (capstone firing/UI), A2-21 (post-capstone identity-keyed generation), and any future authored-cutscenes sprint that sits outside this arc.
+
+**Risks / open questions.**
+- ~~Field names: `capstone_id, lens_id, trigger_condition, cutscene_ref` (per this sprint's original Deliverables) vs `id, lens_id, capstone_threshold, narration_key` (per the A2-5+ Conventions block at ROADMAP §11142-11146)?~~ **Locked: `capstone_id: str`, `lens_id: str`, `capstone_threshold: int`, `cutscene_ref: Optional[str] = None`.** Rationale: `capstone_id` mirrors A2-1's `lens_id` naming discipline (no bare `id`, which shadows a Python builtin in code review and reads ambiguously in cross-references). `capstone_threshold` is the concrete form of the sprint spec's abstract `trigger_condition` — per Q3 in the decomposition doc there is only one trigger type (investment-gte-threshold), so a primitive int is the right shape and a `CapstoneTrigger` dataclass would be YAGNI. `cutscene_ref` follows the sprint spec's own wording; A2-20's assumption block explicitly says it adapts to whatever A2-3 ships, so the discrepancy with `narration_key` is A2-20's rendering concern (null `cutscene_ref` → template narration, non-null → future cutscene lookup) — documented in the Capstone module docstring so A2-20 has a shape to code against.
+- ~~Should A2-3 extend `DataLoader` or should A2-20?~~ **Locked: A2-3.** Rationale: the format's owner owns the loader (A2-1's precedent). Handing loader wiring to A2-20 forces it to touch `spacegame/data_loader.py` — a file it does not otherwise need — and creates a hidden coupling between the two sprints' touch zones. Extending A2-3's touch zones by one file is cheaper than the downstream coupling.
+- ~~Should `capstones.json` ship with fixture entries or empty?~~ **Locked: empty stub (`{"capstones": []}`).** Rationale: A2-20 touches this file to append the sixteen real capstones. Fixture entries in the shipped JSON would collide with A2-20's writes. Tests use `tmp_path` via `DataLoader(data_dir=tmp_path)`, matching A2-1's precedent.
+- ~~Hook contract shape: pure `should_fire()` predicate vs a `Protocol` class for a fire-callback?~~ **Locked: pure predicate function.** Rationale: A2-20 wires the actual state transition, not this sprint. A predicate that takes primitives (`int` + two `set[str]`) has zero coupling to Player/LensInvestment (neither of which A2-3 depends on) and is trivially testable. A `Protocol` for a fire-callback would add abstraction without a second consumer to justify it. The hook contract lives narratively in the module docstring; the mechanical contract is the predicate.
+- ~~Should A2-3 define `player.capstones_reached` or does A2-20?~~ **Locked: A2-20.** Rationale: A2-3's touch zones do not include `spacegame/models/player.py`; A2-20's do. Adding the field here would silently expand touch zones and create a `Player`-shaped touch conflict with any Player-touching sprint. A2-3 stops at the Capstone model + loader + predicate; the predicate takes `capstones_reached: set[str]` as a primitive parameter so it doesn't depend on where that state lives.
+- ~~Should A2-3 include a scenario-level test that a capstone firing does not end the session?~~ **Locked: no.** Rationale: firing requires GameState transitions and a `CapstoneView`, both of which are A2-20's scope. AC1's "play continues" is asserted at the contract level here (docstring scan + structural import guard), not at the runtime level. A2-20 owns `tests/test_scenarios/test_scenario_capstone_session_continues.py` per its own Touch zones.
+- ~~Should `capstone_threshold` be a signed int (allow 0) or strictly positive?~~ **Locked: non-negative int.** Rationale: an investment threshold of 0 is degenerate (fires on any nonzero investment) but not incoherent for tests. Reject negative thresholds only; leave 0 as valid per Postel's law on the input side. The `>=` comparison in `should_fire()` handles the 0-threshold case correctly. A2-20 will pick 95 for its shipped capstones (per its own spec), so the strict-positive rule would gate that too, but a stricter guard buys nothing.
 
 **Activity log.**
 - 2026-08-27 — todo (created)
+- 2026-08-28 18:08 — harness: plan phase starting
+- 2026-08-28 18:35 — planning complete; verified 3 declared context docs (act-two-ambition-design, transitions.py, config.py) exist; added 5 supplementary reads (decomposition doc for Q3, lens.py + data_loader.py:load_lenses as parallel-model template, test_lens_registry.py + test_findings_register.py for compliance pattern, ROADMAP §11125-11146 + §A2-20 for downstream shape assumption); extended touch zones from 3 to 5 files (added `spacegame/data_loader.py` for loader wiring and `tests/test_compliance/test_capstone_registry.py` for the integrity guard); folded in 2 polish items (empty-stub scan guard on the `test_findings_register.py` pattern, module-import-hygiene structural test); locked 7 open decisions (field names/types, primitive int threshold not CapstoneTrigger dataclass, loader owned by A2-3 not A2-20, empty stub not shipped fixtures, pure predicate not Protocol callback, no Player-side state here, non-negative threshold allowing 0); expanded acceptance criteria from 5 to 8 (added structural-import guard under AC1, `>=` semantics test under AC5, per-branch predicate test coverage, loader integration under AC6, from_dict missing/type-mismatch coverage under AC2/AC7); drafted 7-task plan with per-task test names and gotchas. Cross-sprint reactions: none (foundational). PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-28 18:08
+- Completed: 2026-08-28 18:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (to be filled after commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: empty-stub scan guard on the `test_findings_register.py` pattern; module-import-hygiene structural test (Capstone must not reach into engine/views)
+- Decisions_locked: 7
+- Notes: A2-3 is foundational — a small typed module plus a JSON stub plus loader plumbing plus a pure predicate. Locked field names to `capstone_id/lens_id/capstone_threshold/cutscene_ref` to bridge the discrepancy between the sprint's original Deliverables (which said `trigger_condition`) and A2-20's assumption block (which said `capstone_threshold` + `narration_key`); documented the resolution in the module docstring so A2-20 has a shape to code against without touching this sprint's format. Extended touch zones by one file (`data_loader.py`) to keep A2-20 from having to reach outside its own scope for loader wiring, matching A2-1's precedent. Test count target 15+; hits the AC5 minimum of 10 comfortably with per-branch predicate tests and the structural-import guard.
 #### A2-4 — Per-lens investment tracking
 
 **Status**: todo
