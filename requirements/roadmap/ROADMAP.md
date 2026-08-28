@@ -11029,7 +11029,7 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - Started: 2026-08-28 15:59
 - Completed: 2026-08-28 16:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 1a0af0c
+- Commits: edfa8e4, and this follow-up recording the correct hash
 - New_sprints_proposed: none
 - Polish_items_folded_in: investment_from-vocabulary-section, reskin-self-audit-checklist, voice-ladder-gate-on-sample-lines (AC6)
 - Decisions_locked: 5
