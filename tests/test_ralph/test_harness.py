@@ -1912,11 +1912,8 @@ class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
                         local_names.add(alias.asname or alias.name)
             elif isinstance(node, ast.Assign):
                 value = node.value
-                bound = (
-                    isinstance(value, ast.Name)
-                    and value.id in local_names
-                    or isinstance(value, ast.Attribute)
-                    and value.attr == "atomic_write"
+                bound = (isinstance(value, ast.Name) and value.id in local_names) or (
+                    isinstance(value, ast.Attribute) and value.attr == "atomic_write"
                 )
                 if bound:
                     for target in node.targets:
