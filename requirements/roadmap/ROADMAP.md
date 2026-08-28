@@ -123,7 +123,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | blocked | none |
-| [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | in-progress | none |
+| [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | todo | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
@@ -10956,7 +10956,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 
 #### A2-2 — Lens authoring guide
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: none
 
@@ -11026,7 +11026,7 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - 2026-08-28 17:00 — compliance test written (TDD: 4 tests skip cleanly when guide absent, then 3 pass + 1 skips once guide lands); requirements/lens_authoring_guide.md authored: 5 sections, 16 per-lens voice notes with NPC patterns, derelict hauler worked example (Preservation/Crime/Wealth), reskin self-audit checklist, investment_from vocabulary; Writing Bible scanner 35/35 clean; dialogue integrity 19/19 clean; lint+format clean; tests 10937 -> 10940 (+3). PHASE_OK
 - 2026-08-28 17:01 — harness: review phase starting (rework cycle 0)
 - 2026-08-28 17:30 — review complete; plan audit sound; 6/6 ACs verified; 1 minor fix applied directly (crime lens sample line relabeled from 'player Intimidation' to NPC voice -- content was the broker speaking, not the player). PHASE_OK
-
+- 2026-08-28 17:17 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
