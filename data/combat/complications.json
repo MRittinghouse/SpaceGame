@@ -33,7 +33,7 @@
     {
       "id": "morale_shift",
       "name": "Morale Shift",
-      "description": "Player hull under 30% — a dramatic beat where the captain's tone shifts.",
+      "description": "Player hull under 30%: a dramatic beat where the captain's tone shifts.",
       "trigger_type": "hp_threshold",
       "trigger_params": { "target": "player", "hp_pct": 0.3 },
       "effect_type": "narration",
@@ -53,7 +53,7 @@
     {
       "id": "battle_damage_marker",
       "name": "Battle Damage",
-      "description": "Enemy hull under 50% — accuracy degrades as their fire control limps.",
+      "description": "Enemy hull under 50%: accuracy degrades as their fire control limps.",
       "trigger_type": "hp_threshold",
       "trigger_params": { "target": "enemy", "hp_pct": 0.5 },
       "effect_type": "environmental",

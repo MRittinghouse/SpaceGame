@@ -1,5 +1,5 @@
 {
-  "_comment": "TW timed threads — QA-F-1 revision. touch_triggers are interaction keys recorded via Player.record_interaction() at action points (dialogue end, mission accept), NOT raw dialogue flags. This correctly handles both one-time touches (flag flips once) and recurring touches (repeated NPC interactions reset the clock). Threads with last_touched_day=None stay inactive until an interaction kicks them off — so no drift fires on the first 30 days of a fresh playthrough.",
+  "_comment": "TW timed threads, QA-F-1 revision. touch_triggers are interaction keys recorded via Player.record_interaction() at action points (dialogue end, mission accept), NOT raw dialogue flags. This correctly handles both one-time touches (flag flips once) and recurring touches (repeated NPC interactions reset the clock). Threads with last_touched_day=None stay inactive until an interaction kicks them off, so no drift fires on the first 30 days of a fresh playthrough.",
   "threads": [
     {
       "id": "marcus_lead_cold",
