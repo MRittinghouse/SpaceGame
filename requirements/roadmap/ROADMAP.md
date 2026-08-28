@@ -122,7 +122,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | todo | none |
+| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | in-progress | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | todo | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | todo | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
@@ -10834,7 +10834,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 #### A2-1 — Lens data model and registry
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 1 week
 **Depends on**: none | **Blocks**: A2-4, A2-5, A2-6, A2-7
 
@@ -10929,18 +10929,30 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 - 2026-08-27 — todo (created)
 - 2026-08-28 13:58 — harness: plan phase starting
 - 2026-08-28 — planning complete; expanded Lens schema from 5 fields to the spec's full 11 to unblock A2-5/A2-6, added snake_case + all-fields-required guards (criteria 2 and 6), locked 5 open decisions, added a scan-guard-against-empty-registry sub-test. Ship `lenses.json` empty so downstream population sprints have a clean touch zone. Cross-sprint reactions: none (foundational). PHASE_OK
+- 2026-08-28 14:05 — harness: implement phase starting (rework cycle 0)
+- 2026-08-28 14:10 — test red: 7 tests failing (TestLensRegistry.* — DataLoader missing load_lenses/self.lenses)
+- 2026-08-28 14:15 — implemented: Lens dataclass (lens.py), lenses.json stub, DataLoader integration (load_lenses, self.lenses, wired into load_all). Test green: 55 pass, 1 skip.
+- 2026-08-28 14:20 — data-integrity guard (test_lens_registry.py) written: 22 pass + 1 expected skip.
+- 2026-08-28 14:25 — ruff format+check clean on touched files; mypy baseline exit 0 (0 new violations); pre-commit hooks all pass.
+- 2026-08-28 14:28 — implementation complete, all gates green; tests 10882→10937 (+55). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-28 13:58
-- Completed: 2026-08-28
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 84e519d
-- New_sprints_proposed: none
-- Polish_items_folded_in: full-schema-alignment (Lens gets 11 fields, not 5), all-required-fields-guard (criterion 2 extended beyond `minigame_shape`), snake_case-lens_id-guard (new criterion 6), scan-guard-against-empty-registry (matches `test_findings_register.py` pattern), empty-stub `lenses.json` (protects A2-5/A2-6 touch zones)
-- Decisions_locked: 5
-- Notes: Verified all 5 context docs exist and read. Vision-alignment gap closed: A2-1 shipped as originally written would have silently forced A2-5/A2-6 to modify `models/lens.py` and `data_loader.py`, breaking their declared touch zones and A2-1's own "no Python change" criterion. Sprint size stays M (1 week) — the added fields are declarative and the extra tests are parametric variations on the same guard shape.
+- Started: 2026-08-28 14:05
+- Completed: 2026-08-28 14:28
+- Files_changed: spacegame/models/lens.py, data/narrative/lenses.json, spacegame/data_loader.py, tests/test_models/test_lens.py, tests/test_compliance/test_lens_registry.py
+- Commits: 8a399b7
+- Tests_added: 55
+- Tests_baseline: 10882
+- Tests_passing: 10937
+- Tests_skipped: 99
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: 11-field frozen Lens dataclass + DataLoader integration + data-integrity guard. All 7 acceptance criteria satisfied. lenses.json ships empty; A2-5/A2-6 touch zones protected. 56 tests collected (55 pass, 1 skip -- expected empty-registry guard skip).
 
 #### A2-2 — Lens authoring guide
 
