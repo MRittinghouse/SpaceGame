@@ -10956,7 +10956,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 
 #### A2-2 — Lens authoring guide
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: none
 
@@ -11024,24 +11024,24 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - 2026-08-28 16:20 — planning complete; verified 4 context docs plus 3 added (aurelia_voice_examples.md, lens.py, ambient_dialogue.py); added compliance test file to Touch zones; folded in 2 polish items (investment_from vocabulary, reskin self-audit checklist); locked 5 decisions (guide location, no-duplication-of-Writing-Bible, three worked-example lenses, compliance-test canonical-source strategy, per-lens voice-note depth); tightened AC1/2/5 and added AC6 (voice-ladder gate on sample lines); drafted 6-task plan. PHASE_OK
 - 2026-08-28 16:08 — harness: implement phase starting (rework cycle 0)
 - 2026-08-28 17:00 — compliance test written (TDD: 4 tests skip cleanly when guide absent, then 3 pass + 1 skips once guide lands); requirements/lens_authoring_guide.md authored: 5 sections, 16 per-lens voice notes with NPC patterns, derelict hauler worked example (Preservation/Crime/Wealth), reskin self-audit checklist, investment_from vocabulary; Writing Bible scanner 35/35 clean; dialogue integrity 19/19 clean; lint+format clean; tests 10937 -> 10940 (+3). PHASE_OK
+- 2026-08-28 17:01 — harness: review phase starting (rework cycle 0)
+- 2026-08-28 17:30 — review complete; plan audit sound; 6/6 ACs verified; 1 minor fix applied directly (crime lens sample line relabeled from 'player Intimidation' to NPC voice -- content was the broker speaking, not the player). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-28 16:08
-- Completed: 2026-08-28 17:00
-- Files_changed: requirements/lens_authoring_guide.md, tests/test_compliance/test_lens_authoring_guide.py
-- Commits: e50ea1f
-- Tests_added: 4 (3 pass, 1 skips -- registry drift check activates when A2-5/A2-6 land)
-- Tests_baseline: 10937
+- Started: 2026-08-28 17:01
+- Completed: 2026-08-28 17:30
+- Files_changed: requirements/lens_authoring_guide.md
+- Commits: c2a1497
 - Tests_passing: 10940
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a (no new flags added)
-- Writing_bible_clean: yes (35/35 existing + new guide content; no em-dashes, no banned phrases, no banned NPC names in guide)
-- Touch_zones_respected: yes
-- Notes: requirements/lens_authoring_guide.md ships all 5 sections: 16 per-lens voice notes with NPC patterns and scar/hostile distinction, shared-world model, derelict hauler worked example (Preservation/Crime/Wealth), reskin failure-mode checklist, investment_from vocabulary anchored to AmbientLine.action_type shape. Compliance test gates on all 16 lens IDs, banned NPC names, em-dash, and registry drift. All 6 ACs satisfied.
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: 2/2
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: crime lens sample line was labeled 'player Intimidation, grade B' but voiced the NPC (broker claiming 17 years of experience); relabeled as NPC voice to prevent future authors from modeling player skill-check dialogue on an NPC line.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; locked decisions on guide location, no-Bible-duplication, three worked-example lenses, compliance-test canonical-source strategy, compact voice-note depth are all defensible. All 16 lenses have voice notes and NPC patterns; derelict hauler worked example is non-swappable across all three lenses; compliance test gates on 16 IDs, banned names, em-dash, and registry drift (currently skipped, activates when A2-5/A2-6 land). One minor attribution fix committed.
 #### A2-3 — Capstone format and hook contract
 
 **Status**: todo
