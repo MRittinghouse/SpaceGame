@@ -221,7 +221,7 @@ committing to anything.
 connects operators who need discretion with suppliers who do not ask. Seventeen years in
 business by being careful about which questions get answered.
 
-Sample line (player Intimidation, grade B -- reads the NPC's professional position):
+Sample line (NPC, broker's read of an Intimidation approach -- shows how the lens's register holds under pressure):
 > "I've been in business seventeen years. I know what questions the Guild doesn't ask.
 > You're not one of them."
 
