@@ -1,30 +1,34 @@
 # Ralph Status
 
-_Updated: 2026-08-28 13:48:30_
+_Updated: 2026-08-28 15:51:45_
 
-## Harness Did Not Run
+## TEST SUITE FAILING
 
-Baseline capture FAILED: timeout after 600s — pytest run never finished. Aborting run to avoid running agents with no baseline.
+The harness stopped: the test-suite gate found a red tree, so no further sprint will be authored on top of it. Nothing is broken about the harness itself -- this is it refusing to build on a break.
+
+```
+A2-1: test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
+```
 
 ## Now
 
-- Sprint: **(between sprints)**
-- Phase: **-**
-- Last beat: **just now**
-- Beat PID: 4664 -- alive
+- Sprint: **A2-1**
+- Phase: **review**
+- Last beat: **10 seconds ago**
+- Beat PID: 18004 -- alive
 
 ## Queue
 
 - total: 86
-- todo: 36
-- eligible: 3
+- todo: 35
+- eligible: 2
 - in flight: none
-- blocked: SA-F2, UI-BOUNDS-1
+- blocked: A2-1, SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (13 minutes ago)
-- last successful push: 13 minutes ago
+- last push: **OK** (2 hours ago)
+- last successful push: 2 hours ago
 
 ## Blocks drift
 
@@ -35,3 +39,8 @@ Baseline capture FAILED: timeout after 600s — pytest run never finished. Abort
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- A2-1 blocked
+- A2-1 TEST-GATE FAILED

@@ -122,7 +122,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | in-progress | none |
+| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | blocked | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | todo | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | todo | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
@@ -10834,7 +10834,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 #### A2-1 — Lens data model and registry
 
-**Status**: in-progress (reviewing)
+**Status**: blocked
 **Phase**: Act II | **Size**: M | **Effort**: 1 week
 **Depends on**: none | **Blocks**: A2-4, A2-5, A2-6, A2-7
 
@@ -10937,7 +10937,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 - 2026-08-28 14:28 — implementation complete, all gates green; tests 10882→10937 (+55). PHASE_OK
 - 2026-08-28 14:43 — harness: review phase starting (rework cycle 0)
 - 2026-08-28 15:10 — review complete; all 7 acceptance criteria verified, lint/format/mypy clean, 55+1 tests confirmed. Plan audit: sound. Single tighten noted (see report). PHASE_OK
-
+- 2026-08-28 15:51 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
