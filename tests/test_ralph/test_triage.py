@@ -73,3 +73,67 @@ class TestStarvationReport:
 
     def test_report_is_empty_when_not_starved(self) -> None:
         assert starvation_report(analyse({"A": _sprint("A", "todo")})) == ""
+
+
+class TestUnresolvedDependency:
+    """A typo'd dependency ID must be named, not swallowed into a generic warning.
+
+    Agents author new sprints unattended -- a typo'd `depends_on` entry is a
+    realistic way to starve the queue mid-week, and the operator needs the
+    sprint id and the bad dependency id to grep for, not a shrug.
+    """
+
+    def test_unknown_dependency_id_is_recorded_on_state(self) -> None:
+        sprints = {"X11": _sprint("X11", "todo", ["F8"])}
+        state = analyse(sprints)
+        assert state.is_starved is True
+        assert state.unresolved_deps == {"X11": ["F8"]}
+
+    def test_report_names_sprint_and_missing_id(self) -> None:
+        sprints = {"X11": _sprint("X11", "todo", ["F8"])}
+        text = starvation_report(analyse(sprints))
+        assert "STARVED" in text
+        assert "X11" in text, "the sprint with the bad dependency must be named"
+        assert "F8" in text, "the missing dependency id must be named"
+        assert "typos" not in text, (
+            "an unresolved dependency IS the typo case -- it must get its own "
+            "specific line, not the generic fallback"
+        )
+
+
+class TestDependencyCycle:
+    """Two sprints depending on each other is not a typo -- the report must say so."""
+
+    def test_cycle_is_recorded_on_state(self) -> None:
+        sprints = {
+            "A": _sprint("A", "todo", ["B"]),
+            "B": _sprint("B", "todo", ["A"], pos=1),
+        }
+        state = analyse(sprints)
+        assert state.is_starved is True
+        assert set(state.cycle) == {"A", "B"}
+
+    def test_report_names_the_cycle_members(self) -> None:
+        sprints = {
+            "A": _sprint("A", "todo", ["B"]),
+            "B": _sprint("B", "todo", ["A"], pos=1),
+        }
+        text = starvation_report(analyse(sprints))
+        assert "cycle" in text.lower()
+        assert "A" in text and "B" in text
+        assert "typos" not in text, (
+            "a cycle is not a typo -- blaming typos here is actively misleading"
+        )
+
+
+class TestBlockedPathUnchanged:
+    """The verified blocked/stranded path must not gain unrelated noise."""
+
+    def test_blocked_explanation_does_not_mention_unresolved_or_cycle(self) -> None:
+        sprints = {
+            "F2": _sprint("F2", "blocked"),
+            "F3": _sprint("F3", "todo", ["F2"], pos=1),
+        }
+        text = starvation_report(analyse(sprints))
+        assert "unknown sprint" not in text
+        assert "cycle" not in text.lower()
