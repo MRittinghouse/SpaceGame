@@ -1,6 +1,6 @@
 # Ralph Status
 
-_Updated: 2026-08-28 13:35:25_
+_Updated: 2026-08-28 13:48:30_
 
 ## Harness Did Not Run
 
@@ -11,7 +11,7 @@ Baseline capture FAILED: timeout after 600s — pytest run never finished. Abort
 - Sprint: **(between sprints)**
 - Phase: **-**
 - Last beat: **just now**
-- Beat PID: 26972 -- alive
+- Beat PID: 4664 -- alive
 
 ## Queue
 
@@ -23,7 +23,8 @@ Baseline capture FAILED: timeout after 600s — pytest run never finished. Abort
 
 ## Push
 
-- no push recorded yet
+- last push: **OK** (13 minutes ago)
+- last successful push: 13 minutes ago
 
 ## Blocks drift
 
