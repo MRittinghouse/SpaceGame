@@ -536,6 +536,11 @@ class TestReportSilentExit:
         return target
 
     def _wire_reporting(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # `_report_silent_exit` now commits and pushes what it writes (that is
+        # the whole point -- see TestSupervisorPublishesWhatItWrites). Stub it
+        # here so these tests keep testing the WRITE decision and never touch
+        # the real repo or the network.
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
         monkeypatch.setattr(supervisor, "parse_sprints", dict)
         monkeypatch.setattr(
             supervisor.triage, "analyse", lambda sprints: QueueState(total=0, todo=0, eligible=0)
@@ -587,6 +592,9 @@ class TestMainProcessLoop:
         monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
         monkeypatch.setattr(supervisor.subprocess, "Popen", lambda *a, **k: object())
         monkeypatch.setattr(supervisor.time, "sleep", lambda _seconds: None)
+        # The crash-loop path commits and pushes for real; stubbed so this
+        # suite cannot mutate the repo or hit the network.
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
         monkeypatch.setattr(
             supervisor, "_supervise", _bounded_constant(supervise_rc, max_iterations, "_supervise")
         )
@@ -663,6 +671,7 @@ class TestMainProcessLoop:
         monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
         monkeypatch.setattr(supervisor.subprocess, "Popen", lambda *a, **k: object())
         monkeypatch.setattr(supervisor.time, "sleep", lambda _seconds: None)
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
         monkeypatch.setattr(supervisor, "_supervise", _bounded_scripted(rcs, "_supervise"))
 
         monkeypatch.setattr(supervisor, "_status_mtime", _bounded_mtimes(len(rcs) * 2 + 2))
@@ -762,3 +771,247 @@ class TestMainProcessLoop:
         assert rc == 0
         assert waited == [4242], "must adopt the live pid rather than ignore it"
         assert len(launches) == 1, "must launch exactly once, only after adopting finished"
+
+
+class TestSupervisorPublishesWhatItWrites:
+    """Every remote signal in this system is emitted by the harness.
+
+    That is the whole defect: when the harness cannot start (a repeating
+    pre-flight failure) or will not be restarted again (crash-loop), the two
+    states that mean "the week is over", the supervisor is the only component
+    that knows -- and it wrote what it knew to local disk only. GitHub kept
+    serving the last STATUS.md the harness pushed, whose beat age is
+    re-rendered at read time and therefore reads as recent: a calm, green,
+    permanently-final page describing a dead run.
+    """
+
+    def _wire(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> list[str]:
+        """Fake the roadmap/queue edges and capture publish labels."""
+        monkeypatch.setattr(status_module, "STATUS_PATH", tmp_path / "STATUS.md")
+        monkeypatch.setattr(supervisor, "parse_sprints", dict)
+        monkeypatch.setattr(
+            supervisor.triage, "analyse", lambda sprints: QueueState(total=0, todo=0, eligible=0)
+        )
+        monkeypatch.setattr(supervisor.triage, "blocks_disagreements", lambda sprints: [])
+        monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
+
+        published: list[str] = []
+        monkeypatch.setattr(
+            supervisor, "_publish_status", lambda label: published.append(label) or True
+        )
+        return published
+
+    def test_a_preflight_failure_report_is_pushed_not_just_written(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        published = self._wire(tmp_path, monkeypatch)
+
+        supervisor._report_silent_exit(supervisor.HARNESS_RC_PREFLIGHT_FAILURE, [])
+
+        assert published, (
+            "the silent-exit report was written to local disk and never "
+            "committed or pushed, so the operator's GitHub view keeps showing "
+            "the last healthy STATUS.md and never changes again"
+        )
+
+    def test_a_normal_lock_conflict_publishes_nothing(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        published = self._wire(tmp_path, monkeypatch)
+
+        supervisor._report_silent_exit(supervisor.HARNESS_RC_LOCK_CONFLICT, [])
+
+        assert published == [], "a lock conflict is normal and must stay quiet"
+
+    def test_crash_loop_is_pushed_not_just_written(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        published = self._wire(tmp_path, monkeypatch)
+
+        supervisor._write_crash_loop_status([])
+
+        assert published, (
+            "CRASH-LOOP -- the supervisor will not restart the harness again -- "
+            "reached local disk only; from GitHub 'stopped for good' and "
+            "'between sprints' remain indistinguishable"
+        )
+
+    def test_a_failed_status_write_publishes_nothing(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Nothing was written, so there is nothing to commit."""
+        published = self._wire(tmp_path, monkeypatch)
+
+        def boom(*_args: object, **_kwargs: object) -> None:
+            raise OSError("disk full")
+
+        monkeypatch.setattr(supervisor.status, "write_status", boom)
+
+        supervisor._write_crash_loop_status([])
+        supervisor._report_silent_exit(supervisor.HARNESS_RC_PREFLIGHT_FAILURE, [])
+
+        assert published == []
+
+
+class TestPublishStatusIsResilient:
+    """A push that cannot run must never crash the supervisor.
+
+    The supervisor is the one thing keeping the run alive; trading a reporting
+    gap for the end of the week is the wrong trade in every case.
+    """
+
+    def test_reuses_the_harness_commit_and_push_helpers(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Not a second mechanism: the same commit/push path the harness uses."""
+        from ralph import harness
+
+        committed: list[tuple[str, str]] = []
+        pushed: list[str] = []
+        monkeypatch.setattr(
+            harness,
+            "_commit_harness_bookkeeping",
+            lambda sprint_id, summary: bool(committed.append((sprint_id, summary))) or True,
+        )
+        monkeypatch.setattr(
+            harness,
+            "_push_after_sprint",
+            lambda sprint_id, outcome, enabled: pushed.append(sprint_id),
+        )
+        monkeypatch.setattr(
+            supervisor.status,
+            "read_push_state",
+            lambda: status_module.PushState(ok=True, timestamp=1.0),
+        )
+
+        assert supervisor._publish_status("supervisor-crash-loop") is True
+        assert committed and committed[0][0] == "supervisor-crash-loop"
+        assert pushed == ["supervisor-crash-loop"]
+
+    def test_a_raising_commit_helper_does_not_propagate(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from ralph import harness
+
+        def boom(*_args: object, **_kwargs: object) -> None:
+            raise RuntimeError("git exploded")
+
+        monkeypatch.setattr(harness, "_commit_harness_bookkeeping", boom)
+
+        assert supervisor._publish_status("supervisor-crash-loop") is False
+
+    def test_a_failed_push_is_reported_as_unpublished(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A rejected push must be recorded, not mistaken for a delivery."""
+        from ralph import harness
+
+        monkeypatch.setattr(harness, "_commit_harness_bookkeeping", lambda *a: True)
+        monkeypatch.setattr(harness, "_push_after_sprint", lambda *a: None)
+        monkeypatch.setattr(
+            supervisor.status,
+            "read_push_state",
+            lambda: status_module.PushState(
+                ok=False, timestamp=1.0, detail="! [rejected] non-fast-forward"
+            ),
+        )
+
+        assert supervisor._publish_status("supervisor-crash-loop") is False, (
+            "a rejected push was reported as a successful publish, which is "
+            "exactly the false confidence this whole finding is about"
+        )
+
+
+class TestSupervisorLogFile:
+    """`silent_exit_reason` used to send the operator to `ralph/logs`, which
+    structurally could not contain the pre-flight message: both components
+    logged only via `print`, and the Scheduled Task redirects nothing."""
+
+    def test_log_lines_reach_a_file_on_disk(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        target = tmp_path / "supervisor.log"
+        monkeypatch.setattr(supervisor, "LOGS_DIR", tmp_path)
+        monkeypatch.setattr(supervisor, "SUPERVISOR_LOG_PATH", target)
+
+        supervisor._log("supervisor: harness exited rc=4")
+
+        assert target.exists(), (
+            "the supervisor logged to stdout only; under a Scheduled Task that "
+            "stream is discarded, so nothing about the run exists on disk"
+        )
+        assert "rc=4" in target.read_text(encoding="utf-8")
+
+    def test_logging_survives_an_unwritable_log_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A supervisor that cannot write its log must still supervise."""
+        monkeypatch.setattr(supervisor, "LOGS_DIR", tmp_path / "missing")
+        monkeypatch.setattr(supervisor, "SUPERVISOR_LOG_PATH", tmp_path / "nope" / "x" / "s.log")
+        monkeypatch.setattr(
+            supervisor.Path, "mkdir", lambda *a, **k: (_ for _ in ()).throw(OSError("read-only"))
+        )
+
+        supervisor._log("still alive")
+
+    def test_the_guidance_points_at_files_that_hold_the_message(self) -> None:
+        reason = supervisor.silent_exit_reason(supervisor.HARNESS_RC_PREFLIGHT_FAILURE)
+
+        assert reason is not None
+        assert "ralph/logs/harness.log" in reason, (
+            "the operator is told where to look for the pre-flight message; the "
+            "place named must be the place that actually holds it"
+        )
+        assert "ralph/logs/supervisor.log" in reason
+
+    def test_the_harness_subprocess_gets_a_real_log_handle(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """`Popen` with no stdout makes the harness inherit the supervisor's
+        handles, which a Scheduled Task discards."""
+        monkeypatch.setattr(supervisor, "LOGS_DIR", tmp_path)
+        monkeypatch.setattr(supervisor, "HARNESS_LOG_PATH", tmp_path / "harness.log")
+
+        handle = supervisor._open_harness_log()
+
+        assert handle is not None
+        handle.write(b"pre-flight message\n")
+        handle.close()
+        assert "pre-flight message" in (tmp_path / "harness.log").read_text(encoding="utf-8")
+
+    def test_main_hands_the_harness_a_log_handle(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        captured: list[dict[str, object]] = []
+
+        def fake_popen(*_args: object, **kwargs: object) -> object:
+            captured.append(kwargs)
+            return object()
+
+        monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
+        monkeypatch.setattr(supervisor.subprocess, "Popen", fake_popen)
+        monkeypatch.setattr(supervisor.time, "sleep", lambda _s: None)
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
+        monkeypatch.setattr(supervisor, "_supervise", lambda proc: 0)
+        mtimes = iter([1.0, 2.0])
+        monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
+        monkeypatch.setattr(supervisor, "parse_sprints", dict)
+        monkeypatch.setattr(
+            supervisor.triage, "analyse", lambda sprints: QueueState(total=0, todo=0, eligible=0)
+        )
+
+        supervisor.main()
+
+        assert captured, "main() never launched the harness"
+        assert captured[0].get("stdout") is not None, (
+            "the harness was launched with no stdout handle, so it inherits the "
+            "supervisor's -- which a Scheduled Task discards, leaving no record "
+            "of the pre-flight failure the operator is told to go read"
+        )
+
+    def test_rotation_bounds_the_log_over_a_seven_day_run(self, tmp_path: Path) -> None:
+        target = tmp_path / "supervisor.log"
+        target.write_text("x" * 200, encoding="utf-8")
+
+        supervisor._rotate_if_large(target, max_bytes=100)
+
+        assert not target.exists()
+        assert (tmp_path / "supervisor.log.1").exists()

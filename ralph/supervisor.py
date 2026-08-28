@@ -1,9 +1,19 @@
 """Restart policy and process loop for unattended runs.
 
 Nothing supervises the supervisor, so it is deliberately the dumbest component
-in the system: start a process, watch a heartbeat file, apply a bounded policy,
-never touch the repo. Every capability added here is one that can fail with
-nobody watching.
+in the system: start a process, watch a heartbeat file, apply a bounded policy.
+Every capability added here is one that can fail with nobody watching.
+
+It touches the repo in exactly one narrow way, and only because leaving that
+out was a defect: after it writes a STATUS.md of its own it commits and pushes
+that file (``_publish_status``), reusing the harness's own commit/push helpers
+rather than inventing a second mechanism. Every remote signal in this system is
+emitted by the harness, so on the two paths where the harness cannot run --
+a repeating pre-flight failure and a crash-loop stop, the two states that mean
+the week is over -- a local-only report is no report at all: GitHub keeps
+serving the last STATUS.md the harness pushed, and its beat age is re-rendered
+at read time, so it reads as a healthy run forever. The publish is entirely
+best-effort: it cannot crash the supervisor and cannot prevent a restart.
 
 Bounded is the operative word. A harness that dies instantly and is relaunched
 instantly burns a week of API budget in an afternoon, so the backoff and the
@@ -43,11 +53,78 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional
+from typing import IO, Callable, Optional
 
 from ralph import heartbeat, status, triage
-from ralph.config import PROJECT_ROOT
+from ralph.config import LOGS_DIR, PROJECT_ROOT
 from ralph.roadmap_state import parse_sprints
+
+# ---------------------------------------------------------------------------
+# Logging -- the supervisor's only durable channel on the machine
+# ---------------------------------------------------------------------------
+
+# Both components used to log exclusively via `print`, and the Scheduled Task
+# redirects nothing, so under the deployment this code exists for NOTHING was
+# written to disk. `ralph/logs/` held only per-phase agent transcripts, which
+# meant `silent_exit_reason`'s own guidance ("check ralph/logs") pointed at a
+# directory that structurally could not contain the pre-flight message it was
+# telling the operator to look for.
+SUPERVISOR_LOG_PATH: Path = LOGS_DIR / "supervisor.log"
+HARNESS_LOG_PATH: Path = LOGS_DIR / "harness.log"
+
+# Seven days of restarts is a lot of lines but not a lot of bytes. One
+# rotation is enough to bound the disk while keeping recent history; a full
+# rotating scheme would be more machinery than the problem deserves.
+LOG_MAX_BYTES: int = 5 * 1024 * 1024
+
+
+def _rotate_if_large(path: Path, max_bytes: int = LOG_MAX_BYTES) -> None:
+    """Move *path* aside once it exceeds *max_bytes*, keeping one generation."""
+    try:
+        if path.stat().st_size < max_bytes:
+            return
+    except OSError:
+        return
+    try:
+        path.replace(path.with_suffix(path.suffix + ".1"))
+    except OSError:
+        pass
+
+
+def _log(message: str) -> None:
+    """Print *message* and append it to the supervisor's log file.
+
+    Best-effort on the file half: a supervisor that cannot write its log must
+    still supervise. Printing is kept because a foreground smoke drill is the
+    one context where stdout is actually read.
+    """
+    line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}"
+    print(line, flush=True)
+    try:
+        LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        _rotate_if_large(SUPERVISOR_LOG_PATH)
+        with open(SUPERVISOR_LOG_PATH, "a", encoding="utf-8") as handle:
+            handle.write(line + "\n")
+    except OSError:
+        pass
+
+
+def _open_harness_log() -> Optional[IO[bytes]]:
+    """Append-mode handle for the harness's stdout/stderr, or None.
+
+    The harness logs via `print`, and `Popen` with no stdout/stderr makes it
+    inherit the supervisor's handles -- which, under a Scheduled Task, are
+    discarded. Handing it a file is what turns every `harness.log()` line,
+    every traceback, and every pre-flight message into something the operator
+    can read after the fact.
+    """
+    try:
+        LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        _rotate_if_large(HARNESS_LOG_PATH)
+        return open(HARNESS_LOG_PATH, "ab")
+    except OSError:
+        return None
+
 
 # ---------------------------------------------------------------------------
 # Restart policy (pure functions)
@@ -266,18 +343,82 @@ def silent_exit_reason(rc: int) -> Optional[str]:
         "two paths, both before the harness's main loop starts: a pre-flight check "
         "failure, or a lock already held by another instance. Exit code "
         f"{HARNESS_RC_LOCK_CONFLICT} means the latter (normal, not reported); any "
-        "other code -- including this one -- means a pre-flight check failed. Check "
-        "ralph/logs, or run `python -m ralph.harness` by hand to see the pre-flight "
-        "message."
+        "other code -- including this one -- means a pre-flight check failed. The "
+        "pre-flight message itself is in `ralph/logs/harness.log` (the harness's "
+        "stdout, captured by the supervisor); the supervisor's own account of the "
+        "run is in `ralph/logs/supervisor.log`. Failing that, run "
+        "`python -m ralph.harness` by hand."
     )
 
 
-def _report_silent_exit(rc: int, recent: list[str]) -> None:
-    """Write STATUS.md's decline_reason for a silent harness exit, unless the
-    silence is a normal lock conflict (see ``silent_exit_reason``).
+def _publish_status(label: str) -> bool:
+    """Commit and push the STATUS.md this supervisor just wrote.
 
-    Best-effort: a failure here (a roadmap-parsing bug, a disk error) must
-    never crash the supervisor -- it is the one thing keeping the run alive.
+    The supervisor owns the two messages that matter most -- "the harness will
+    not start" (a repeating pre-flight failure) and "nothing will resume"
+    (crash-loop) -- and until this existed it wrote both to local disk only.
+    Every remote signal in this system is emitted by the harness, so on exactly
+    the paths where the harness cannot run, no channel remained: GitHub kept
+    serving the last STATUS.md the harness pushed, whose beat age is
+    re-rendered at read time and therefore reads as recent. A dead run and a
+    working one were indistinguishable, forever.
+
+    The module docstring's "never touch the repo" rule is narrowed rather than
+    abandoned: this commits exactly the one file it just wrote (plus ROADMAP.md,
+    which `_commit_harness_bookkeeping` stages alongside it -- desirable here,
+    since a harness killed mid-sprint leaves roadmap edits that would otherwise
+    fail the next pre-flight), and it reuses the harness's own commit/push
+    helpers rather than inventing a second mechanism that could disagree with
+    them.
+
+    Every failure is caught and logged. A push that cannot run must never crash
+    the supervisor or block a restart -- that would trade a reporting gap for
+    the end of the run.
+
+    Args:
+        label: Short identifier for the commit message and the log line.
+
+    Returns:
+        True if the push was attempted and recorded as successful.
+    """
+    try:
+        # Imported lazily: the supervisor must still start and supervise if
+        # `harness` is unimportable, and that is precisely the situation in
+        # which someone needs the supervisor most.
+        from ralph import harness
+
+        harness._commit_harness_bookkeeping(label, "supervisor status report")
+        harness._push_after_sprint(label, harness.Outcome.OK, True)
+    except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
+        _log(f"supervisor: could not publish STATUS.md ({label}): {exc!r}")
+        return False
+
+    pushed = status.read_push_state()
+    if pushed is not None and pushed.ok:
+        _log(f"supervisor: published STATUS.md ({label}) to origin")
+        return True
+    detail = pushed.detail if pushed is not None else "no push state recorded"
+    _log(
+        f"supervisor: STATUS.md ({label}) was committed but NOT pushed; the "
+        f"GitHub copy is frozen. {detail}"
+    )
+    return False
+
+
+def _report_silent_exit(rc: int, recent: list[str]) -> None:
+    """Write, commit and push STATUS.md's decline_reason for a silent harness
+    exit, unless the silence is a normal lock conflict (see
+    ``silent_exit_reason``).
+
+    A repeating pre-flight failure is the single most likely way an unattended
+    run dies, and the pre-flight exit is the one path on which the harness
+    writes no STATUS.md of its own -- so if this report stops at the local
+    disk, the operator's GitHub view keeps showing the last healthy file the
+    harness pushed and never changes again. Hence ``_publish_status``.
+
+    Best-effort throughout: a failure here (a roadmap-parsing bug, a disk
+    error, a rejected push) must never crash the supervisor -- it is the one
+    thing keeping the run alive.
     """
     reason = silent_exit_reason(rc)
     if reason is None:
@@ -291,8 +432,10 @@ def _report_silent_exit(rc: int, recent: list[str]) -> None:
             disagreements=triage.blocks_disagreements(sprints),
             decline_reason=reason,
         )
-    except Exception:
-        pass
+    except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
+        _log(f"supervisor: could not write STATUS.md for silent exit rc={rc}: {exc!r}")
+        return
+    _publish_status("supervisor-silent-exit")
 
 
 # ---------------------------------------------------------------------------
@@ -345,7 +488,14 @@ def _supervise(
 
 
 def _write_crash_loop_status(recent: list[str]) -> None:
-    """Write STATUS.md with crash_loop=True before the supervisor gives up.
+    """Write, commit and push STATUS.md with crash_loop=True before the
+    supervisor gives up.
+
+    This is the most important message the system can send: the supervisor
+    will not restart the harness again, so nothing further will happen until
+    a human intervenes. Recording it only on local disk made "stopped for
+    good" and "between sprints" identical from GitHub, which is the one
+    distinction the operator is away and unable to make for themselves.
 
     Best-effort for the same reason as ``_report_silent_exit``: STATUS.md is
     the operator's only window into a week-long unattended run, so a bug
@@ -360,8 +510,10 @@ def _write_crash_loop_status(recent: list[str]) -> None:
             crash_loop=True,
             disagreements=triage.blocks_disagreements(sprints),
         )
-    except Exception:
-        pass
+    except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
+        _log(f"supervisor: could not write crash-loop STATUS.md: {exc!r}")
+        return
+    _publish_status("supervisor-crash-loop")
 
 
 def _wait_for_foreign_harness(
@@ -406,20 +558,35 @@ def main() -> int:
     while True:
         live_pid = heartbeat_pid_alive()
         if live_pid is not None:
-            print(
+            _log(
                 f"supervisor: harness already alive (pid={live_pid}); "
-                "adopting rather than double-launching.",
-                flush=True,
+                "adopting rather than double-launching."
             )
             _wait_for_foreign_harness(live_pid)
             continue
 
         mtime_before = _status_mtime()
-        print(f"supervisor: launching {' '.join(HARNESS_CMD)}", flush=True)
-        proc = subprocess.Popen(list(HARNESS_CMD), cwd=str(PROJECT_ROOT))
+        _log(f"supervisor: launching {' '.join(HARNESS_CMD)} (stdout -> {HARNESS_LOG_PATH})")
+        # The harness logs via `print`. Without these handles it inherits the
+        # supervisor's, which a Scheduled Task discards -- so a pre-flight
+        # failure, the most likely way this run dies, would be written down
+        # nowhere at all.
+        harness_log = _open_harness_log()
+        try:
+            proc = subprocess.Popen(
+                list(HARNESS_CMD),
+                cwd=str(PROJECT_ROOT),
+                stdout=harness_log,
+                stderr=subprocess.STDOUT if harness_log is not None else None,
+            )
+        finally:
+            # Popen duplicates the handle into the child; the parent's copy is
+            # dead weight and would keep the rotated file open.
+            if harness_log is not None:
+                harness_log.close()
         rc = _supervise(proc)
         mtime_after = _status_mtime()
-        print(f"supervisor: harness exited rc={rc}", flush=True)
+        _log(f"supervisor: harness exited rc={rc}")
 
         if harness_exited_silently(mtime_before, mtime_after):
             _report_silent_exit(rc, recent)
@@ -435,7 +602,7 @@ def main() -> int:
         restart, reason = should_restart(
             policy.consecutive_failures, queue.eligible, queue.is_starved
         )
-        print(f"supervisor: {reason}", flush=True)
+        _log(f"supervisor: {reason}")
 
         if not restart:
             if policy.exhausted:
