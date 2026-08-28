@@ -10834,7 +10834,7 @@ Open question (reviewer judgment, not blocking implementation):
 
 #### A2-1 — Lens data model and registry
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 1 week
 **Depends on**: none | **Blocks**: A2-4, A2-5, A2-6, A2-7
 
@@ -10855,21 +10855,92 @@ Open question (reviewer judgment, not blocking implementation):
 - `tests/test_compliance/test_lens_registry.py` (NEW)
 
 **Deliverables.**
-- `Lens` as a frozen `@dataclass`: `lens_id`, `name`, `core_fantasy`, `question`, `minigame_shape`.
-- JSON-backed registry loaded through `get_data_loader()`, following the existing singleton access rule.
-- `to_dict()` / `from_dict()` round-trip.
-- A data-integrity test that fails the build on a malformed or incomplete lens.
+- `Lens` as a frozen `@dataclass` with the **full 11-field schema** the spec's "What a lens is, concretely" section declares: `lens_id: str`, `name: str`, `core_fantasy: str`, `question: str`, `sees: str`, `wants: str`, `trades: str`, `investment_from: tuple[str, ...]`, `minigame_shape: str`, `voice: str`, `tier_unlocks: tuple[str, ...]`. Frozen requires immutable collections; tuples over lists. A2-5/A2-6 populate the fields; A2-1 owns the schema so downstream sprints can add lenses as data with no Python change.
+- JSON-backed registry loaded through `get_data_loader()`, following the existing singleton access rule. Registry exposed as `DataLoader.lenses: dict[str, Lens]` keyed by `lens_id`, insertion order preserved (matches the spec table's lens-1-through-16 ordering when authored).
+- `to_dict()` / `from_dict()` round-trip. `to_dict` emits `investment_from` and `tier_unlocks` as JSON arrays; `from_dict` accepts either arrays or already-tuple form and stores tuples on the dataclass.
+- A data-integrity guard in `tests/test_compliance/test_lens_registry.py` on the `test_findings_register.py` pattern: fails the build on missing required field (any of the 11), duplicate `lens_id`, or non-snake_case `lens_id`. The scan itself carries a "guard against scanning nothing when the file is genuinely empty" sub-test that is skipped rather than passing when `lenses.json` has zero entries — because A2-1 ships the file empty and A2-5/A2-6 fill it in; a scan that silently passes over an empty registry is exactly the bug this pattern exists to catch.
+- `data/narrative/lenses.json` shipped as `{"lenses": []}` (empty stub). A2-5 and A2-6 append the sixteen real entries; this sprint deliberately authors none, so their touch zones stay clean.
 
 **Acceptance criteria.**
-1. A new lens can be added to `data/narrative/lenses.json` and appears in the registry with **no Python change**. A test proves this by adding a fixture lens and asserting it loads.
-2. `minigame_shape` is REQUIRED. A lens missing it fails the build with a message naming the offending `lens_id`. This field is what stops a later lens shipping as a reskin of another, so its absence must be loud.
-3. Round-trip `to_dict()` → `from_dict()` preserves every field.
-4. Duplicate `lens_id` values fail the build rather than silently overwriting.
-5. Loading is exercised through `get_data_loader()`, not by constructing `DataLoader()` directly.
-6. 15+ new tests.
+1. A new lens can be added to a JSON file and appears in the registry with **no Python change**. A test proves this by writing a synthetic lens to `tmp_path/narrative/lenses.json`, calling `DataLoader(data_dir=tmp_path).load_lenses()`, and asserting the lens is in `loader.lenses`. This uses `DataLoader(data_dir=...)` — the singleton exception the constructor already supports for tests — not `get_data_loader()`, which is exercised separately (criterion 5).
+2. `minigame_shape` is REQUIRED. A lens missing it fails the build with a `ValueError` whose message names the offending `lens_id` and the missing field. Extend the check to fail loudly for *every* required field (all 11), not only `minigame_shape` — a lens missing `sees` or `voice` is just as much a reskin risk.
+3. Round-trip `to_dict()` → `from_dict()` preserves every field, including collection field types (tuple in, tuple out; the JSON list round-trips through `from_dict` to a tuple, not a list).
+4. Duplicate `lens_id` values in `lenses.json` raise `ValueError` naming the duplicated id. Silent last-wins overwrite is a specific bug the guard exists to catch.
+5. Loading is exercised through `get_data_loader()`, not by constructing `DataLoader()` directly, in at least one test: `get_data_loader().lenses` returns the registry dict after `load_all()`.
+6. `lens_id` must match `^[a-z][a-z0-9_]*$`. Non-snake_case ids raise `ValueError`. The A2-5/A2-6 conventions doc pre-declares all sixteen ids as snake_case (`vengeance`, `political_power`, ...) so this test lands with no author friction.
+7. 15+ new tests across `test_lens.py` and `test_lens_registry.py`.
+
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing test to write first, and any gotchas.
+
+1. **Create `spacegame/models/lens.py` — the `Lens` frozen dataclass and its schema docstring.**
+   - Files: `spacegame/models/lens.py` (NEW).
+   - Test: `tests/test_models/test_lens.py::TestLensSchema::test_field_set_matches_spec` — assert every one of the 11 field names is present on the dataclass; assert the dataclass is frozen (mutation raises `FrozenInstanceError`); assert `investment_from` and `tier_unlocks` default types are `tuple`.
+   - Gotchas: `@dataclass(frozen=True)` — see `spacegame/models/okafor_research.py:73` for the existing pattern. Frozen dataclasses cannot have mutable defaults; use `field(default_factory=tuple)` for the two collection fields OR make them required (recommended: required, since a lens without `investment_from` is a design smell A2-5 should not be able to ship).
+
+2. **Implement `Lens.to_dict()` / `Lens.from_dict()` with tuple-preserving round-trip.**
+   - Files: `spacegame/models/lens.py`.
+   - Test: `tests/test_models/test_lens.py::TestLensRoundtrip::test_to_dict_from_dict_preserves_every_field` — construct a Lens with all 11 fields non-empty, `to_dict`, JSON-serialize, JSON-deserialize, `from_dict`, assert equality field-by-field including that `investment_from` and `tier_unlocks` came back as tuples not lists.
+   - Gotchas: JSON has no tuple type; `to_dict` emits lists, `from_dict` must convert lists back to tuples explicitly. Do not use `dataclasses.asdict` — it recurses and produces lists for tuples-of-primitives, which then round-trip as lists and quietly break equality on the frozen dataclass. Write both methods by hand.
+
+3. **Create `data/narrative/` directory and `data/narrative/lenses.json` as `{"lenses": []}`.**
+   - Files: `data/narrative/lenses.json` (NEW).
+   - Test: no direct test; verified via task 4's loader integration.
+   - Gotchas: the directory is new; `git` will track it once `lenses.json` lands. Do not add a README — CLAUDE.md forbids unrequested docs.
+
+4. **Add `_parse_lenses()` and `load_lenses()` to `DataLoader`; wire into `load_all()`; expose `self.lenses: dict[str, Lens]`.**
+   - Files: `spacegame/data_loader.py`.
+   - Tests:
+     - `tests/test_models/test_lens.py::TestLensRegistry::test_load_from_tmp_path` — write a synthetic `{"lenses": [{...one complete lens...}]}` to `tmp_path/narrative/lenses.json`, call `DataLoader(data_dir=tmp_path).load_lenses()`, assert one Lens in `loader.lenses` keyed by its id.
+     - `tests/test_models/test_lens.py::TestLensRegistry::test_singleton_exposes_lenses` — `get_data_loader().lenses` is a `dict[str, Lens]` (may be empty until A2-5/A2-6 land).
+     - `tests/test_models/test_lens.py::TestLensRegistry::test_empty_stub_loads_without_error` — the shipped `data/narrative/lenses.json` (empty stub) loads without crashing.
+   - Gotchas: follow the existing `load_achievements` pattern at `spacegame/data_loader.py:698` — check file exists, log warning + return if missing (preserves the "runs without every JSON file present" invariant other tests rely on), else parse. Register in `load_all()` via `self._safe_load("lenses", self.load_lenses)`. Add the `self.lenses: dict[str, Lens] = {}` initialisation in `__init__` alongside the other registry dicts (near line 100). No `_get_lens(lens_id)` helper — downstream sprints access the dict directly, which matches how `self.commodities`, `self.factions`, etc. are consumed.
+
+5. **Write `tests/test_compliance/test_lens_registry.py` — the data-integrity guard.**
+   - Files: `tests/test_compliance/test_lens_registry.py` (NEW).
+   - Tests: one class `TestLensRegistryIntegrity` with sub-tests asserting the parser raises `ValueError` on:
+     - missing `minigame_shape` (message names the offending `lens_id`);
+     - missing any other required field (`sees`, `wants`, `trades`, `voice`, etc.) — one parametrised test covering the whole 11-field set;
+     - duplicate `lens_id` (message names the duplicated id);
+     - non-snake_case `lens_id` (`Vengeance`, `political-power`, `1lens` all rejected);
+     - `investment_from` or `tier_unlocks` provided as a non-list JSON type (e.g., string, dict) — rejected with a clear message.
+   - Also: a `test_scan_guard_is_not_silent_on_empty_registry` that asserts the loader's compliance scan is skipped-with-reason rather than passing when zero lenses are present (the pattern from `test_findings_register.py`).
+   - Gotchas: use `tmp_path` for every negative test — do NOT construct malformed lenses in the real `data/narrative/lenses.json`. The pattern is: write bad JSON to `tmp_path/narrative/lenses.json`, expect `ValueError` from `DataLoader(data_dir=tmp_path).load_lenses()`.
+
+6. **Sweep: run `ruff format` + `ruff check` on touched files only; run mypy on touched files against baseline; run `pytest -n auto -q`; validate acceptance criteria.**
+   - Files: none (verification).
+   - Command scope: `ruff format spacegame/models/lens.py spacegame/data_loader.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py` — per AGENT_GUIDE.md's "scope formatting to touched files" rule; project-wide format is banned during sprint work.
+   - Type check: `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` — must exit 0 (no new mypy violations vs. the 768-error baseline).
+   - Test suite: pass count ≥ 10882 (pre-phase baseline). New test count target: 15+.
+   - Gotchas: `mypy-baseline.txt` MUST NOT be regenerated — this sprint adds new module code, so any new mypy error is on this sprint to fix, not on the baseline to absorb. The ratchet's whole point is that feature commits do not regenerate the baseline.
+
+**Cross-sprint reactions to author.**
+- none (foundational typed module, no player-facing surface). A2-1 authors zero lens content, zero NPCs, zero missions, zero locations. The only observable surface is `get_data_loader().lenses` for downstream sprints. Cross-sprint reactions belong to A2-5/A2-6 (lens content), A2-7 (per-lens location readings), and A2-12 through A2-19 (dilemma-specific NPC reactions).
+
+**Risks / open questions.**
+- ~~Should A2-1 ship 5 fields or 11?~~ **Locked: 11.** Rationale: A2-5/A2-6 name all 11 as fields they populate; A2-5's touch zones do not include `spacegame/models/lens.py` or `data_loader.py`; A2-1's own criterion 1 ("no Python change to add a lens") is only satisfiable if the schema is complete. Shipping 5 fields would silently force A2-5 to extend the schema and the parser, breaking its declared touch zones.
+- ~~Should `lenses.json` ship with fixture entries?~~ **Locked: no, ship empty (`{"lenses": []}`).** Rationale: A2-5/A2-6 touch this file to append the sixteen real entries; A2-1 fixtures would collide. Round-trip and load tests use `tmp_path` via `DataLoader(data_dir=tmp_path)`.
+- ~~Should `investment_from` and `tier_unlocks` be `list[str]` or `tuple[str, ...]`?~~ **Locked: `tuple[str, ...]`.** Rationale: frozen dataclass cannot hold mutable collections safely; tuples are hashable and immutable; JSON round-trip converts list ↔ tuple explicitly in `to_dict`/`from_dict`.
+- ~~Should A2-1 validate `investment_from` tag pattern (`^[a-z][a-z0-9_]*(:[a-z][a-z0-9_]*)?$`)?~~ **Locked: no.** A2-5's own compliance test owns tag-format validation (per its acceptance criterion 5). A2-1's guard covers structural/schema integrity only.
+- ~~Should A2-1 add a `_get_lens(lens_id)` helper on `DataLoader`?~~ **Locked: no.** Consumers use `loader.lenses[lens_id]` directly, matching the existing `loader.commodities`, `loader.factions`, `loader.upgrades` access pattern. Adding a helper introduces an unused indirection and diverges from the singleton's shape.
 
 **Activity log.**
 - 2026-08-27 — todo (created)
+- 2026-08-28 13:58 — harness: plan phase starting
+- 2026-08-28 — planning complete; expanded Lens schema from 5 fields to the spec's full 11 to unblock A2-5/A2-6, added snake_case + all-fields-required guards (criteria 2 and 6), locked 5 open decisions, added a scan-guard-against-empty-registry sub-test. Ship `lenses.json` empty so downstream population sprints have a clean touch zone. Cross-sprint reactions: none (foundational). PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-28 13:58
+- Completed: 2026-08-28
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: full-schema-alignment (Lens gets 11 fields, not 5), all-required-fields-guard (criterion 2 extended beyond `minigame_shape`), snake_case-lens_id-guard (new criterion 6), scan-guard-against-empty-registry (matches `test_findings_register.py` pattern), empty-stub `lenses.json` (protects A2-5/A2-6 touch zones)
+- Decisions_locked: 5
+- Notes: Verified all 5 context docs exist and read. Vision-alignment gap closed: A2-1 shipped as originally written would have silently forced A2-5/A2-6 to modify `models/lens.py` and `data_loader.py`, breaking their declared touch zones and A2-1's own "no Python change" criterion. Sprint size stays M (1 week) — the added fields are declarative and the extra tests are parametric variations on the same guard shape.
 
 #### A2-2 — Lens authoring guide
 
