@@ -21,7 +21,7 @@ from dataclasses import fields as dataclass_fields
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ralph import agents, heartbeat, roadmap_state
+from ralph import agents, heartbeat, roadmap_state, triage
 from ralph.agents import Outcome, Phase, PhaseContext
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
@@ -1389,7 +1389,12 @@ def main() -> int:
             else:
                 eligible = roadmap_state.eligible_sprints(sprints)
                 if not eligible:
-                    log("No eligible sprints. Exiting cleanly.")
+                    queue = triage.analyse(sprints)
+                    if queue.is_starved:
+                        log(triage.starvation_report(queue))
+                        log("STARVED -- exiting. This is NOT completion.")
+                    else:
+                        log("No eligible sprints; all work complete. Exiting cleanly.")
                     break
                 picked = eligible[0]
 
