@@ -28,10 +28,13 @@ from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
+    HARNESS_RC_INFRA_ERROR,
     IN_PROGRESS_STALE_MINUTES,
     INTER_SPRINT_SLEEP,
     LOCK_FILE,
     LOGS_DIR,
+    MAX_CONSECUTIVE_INFRA_SPRINTS,
+    MAX_INFRA_ERRORS_PER_SPRINT,
     MAX_REWORK_CYCLES,
     PROJECT_ROOT,
     PUSH_ON_SPRINT_COMPLETE,
@@ -69,6 +72,12 @@ class SprintState:
     # a permanent block. See `_should_retry`. BLOCKED never consumes this --
     # it is a judgement, not a failure.
     retry_count: int = 0
+    # Consecutive INFRA_ERROR outcomes on this sprint. `retry_count` does not
+    # bound INFRA_ERROR: `_mark_terminal_outcome` resets it to `todo` so the
+    # next run picks it up cleanly, which makes it re-runnable without limit.
+    # Reset the moment any phase actually completes, since that proves the
+    # infrastructure is up. See `MAX_INFRA_ERRORS_PER_SPRINT`.
+    infra_error_count: int = 0
     last_phase: Optional[str] = None
     last_outcome: Optional[str] = None
     started_at: Optional[str] = None
@@ -279,6 +288,21 @@ def _handle_non_ok_phase(
     marks blocked instead, even on what would otherwise be the free retry.
     """
     outcome = result.outcome
+    if outcome == Outcome.INFRA_ERROR:
+        sprint_state.infra_error_count += 1
+        state.save()
+        if sprint_state.infra_error_count >= MAX_INFRA_ERRORS_PER_SPRINT:
+            _mark_terminal_outcome(
+                sprint_id,
+                phase,
+                Outcome.BLOCKED,
+                f"{result.reason} (blocking rather than resetting to todo: "
+                f"{sprint_state.infra_error_count} consecutive infrastructure failures on "
+                f"this sprint. INFRA_ERROR normally resets to todo and is therefore "
+                f"re-runnable without limit; this bound stops one sprint holding the "
+                f"whole queue behind it.)",
+            )
+            return
     if _should_retry(sprint_state, outcome):
         if _sprint_has_partial_commits(sprint_id, phase_context):
             _mark_terminal_outcome(
@@ -361,6 +385,12 @@ def _run_sprint_phases(
     if plan_result.outcome != Outcome.OK:
         _handle_non_ok_phase(sprint_id, "plan", plan_result, sprint_state, phase_context, state)
         return plan_result.outcome
+
+    # A phase that actually completed proves the CLI, the network and the auth
+    # token are all working, so any earlier infrastructure failures on this
+    # sprint were transient.
+    sprint_state.infra_error_count = 0
+    state.save()
 
     if not DRY_RUN:
         gate = _run_quality_gates()
@@ -1453,6 +1483,7 @@ def _write_status_snapshot(
     exit_reason: Optional[str] = None,
     crash_info: Optional[status.CrashInfo] = None,
     gate_failure: Optional[str] = None,
+    infra_failure: Optional[str] = None,
 ) -> None:
     """Write STATUS.md so progress is visible from a phone.
 
@@ -1476,6 +1507,10 @@ def _write_status_snapshot(
         gate_failure: Set when the per-sprint test gate found a red tree. The
             operator must be able to see that from GitHub -- a gate whose
             failure only reaches a discarded stdout is not a gate.
+        infra_failure: Set when consecutive sprints failed with INFRA_ERROR and
+            the run stopped. Partially visible before (`recent_outcomes`
+            rendered "SA-2 infra_error") but nothing said the run had given
+            up, or why.
     """
     try:
         sprints_now = roadmap_state.parse_sprints()
@@ -1487,6 +1522,7 @@ def _write_status_snapshot(
             crash=crash_info,
             decline_reason=exit_reason,
             gate_failure=gate_failure,
+            infra_failure=infra_failure,
         )
     except Exception as e:
         log(f"{sprint_id}: STATUS.md write failed: {e}")
@@ -1766,6 +1802,8 @@ def main() -> int:
     exit_reason: Optional[str] = None
     crash_info: Optional[status.CrashInfo] = None
     gate_failure: Optional[str] = None
+    infra_failure: Optional[str] = None
+    infra_streak = 0
     _consume_red_tree()  # a previous in-process run must not leak into this one
 
     try:
@@ -1888,6 +1926,26 @@ def main() -> int:
                 recent_outcomes.append(f"{picked.sprint_id} TEST-GATE FAILED")
                 log(f"Stopping the run: {gate_failure}")
 
+            # Infrastructure down (H4). INFRA_ERROR means the agent never
+            # meaningfully executed -- expired token, API outage, sustained
+            # rate limit -- and `_mark_terminal_outcome` resets the sprint to
+            # `todo`, so the loop would otherwise re-pick it immediately and
+            # keep doing so for every one of `--max-sprints` sprints, then
+            # exit 0. Exiting 0 is what let the supervisor call it a success,
+            # reset its failure counter, and relaunch 30 seconds later for as
+            # long as the outage lasted.
+            infra_streak = infra_streak + 1 if outcome == Outcome.INFRA_ERROR else 0
+            if infra_streak >= MAX_CONSECUTIVE_INFRA_SPRINTS:
+                infra_failure = (
+                    f"{infra_streak} consecutive sprints failed with infra_error "
+                    f"(most recently {picked.sprint_id}). The agent CLI, the network "
+                    "or the auth token is down; no sprint can succeed until it is "
+                    "back. Stopping this run and reporting failure so the supervisor "
+                    "backs off instead of relaunching every 30 seconds."
+                )
+                log(infra_failure)
+                recent_outcomes.append(f"{picked.sprint_id} INFRA-STOP")
+
             # Refresh baseline after a successful sprint (item L).
             # Mid-run failure keeps the previous baseline rather than aborting —
             # agents already running can still compare against the last-known-good count.
@@ -1934,7 +1992,12 @@ def main() -> int:
             # STATUS.md (Task 8) -- the operator's only window into the run
             # while away. Written before the bookkeeping commit below so it
             # rides along with it.
-            _write_status_snapshot(picked.sprint_id, recent_outcomes, gate_failure=gate_failure)
+            _write_status_snapshot(
+                picked.sprint_id,
+                recent_outcomes,
+                gate_failure=gate_failure,
+                infra_failure=infra_failure,
+            )
 
             # Commit harness bookkeeping (terminal status + index regen).
             # Captures the post-agent ROADMAP edits the harness writes
@@ -1951,7 +2014,7 @@ def main() -> int:
             # Auto-push (item A) after sprint completion.
             _push_after_sprint(picked.sprint_id, outcome, push_enabled)
 
-            if gate_failure is not None:
+            if gate_failure is not None or infra_failure is not None:
                 break
 
             if should_stop():
@@ -1962,7 +2025,9 @@ def main() -> int:
 
         log(f"Harness done. Sprints processed this run: {sprints_processed}.")
         state.save()
-        return 0
+        # Non-zero when the run accomplished nothing because the infrastructure
+        # was down, so the supervisor records a failure rather than a success.
+        return HARNESS_RC_INFRA_ERROR if infra_failure is not None else 0
     except Exception as exc:
         # A crash must be legible as a crash: right now, without this, the
         # operator cannot tell "exited cleanly with nothing to do" from
@@ -2004,6 +2069,7 @@ def main() -> int:
             exit_reason=exit_reason,
             crash_info=crash_info,
             gate_failure=gate_failure,
+            infra_failure=infra_failure,
         )
         try:
             _commit_harness_bookkeeping("harness-exit", "final status snapshot")

@@ -516,3 +516,47 @@ class TestGateFailureBanner:
         finally:
             status_module.STATUS_PATH = status_module.PROJECT_ROOT / "STATUS.md"
         assert "## TEST SUITE FAILING" in target.read_text(encoding="utf-8")
+
+
+class TestInfrastructureBanner:
+    """H4: `## Recent` already rendered the individual `infra_error` outcomes,
+    so the failure was not silent -- but nothing said the run had GIVEN UP, or
+    why, or that the supervisor is now backing off rather than retrying. The
+    operator saw a queue that had stopped moving with no statement of cause.
+    """
+
+    def test_an_infrastructure_stop_is_a_loud_banner(self) -> None:
+        text = render_status(
+            QueueState(total=5, todo=5, eligible=5),
+            None,
+            [],
+            infra_failure="2 consecutive sprints failed with infra_error (most recently SA-4).",
+        )
+        assert "## INFRASTRUCTURE FAILING" in text
+        assert "SA-4" in text
+        assert "not because of anything in the repo" in text, (
+            "the banner does not tell the operator this is an outage rather than a "
+            "code problem, which is the whole diagnostic value of separating it"
+        )
+
+    def test_no_banner_on_a_healthy_run(self) -> None:
+        text = render_status(QueueState(total=5, todo=5, eligible=5), None, [])
+        assert "INFRASTRUCTURE FAILING" not in text
+
+    def test_the_crash_loop_banner_carries_the_supervisors_reason(self) -> None:
+        """ "3 consecutive failures" and "6 consecutive infrastructure failures"
+        call for entirely different responses; the banner said neither."""
+        text = render_status(
+            QueueState(total=5, todo=5, eligible=5),
+            None,
+            [],
+            crash_loop=True,
+            crash_loop_reason="stopping: 6 consecutive infrastructure failures",
+        )
+        assert "## CRASH-LOOP" in text
+        assert "6 consecutive infrastructure failures" in text
+        assert "Nothing will resume until a human intervenes." in text
+
+    def test_the_crash_loop_banner_still_renders_without_a_reason(self) -> None:
+        text = render_status(QueueState(total=5, todo=5, eligible=5), None, [], crash_loop=True)
+        assert "## CRASH-LOOP" in text

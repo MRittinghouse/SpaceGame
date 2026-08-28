@@ -508,6 +508,7 @@ class TestWriteStatusSnapshot:
             crash: Optional[CrashInfo] = None,
             decline_reason: Optional[str] = None,
             gate_failure: Optional[str] = None,
+            infra_failure: Optional[str] = None,
         ) -> None:
             calls.append(
                 {
@@ -551,6 +552,7 @@ class TestWriteStatusSnapshot:
             crash: Optional[CrashInfo] = None,
             decline_reason: Optional[str] = None,
             gate_failure: Optional[str] = None,
+            infra_failure: Optional[str] = None,
         ) -> None:
             calls.append(recent)
 
@@ -2702,3 +2704,187 @@ class TestMidRunBaselineRefreshFailureIsVisible:
             "stopped being able to measure the suite at all"
         )
         assert "INTERNALERROR" in content, "STATUS.md does not carry the reason"
+
+
+class TestInfraErrorIsBoundedPerSprint:
+    """`_mark_terminal_outcome` resets INFRA_ERROR to `todo` so the next run
+    picks the sprint up cleanly -- which makes it re-runnable without limit.
+    `retry_count` bounds every other outcome class; it bounds nothing here,
+    because the reset happens whether or not the retry was allowed.
+    """
+
+    def _infra_result(self, tmp_path: Path) -> PhaseResult:
+        return PhaseResult(
+            outcome=Outcome.INFRA_ERROR,
+            phase=Phase.PLAN,
+            sprint_id="SA-2",
+            log_path=tmp_path / "test.log",
+            reason="claude CLI exited 1 with 0 bytes of output",
+        )
+
+    def _drive(self, isolated_roadmap: Path, attempts: int) -> HarnessState:
+        state = HarnessState()
+        for _ in range(attempts):
+            roadmap_state.update_status("SA-2", config.STATUS_TODO)
+            with patch.object(
+                agents, "run_phase", return_value=self._infra_result(isolated_roadmap)
+            ):
+                harness.execute_sprint("SA-2", state)
+        return state
+
+    def test_below_the_cap_the_sprint_is_reset_to_todo(self, isolated_roadmap: Path) -> None:
+        """Control: the existing, correct behaviour must survive the bound.
+
+        A transient CLI blip is exactly what the todo-reset is for, and the
+        bound must not turn the first one into a block."""
+        self._drive(isolated_roadmap, attempts=1)
+        sprint = roadmap_state.parse_sprints()["SA-2"]
+        assert sprint.is_todo(), (
+            f"a single infrastructure blip left SA-2 at {sprint.status!r} instead of "
+            "todo; the bound has swallowed the transient-failure grace"
+        )
+
+    def test_at_the_cap_the_sprint_is_blocked_instead(self, isolated_roadmap: Path) -> None:
+        state = self._drive(isolated_roadmap, attempts=config.MAX_INFRA_ERRORS_PER_SPRINT)
+
+        assert state.for_sprint("SA-2").infra_error_count >= config.MAX_INFRA_ERRORS_PER_SPRINT
+        content = roadmap_state.ROADMAP_PATH.read_text(encoding="utf-8")
+        assert "**Status**: blocked" in content, (
+            f"after {config.MAX_INFRA_ERRORS_PER_SPRINT} consecutive infrastructure "
+            "failures the sprint was still reset to todo, so it is re-picked forever "
+            "and the rest of the queue waits behind it"
+        )
+        assert "consecutive infrastructure failures" in content
+
+    def test_a_completed_phase_clears_the_count(self, isolated_roadmap: Path) -> None:
+        """The counter means "consecutive", so a phase that actually ran --
+        which proves the CLI, network and token are all up -- must reset it."""
+        state = self._drive(isolated_roadmap, attempts=config.MAX_INFRA_ERRORS_PER_SPRINT - 1)
+        assert state.for_sprint("SA-2").infra_error_count > 0
+
+        roadmap_state.update_status("SA-2", config.STATUS_TODO)
+        ok = PhaseResult(
+            outcome=Outcome.OK,
+            phase=Phase.PLAN,
+            sprint_id="SA-2",
+            log_path=isolated_roadmap / "t.log",
+            reason="",
+        )
+        needs_rework = PhaseResult(
+            outcome=Outcome.NEEDS_REWORK,
+            phase=Phase.REVIEW,
+            sprint_id="SA-2",
+            log_path=isolated_roadmap / "t.log",
+            reason="not yet",
+        )
+        with patch.object(agents, "run_phase", side_effect=[ok, ok, needs_rework] * 4):
+            with patch.object(harness, "_run_quality_gates", return_value=None):
+                harness.execute_sprint("SA-2", state)
+
+        assert state.for_sprint("SA-2").infra_error_count == 0, (
+            "a phase that actually completed did not clear the infrastructure counter, "
+            "so unrelated blips accumulate across a seven-day run and eventually block "
+            "a sprint that has nothing wrong with it"
+        )
+
+
+class TestAnInfrastructureOutageStopsTheRunAndIsReported:
+    """The composed failure: ten sprints, every one infra_error, nothing
+    accomplished -- and `main()` still returned 0, so the supervisor recorded
+    a success, reset its counter, and relaunched 30 seconds later."""
+
+    def _drive(
+        self,
+        isolated_roadmap: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        outcomes: list[Outcome],
+    ) -> tuple[int, str, list[str]]:
+        (isolated_roadmap / "ROADMAP.md").write_text(_TWO_TODO_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", False)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_infra.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        monkeypatch.setattr(
+            harness,
+            "_run_git",
+            lambda args, timeout=30: (0, "true\n", "")
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]
+            else (0, "", ""),
+        )
+        monkeypatch.setattr(harness, "_capture_test_baseline", lambda: (10_774, 98))
+
+        picked: list[str] = []
+        queue = list(outcomes)
+
+        def fake_execute(
+            sprint_id: str, state: object, test_baseline: tuple[int, int] = (0, 0)
+        ) -> Outcome:
+            picked.append(sprint_id)
+            assert queue, f"main() ran more sprints than scripted: {picked}"
+            return queue.pop(0)
+
+        monkeypatch.setattr(harness, "execute_sprint", fake_execute)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                str(len(outcomes)),
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-agency-probe",
+            ],
+        )
+        try:
+            rc = harness.main()
+            content = status_file.read_text(encoding="utf-8") if status_file.exists() else ""
+        finally:
+            status_file.unlink(missing_ok=True)
+        return rc, content, picked
+
+    def test_consecutive_infra_errors_stop_the_run_with_a_nonzero_exit(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        rc, _content, picked = self._drive(isolated_roadmap, monkeypatch, [Outcome.INFRA_ERROR] * 4)
+
+        assert rc == config.HARNESS_RC_INFRA_ERROR, (
+            f"the harness exited {rc} after accomplishing nothing. On rc 0 the "
+            "supervisor calls record_success(), resets its failure counter, and "
+            "relaunches in 30 seconds -- for as long as the outage lasts"
+        )
+        assert len(picked) == config.MAX_CONSECUTIVE_INFRA_SPRINTS, (
+            f"the harness kept picking up sprints during an outage: {picked}. Each one "
+            "costs up to three agent invocations that cannot possibly succeed"
+        )
+
+    def test_the_outage_is_named_in_status_md(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _rc, content, _picked = self._drive(
+            isolated_roadmap, monkeypatch, [Outcome.INFRA_ERROR] * 4
+        )
+
+        assert "## INFRASTRUCTURE FAILING" in content, (
+            "STATUS.md carried the individual `infra_error` outcomes but never said "
+            "the run had given up, or why -- the operator sees a queue that is not "
+            "moving and no statement of the cause"
+        )
+        assert "INFRA-STOP" in content
+
+    def test_an_isolated_infra_error_does_not_stop_the_run(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Control: a single blip between working sprints must not end a run.
+        The counter is consecutive, so a success in between clears it."""
+        rc, content, picked = self._drive(
+            isolated_roadmap,
+            monkeypatch,
+            [Outcome.INFRA_ERROR, Outcome.OK, Outcome.INFRA_ERROR, Outcome.OK],
+        )
+
+        assert rc == 0
+        assert len(picked) == 4, f"the run stopped early on an isolated blip: {picked}"
+        assert "INFRASTRUCTURE FAILING" not in content

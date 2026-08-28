@@ -231,6 +231,37 @@ PUSH_TIMEOUT_SECONDS: int = 60
 # positive rather than disable, normally.
 VALIDATE_ROADMAP_AFTER_AGENT: bool = True
 
+# ---------------------------------------------------------------------------
+# Infrastructure failures (H4)
+# ---------------------------------------------------------------------------
+
+# Exit code meaning "this run accomplished nothing because the infrastructure
+# the agents depend on was down" -- an expired auth token, an API outage, a
+# sustained rate limit.
+#
+# It exists because INFRA_ERROR used to leave `main()` returning 0. The
+# supervisor's `record_success()` then reset its consecutive-failure counter,
+# so the 3-strike crash-loop cap and the exponential backoff -- the two
+# mechanisms that separate a quiet week from an expensive one -- never engaged
+# for the one failure class that can persist for hours. A harness that
+# processed ten sprints, every one of them infra_error, and produced nothing,
+# still reported success, and the supervisor relaunched it 30 seconds later,
+# for as long as the outage lasted.
+HARNESS_RC_INFRA_ERROR: int = 5
+
+# Consecutive INFRA_ERROR sprint outcomes before the harness stops the run and
+# exits with HARNESS_RC_INFRA_ERROR. Two is enough to tell "the API is down"
+# from "one phase hit a blip": the first one already consumed its retry.
+MAX_CONSECUTIVE_INFRA_SPRINTS: int = 2
+
+# Consecutive INFRA_ERROR outcomes on ONE sprint before it is blocked instead
+# of reset to `todo`. `_mark_terminal_outcome` resets INFRA_ERROR to todo so
+# the next run can pick it up cleanly, which makes it infinitely re-runnable
+# -- `retry_count` gates every other outcome class but not this one. A sprint
+# whose prompt reliably kills the CLI would otherwise be re-picked forever
+# while the rest of the queue waited behind it.
+MAX_INFRA_ERRORS_PER_SPRINT: int = 3
+
 # An "in-progress" sprint older than this many minutes (no recent
 # Activity log entry, no recent state-file touch) is considered
 # abandoned by a previously-killed run. The startup recovery resets it

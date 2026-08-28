@@ -57,6 +57,7 @@ from pathlib import Path
 from typing import IO, Callable, Optional
 
 from ralph import heartbeat, status, triage
+from ralph.config import HARNESS_RC_INFRA_ERROR as _HARNESS_RC_INFRA_ERROR
 from ralph.config import LOGS_DIR, PROJECT_ROOT, RALPH_DIR
 from ralph.proc import atomic_write
 from ralph.roadmap_state import parse_sprints
@@ -136,6 +137,23 @@ _BACKOFF_LADDER = (30.0, 120.0, 480.0)
 MAX_CONSECUTIVE_FAILURES = 3
 HEARTBEAT_STALE_SECONDS = 600.0
 
+# Infrastructure failures get their own, much slower ladder and a higher cap.
+#
+# A harness that exits HARNESS_RC_INFRA_ERROR did nothing wrong: the CLI, the
+# network or the auth token is down. Two opposite mistakes are possible here
+# and both end the week. Treating it as a success (what used to happen, since
+# the harness exited 0) means relaunching every 30 seconds for as long as the
+# outage lasts -- five days of full API spend producing nothing. Treating it as
+# an ordinary failure means the normal ladder retires the run in about ten
+# minutes, so a transient three-hour outage on day 2 permanently ends a
+# seven-day trip.
+#
+# So: back off in minutes rather than seconds, and allow six of them. The
+# outage has to persist roughly four hours before the supervisor gives up, and
+# it costs six harness launches over that period instead of several hundred.
+_INFRA_BACKOFF_LADDER = (300.0, 900.0, 1800.0, 3600.0)
+MAX_CONSECUTIVE_INFRA_FAILURES = 6
+
 # How often the supervisor checks the heartbeat while the harness runs.
 HEARTBEAT_POLL_SECONDS = 30.0
 
@@ -188,18 +206,40 @@ def backoff_seconds(consecutive_failures: int) -> float:
     return _BACKOFF_LADDER[idx]
 
 
+def infra_backoff_seconds(consecutive_infra_failures: int) -> float:
+    """Delay after an infrastructure failure: 5m, 15m, 30m, then hourly.
+
+    Deliberately an order of magnitude slower than `backoff_seconds`. Nothing
+    the harness can do shortens an API outage, so retrying quickly only spends
+    money; retrying slowly costs nothing but wall clock the run was going to
+    lose anyway.
+    """
+    idx = min(max(consecutive_infra_failures, 0), len(_INFRA_BACKOFF_LADDER) - 1)
+    return _INFRA_BACKOFF_LADDER[idx]
+
+
 def should_restart(
     consecutive_failures: int,
     eligible: int,
     starved: bool,
+    consecutive_infra_failures: int = 0,
 ) -> tuple[bool, str]:
     """Decide whether to relaunch the harness.
 
     Returns (restart, reason). Reason is always populated so the log explains
-    itself without the reader inferring intent.
+    itself without the reader inferring intent -- and it is now what STATUS.md
+    prints inside the CRASH-LOOP banner, because "3 consecutive failures" and
+    "6 consecutive infrastructure failures" call for entirely different
+    responses from the operator.
     """
     if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
         return False, f"stopping: {consecutive_failures} consecutive failures"
+    if consecutive_infra_failures >= MAX_CONSECUTIVE_INFRA_FAILURES:
+        return False, (
+            f"stopping: {consecutive_infra_failures} consecutive infrastructure "
+            "failures (agent CLI / network / auth). Restarting cannot help until "
+            "that is fixed."
+        )
     if starved:
         return False, "stopping: queue is STARVED — restarting cannot help"
     if eligible <= 0:
@@ -219,19 +259,38 @@ class RestartPolicy:
     """
 
     consecutive_failures: int = 0
+    consecutive_infra_failures: int = 0
     max_consecutive_failures: int = MAX_CONSECUTIVE_FAILURES
+    max_consecutive_infra_failures: int = MAX_CONSECUTIVE_INFRA_FAILURES
 
     def record_success(self) -> None:
         """A harness run that exited 0 (whatever sprints it processed)."""
         self.consecutive_failures = 0
+        self.consecutive_infra_failures = 0
 
     def record_failure(self) -> None:
         self.consecutive_failures += 1
+        self.consecutive_infra_failures = 0
+
+    def record_infra_failure(self) -> None:
+        """A run that accomplished nothing because the infrastructure was down.
+
+        Counted separately, not as an ordinary failure: the harness did nothing
+        wrong and nothing it does can shorten an API outage. Its own cap is
+        higher and its own backoff is slower, so a transient outage does not
+        retire the week in ten minutes -- but it IS counted, which is the whole
+        point. It used to be counted as a *success*, because the harness exited
+        0, which reset this counter and disarmed both mechanisms entirely.
+        """
+        self.consecutive_infra_failures += 1
 
     @property
     def exhausted(self) -> bool:
         """True once ``should_restart`` would refuse on failure count alone."""
-        return self.consecutive_failures >= self.max_consecutive_failures
+        return (
+            self.consecutive_failures >= self.max_consecutive_failures
+            or self.consecutive_infra_failures >= self.max_consecutive_infra_failures
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -363,6 +422,11 @@ def harness_exited_silently(
 # has no race the way reading the lock file's live state afterward does.
 HARNESS_RC_LOCK_CONFLICT = 2
 HARNESS_RC_PREFLIGHT_FAILURE = 4
+
+# Imported rather than redeclared: the harness owns this code and the two
+# modules must not be able to drift apart on the one exit that decides whether
+# the backoff engages at all.
+HARNESS_RC_INFRA_ERROR = _HARNESS_RC_INFRA_ERROR
 
 
 def silent_exit_reason(rc: int) -> Optional[str]:
@@ -635,7 +699,7 @@ def _supervise(
     return proc.wait()
 
 
-def _write_crash_loop_status(recent: list[str]) -> None:
+def _write_crash_loop_status(recent: list[str], reason: Optional[str] = None) -> None:
     """Write, commit and push STATUS.md with crash_loop=True before the
     supervisor gives up.
 
@@ -657,6 +721,7 @@ def _write_crash_loop_status(recent: list[str]) -> None:
             recent[-5:],
             crash_loop=True,
             disagreements=triage.blocks_disagreements(sprints),
+            crash_loop_reason=reason,
         )
     except Exception as exc:  # nothing supervises the supervisor: swallow, never crash
         _log(f"supervisor: could not write crash-loop STATUS.md: {exc!r}")
@@ -753,26 +818,40 @@ def main() -> int:
 
         if rc == 0:
             policy.record_success()
+        elif rc == HARNESS_RC_INFRA_ERROR:
+            policy.record_infra_failure()
         else:
             policy.record_failure()
-        recent.append(f"harness exit rc={rc}")
+        recent.append(
+            f"harness exit rc={rc}"
+            + (" (infrastructure down)" if rc == HARNESS_RC_INFRA_ERROR else "")
+        )
 
         sprints = parse_sprints()
         queue = triage.analyse(sprints)
         restart, reason = should_restart(
-            policy.consecutive_failures, queue.eligible, queue.is_starved
+            policy.consecutive_failures,
+            queue.eligible,
+            queue.is_starved,
+            policy.consecutive_infra_failures,
         )
         _log(f"supervisor: {reason}")
 
         if not restart:
             if policy.exhausted:
-                _write_crash_loop_status(recent)
+                _write_crash_loop_status(recent, reason)
             # Recorded BEFORE returning, so the repeating trigger's next
             # firing sees a deliberate stop rather than an absence.
             record_terminal_stop(reason)
             return 0
 
-        time.sleep(backoff_seconds(policy.consecutive_failures))
+        delay = (
+            infra_backoff_seconds(policy.consecutive_infra_failures)
+            if rc == HARNESS_RC_INFRA_ERROR
+            else backoff_seconds(policy.consecutive_failures)
+        )
+        _log(f"supervisor: sleeping {delay:.0f}s before the next launch")
+        time.sleep(delay)
 
 
 if __name__ == "__main__":

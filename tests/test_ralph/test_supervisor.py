@@ -1381,3 +1381,131 @@ class TestSuperviseIgnoresAPreviousRunsHeartbeat:
         )
 
         assert killed == [4321]
+
+
+class TestInfrastructureFailuresAreAFailureMode:
+    """H4: the harness used to exit 0 after processing ten sprints that all
+    failed with infra_error and accomplishing nothing.
+
+    `should_restart` saw rc 0, `record_success()` reset the counter, and the
+    3-strike cap and the exponential backoff -- named in the spec as "the
+    difference between a quiet week and an expensive one" -- never engaged,
+    because both are keyed to non-zero exits and this failure mode never
+    produced one. An expired token or a multi-hour outage on day 2 therefore
+    yielded a full pre-flight (one claude call) plus a full baseline capture
+    (~100s of pytest) plus ten sprints, on a 30-second loop, for five days.
+    """
+
+    def test_an_infra_exit_is_not_a_success(self) -> None:
+        policy = RestartPolicy()
+        policy.record_failure()
+        policy.record_failure()
+        policy.record_infra_failure()
+
+        assert policy.consecutive_failures == 2, (
+            "an infrastructure failure reset the ordinary failure counter, so a "
+            "harness alternating between crashing and hitting an outage never trips "
+            "the crash-loop cap"
+        )
+        assert policy.consecutive_infra_failures == 1
+
+    def test_repeated_infra_failures_eventually_exhaust_the_policy(self) -> None:
+        policy = RestartPolicy()
+        for _ in range(supervisor.MAX_CONSECUTIVE_INFRA_FAILURES):
+            policy.record_infra_failure()
+            assert policy.consecutive_failures == 0, (
+                "infra failures must not be counted as ordinary failures too, or a "
+                "three-minute blip would retire the week"
+            )
+        assert policy.exhausted, (
+            "the supervisor never gives up on an infrastructure failure, so a "
+            "permanently expired auth token spins for the whole trip"
+        )
+
+    def test_a_successful_run_clears_the_infra_counter(self) -> None:
+        policy = RestartPolicy()
+        policy.record_infra_failure()
+        policy.record_infra_failure()
+        policy.record_success()
+
+        assert policy.consecutive_infra_failures == 0
+        assert not policy.exhausted
+
+    def test_should_restart_stops_on_repeated_infra_failures(self) -> None:
+        restart, reason = should_restart(0, 5, False, supervisor.MAX_CONSECUTIVE_INFRA_FAILURES)
+        assert restart is False
+        assert "infrastructure" in reason
+
+    def test_should_restart_keeps_going_below_the_infra_cap(self) -> None:
+        restart, _reason = should_restart(
+            0, 5, False, supervisor.MAX_CONSECUTIVE_INFRA_FAILURES - 1
+        )
+        assert restart is True
+
+    def test_the_infra_backoff_is_an_order_of_magnitude_slower(self) -> None:
+        """Nothing the harness does shortens an API outage, so a fast retry
+        only spends money. The ladder must also give a transient outage room
+        to end: the ordinary ladder retires a run in ~10 minutes, which would
+        make a three-hour outage on day 2 end a seven-day trip."""
+        for n in range(supervisor.MAX_CONSECUTIVE_INFRA_FAILURES):
+            assert supervisor.infra_backoff_seconds(n) >= supervisor.backoff_seconds(n) * 3
+
+        total = sum(
+            supervisor.infra_backoff_seconds(n)
+            for n in range(supervisor.MAX_CONSECUTIVE_INFRA_FAILURES)
+        )
+        assert total >= 3 * 3600, (
+            f"the supervisor gives up on infrastructure after only {total / 3600:.1f} "
+            "hours of backoff; a transient outage would end the week"
+        )
+
+
+class TestInfraExitDrivesTheSupervisorLoop:
+    """The policy is right in isolation; this proves `main()` consults it."""
+
+    def test_repeated_infra_exits_stop_the_supervisor_with_an_infra_reason(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        write_calls: list[dict[str, object]] = []
+        slept: list[float] = []
+
+        monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
+        monkeypatch.setattr(supervisor.subprocess, "Popen", lambda *a, **k: object())
+        monkeypatch.setattr(supervisor.time, "sleep", lambda seconds: slept.append(seconds))
+        monkeypatch.setattr(supervisor, "_publish_status", lambda label: True)
+        monkeypatch.setattr(
+            supervisor,
+            "_supervise",
+            _bounded_constant(supervisor.HARNESS_RC_INFRA_ERROR, 10, "_supervise"),
+        )
+        monkeypatch.setattr(supervisor, "_status_mtime", _bounded_mtimes(30))
+        monkeypatch.setattr(supervisor, "parse_sprints", dict)
+        monkeypatch.setattr(
+            supervisor.triage, "analyse", lambda sprints: QueueState(total=5, todo=5, eligible=5)
+        )
+        monkeypatch.setattr(supervisor.triage, "blocks_disagreements", lambda sprints: [])
+        monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
+
+        def spy_write_status(queue: object, beat: object, recent: object, **kwargs: object) -> None:
+            write_calls.append(kwargs)
+
+        monkeypatch.setattr(supervisor.status, "write_status", spy_write_status)
+
+        rc = supervisor.main()
+
+        assert rc == 0
+        assert len(write_calls) == 1, (
+            f"expected exactly one crash-loop STATUS.md write, got {write_calls} -- "
+            "a harness exiting on an infrastructure failure must eventually stop the "
+            "supervisor rather than being relaunched forever"
+        )
+        assert write_calls[0].get("crash_loop") is True
+        reason = str(write_calls[0].get("crash_loop_reason"))
+        assert "infrastructure" in reason, (
+            f"the CRASH-LOOP banner does not distinguish an outage from a crashing "
+            f"harness: {reason!r}. The operator's response to the two is different"
+        )
+        assert slept and min(slept) >= supervisor.infra_backoff_seconds(0), (
+            f"the supervisor used the fast ladder after an infrastructure failure "
+            f"({slept}), which is the 30-second spin this finding is about"
+        )

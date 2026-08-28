@@ -227,6 +227,8 @@ def render_status(
     decline_reason: Optional[str] = None,
     push: Optional[PushState] = None,
     gate_failure: Optional[str] = None,
+    infra_failure: Optional[str] = None,
+    crash_loop_reason: Optional[str] = None,
 ) -> str:
     """Build the STATUS.md body.
 
@@ -256,6 +258,14 @@ def render_status(
             a red tree is the one state where the correct response is to
             stop authoring, and it must not be reported only to a log the
             Scheduled Task discards.
+        infra_failure: Set when consecutive sprints failed with INFRA_ERROR
+            and the run gave up. `## Recent` already showed the individual
+            outcomes, but nothing said the run had stopped, or why, or that
+            the supervisor is now backing off rather than retrying.
+        crash_loop_reason: The supervisor's own words for why it stopped,
+            shown inside the CRASH-LOOP banner. "3 consecutive failures" and
+            "6 consecutive infrastructure failures" call for entirely
+            different responses from the operator.
 
     Returns:
         The full Markdown text of STATUS.md.
@@ -275,7 +285,10 @@ def render_status(
     lines.append("")
 
     if crash_loop:
-        lines += ["## CRASH-LOOP", "", "Supervisor stopped after repeated failures.", ""]
+        lines += ["## CRASH-LOOP", "", "Supervisor stopped after repeated failures."]
+        if crash_loop_reason:
+            lines.append(f"Reason: {crash_loop_reason}")
+        lines += ["Nothing will resume until a human intervenes.", ""]
     if push is not None and not push.ok:
         last_ok = (
             _humanize_age(max(0.0, time.time() - push.last_success_timestamp))
@@ -289,6 +302,20 @@ def render_status(
             "copy of this file on GitHub is FROZEN at whatever it said when push last "
             f"worked ({last_ok}). A frozen board is not a dead machine -- but from "
             "GitHub alone the two look identical, which is why this says so here.",
+            "",
+        ]
+    if infra_failure is not None:
+        lines += [
+            "## INFRASTRUCTURE FAILING",
+            "",
+            "The harness stopped because the agent CLI, the network or the auth token "
+            "is down -- not because of anything in the repo. It reported failure rather "
+            "than success so the supervisor backs off (5m, 15m, 30m, then hourly) "
+            "instead of relaunching every 30 seconds for the rest of the week.",
+            "",
+            "```",
+            infra_failure,
+            "```",
             "",
         ]
     if gate_failure is not None:
@@ -410,6 +437,8 @@ def write_status(
     decline_reason: Optional[str] = None,
     push: Optional[PushState] = None,
     gate_failure: Optional[str] = None,
+    infra_failure: Optional[str] = None,
+    crash_loop_reason: Optional[str] = None,
 ) -> None:
     """Write STATUS.md atomically.
 
@@ -438,5 +467,7 @@ def write_status(
             decline_reason=decline_reason,
             push=push,
             gate_failure=gate_failure,
+            infra_failure=infra_failure,
+            crash_loop_reason=crash_loop_reason,
         ),
     )
