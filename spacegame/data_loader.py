@@ -54,6 +54,7 @@ from spacegame.models.upgrades import ShipUpgrade
 from spacegame.utils.logger import logger
 
 if TYPE_CHECKING:
+    from spacegame.models.capstone import Capstone
     from spacegame.models.captain_variant import CaptainVariant
     from spacegame.models.combat_complication import CombatComplication
     from spacegame.models.crew_interjection import CrewInterjection
@@ -153,6 +154,8 @@ class DataLoader:
         self.auction_voices: Dict[str, dict] = {}
         # A2-1: lens registry keyed by lens_id.
         self.lenses: Dict[str, "Lens"] = {}
+        # A2-3: capstone registry keyed by capstone_id.
+        self.capstones: Dict[str, "Capstone"] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -229,6 +232,7 @@ class DataLoader:
         self._safe_load("travel_log_templates", self.load_travel_log_templates)
         self._safe_load("balance_config", self.load_balance_config)
         self._safe_load("lenses", self.load_lenses)
+        self._safe_load("capstones", self.load_capstones)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -760,6 +764,37 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.lenses)} lenses")
         return self.lenses
+
+    def load_capstones(self) -> Dict[str, "Capstone"]:
+        """Load capstone registry from data/narrative/capstones.json.
+
+        Returns:
+            Dict mapping capstone_id to Capstone instance (empty when file is absent).
+
+        Raises:
+            ValueError: If any capstone in the file is invalid (missing fields,
+                duplicate ids, bad id format, negative threshold, wrong cutscene_ref
+                type).
+        """
+        from spacegame.models.capstone import Capstone
+
+        file_path = self.data_dir / "narrative" / "capstones.json"
+        if not file_path.exists():
+            logger.warning(f"Capstones not found: {file_path}")
+            return self.capstones
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.capstones.clear()
+        for raw in data.get("capstones", []):
+            capstone = Capstone.from_dict(raw)
+            if capstone.capstone_id in self.capstones:
+                raise ValueError(f"Duplicate capstone_id '{capstone.capstone_id}' in {file_path}.")
+            self.capstones[capstone.capstone_id] = capstone
+
+        logger.info(f"Loaded {len(self.capstones)} capstones")
+        return self.capstones
 
     def load_factions(self) -> Dict[str, Faction]:
         """Load faction definitions from JSON."""
