@@ -17,7 +17,7 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -1082,7 +1082,9 @@ class TestExecuteSprintRetryGrace:
     sprint -- retrying that would risk duplicating partial work.
     """
 
-    def _err_run_phase(self, tmp_path: Path, reason: str = "no sentinel"):
+    def _err_run_phase(
+        self, tmp_path: Path, reason: str = "no sentinel"
+    ) -> Callable[..., PhaseResult]:
         """Build a `run_phase` replacement that mimics the real function's
         one relevant side effect: populating `context.pre_phase_head`.
 
