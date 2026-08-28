@@ -135,9 +135,23 @@ $action = New-ScheduledTaskAction -Execute "python" `
 # deliberate stop in `ralph/supervisor_stop.json` and a new instance that finds
 # it exits immediately. Delete that file to resume.
 $triggerAtBoot = New-ScheduledTaskTrigger -AtStartup
+
+# RepetitionDuration is 3650 days, NOT [TimeSpan]::MaxValue.
+#
+# MaxValue is the obvious way to say "repeat forever" and it is what the first
+# version of this script used. PowerShell accepts it, builds the trigger without
+# complaint, and Register-ScheduledTask then fails on this host with:
+#
+#   The task XML contains a value which is incorrectly formatted or out of
+#   range. (13,42):Duration:P99999999DT23H59M59S
+#
+# MaxValue serialises to P99999999DT23H59M59S, which the Task Scheduler XML
+# schema rejects. The failure appears only at REGISTRATION, so verifying the
+# constructed task object (which earlier rounds did, to avoid arming anything)
+# cannot catch it. Ten years is valid XML and outlives any run this supervises.
 $triggerRepeating = New-ScheduledTaskTrigger -Once -At (Get-Date).Date `
     -RepetitionInterval (New-TimeSpan -Minutes 15) `
-    -RepetitionDuration ([TimeSpan]::MaxValue)
+    -RepetitionDuration (New-TimeSpan -Days 3650)
 
 # RestartCount/RestartInterval cover the supervisor itself dying (its own
 # crash-loop backoff, in ralph/supervisor.py, covers the harness dying
@@ -179,4 +193,51 @@ $principal = New-ScheduledTaskPrincipal -UserId "$env:COMPUTERNAME\$env:USERNAME
 
 Register-ScheduledTask -TaskName "RalphSupervisor" -Action $action `
     -Trigger $triggerAtBoot, $triggerRepeating `
-    -Settings $settings -Principal $principal -Description "Ralph harness supervisor (Spec E)"
+    -Settings $settings -Principal $principal `
+    -Description "Ralph harness supervisor (Spec E)" | Out-Null
+
+# Read the registered task back and check the settings that actually matter.
+#
+# Registering successfully is not the same as registering correctly. Two of the
+# findings this script exists to fix were silent defaults, not errors: the
+# cmdlet's ExecutionTimeLimit default of PT72H would have killed a seven-day run
+# on day 3, and the LogonType default of InteractiveToken would have meant the
+# task never fired with nobody logged on. Both register without complaint.
+$t = Get-ScheduledTask -TaskName "RalphSupervisor" -ErrorAction Stop
+$problems = @()
+
+if ($t.Settings.ExecutionTimeLimit -ne "PT0S") {
+    $problems += "ExecutionTimeLimit is $($t.Settings.ExecutionTimeLimit), expected PT0S (run indefinitely). The run would be terminated mid-week."
+}
+if ($t.Principal.LogonType -ne "S4U") {
+    $problems += "LogonType is $($t.Principal.LogonType), expected S4U. The task would not fire with nobody logged on, so a power cut would end the run."
+}
+if ($t.Settings.MultipleInstances -ne "IgnoreNew") {
+    $problems += "MultipleInstances is $($t.Settings.MultipleInstances), expected IgnoreNew. Concurrent supervisors could run against one repo."
+}
+if (-not ($t.Triggers | Where-Object { $_.Repetition.Interval })) {
+    $problems += "No repetition trigger registered. A supervisor that stops would never be restarted."
+}
+if ($t.Settings.DisallowStartIfOnBatteries) {
+    $problems += "DisallowStartIfOnBatteries is True. A UPS presenting as a battery would stop the task starting at boot."
+}
+
+Write-Host ""
+if ($problems.Count -gt 0) {
+    Write-Host "REGISTERED, BUT WITH WRONG SETTINGS:" -ForegroundColor Red
+    $problems | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+    Write-Host ""
+    Write-Host "Do NOT rely on this. Unregister and fix:" -ForegroundColor Yellow
+    Write-Host "  Unregister-ScheduledTask -TaskName 'RalphSupervisor' -Confirm:`$false" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "ARMED, and the settings that matter were read back and verified:" -ForegroundColor Green
+Write-Host "  ExecutionTimeLimit : $($t.Settings.ExecutionTimeLimit)   (PT0S = no 72h kill)"
+Write-Host "  LogonType          : $($t.Principal.LogonType)   (fires with nobody logged on)"
+Write-Host "  MultipleInstances  : $($t.Settings.MultipleInstances)"
+Write-Host "  Triggers           : $($t.Triggers.Count)   (at-startup + 15-minute repetition)"
+Write-Host "  State              : $($t.State)"
+Write-Host ""
+Write-Host "To stop the run:  Unregister-ScheduledTask -TaskName 'RalphSupervisor' -Confirm:`$false" -ForegroundColor Cyan
+Write-Host "                  (and delete ralph\STOP if you created one)" -ForegroundColor Cyan
