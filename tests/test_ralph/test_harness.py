@@ -1086,9 +1086,47 @@ class TestLock:
 
     def test_fresh_lock_blocks_acquisition(self, isolated_roadmap) -> None:
         config.LOCK_FILE.write_text("12345", encoding="utf-8")
-        with patch.object(harness, "_pid_alive", return_value=True):
+        with patch.object(harness, "_lock_holder_is_live_harness", return_value=True):
             result = harness._acquire_lock()
         assert result is False
+
+    @pytest.mark.timeout(120)
+    def test_a_live_but_unrelated_pid_does_not_hold_the_lock(self, isolated_roadmap) -> None:
+        """A recycled PID must not brick every launch for the rest of the week.
+
+        The lock check asked `_pid_alive` -- existence, not identity. PIDs are
+        recycled, so a lock file left behind by a hard-killed harness whose PID
+        now belongs to something else read as "held by a running harness", and
+        the harness refused to start. Forever: nothing ages a lock file out.
+
+        The process below is real and genuinely alive, so existence alone says
+        "held". It is `python -c "sleep"`, not a harness, so identity says
+        "stale" -- which is the correct answer.
+        """
+        proc = subprocess.Popen(
+            [sys.executable, "-c", "import time; time.sleep(120)"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        try:
+            config.LOCK_FILE.write_text(str(proc.pid), encoding="utf-8")
+            assert harness._pid_alive(proc.pid), (
+                "test setup is broken: the stand-in process must genuinely be "
+                "alive, or this proves nothing about identity vs. existence"
+            )
+
+            acquired = harness._acquire_lock()
+
+            assert acquired is True, (
+                f"PID {proc.pid} is alive but is NOT the ralph harness -- it is a "
+                f"sleeping python -c. Treating it as the lock holder is the "
+                f"recycled-PID failure: one dead harness's PID, reused by anything "
+                f"on the machine, refuses every launch for the rest of the run"
+            )
+            assert config.LOCK_FILE.read_text(encoding="utf-8").strip() == str(os.getpid())
+        finally:
+            proc.kill()
+            proc.wait(timeout=30)
 
     def test_release_idempotent(self, isolated_roadmap) -> None:
         # Releasing without holding is a no-op (no exception).

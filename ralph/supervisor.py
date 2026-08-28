@@ -328,11 +328,18 @@ class RestartPolicy:
 # PID liveness -- existence is not identity
 # ---------------------------------------------------------------------------
 
-# Substring that identifies a process as "the ralph harness", present in the
+# Substrings that identify a process as "the ralph harness", present in the
 # command line the supervisor itself uses to launch it (``HARNESS_CMD``:
-# ``python -m ralph.harness``). Kept as a marker (not an exact-cmd match) so
-# it still matches when args are appended (--max-sprints, --dry-run, ...).
-_HARNESS_IDENTITY_MARKER = "ralph.harness"
+# ``python -m ralph.harness``). Kept as markers (not an exact-cmd match) so
+# they still match when args are appended (--max-sprints, --dry-run, ...).
+#
+# The path forms are here because a false NEGATIVE now costs more than it used
+# to: `harness._lock_holder_is_live_harness` asks this same question about the
+# PID in the lock file, and answering "not the harness" there means stealing
+# the lock from a run that is genuinely working. `python -m ralph.harness` is
+# the documented and deployed invocation, but `python ralph/harness.py` works
+# too, and its command line contains no dot-form marker at all.
+_HARNESS_IDENTITY_MARKERS = ("ralph.harness", "ralph/harness", "ralph\\harness")
 
 
 def _pid_command_line(pid: int) -> Optional[str]:
@@ -384,7 +391,8 @@ def looks_like_ralph_process(command_line: Optional[str]) -> bool:
     """
     if not command_line:
         return False
-    return _HARNESS_IDENTITY_MARKER in command_line.lower()
+    lowered = command_line.lower()
+    return any(marker in lowered for marker in _HARNESS_IDENTITY_MARKERS)
 
 
 def is_harness_alive(pid: int) -> bool:

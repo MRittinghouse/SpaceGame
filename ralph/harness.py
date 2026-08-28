@@ -1318,9 +1318,9 @@ def _acquire_lock() -> bool:
             other_pid = int(LOCK_FILE.read_text(encoding="utf-8").strip())
         except (ValueError, OSError):
             other_pid = -1
-        if other_pid > 0 and _pid_alive(other_pid):
+        if other_pid > 0 and _lock_holder_is_live_harness(other_pid):
             log(
-                f"Lock file {LOCK_FILE} held by PID {other_pid} (running). "
+                f"Lock file {LOCK_FILE} held by PID {other_pid} (a running harness). "
                 f"Refusing to start a concurrent harness."
             )
             return False
@@ -1348,8 +1348,45 @@ def _release_lock() -> None:
         pass
 
 
+def _lock_holder_is_live_harness(pid: int) -> bool:
+    """True iff *pid* is a running process that is identifiably a ralph harness.
+
+    Existence is not identity. `_pid_alive` answers only "does something with
+    this PID exist", and PIDs are recycled -- on Windows, aggressively. So a
+    lock file left behind by a harness that was hard-killed, whose PID has
+    since been handed to an unrelated process, read as "held by a running
+    harness" and every subsequent launch refused to start. For a seven-day
+    unattended run that is the whole week, spent by a lock naming a process
+    that is not the harness and never was. (This path does get exercised: a
+    real `ralph/.running` holding dead PID 16080 was found and removed during
+    the resilience work.)
+
+    Reuses `supervisor.is_harness_alive` rather than growing a second identity
+    implementation -- the supervisor already had to solve exactly this for the
+    heartbeat's PID, and two answers to "is that process ralph" is how the
+    heartbeat and the lock would come to disagree. Imported lazily, the way
+    `status.beat_pid_liveness` does it, so neither module needs the other at
+    import time.
+
+    `_pid_alive` is still the first gate: it is a cheap existence check, and
+    the expensive command-line lookup is only worth doing for a PID that
+    resolves to something.
+    """
+    if not _pid_alive(pid):
+        return False
+    from ralph.supervisor import is_harness_alive
+
+    return is_harness_alive(pid)
+
+
 def _pid_alive(pid: int) -> bool:
-    """Return True if a process with the given PID is currently running."""
+    """Return True if a process with the given PID is currently running.
+
+    EXISTENCE ONLY -- never call this to decide whether the harness is running
+    (see `_lock_holder_is_live_harness`, which composes it with an identity
+    check). Kept as a primitive because "did this process tree actually die"
+    is a real question the kill-tree tests ask about non-harness processes.
+    """
     if sys.platform == "win32":
         # Windows: tasklist returns the process name if it exists.
         try:
