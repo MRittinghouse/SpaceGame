@@ -547,13 +547,30 @@ def _capture_test_baseline() -> tuple[int, int]:
     return pass_count, skip_count
 
 
-_HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = (
+_HARNESS_MANAGED_RUNTIME_BASE: tuple[str, ...] = (
     "ralph/.running",
     "ralph/state.json",
     "ralph/heartbeat.json",
     "ralph/.write_probe",
     "ralph/.agency_probe",
     "STOP",
+    "STATUS.md",
+)
+
+# `atomic_write` writes "<path>.tmp" then `os.replace`s it into place. Its
+# `finally` deletes the sibling on exception, but a hard kill -- `taskkill /F`,
+# SIGKILL, a power cut -- skips `finally` entirely and strands the .tmp.
+#
+# That orphan is untracked, so preflight's clean-tree check fails and EVERY
+# later launch returns the preflight code. The harness stays bricked until a
+# human deletes a file they have no reason to know exists. During an unattended
+# run a single power cut would crash-loop the supervisor for the rest of the
+# week.
+#
+# Derived rather than hand-listed so a future managed file cannot be added
+# without its .tmp sibling coming along.
+_HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = _HARNESS_MANAGED_RUNTIME_BASE + tuple(
+    f"{name}.tmp" for name in _HARNESS_MANAGED_RUNTIME_BASE
 )
 _HARNESS_MANAGED_RUNTIME_PREFIXES: tuple[str, ...] = ("ralph/logs/",)
 

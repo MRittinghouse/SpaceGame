@@ -71,6 +71,11 @@ ralph/logs/*
 ralph/state.json
 ralph/heartbeat.json
 ralph/heartbeat.json.tmp
+# atomic_write .tmp siblings stranded by a hard kill (power cut, taskkill /F).
+# Untracked orphans here fail preflight's clean-tree check and brick every
+# subsequent launch, so they must never appear as working-tree dirt.
+ralph/state.json.tmp
+STATUS.md.tmp
 ralph/.running
 ralph/.write_probe
 ralph/.agency_probe

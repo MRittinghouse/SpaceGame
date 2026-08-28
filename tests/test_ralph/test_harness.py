@@ -1729,3 +1729,30 @@ class TestExecuteSprintRetryGrace:
         assert not mock_commits.called, (
             "BLOCKED is a judgement; the retry path (and its commit check) must not even run"
         )
+
+
+class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
+    """A hard kill mid-`atomic_write` leaves a `.tmp` sibling behind.
+
+    `atomic_write` writes `<path>.tmp` then `os.replace`. Its `finally`
+    removes the sibling on exception, but a SIGKILL / `taskkill /F` / power
+    cut skips `finally` entirely. The orphan then shows up as an untracked
+    file, preflight's clean-tree check fails, and EVERY later launch returns
+    the preflight code -- the harness is bricked until a human deletes a file
+    they do not know exists.
+
+    Found by the pre-deployment smoke drill, which killed the process
+    mid-write rather than reasoning about it. A power cut is exactly this
+    scenario, so an unattended run would crash-loop for the rest of the week.
+    """
+
+    def test_tmp_siblings_of_managed_files_are_treated_as_harness_managed(self) -> None:
+        for managed in ("ralph/state.json", "ralph/heartbeat.json", "STATUS.md"):
+            porcelain = f"?? {managed}.tmp"
+            filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+            assert filtered == "", (
+                f"a leftover '{managed}.tmp' from a hard kill is treated as real "
+                f"working-tree dirt, so preflight fails and every future launch "
+                f"is bricked; filtered={filtered!r}"
+            )
+            assert f"{managed}.tmp" in removed
