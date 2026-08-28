@@ -715,26 +715,26 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
     # 1. ROADMAP.md exists.
     if not roadmap_state.roadmap_exists():
         log(f"ROADMAP.md not found at {ROADMAP_PATH}. Aborting.")
-        return 2
+        return 4
 
     # 2. git is on PATH.
     rc, _stdout, _stderr = _run_git(["--version"], timeout=10)
     if rc != 0:
         log(f"git unavailable: {_stderr.strip()}. Aborting.")
-        return 2
+        return 4
 
     # 3. We're in a git repository.
     rc, _stdout, _stderr = _run_git(["rev-parse", "--is-inside-work-tree"], timeout=10)
     if rc != 0 or _stdout.strip() != "true":
         log(f"Not in a git repo at {PROJECT_ROOT}. Aborting.")
-        return 2
+        return 4
 
     # 4. Working tree clean (unless overridden).
     if REQUIRE_CLEAN_WORKING_TREE and not allow_dirty:
         rc, stdout, _stderr = _run_git(["status", "--porcelain"], timeout=15)
         if rc != 0:
             log("git status failed. Aborting.")
-            return 2
+            return 4
         # Filter out harness-managed runtime artifacts (lock file, state,
         # logs, probe files, STOP). The harness owns those paths and their
         # presence/absence is normal lifecycle, not a project-state concern.
@@ -750,7 +750,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "Commit or stash, OR pass --allow-dirty to override."
             )
             log(f"Dirty files:\n{filtered}")
-            return 2
+            return 4
 
     # 5. On a branch (not detached HEAD) — required for push.
     if push_enabled:
@@ -760,13 +760,13 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "Detached HEAD detected. Push needs a branch. "
                 "Either checkout a branch or pass --no-push."
             )
-            return 2
+            return 4
 
         # 6. Origin remote configured.
         rc, _stdout, _stderr = _run_git(["remote", "get-url", "origin"], timeout=10)
         if rc != 0:
             log("No 'origin' remote configured. Either add origin or pass --no-push.")
-            return 2
+            return 4
 
     # 7. Claude CLI available (best-effort).
     from ralph.config import CLAUDE_CMD
@@ -790,7 +790,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 f"The first agent invocation will fail. "
                 f"Check ralph/config.py CLAUDE_CMD or your install."
             )
-            return 2
+            return 4
         except subprocess.TimeoutExpired:
             log(
                 "Claude CLI did not respond to --version within 10s. "
@@ -809,7 +809,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "files. To skip this check (e.g., known-good environment), "
                 "pass --skip-agency-probe."
             )
-            return 2
+            return 4
         log(f"Agency probe passed: {reason}")
 
     log("Pre-flight checks passed.")

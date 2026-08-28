@@ -22,13 +22,18 @@ Two failure modes drive most of this module's shape:
    Beat age is used only as a secondary signal, to detect a hang in a
    process we already know is alive (see ``_supervise``).
 
-2. Two of the harness's eleven exits happen before its own STATUS.md-writing
-   ``finally`` block even starts: a pre-flight failure (``return rc``) and a
+2. Two of the harness's exits happen before its own STATUS.md-writing
+   ``finally`` block even starts: a pre-flight failure (``return 4``) and a
    lock-acquisition failure (``return 2``), both in ``harness.main()`` before
    its ``try``. The harness says nothing on either path. The supervisor is
    the layer that sees the exit code, so it is the layer that must report
    why -- except a lock conflict is *normal* (another instance is already
    running) and must stay quiet, not be reported as though it were a crash.
+   The two are distinguishable by exit code alone (``silent_exit_reason``):
+   an earlier version of this module disambiguated them by re-checking the
+   lock file's live PID after the fact, which has its own TOCTOU race
+   (something else could grab or release the lock in the gap). Reading the
+   harness's own already-decided exit code has no such race.
 """
 
 from __future__ import annotations
@@ -41,7 +46,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from ralph import heartbeat, status, triage
-from ralph.config import LOCK_FILE, PROJECT_ROOT
+from ralph.config import PROJECT_ROOT
 from ralph.roadmap_state import parse_sprints
 
 # ---------------------------------------------------------------------------
@@ -230,36 +235,40 @@ def harness_exited_silently(
     return mtime_before == mtime_after
 
 
-def _read_lock_pid() -> Optional[int]:
-    """The PID recorded in the harness lock file, or None if absent/unusable."""
-    try:
-        return int(LOCK_FILE.read_text(encoding="utf-8").strip())
-    except (OSError, ValueError):
-        return None
+# harness.main()'s two silent exits are now distinguishable by exit code
+# alone: `_preflight_checks` returns HARNESS_RC_PREFLIGHT_FAILURE (4) on all
+# nine of its failure paths (Task 9 fix round 1, Finding 2 -- previously
+# these shared code 2 with the lock-conflict path below, which made the two
+# genuinely ambiguous and forced disambiguation onto a lock-file liveness
+# check with its own TOCTOU race). `_acquire_lock()` failing still returns
+# HARNESS_RC_LOCK_CONFLICT (2), unchanged -- the harness's own choice of
+# which code to return is synchronous with the exit itself, so reading it
+# has no race the way reading the lock file's live state afterward does.
+HARNESS_RC_LOCK_CONFLICT = 2
+HARNESS_RC_PREFLIGHT_FAILURE = 4
 
 
-def silent_exit_reason(rc: int, lock_holder_alive: bool) -> Optional[str]:
+def silent_exit_reason(rc: int) -> Optional[str]:
     """Why the harness exited without writing STATUS.md, or None to stay quiet.
 
-    ``lock_holder_alive`` is whether the PID currently in the lock file is a
-    live, identity-confirmed ralph process (see ``is_harness_alive``).
-
-    Lock-acquisition failure is NORMAL: another instance is already running,
-    the harness correctly declined to start a second one, and the right
-    response is to do nothing and exit quietly -- returning None here means
-    "do not report this". Anything else silent (a pre-flight failure) is
-    reported with the exit code, since a repeating pre-flight failure would
-    otherwise be complete silence for seven days.
+    Lock-acquisition failure (``HARNESS_RC_LOCK_CONFLICT``) is NORMAL: another
+    instance is already running, the harness correctly declined to start a
+    second one, and the right response is to do nothing and exit quietly --
+    returning None here means "do not report this". Any other silent exit
+    (in practice, ``HARNESS_RC_PREFLIGHT_FAILURE``) is reported with the exit
+    code, since a repeating pre-flight failure would otherwise be complete
+    silence for seven days.
     """
-    if lock_holder_alive:
+    if rc == HARNESS_RC_LOCK_CONFLICT:
         return None
     return (
         f"harness exited with code {rc} without writing STATUS.md. This happens on "
         "two paths, both before the harness's main loop starts: a pre-flight check "
-        "failure, or a lock already held by another instance. The supervisor checked "
-        "the lock file and found no other live harness holding it, so this is most "
-        "likely a pre-flight failure -- check ralph/logs, or run "
-        "`python -m ralph.harness` by hand to see the pre-flight message."
+        "failure, or a lock already held by another instance. Exit code "
+        f"{HARNESS_RC_LOCK_CONFLICT} means the latter (normal, not reported); any "
+        "other code -- including this one -- means a pre-flight check failed. Check "
+        "ralph/logs, or run `python -m ralph.harness` by hand to see the pre-flight "
+        "message."
     )
 
 
@@ -270,9 +279,7 @@ def _report_silent_exit(rc: int, recent: list[str]) -> None:
     Best-effort: a failure here (a roadmap-parsing bug, a disk error) must
     never crash the supervisor -- it is the one thing keeping the run alive.
     """
-    lock_pid = _read_lock_pid()
-    lock_holder_alive = lock_pid is not None and is_harness_alive(lock_pid)
-    reason = silent_exit_reason(rc, lock_holder_alive)
+    reason = silent_exit_reason(rc)
     if reason is None:
         return
     try:

@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import pytest
 
@@ -213,24 +213,43 @@ class TestHarnessExitedSilently:
 
 
 class TestSilentExitReason:
-    """Lock-acquisition failure is normal (another instance is already
-    running) and must stay quiet. A pre-flight failure must be reported,
-    including the exit code, or a repeating failure is silent for 7 days.
+    """Lock-acquisition failure (exit code 2) is normal (another instance is
+    already running) and must stay quiet. A pre-flight failure (exit code 4,
+    since Task 9 fix round 1 -- previously it shared code 2 with the lock
+    conflict, which was genuinely ambiguous) must be reported, including the
+    exit code, or a repeating failure is silent for 7 days.
+
+    Fix round 1, Finding 2: this used to take a `lock_holder_alive` flag
+    computed by re-checking the lock file's live PID after the harness had
+    already exited -- a real TOCTOU race (something else could grab or
+    release the lock in that gap). The exit code the harness itself already
+    chose has no such race, so that is now the sole input.
     """
 
-    def test_lock_held_by_live_instance_is_quiet(self) -> None:
-        assert silent_exit_reason(2, lock_holder_alive=True) is None
+    def test_lock_conflict_exit_code_is_quiet(self) -> None:
+        assert silent_exit_reason(supervisor.HARNESS_RC_LOCK_CONFLICT) is None
 
-    def test_no_live_lock_holder_reports_with_exit_code(self) -> None:
-        reason = silent_exit_reason(2, lock_holder_alive=False)
+    def test_preflight_failure_exit_code_reports_with_the_code(self) -> None:
+        reason = silent_exit_reason(supervisor.HARNESS_RC_PREFLIGHT_FAILURE)
         assert reason is not None
-        assert "2" in reason
+        assert "4" in reason
 
     def test_reports_the_actual_exit_code_not_a_placeholder(self) -> None:
-        reason = silent_exit_reason(7, lock_holder_alive=False)
+        reason = silent_exit_reason(7)
         assert reason is not None
         assert "7" in reason
         assert "code 7" in reason
+
+    def test_the_two_cases_are_distinguishable_by_exit_code_alone(self) -> None:
+        """The property Finding 2 asked for directly: given nothing but the
+        two exit codes harness.main() actually uses for its silent exits,
+        one must report and the other must not -- with no lock-file, no
+        PID, no other input in play at all."""
+        lock_conflict = silent_exit_reason(supervisor.HARNESS_RC_LOCK_CONFLICT)
+        preflight_failure = silent_exit_reason(supervisor.HARNESS_RC_PREFLIGHT_FAILURE)
+        assert lock_conflict is None
+        assert preflight_failure is not None
+        assert lock_conflict != preflight_failure
 
 
 class TestKillTree:
@@ -247,6 +266,73 @@ class TestKillTree:
         # silently passing -- the failure names the real problem.
         returncode = proc.wait(timeout=10)
         assert returncode is not None
+
+
+def _bounded_counter(max_calls: int, description: str) -> Callable[[], int]:
+    """Return a zero-arg counter that raises a clear, named AssertionError
+    once called more than *max_calls* times, instead of letting whatever
+    resource backs a test double (an iterator, a list) run dry on its own
+    and fail with an unrelated, undiagnostic error.
+
+    Fix round 1, Finding 3: an integration test whose bounded mock ran out
+    after exactly as many calls as the test happened to script would, on a
+    regression that makes main() loop more than expected, fail via a raw
+    `StopIteration` from deep inside `next()` rather than an assertion
+    naming the real problem ("main() did not stop when it should have").
+    This makes that failure explicit and diagnostic no matter which
+    production code path causes the extra call.
+    """
+    calls = {"n": 0}
+
+    def counter() -> int:
+        calls["n"] += 1
+        if calls["n"] > max_calls:
+            raise AssertionError(
+                f"{description} called {calls['n']} times (> {max_calls} expected) -- "
+                "main() likely never stopped when it should have (should_restart / "
+                "RestartPolicy.exhausted may be broken)."
+            )
+        return calls["n"]
+
+    return counter
+
+
+def _bounded_constant(value: int, max_calls: int, description: str) -> Callable[[object], int]:
+    """A fake `_supervise` that always returns *value*, guarded by
+    `_bounded_counter` so an unexpectedly-long-running `main()` fails on a
+    named assertion rather than however the caller happens to notice."""
+    counter = _bounded_counter(max_calls, description)
+
+    def fake(proc: object) -> int:
+        counter()
+        return value
+
+    return fake
+
+
+def _bounded_scripted(values: list[int], description: str) -> Callable[[object], int]:
+    """A fake `_supervise` returning *values* in order; calling it more than
+    `len(values)` times raises a clear, named AssertionError (via
+    `_bounded_counter`) instead of an IndexError once the script runs out."""
+    counter = _bounded_counter(len(values), description)
+
+    def fake(proc: object) -> int:
+        n = counter()
+        return values[n - 1]
+
+    return fake
+
+
+def _bounded_mtimes(max_calls: int, description: str = "_status_mtime") -> Callable[[], float]:
+    """A fake `_status_mtime` returning a distinct, increasing value on every
+    call (so `harness_exited_silently` is always False), guarded the same
+    way as `_bounded_constant`."""
+    counter = _bounded_counter(max_calls, description)
+
+    def fake() -> float:
+        return float(counter())
+
+    return fake
 
 
 class _FakeProc:
@@ -386,30 +472,6 @@ class TestWaitForForeignHarness:
         assert killed == []
 
 
-class TestReadLockPid:
-    def test_reads_pid_from_lock_file(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        lock = tmp_path / ".running"
-        lock.write_text("54321", encoding="utf-8")
-        monkeypatch.setattr(supervisor, "LOCK_FILE", lock)
-        assert supervisor._read_lock_pid() == 54321
-
-    def test_missing_lock_file_reads_as_none(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        monkeypatch.setattr(supervisor, "LOCK_FILE", tmp_path / "absent")
-        assert supervisor._read_lock_pid() is None
-
-    def test_corrupt_lock_file_reads_as_none_not_crash(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        lock = tmp_path / ".running"
-        lock.write_text("not-a-pid", encoding="utf-8")
-        monkeypatch.setattr(supervisor, "LOCK_FILE", lock)
-        assert supervisor._read_lock_pid() is None
-
-
 class TestHeartbeatPidAlive:
     """Composes heartbeat.read_heartbeat() with is_harness_alive() -- the
     check the main loop uses to decide whether to adopt an already-running
@@ -461,9 +523,11 @@ class TestHeartbeatPidAlive:
 
 
 class TestReportSilentExit:
-    """`_report_silent_exit` is the actual call site: reads the lock file,
-    checks liveness, and only writes STATUS.md's decline_reason when the
-    silence is NOT a normal lock conflict.
+    """`_report_silent_exit` is the actual call site: writes STATUS.md's
+    decline_reason for a silent exit, unless the exit code IS the normal
+    lock-conflict code (Finding 2: decided by exit code alone now, not by
+    re-checking the lock file's live PID -- no lock file is touched here at
+    all, on purpose, which is the property this class is testing).
     """
 
     def _isolated_status(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
@@ -471,11 +535,7 @@ class TestReportSilentExit:
         monkeypatch.setattr(status_module, "STATUS_PATH", target)
         return target
 
-    def test_no_lock_file_reports_pre_flight_failure(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        target = self._isolated_status(tmp_path, monkeypatch)
-        monkeypatch.setattr(supervisor, "LOCK_FILE", tmp_path / "absent-lock")
+    def _wire_reporting(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(supervisor, "parse_sprints", dict)
         monkeypatch.setattr(
             supervisor.triage, "analyse", lambda sprints: QueueState(total=0, todo=0, eligible=0)
@@ -483,31 +543,28 @@ class TestReportSilentExit:
         monkeypatch.setattr(supervisor.triage, "blocks_disagreements", lambda sprints: [])
         monkeypatch.setattr(supervisor.heartbeat, "read_heartbeat", lambda: None)
 
-        supervisor._report_silent_exit(2, [])
-
-        assert target.exists()
-        content = target.read_text(encoding="utf-8")
-        assert "code 2" in content
-
-    def test_live_lock_holder_stays_quiet(
+    def test_preflight_failure_code_writes_status(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         target = self._isolated_status(tmp_path, monkeypatch)
-        lock = tmp_path / ".running"
-        proc = subprocess.Popen(
-            [sys.executable, "-c", "import time; time.sleep(20)", "ralph.harness"]
-        )
-        try:
-            lock.write_text(str(proc.pid), encoding="utf-8")
-            monkeypatch.setattr(supervisor, "LOCK_FILE", lock)
+        self._wire_reporting(monkeypatch)
 
-            supervisor._report_silent_exit(2, [])
+        supervisor._report_silent_exit(supervisor.HARNESS_RC_PREFLIGHT_FAILURE, [])
 
-            # Genuine lock conflict: no STATUS.md write at all.
-            assert not target.exists()
-        finally:
-            proc.terminate()
-            proc.wait(timeout=10)
+        assert target.exists()
+        content = target.read_text(encoding="utf-8")
+        assert "code 4" in content
+
+    def test_lock_conflict_code_stays_quiet(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        target = self._isolated_status(tmp_path, monkeypatch)
+        self._wire_reporting(monkeypatch)
+
+        supervisor._report_silent_exit(supervisor.HARNESS_RC_LOCK_CONFLICT, [])
+
+        # Genuine lock conflict: no STATUS.md write at all.
+        assert not target.exists()
 
 
 class TestMainProcessLoop:
@@ -525,17 +582,23 @@ class TestMainProcessLoop:
         supervise_rc: int,
         eligible: int,
         starved: bool = False,
+        max_iterations: int = 5,
     ) -> list[dict[str, object]]:
         monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
         monkeypatch.setattr(supervisor.subprocess, "Popen", lambda *a, **k: object())
         monkeypatch.setattr(supervisor.time, "sleep", lambda _seconds: None)
-        monkeypatch.setattr(supervisor, "_supervise", lambda proc: supervise_rc)
+        monkeypatch.setattr(
+            supervisor, "_supervise", _bounded_constant(supervise_rc, max_iterations, "_supervise")
+        )
 
         # Distinct, increasing mtimes on every call so harness_exited_silently
         # is always False -- this suite isolates the crash-loop/should_restart
         # wiring from the (separately tested) silent-exit reporting path.
-        mtimes = iter(range(1, 10_000))
-        monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
+        # Bounded (fix round 1, Finding 3): a broken stop condition now fails
+        # on `_bounded_counter`'s own assertion naming the real problem,
+        # instead of degrading to a raw, undiagnostic StopIteration once an
+        # unbounded-looking sequence happens to run dry.
+        monkeypatch.setattr(supervisor, "_status_mtime", _bounded_mtimes(max_iterations * 2 + 2))
 
         monkeypatch.setattr(supervisor, "parse_sprints", dict)
         monkeypatch.setattr(
@@ -590,14 +653,19 @@ class TestMainProcessLoop:
         # fail, fail, SUCCEED (resets the counter), fail, fail, SUCCEED (resets
         # it again right as starvation hits) -- consecutive_failures never
         # reaches 3, so if the loop stops it cannot be the failure cap.
-        rcs = iter([1, 1, 0, 1, 1, 0])
+        #
+        # Both fakes are bounded (fix round 1, Finding 3): if should_restart
+        # or RestartPolicy were broken so main() never stopped, this now
+        # fails on `_bounded_counter`'s own assertion naming the real
+        # problem, instead of an incidental IndexError/StopIteration once an
+        # unbounded-looking sequence happened to run dry.
+        rcs = [1, 1, 0, 1, 1, 0]
         monkeypatch.setattr(supervisor, "heartbeat_pid_alive", lambda: None)
         monkeypatch.setattr(supervisor.subprocess, "Popen", lambda *a, **k: object())
         monkeypatch.setattr(supervisor.time, "sleep", lambda _seconds: None)
-        monkeypatch.setattr(supervisor, "_supervise", lambda proc: next(rcs))
+        monkeypatch.setattr(supervisor, "_supervise", _bounded_scripted(rcs, "_supervise"))
 
-        mtimes = iter(range(1, 10_000))
-        monkeypatch.setattr(supervisor, "_status_mtime", lambda: next(mtimes))
+        monkeypatch.setattr(supervisor, "_status_mtime", _bounded_mtimes(len(rcs) * 2 + 2))
         monkeypatch.setattr(supervisor, "parse_sprints", dict)
 
         # Starved only once the 5 scripted runs are exhausted, so the loop
