@@ -19,6 +19,7 @@ from __future__ import annotations
 import ast
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -2252,14 +2253,36 @@ class TestAgencyProbeCannotHangIndefinitely:
         )
 
 
-class TestNoBareSubprocessRunTimeoutOnAgenticCommands:
-    """H2 audit: no `subprocess.run(timeout=...)` may run the claude CLI.
+class TestNoBareSubprocessRunTimeoutOnCommandsThatSpawnGrandchildren:
+    """H2/N2 audit: `subprocess.run(timeout=...)` may not run anything that can
+    leave a grandchild holding the captured pipe.
 
     The distinction that matters is not "does it have a timeout" but "can it
-    spawn grandchildren that hold the stdout pipe". `git`, `tasklist`,
-    `taskkill` and `powershell -Command` cannot; an agentic CLI, which spawns
-    subagents by design, can -- and `subprocess.run(timeout=...)` has no
-    defence against it.
+    spawn grandchildren that hold the stdout pipe". On Windows, `run()` handles
+    `TimeoutExpired` by killing the DIRECT child and then calling
+    `communicate()` with no timeout at all -- so a surviving grandchild turns a
+    60-second bound into an unbounded wait. That is the measured 8.5-hour hang.
+
+    Two command families qualify:
+
+    * an agentic CLI, which spawns subagents by design;
+    * **git**, which the original H2 audit cleared on the reasoning that
+      "capture_output means no tty, so no pager, so no grandchild". True of
+      `git status`. False of `git push`: origin is
+      `git@github.com:MRittinghouse/SpaceGame.git`, so git execs `ssh.exe`,
+      which inherits the captured stderr. Killing `git.exe` does not kill
+      `ssh.exe`, and an ssh writing to a black-holed socket has no
+      `ServerAliveInterval` by default. The supervisor reaches `git push`
+      through `_publish_status`, and nothing supervises the supervisor:
+      `MultipleInstances = IgnoreNew` discards every trigger firing while the
+      wedged process lives, and `_publish_status` catches exceptions, not
+      hangs. So a hang there is permanent.
+
+    Still cleared, deliberately: `tasklist`, `taskkill` and
+    `powershell -Command Get-CimInstance` are leaf queries that spawn nothing,
+    and `python -m ruff|mypy|mypy_baseline` (the quality gates) spawn no
+    children either -- and unlike the supervisor, the harness running them is
+    itself watched by the supervisor's stale-heartbeat kill.
 
     Walks the AST rather than grepping so a reformatted call site cannot slip
     past, and so it keeps holding for call sites that do not exist yet.
@@ -2315,6 +2338,32 @@ class TestNoBareSubprocessRunTimeoutOnAgenticCommands:
             "ralph.proc.run_with_hard_timeout instead."
         )
 
+    def test_no_subprocess_run_invokes_git(self) -> None:
+        """N2: `git push` against an SSH origin execs `ssh.exe`, which holds
+        the captured stderr after `git.exe` is killed.
+
+        Enforced against git as a whole rather than against a push/fetch
+        allowlist: deciding which subcommands reach the network is precisely
+        the judgement the first audit got wrong, and an allowlist would have to
+        be re-derived every time a call site is added. `harness._run_git` is
+        the single choke point and it goes through `run_with_hard_timeout`.
+        """
+        offenders: list[str] = []
+        for module in self._ralph_modules():
+            for lineno, args_src, _bounded in self._subprocess_run_calls(module):
+                if re.search(r"""['"]git['"]""", args_src):
+                    offenders.append(f"{module.name}:{lineno} -> {args_src}")
+        assert not offenders, (
+            f"these subprocess.run call sites invoke git: {offenders}. origin "
+            "is git@github.com:..., so git execs ssh.exe, which inherits the "
+            "captured pipe; subprocess.run's timeout kills git.exe and then "
+            "blocks in communicate() with NO timeout while ssh holds the "
+            "handle -- the 8.5-hour hang. In the supervisor that hang is "
+            "permanent: nothing supervises it and IgnoreNew discards every "
+            "trigger firing. Route it through harness._run_git, which uses "
+            "ralph.proc.run_with_hard_timeout."
+        )
+
     def test_every_subprocess_run_in_ralph_is_bounded(self) -> None:
         """A `subprocess.run` with no timeout at all can block forever even
         without a grandchild -- and both such calls were on kill paths: the
@@ -2329,6 +2378,71 @@ class TestNoBareSubprocessRunTimeoutOnAgenticCommands:
             "Nothing supervises the supervisor; an unbounded call there is an "
             "unbounded wait with nobody left to break it."
         )
+
+
+class TestGitCannotHangTheProcessThatRunsIt:
+    """N2, behaviourally: `_run_git` is the one choke point for git, and it
+    must not be `subprocess.run`.
+
+    The AST test above states the rule; this states the wiring, so a call site
+    that stopped using `_run_git` (or a `_run_git` that quietly went back to
+    `subprocess.run`) fails here as well as there.
+    """
+
+    def _capture(
+        self, monkeypatch: pytest.MonkeyPatch, result: object
+    ) -> list[tuple[list[str], float]]:
+        seen: list[tuple[list[str], float]] = []
+
+        def _run(cmd: list[str], timeout_seconds: float, cwd: Optional[str] = None) -> object:
+            seen.append((list(cmd), timeout_seconds))
+            if isinstance(result, BaseException):
+                raise result
+            return result
+
+        monkeypatch.setattr(harness, "run_with_hard_timeout", _run)
+
+        def _forbidden(*_args: object, **_kwargs: object) -> object:
+            raise AssertionError(
+                "_run_git fell back to subprocess.run: on Windows its timeout "
+                "kills git.exe and then blocks in communicate() with no bound "
+                "while ssh.exe holds the pipe"
+            )
+
+        monkeypatch.setattr(harness.subprocess, "run", _forbidden)
+        return seen
+
+    def test_a_push_goes_through_the_hard_timeout(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        seen = self._capture(monkeypatch, _FakeCompleted(0, "Everything up-to-date\r\n"))
+
+        rc, stdout, _stderr = harness._run_git(["push", "origin", "HEAD"], timeout=60)
+
+        assert seen == [(["git", "push", "origin", "HEAD"], 60)], (
+            "the push did not reach run_with_hard_timeout, so a wedged ssh.exe "
+            f"can block it indefinitely; calls seen: {seen}"
+        )
+        assert rc == 0
+        assert stdout == "Everything up-to-date\n", (
+            "run_with_hard_timeout decodes raw bytes, so CRLF must be "
+            "normalised here or every caller that compares git output against "
+            f"a plain string silently changes behaviour; got {stdout!r}"
+        )
+
+    def test_a_wedged_push_is_reported_as_a_timeout_not_raised(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A hard timeout must still look to callers exactly like the old
+        `subprocess.run` timeout: rc 124 and a reason, never an exception that
+        would escape `_push_after_sprint` and end the run."""
+        self._capture(
+            monkeypatch,
+            subprocess.TimeoutExpired(cmd=["git", "push"], timeout=60),
+        )
+
+        rc, _stdout, stderr = harness._run_git(["push", "origin", "HEAD"], timeout=60)
+
+        assert rc == 124, f"a timed-out push reported rc={rc} instead of 124"
+        assert "timed out" in stderr
 
 
 class TestHeartbeatIsWrittenOnlyByTheLockHolder:

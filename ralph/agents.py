@@ -394,17 +394,16 @@ def _looks_like_infra_error(returncode: int, stdout: str) -> bool:
 
 
 def _git_head_sha() -> str:
-    """Return current HEAD SHA. Empty string on error."""
-    import subprocess
+    """Return current HEAD SHA. Empty string on error.
 
+    Through `run_with_hard_timeout` for the same reason as `harness._run_git`:
+    no git subcommand goes through `subprocess.run(timeout=)` any more. These
+    two are local reads that cannot reach ssh today, but "which git subcommands
+    touch the network" is exactly the judgement the previous audit got wrong
+    once, so the rule is applied to git as a whole rather than to a list.
+    """
     try:
-        result = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=str(PROJECT_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
+        result = run_with_hard_timeout(["git", "rev-parse", "HEAD"], 10, cwd=str(PROJECT_ROOT))
         if result.returncode == 0:
             return result.stdout.strip()
     except Exception:
@@ -416,17 +415,11 @@ def _commits_since(sha: str, sprint_id: str) -> list[str]:
     """Return the oneline commits since `sha` whose subject contains
     `sprint_id`. Used by sentinel cross-validation (item E).
     """
-    import subprocess
-
     if not sha:
         return []
     try:
-        result = subprocess.run(
-            ["git", "log", "--oneline", f"{sha}..HEAD"],
-            cwd=str(PROJECT_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=10,
+        result = run_with_hard_timeout(
+            ["git", "log", "--oneline", f"{sha}..HEAD"], 10, cwd=str(PROJECT_ROOT)
         )
         if result.returncode != 0:
             return []

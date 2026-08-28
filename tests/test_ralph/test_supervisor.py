@@ -1144,6 +1144,45 @@ class TestPublishStatusIsResilient:
             "exactly the false confidence this whole finding is about"
         )
 
+    def test_the_publish_push_cannot_block_forever(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """N2. This is the supervisor's own git call, and it is the one place
+        in the system where a hang has no rescue: nothing supervises the
+        supervisor, `MultipleInstances = IgnoreNew` discards every 15-minute
+        trigger firing while the wedged process is alive, and `_publish_status`
+        catches exceptions -- a hang is not one.
+
+        origin is `git@github.com:...`, so `git push` execs `ssh.exe`, which
+        inherits the captured stderr. `subprocess.run`'s timeout kills
+        `git.exe` and then re-enters `communicate()` with no bound at all while
+        ssh holds the handle. Real git is not invoked here; what is asserted is
+        that the whole path reaches `run_with_hard_timeout` and nothing else.
+        """
+        from ralph import harness
+
+        seen: list[list[str]] = []
+
+        def _hard(cmd: list[str], timeout_seconds: float, cwd: Optional[str] = None) -> object:
+            seen.append(list(cmd))
+            return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+
+        def _forbidden(*_args: object, **_kwargs: object) -> object:
+            raise AssertionError(
+                "the supervisor's publish reached subprocess.run for a git "
+                "command; on Windows that call re-enters an UNBOUNDED "
+                "communicate() after the timeout kills git.exe, and a wedged "
+                "ssh.exe then holds the supervisor open forever"
+            )
+
+        monkeypatch.setattr(harness, "run_with_hard_timeout", _hard)
+        monkeypatch.setattr(harness.subprocess, "run", _forbidden)
+
+        supervisor._publish_status("supervisor-crash-loop")
+
+        assert ["git", "push", "origin", "HEAD"] in seen, (
+            "the supervisor's publish never pushed through the hard-timeout "
+            f"path; git commands seen: {seen}"
+        )
+
 
 class TestSupervisorLogFile:
     """`silent_exit_reason` used to send the operator to `ralph/logs`, which

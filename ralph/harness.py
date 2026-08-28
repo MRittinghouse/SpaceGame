@@ -986,22 +986,50 @@ def _sweep_tmp_orphans(
 
 
 def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
-    """Run a git subcommand at the project root. Returns (rc, stdout, stderr)."""
+    """Run a git subcommand at the project root. Returns (rc, stdout, stderr).
+
+    Goes through ``proc.run_with_hard_timeout``, NOT ``subprocess.run(timeout=)``.
+
+    The earlier audit cleared git on the reasoning that it "cannot spawn a
+    pipe-holding grandchild -- capture_output means no tty, so no pager". That
+    was true when origin was HTTPS. It is false now: origin is
+    ``git@github.com:...``, so ``git push`` (and any fetch) execs ``ssh.exe``,
+    which inherits the captured stderr handle. On Windows, ``subprocess.run``
+    handles ``TimeoutExpired`` by killing the DIRECT child and then calling
+    ``communicate()`` with **no timeout** -- so ``git.exe`` dies, ``ssh.exe``
+    keeps the pipe, and the call blocks for as long as ssh survives. An ssh
+    blocked writing to a black-holed TCP socket has no ``ServerAliveInterval``
+    by default and can outlive its parent for hours. That is precisely the
+    construct behind the measured 8.5-hour hang.
+
+    It matters most in the supervisor, which reaches this function through
+    ``_push_after_sprint``: nothing supervises the supervisor, and
+    ``MultipleInstances = IgnoreNew`` makes the Scheduled Task discard every
+    15-minute firing while the wedged process is alive. A hang there is
+    permanent silence with no rescue. ``_publish_status`` catches every
+    exception, and a hang is not an exception.
+
+    Applied to every git subcommand rather than to a push/fetch allowlist: an
+    allowlist is one more thing to keep in step with the call sites, and the
+    cost of the hard-timeout path on a local subcommand is two short-lived
+    drain threads.
+
+    ``run_with_hard_timeout`` decodes raw bytes, so CRLF is normalised here to
+    match what ``text=True`` used to deliver to every caller.
+    """
     try:
-        result = subprocess.run(
-            ["git", *args],
-            cwd=str(PROJECT_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            encoding="utf-8",
-            errors="replace",
-        )
-        return result.returncode, result.stdout, result.stderr
+        result = run_with_hard_timeout(["git", *args], timeout, cwd=str(PROJECT_ROOT))
     except FileNotFoundError:
         return 127, "", "git not found on PATH"
     except subprocess.TimeoutExpired:
         return 124, "", f"git {args[0]} timed out after {timeout}s"
+    except OSError as exc:
+        return 127, "", f"git {args[0]} could not be launched: {exc}"
+    return (
+        result.returncode,
+        result.stdout.replace("\r\n", "\n"),
+        result.stderr.replace("\r\n", "\n"),
+    )
 
 
 # ---------------------------------------------------------------------------
