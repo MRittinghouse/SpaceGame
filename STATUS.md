@@ -1,6 +1,6 @@
 # Ralph Status
 
-_Updated: 2026-08-28 15:51:45_
+_Updated: 2026-08-28 15:51:48_
 
 ## TEST SUITE FAILING
 
@@ -14,7 +14,7 @@ A2-1: test-suite gate FAILED: the test suite did not finish within 900s in paral
 
 - Sprint: **A2-1**
 - Phase: **review**
-- Last beat: **10 seconds ago**
+- Last beat: **14 seconds ago**
 - Beat PID: 18004 -- alive
 
 ## Queue
@@ -27,8 +27,8 @@ A2-1: test-suite gate FAILED: the test suite did not finish within 900s in paral
 
 ## Push
 
-- last push: **OK** (2 hours ago)
-- last successful push: 2 hours ago
+- last push: **OK** (just now)
+- last successful push: just now
 
 ## Blocks drift
 
