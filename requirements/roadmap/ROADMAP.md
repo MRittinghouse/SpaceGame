@@ -11044,7 +11044,7 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - Notes: Plan audit: sound; locked decisions on guide location, no-Bible-duplication, three worked-example lenses, compliance-test canonical-source strategy, compact voice-note depth are all defensible. All 16 lenses have voice notes and NPC patterns; derelict hauler worked example is non-swappable across all three lenses; compliance test gates on 16 IDs, banned names, em-dash, and registry drift (currently skipped, activates when A2-5/A2-6 land). One minor attribution fix committed.
 #### A2-3 — Capstone format and hook contract
 
-**Status**: in-progress
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: A2-20
 
@@ -11173,18 +11173,29 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - 2026-08-27 — todo (created)
 - 2026-08-28 18:08 — harness: plan phase starting
 - 2026-08-28 18:35 — planning complete; verified 3 declared context docs (act-two-ambition-design, transitions.py, config.py) exist; added 5 supplementary reads (decomposition doc for Q3, lens.py + data_loader.py:load_lenses as parallel-model template, test_lens_registry.py + test_findings_register.py for compliance pattern, ROADMAP §11125-11146 + §A2-20 for downstream shape assumption); extended touch zones from 3 to 5 files (added `spacegame/data_loader.py` for loader wiring and `tests/test_compliance/test_capstone_registry.py` for the integrity guard); folded in 2 polish items (empty-stub scan guard on the `test_findings_register.py` pattern, module-import-hygiene structural test); locked 7 open decisions (field names/types, primitive int threshold not CapstoneTrigger dataclass, loader owned by A2-3 not A2-20, empty stub not shipped fixtures, pure predicate not Protocol callback, no Player-side state here, non-negative threshold allowing 0); expanded acceptance criteria from 5 to 8 (added structural-import guard under AC1, `>=` semantics test under AC5, per-branch predicate test coverage, loader integration under AC6, from_dict missing/type-mismatch coverage under AC2/AC7); drafted 7-task plan with per-task test names and gotchas. Cross-sprint reactions: none (foundational). PHASE_OK
+- 2026-08-28 18:17 — harness: implement phase starting (rework cycle 0)
+- 2026-08-28 19:10 — test red: test_capstone.py and test_capstone_registry.py written (47 total); imports fail as expected (module doesn't exist yet)
+- 2026-08-28 19:15 — spacegame/models/capstone.py created; 22 model tests green
+- 2026-08-28 19:20 — data_loader.py extended (self.capstones, load_capstones(), _safe_load registration, TYPE_CHECKING import); data/narrative/capstones.json stub created; 27 model + 20 compliance tests green
+- 2026-08-28 19:35 — full suite run: 10984 passing (+47), 101 skipped, 2 pre-existing flaky ralph timing failures that pass in isolation; lint/format/mypy all clean; all 8 ACs satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-28 18:08
-- Completed: 2026-08-28 18:35
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 836626d
-- New_sprints_proposed: none
-- Polish_items_folded_in: empty-stub scan guard on the `test_findings_register.py` pattern; module-import-hygiene structural test (Capstone must not reach into engine/views)
-- Decisions_locked: 7
-- Notes: A2-3 is foundational — a small typed module plus a JSON stub plus loader plumbing plus a pure predicate. Locked field names to `capstone_id/lens_id/capstone_threshold/cutscene_ref` to bridge the discrepancy between the sprint's original Deliverables (which said `trigger_condition`) and A2-20's assumption block (which said `capstone_threshold` + `narration_key`); documented the resolution in the module docstring so A2-20 has a shape to code against without touching this sprint's format. Extended touch zones by one file (`data_loader.py`) to keep A2-20 from having to reach outside its own scope for loader wiring, matching A2-1's precedent. Test count target 15+; hits the AC5 minimum of 10 comfortably with per-branch predicate tests and the structural-import guard.
+- Started: 2026-08-28 18:17
+- Completed: 2026-08-28 19:35
+- Files_changed: spacegame/models/capstone.py, spacegame/data_loader.py, data/narrative/capstones.json, tests/test_models/test_capstone.py, tests/test_compliance/test_capstone_registry.py
+- Commits: 896bda5, 45541bd, ee7e757
+- Tests_added: 47
+- Tests_baseline: 10937
+- Tests_passing: 10984
+- Tests_skipped: 101
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Capstone frozen dataclass + should_fire() predicate + DataLoader loader wiring + empty JSON stub. All 8 ACs satisfied; 47 tests (27 in test_capstone.py, 20 in test_capstone_registry.py). Two ralph timing-flaky failures in the parallel suite are pre-existing — both pass in isolation and are unrelated to this sprint.
 #### A2-4 — Per-lens investment tracking
 
 **Status**: todo
