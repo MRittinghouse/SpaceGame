@@ -1156,18 +1156,31 @@ def _commit_harness_bookkeeping(sprint_id: str, summary: str) -> bool:
     return True
 
 
-def _write_status_snapshot(sprint_id: str, recent_outcomes: list[str]) -> None:
+def _write_status_snapshot(
+    sprint_id: str,
+    recent_outcomes: list[str],
+    exit_reason: Optional[str] = None,
+    crash_info: Optional[status.CrashInfo] = None,
+) -> None:
     """Write STATUS.md so progress is visible from a phone.
 
     Best-effort: any failure here -- a roadmap-parsing bug, a rendering bug,
     a disk error -- is logged and swallowed. STATUS.md is the operator's only
     window into a week-long unattended run; a bug in producing it must never
-    be allowed to end the run it is trying to report on.
+    be allowed to end the run it is trying to report on, and must never
+    replace a real error already propagating with a confusing secondary one.
 
     `blocks_disagreements` is a cross-check on the `Blocks:` field, reported
     here so it resurfaces without a human remembering to run a command. It
     never influences `sprints_now` or which sprint gets picked -- reporting
     only.
+
+    Args:
+        sprint_id: Used only in the log line if this write fails.
+        recent_outcomes: Trimmed to the last 5 here, at write time.
+        exit_reason: Set when the harness declined to run at all (a forced-
+            sprint validation failure, a baseline-capture failure).
+        crash_info: Set when an unhandled exception escaped the main loop.
     """
     try:
         sprints_now = roadmap_state.parse_sprints()
@@ -1176,6 +1189,8 @@ def _write_status_snapshot(sprint_id: str, recent_outcomes: list[str]) -> None:
             heartbeat.read_heartbeat(),
             recent_outcomes[-5:],
             disagreements=triage.blocks_disagreements(sprints_now),
+            crash=crash_info,
+            decline_reason=exit_reason,
         )
     except Exception as e:
         log(f"{sprint_id}: STATUS.md write failed: {e}")
@@ -1424,6 +1439,16 @@ def main() -> int:
         heartbeat_stop.set()
         return 2
 
+    # Declared before `try` (not at first use inside it) so `finally` can
+    # always reference them, no matter how early an exception strikes --
+    # otherwise a crash before, say, `recent_outcomes` was normally assigned
+    # would raise NameError out of `finally` itself, which would replace the
+    # real error rather than report it (Task 8 review round 2, Finding 1).
+    recent_outcomes: list[str] = []
+    crashed_sprint_id: Optional[str] = None
+    exit_reason: Optional[str] = None
+    crash_info: Optional[status.CrashInfo] = None
+
     try:
         state = HarnessState.load()
         state.last_run_started_at = datetime.now().isoformat()
@@ -1462,10 +1487,11 @@ def main() -> int:
             try:
                 test_baseline = _capture_test_baseline()
             except BaselineCaptureError as exc:
-                log(
+                exit_reason = (
                     f"Baseline capture FAILED: {exc}. "
                     "Aborting run to avoid running agents with no baseline."
                 )
+                log(exit_reason)
                 return 3
             log(f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped.")
 
@@ -1478,9 +1504,6 @@ def main() -> int:
             log(f"Forced sprint pickup: {args.sprint}")
 
         sprints_processed = 0
-        # STATUS.md's "Recent" section (Task 8) -- trimmed to the last 5 at
-        # write time, kept growing here so nothing is lost across sprints.
-        recent_outcomes: list[str] = []
         while sprints_processed < args.max_sprints:
             if should_stop():
                 log("Stop signal honored before sprint pickup.")
@@ -1492,18 +1515,23 @@ def main() -> int:
             if args.sprint:
                 target = sprints.get(args.sprint)
                 if target is None:
-                    log(f"Forced sprint {args.sprint} not found. Aborting.")
+                    exit_reason = f"Forced sprint {args.sprint} not found. Aborting."
+                    log(exit_reason)
                     return 2
                 if not target.is_todo():
-                    log(
+                    exit_reason = (
                         f"Forced sprint {args.sprint} status={target.status!r}, not todo. Aborting."
                     )
+                    log(exit_reason)
                     return 2
                 unmet = [
                     d for d in target.depends_on if not sprints.get(d) or not sprints[d].is_done()
                 ]
                 if unmet:
-                    log(f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting.")
+                    exit_reason = (
+                        f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting."
+                    )
+                    log(exit_reason)
                     return 2
                 picked = target
                 args.sprint = None
@@ -1520,7 +1548,12 @@ def main() -> int:
                 picked = eligible[0]
 
             log(f"Picking up sprint {picked.sprint_id}: {picked.title}")
+            # Set right before, cleared right after: if execute_sprint raises,
+            # this stays pointed at the sprint that was in flight when it
+            # died, for the CRASHED banner (Task 8 review round 2).
+            crashed_sprint_id = picked.sprint_id
             outcome = execute_sprint(picked.sprint_id, state, test_baseline=test_baseline)
+            crashed_sprint_id = None
             sprints_processed += 1
             state.total_sprints_processed += 1
             state.save()
@@ -1591,26 +1624,58 @@ def main() -> int:
 
             time.sleep(INTER_SPRINT_SLEEP)
 
-        # STATUS.md must be written and committed on EVERY exit path, not
-        # just after a sprint completes. Every `break` above -- starved at
-        # launch, starvation discovered mid-run, normal completion with an
-        # empty queue, a STOP file honored before pickup -- lands here
-        # without ever reaching the per-sprint write inside the loop body.
-        # A starved-at-launch run is exactly the vacation scenario this file
-        # exists for: the operator leaves, the harness finds nothing
-        # eligible, exits, and without this the one file that would have
-        # told them so is never created (Task 8 Finding 1).
-        _write_status_snapshot("harness-exit", recent_outcomes)
+        log(f"Harness done. Sprints processed this run: {sprints_processed}.")
+        state.save()
+        return 0
+    except Exception as exc:
+        # A crash must be legible as a crash: right now, without this, the
+        # operator cannot tell "exited cleanly with nothing to do" from
+        # "died on an unhandled exception" -- both would otherwise render
+        # the same calm queue summary in STATUS.md. Captured here (not in
+        # `finally`) because heartbeat.read_heartbeat() must be read while
+        # the heartbeat thread is still running, and because
+        # execute_sprint's own try/finally already reset _current_context
+        # to (None, None) by the time control reaches this frame -- the
+        # heartbeat FILE (written on its own timer) still holds the last
+        # live sprint/phase, unlike that synchronous in-process variable.
+        beat = heartbeat.read_heartbeat()
+        phase = None
+        if beat is not None and beat.get("sprint") == crashed_sprint_id:
+            beat_phase = beat.get("phase")
+            phase = beat_phase if isinstance(beat_phase, str) else None
+        crash_info = status.CrashInfo(
+            exc_type=type(exc).__name__,
+            exc_message=str(exc),
+            sprint=crashed_sprint_id,
+            phase=phase,
+        )
+        log(f"harness: UNHANDLED {crash_info.exc_type}: {crash_info.exc_message}")
+        raise  # the operator needs the real traceback; STATUS.md is a supplement, not a replacement
+    finally:
+        # STATUS.md must be written on EVERY exit from this function --
+        # clean break, early return (baseline/forced-sprint validation
+        # failures), or a propagating exception -- not just after a sprint
+        # completes inside the loop. `finally` is the one path Python
+        # guarantees runs regardless of how `try` was left, so it belongs
+        # here rather than duplicated at each exit site (Task 8 review
+        # round 2, Finding 1). `_write_status_snapshot` is internally
+        # guarded (see its docstring) and only ever logs on failure, so it
+        # cannot itself raise and mask a real error already in flight; the
+        # two calls below are wrapped for the same reason.
+        _write_status_snapshot(
+            "harness-exit",
+            recent_outcomes,
+            exit_reason=exit_reason,
+            crash_info=crash_info,
+        )
         try:
             _commit_harness_bookkeeping("harness-exit", "final status snapshot")
         except Exception as e:
             log(f"harness-exit: harness bookkeeping commit failed: {e}")
-        _push_after_sprint("harness-exit", Outcome.OK, push_enabled)
-
-        log(f"Harness done. Sprints processed this run: {sprints_processed}.")
-        state.save()
-        return 0
-    finally:
+        try:
+            _push_after_sprint("harness-exit", Outcome.OK, push_enabled)
+        except Exception as e:
+            log(f"harness-exit: push failed: {e}")
         heartbeat_stop.set()
         _release_lock()
 

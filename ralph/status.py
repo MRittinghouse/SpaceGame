@@ -7,8 +7,12 @@ working" in five seconds of squinting: STARVED is the loudest word in the
 file, an absent heartbeat is stated rather than silently omitted, a stale one
 is flagged rather than left indistinguishable from a fresh one (a heartbeat
 file can outlive the process that wrote it -- a reboot mid-sprint leaves it
-behind), and a heartbeat's age is spelled out in words instead of a raw
-timestamp the reader has to do arithmetic on.
+behind), a heartbeat's age is spelled out in words instead of a raw
+timestamp the reader has to do arithmetic on, and a run that died on an
+unhandled exception renders as a distinct CRASHED banner rather than the
+same calm queue summary a clean exit produces -- the two are indistinguishable
+otherwise, and that difference is the single most valuable thing this file
+can tell someone on a beach.
 
 Everything here is derived from state that already exists (the queue, the
 heartbeat, the roadmap's own `Blocks:` claims). This module adds no new
@@ -20,6 +24,7 @@ sprint runs next.
 from __future__ import annotations
 
 import time
+from dataclasses import dataclass
 from typing import Optional
 
 from ralph.config import IN_PROGRESS_STALE_MINUTES, PROJECT_ROOT
@@ -31,6 +36,22 @@ STATUS_PATH = PROJECT_ROOT / "STATUS.md"
 # "the first few lines" of Blocks: drift -- enough to see the shape of the
 # problem without turning a five-second phone check into a scroll.
 _MAX_DISAGREEMENT_LINES = 5
+
+
+@dataclass(frozen=True)
+class CrashInfo:
+    """Captured at the moment an unhandled exception escapes `main()`'s loop.
+
+    Deliberately minimal -- exception type/message plus which sprint/phase
+    was in flight. A full traceback belongs in the harness's own log file,
+    not in a five-second phone read; this is enough to tell "died on a bug"
+    from "exited cleanly" and to know roughly where to start looking.
+    """
+
+    exc_type: str
+    exc_message: str
+    sprint: Optional[str] = None
+    phase: Optional[str] = None
 
 
 def _humanize_age(seconds: float) -> str:
@@ -75,6 +96,8 @@ def render_status(
     recent: list[str],
     crash_loop: bool = False,
     disagreements: Optional[list[str]] = None,
+    crash: Optional[CrashInfo] = None,
+    decline_reason: Optional[str] = None,
 ) -> str:
     """Build the STATUS.md body.
 
@@ -87,6 +110,13 @@ def render_status(
         disagreements: `triage.blocks_disagreements()` output. A cross-check
             only -- shown here so it resurfaces without a human remembering
             to run a command, but it never gates which sprint runs.
+        crash: Set when an unhandled exception escaped the main loop.
+            Rendered as a distinct CRASHED banner -- a crash must not read
+            as the same calm queue summary a clean exit produces.
+        decline_reason: Set when the harness declined to run at all (a
+            forced-sprint validation failure, a baseline-capture failure).
+            An intentional, clean abort -- not a crash -- but STATUS.md
+            must still say why, not just exist with a generic snapshot.
 
     Returns:
         The full Markdown text of STATUS.md.
@@ -107,6 +137,22 @@ def render_status(
 
     if crash_loop:
         lines += ["## CRASH-LOOP", "", "Supervisor stopped after repeated failures.", ""]
+    if crash is not None:
+        if crash.sprint and crash.phase:
+            in_flight = f"{crash.sprint} ({crash.phase})"
+        elif crash.sprint:
+            in_flight = crash.sprint
+        else:
+            in_flight = "(no sprint was in flight)"
+        lines += [
+            "## CRASHED",
+            "",
+            f"The harness died on an unhandled `{crash.exc_type}`: {crash.exc_message}",
+            f"In flight: {in_flight}",
+            "",
+        ]
+    if decline_reason is not None:
+        lines += ["## Harness Did Not Run", "", decline_reason, ""]
     if queue.is_starved:
         lines += ["## STARVED", "", "```", starvation_report(queue), "```", ""]
     if beat_is_stale:
@@ -172,11 +218,25 @@ def write_status(
     recent: list[str],
     crash_loop: bool = False,
     disagreements: Optional[list[str]] = None,
+    crash: Optional[CrashInfo] = None,
+    decline_reason: Optional[str] = None,
 ) -> None:
     """Write STATUS.md atomically.
 
-    Does not catch exceptions itself -- the harness's sprint-boundary call
-    site is responsible for degrading a failure to a logged warning, so a
-    rendering bug can never take down a week-long unattended run.
+    Does not catch exceptions itself -- the harness's call site is
+    responsible for degrading a failure to a logged warning, so a rendering
+    bug can never take down (or mask a real error ending) a week-long
+    unattended run.
     """
-    atomic_write(STATUS_PATH, render_status(queue, beat, recent, crash_loop, disagreements))
+    atomic_write(
+        STATUS_PATH,
+        render_status(
+            queue,
+            beat,
+            recent,
+            crash_loop,
+            disagreements,
+            crash=crash,
+            decline_reason=decline_reason,
+        ),
+    )

@@ -13,7 +13,7 @@ import pytest
 
 from ralph import status as status_module
 from ralph.config import IN_PROGRESS_STALE_MINUTES
-from ralph.status import render_status
+from ralph.status import CrashInfo, render_status
 from ralph.triage import QueueState
 
 
@@ -227,6 +227,89 @@ class TestBlocksDrift:
             QueueState(total=1, todo=0, eligible=0), None, [], disagreements=["X: drift"]
         )
         assert "does not affect scheduling" in text
+
+
+class TestCrashBanner:
+    """Task 8 review round 2, Finding 1/2: the operator must be able to tell
+    "exited cleanly with nothing to do" from "died on an unhandled
+    exception" at a glance -- both would otherwise render the same calm
+    queue summary. Assertions here target content unique to the crash
+    (exception type, exception message, which sprint/phase was in flight),
+    not just the presence of some heading that another section could also
+    satisfy -- that exact mistake is what let Finding 3 (round 1) through.
+    """
+
+    def test_crash_shows_exception_type_and_message(self) -> None:
+        crash = CrashInfo(
+            exc_type="_SimulatedCrash",
+            exc_message="boom-distinctive-crash-marker-77123",
+            sprint="EXEC-1",
+            phase="implement",
+        )
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], crash=crash)
+        assert "_SimulatedCrash" in text
+        assert "boom-distinctive-crash-marker-77123" in text
+
+    def test_crash_shows_which_sprint_and_phase_were_in_flight(self) -> None:
+        crash = CrashInfo(
+            exc_type="RuntimeError",
+            exc_message="agent subprocess died",
+            sprint="EXEC-1",
+            phase="implement",
+        )
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], crash=crash)
+        assert "EXEC-1" in text
+        assert "implement" in text
+
+    def test_crash_is_its_own_distinct_banner_heading(self) -> None:
+        crash = CrashInfo(exc_type="RuntimeError", exc_message="x", sprint=None, phase=None)
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], crash=crash)
+        assert "## CRASHED" in text
+
+    def test_no_crash_omits_the_banner_entirely(self) -> None:
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], crash=None)
+        assert "## CRASHED" not in text
+        assert "_SimulatedCrash" not in text
+
+    def test_crash_with_no_sprint_in_flight_does_not_crash_the_renderer(self) -> None:
+        """An exception before any sprint was picked (e.g. baseline capture)
+        has no sprint/phase to report -- must still render, not raise."""
+        crash = CrashInfo(exc_type="OSError", exc_message="disk full", sprint=None, phase=None)
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], crash=crash)
+        assert "## CRASHED" in text
+        assert "OSError" in text
+
+
+class TestDeclineReason:
+    """`return 2` / `return 3` paths (forced-sprint validation, baseline
+    capture failure) are clean, intentional declines, not crashes -- but
+    STATUS.md must still say why the harness didn't run, not just exist
+    with a generic queue snapshot.
+    """
+
+    def test_decline_reason_is_shown(self) -> None:
+        text = render_status(
+            QueueState(total=1, todo=1, eligible=1),
+            None,
+            [],
+            decline_reason="Forced sprint XYZ-9 not found. Aborting.",
+        )
+        assert "Forced sprint XYZ-9 not found. Aborting." in text
+
+    def test_no_decline_reason_omits_the_section(self) -> None:
+        text = render_status(QueueState(total=1, todo=1, eligible=1), None, [], decline_reason=None)
+        assert "Did Not Run" not in text
+
+    def test_decline_reason_and_crash_are_visually_distinct(self) -> None:
+        """A decline is an intentional, clean abort; a crash is a bug. They
+        must not collapse into the same banner wording."""
+        text = render_status(
+            QueueState(total=1, todo=1, eligible=1),
+            None,
+            [],
+            decline_reason="Baseline capture FAILED: pytest exited 1. Aborting run.",
+        )
+        assert "## CRASHED" not in text
 
 
 class TestWriteStatus:

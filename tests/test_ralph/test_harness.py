@@ -30,6 +30,7 @@ import pytest
 from ralph import agents, config, harness, roadmap_state, triage
 from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.harness import HarnessState, SprintState
+from ralph.status import CrashInfo
 
 _ROADMAP_WITH_STUCK = """\
 # Test
@@ -482,6 +483,8 @@ class TestWriteStatusSnapshot:
             recent: list[str],
             crash_loop: bool = False,
             disagreements: Optional[list[str]] = None,
+            crash: Optional[CrashInfo] = None,
+            decline_reason: Optional[str] = None,
         ) -> None:
             calls.append(
                 {
@@ -489,6 +492,8 @@ class TestWriteStatusSnapshot:
                     "beat": beat,
                     "recent": recent,
                     "disagreements": disagreements,
+                    "crash": crash,
+                    "decline_reason": decline_reason,
                 }
             )
 
@@ -520,6 +525,8 @@ class TestWriteStatusSnapshot:
             recent: list[str],
             crash_loop: bool = False,
             disagreements: Optional[list[str]] = None,
+            crash: Optional[CrashInfo] = None,
+            decline_reason: Optional[str] = None,
         ) -> None:
             calls.append(recent)
 
@@ -643,6 +650,264 @@ class TestStatusMdWrittenOnEveryExitPath:
             # placeholder -- proves this came from a live analyse(), not a
             # stub.
             assert "BLOCK-1" in content
+        finally:
+            status_file.unlink(missing_ok=True)
+
+
+class _SimulatedCrash(RuntimeError):
+    """A deliberately distinctive exception type/name for crash-banner tests.
+
+    Distinctive on purpose: assertions on its type name and message must not
+    accidentally pass because some OTHER section of STATUS.md happens to
+    contain the same text (the exact mistake that let round 1's Finding 3
+    through for the STARVED heading).
+    """
+
+
+_ONE_ELIGIBLE_SPRINT_ROADMAP = """\
+# Test One Eligible Sprint
+
+### EXEC-1 — Sprint that will crash
+
+**Status**: todo
+**Depends on**: none
+
+**Activity log.**
+- 2026-01-01 — todo (created)
+"""
+
+
+class TestUncaughtExceptionDuringLoop:
+    """Task 8 review round 2, Finding 1 -- the critical gap: an uncaught
+    exception escaping the loop body previously produced total silence, no
+    STATUS.md, no explanation. An agent crash on day 4 of a week-long
+    unattended run is otherwise indistinguishable, from a phone, from a
+    quiet success.
+    """
+
+    def test_exception_propagates_unchanged_and_status_md_shows_crash_banner(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_ONE_ELIGIBLE_SPRINT_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_e2e_crash.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_execute_sprint(
+            sprint_id: str, state: HarnessState, test_baseline: tuple[int, int] = (0, 0)
+        ) -> Outcome:
+            raise _SimulatedCrash("boom-distinctive-crash-marker-77123")
+
+        monkeypatch.setattr(harness, "execute_sprint", fake_execute_sprint)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            if args and args[0] == "status":
+                return (0, " M requirements/roadmap/ROADMAP.md\n?? STATUS.md\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+            ],
+        )
+
+        try:
+            # The status write must never swallow or mask a propagating
+            # exception -- the original error and exit code are what the
+            # operator (or a process supervisor) needs, and STATUS.md is a
+            # supplement, never a replacement.
+            with pytest.raises(_SimulatedCrash, match="boom-distinctive-crash-marker-77123"):
+                harness.main()
+
+            assert status_file.exists(), (
+                "STATUS.md must exist even when the harness dies on an "
+                "unhandled exception -- this is the single most important "
+                "case in the whole task"
+            )
+            content = status_file.read_text(encoding="utf-8")
+            # Distinguishing content, not merely a heading another section
+            # could also satisfy (the Finding 3 mistake).
+            assert "## CRASHED" in content
+            assert "_SimulatedCrash" in content
+            assert "boom-distinctive-crash-marker-77123" in content
+            assert "EXEC-1" in content  # which sprint was in flight
+        finally:
+            status_file.unlink(missing_ok=True)
+
+    def test_a_failure_inside_status_write_does_not_replace_the_real_crash(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The write must stay internally guarded: if status rendering
+        itself has a bug while a real crash is already in flight (a
+        `finally` running during unwinding of an already-failing run), the
+        operator needs the ORIGINAL error, not a confusing secondary one
+        from the reporting mechanism replacing it.
+        """
+        (isolated_roadmap / "ROADMAP.md").write_text(_ONE_ELIGIBLE_SPRINT_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        def fake_execute_sprint(
+            sprint_id: str, state: HarnessState, test_baseline: tuple[int, int] = (0, 0)
+        ) -> Outcome:
+            raise _SimulatedCrash("original-crash-marker")
+
+        monkeypatch.setattr(harness, "execute_sprint", fake_execute_sprint)
+
+        def broken_write_status(*args: object, **kwargs: object) -> None:
+            raise RuntimeError("status-write-itself-is-also-broken")
+
+        monkeypatch.setattr(harness.status, "write_status", broken_write_status)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+            ],
+        )
+
+        # The ORIGINAL crash must win -- not the secondary bug in the
+        # status-writing path that fired while it was already unwinding.
+        with pytest.raises(_SimulatedCrash, match="original-crash-marker"):
+            harness.main()
+
+
+class TestDeclinedToRunLeavesStatus:
+    """`return 2` (forced-sprint validation) / `return 3` (baseline capture
+    failure) are clean, intentional declines -- not crashes -- but the
+    operator still needs to know the harness didn't run, and why, rather
+    than finding no STATUS.md at all.
+    """
+
+    def test_baseline_capture_failure_leaves_a_status_with_the_reason(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_ONE_ELIGIBLE_SPRINT_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+
+        # This path specifically needs baseline capture to actually run
+        # (not short-circuited by DRY_RUN), so preflight's real `claude
+        # --version` subprocess check is neutralized directly instead.
+        def fake_subprocess_run(*args: object, **kwargs: object) -> MagicMock:
+            return MagicMock(returncode=0)
+
+        monkeypatch.setattr(harness.subprocess, "run", fake_subprocess_run)
+
+        def fake_capture_baseline() -> tuple[int, int]:
+            raise harness.BaselineCaptureError("simulated-baseline-marker-42")
+
+        monkeypatch.setattr(harness, "_capture_test_baseline", fake_capture_baseline)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_e2e_baseline.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            if args and args[0] == "status":
+                return (0, " M requirements/roadmap/ROADMAP.md\n?? STATUS.md\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-agency-probe",
+            ],
+        )
+
+        try:
+            rc = harness.main()
+            assert rc == 3
+
+            assert status_file.exists(), (
+                "a declined run must still leave STATUS.md -- total silence "
+                "here is what the operator cannot tell from a quiet success"
+            )
+            content = status_file.read_text(encoding="utf-8")
+            assert "simulated-baseline-marker-42" in content
+            assert "## CRASHED" not in content, "a clean decline is not a crash"
+        finally:
+            status_file.unlink(missing_ok=True)
+
+    def test_forced_sprint_not_found_leaves_a_status_with_the_reason(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_ONE_ELIGIBLE_SPRINT_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", True)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_e2e_forced.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+
+        def fake_run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]:
+                return (0, "true\n", "")
+            if args and args[0] == "status":
+                return (0, " M requirements/roadmap/ROADMAP.md\n?? STATUS.md\n", "")
+            return (0, "", "")
+
+        monkeypatch.setattr(harness, "_run_git", fake_run_git)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-baseline",
+                "--skip-agency-probe",
+                "--sprint",
+                "DOES-NOT-EXIST",
+            ],
+        )
+
+        try:
+            rc = harness.main()
+            assert rc == 2
+
+            assert status_file.exists()
+            content = status_file.read_text(encoding="utf-8")
+            assert "DOES-NOT-EXIST" in content
+            assert "not found" in content
         finally:
             status_file.unlink(missing_ok=True)
 
