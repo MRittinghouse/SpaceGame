@@ -3382,3 +3382,46 @@ class TestPytestSerialFallbackOnHang:
         )
         assert calls[1][calls[1].index("-n") + 1] == "0"
         assert result is None, f"serial retry passed, so the gate must pass; got {result}"
+
+
+class TestGateTimeoutIsInfraNotBlocked:
+    """A gate that never FINISHED must not permanently block a sprint.
+
+    A2-1 was marked blocked on the first real armed run with its work complete,
+    correct and committed: plan, implement and review all returned PHASE_OK
+    with 7/7 acceptance criteria verified, and the suite measured green at 116s
+    minutes later. Only the gate's budget was exceeded. That single block
+    stranded 18 downstream sprints -- the entire Act II arc -- which is the very
+    cascade the arc's shallow dependency graph was shaped to prevent.
+
+    A suite that RAN and was red is evidence about the code, and blocking is
+    right. A timeout is evidence about the machine, so the sprint goes back to
+    `todo` under the existing INFRA_ERROR bounds instead.
+    """
+
+    def test_the_timeout_message_carries_the_marker(self) -> None:
+        """The two paths are told apart by the gate's own wording, so a change
+        to that wording must not silently turn timeouts back into blocks."""
+        with patch.object(
+            harness,
+            "run_with_hard_timeout",
+            side_effect=subprocess.TimeoutExpired(cmd=["pytest"], timeout=1),
+        ):
+            gate = harness._run_test_gate((10, 0))
+        assert gate is not None
+        assert harness._TEST_GATE_TIMEOUT_MARKER in gate[1], (
+            "the timeout message no longer contains the marker the sprint-outcome "
+            f"branch keys on, so a gate timeout would BLOCK and strand every "
+            f"downstream sprint. Message was: {gate[1]!r}"
+        )
+
+    def test_a_red_suite_message_does_not_carry_the_marker(self) -> None:
+        """The inverse: a genuinely red suite must still block."""
+        failure = MagicMock(returncode=1, stdout="1 failed, 9 passed", stderr="")
+        with patch.object(harness, "run_with_hard_timeout", return_value=failure):
+            gate = harness._run_test_gate((10, 0))
+        assert gate is not None
+        assert harness._TEST_GATE_TIMEOUT_MARKER not in gate[1], (
+            "a red suite must not be mistaken for a timeout, or a real breakage "
+            "would be retried forever instead of blocking"
+        )

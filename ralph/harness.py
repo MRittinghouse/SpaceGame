@@ -495,6 +495,25 @@ def _run_sprint_phases(
                 if test_gate is not None:
                     _gate_name, err = test_gate
                     reason = f"test-suite gate FAILED: {err}"
+                    if _TEST_GATE_TIMEOUT_MARKER in err:
+                        # A gate that never FINISHED is an infrastructure fault, not a
+                        # red suite, and the two deserve opposite handling.
+                        #
+                        # A2-1 was marked blocked here with its work complete, correct
+                        # and committed -- plan, implement and review all PHASE_OK, 7/7
+                        # criteria verified -- because the gate exceeded its budget.
+                        # That single block stranded 18 downstream sprints, the entire
+                        # Act II arc, which is precisely the cascade the arc's shallow
+                        # dependency graph was shaped to prevent. It arrived through the
+                        # gate rather than the graph.
+                        #
+                        # Blocking is right for a suite that RAN and was red: that is
+                        # evidence about the code. A timeout is evidence about the
+                        # machine, so the sprint returns to `todo` and is retried under
+                        # the existing INFRA_ERROR bounds rather than permanently
+                        # closing the path for everything behind it.
+                        _mark_terminal_outcome(sprint_id, "review", Outcome.INFRA_ERROR, reason)
+                        return Outcome.INFRA_ERROR
                     _mark_terminal_outcome(sprint_id, "review", Outcome.BLOCKED, reason)
                     _set_red_tree(f"{sprint_id}: {reason}")
                     return Outcome.BLOCKED
@@ -570,6 +589,10 @@ def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
 # machine while still being a bound: a pytest run that never finishes must not
 # become the harness's new way of hanging.
 TEST_GATE_TIMEOUT_SECONDS: int = 2700
+
+# Substring identifying a gate that never finished, as opposed to one that
+# ran and found failures. `_run_test_gate` puts it in the timeout message.
+_TEST_GATE_TIMEOUT_MARKER: str = "did not finish within"
 
 # Characters of pytest output carried into the block reason / STATUS.md.
 _TEST_GATE_TAIL_CHARS: int = 1200
