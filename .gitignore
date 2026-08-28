@@ -75,7 +75,13 @@ ralph/heartbeat.json.tmp
 # Untracked orphans here fail preflight's clean-tree check and brick every
 # subsequent launch, so they must never appear as working-tree dirt.
 ralph/state.json.tmp
+ralph/push_state.json
+ralph/push_state.json.tmp
 STATUS.md.tmp
+# ROADMAP.md itself is tracked -- only the atomic_write sibling is ignored.
+# Unlike the runtime files above it lives outside ralph/, so without this line
+# a stranded orphan is real untracked dirt and preflight returns 4 forever.
+requirements/roadmap/ROADMAP.md.tmp
 ralph/.running
 ralph/.write_probe
 ralph/.agency_probe

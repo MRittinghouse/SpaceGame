@@ -22,6 +22,17 @@ import sys
 import threading
 from pathlib import Path
 
+# Suffix `atomic_write` appends to build its sibling temp file. Exported so
+# the harness's stranded-orphan defences (the managed-dirty filter and the
+# startup sweep) derive the suffix from the implementation rather than
+# repeating a literal that could drift away from it.
+ATOMIC_WRITE_TMP_SUFFIX = ".tmp"
+
+
+def tmp_sibling(path: Path) -> Path:
+    """The temp file `atomic_write` uses while writing *path*."""
+    return path.with_name(path.name + ATOMIC_WRITE_TMP_SUFFIX)
+
 
 def atomic_write(path: Path, text: str, encoding: str = "utf-8") -> None:
     """Write *text* to *path* atomically.
@@ -47,7 +58,7 @@ def atomic_write(path: Path, text: str, encoding: str = "utf-8") -> None:
         text: Full contents to write.
         encoding: Text encoding.
     """
-    tmp = path.with_name(path.name + ".tmp")
+    tmp = tmp_sibling(path)
     try:
         with open(tmp, "w", encoding=encoding, newline="") as f:
             f.write(text)

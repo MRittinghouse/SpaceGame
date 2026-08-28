@@ -16,10 +16,12 @@ and `_run_git` faked so nothing touches the real repo.
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable, Optional
@@ -1742,17 +1744,216 @@ class TestAtomicWriteTmpOrphansDoNotBrickTheHarness:
     they do not know exists.
 
     Found by the pre-deployment smoke drill, which killed the process
-    mid-write rather than reasoning about it. A power cut is exactly this
-    scenario, so an unattended run would crash-loop for the rest of the week.
+    mid-write rather than reasoning about it. The trigger is routine, not
+    hypothetical: the supervisor's own stale-heartbeat recovery IS a
+    `taskkill /F /T`.
+
+    The first version of this class iterated a hardcoded three-element subset
+    of `_HARNESS_MANAGED_RUNTIME_BASE` and asserted that the derivation
+    produced `.tmp` entries for it -- i.e. it asserted over the same set that
+    produced the answer, so it could not notice that `ROADMAP.md` (the
+    largest and most frequently written atomic-write destination of all) was
+    missing from the list entirely. That is why the defect survived review.
+    The expectations below are therefore derived from the real write sites:
+    the AST of every module is walked for `atomic_write(...)` calls, and a
+    call site naming a destination this file does not know about fails.
     """
 
-    def test_tmp_siblings_of_managed_files_are_treated_as_harness_managed(self) -> None:
-        for managed in ("ralph/state.json", "ralph/heartbeat.json", "STATUS.md"):
+    # Destination expression (as it appears in the source) -> repo-relative
+    # path it resolves to. Written out by hand ON PURPOSE: these strings are
+    # an independent statement of where `atomic_write` actually writes, so
+    # checking them against `_filter_harness_managed_dirty` cannot be
+    # satisfied by the registry agreeing with itself.
+    EXPECTED_DESTINATIONS: dict[str, str] = {
+        "STATE_FILE": "ralph/state.json",
+        "HEARTBEAT_PATH": "ralph/heartbeat.json",
+        "PUSH_STATE_PATH": "ralph/push_state.json",
+        "STATUS_PATH": "STATUS.md",
+        "ROADMAP_PATH": "requirements/roadmap/ROADMAP.md",
+        "_RM": "requirements/roadmap/ROADMAP.md",
+        "summary_path": "ralph/logs/SA-1/SUMMARY.md",
+    }
+
+    def _atomic_write_call_sites(self) -> list[tuple[str, int, str]]:
+        """Every `atomic_write(dest, ...)` call in ralph/ and scripts/.
+
+        Returns (module path, line number, source of the first argument).
+        """
+        root = Path(harness.PROJECT_ROOT)
+        sites: list[tuple[str, int, str]] = []
+        for source_dir in ("ralph", "scripts"):
+            for module in sorted((root / source_dir).rglob("*.py")):
+                if "__pycache__" in module.parts:
+                    continue
+                tree = ast.parse(module.read_text(encoding="utf-8"))
+                for node in ast.walk(tree):
+                    if not isinstance(node, ast.Call) or not node.args:
+                        continue
+                    func = node.func
+                    if isinstance(func, ast.Name):
+                        name: Optional[str] = func.id
+                    elif isinstance(func, ast.Attribute):
+                        name = func.attr
+                    else:
+                        name = None
+                    if name != "atomic_write":
+                        continue
+                    rel = module.relative_to(root).as_posix()
+                    sites.append((rel, node.lineno, ast.unparse(node.args[0])))
+        return sites
+
+    def test_the_ast_scan_finds_the_known_write_sites(self) -> None:
+        """Guard on the guard: a scan that silently matched nothing would make
+        every assertion below vacuous, which is exactly the failure class this
+        rewrite exists to close."""
+        sites = self._atomic_write_call_sites()
+        assert len(sites) >= 5, (
+            f"the atomic_write AST scan found only {len(sites)} call site(s); "
+            "every test in this class would then be asserting over an empty "
+            "set and proving nothing"
+        )
+        modules = {module for module, _line, _dest in sites}
+        assert "ralph/roadmap_state.py" in modules, (
+            "the scan missed ralph/roadmap_state.py, the ROADMAP.md write site "
+            f"whose orphan bricks preflight; found: {sorted(modules)}"
+        )
+
+    def test_every_atomic_write_destination_is_registered(self) -> None:
+        """A new `atomic_write` call site must declare where it writes.
+
+        This is the check that would have caught the ROADMAP.md gap: the
+        registry is compared against the code, not against itself.
+        """
+        for module, line, dest in self._atomic_write_call_sites():
+            assert dest in self.EXPECTED_DESTINATIONS, (
+                f"{module}:{line} writes via atomic_write to `{dest}`, a "
+                "destination this test does not know about. A hard kill "
+                f"mid-write strands `{dest}.tmp`; if that path is not covered "
+                "by harness._ATOMIC_WRITE_TARGETS (or the ralph/logs/ prefix) "
+                "the orphan fails preflight's clean-tree check and bricks "
+                "EVERY subsequent launch. Add the destination to "
+                "harness._ATOMIC_WRITE_TARGETS, to .gitignore, and to "
+                "EXPECTED_DESTINATIONS here."
+            )
+
+    def test_tmp_sibling_of_every_atomic_write_destination_is_filtered(self) -> None:
+        """The orphan of every real write site must read as harness noise."""
+        for dest in sorted(set(self.EXPECTED_DESTINATIONS.values())):
+            porcelain = f"?? {dest}.tmp"
+            filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+            assert filtered == "", (
+                f"a leftover '{dest}.tmp' from a hard kill is treated as real "
+                "working-tree dirt, so preflight returns 4 and every future "
+                f"launch is bricked; filtered={filtered!r}"
+            )
+            assert removed == [f"{dest}.tmp"]
+
+    def test_tmp_sibling_of_every_managed_runtime_file_is_filtered(self) -> None:
+        """Iterates the whole tuple, not a literal subset of it."""
+        assert harness._HARNESS_MANAGED_RUNTIME_BASE, "the managed-file tuple is empty"
+        for managed in harness._HARNESS_MANAGED_RUNTIME_BASE:
             porcelain = f"?? {managed}.tmp"
             filtered, removed = harness._filter_harness_managed_dirty(porcelain)
             assert filtered == "", (
                 f"a leftover '{managed}.tmp' from a hard kill is treated as real "
-                f"working-tree dirt, so preflight fails and every future launch "
+                "working-tree dirt, so preflight fails and every future launch "
                 f"is bricked; filtered={filtered!r}"
             )
             assert f"{managed}.tmp" in removed
+
+    def test_roadmap_md_itself_is_still_real_dirt(self) -> None:
+        """Only the `.tmp` sibling is harness noise.
+
+        ROADMAP.md is deliberately absent from `_HARNESS_MANAGED_RUNTIME_BASE`:
+        blanket-filtering it would hide a genuinely modified roadmap from the
+        clean-tree check, which is a real signal.
+        """
+        porcelain = " M requirements/roadmap/ROADMAP.md"
+        filtered, removed = harness._filter_harness_managed_dirty(porcelain)
+        assert filtered == porcelain, (
+            "a modified ROADMAP.md is a real working-tree change and must still "
+            f"fail the clean-tree check; filtered={filtered!r}"
+        )
+        assert removed == []
+
+
+class TestTmpOrphanSweep:
+    """`_sweep_tmp_orphans` is the second layer: it deletes the stranded file.
+
+    The filter above makes a registered orphan invisible; the sweep removes it
+    outright, including for destinations nobody registered -- the case that
+    cannot be fixed by adding one more entry to a tuple.
+    """
+
+    def _aged(self, path: Path, age_seconds: float) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("half-written", encoding="utf-8")
+        stamp = time.time() - age_seconds
+        os.utime(path, (stamp, stamp))
+        return path
+
+    def test_stranded_orphan_of_a_registered_target_is_deleted(self, tmp_path: Path) -> None:
+        orphan = self._aged(tmp_path / "requirements" / "roadmap" / "ROADMAP.md.tmp", 600)
+
+        _porcelain, swept = harness._sweep_tmp_orphans(root=tmp_path)
+
+        assert not orphan.exists(), (
+            "a ROADMAP.md.tmp stranded by a hard kill survived the startup "
+            "sweep; it stays untracked dirt and preflight returns 4 forever"
+        )
+        assert "requirements/roadmap/ROADMAP.md.tmp" in swept
+
+    def test_untracked_tmp_of_an_unregistered_target_is_deleted(self, tmp_path: Path) -> None:
+        """The property the registry alone cannot give: a FUTURE write site."""
+        orphan = self._aged(tmp_path / "some" / "future" / "target.json.tmp", 600)
+
+        porcelain, swept = harness._sweep_tmp_orphans(
+            "?? some/future/target.json.tmp", root=tmp_path
+        )
+
+        assert not orphan.exists(), (
+            "an untracked .tmp for an atomic_write destination nobody "
+            "registered survived the sweep, so a future write site can still "
+            "brick every launch"
+        )
+        assert swept == ["some/future/target.json.tmp"]
+        assert porcelain == "", (
+            "the swept file is gone from disk, so its porcelain line must not "
+            f"still be counted as dirt; porcelain={porcelain!r}"
+        )
+
+    def test_a_fresh_tmp_is_left_alone(self, tmp_path: Path) -> None:
+        """Preflight runs before the lock, so a young .tmp may be in flight.
+
+        Deleting it would break a concurrent instance's `os.replace`.
+        """
+        live = self._aged(tmp_path / "STATUS.md.tmp", 1)
+
+        _porcelain, swept = harness._sweep_tmp_orphans(root=tmp_path)
+
+        assert live.exists(), (
+            "a .tmp written one second ago may belong to a write happening "
+            "right now; deleting it breaks that write's os.replace"
+        )
+        assert swept == []
+
+    def test_non_tmp_untracked_files_are_never_deleted(self, tmp_path: Path) -> None:
+        real = self._aged(tmp_path / "spacegame" / "new_module.py", 600)
+
+        porcelain, swept = harness._sweep_tmp_orphans("?? spacegame/new_module.py", root=tmp_path)
+
+        assert real.exists(), "the sweep deleted an untracked file that is not a .tmp orphan"
+        assert swept == []
+        assert porcelain == "?? spacegame/new_module.py"
+
+    def test_tracked_modifications_are_never_deleted(self, tmp_path: Path) -> None:
+        """Only `??` (untracked) porcelain entries are sweep candidates."""
+        tracked = self._aged(tmp_path / "notes.tmp", 600)
+
+        _porcelain, swept = harness._sweep_tmp_orphans(" M notes.tmp", root=tmp_path)
+
+        assert tracked.exists(), (
+            "a tracked file ending in .tmp was deleted; the sweep must only "
+            "consider untracked orphans and registered destinations"
+        )
+        assert swept == []

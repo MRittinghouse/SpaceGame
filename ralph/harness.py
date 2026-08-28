@@ -19,6 +19,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from dataclasses import fields as dataclass_fields
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Optional
 
 from ralph import agents, heartbeat, roadmap_state, status, triage
@@ -47,7 +48,7 @@ from ralph.config import (
     STOP_FILE,
     TEST_WORKERS,
 )
-from ralph.proc import atomic_write, run_with_hard_timeout
+from ralph.proc import ATOMIC_WRITE_TMP_SUFFIX, atomic_write, run_with_hard_timeout
 
 # ---------------------------------------------------------------------------
 # Persistent state
@@ -551,28 +552,66 @@ _HARNESS_MANAGED_RUNTIME_BASE: tuple[str, ...] = (
     "ralph/.running",
     "ralph/state.json",
     "ralph/heartbeat.json",
+    "ralph/push_state.json",
     "ralph/.write_probe",
     "ralph/.agency_probe",
     "STOP",
     "STATUS.md",
 )
 
-# `atomic_write` writes "<path>.tmp" then `os.replace`s it into place. Its
-# `finally` deletes the sibling on exception, but a hard kill -- `taskkill /F`,
-# SIGKILL, a power cut -- skips `finally` entirely and strands the .tmp.
+# Every destination written through `ralph.proc.atomic_write`, repo-relative.
 #
-# That orphan is untracked, so preflight's clean-tree check fails and EVERY
-# later launch returns the preflight code. The harness stays bricked until a
-# human deletes a file they have no reason to know exists. During an unattended
-# run a single power cut would crash-loop the supervisor for the rest of the
-# week.
+# This is the registry, not a convenience list: `atomic_write` writes
+# "<path>.tmp" then `os.replace`s it into place, and its `finally` only deletes
+# that sibling when an *exception* unwinds. A hard kill -- `taskkill /F`
+# (which is exactly what the supervisor's own stale-heartbeat recovery does),
+# SIGKILL, Task Scheduler's AllowHardTerminate, a power cut -- skips `finally`
+# entirely and strands the .tmp.
 #
-# Derived rather than hand-listed so a future managed file cannot be added
-# without its .tmp sibling coming along.
+# A stranded .tmp is untracked, so preflight's clean-tree check fails and EVERY
+# later launch returns HARNESS_RC_PREFLIGHT_FAILURE. The harness stays bricked
+# until a human deletes a file they have no reason to know exists -- and the
+# preflight exit is the one that writes no STATUS.md of its own, so the bricked
+# state is also the invisible one.
+#
+# ROADMAP.md is the load-bearing entry: it is the largest file written (~9,000
+# lines, the widest write window), it is written a dozen times per sprint, and
+# unlike the runtime files below it is NOT gitignored -- an orphan there is
+# real, visible working-tree dirt. It appears here and not in
+# `_HARNESS_MANAGED_RUNTIME_BASE` on purpose: only its `.tmp` sibling is
+# harness noise, while a genuinely modified ROADMAP.md must still fail the
+# clean-tree check.
+#
+# `tests/test_ralph/test_harness.py::TestAtomicWriteTmpOrphansDoNotBrickTheHarness`
+# walks the AST of every module for `atomic_write(...)` call sites and fails if
+# one names a destination that is not covered here, so a future write site
+# cannot be added silently.
+_ATOMIC_WRITE_TARGETS: tuple[str, ...] = (
+    "ralph/state.json",  # HarnessState.save
+    "ralph/heartbeat.json",  # heartbeat.write_heartbeat
+    "ralph/push_state.json",  # status.record_push
+    "STATUS.md",  # status.write_status
+    "requirements/roadmap/ROADMAP.md",  # roadmap_state._write_roadmap, _sync_roadmap_index
+    # ralph/logs/<sprint>/SUMMARY.md (_write_sprint_summary) is covered by
+    # _HARNESS_MANAGED_RUNTIME_PREFIXES below, which already swallows the
+    # whole gitignored log tree.
+)
+
+# Derived rather than hand-listed so neither a new managed runtime file nor a
+# new atomic-write destination can be added without its .tmp sibling coming
+# along. `dict.fromkeys` de-duplicates while preserving order.
 _HARNESS_MANAGED_RUNTIME_FILES: tuple[str, ...] = _HARNESS_MANAGED_RUNTIME_BASE + tuple(
-    f"{name}.tmp" for name in _HARNESS_MANAGED_RUNTIME_BASE
+    f"{name}{ATOMIC_WRITE_TMP_SUFFIX}"
+    for name in dict.fromkeys(_HARNESS_MANAGED_RUNTIME_BASE + _ATOMIC_WRITE_TARGETS)
 )
 _HARNESS_MANAGED_RUNTIME_PREFIXES: tuple[str, ...] = ("ralph/logs/",)
+
+# A .tmp sibling younger than this may belong to a write happening right now
+# (preflight runs before the lock is acquired, so a second instance can be
+# mid-write), so the sweep leaves it alone and the managed-dirty filter above
+# covers it instead. An `atomic_write` takes milliseconds; a minute is a very
+# wide margin.
+TMP_ORPHAN_MIN_AGE_SECONDS: float = 60.0
 
 # Maximum characters of gate output captured in the activity-log entry.
 # Full output lives in the phase log; this keeps the ROADMAP readable.
@@ -701,6 +740,75 @@ def _filter_harness_managed_dirty(porcelain_text: str) -> tuple[str, list[str]]:
     return "\n".join(kept_lines), removed_paths
 
 
+def _sweep_tmp_orphans(
+    porcelain_text: str = "",
+    *,
+    root: Path = PROJECT_ROOT,
+    min_age_seconds: float = TMP_ORPHAN_MIN_AGE_SECONDS,
+) -> tuple[str, list[str]]:
+    """Delete `.tmp` siblings stranded by a hard kill mid-`atomic_write`.
+
+    The second layer of the orphan defence. `_filter_harness_managed_dirty`
+    makes a stranded `.tmp` invisible to the clean-tree check for every
+    destination in `_ATOMIC_WRITE_TARGETS`; this one deletes the file so the
+    orphan cannot accumulate, cannot brick anything, and -- crucially -- so
+    that a *future* `atomic_write` destination nobody registered still cannot
+    fail a launch. Anything git reports as untracked with a `.tmp` suffix is
+    swept, registered or not.
+
+    Only orphans older than *min_age_seconds* are removed: preflight runs
+    before the lock is acquired, so a concurrent instance could be mid-write,
+    and deleting its temp file would break its `os.replace`. A fresh orphan is
+    left to the filter layer and swept by the next launch.
+
+    Args:
+        porcelain_text: `git status --porcelain` output, when available. Its
+            untracked `.tmp` entries are swept in addition to the registered
+            destinations, and the lines for files actually deleted are
+            stripped from the returned text.
+        root: Repository root (injectable for tests).
+        min_age_seconds: Minimum age before an orphan is considered stranded
+            rather than in flight.
+
+    Returns:
+        (porcelain_text with swept lines removed, repo-relative paths swept).
+    """
+    candidates: dict[str, str] = {}  # relative path -> porcelain line ("" if none)
+    for target in _ATOMIC_WRITE_TARGETS:
+        candidates.setdefault(f"{target}{ATOMIC_WRITE_TMP_SUFFIX}", "")
+
+    for line in porcelain_text.splitlines():
+        if not line.startswith("??") or len(line) < 4:
+            continue
+        rel = line[3:].split(" -> ", 1)[0].strip().strip('"')
+        if rel.endswith(ATOMIC_WRITE_TMP_SUFFIX):
+            candidates[rel] = line
+
+    now = time.time()
+    swept: list[str] = []
+    swept_lines: set[str] = set()
+    for rel, line in candidates.items():
+        path = root / rel
+        try:
+            age = now - path.stat().st_mtime
+        except OSError:
+            continue  # absent, or unreadable -- nothing to sweep
+        if age < min_age_seconds:
+            continue
+        try:
+            path.unlink()
+        except OSError:
+            continue
+        swept.append(rel)
+        if line:
+            swept_lines.add(line)
+
+    if swept_lines:
+        remaining = [ln for ln in porcelain_text.splitlines() if ln not in swept_lines]
+        porcelain_text = "\n".join(remaining)
+    return porcelain_text, swept
+
+
 def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
     """Run a git subcommand at the project root. Returns (rc, stdout, stderr)."""
     try:
@@ -729,6 +837,14 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
     """Verify environment before starting the loop. Returns 0 on success,
     non-zero exit code on failure. Each check fails fast with a clear message.
     """
+    # 0. Sweep `.tmp` orphans stranded by a hard kill mid-`atomic_write`
+    # (see `_sweep_tmp_orphans`). Runs first, because an orphan of a
+    # non-gitignored destination -- ROADMAP.md above all -- is what fails
+    # check 4 below and bricks every subsequent launch.
+    _, swept = _sweep_tmp_orphans()
+    if swept:
+        log(f"Swept stranded atomic-write .tmp orphan(s) from a hard kill: {swept}")
+
     # 1. ROADMAP.md exists.
     if not roadmap_state.roadmap_exists():
         log(f"ROADMAP.md not found at {ROADMAP_PATH}. Aborting.")
@@ -752,8 +868,16 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
         if rc != 0:
             log("git status failed. Aborting.")
             return 4
+        # Sweep again with git's own view: this catches a stranded `.tmp`
+        # for an `atomic_write` destination that is not in the registry --
+        # the failure mode that cannot be fixed by adding one more entry.
+        stdout, swept = _sweep_tmp_orphans(stdout)
+        if swept:
+            log(f"Swept stranded .tmp orphan(s) reported as untracked: {swept}")
+
         # Filter out harness-managed runtime artifacts (lock file, state,
-        # logs, probe files, STOP). The harness owns those paths and their
+        # logs, probe files, STOP) and the `.tmp` siblings of every
+        # atomic-write destination. The harness owns those paths and their
         # presence/absence is normal lifecycle, not a project-state concern.
         # Without this, a leaked-tracked-artifact (e.g., .running once got
         # accidentally committed) bricks the pre-flight permanently.
