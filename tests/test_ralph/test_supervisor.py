@@ -10,14 +10,16 @@ deliberately thin.
 
 from __future__ import annotations
 
+import ast
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Iterator, Optional
 
 import pytest
 
+from ralph import config as config_module
 from ralph import harness, supervisor
 from ralph import heartbeat as heartbeat_module
 from ralph import status as status_module
@@ -262,6 +264,172 @@ class TestSilentExitReason:
         assert lock_conflict is None
         assert preflight_failure is not None
         assert lock_conflict != preflight_failure
+
+
+class TestCleanRunWithAFailedStatusWrite:
+    """M6: rc 0 plus an unchanged STATUS.md mtime is NOT a pre-flight failure.
+
+    `_write_status_snapshot` swallows every exception by design, so a disk
+    error or a rendering bug on an otherwise-perfect run leaves exactly the
+    signature `harness_exited_silently` looks for. The supervisor then
+    overwrote STATUS.md with the full pre-flight explanation -- wrong in every
+    particular, and pointing the operator at a subsystem that was working.
+    """
+
+    def test_a_clean_exit_does_not_get_blamed_on_pre_flight(self) -> None:
+        reason = silent_exit_reason(supervisor.HARNESS_RC_OK)
+        assert reason is not None, "silence is still wrong -- something did fail"
+        assert "STATUS.md write failed" in reason, (
+            "the operator needs the string they can actually grep the harness log "
+            "for, not a tour of pre-flight"
+        )
+        assert "NOT a pre-flight failure" in reason
+
+    def test_the_pre_flight_message_is_reserved_for_pre_flight(self) -> None:
+        clean = silent_exit_reason(supervisor.HARNESS_RC_OK)
+        preflight = silent_exit_reason(supervisor.HARNESS_RC_PREFLIGHT_FAILURE)
+        assert clean != preflight
+        assert preflight is not None and "pre-flight check failed" in preflight
+        assert clean is not None and "pre-flight check failed" not in clean
+
+    def test_post_try_failure_codes_are_not_blamed_on_pre_flight_either(self) -> None:
+        """Baseline, infra and forced-sprint aborts all reach the finally block.
+
+        Each of them writes STATUS.md, so an unchanged mtime on any of them
+        means the write failed -- the same diagnosis as rc 0, and never
+        pre-flight.
+        """
+        for rc in (
+            supervisor.HARNESS_RC_BASELINE_FAILURE,
+            supervisor.HARNESS_RC_INFRA_ERROR,
+            supervisor.HARNESS_RC_FORCED_SPRINT_INVALID,
+        ):
+            reason = silent_exit_reason(rc)
+            assert reason is not None
+            assert "STATUS.md write failed" in reason, f"rc={rc} misdiagnosed: {reason!r}"
+
+
+def _returned_values(node: ast.expr) -> Iterator[ast.expr]:
+    """Flatten a return expression into the values it can actually yield.
+
+    `return X if cond else Y` returns two different things; a test that only
+    inspected the IfExp node itself would see neither -- and the harness's
+    final line is exactly that shape.
+    """
+    if isinstance(node, ast.IfExp):
+        yield from _returned_values(node.body)
+        yield from _returned_values(node.orelse)
+    else:
+        yield node
+
+
+class TestExitCodeLedger:
+    """M4: `harness.py` emits the codes, `supervisor.py` interprets them, and
+    nothing held the two together.
+
+    The harness used bare integer literals and the supervisor declared its own
+    constants, so every test asserted against the supervisor's copy -- the half
+    that does not decide anything. Changing a literal in the harness broke no
+    test at all. Worse, `2` had quietly grown a second meaning (a forced-sprint
+    validation abort) alongside the one the supervisor treats as "normal, stay
+    quiet".
+
+    These tests read `ralph/harness.py`'s own source, so they fail on the
+    emission side, where the drift starts.
+    """
+
+    HARNESS_SOURCE_PATH = config_module.PROJECT_ROOT / "ralph" / "harness.py"
+
+    def _returns(self) -> tuple[list[int], set[str]]:
+        """(bare int literals returned, HARNESS_RC_* names returned)."""
+        tree = ast.parse(self.HARNESS_SOURCE_PATH.read_text(encoding="utf-8"))
+        literals: list[int] = []
+        names: set[str] = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Return) or node.value is None:
+                continue
+            for value in _returned_values(node.value):
+                if isinstance(value, ast.Constant) and type(value.value) is int:
+                    literals.append(value.value)
+                elif isinstance(value, ast.Name) and value.id.startswith("HARNESS_RC_"):
+                    names.add(value.id)
+        return literals, names
+
+    def test_the_harness_returns_no_bare_exit_code_literals(self) -> None:
+        literals, _names = self._returns()
+        assert literals == [], (
+            f"ralph/harness.py returns bare integer exit code(s) {sorted(set(literals))}. "
+            "A literal here is invisible to every test in this file, all of which "
+            "assert against the supervisor's constants -- which is exactly how the "
+            "emitter and the interpreter drifted apart. Use the HARNESS_RC_* "
+            "constants from ralph.config."
+        )
+
+    def test_every_code_the_harness_emits_is_in_the_ledger(self) -> None:
+        _literals, names = self._returns()
+        assert names, "no HARNESS_RC_* returns found -- this test has stopped looking"
+        for name in sorted(names):
+            code = getattr(config_module, name, None)
+            assert code is not None, (
+                f"harness.py returns {name}, which ralph.config does not define"
+            )
+            assert code in config_module.HARNESS_EXIT_CODES, (
+                f"harness.py can exit with {name} ({code}), which is absent from "
+                "HARNESS_EXIT_CODES -- the supervisor has not been told what it means"
+            )
+
+    def test_the_supervisor_reexports_the_config_values_unchanged(self) -> None:
+        """Re-declaring instead of importing is what created the drift."""
+        for name, code in (
+            ("HARNESS_RC_OK", config_module.HARNESS_RC_OK),
+            ("HARNESS_RC_LOCK_CONFLICT", config_module.HARNESS_RC_LOCK_CONFLICT),
+            ("HARNESS_RC_BASELINE_FAILURE", config_module.HARNESS_RC_BASELINE_FAILURE),
+            ("HARNESS_RC_PREFLIGHT_FAILURE", config_module.HARNESS_RC_PREFLIGHT_FAILURE),
+            ("HARNESS_RC_INFRA_ERROR", config_module.HARNESS_RC_INFRA_ERROR),
+            (
+                "HARNESS_RC_FORCED_SPRINT_INVALID",
+                config_module.HARNESS_RC_FORCED_SPRINT_INVALID,
+            ),
+        ):
+            assert getattr(supervisor, name) == code, (
+                f"supervisor.{name} disagrees with ralph.config.{name}"
+            )
+
+    def test_the_supervisor_interprets_every_code_in_the_ledger(self) -> None:
+        for code in sorted(config_module.HARNESS_EXIT_CODES):
+            reason = silent_exit_reason(code)
+            if code == supervisor.HARNESS_RC_LOCK_CONFLICT:
+                assert reason is None, "a lock conflict is normal and must stay quiet"
+            else:
+                assert reason is not None, (
+                    f"exit code {code} produces no report at all; a silent exit on it "
+                    "would be seven days of nothing"
+                )
+                assert str(code) in reason, f"the report for {code} does not name the code"
+
+    def test_lock_and_forced_sprint_aborts_no_longer_share_a_code(self) -> None:
+        """The unledgered second use of 2.
+
+        A forced-sprint abort is a hard stop that must be reported. It used to
+        return the one code the supervisor deliberately says nothing about, so
+        a failed STATUS.md write on that path turned it into silence.
+        """
+        assert (
+            config_module.HARNESS_RC_FORCED_SPRINT_INVALID != config_module.HARNESS_RC_LOCK_CONFLICT
+        )
+        assert silent_exit_reason(config_module.HARNESS_RC_FORCED_SPRINT_INVALID) is not None
+
+    def test_only_the_pre_try_codes_are_marked_as_writing_no_status(self) -> None:
+        assert config_module.HARNESS_PRE_TRY_EXIT_CODES == frozenset(
+            {
+                config_module.HARNESS_RC_LOCK_CONFLICT,
+                config_module.HARNESS_RC_PREFLIGHT_FAILURE,
+            }
+        ), (
+            "these are the only two exits that happen before main()'s try block; "
+            "any other code reaching the supervisor with an unchanged STATUS.md "
+            "mtime means the write itself failed (M6)"
+        )
 
 
 class TestKillTree:

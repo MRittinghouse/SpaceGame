@@ -57,7 +57,14 @@ from pathlib import Path
 from typing import IO, Callable, Optional
 
 from ralph import heartbeat, status, triage
+from ralph.config import HARNESS_EXIT_CODES as _HARNESS_EXIT_CODES
+from ralph.config import HARNESS_PRE_TRY_EXIT_CODES as _HARNESS_PRE_TRY_EXIT_CODES
+from ralph.config import HARNESS_RC_BASELINE_FAILURE as _HARNESS_RC_BASELINE_FAILURE
+from ralph.config import HARNESS_RC_FORCED_SPRINT_INVALID as _HARNESS_RC_FORCED_SPRINT_INVALID
 from ralph.config import HARNESS_RC_INFRA_ERROR as _HARNESS_RC_INFRA_ERROR
+from ralph.config import HARNESS_RC_LOCK_CONFLICT as _HARNESS_RC_LOCK_CONFLICT
+from ralph.config import HARNESS_RC_OK as _HARNESS_RC_OK
+from ralph.config import HARNESS_RC_PREFLIGHT_FAILURE as _HARNESS_RC_PREFLIGHT_FAILURE
 from ralph.config import HEARTBEAT_STALE_SECONDS as _HEARTBEAT_STALE_SECONDS
 from ralph.config import LOGS_DIR, PROJECT_ROOT, RALPH_DIR
 from ralph.proc import atomic_write
@@ -417,22 +424,33 @@ def harness_exited_silently(
     return mtime_before == mtime_after
 
 
-# harness.main()'s two silent exits are now distinguishable by exit code
-# alone: `_preflight_checks` returns HARNESS_RC_PREFLIGHT_FAILURE (4) on all
-# nine of its failure paths (Task 9 fix round 1, Finding 2 -- previously
-# these shared code 2 with the lock-conflict path below, which made the two
-# genuinely ambiguous and forced disambiguation onto a lock-file liveness
-# check with its own TOCTOU race). `_acquire_lock()` failing still returns
-# HARNESS_RC_LOCK_CONFLICT (2), unchanged -- the harness's own choice of
-# which code to return is synchronous with the exit itself, so reading it
-# has no race the way reading the lock file's live state afterward does.
-HARNESS_RC_LOCK_CONFLICT = 2
-HARNESS_RC_PREFLIGHT_FAILURE = 4
-
-# Imported rather than redeclared: the harness owns this code and the two
-# modules must not be able to drift apart on the one exit that decides whether
-# the backoff engages at all.
+# harness.main()'s two silent exits are distinguishable by exit code alone:
+# `_preflight_checks` returns HARNESS_RC_PREFLIGHT_FAILURE (4) on all nine of
+# its failure paths (Task 9 fix round 1, Finding 2 -- previously these shared
+# code 2 with the lock-conflict path, which made the two genuinely ambiguous
+# and forced disambiguation onto a lock-file liveness check with its own TOCTOU
+# race). `_acquire_lock()` failing returns HARNESS_RC_LOCK_CONFLICT (2) -- the
+# harness's own choice of which code to return is synchronous with the exit
+# itself, so reading it has no race the way reading the lock file's live state
+# afterward does.
+#
+# Every one of these is now IMPORTED, never redeclared (M4). They used to be
+# literals in `harness.py` and constants here, which is two declarations of the
+# same fact with nothing holding them together: every test asserted against
+# this module's copy -- the half that does not decide anything -- so changing a
+# literal in the harness broke no test at all.
+HARNESS_RC_OK = _HARNESS_RC_OK
+HARNESS_RC_LOCK_CONFLICT = _HARNESS_RC_LOCK_CONFLICT
+HARNESS_RC_BASELINE_FAILURE = _HARNESS_RC_BASELINE_FAILURE
+HARNESS_RC_PREFLIGHT_FAILURE = _HARNESS_RC_PREFLIGHT_FAILURE
 HARNESS_RC_INFRA_ERROR = _HARNESS_RC_INFRA_ERROR
+HARNESS_RC_FORCED_SPRINT_INVALID = _HARNESS_RC_FORCED_SPRINT_INVALID
+
+# The ledger itself, so `tests/test_ralph/test_supervisor.py` can assert that
+# every code `harness.py` is capable of emitting is one this module has been
+# taught to interpret.
+HARNESS_EXIT_CODES = _HARNESS_EXIT_CODES
+HARNESS_PRE_TRY_EXIT_CODES = _HARNESS_PRE_TRY_EXIT_CODES
 
 
 def silent_exit_reason(rc: int) -> Optional[str]:
@@ -441,23 +459,43 @@ def silent_exit_reason(rc: int) -> Optional[str]:
     Lock-acquisition failure (``HARNESS_RC_LOCK_CONFLICT``) is NORMAL: another
     instance is already running, the harness correctly declined to start a
     second one, and the right response is to do nothing and exit quietly --
-    returning None here means "do not report this". Any other silent exit
-    (in practice, ``HARNESS_RC_PREFLIGHT_FAILURE``) is reported with the exit
-    code, since a repeating pre-flight failure would otherwise be complete
-    silence for seven days.
+    returning None here means "do not report this".
+
+    Every other code splits in two, and conflating them was M6. Only the codes
+    in ``HARNESS_PRE_TRY_EXIT_CODES`` are returned before ``main()``'s ``try``
+    block; on those, no STATUS.md is *expected* and a pre-flight failure is the
+    diagnosis. On every other code the harness reached its own ``finally`` and
+    tried to write STATUS.md -- so an unchanged mtime means that write itself
+    failed (``_write_status_snapshot`` swallows every exception by design), not
+    that a pre-flight check did. Reporting the first as the second sent the
+    operator to a subsystem that was working perfectly.
     """
     if rc == HARNESS_RC_LOCK_CONFLICT:
         return None
+    meaning = HARNESS_EXIT_CODES.get(rc, "an exit code this supervisor does not recognise")
+    if rc not in HARNESS_PRE_TRY_EXIT_CODES:
+        return (
+            f"harness exited with code {rc} ({meaning}) and STATUS.md was NOT updated. "
+            "This is NOT a pre-flight failure: that code is "
+            f"{HARNESS_RC_PREFLIGHT_FAILURE}, and this is not it. The harness got as "
+            "far as its own exit handler and tried to write STATUS.md; the WRITE "
+            "failed -- a full or read-only disk, a permissions change on STATUS.md, "
+            "or a rendering bug. `_write_status_snapshot` swallows that failure by "
+            "design (a broken status file must never end a run it is only trying to "
+            "report on), so the reason is a single line in "
+            "`ralph/logs/harness.log`: search it for `STATUS.md write failed`. The "
+            "run itself may well have been fine."
+        )
     return (
-        f"harness exited with code {rc} without writing STATUS.md. This happens on "
-        "two paths, both before the harness's main loop starts: a pre-flight check "
-        "failure, or a lock already held by another instance. Exit code "
-        f"{HARNESS_RC_LOCK_CONFLICT} means the latter (normal, not reported); any "
-        "other code -- including this one -- means a pre-flight check failed. The "
-        "pre-flight message itself is in `ralph/logs/harness.log` (the harness's "
-        "stdout, captured by the supervisor); the supervisor's own account of the "
-        "run is in `ralph/logs/supervisor.log`. Failing that, run "
-        "`python -m ralph.harness` by hand."
+        f"harness exited with code {rc} ({meaning}) without writing STATUS.md. This "
+        "happens on two paths, both before the harness's main loop starts: a "
+        "pre-flight check failure, or a lock already held by another instance. Exit "
+        f"code {HARNESS_RC_LOCK_CONFLICT} means the latter (normal, not reported); "
+        "this one means a pre-flight check failed. The pre-flight message itself is "
+        "in `ralph/logs/harness.log` (the harness's stdout, captured by the "
+        "supervisor); the supervisor's own account of the run is in "
+        "`ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` "
+        "by hand."
     )
 
 

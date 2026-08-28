@@ -263,6 +263,75 @@ MAX_CONSECUTIVE_INFRA_SPRINTS: int = 2
 MAX_INFRA_ERRORS_PER_SPRINT: int = 3
 
 # ---------------------------------------------------------------------------
+# Harness exit codes (M4) -- one ledger, two readers
+# ---------------------------------------------------------------------------
+#
+# `harness.main()` decides these; `supervisor` interprets them. They used to be
+# raw integer literals in the harness and separately-declared constants in the
+# supervisor, so the emitter and the interpreter could drift without a single
+# test noticing -- every test asserted against the supervisor's copy, which is
+# the half that does not decide anything. Worse, `2` had grown TWO meanings:
+# "another instance holds the lock" (which the supervisor deliberately stays
+# quiet about) and "--sprint named something unrunnable" (a hard abort that
+# must be reported). A failed STATUS.md write on the second turned it into the
+# first.
+#
+# So: defined here once, imported by both, and every code carries a sentence
+# saying what it means. `HARNESS_EXIT_CODES` is the ledger a test asserts
+# against, so a new code that nobody taught the supervisor about fails the
+# suite rather than being silently misread for a week.
+#
+# 1 is deliberately absent: it is what Python itself returns for an unhandled
+# exception, and it must keep meaning exactly that.
+
+# The run finished on its own terms. Not necessarily "work happened" -- an
+# empty eligible queue also exits 0 -- but the main loop ran and STATUS.md was
+# written.
+HARNESS_RC_OK: int = 0
+
+# Another harness already holds `ralph/.running`. NORMAL, and the only
+# non-zero code the supervisor stays quiet about.
+HARNESS_RC_LOCK_CONFLICT: int = 2
+
+# The test-suite baseline could not be captured, so the run refused to start
+# rather than drive agents with no idea what "green" means.
+HARNESS_RC_BASELINE_FAILURE: int = 3
+
+# A pre-flight check failed. Returned before `main()`'s try block, so no
+# STATUS.md is written on this path -- the supervisor is the only layer that
+# can report it.
+HARNESS_RC_PREFLIGHT_FAILURE: int = 4
+
+# `--sprint` named a sprint that does not exist, is not todo, or has unmet
+# dependencies. Split off from HARNESS_RC_LOCK_CONFLICT, which it used to
+# share: a hard abort must never be readable as "normal, stay quiet".
+HARNESS_RC_FORCED_SPRINT_INVALID: int = 6
+
+# What each code means, in the operator's terms. Both modules import this, and
+# a test asserts that every code `harness.py` can emit appears here.
+HARNESS_EXIT_CODES: dict[int, str] = {
+    HARNESS_RC_OK: "ran to its own exit (whatever it processed)",
+    HARNESS_RC_LOCK_CONFLICT: "another harness holds the lock; declined to start (normal)",
+    HARNESS_RC_BASELINE_FAILURE: "test-suite baseline capture failed; refused to run agents blind",
+    HARNESS_RC_PREFLIGHT_FAILURE: "a pre-flight check failed before the main loop started",
+    HARNESS_RC_INFRA_ERROR: "the agent CLI, network or auth was down; the run accomplished nothing",
+    HARNESS_RC_FORCED_SPRINT_INVALID: "--sprint named a sprint that cannot be run",
+}
+
+# The codes returned BEFORE `main()`'s try block, i.e. the only ones on which
+# an unchanged STATUS.md mtime is expected rather than a symptom.
+#
+# This distinction is load-bearing (M6): `harness_exited_silently` infers "the
+# harness exited early" from an unchanged mtime, but `_write_status_snapshot`
+# swallows every exception, so a disk error on an otherwise-perfect run leaves
+# the same signature. Without this set the supervisor reported a clean run
+# whose STATUS.md write failed as a pre-flight failure -- pointing the operator
+# at a subsystem that was working fine.
+HARNESS_PRE_TRY_EXIT_CODES: frozenset[int] = frozenset(
+    {HARNESS_RC_LOCK_CONFLICT, HARNESS_RC_PREFLIGHT_FAILURE}
+)
+
+# ---------------------------------------------------------------------------
 # Liveness thresholds (M1) -- three questions, three numbers
 # ---------------------------------------------------------------------------
 

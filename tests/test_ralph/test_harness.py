@@ -928,7 +928,12 @@ class TestDeclinedToRunLeavesStatus:
 
         try:
             rc = harness.main()
-            assert rc == 2
+            # Its own code (M4), no longer shared with HARNESS_RC_LOCK_CONFLICT:
+            # a hard abort must never be readable as "another instance is
+            # running, stay quiet", which is exactly what the supervisor does
+            # with code 2.
+            assert rc == config.HARNESS_RC_FORCED_SPRINT_INVALID
+            assert rc != config.HARNESS_RC_LOCK_CONFLICT
 
             assert status_file.exists()
             content = status_file.read_text(encoding="utf-8")

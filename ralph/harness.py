@@ -28,7 +28,12 @@ from ralph.agents import Outcome, Phase, PhaseContext, PhaseResult
 from ralph.config import (
     DEFAULT_MAX_SPRINTS_PER_RUN,
     DRY_RUN,
+    HARNESS_RC_BASELINE_FAILURE,
+    HARNESS_RC_FORCED_SPRINT_INVALID,
     HARNESS_RC_INFRA_ERROR,
+    HARNESS_RC_LOCK_CONFLICT,
+    HARNESS_RC_OK,
+    HARNESS_RC_PREFLIGHT_FAILURE,
     IN_PROGRESS_STALE_MINUTES,
     INTER_SPRINT_SLEEP,
     LOCK_FILE,
@@ -1018,26 +1023,26 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
     # 1. ROADMAP.md exists.
     if not roadmap_state.roadmap_exists():
         log(f"ROADMAP.md not found at {ROADMAP_PATH}. Aborting.")
-        return 4
+        return HARNESS_RC_PREFLIGHT_FAILURE
 
     # 2. git is on PATH.
     rc, _stdout, _stderr = _run_git(["--version"], timeout=10)
     if rc != 0:
         log(f"git unavailable: {_stderr.strip()}. Aborting.")
-        return 4
+        return HARNESS_RC_PREFLIGHT_FAILURE
 
     # 3. We're in a git repository.
     rc, _stdout, _stderr = _run_git(["rev-parse", "--is-inside-work-tree"], timeout=10)
     if rc != 0 or _stdout.strip() != "true":
         log(f"Not in a git repo at {PROJECT_ROOT}. Aborting.")
-        return 4
+        return HARNESS_RC_PREFLIGHT_FAILURE
 
     # 4. Working tree clean (unless overridden).
     if REQUIRE_CLEAN_WORKING_TREE and not allow_dirty:
         rc, stdout, _stderr = _run_git(["status", "--porcelain"], timeout=15)
         if rc != 0:
             log("git status failed. Aborting.")
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
         # Sweep again with git's own view: this catches a stranded `.tmp`
         # for an `atomic_write` destination that is not in the registry --
         # the failure mode that cannot be fixed by adding one more entry.
@@ -1061,7 +1066,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "Commit or stash, OR pass --allow-dirty to override."
             )
             log(f"Dirty files:\n{filtered}")
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
 
     # 5. On a branch (not detached HEAD) — required for push.
     if push_enabled:
@@ -1071,13 +1076,13 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "Detached HEAD detected. Push needs a branch. "
                 "Either checkout a branch or pass --no-push."
             )
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
 
         # 6. Origin remote configured.
         rc, _stdout, _stderr = _run_git(["remote", "get-url", "origin"], timeout=10)
         if rc != 0:
             log("No 'origin' remote configured. Either add origin or pass --no-push.")
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
 
     # 7. Claude CLI available (best-effort).
     from ralph.config import CLAUDE_CMD
@@ -1103,7 +1108,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 f"The first agent invocation will fail. "
                 f"Check ralph/config.py CLAUDE_CMD or your install."
             )
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
         except subprocess.TimeoutExpired:
             log(
                 "Claude CLI did not respond to --version within 10s. "
@@ -1122,11 +1127,11 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
                 "files. To skip this check (e.g., known-good environment), "
                 "pass --skip-agency-probe."
             )
-            return 4
+            return HARNESS_RC_PREFLIGHT_FAILURE
         log(f"Agency probe passed: {reason}")
 
     log("Pre-flight checks passed.")
-    return 0
+    return HARNESS_RC_OK
 
 
 # ---------------------------------------------------------------------------
@@ -1775,7 +1780,7 @@ def main() -> int:
 
     # Lock — refuse concurrent runs (paranoia / safety).
     if not _acquire_lock():
-        return 2
+        return HARNESS_RC_LOCK_CONFLICT
 
     # Heartbeat (Task 5): started only once pre-flight has passed AND the lock
     # is held, and stopped on every exit path below. A stale or absent
@@ -1849,7 +1854,7 @@ def main() -> int:
                     "Aborting run to avoid running agents with no baseline."
                 )
                 log(exit_reason)
-                return 3
+                return HARNESS_RC_BASELINE_FAILURE
             log(f"Baseline: {test_baseline[0]} passing, {test_baseline[1]} skipped.")
 
         log(
@@ -1874,13 +1879,13 @@ def main() -> int:
                 if target is None:
                     exit_reason = f"Forced sprint {args.sprint} not found. Aborting."
                     log(exit_reason)
-                    return 2
+                    return HARNESS_RC_FORCED_SPRINT_INVALID
                 if not target.is_todo():
                     exit_reason = (
                         f"Forced sprint {args.sprint} status={target.status!r}, not todo. Aborting."
                     )
                     log(exit_reason)
-                    return 2
+                    return HARNESS_RC_FORCED_SPRINT_INVALID
                 unmet = [
                     d for d in target.depends_on if not sprints.get(d) or not sprints[d].is_done()
                 ]
@@ -1889,7 +1894,7 @@ def main() -> int:
                         f"Forced sprint {args.sprint} has unmet dependencies: {unmet}. Aborting."
                     )
                     log(exit_reason)
-                    return 2
+                    return HARNESS_RC_FORCED_SPRINT_INVALID
                 picked = target
                 args.sprint = None
             else:
@@ -2027,7 +2032,7 @@ def main() -> int:
         state.save()
         # Non-zero when the run accomplished nothing because the infrastructure
         # was down, so the supervisor records a failure rather than a success.
-        return HARNESS_RC_INFRA_ERROR if infra_failure is not None else 0
+        return HARNESS_RC_INFRA_ERROR if infra_failure is not None else HARNESS_RC_OK
     except Exception as exc:
         # A crash must be legible as a crash: right now, without this, the
         # operator cannot tell "exited cleanly with nothing to do" from
