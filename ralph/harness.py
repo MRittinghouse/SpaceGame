@@ -569,7 +569,7 @@ def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
 # The full suite is ~100s at -n 8. 15 minutes is a wide margin for a loaded
 # machine while still being a bound: a pytest run that never finishes must not
 # become the harness's new way of hanging.
-TEST_GATE_TIMEOUT_SECONDS: int = 900
+TEST_GATE_TIMEOUT_SECONDS: int = 2700
 
 # Characters of pytest output carried into the block reason / STATUS.md.
 _TEST_GATE_TAIL_CHARS: int = 1200
@@ -584,7 +584,17 @@ PYTEST_BASETEMP: Path = (
     / "Temp"
     / "ralph-pytest"
 )
-SERIAL_RETRY_TIMEOUT_SECONDS: int = 2400
+# Measured, not guessed. The suite runs in ~116s interactively at -n 8, but
+# 355s under the Scheduled Task's S4U token, and the gate runs while an agent
+# is also consuming the machine. A2-1 was marked blocked at a 900s parallel
+# budget despite its work being complete, correct, and committed -- the gate
+# timed out on contention and stranded 18 downstream sprints, which is the
+# exact cascade this arc was shaped to avoid.
+#
+# A serial run of ~11,000 tests is roughly 8x the parallel wall clock, so the
+# old 2400s serial budget could not finish one even in principle. Both budgets
+# are now sized against the slowest OBSERVED run rather than the fastest.
+SERIAL_RETRY_TIMEOUT_SECONDS: int = 7200
 
 
 def _pytest_gate_cmd(*extra: str, workers: Optional[str] = None) -> list[str]:
