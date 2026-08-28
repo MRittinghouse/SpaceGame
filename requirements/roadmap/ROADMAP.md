@@ -123,7 +123,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | blocked | none |
-| [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | todo | none |
+| [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | in-progress | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | todo | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
@@ -10956,7 +10956,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 
 #### A2-2 — Lens authoring guide
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: none
 
@@ -11022,18 +11022,26 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - 2026-08-27 — todo (created)
 - 2026-08-28 15:59 — harness: plan phase starting
 - 2026-08-28 16:20 — planning complete; verified 4 context docs plus 3 added (aurelia_voice_examples.md, lens.py, ambient_dialogue.py); added compliance test file to Touch zones; folded in 2 polish items (investment_from vocabulary, reskin self-audit checklist); locked 5 decisions (guide location, no-duplication-of-Writing-Bible, three worked-example lenses, compliance-test canonical-source strategy, per-lens voice-note depth); tightened AC1/2/5 and added AC6 (voice-ladder gate on sample lines); drafted 6-task plan. PHASE_OK
+- 2026-08-28 16:08 — harness: implement phase starting (rework cycle 0)
+- 2026-08-28 17:00 — compliance test written (TDD: 4 tests skip cleanly when guide absent, then 3 pass + 1 skips once guide lands); requirements/lens_authoring_guide.md authored: 5 sections, 16 per-lens voice notes with NPC patterns, derelict hauler worked example (Preservation/Crime/Wealth), reskin self-audit checklist, investment_from vocabulary; Writing Bible scanner 35/35 clean; dialogue integrity 19/19 clean; lint+format clean; tests 10937 -> 10940 (+3). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-28 15:59
-- Completed: 2026-08-28 16:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: edfa8e4, and this follow-up recording the correct hash
-- New_sprints_proposed: none
-- Polish_items_folded_in: investment_from-vocabulary-section, reskin-self-audit-checklist, voice-ladder-gate-on-sample-lines (AC6)
-- Decisions_locked: 5
-- Notes: All 4 originally-listed context docs verified present. Added 3 more that the planner surfaced as load-bearing (aurelia_voice_examples.md for the voice standard the guide models, lens.py for the Lens field contract from A2-1, ambient_dialogue.py for the investment_from tag vocabulary). Compliance test moved from acceptance-criterion-only status to Touch zones with a named path. Decision on canonical-source strategy for the sixteen lens_ids: hardcode in the test from Spec F, layer a registry-drift check that activates when A2-5/A2-6 land — gates the guide immediately rather than waiting. Cross-sprint reaction surface: none, foundational docs-only sprint with no player-facing surface.
+- Started: 2026-08-28 16:08
+- Completed: 2026-08-28 17:00
+- Files_changed: requirements/lens_authoring_guide.md, tests/test_compliance/test_lens_authoring_guide.py
+- Commits: e50ea1f
+- Tests_added: 4 (3 pass, 1 skips -- registry drift check activates when A2-5/A2-6 land)
+- Tests_baseline: 10937
+- Tests_passing: 10940
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no new flags added)
+- Writing_bible_clean: yes (35/35 existing + new guide content; no em-dashes, no banned phrases, no banned NPC names in guide)
+- Touch_zones_respected: yes
+- Notes: requirements/lens_authoring_guide.md ships all 5 sections: 16 per-lens voice notes with NPC patterns and scar/hostile distinction, shared-world model, derelict hauler worked example (Preservation/Crime/Wealth), reskin failure-mode checklist, investment_from vocabulary anchored to AmbientLine.action_type shape. Compliance test gates on all 16 lens IDs, banned NPC names, em-dash, and registry drift. All 6 ACs satisfied.
 #### A2-3 — Capstone format and hook contract
 
 **Status**: todo
