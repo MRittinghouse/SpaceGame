@@ -116,7 +116,7 @@ class TestCapstoneRoundtrip:
         """When capstone_id is missing the error message should say <unknown>."""
         d = _valid_dict()
         del d["capstone_id"]
-        with pytest.raises(ValueError, match="<unknown>|capstone_id"):
+        with pytest.raises(ValueError, match=r"<unknown>|capstone_id"):
             Capstone.from_dict(d)
 
     def test_from_dict_rejects_list_lens_id_empty(self) -> None:
