@@ -15,6 +15,7 @@ from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
 from spacegame.models.forge_buffer import ForgeBufferManager
 from spacegame.models.forge_upgrade import ForgeUpgradeState
+from spacegame.models.lens_investment import LensInvestment
 from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.ore_silo import OreSiloManager
 from spacegame.models.player_identity import (
@@ -73,6 +74,13 @@ class Player:
     # under faction reputation.  Keyed by organization ID (e.g. "wreckers_guild").
     # Notification queue lives on _pending_sub_rep_deltas (non-serialized).
     sub_reputation: dict[str, int] = field(default_factory=dict)
+
+    # A2-4: per-lens investment substrate for Act II ambition arcs. Kept as a
+    # sub-model so callers use the ``add_investment`` / ``get_investment`` /
+    # ``is_at_or_above`` / ``record_action`` API and never read the raw dict.
+    # The "no raw number in UI" invariant (AC4) is enforced structurally by
+    # ``tests/test_compliance/test_lens_investment_never_rendered.py``.
+    lens_investment: LensInvestment = field(default_factory=LensInvestment)
 
     # SA-1: Wreckers' Guild Hall runtime state. None for unenrolled players;
     # the first conversation with Malia at the Hall flips it on. The

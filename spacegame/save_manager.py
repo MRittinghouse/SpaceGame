@@ -440,6 +440,10 @@ class SaveManager:
             "faction_reputation": player.faction_reputation,
             "faction_assignments": player.faction_assignments,
             "sub_reputation": player.sub_reputation,
+            # A2-4: per-lens investment substrate. Always serialized (default
+            # ``LensInvestment()`` is the empty state); legacy saves without
+            # the key restore an empty state via the deserialize path.
+            "lens_investment": player.lens_investment.to_dict(),
             "wreckers_guild_state": (
                 player.wreckers_guild_state.to_dict()
                 if player.wreckers_guild_state is not None
@@ -610,6 +614,21 @@ class SaveManager:
         player.faction_reputation = data.get("faction_reputation", {})
         player.faction_assignments = data.get("faction_assignments", {})
         player.sub_reputation = data.get("sub_reputation", {})
+
+        # A2-4: per-lens investment substrate for Act II ambition arcs.
+        # Legacy saves predating A2-4 have no ``lens_investment`` key and
+        # load with the default empty state. Malformed payloads (bad shape,
+        # non-int values, negative values) also load as empty via the
+        # ``from_dict`` cleaner rather than crashing the save.
+        lens_investment_data = data.get("lens_investment")
+        if lens_investment_data is not None:
+            from spacegame.models.lens_investment import LensInvestment
+
+            player.lens_investment = LensInvestment.from_dict(lens_investment_data)
+        else:
+            from spacegame.models.lens_investment import LensInvestment
+
+            player.lens_investment = LensInvestment()
 
         # SA-1: Wreckers' Guild Hall runtime state (None for legacy saves
         # and for players who never docked at the Hall).
