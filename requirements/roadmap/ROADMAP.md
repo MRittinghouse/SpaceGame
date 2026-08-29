@@ -11487,7 +11487,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11755,7 +11755,7 @@ sprints.
 - 2026-08-27 - todo (created)
 - 2026-08-29 00:18 — harness: plan phase starting
 - 2026-08-29 00:52 — planning complete; verified all 6 context-to-read docs exist plus the bonus `lens_authoring_guide.md` (A2-2) and `test_lens_authoring_guide.py` drift check; locked 6 open decisions on tag scope, field length, voice sourcing, `tier_unlocks` count, distinctness-test location, and forward-referenced tags; added 3 acceptance criteria (AC6 political-power/revolution distinctness, AC7 authoring-guide drift check activation, AC8 prose-anti-pattern scanner clean); added 6-task plan; cross-sprint reactions are mechanical only (no player-facing surface). PHASE_OK
-
+- 2026-08-29 00:24 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
