@@ -245,11 +245,30 @@ class TestLensRegistry:
         with pytest.raises(ValueError, match="minigame_shape"):
             loader.load_lenses()
 
-    def test_real_stub_lenses_json_loads_empty(self) -> None:
-        """The real data/narrative/lenses.json stub ships empty and loads cleanly."""
+    def test_real_lenses_json_loads_a2_5_entries(self) -> None:
+        """The real data/narrative/lenses.json loads the A2-5 lens definitions cleanly.
+
+        Before A2-5 the file was an empty stub; after A2-5 it carries eight entries.
+        This test is updated in lockstep -- it verifies the file loads without error
+        and produces the expected count rather than asserting the stub is empty.
+        """
         from spacegame.config import PROJECT_ROOT
         from spacegame.data_loader import DataLoader
 
         loader = DataLoader(data_dir=PROJECT_ROOT / "data")
         loader.load_lenses()
-        assert loader.lenses == {}
+        assert len(loader.lenses) == 8, (
+            f"Expected 8 lenses from A2-5; found {len(loader.lenses)}. "
+            "Update this count when A2-6 lands."
+        )
+        expected_ids = {
+            "vengeance",
+            "wealth",
+            "political_power",
+            "exploration",
+            "discovery",
+            "justice",
+            "crime",
+            "revolution",
+        }
+        assert set(loader.lenses.keys()) == expected_ids

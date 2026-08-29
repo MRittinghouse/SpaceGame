@@ -1,1 +1,159 @@
-{"lenses": []}
+{
+  "lenses": [
+    {
+      "lens_id": "vengeance",
+      "name": "Vengeance",
+      "core_fantasy": "Hunt whoever caused or enabled the destruction of what you knew.",
+      "question": "If you find them, what are you willing to become to punish them?",
+      "sees": "A trail of receipts, manifests, and named individuals that place someone at the scene.",
+      "wants": "Confirmation, then a clear line from cause to person.",
+      "trades": "Patience, anonymity, and sometimes the law.",
+      "investment_from": [
+        "combat_victory_named_target",
+        "mission_completed:bounty"
+      ],
+      "minigame_shape": "Pursuit: tracking, interrogation, closing distance on a fleeing target",
+      "voice": "Precise, patient, controlled; catalogs facts, names names, corrects imprecision.",
+      "tier_unlocks": [
+        "access to informants who only deal with operators who have something to lose",
+        "manifests and transit records that official channels do not index"
+      ]
+    },
+    {
+      "lens_id": "wealth",
+      "name": "Wealth",
+      "core_fantasy": "Build an interstellar commercial empire from a position of nothing.",
+      "question": "After growing up with nothing, how much is finally enough?",
+      "sees": "A supply gap, a price event forming, or a route nobody is running yet.",
+      "wants": "Margin, leverage, and the next position before the current one closes.",
+      "trades": "Time, loyalty, and the comfort of operating only within legal channels.",
+      "investment_from": [
+        "sold_cargo",
+        "trade_profit_large",
+        "auction_won",
+        "investment_tier_purchased"
+      ],
+      "minigame_shape": "Optimisation under scarcity: routes, margins, leverage",
+      "voice": "Optimized, additive; converts everything to margin and window; recalculates mid-sentence when conditions shift.",
+      "tier_unlocks": [
+        "access to black-market financiers who do not ask where the capital originated",
+        "route intelligence that the Guild sells only to certified volume operators"
+      ]
+    },
+    {
+      "lens_id": "political_power",
+      "name": "Political Power",
+      "core_fantasy": "Rise from nobody to governor, senator, or kingmaker.",
+      "question": "Can power create the freedom you wanted, or only control over others?",
+      "sees": "The three votes that are persuadable, the favour owed, and the procedural mechanism nobody has used yet.",
+      "wants": "A seat at the table and enough committed votes to hold it.",
+      "trades": "Neutrality, and eventually the pretense of acting on principle alone.",
+      "investment_from": [
+        "politics_favor_granted",
+        "politics_vote_won",
+        "council_seat_won"
+      ],
+      "minigame_shape": "Negotiation and vote-counting; favours as currency",
+      "voice": "Measured, indirect; everything said implies something unsaid; credits positions to third parties.",
+      "tier_unlocks": [
+        "access to committee schedules and unreported session outcomes",
+        "commitments from three-vote margins that do not appear on the public record"
+      ]
+    },
+    {
+      "lens_id": "exploration",
+      "name": "Exploration",
+      "core_fantasy": "Go farther than anyone has gone and file the first transit record.",
+      "question": "What is beyond the edge of known civilisation?",
+      "sees": "Fuel range, transit risk, and the gap between the last relay and whatever is past it.",
+      "wants": "The first confirmed transit to a system with no prior beacon log.",
+      "trades": "Safety margin, return certainty, and sometimes contact with anyone who knew where they went.",
+      "investment_from": [
+        "reach_system_first_visit",
+        "deep_scan_completed"
+      ],
+      "minigame_shape": "Survey and risk management at range; fuel, distance, the unknown",
+      "voice": "Terse, spatial, risk-calibrated; states range before describing the destination.",
+      "tier_unlocks": [
+        "resupply arrangements with depot operators who do not require a return-date filing",
+        "access to beacon logs from ships that did not come back"
+      ]
+    },
+    {
+      "lens_id": "discovery",
+      "name": "Discovery",
+      "core_fantasy": "Understand what a place, wreck, or phenomenon actually is -- comprehension, not territory.",
+      "question": "What is this thing, and what does it mean -- understanding the find, not claiming it?",
+      "sees": "A data gap, a classification anomaly, or a hull marking that does not match the registry period.",
+      "wants": "A coherent explanation assembled from fragments that individually point in conflicting directions.",
+      "trades": "Speed, credit for the find, and the comfort of a settled answer.",
+      "investment_from": [
+        "encounter_anomaly_resolved",
+        "journal_entry:discovery"
+      ],
+      "minigame_shape": "Analysis: assembling fragments into a coherent explanation",
+      "voice": "Precise, methodical, slightly impatient when interrupted; distinguishes suggest from confirm.",
+      "tier_unlocks": [
+        "access to archive specialists who hold unpublished classification records",
+        "cultural-preservation filing rights over sites not yet registered"
+      ]
+    },
+    {
+      "lens_id": "justice",
+      "name": "Justice",
+      "core_fantasy": "Become a marshal, investigator, or protector who holds the powerful accountable.",
+      "question": "Can there be justice where the powerful write the laws?",
+      "sees": "A procedural opening, an applicable precedent, and who is positioned to act on it.",
+      "wants": "A warrant that holds, testimony on the record, and a case that closes without compromise.",
+      "trades": "Speed, personal grievance, and the satisfaction of the outcome when the process must come first.",
+      "investment_from": [
+        "mission_completed:bounty_lawful",
+        "politics_dispute_resolved_lawful"
+      ],
+      "minigame_shape": "Case-building: evidence, testimony, warrants that must hold",
+      "voice": "Formal but not cold; distinguishes allegation from charge from finding; uncomfortable with shortcuts.",
+      "tier_unlocks": [
+        "access to case records that predate the current jurisdiction",
+        "precedents from 2318 mediations that official archives do not index"
+      ]
+    },
+    {
+      "lens_id": "crime",
+      "name": "Crime",
+      "core_fantasy": "Build a criminal identity and an organisation -- become a name, not just an operator.",
+      "question": "What does it cost to build something that operates outside the law and stays standing?",
+      "sees": "Who holds the access key, whose manifest runs clean, and which cargo moves on two sets of records.",
+      "wants": "A reliable network and enough heat management to keep it running past the next inspection.",
+      "trades": "Legitimacy, the option of a clean record, and anyone who cannot operate in ambiguity.",
+      "investment_from": [
+        "mission_completed:smuggling",
+        "black_market_sale"
+      ],
+      "minigame_shape": "Heist planning and heat management; risk against reputation",
+      "voice": "Oblique, transactional, unhurried; never explains more than necessary; silences are information.",
+      "tier_unlocks": [
+        "introductions to freight brokers who operate entirely outside the manifest registry",
+        "access to port override keys for cargo that does not appear on official lists"
+      ]
+    },
+    {
+      "lens_id": "revolution",
+      "name": "Revolution",
+      "core_fantasy": "Liberate exploited colonies, workers, and stations -- dismantle the systems that created poverty.",
+      "question": "Destroy the systems that created people like your father -- but what replaces them?",
+      "sees": "The structural condition under the personal grievance: who filed the injury report and what the official record shows instead.",
+      "wants": "A coordinated action with enough participants and timing to hold past the first suppression attempt.",
+      "trades": "Personal cover, individual relationships with anyone who benefits from the current arrangement, and the option of a negotiated outcome.",
+      "investment_from": [
+        "politics_dispute_resolved_uprising",
+        "faction_reputation_up:frontier_alliance_labor"
+      ],
+      "minigame_shape": "Organising: cells, sympathy, timing an uprising that can fail",
+      "voice": "Urgent but controlled; specific about grievances; names the structural condition, not the personal injury.",
+      "tier_unlocks": [
+        "contact with union coordinators who hold unauthorized stoppage records",
+        "access to labor data that management's official filing contradicts"
+      ]
+    }
+  ]
+}
