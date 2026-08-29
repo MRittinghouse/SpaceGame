@@ -11201,7 +11201,7 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - Notes: Plan audit: sound; locked decisions on field names (capstone_id not bare id), primitive int threshold not CapstoneTrigger dataclass, loader ownership, empty stub, pure predicate not Protocol, non-negative threshold are all defensible. Mypy baseline reports new violations in untouched files (pre-existing Python 3.14.0 drift, not caused by A2-3); capstone.py itself is type-clean. All structural invariants enforced: zero engine/views imports, module docstring states the session-continues contract, should_fire() takes primitives only.
 #### A2-4 — Per-lens investment tracking
 
-**Status**: blocked
+**Status**: done
 **Phase**: Act II | **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: A2-1 | **Blocks**: A2-8
 
@@ -11321,6 +11321,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - 2026-08-28 20:39 — harness: review phase starting (rework cycle 0)
 - 2026-08-28 21:15 — review complete; 1 minor finding fixed directly (redundant duplicate LensInvestment import in save_manager.py deserialization if/else branches — hoisted above the conditional); all 10 acceptance criteria verified; 40 new tests across 3 files (well above AC9 25+ floor); plan audit sound. PHASE_OK
 - 2026-08-28 21:58 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
+- 2026-08-29 09:27 — operator: reset blocked -> done. Same cause as A2-1. Plan, implement and review all completed with review PHASE_OK (one minor finding fixed directly), and the work landed: spacegame/models/lens_investment.py is present and commits d642172, 57ac350 and fde86d4 are in history. Only the post-review test gate failed, on a TIMEOUT under the old 900s/2400s budgets, and the root cause was 66 leaked pytest process trees from earlier hung gate runs, which made every subsequent run slower (ralph suite alone: ~9s clean vs 117s with the strays present). Fixed by harness._sweep_stray_pytest at pre-flight (fa49b6f), raised budgets (97f7497), and gate timeouts now returning INFRA_ERROR rather than BLOCKED (d61a23e) so this class of failure retries instead of stranding the arc.
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
