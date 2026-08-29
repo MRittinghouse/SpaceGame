@@ -125,7 +125,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | done | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
-| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | blocked | A2-1 |
+| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | in-progress | A2-1 |
