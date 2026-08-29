@@ -1,36 +1,36 @@
 # Ralph Status
 
-_Updated: 2026-08-29 03:09:55_
+_Updated: 2026-08-29 10:17:02_
 
-## CRASH-LOOP
+## Harness Did Not Run
 
-Supervisor stopped after repeated failures.
-Reason: stopping: 3 consecutive failures
-Nothing will resume until a human intervenes.
+Baseline capture FAILED: pytest exited 1; tail: s\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
+    surf = pygame.display.set_mode((1280, 720), flags=flags)
 
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_compliance/test_roadmap_index_sync.py::TestRoadmapIndexInSync::test_index_status_matches_sections
+1 failed, 11036 passed, 100 skipped, 41 warnings in 1248.79s (0:20:48). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **18 seconds ago**
-- Beat PID: 40300 -- **NOT RUNNING**
+- Last beat: **just now**
+- Beat PID: 41216 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 33
-- eligible: 2
-- in flight: A2-5 (in-progress (implementing))
-- blocked: A2-4, SA-F2, UI-BOUNDS-1
+- todo: 34
+- eligible: 4
+- in flight: none
+- blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (17 seconds ago)
-- last successful push: 17 seconds ago
+- last push: **OK** (7 hours ago)
+- last successful push: 7 hours ago
 
 ## Blocks drift
 
@@ -41,11 +41,3 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- harness exit rc=0
-- harness exit rc=0
-- harness exit rc=3
-- harness exit rc=1
-- harness exit rc=3
