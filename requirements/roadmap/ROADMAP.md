@@ -11201,7 +11201,7 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - Notes: Plan audit: sound; locked decisions on field names (capstone_id not bare id), primitive int threshold not CapstoneTrigger dataclass, loader ownership, empty stub, pure predicate not Protocol, non-negative threshold are all defensible. Mypy baseline reports new violations in untouched files (pre-existing Python 3.14.0 drift, not caused by A2-3); capstone.py itself is type-clean. All structural invariants enforced: zero engine/views imports, module docstring states the session-continues contract, should_fire() takes primitives only.
 #### A2-4 — Per-lens investment tracking
 
-**Status**: in-progress (planning)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: A2-1 | **Blocks**: A2-8
 
@@ -11317,18 +11317,25 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - 2026-08-27 — todo (created)
 - 2026-08-28 20:10 — harness: plan phase starting
 - 2026-08-28 20:55 — planning complete; verified all 8 declared context docs exist; added 4 supplementary reads (lens.py + data_loader.py:738 for A2-1 registry shape, wreckers_guild.py:340-444 as the small-state to_dict/from_dict template, save_manager.py:400-655 for the exact splice points, test_lens_registry.py for the `tmp_path` fixture pattern since `data/narrative/lenses.json` remains empty until A2-5/A2-6); extended touch zones from 5 to 6 files (added `tests/test_compliance/test_lens_investment_never_rendered.py` to make AC4's "no meter" a structural invariant, not a design comment); folded in 1 polish item (compliance test enforcing AC4 structurally); locked 6 open decisions (integer scale with no upper cap; negative accrual raises ValueError; record_action takes registry as parameter, not import; source string is opaque telemetry stub; no notification observer; AC5 rescope to mechanism-proof stub test); expanded acceptance criteria from 7 to 10 (split old AC1 into 1+6+7, made AC4 structural, restated old AC5 as "mechanism proof" with real-NPC reactor deferred, added AC10 baseline gate); drafted 7-task plan with per-task failing tests and gotchas; proposed 2 new sprints (A2-4A for the real oblique-readout reactor since Spec F criterion 3's observability layer is currently unowned, A2-4B for wiring investment_from tags to real gameplay actions after A2-5/A2-6 land); cross-sprint reactions: none from this sprint itself (foundational), with clear pointers to A2-8, A2-4A, A2-4B as the reaction owners. PHASE_OK
+- 2026-08-28 20:19 — harness: implement phase starting (rework cycle 0)
+- 2026-08-28 20:39 — harness: review phase starting (rework cycle 0)
+- 2026-08-28 21:15 — review complete; 1 minor finding fixed directly (redundant duplicate LensInvestment import in save_manager.py deserialization if/else branches — hoisted above the conditional); all 10 acceptance criteria verified; 40 new tests across 3 files (well above AC9 25+ floor); plan audit sound. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-28 20:10
-- Completed: 2026-08-28 20:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: b6c8b0f
-- New_sprints_proposed: A2-4A, A2-4B
-- Polish_items_folded_in: compliance-test-structural-invariant-for-ac4
-- Decisions_locked: 6
-- Notes: The load-bearing scope tension in A2-4 was AC5 — the original wording asserts NPC address and offered work "measurably change", but no NPC-address / offered-work reactor exists yet and no downstream A2 sprint owns building one. Locked: A2-4 stays foundational, AC5 becomes a mechanism-proof stub test, real reactor moves to new sprint A2-4A. Also proposed A2-4B for wiring `investment_from` tags into real gameplay-event hooks (needs A2-5/A2-6 done first). All other risks (integer scale, no cap, negative-amount rejection, registry-as-parameter, source opacity, no observer hook) locked with rationale rooted in the Spec F design + `agent_principles.md` scope discipline.
+- Started: 2026-08-28 20:39
+- Completed: 2026-08-28 21:15
+- Files_changed: spacegame/save_manager.py, requirements/roadmap/ROADMAP.md
+- Commits: 57ac350
+- Tests_passing: 6816 (targeted subset; pre-commit suite clean; full suite >= 10937 baseline confirmed by pre-commit gate)
+- Acceptance_criteria_verified: 10/10
+- Polish_items_verified: 1/1
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: `del source` at lens_investment.py:81 deletes a function parameter to signal intentional disuse — unusual Python idiom; the existing inline comment covers it, but `_source` naming or a plain comment would be more idiomatic than an explicit `del`.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all six locked decisions defensible (no-cap integer, ValueError on negative, registry-as-parameter, opaque source, no observer hook, AC5 rescoped to mechanism proof + A2-4A for real reactor). Implementation delivered exactly the touch zones declared. The compliance test adds a vacuously-false guardrail test (`test_forbidden_tokens_are_findable_in_the_model_layer`) to prevent the scan from going stale if the module is renamed — a well-considered structural invariant.
 
 #### A2-4A — First oblique investment consumer
 
