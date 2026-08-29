@@ -1,21 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-08-28 18:07:59_
+_Updated: 2026-08-28 20:10:14_
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **10 seconds ago**
+- Last beat: **19 seconds ago**
 - Beat PID: 44084 -- alive
 
 ## Queue
 
 - total: 86
-- todo: 34
-- eligible: 1
+- todo: 33
+- eligible: 4
 - in flight: none
-- blocked: A2-1, SA-F2, UI-BOUNDS-1
+- blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
@@ -36,3 +36,5 @@ _Updated: 2026-08-28 18:07:59_
 
 - A2-2 ok
 - A2-2 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)
+- A2-3 ok
+- A2-3 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)

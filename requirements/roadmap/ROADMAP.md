@@ -122,9 +122,9 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 
 | ID | Title | Phase | Size | Status | Depends on |
 |---|---|---|---|---|---|
-| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | blocked | none |
+| [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | done | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
-| [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | in-progress | none |
+| [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
@@ -11045,7 +11045,7 @@ None (foundational authoring guide; no player-facing content, no world events, n
 - Notes: Plan audit: sound; locked decisions on guide location, no-Bible-duplication, three worked-example lenses, compliance-test canonical-source strategy, compact voice-note depth are all defensible. All 16 lenses have voice notes and NPC patterns; derelict hauler worked example is non-swappable across all three lenses; compliance test gates on 16 IDs, banned names, em-dash, and registry drift (currently skipped, activates when A2-5/A2-6 land). One minor attribution fix committed.
 #### A2-3 — Capstone format and hook contract
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: S | **Effort**: 3 days
 **Depends on**: none | **Blocks**: A2-20
 
@@ -11181,7 +11181,7 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - 2026-08-28 19:35 — full suite run: 10984 passing (+47), 101 skipped, 2 pre-existing flaky ralph timing failures that pass in isolation; lint/format/mypy all clean; all 8 ACs satisfied. PHASE_OK
 - 2026-08-28 18:35 — harness: review phase starting (rework cycle 0)
 - 2026-08-28 20:15 — review complete; all 8 ACs verified; 47 tests pass (46 pass + 1 expected skip on empty-registry scan guard); lint/format clean; capstone.py has zero mypy errors; pre-existing mypy baseline drift in untouched files (ship_build.py, system.py, etc.) confirmed not introduced by A2-3 (those files last changed by QF-9 and earlier commits, pre-existing on Python 3.14.0 environment). Plan audit: sound. Single tighten noted. PHASE_OK
-
+- 2026-08-28 19:20 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
