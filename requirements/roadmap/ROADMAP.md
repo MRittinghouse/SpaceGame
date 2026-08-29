@@ -11487,7 +11487,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11558,21 +11558,215 @@ requires, populated with setting-specific content, for eight of the sixteen.
 **Acceptance criteria.**
 1. `get_data_loader().lenses` contains all eight ids after `load_all()`, each an instance of
    `Lens` with every schema field non-empty.
-2. A2-1's lens data-integrity test (whatever file it landed in) passes against the expanded
-   `lenses.json` with no code changes to that test.
+2. A2-1's lens data-integrity test (`tests/test_compliance/test_lens_registry.py`) passes
+   against the expanded `lenses.json` with no code changes to that test. In particular the
+   "scan guard on empty registry" test in that file switches from its `pytest.skip` branch to
+   its assert-branch once eight entries land, which is expected and not a regression.
 3. `tests/test_compliance/test_lens_content_uniqueness.py` passes: no two lenses in the
-   registry (across whatever subset exists) share a `minigame_shape` string.
+   registry (across whatever subset exists) share a `minigame_shape` string
+   (case-insensitive, exact match after `.strip().lower()`).
 4. Exploration and Discovery `sees`/`wants`/`question` fields are textually distinct enough
    that a unit test asserting `lenses["exploration"].question != lenses["discovery"].question`
    and the same for `sees` passes trivially (they must not be near-duplicates).
 5. Every `investment_from` tag for these eight lenses is a string matching the pattern
    `^[a-z][a-z0-9_]*(:[a-z][a-z0-9_]*)?$` (snake_case, optional single colon-qualifier),
    verified by a new test in `tests/test_compliance/test_lens_content_uniqueness.py`.
-6. Full suite green; no regression from baseline.
+6. Political Power and Revolution `question` and `minigame_shape` fields are textually
+   distinct (a unit test in `test_lens_content_uniqueness.py` asserts inequality on both).
+   Spec F names this trio (`political_power`, `revolution`, `empire`) as a "must not
+   collapse" set; enforcing the two members that land in this sprint here catches the
+   collapse the day it would happen. The Empire arm of the trio is A2-6's problem.
+7. `tests/test_compliance/test_lens_authoring_guide.py::test_registry_drift_check` no longer
+   skips: with the registry non-empty, it activates its assertion path and passes (every
+   registered lens_id is covered in `requirements/lens_authoring_guide.md`). This is a
+   free integration check A2-2 wired for the moment A2-5 lands.
+8. `data/narrative/lenses.json` remains schema-agnostic-scanner-clean after the eight
+   entries land: `test_prose_anti_patterns.py` (all four checks, plus the parametrized
+   banned-NPC-name test) passes across the file's authored strings.
+9. Full suite green; no regression from the pre-phase baseline of 11028 passing / 101
+   skipped. Two previously-skipping tests (`test_scan_guard_is_not_silent_on_empty_registry`
+   in `test_lens_registry.py` and `test_registry_drift_check` in `test_lens_authoring_guide.py`)
+   are expected to move from skip to pass, which nets: passing count rises by up to 2 and
+   skipped count drops by up to 2. Any *new* failing test versus baseline is a blocker.
+
+**Risks / open questions.**
+- ~~Should `investment_from` include forward-referenced tags whose emitters don't exist yet
+  (e.g. `deep_scan_completed`, `encounter_anomaly_resolved`, `journal_entry:discovery`)?~~
+  **Locked: yes, include them.** Rationale: A2-4B is the sprint that wires real emitters
+  to `LensInvestment.record_action`; A2-5's job is to fix the canonical tag vocabulary the
+  wiring reads from. `record_action` uses exact-match against `investment_from` (see
+  `spacegame/models/lens_investment.py:96`), so a tag with no emitter simply never
+  increments -- no crash, no test failure. A2-4B's audit table catches every unwired tag
+  by design. Removing forward-referenced tags here would force A2-4B to guess at the
+  vocabulary, defeating the split.
+- ~~How many `tier_unlocks` entries per lens (lens-level, not dilemma-outcome-level)?~~
+  **Locked: 1 to 3 short entries per lens**, each one line, each naming a category of what
+  deepens (methods, contacts, permissions) rather than a specific NPC or venue. Rationale:
+  Spec F's example is a single line; per-outcome tier_unlocks belong to the dilemma sprints
+  (A2-12 to A2-19); more than three lens-level entries starts pre-authoring content that
+  A2-7 and the dilemma sprints own.
+- ~~How long is each prose field?~~ **Locked**: `core_fantasy`, `question`, `sees`,
+  `wants`, `trades`, `voice` = one sentence each, two only when the second sentence names a
+  concrete constraint the first cannot. `minigame_shape` = the spec's phrase verbatim in
+  meaning (may reword for grammar, may not shift the mechanical claim). `name` = the
+  spec's Title Case display name. Rationale: `Lens` is data, not prose. Long fields
+  dilute the "sixteen readings, one world" architecture and re-inject the reskin failure
+  mode the design exists to prevent.
+- ~~Does the `sees` field duplicate `lens_authoring_guide.md`'s derelict-hauler worked
+  example?~~ **Locked: no.** The `sees` field is a general-purpose one-sentence reading
+  ("what this lens notices in a place, wreck, rumour, or person"); the guide's derelict
+  paragraphs are location-specific and per-object. A2-7 authors per-location paragraphs
+  keyed off the `sees` field. Do not paste guide paragraphs into `sees`.
+- ~~Where does the Exploration-vs-Discovery distinctness test (AC4) live?~~ **Locked**: in
+  `tests/test_compliance/test_lens_content_uniqueness.py`, not in `tests/test_models/test_lens.py`.
+  Rationale: it is a content-integrity assertion, not a schema unit test, and keeping all
+  distinctness assertions in one file makes A2-6 extending them a single-file edit. This
+  choice also confines the touch zones as declared.
+- ~~Should the `voice` field paste text from `lens_authoring_guide.md`'s per-lens voice
+  notes?~~ **Locked: no**, but voice must be *consistent* with the guide's more detailed
+  treatment. The `Lens.voice` field is one sentence naming the register (e.g. Vengeance:
+  "Precise, patient, controlled; catalogs facts, names names, corrects imprecision.").
+  The guide keeps the longer treatment. Downstream authors read both; the field is the
+  quick reference, the guide is the reference implementation.
+
+**Plan.**
+
+Sequenced 6 tasks, each with test surface and gotchas. TDD-style: for authoring tasks the
+"failing test" is the compliance-scanner failure on empty content.
+
+1. **Draft the eight lens records in a scratch buffer, not yet the JSON file.** Author all
+   eight as Python dicts locally (Vengeance, Wealth, Political Power, Exploration, Discovery,
+   Justice, Crime, Revolution). For each: pull `core_fantasy`, `question`, `minigame_shape`
+   from Spec F's lens table; write `sees`/`wants`/`trades`/`voice` in one focused sentence
+   consistent with `requirements/lens_authoring_guide.md` Section 2; pick 2-4
+   `investment_from` tags from the sprint's minimum starting set (extend from the guide's
+   Section 5.5 palette if a lens has fewer than 2 grounded tags); write 1-3 lens-level
+   `tier_unlocks` per the locked decision. Verify each dict passes `Lens.from_dict()`
+   locally in a REPL or one-shot script. No commits yet.
+   - Files: none (scratch).
+   - Test surface: none (this is drafting).
+   - Gotchas: em-dashes (U+2014) fail `test_prose_anti_patterns.py`; use ASCII
+     double-hyphen `--` in prose. Banned NPC names (Yara, Elara, Kael, Mara, Lydia, Clive,
+     Magnus, Ambrose) fail the parametrized scanner. "no X, no Y" parallel-negation
+     structure fails. See `tests/test_compliance/test_prose_anti_patterns.py`.
+
+2. **Write `tests/test_compliance/test_lens_content_uniqueness.py` (RED first, empty content).**
+   Author the compliance module first with four test classes, so the file lands red:
+   (a) `test_minigame_shape_is_unique_across_registry` (case-insensitive `.strip().lower()`
+   set comparison; guard-against-empty-registry pattern from `test_findings_register.py`);
+   (b) `test_investment_from_tags_match_pattern` (regex `^[a-z][a-z0-9_]*(:[a-z][a-z0-9_]*)?$`
+   applied per tag per lens);
+   (c) `test_exploration_and_discovery_are_distinct` (asserts inequality of `question`,
+   `sees`, and `wants` between the two, skipping cleanly if either lens is absent);
+   (d) `test_political_power_and_revolution_are_distinct` (same shape as (c), covering AC6).
+   Use `get_data_loader()` and skip individual assertions when the referenced lens_id is
+   absent, so A2-6 (running before A2-5 in a race) does not fail this file's absent-lens
+   asserts. Run the file: it should skip cleanly on the empty registry.
+   - Files: `tests/test_compliance/test_lens_content_uniqueness.py` (NEW).
+   - Test surface: `pytest tests/test_compliance/test_lens_content_uniqueness.py -v`.
+   - Gotchas: `_data_files()` in `test_prose_anti_patterns.py` uses `PROJECT_ROOT.rglob`;
+     mirror that pattern for consistency. Do not import from `spacegame.data_loader` at
+     module scope -- lazy-import inside each test, so a top-level import failure does not
+     mask a schema regression.
+
+3. **Populate `data/narrative/lenses.json` with the eight records.** Write the JSON: top
+   level `{"lenses": [...]}`, eight entries, each with all 11 fields. Preserve stable
+   insertion order (vengeance, wealth, political_power, exploration, discovery, justice,
+   crime, revolution) so downstream diffs are readable. Save as UTF-8, no BOM.
+   `record_action`'s deterministic-iteration guarantee (see `lens_investment.py:127`)
+   depends on registry insertion order matching file order, which A2-6 will append to; do
+   not reorder existing entries.
+   - Files: `data/narrative/lenses.json` (EDIT: empty stub `[]` → 8 records).
+   - Test surface: run `pytest tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_content_uniqueness.py tests/test_compliance/test_lens_authoring_guide.py tests/test_compliance/test_prose_anti_patterns.py -v`; every assertion that was skipping should now pass.
+   - Gotchas: `test_lens_registry.py::test_scan_guard_is_not_silent_on_empty_registry`
+     currently `pytest.skip`s when the registry is empty; the same test's assertion path
+     activates once entries load. Confirm it passes, not merely stops skipping. Same for
+     `test_lens_authoring_guide.py::test_registry_drift_check`.
+
+4. **Fix any content-uniqueness or scanner failures surfaced by step 3.** Likely candidates:
+   two lenses accidentally share a `minigame_shape` word (fix by tightening to the phrase
+   Spec F uses); an em-dash slipped into a `voice` or `sees` field (search and replace with
+   `--`); Exploration and Discovery `sees` fields too similar (rewrite Discovery's to
+   emphasize *comprehension* rather than *distance*, using the guide's Section 5's
+   easy-collapse note); an `investment_from` tag missing a colon segment or containing a
+   hyphen (fix per pattern regex).
+   - Files: `data/narrative/lenses.json` (EDIT).
+   - Test surface: same as step 3, plus `test_prose_anti_patterns.py`.
+   - Gotchas: do NOT relax the compliance test to make content pass; content is authored
+     to the guard, not the other way around.
+
+5. **Run the full test suite, confirm baseline delta.** `python -m pytest -n auto -q`.
+   Expected: passing count rises by up to 2 (the two previously-skipping tests noted in AC9
+   flip from skip to pass) and skipped count drops by up to 2. Any *new* failing test is a
+   blocker -- most likely place for a surprise is `test_lens_authoring_guide.py::test_registry_drift_check`
+   if a lens_id in the JSON differs by even one character from the guide's `### <lens_id>`
+   heading (guide uses `### vengeance`, `### wealth`, etc.). Cross-check spelling before
+   committing.
+   - Files: none.
+   - Test surface: full suite.
+   - Gotchas: Windows path encoding; `-n auto` occasionally reorders tests but does not
+     change pass/fail.
+
+6. **Lint, format, commit.** `ruff format data/narrative/lenses.json` is a no-op (Ruff does
+   not format JSON); `ruff format tests/test_compliance/test_lens_content_uniqueness.py`
+   and `ruff check tests/test_compliance/test_lens_content_uniqueness.py`. Commit with
+   message `A2-5: implement lens definitions 1-8 (vengeance through revolution)`. Do not
+   push.
+   - Files: `data/narrative/lenses.json`, `tests/test_compliance/test_lens_content_uniqueness.py`.
+   - Test surface: `ruff check`, `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter`.
+   - Gotchas: the mypy ratchet run is a no-op for a data-only change but a green run
+     confirms no accidental Python edit. Do NOT regenerate `mypy-baseline.txt`.
+
+**Cross-sprint reactions to author.**
+
+This sprint authors foundational data (lens definitions), not player-facing content. No NPC
+dialogue, no location description, no mission, no journal entry is authored in
+`data/narrative/lenses.json`. The registry is a shared vocabulary the following sprints
+consume:
+
+- `data/narrative/locations.json` (A2-7) -- per-location `lens_readings` paragraphs keyed
+  off each `sees` field. This sprint's `sees` fields are the contract A2-7 reads from.
+- `spacegame/models/[gameplay hooks]` (A2-4B) -- calls to
+  `player.lens_investment.record_action(tag, amount, dl.lenses)` from real gameplay events
+  matching the `investment_from` vocabulary. This sprint's tag set is the audit target
+  A2-4B compares against implemented emitters.
+- `data/narrative/dilemmas/<id>.json` (A2-12 through A2-19) -- each dilemma reads the
+  `voice` field of both poles to keep the dilemma NPC's speech consistent with the lens
+  registry. This sprint's `voice` fields are the reference every dilemma author reads.
+- `data/crew/ambient_dialogue.json` (CB arc, not yet reopened) -- if a future crew banter
+  sprint wanted a line reacting to a specific `investment_from` tag firing (e.g. Elena on
+  a `sold_cargo` streak), the tag names authored here become the trigger vocabulary. Not
+  this sprint's job to author those lines; flagged so the vocabulary here is picked with
+  future-legibility in mind (concrete verbs preferred over abstract nouns).
+- `requirements/lens_authoring_guide.md` (A2-2) -- the guide already covers all eight
+  lenses this sprint populates. The `test_registry_drift_check` test (currently skipping)
+  activates when this sprint lands and enforces that every registered `lens_id` appears in
+  the guide's Section 2 as a `### <lens_id>` heading. Consistency is enforced mechanically;
+  the drift risk is that a lens_id gets renamed at some future point without updating the
+  guide -- that renaming sprint would carry the cost, not this one.
+
+No banter, no journal entry, no achievement, no news ticker line is authored here. The
+reaction surface is entirely mechanical (data other sprints read). This is correct: A2-5
+is a data-schema-population sprint, not a content sprint. The player-facing surface
+appears in A2-7 (locations), A2-12 through A2-19 (dilemma NPCs), and downstream cohesion
+sprints.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-29 00:18 — harness: plan phase starting
+- 2026-08-29 00:52 — planning complete; verified all 6 context-to-read docs exist plus the bonus `lens_authoring_guide.md` (A2-2) and `test_lens_authoring_guide.py` drift check; locked 6 open decisions on tag scope, field length, voice sourcing, `tier_unlocks` count, distinctness-test location, and forward-referenced tags; added 3 acceptance criteria (AC6 political-power/revolution distinctness, AC7 authoring-guide drift check activation, AC8 prose-anti-pattern scanner clean); added 6-task plan; cross-sprint reactions are mechanical only (no player-facing surface). PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-29 00:18
+- Completed: 2026-08-29 00:52
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (will commit after edit lands)
+- New_sprints_proposed: none
+- Polish_items_folded_in: political-power-vs-revolution distinctness assertion (AC6); authoring-guide drift-check activation as an explicit acceptance criterion (AC7); prose-anti-pattern scanner cleanliness as an explicit acceptance criterion (AC8); test_lens_content_uniqueness.py structure specified with 4 test classes and skip-on-absent-lens semantics.
+- Decisions_locked: 6
+- Notes: All 6 context docs exist; lens_authoring_guide.md (A2-2) is already published with per-lens voice notes for all 8 lenses in this sprint, which raises the quality floor and means the compliance drift-check activates the day this sprint lands. Sprint is genuinely M-sized as scoped; no split needed. Cross-sprint reactions are entirely mechanical (data consumers), no NPC/journal/banter surface -- correctly flagged since the harness is structurally bad at surfacing this in a data-authoring sprint.
 ---
 
 #### A2-6 — Lens definitions 9-16
