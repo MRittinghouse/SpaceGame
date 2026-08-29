@@ -1,6 +1,6 @@
 # Ralph Status
 
-_Updated: 2026-08-29 14:33:08_
+_Updated: 2026-08-29 14:41:43_
 
 ## Harness Did Not Run
 
@@ -12,13 +12,13 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 
 ## STALE HEARTBEAT
 
-No beat in over 10 minutes (15 minutes ago) -- past the age at which the supervisor kills a harness as wedged. The process may have died, or the machine rebooted mid-sprint and left this file behind; its age alone does not mean a run is live.
+No beat in over 10 minutes (24 minutes ago) -- past the age at which the supervisor kills a harness as wedged. The process may have died, or the machine rebooted mid-sprint and left this file behind; its age alone does not mean a run is live.
 
 ## Now
 
 - Sprint: **A2-6**
 - Phase: **implement**
-- Last beat: **15 minutes ago** -- **STALE**
+- Last beat: **24 minutes ago** -- **STALE**
 - Beat PID: 38720 -- **NOT RUNNING**
 
 ## Queue
@@ -31,8 +31,8 @@ No beat in over 10 minutes (15 minutes ago) -- past the age at which the supervi
 
 ## Push
 
-- last push: **OK** (3 minutes ago)
-- last successful push: 3 minutes ago
+- last push: **OK** (9 minutes ago)
+- last successful push: 9 minutes ago
 
 ## Blocks drift
 
@@ -46,4 +46,5 @@ No beat in over 10 minutes (15 minutes ago) -- past the age at which the supervi
 
 ## Recent
 
+- harness exit rc=4
 - harness exit rc=4
