@@ -1,19 +1,23 @@
 # Ralph Status
 
-_Updated: 2026-08-29 11:33:26_
+_Updated: 2026-08-29 11:33:55_
 
-## Harness Did Not Run
+## CRASH-LOOP
 
-Baseline capture FAILED: pytest exited 1; tail: ......................s................................................. [  0%]
-s....................................................................... [  1%]
-.............................................................. Aborting run to avoid running agents with no baseline.
+Supervisor stopped after repeated failures.
+Reason: stopping: 3 consecutive failures
+Nothing will resume until a human intervenes.
+
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **21 seconds ago**
-- Beat PID: 19032 -- alive
+- Last beat: **49 seconds ago**
+- Beat PID: 19032 -- **NOT RUNNING**
 
 ## Queue
 
@@ -25,8 +29,8 @@ s....................................................................... [  1%]
 
 ## Push
 
-- last push: **OK** (74 minutes ago)
-- last successful push: 74 minutes ago
+- last push: **OK** (26 seconds ago)
+- last successful push: 26 seconds ago
 
 ## Blocks drift
 
@@ -37,3 +41,9 @@ s....................................................................... [  1%]
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- harness exit rc=3
+- harness exit rc=4
+- harness exit rc=3
