@@ -128,7 +128,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
-| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
+| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | in-progress | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11758,17 +11758,19 @@ sprints.
 - 2026-08-29 00:52 — planning complete; verified all 6 context-to-read docs exist plus the bonus `lens_authoring_guide.md` (A2-2) and `test_lens_authoring_guide.py` drift check; locked 6 open decisions on tag scope, field length, voice sourcing, `tier_unlocks` count, distinctness-test location, and forward-referenced tags; added 3 acceptance criteria (AC6 political-power/revolution distinctness, AC7 authoring-guide drift check activation, AC8 prose-anti-pattern scanner clean); added 6-task plan; cross-sprint reactions are mechanical only (no player-facing surface). PHASE_OK
 - 2026-08-29 00:24 — harness: implement phase starting (rework cycle 0)
 - 2026-08-29 09:46 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
+- 2026-08-29 12:01 — harness: plan phase starting
+- 2026-08-29 12:10 — planner: sprint is already implemented and committed at 8f63460 (data/narrative/lenses.json populated with all 8 lens records; tests/test_compliance/test_lens_content_uniqueness.py landed with 7 tests). All 66 acceptance-criteria tests pass (test_lens_content_uniqueness, test_lens_registry, test_lens_authoring_guide, test_lens.py). test_registry_drift_check activated from skip to pass (AC7 satisfied). test_prose_anti_patterns.py passes all 13 checks (AC8 satisfied). test_scan_guard_is_not_silent_on_empty_registry correctly skips because the registry is no longer empty (its counterpart assertion path is exercised by test_singleton_exposes_lenses). The stuck-sprint recovery on 09:46 was a false positive -- the implementation phase agent completed the commit at 00:46 but likely never wrote its PHASE_OK sentinel, so the harness's 9-hour timer fired 23 minutes after work already shipped. Plan is unchanged (still sound); no re-planning work exists. Re-implementing would revert or duplicate a completed commit. PHASE_BLOCKED: sprint already implemented -- dispatcher should advance to review, not re-implement.
 **Last phase report.**
 - Phase: plan
-- Outcome: PHASE_OK
-- Started: 2026-08-29 00:18
-- Completed: 2026-08-29 00:52
+- Outcome: PHASE_BLOCKED
+- Started: 2026-08-29 12:01
+- Completed: 2026-08-29 12:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 8af5b67
+- Commits: none (planner made no plan changes; sprint content is unchanged; only appended a status-reconciliation activity-log entry)
 - New_sprints_proposed: none
-- Polish_items_folded_in: political-power-vs-revolution distinctness assertion (AC6); authoring-guide drift-check activation as an explicit acceptance criterion (AC7); prose-anti-pattern scanner cleanliness as an explicit acceptance criterion (AC8); test_lens_content_uniqueness.py structure specified with 4 test classes and skip-on-absent-lens semantics.
-- Decisions_locked: 6
-- Notes: All 6 context docs exist; lens_authoring_guide.md (A2-2) is already published with per-lens voice notes for all 8 lenses in this sprint, which raises the quality floor and means the compliance drift-check activates the day this sprint lands. Sprint is genuinely M-sized as scoped; no split needed. Cross-sprint reactions are entirely mechanical (data consumers), no NPC/journal/banter surface -- correctly flagged since the harness is structurally bad at surfacing this in a data-authoring sprint.
+- Polish_items_folded_in: none (implementation already shipped; nothing to add)
+- Decisions_locked: 0
+- Notes: Implementation is complete at commit 8f63460 with all 9 acceptance criteria met. Verified: 66/66 lens-registry/uniqueness/authoring-guide/model tests pass, 13/13 prose-anti-pattern checks pass, drift check activated. Stuck-sprint recovery on 09:46 misfired 23 minutes after the successful commit -- implementation agent likely never wrote its PHASE_OK sentinel, so the harness's timeout tripped on already-shipped work. PHASE_BLOCKED so a human/dispatcher can advance the status to review (or done) without triggering a redundant re-implementation cycle. Reason: sprint is already implemented; no planning work exists to do; re-implementation would either no-op or revert a good commit. Recommend the dispatcher either mark status=review directly or gate implementation phases on absence of an existing implementation commit for the sprint id in the git log.
 ---
 
 #### A2-6 — Lens definitions 9-16
