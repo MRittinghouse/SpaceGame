@@ -1630,19 +1630,23 @@ class TestStateWritesAreAtomic:
         assert "SA-1" in call_args[1]
         assert "ok" in call_args[1]
 
-    def test_sync_roadmap_index_uses_atomic_write(self) -> None:
-        """Index sync must survive a power cut."""
+    def test_sync_roadmap_index_uses_atomic_write(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Index sync must survive a power cut.
+
+        The destination comes from ``roadmap_state.ROADMAP_PATH`` -- see
+        ``test_sync_roadmap_index_writes_the_roadmap_state_binding`` for why the
+        script's own module-level copy is deliberately not consulted.
+        """
         mock_sync = MagicMock(return_value=("new content", ["SA-1"]))
         mock_rm_path = MagicMock()
         mock_rm_path.read_text.return_value = "original"
+        monkeypatch.setattr(roadmap_state, "ROADMAP_PATH", mock_rm_path)
 
         with patch("ralph.harness.atomic_write") as mock_atomic:
             with patch.dict(
                 "sys.modules", {"scripts.sync_roadmap_index": MagicMock()}
             ) as mocked_modules:
-                mock_module = mocked_modules["scripts.sync_roadmap_index"]
-                mock_module.ROADMAP_PATH = mock_rm_path
-                mock_module.sync = mock_sync
+                mocked_modules["scripts.sync_roadmap_index"].sync = mock_sync
 
                 harness._sync_roadmap_index("SA-1")
 
@@ -1650,6 +1654,50 @@ class TestStateWritesAreAtomic:
         call_args = mock_atomic.call_args[0]
         assert call_args[0] == mock_rm_path
         assert call_args[1] == "new content"
+
+    def test_sync_roadmap_index_writes_the_roadmap_state_binding(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Index sync must resolve the roadmap the way the rest of the harness does.
+
+        It used to import ``ROADMAP_PATH`` from ``scripts.sync_roadmap_index``,
+        a second binding that no ralph-side monkeypatch reaches -- ``isolated_roadmap``
+        and the package's autouse isolation fixture both patch
+        ``roadmap_state.ROADMAP_PATH``, which this call site never consulted.
+
+        So every test that drove ``main()`` rewrote the REAL
+        ``requirements/roadmap/ROADMAP.md``. Measured: one ``pytest tests/test_ralph/``
+        run left it modified in the working tree. Preflight treats a genuinely
+        modified ROADMAP.md as dirt on purpose (only its ``.tmp`` sibling is
+        filtered), so the harness's own test gate dirtied the tree that the next
+        launch's clean-tree check then refused -- the C1 bricking class, reached
+        from inside the suite. It also made
+        ``test_compliance/test_roadmap_index_sync.py`` order-dependent under
+        xdist, because the stray write silently repaired the very drift that
+        test exists to catch.
+        """
+        drifted = """| [A2-4](#a2-4) | Per-lens investment tracking | Act II | L | blocked | A2-1 |
+
+#### A2-4 — Per-lens investment tracking
+
+**Status**: done
+"""
+        isolated = tmp_path / "ROADMAP.md"
+        isolated.write_text(drifted, encoding="utf-8")
+        monkeypatch.setattr(roadmap_state, "ROADMAP_PATH", isolated)
+
+        real_roadmap = config.PROJECT_ROOT / "requirements" / "roadmap" / "ROADMAP.md"
+        before = real_roadmap.read_bytes()
+
+        harness._sync_roadmap_index("A2-4")
+
+        assert real_roadmap.read_bytes() == before, (
+            "the real ROADMAP.md must not be written by a test; "
+            "_sync_roadmap_index resolved a binding no fixture can redirect"
+        )
+        assert "| done |" in isolated.read_text(encoding="utf-8"), (
+            "the redirected roadmap should have been synced instead"
+        )
 
 
 # ---------------------------------------------------------------------------

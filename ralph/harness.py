@@ -1934,9 +1934,17 @@ def _sync_roadmap_index(sprint_id: str) -> None:
     Failure here is non-fatal and logged; the harness continues.
     """
     try:
-        from scripts.sync_roadmap_index import ROADMAP_PATH as _RM
         from scripts.sync_roadmap_index import sync as _sync_index
 
+        # Resolve the roadmap through `roadmap_state`, NOT through the script's
+        # own module-level ROADMAP_PATH. The two name the same file in
+        # production, but only this one is the binding every other roadmap
+        # write in the harness goes through -- and therefore the only one a
+        # test fixture can redirect. Importing the script's copy made this the
+        # single call site that escaped `isolated_roadmap`, so the suite
+        # rewrote the real requirements/roadmap/ROADMAP.md (line endings and
+        # all) on every run that reached `main()`.
+        _RM = roadmap_state.ROADMAP_PATH
         _text = _RM.read_text(encoding="utf-8")
         _new, _drift = _sync_index(_text)
         if _drift:
