@@ -1142,6 +1142,90 @@ def _run_git(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
 # ---------------------------------------------------------------------------
 
 
+_STRAY_PYTEST_MAX_AGE_SECONDS: int = 1800
+
+
+def _sweep_stray_pytest(max_age_seconds: int = _STRAY_PYTEST_MAX_AGE_SECONDS) -> list[int]:
+    """Kill leftover pytest process trees from earlier runs.
+
+    Measured on the first overnight run: 66 python processes, all created
+    within a six-minute window, still alive eight and a half hours later and
+    holding 2.1 GB. They were leaked by gate runs whose parallel pytest hung.
+
+    That leak is self-amplifying, which is what makes it fatal rather than
+    untidy. Every leaked worker competes with the next run, so the next run is
+    likelier to hang, which leaks more workers. The gate hung on its parallel
+    attempt in EVERY sprint that reached it, and the run stopped after three
+    consecutive failures with the machine at 8% CPU.
+
+    An interactive session cannot clear them: the Scheduled Task runs as S4U,
+    and both `Stop-Process` and `taskkill /F /T` return Access Denied from a
+    non-elevated shell. The harness runs under that same token, so it is the
+    only thing that can clean up after itself without a human at the keyboard.
+
+    Only trees older than `max_age_seconds` are touched, so a pytest run this
+    harness started moments ago is never killed.
+
+    Returns:
+        The pids killed, for logging.
+    """
+    # Two selectors, because neither alone is sufficient.
+    #
+    # A command-line match is precise, but `CommandLine` reads back empty for a
+    # process on another token, and this sweep must keep working if the harness
+    # is ever launched interactively while strays from an S4U run remain.
+    #
+    # So anything python that has outlived the longest legitimate pytest run
+    # (the serial gate budget) also qualifies, EXCEPT this process and its
+    # ancestors -- the harness and the supervisor are themselves long-lived
+    # python, and killing them here would have the sweep destroy the run it is
+    # meant to protect.
+    keep = {os.getpid(), os.getppid()}
+    hard_age = max(max_age_seconds, SERIAL_RETRY_TIMEOUT_SECONDS + 600)
+    script = (
+        "$cut=(Get-Date).AddSeconds(-%d);"
+        "$hard=(Get-Date).AddSeconds(-%d);"
+        "$keep=@(%s);"
+        "Get-CimInstance Win32_Process -Filter \"Name LIKE 'python%%'\" |"
+        " Where-Object { $keep -notcontains $_.ProcessId -and ("
+        "   ($_.CreationDate -lt $cut -and $_.CommandLine -match 'pytest')"
+        "   -or ($_.CreationDate -lt $hard) ) } |"
+        " ForEach-Object { $_.ProcessId }"
+    ) % (max_age_seconds, hard_age, ",".join(str(p) for p in sorted(keep)))
+    try:
+        found = run_with_hard_timeout(
+            ["powershell", "-NoProfile", "-Command", script],
+            timeout_seconds=60,
+            cwd=str(PROJECT_ROOT),
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        return []
+
+    pids: list[int] = []
+    for line in found.stdout.splitlines():
+        line = line.strip()
+        if line.isdigit():
+            pids.append(int(line))
+    if not pids:
+        return []
+
+    killed: list[int] = []
+    for pid in pids:
+        try:
+            # /T because the leak is whole trees: one pytest parent was
+            # measured holding 32 children.
+            result = run_with_hard_timeout(
+                ["taskkill", "/F", "/T", "/PID", str(pid)],
+                timeout_seconds=30,
+                cwd=str(PROJECT_ROOT),
+            )
+            if result.returncode == 0:
+                killed.append(pid)
+        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+            continue
+    return killed
+
+
 def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool) -> int:
     """Verify environment before starting the loop. Returns 0 on success,
     non-zero exit code on failure. Each check fails fast with a clear message.
@@ -1153,6 +1237,13 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
     _, swept = _sweep_tmp_orphans()
     if swept:
         log(f"Swept stranded atomic-write .tmp orphan(s) from a hard kill: {swept}")
+
+    # 0b. Kill leftover pytest trees from earlier runs. See
+    # `_sweep_stray_pytest`: the leak is self-amplifying, and only a process
+    # holding the Scheduled Task's own token can clear it.
+    strays = _sweep_stray_pytest()
+    if strays:
+        log(f"Killed {len(strays)} stray pytest process tree(s) from an earlier run: {strays}")
 
     # 1. ROADMAP.md exists.
     if not roadmap_state.roadmap_exists():
