@@ -11762,7 +11762,7 @@ sprints.
 - Started: 2026-08-29 00:18
 - Completed: 2026-08-29 00:52
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (will commit after edit lands)
+- Commits: 8af5b67
 - New_sprints_proposed: none
 - Polish_items_folded_in: political-power-vs-revolution distinctness assertion (AC6); authoring-guide drift-check activation as an explicit acceptance criterion (AC7); prose-anti-pattern scanner cleanliness as an explicit acceptance criterion (AC8); test_lens_content_uniqueness.py structure specified with 4 test classes and skip-on-absent-lens semantics.
 - Decisions_locked: 6
