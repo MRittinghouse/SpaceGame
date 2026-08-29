@@ -11324,7 +11324,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - Started: 2026-08-28 20:10
 - Completed: 2026-08-28 20:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this planning commit)
+- Commits: b6c8b0f
 - New_sprints_proposed: A2-4A, A2-4B
 - Polish_items_folded_in: compliance-test-structural-invariant-for-ac4
 - Decisions_locked: 6
