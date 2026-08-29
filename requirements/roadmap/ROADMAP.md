@@ -125,7 +125,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | done | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
-| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | in-progress | A2-1 |
+| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | blocked | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
@@ -11201,7 +11201,7 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - Notes: Plan audit: sound; locked decisions on field names (capstone_id not bare id), primitive int threshold not CapstoneTrigger dataclass, loader ownership, empty stub, pure predicate not Protocol, non-negative threshold are all defensible. Mypy baseline reports new violations in untouched files (pre-existing Python 3.14.0 drift, not caused by A2-3); capstone.py itself is type-clean. All structural invariants enforced: zero engine/views imports, module docstring states the session-continues contract, should_fire() takes primitives only.
 #### A2-4 — Per-lens investment tracking
 
-**Status**: in-progress (reviewing)
+**Status**: blocked
 **Phase**: Act II | **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: A2-1 | **Blocks**: A2-8
 
@@ -11320,7 +11320,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - 2026-08-28 20:19 — harness: implement phase starting (rework cycle 0)
 - 2026-08-28 20:39 — harness: review phase starting (rework cycle 0)
 - 2026-08-28 21:15 — review complete; 1 minor finding fixed directly (redundant duplicate LensInvestment import in save_manager.py deserialization if/else branches — hoisted above the conditional); all 10 acceptance criteria verified; 40 new tests across 3 files (well above AC9 25+ floor); plan audit sound. PHASE_OK
-
+- 2026-08-28 21:58 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK

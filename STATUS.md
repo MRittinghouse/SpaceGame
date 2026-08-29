@@ -1,21 +1,29 @@
 # Ralph Status
 
-_Updated: 2026-08-28 20:10:14_
+_Updated: 2026-08-28 21:58:20_
+
+## TEST SUITE FAILING
+
+The harness stopped: the test-suite gate found a red tree, so no further sprint will be authored on top of it. Nothing is broken about the harness itself -- this is it refusing to build on a break.
+
+```
+A2-4: test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
+```
 
 ## Now
 
-- Sprint: **(between sprints)**
-- Phase: **-**
-- Last beat: **19 seconds ago**
+- Sprint: **A2-4**
+- Phase: **review**
+- Last beat: **22 seconds ago**
 - Beat PID: 44084 -- alive
 
 ## Queue
 
-- total: 86
-- todo: 33
-- eligible: 4
+- total: 88
+- todo: 34
+- eligible: 3
 - in flight: none
-- blocked: SA-F2, UI-BOUNDS-1
+- blocked: A2-4, SA-F2, UI-BOUNDS-1
 
 ## Push
 
@@ -34,7 +42,8 @@ _Updated: 2026-08-28 20:10:14_
 
 ## Recent
 
-- A2-2 ok
 - A2-2 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)
 - A2-3 ok
 - A2-3 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)
+- A2-4 blocked
+- A2-4 TEST-GATE FAILED
