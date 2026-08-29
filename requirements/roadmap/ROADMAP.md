@@ -125,7 +125,9 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-1](#a2-1--lens-data-model-and-registry) | Lens data model and registry | Act II | M | done | none |
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
-| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | todo | A2-1 |
+| [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | in-progress | A2-1 |
+| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11199,43 +11201,236 @@ None (foundational typed module, no player-facing surface). A2-3 authors zero ca
 - Notes: Plan audit: sound; locked decisions on field names (capstone_id not bare id), primitive int threshold not CapstoneTrigger dataclass, loader ownership, empty stub, pure predicate not Protocol, non-negative threshold are all defensible. Mypy baseline reports new violations in untouched files (pre-existing Python 3.14.0 drift, not caused by A2-3); capstone.py itself is type-clean. All structural invariants enforced: zero engine/views imports, module docstring states the session-continues contract, should_fire() takes primitives only.
 #### A2-4 — Per-lens investment tracking
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1-2 weeks
 **Depends on**: A2-1 | **Blocks**: A2-8
 
-**Goal.** Track how far the player has invested in each lens, persist it, and expose it to the dilemma engine. Investment is what makes a collision possible, so this is the load-bearing state for the whole arc.
+**Goal.** Track how far the player has invested in each lens, persist it, and expose it to the dilemma engine and any future oblique-readout consumer. Investment is what makes a collision possible, so this is the load-bearing state for the whole arc. A2-4 owns the *state and the query API*; it does not own the NPC-address / offered-work reactor surface (that lives in follow-up sprint [A2-4A](#a2-4a--first-oblique-investment-consumer)) and it does not wire real gameplay hooks into the accrual API (that lives in [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks)).
 
 **Context to read.**
-- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` (success criteria 3 and 6)
-- `docs/superpowers/specs/2026-08-27-act-two-decomposition.md` (the resolved Q1: investment is fully oblique)
-- `spacegame/models/player.py`
-- `spacegame/models/progression.py` (bonus accumulation patterns)
-- `spacegame/save_manager.py`
+- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` (success criteria 3 and 6; the "Investment" and "The sixteen lenses" sections)
+- `docs/superpowers/specs/2026-08-27-act-two-decomposition.md` (Tier-1 A2-4 entry; the resolved Q1 "investment is fully oblique" and its telegraph-invariant consequence)
+- `spacegame/models/lens.py` (A2-1's Lens dataclass — `investment_from: tuple[str, ...]` is the accrual key)
+- `spacegame/data_loader.py:738-766` (A2-1's `load_lenses()` — mirror the pattern for anything that scans the registry)
+- `spacegame/models/player.py` (Player dataclass shape; existing dict-shaped state fields like `sub_reputation`, `faction_reputation`)
+- `spacegame/models/wreckers_guild.py:340-444` (`WreckersGuildState` — the current best example of a small `@dataclass` state model with `to_dict` / `from_dict` migration semantics)
+- `spacegame/models/progression.py:337-368` (`PlayerProgression.to_dict()` / `from_dict()` — the missing-key-default pattern this sprint copies)
+- `spacegame/save_manager.py:400-655` (`_serialize_player` and `_deserialize_player` — where the new field wires in; note the `data.get(..., default)` legacy pattern)
+- `tests/test_compliance/test_lens_registry.py` (A2-1's compliance test — the `tmp_path` + `DataLoader(data_dir=tmp_path)` fixture pattern this sprint's tests reuse, since `data/narrative/lenses.json` is still an empty stub until A2-5/A2-6 land)
+- `requirements/agent_principles.md` (in full — "Block early when scope is ambiguous", "Don't lazy-init dataclass fields with hasattr guards", "Real engineering depth, not surface fixes")
 
 **Touch zones.**
 - `spacegame/models/lens_investment.py` (NEW)
-- `spacegame/models/player.py` (investment state field)
-- `spacegame/save_manager.py`
-- `tests/test_models/test_lens_investment.py` (NEW)
-- `tests/test_scenarios/test_scenario_investment_persists.py` (NEW)
+- `spacegame/models/player.py` (add one field: `lens_investment: LensInvestment = field(default_factory=LensInvestment)`; no method changes on `Player`)
+- `spacegame/save_manager.py` (one serialize line, one deserialize block on the existing legacy-default pattern)
+- `tests/test_models/test_lens_investment.py` (NEW — the model surface)
+- `tests/test_scenarios/test_scenario_investment_persists.py` (NEW — save/load round-trip through the SaveManager path, and the accrual-via-registry mechanism proof)
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (NEW — enforces AC4)
 
 **Deliverables.**
-- Per-lens investment accumulation keyed by `lens_id`.
-- Save/load round-trip preserving all sixteen values.
-- A query API the dilemma engine consumes: current investment for a lens, and whether it exceeds a given threshold.
-- Backward-compatible `from_dict()` that defaults missing lens keys to zero, per the project's save-migration rules.
+- `LensInvestment` `@dataclass` living in `spacegame/models/lens_investment.py`. Single field `_values: dict[str, int] = field(default_factory=dict)` (leading underscore because callers use the methods, never the dict — the compliance test in AC4 keys off this rule). Integer scale, `0` floor enforced; **no upper bound is enforced in A2-4**. The design spec speaks of "threshold" but names no unit; A2-8 owns collision thresholds and telegraphs. A2-4 storing an uncapped `int` (with a locked design note that dilemma thresholds are unitless integers) keeps A2-4 from having to guess what A2-8 will pick. Locked in Risks below.
+- `add_investment(lens_id: str, amount: int, source: str) -> None` method. Positive `amount` increments the lens value; **negative `amount` is rejected via `ValueError`** — investment monotonically rises, then closes at a collision (per Spec F "Permanent closure"), it never leaks. `source` is a free-form string logged for future telemetry; A2-4 does NOT ship a telemetry surface, but the parameter is on the API so downstream sprints don't need a signature change.
+- `get_investment(lens_id: str) -> int` — returns `0` for any lens_id not yet accrued (both unknown and never-touched cases collapse; the caller is the query, not the schema).
+- `is_at_or_above(lens_id: str, threshold: int) -> bool` — the predicate A2-8's dilemma engine calls. Kept as a first-class method (not an inline comparison) so A2-8 can key on the intent, not the arithmetic, and any future "with skill bonus" adjustment lands in one place.
+- `record_action(action_tag: str, amount: int, lenses: dict[str, Lens]) -> list[str]` — the accrual-via-registry mechanism. Walks the passed lens dict, and for every lens whose `investment_from` contains `action_tag` (exact match), calls `add_investment(lens.lens_id, amount, source=action_tag)`. Returns the list of `lens_id`s that were incremented (for the caller's own logging / notification queue). Passing the registry in as a parameter avoids importing `data_loader` into the model — the singleton stays a data layer, and `LensInvestment` stays testable with hand-built lens fixtures.
+- Save/load round-trip preserving all raised values, on the standard save-migration rules (missing key → empty `LensInvestment`, extra keys ignored, malformed values dropped rather than crash the save).
+- Backward-compatible `LensInvestment.from_dict()` that accepts either the shape A2-4 emits or a bare `dict[str, int]` (defensive against a hypothetical malformed save from a partial rollout).
+- Compliance test asserting no file in `spacegame/views/` or `spacegame/engine/` imports `LensInvestment` or reads `player.lens_investment` — the "no raw number in UI" invariant, enforced structurally not just behaviourally (AC4).
 
 **Acceptance criteria.**
-1. Investment accrues from player action and is readable per lens.
-2. Save, reload, and confirm every value survives exactly.
-3. An older save with no investment data loads without crashing, defaulting to zero for every lens.
-4. **Investment is NEVER rendered as a meter, bar, or numeric panel.** This is a binding design decision. A compliance test asserts no UI surface exposes a raw investment number.
-5. Criterion 3 of the spec is satisfied obliquely and testably: a scenario test drives one lens high and asserts that NPC address and offered work measurably change. The assertion is on world behaviour, not on the existence of a UI element.
-6. Adding a seventeenth lens to the registry requires no change here.
-7. 25+ new tests.
+1. `add_investment` accrues per lens and `get_investment` returns exactly that per lens, verified per-lens across a synthetic 3-lens fixture.
+2. Save through `SaveManager._serialize_player`, load through `SaveManager._deserialize_player`, and every raised value survives byte-exact (the round-trip test uses the real save path, not the model's `to_dict/from_dict` alone).
+3. An older save with no `lens_investment` key loads without crashing; `player.lens_investment.get_investment("any_lens")` returns `0` for every lens.
+4. **Structural invariant: no file under `spacegame/views/` or `spacegame/engine/` imports `LensInvestment` or accesses `player.lens_investment`.** A compliance test at `tests/test_compliance/test_lens_investment_never_rendered.py` fails the build on violation. The single legal reader outside the model + tests + save_manager is `spacegame/models/` itself (dilemma engine, telegraph, downstream lens consumers), where the readout is behavioural, not numeric.
+5. **Mechanism proof (revised from the original AC5).** A scenario test at `tests/test_scenarios/test_scenario_investment_persists.py::TestObliqueReadoutMechanism` uses a *test-owned* stub consumer (a plain function that picks a line from a dict keyed by lens-and-threshold) and asserts that the same stub returns a different line for a `Player` whose `wealth` investment is above a threshold vs one whose is below. This proves the query API is consumable by an oblique-readout system; **the actual NPC-address and offered-work reactor surface is A2-4A's scope** and its scenario test lives there. The original wording of this AC assumed infrastructure A2-4 does not build; see Risks / open questions for the locked decision.
+6. `record_action("combat_victory_named_target", 5, lenses)` correctly increments only lenses whose `investment_from` tuple contains that tag; a lens whose registry entry lists a different tag is unchanged; a lens absent from the fixture is unaffected. Verified with hand-built `Lens` fixtures (not the empty production `lenses.json`).
+7. `add_investment(lens_id, -5, "test")` raises `ValueError`; the current value is unchanged.
+8. Adding a seventeenth lens to the registry requires no change here — verified by a test that constructs a hand-built lens with a novel `lens_id`, calls `record_action` with one of its `investment_from` tags, and asserts the value went up on that lens without any Python edit to `lens_investment.py`.
+9. **25+ new tests** total across the three new test files.
+10. Full suite green; pass count >= 10937 (pre-phase baseline).
+
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing test to write first, and any gotchas.
+
+1. **Create `spacegame/models/lens_investment.py` — the `LensInvestment` dataclass and its five methods.**
+   - Files: `spacegame/models/lens_investment.py` (NEW).
+   - Failing test: `tests/test_models/test_lens_investment.py::TestLensInvestmentBasics::test_get_investment_defaults_to_zero_for_unknown_lens` — construct `LensInvestment()`, assert `.get_investment("vengeance") == 0`.
+   - Follow-on tests in the same class: `test_add_investment_accrues`, `test_add_investment_multiple_calls_sum`, `test_add_investment_rejects_negative_amount_with_valueerror`, `test_is_at_or_above_returns_true_at_boundary`, `test_is_at_or_above_returns_true_above_boundary`, `test_is_at_or_above_returns_false_below_boundary`, `test_is_at_or_above_on_unraised_lens_returns_false_for_positive_threshold` (and True for threshold=0).
+   - Gotchas: use `field(default_factory=dict)` for `_values` — the frozen-dataclass rule from A2-1 does NOT apply here (`LensInvestment` is mutable per its whole purpose, so it is a plain `@dataclass`, not `@dataclass(frozen=True)`). Do NOT add a leading `lens_id in _values` guard around `get_investment` — return `self._values.get(lens_id, 0)` directly (per `agent_principles.md` "Don't add error handling for impossible cases"). The `source` parameter on `add_investment` is retained but ignored in A2-4; do NOT wire a telemetry sink in this sprint (`agent_principles.md` "Scope discipline"). Store the value keyed by `lens_id` regardless of whether that lens exists in the registry — validation is A2-1's job, not this sprint's.
+
+2. **Implement `record_action(action_tag, amount, lenses)`.**
+   - Files: `spacegame/models/lens_investment.py`.
+   - Failing tests: `tests/test_models/test_lens_investment.py::TestRecordAction::test_walks_registry_and_increments_matching_lenses`, `test_ignores_lens_whose_investment_from_does_not_contain_tag`, `test_returns_list_of_incremented_lens_ids`, `test_with_empty_registry_returns_empty_list`, `test_seventeenth_lens_added_purely_via_fixture_is_still_matched`.
+   - Gotchas: exact-match tag comparison, not substring — a lens with `investment_from = ("combat_victory",)` must NOT match `action_tag = "combat_victory_named_target"` (the tags are already qualified by the `snake_case:qualifier` pattern A2-5 owns). Iteration order over the passed lens dict is preserved (Python 3.7+ dict guarantee); the returned list follows registry order for deterministic tests.
+
+3. **Implement `LensInvestment.to_dict()` / `from_dict()`.**
+   - Files: `spacegame/models/lens_investment.py`.
+   - Failing tests: `TestLensInvestmentSerialization::test_to_dict_emits_current_values`, `test_from_dict_missing_key_returns_empty_state`, `test_from_dict_accepts_bare_dict_of_int` (defensive; the alternative payload shape), `test_from_dict_drops_non_int_values_without_crashing` (belt-and-braces: bad save data shouldn't crash load; log-warn and drop).
+   - Gotchas: `to_dict()` returns `{"values": {lens_id: int, ...}}` — the outer wrapping is intentional so the shape has room for a future `"metadata"` sibling (schema version, last-updated day) without a save migration. `from_dict()` reads either the wrapped form or a bare `dict[str, int]` (defensive). Never raise from `from_dict` on unrecognised keys or bad value types — `agent_principles.md` says validate at boundaries but *do not crash on old save data* (CLAUDE.md Save Migration rules).
+
+4. **Wire `lens_investment` onto `Player` and thread through `SaveManager`.**
+   - Files: `spacegame/models/player.py` (one field addition), `spacegame/save_manager.py` (one `_serialize_player` line, one `_deserialize_player` block).
+   - Failing tests: `tests/test_scenarios/test_scenario_investment_persists.py::TestInvestmentSaveLoadRoundTrip::test_raised_values_survive_save_and_load` (constructs a Player, raises investment on three lenses, calls `SaveManager.save_game` and `SaveManager.load_game` through the real save file path with `tmp_path`, asserts every value survives), `test_legacy_save_without_lens_investment_key_loads_with_empty_state` (loads a hand-built old-format save dict, asserts `player.lens_investment.get_investment("any") == 0`).
+   - Gotchas: put the field in `Player`'s section next to `sub_reputation` and the other dict-shaped tracking fields (~line 75-100 in player.py). Do NOT touch `Player.__post_init__` — no runtime link back to the lens registry is needed (the registry is passed into `record_action` explicitly). In `save_manager.py`, follow the existing `sub_reputation` pattern: `"lens_investment": player.lens_investment.to_dict()` in serialize, `data.get("lens_investment", {})` → `LensInvestment.from_dict(...)` in deserialize; treat the missing-key path exactly like the `auction_state` legacy-default block at `save_manager.py:645-654`.
+
+5. **Compliance test: enforce AC4 (no raw investment number in UI).**
+   - Files: `tests/test_compliance/test_lens_investment_never_rendered.py` (NEW).
+   - Failing test (will pass immediately since A2-4 introduces no view code): `TestLensInvestmentNeverRendered::test_no_view_imports_lens_investment`, `test_no_view_accesses_player_lens_investment`, `test_no_engine_module_imports_lens_investment`, `test_no_engine_module_accesses_player_lens_investment`. Scans every `.py` file under `spacegame/views/` and `spacegame/engine/` for the strings `"LensInvestment"`, `"lens_investment"`, and `"from spacegame.models.lens_investment"`. Fails the build on any hit with a message naming the offending file. Pattern-copy from `tests/test_compliance/test_flag_string_discipline.py` and `test_asset_reference_discipline.py`.
+   - Gotchas: the scan must skip `__pycache__` and `.pyc`. The string match is deliberately blunt — a rendered value is any access at all. A follow-up sprint (A2-4A) that legitimately needs to *read* investment from a view must first extend this compliance test with a narrow whitelist and justify the reader in a code comment; that friction is the point.
+
+6. **Mechanism-proof scenario test: prove the query API is consumable by an oblique-readout system.**
+   - Files: `tests/test_scenarios/test_scenario_investment_persists.py` (extend from task 4).
+   - Failing test: `TestObliqueReadoutMechanism::test_stub_consumer_picks_different_line_based_on_investment_threshold`. Builds a Player, raises `wealth` investment to 50 on one player and leaves it at 0 on another, then feeds both through a test-local stub function `_select_line(player, lens_id, threshold, low_line, high_line)` that consults `player.lens_investment.is_at_or_above(lens_id, threshold)` and returns the corresponding string. Assert the two Players receive different strings; assert the low-investment player's string is `low_line`.
+   - Gotchas: the stub consumer is **test-local** — do NOT ship an `_select_line` helper in `spacegame/models/lens_investment.py`. A real oblique-readout selector is A2-4A's scope; A2-4's job here is to prove the query API supports one, not to author one. This is the AC5 rescope in code: mechanism, not production surface.
+
+7. **Sweep: run `ruff format` + `ruff check` on touched files only; mypy against baseline; full test suite.**
+   - Files: none (verification).
+   - Commands: `ruff format spacegame/models/lens_investment.py spacegame/models/player.py spacegame/save_manager.py tests/test_models/test_lens_investment.py tests/test_scenarios/test_scenario_investment_persists.py tests/test_compliance/test_lens_investment_never_rendered.py`; `ruff check` on the same set; `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` (must exit 0); `python -m pytest -n auto -q` (pass count >= 10937, new test count 25+).
+   - Gotchas: `mypy-baseline.txt` MUST NOT be regenerated (per CLAUDE.md and this baseline's history — regenerating during feature work silently swallows new type errors). If new mypy errors surface on `lens_investment.py` or on the added `player.py` field, fix them; do not absorb them into the baseline.
+
+**Cross-sprint reactions to author.**
+
+A2-4 is a foundational typed module with no player-facing surface — its own scope produces zero authored content, zero NPCs, zero dialogue, zero mission text. The tracking data it stores is the *substrate* for reactions, not itself a reaction. Concrete reactions that this sprint's *existence* should trigger elsewhere:
+
+- (`spacegame/models/dilemma.py` — A2-8) — the dilemma engine's collision check must read `player.lens_investment.is_at_or_above(lens_id, threshold)`; this is captured in A2-8's own scope but calls out here as a reminder that the API name is load-bearing on that sprint.
+- (`spacegame/models/oblique_consumer.py` or similar — new sprint A2-4A) — the first real NPC-address / offered-work reactor. Fires when any lens crosses configured thresholds; A2-4A owns the sprint.
+- (`spacegame/models/[various]` — new sprint A2-4B) — the hooks that call `player.lens_investment.record_action(tag, amount, dl.lenses)` from real gameplay events (`combat_victory_named_target`, `sold_cargo`, `mission_completed:bounty`, etc.). Without A2-4B, A2-4's accrual API is reachable but no game action calls it, so investment stays flat in a real playthrough. Deliberately split — A2-4B needs A2-5/A2-6 to be done first (the tags to wire come from lens definitions).
+
+For crew banter, ambient dialogue, news, or authored missions: **none** in this sprint. The tracking module has no observable player-facing surface, so no crew has anything to react to. Once A2-4A ships an oblique NPC-address reader and A2-4B wires actions to accrual, crew-banter reactions become authorable and should be listed in *those* sprints' cross-sprint sections.
+
+**Risks / open questions.**
+
+- ~~Should AC5's scenario test drive real NPCs, or a stub consumer?~~ **Locked: stub consumer, and split the real-NPC reactor into a new sprint A2-4A.** Rationale: no NPC-address / offered-work reactor exists in the codebase today (`grep -r "npc_address\|offered_work"` returns nothing), and no downstream A2 sprint owns building one. The decomposition doc restated Spec F criterion 3 as "observable through NPC address and offered work", but that observability layer is unowned. A2-4 asserting "NPC address changes" would either (a) require A2-4 to author an ad-hoc NPC dialogue selector — silently expanding scope by two files — or (b) pretend the test asserts the outcome when it actually asserts a stub. The honest split: A2-4 owns tracking + query + a *mechanism-proof* stub test; a new sibling sprint A2-4A owns the first real reactor surface with its own scenario test. Both remain compatible with the harness's per-sprint touch-zone isolation. See `agent_principles.md` "Block early when scope is ambiguous" and "Scope discipline".
+
+- ~~Should investment be capped (`min(100, current + amount)` on accrual)?~~ **Locked: no upper cap in A2-4.** Rationale: Spec F talks about a "threshold" but names no unit or maximum; A2-8's dilemma engine is where thresholds get concrete. A2-4 shipping with an arbitrary `100` cap forces A2-8 to work around it (or bump it, forcing a save migration). Storing an uncapped `int` and having A2-8 pick its own thresholds is the reversible choice; A2-4 can add a cap later if profiling shows it matters. Documented in the module docstring so A2-8's planner knows this is deliberate.
+
+- ~~Should negative `add_investment` amounts be allowed (as a "closure penalty" or similar)?~~ **Locked: no; raises `ValueError`.** Rationale: Spec F ("Permanent closure") says a resolved lens closes, it doesn't leak backward. The one modelled state transition that reduces investment is a full closure, and closure is A2-10's scope, not per-action decrement. Rejecting negatives with a `ValueError` (rather than silently clamping to 0) makes downstream bugs loud instead of quiet.
+
+- ~~Should `LensInvestment.record_action` import the DataLoader singleton, or take the registry as a parameter?~~ **Locked: parameter.** Rationale: importing `data_loader` from `models/` couples the model to the loader (and creates a testability drag — every test needs a full `get_data_loader()` bootstrap). Passing `dict[str, Lens]` explicitly keeps the model layer clean and lets tests build tiny lens fixtures without touching `data/narrative/lenses.json` (which is empty until A2-5/A2-6 land anyway).
+
+- ~~Should A2-4 ship a `notify_lens_crossed_threshold(lens_id, threshold)` observer/notification hook?~~ **Locked: no.** Rationale: `agent_principles.md` "Don't add abstractions beyond what the task requires". A2-8's telegraph is the first real consumer of threshold-crossing events; if A2-8 wants an observer, A2-8 adds it. Adding an unused hook now would be YAGNI and it would break the "one file, one field, one method" simplicity that keeps A2-4's touch zone auditable.
+
+- ~~Which `source` values should A2-4 accept as valid?~~ **Locked: any string; the parameter is opaque in A2-4.** Rationale: telemetry is not this sprint's scope (`agent_principles.md` "Scope discipline"). The `source` parameter exists on the API so a future telemetry-consumer sprint doesn't need a signature-breaking change; A2-4 accepts and ignores.
 
 **Activity log.**
 - 2026-08-27 — todo (created)
+- 2026-08-28 20:10 — harness: plan phase starting
+- 2026-08-28 20:55 — planning complete; verified all 8 declared context docs exist; added 4 supplementary reads (lens.py + data_loader.py:738 for A2-1 registry shape, wreckers_guild.py:340-444 as the small-state to_dict/from_dict template, save_manager.py:400-655 for the exact splice points, test_lens_registry.py for the `tmp_path` fixture pattern since `data/narrative/lenses.json` remains empty until A2-5/A2-6); extended touch zones from 5 to 6 files (added `tests/test_compliance/test_lens_investment_never_rendered.py` to make AC4's "no meter" a structural invariant, not a design comment); folded in 1 polish item (compliance test enforcing AC4 structurally); locked 6 open decisions (integer scale with no upper cap; negative accrual raises ValueError; record_action takes registry as parameter, not import; source string is opaque telemetry stub; no notification observer; AC5 rescope to mechanism-proof stub test); expanded acceptance criteria from 7 to 10 (split old AC1 into 1+6+7, made AC4 structural, restated old AC5 as "mechanism proof" with real-NPC reactor deferred, added AC10 baseline gate); drafted 7-task plan with per-task failing tests and gotchas; proposed 2 new sprints (A2-4A for the real oblique-readout reactor since Spec F criterion 3's observability layer is currently unowned, A2-4B for wiring investment_from tags to real gameplay actions after A2-5/A2-6 land); cross-sprint reactions: none from this sprint itself (foundational), with clear pointers to A2-8, A2-4A, A2-4B as the reaction owners. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-28 20:10
+- Completed: 2026-08-28 20:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (this planning commit)
+- New_sprints_proposed: A2-4A, A2-4B
+- Polish_items_folded_in: compliance-test-structural-invariant-for-ac4
+- Decisions_locked: 6
+- Notes: The load-bearing scope tension in A2-4 was AC5 — the original wording asserts NPC address and offered work "measurably change", but no NPC-address / offered-work reactor exists yet and no downstream A2 sprint owns building one. Locked: A2-4 stays foundational, AC5 becomes a mechanism-proof stub test, real reactor moves to new sprint A2-4A. Also proposed A2-4B for wiring `investment_from` tags into real gameplay-event hooks (needs A2-5/A2-6 done first). All other risks (integer scale, no cap, negative-amount rejection, registry-as-parameter, source opacity, no observer hook) locked with rationale rooted in the Spec F design + `agent_principles.md` scope discipline.
+
+#### A2-4A — First oblique investment consumer
+
+**Status**: todo
+**Phase**: Act II | **Size**: M | **Effort**: 5-7 days
+**Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
+
+**Goal.** Deliver the first real reactor surface that reads `player.lens_investment` and behaviourally changes the game world in response, honouring Spec F success criterion 3 ("investment is visible in some form") on the decomposition doc's locked oblique interpretation ("observable through NPC address and offered work — not a meter"). A2-4 proved the query API is consumable; this sprint proves one production consumer works end-to-end. Scope is deliberately narrow — one consumer, well-authored, over many consumers thinly done.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` (success criterion 3; "The world must move without the player" for the reactor mindset)
+- `docs/superpowers/specs/2026-08-27-act-two-decomposition.md` (Q1 locked resolution; the consequence for the telegraph invariant)
+- `spacegame/models/lens_investment.py` (A2-4's API — `is_at_or_above`, `get_investment`)
+- `data/narrative/lenses.json` after A2-5/A2-6 (the 16 real lens records with real `voice` fields to key content off)
+- `requirements/lens_authoring_guide.md` (A2-2's guide — the per-lens voice notes this sprint's authored content follows)
+- `spacegame/models/ambient_dialogue.py` and its consumer views (the closest existing pattern — an author-driven pool with runtime filtering)
+- `requirements/agent_principles.md` (in full)
+- `requirements/aurelia_voice_examples.md` (in full — mandatory for any authored NPC line)
+
+**Touch zones.**
+- `spacegame/models/lens_reactor.py` (NEW) — the oblique-readout dispatcher. Chooses one from a pool given `(player, context)`.
+- `data/narrative/lens_reactions.json` (NEW) — the authored pool. Per-lens, threshold-keyed lines/mission-offer tags. Small on landing: one consumer surface (NPC greeting variant) with authored content for at least three of the sixteen lenses.
+- `spacegame/data_loader.py` — new `_parse_lens_reactions()` + `load_lens_reactions()`, mirroring A2-1's `load_lenses` pattern.
+- ONE existing view file (locked in planning) that already renders an NPC greeting — the seam this sprint wires into. Candidate: a station-hub greeting or a Wreckers' Guild Hall Malia line, chosen in the plan phase.
+- `tests/test_models/test_lens_reactor.py` (NEW)
+- `tests/test_data/test_lens_reactions_cross_references.py` (NEW — every `lens_id` referenced in `lens_reactions.json` must exist in `DataLoader.lenses`, matching the cross-reference discipline pattern)
+- `tests/test_scenarios/test_scenario_oblique_readout.py` (NEW — the real production-path scenario test that A2-4's AC5 was originally shaped for; this is the sprint that earns that assertion)
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (extend the AC4 whitelist from A2-4 to permit `lens_reactor.py` to read `player.lens_investment` — with a code comment explaining why the reactor is the sole legal reader outside the model layer)
+
+**Deliverables.**
+- `LensReactor` class with a single primary method `choose_variant(player, context: str, options: dict[str, list[str]]) -> str` that inspects `player.lens_investment`, resolves the dominant lens above threshold for the passed `context`, and returns one of the pool's authored strings for that lens. Deterministic seeding (based on `game_day` + `context` + `player.name`) so tests can assert exact output.
+- Authored content in `data/narrative/lens_reactions.json` for at least three lenses (Wealth, Community, Vengeance are the strongest candidates per Spec F's "emotional centre" and "sharpest" callouts), each with two threshold tiers (mid ~40, high ~80) worth of greeting-line variants.
+- The chosen wire-in view uses the reactor's output in place of its existing default greeting line, and the default is still returned when no lens is above the lowest threshold (so a fresh player sees no regression in the existing feel of that surface).
+- Scenario test at `tests/test_scenarios/test_scenario_oblique_readout.py` that drives one lens above threshold, calls the reactor via the real production path (not a test stub), and asserts the returned string comes from the lens's authored pool — not the default. This is the assertion the original A2-4 AC5 targeted.
+
+**Acceptance criteria.**
+1. `LensReactor.choose_variant` returns a lens-specific line when at least one lens exceeds its lowest threshold; returns the default when none does.
+2. Content-integrity guard: every `lens_id` in `data/narrative/lens_reactions.json` exists in `DataLoader.lenses` (once A2-5/A2-6 have landed the lens registry). A malformed lens_id fails the build.
+3. Deterministic: given the same `(player, context, game_day)`, `choose_variant` returns the same string across runs — no random-per-call flake.
+4. The wired-in view calls the reactor on its render/refresh path; a scenario test drives one lens high and asserts the view's rendered greeting text changes.
+5. Every authored line passes voice-check against `requirements/aurelia_voice_examples.md`'s 16-item diagnostic and `dialogue_writing_guide.md` §8 ladder (Grade B or A for social-skill lines).
+6. AC4 from A2-4 still holds — the compliance test that ensures no view reads investment gains ONE whitelist entry for `lens_reactor.py` (with a code comment justifying it), and NO other whitelist entries.
+7. 15+ new tests.
+8. Full suite green; no regression from baseline.
+
+**Risks / open questions.**
+- Which existing view is the wire-in seam? To be locked in planning. Candidates: station hub greeting variant, Malia at Wreckers' Guild Hall, or a market-vendor line. The seam should already render a single string (not a full dialogue tree) so this sprint stays under M size.
+- Should the reactor's authored pool land as one file or one-file-per-lens? Locked-in-planning candidate: single file to start (parallels A2-1's single `lenses.json`); split when the pool exceeds ~200 lines.
+- Should A2-4A introduce a per-lens `dominant_lens` computation on `LensInvestment`, or keep the resolution logic inside the reactor? Recommend the latter — keeps `LensInvestment` a pure state store and puts resolution alongside the content that consumes it.
+
+**Activity log.**
+- 2026-08-28 — todo (created by A2-4 planner; addresses the AC5 scope gap surfaced during A2-4 planning)
+
+**Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). Sequenced late in Tier 1, but a natural pickup once the three prerequisites are done. If A2-5 / A2-6 are still `todo` when A2-4 finishes, this sprint stays blocked — that is expected, not a defect.
+
+#### A2-4B — Wire `investment_from` actions into gameplay hooks
+
+**Status**: todo
+**Phase**: Act II | **Size**: M | **Effort**: 5-8 days
+**Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
+
+**Goal.** Connect the accrual API from A2-4 (`LensInvestment.record_action(tag, amount, lenses)`) to the real gameplay events named in the `investment_from` fields of the sixteen lens definitions (A2-5 and A2-6). Without this sprint, A2-4 ships an accrual mechanism that no game action calls, so investment stays at zero in a real playthrough regardless of what the player does. A2-4B is what makes the arc real for the player.
+
+**Context to read.**
+- `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` ("Investment" section; the sixteen lenses table and their fantasies)
+- `data/narrative/lenses.json` (post-A2-5/A2-6 — the actual `investment_from` tags the lenses ship with)
+- `spacegame/models/lens_investment.py` (A2-4's `record_action`)
+- `spacegame/models/player.py` (the class that holds `lens_investment`, and the methods that already fire on named gameplay events — `sell_commodity`, `travel_to_system`, `record_captain_encounter`, etc.)
+- `spacegame/models/ambient_dialogue.py` (`AmbientLine.action_type` — the existing action-tag vocabulary A2-2's guide asks lenses to reuse)
+- `spacegame/models/procedural_missions.py` (existing five mission types: `bounty`, `delivery`, `smuggling`, `survey`, `salvage`)
+- `spacegame/models/combat_engine.py` — if a `combat_victory` hook already exists, wire there; otherwise add the tag emit at the caller site.
+
+**Touch zones.**
+- `spacegame/models/player.py` (add `record_action` proxy calls at existing action sites: `sell_commodity`, `travel_to_system`, `record_captain_encounter`, etc., following each `investment_from` tag's semantics)
+- Any mission-completion / combat-victory / market-transaction site where an existing hook is called — the audit against the union of all `investment_from` tags in `lenses.json` produces the exact list; documented in the plan phase.
+- `tests/test_models/test_lens_investment_hooks.py` (NEW) — one test per `investment_from` tag, asserting the hook fires and increments the correct lens.
+- `tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py` (NEW) — end-to-end: run a synthetic sell-cargo action through the real player method and assert `wealth` investment went up.
+
+**Deliverables.**
+- An audit table in the sprint's plan phase: rows are the union of every `investment_from` tag across the sixteen lenses; columns are (a) which player method / manager already fires on that event, (b) whether a `record_action` call needs adding or a helper needs to be extracted, (c) which test file owns the coverage.
+- A wire at every audit-table row so every tag has at least one production code path that emits it.
+- One test per tag proving the tag is emitted when the corresponding gameplay event happens.
+- One scenario test that runs a small vertical slice ("sell cargo -> wealth investment up; win a bounty -> vengeance investment up; visit a new system -> exploration investment up") and asserts the accruals compound correctly.
+
+**Acceptance criteria.**
+1. For every tag `t` in the union of `investment_from` across `DataLoader.lenses.values()`, at least one production code path fires `player.lens_investment.record_action(t, ...)`; a test asserts this by monkey-patching `record_action` on a fresh Player and triggering each action.
+2. No tag is emitted twice for the same underlying event (double-count guard).
+3. Tag names are exact matches against `investment_from` — a typo like `combat_victory_targeted` when the lens says `combat_victory_named_target` fails the coverage test.
+4. Scenario test proves a small vertical slice of real gameplay actions accrues investment on the expected lenses; a full-suite integration test remains stable (no regression on trade / combat / travel loops).
+5. Amount-per-event is proportional to significance (small trade = small accrual; named-target kill = larger accrual). The exact scale is locked in planning.
+6. 20+ new tests.
+7. Full suite green; no regression from baseline.
+
+**Risks / open questions.**
+- Amount-per-tag calibration: how much does one sold-cargo transaction accrue toward `wealth`? Recommend integers in the 1-5 range for common events, 10-20 for milestone events (mission completed, captain defeated). Locked in planning.
+- If `A2-5/A2-6` invented tags that no existing production system emits (e.g. `deep_shafts_pilgrimage_visited` when there is no pilgrimage-completion event), this sprint either (a) adds the missing emitter for a small tag, or (b) marks the tag "author-facing only, awaiting emitter sprint X" in the plan and moves on. Do NOT invent gameplay just to have a place to emit — flag it as a gap.
+- Tags qualified by a colon (`mission_completed:bounty`, `crew_loyalty_gained`) are handled by the caller emitting the qualified form; A2-4's `record_action` does exact-match, not prefix-match. Confirmed in A2-4 planning.
+
+**Activity log.**
+- 2026-08-28 — todo (created by A2-4 planner; addresses the "accrual API is unreachable in production" scope gap surfaced during A2-4 planning)
+
+**Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). If A2-5/A2-6 haven't populated `lenses.json` when this sprint is picked up, block — the audit-table can only be built against the real tag list.
 
 # Act II Ambition - sprint sections A2-5 through A2-21
 
