@@ -221,7 +221,39 @@ def update_status(sprint_id: str, new_status: str) -> None:
     new_section = _STATUS_LINE_RE.sub(f"**Status**: {new_status}", section_text, count=1)
 
     new_content = content[: sprint.section_start] + new_section + content[sprint.section_end :]
-    _write_roadmap(new_content)
+    _write_roadmap(_with_index_synced(new_content))
+
+
+def _with_index_synced(content: str) -> str:
+    """Return `content` with hand-maintained index rows matching their sections.
+
+    `regenerate_index` only rebuilds the SA-arc table, between the
+    AUTO_GENERATED_SA_INDEX markers. The Act II, Followups and QF tables are
+    hand-maintained, and the harness reconciled them exactly once per completed
+    sprint (`harness._sync_roadmap_index`, at the end of the main loop). Every
+    status write outside that path therefore left the index disagreeing with the
+    section it had just changed.
+
+    That is not cosmetic drift, because the agreement is enforced by
+    `tests/test_compliance/test_roadmap_index_sync.py`. Measured 2026-08-29:
+    stuck-sprint recovery reset A2-5 to `todo` and committed it (b18232e) while
+    its index row still read `in-progress`. Recovery runs BEFORE baseline
+    capture, so the harness then ran a suite that failed on drift it had itself
+    created one second earlier, and `_capture_test_baseline` aborted the whole
+    run with rc 3. The same hazard applies to every mid-sprint phase transition,
+    which the per-sprint test gate would fail on for the same reason.
+
+    Syncing inside the write keeps the invariant true after every mutation
+    rather than at one point in the loop. Best-effort: if the helper cannot be
+    imported, the content is returned unchanged, exactly as before.
+    """
+    try:
+        from scripts.sync_roadmap_index import sync as _sync_index
+
+        synced, _drift = _sync_index(content)
+        return synced
+    except Exception:
+        return content
 
 
 def append_activity_log(sprint_id: str, line: str) -> None:

@@ -404,3 +404,70 @@ class TestRoadmapWritesAreAtomic:
         mock_atomic.assert_called_once()
         assert mock_atomic.call_args[0][0] == target
         assert mock_atomic.call_args[0][1] == "new content"
+
+
+# ---------------------------------------------------------------------------
+# A status write must leave the index agreeing with the section
+# ---------------------------------------------------------------------------
+
+
+_ROADMAP_DRIFTABLE_INDEX = """# Test Roadmap
+
+## Index
+
+| ID | Title | Phase | Size | Status | Depends on |
+|---|---|---|---|---|---|
+| [A2-5](#a2-5) | Lens definitions | Act II | M | in-progress | A2-1 |
+
+## Body
+
+#### A2-5 — Lens definitions
+
+**Status**: in-progress (implementing)
+**Phase**: Act II | **Size**: M
+**Depends on**: A2-1 | **Blocks**: none
+
+**Goal.** Define the lenses.
+
+**Activity log.**
+- 2026-08-29 — in-progress (implementing)
+"""
+
+
+class TestUpdateStatusKeepsIndexInSync:
+    """`update_status` rewrites a section; the index row must follow.
+
+    Only the SA-arc table lives between the AUTO_GENERATED_SA_INDEX markers.
+    Every other table -- Act II, Followups, QF -- is hand-maintained, and
+    `_sync_roadmap_index` ran exactly once per completed sprint, at the end of
+    the main loop. So any status write outside that path left the index stale.
+
+    Measured 2026-08-29: stuck-sprint recovery reset A2-5's section to `todo`
+    and committed it (b18232e) while its index row still read `in-progress`.
+    Recovery runs BEFORE baseline capture, so the very next thing the harness
+    did was run the suite, where
+    `test_compliance/test_roadmap_index_sync.py` caught the drift the harness
+    had just created. Baseline capture aborts the run on a non-zero pytest exit,
+    so the harness reliably poisoned its own gate at startup and exited rc 3.
+
+    The same hazard applies to every phase transition mid-sprint, which the
+    per-sprint test gate would then fail on for the same reason.
+    """
+
+    def test_status_write_syncs_the_index_row(self, tmp_path, monkeypatch) -> None:
+        from scripts.sync_roadmap_index import sync
+
+        roadmap_file = tmp_path / "ROADMAP.md"
+        roadmap_file.write_text(_ROADMAP_DRIFTABLE_INDEX, encoding="utf-8")
+        monkeypatch.setattr(roadmap_state, "ROADMAP_PATH", roadmap_file)
+
+        roadmap_state.update_status("A2-5", "todo")
+
+        written = roadmap_file.read_text(encoding="utf-8")
+        assert "**Status**: todo" in written, "the section itself should be updated"
+
+        _new, drift = sync(written)
+        assert not drift, (
+            "index must agree with the section after a status write, but: " + "; ".join(drift)
+        )
+        assert "| todo |" in written, "the index row should now read todo"
