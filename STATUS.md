@@ -1,23 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-08-29 10:17:02_
+_Updated: 2026-08-29 10:19:45_
 
 ## Harness Did Not Run
 
-Baseline capture FAILED: pytest exited 1; tail: s\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
-    surf = pygame.display.set_mode((1280, 720), flags=flags)
+harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
 
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ===========================
-FAILED tests/test_compliance/test_roadmap_index_sync.py::TestRoadmapIndexInSync::test_index_status_matches_sections
-1 failed, 11036 passed, 100 skipped, 41 warnings in 1248.79s (0:20:48). Aborting run to avoid running agents with no baseline.
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **just now**
-- Beat PID: 41216 -- alive
+- Last beat: **3 minutes ago**
+- Beat PID: 41216 -- **NOT RUNNING**
 
 ## Queue
 
@@ -29,8 +27,8 @@ FAILED tests/test_compliance/test_roadmap_index_sync.py::TestRoadmapIndexInSync:
 
 ## Push
 
-- last push: **OK** (7 hours ago)
-- last successful push: 7 hours ago
+- last push: **OK** (3 minutes ago)
+- last successful push: 3 minutes ago
 
 ## Blocks drift
 
@@ -41,3 +39,7 @@ FAILED tests/test_compliance/test_roadmap_index_sync.py::TestRoadmapIndexInSync:
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- harness exit rc=3
