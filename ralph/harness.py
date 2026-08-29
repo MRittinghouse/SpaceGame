@@ -585,10 +585,34 @@ def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
     return None
 
 
-# The full suite is ~100s at -n 8. 15 minutes is a wide margin for a loaded
-# machine while still being a bound: a pytest run that never finishes must not
-# become the harness's new way of hanging.
-TEST_GATE_TIMEOUT_SECONDS: int = 2700
+# The budget for the PARALLEL attempt only -- the serial fallback below is what
+# actually has to finish the suite.
+#
+# Measured 2026-08-29, both with a clean process table:
+#   - interactive, -n 8:            60-77s for ~11,140 tests
+#   - under the Scheduled Task, -n 8: never finishes; killed at 600s, twice
+#   - under the Scheduled Task, -n 0: 1249s (20:48), healthy at ~89% of a core
+#
+# The decisive detail is that during a 10-minute parallel attempt under the task
+# the `--basetemp` root gained ZERO entries, while the serial retry populated it
+# within 7 seconds. So the parallel run hangs before executing any test: this is
+# xdist/execnet worker startup under the task, not slow tests.
+#
+# That makes this budget a bound on dead time, not on a slow run. Parallel either
+# finishes in ~80s or never starts, so every second past a short probe is pure
+# waste -- at the old 2700s the gate burned 45 minutes per sprint before falling
+# back to the serial run that was always going to be the one that finished.
+#
+# 600s is still an 8x margin over the slowest parallel run ever observed here.
+# It is deliberately the same number `_capture_test_baseline` uses: the two ran
+# the same command through the same helper while disagreeing about the budget
+# (600 vs 2700), which is how the baseline's real behaviour stayed invisible in
+# a constant named for the gate.
+#
+# Do NOT raise this to "fix" a hanging gate. It is not a timeout-sizing problem;
+# check `Get-Process python` for leaked workers first (`_sweep_stray_pytest`),
+# then assume xdist startup under the task.
+TEST_GATE_TIMEOUT_SECONDS: int = 600
 
 # Substring identifying a gate that never finished, as opposed to one that
 # ran and found failures. `_run_test_gate` puts it in the timeout message.
@@ -786,10 +810,10 @@ def _capture_test_baseline() -> tuple[int, int]:
             The harness main loop catches this and aborts before picking up any sprint.
     """
     try:
-        result = _run_pytest_with_serial_fallback(timeout_seconds=600)
+        result = _run_pytest_with_serial_fallback(timeout_seconds=TEST_GATE_TIMEOUT_SECONDS)
     except subprocess.TimeoutExpired as exc:
         raise BaselineCaptureError(
-            f"pytest never finished: 600s in parallel, then "
+            f"pytest never finished: {TEST_GATE_TIMEOUT_SECONDS}s in parallel, then "
             f"{SERIAL_RETRY_TIMEOUT_SECONDS}s serially. This is a real hang, not an "
             "xdist fault."
         ) from exc
