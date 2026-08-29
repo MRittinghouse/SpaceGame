@@ -11784,7 +11784,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12174,7 +12174,7 @@ cohesion sprints.
 - 2026-08-27 - todo (created)
 - 2026-08-29 13:23 — harness: plan phase starting
 - 2026-08-29 15:15 — planning complete; verified all 6 context-to-read docs exist; the file listed as `tests/test_compliance/test_lens_content_uniqueness.py` is EXTEND (A2-5 landed it) rather than NEW as the original section said; locked 6 open decisions (forward-referenced tags, prose-field length, tier_unlocks count, no-guide-paste voice, Legacy/Preservation NPCs are fresh not character_voices.md, distinctness test file location, no additional empty-registry guard); expanded acceptance criteria from 5 to 9 (added Empire-trio distinctness, truth-avoids-pursuit-vocabulary, test_real_lenses count-bump, prose-anti-patterns scanner clean, and baseline pin to 11041/100); added 7-task Plan section with test surfaces and gotchas; added Cross-sprint reactions (foundational data, mechanical surface only, no player-facing content). PHASE_OK
-
+- 2026-08-29 13:32 — harness: implement phase starting (rework cycle 0)
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
