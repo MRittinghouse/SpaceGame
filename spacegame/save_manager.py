@@ -621,13 +621,11 @@ class SaveManager:
         # non-int values, negative values) also load as empty via the
         # ``from_dict`` cleaner rather than crashing the save.
         lens_investment_data = data.get("lens_investment")
-        if lens_investment_data is not None:
-            from spacegame.models.lens_investment import LensInvestment
+        from spacegame.models.lens_investment import LensInvestment
 
+        if lens_investment_data is not None:
             player.lens_investment = LensInvestment.from_dict(lens_investment_data)
         else:
-            from spacegame.models.lens_investment import LensInvestment
-
             player.lens_investment = LensInvestment()
 
         # SA-1: Wreckers' Guild Hall runtime state (None for legacy saves
