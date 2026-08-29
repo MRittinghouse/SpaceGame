@@ -595,31 +595,30 @@ def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
 # The budget for the PARALLEL attempt only -- the serial fallback below is what
 # actually has to finish the suite.
 #
-# Measured 2026-08-29, both with a clean process table:
-#   - interactive, -n 8:            60-77s for ~11,140 tests
-#   - under the Scheduled Task, -n 8: never finishes; killed at 600s, twice
-#   - under the Scheduled Task, -n 0: 1249s (20:48), healthy at ~89% of a core
+# Measured 2026-08-29, all with a clean process table:
+#   - interactive (session 1), -n 8:   60-77s for ~11,140 tests
+#   - Scheduled Task (session 0), -n 8: 322s when it completes; hung twice
+#   - Scheduled Task (session 0), -n 0: 1249s, healthy at ~89% of a core
 #
-# The decisive detail is that during a 10-minute parallel attempt under the task
-# the `--basetemp` root gained ZERO entries, while the serial retry populated it
-# within 7 seconds. So the parallel run hangs before executing any test: this is
-# xdist/execnet worker startup under the task, not slow tests.
+# Note the 5x gap between sessions on the SAME command: an interactive timing is
+# not evidence about what the harness will do, and sizing this from one is how it
+# ended up at 600s briefly (a 1.9x margin over 322s, not the 8x it was sized for).
 #
-# That makes this budget a bound on dead time, not on a slow run. Parallel either
-# finishes in ~80s or never starts, so every second past a short probe is pure
-# waste -- at the old 2700s the gate burned 45 minutes per sprint before falling
-# back to the serial run that was always going to be the one that finished.
+# The hangs are NOT a slow run and not xdist startup -- both were an intermittent
+# deadlock in `pygame.mixer.music.unpause()`, named by py-spy on the live process
+# and reachable from any test that drives the crawler. It can strike a worker
+# (parallel wedges) or the main process (serial wedges), which is why the same
+# fault produced two symptoms that looked unrelated.
 #
-# 600s is still an 8x margin over the slowest parallel run ever observed here.
-# It is deliberately the same number `_capture_test_baseline` uses: the two ran
-# the same command through the same helper while disagreeing about the budget
-# (600 vs 2700), which is how the baseline's real behaviour stayed invisible in
-# a constant named for the gate.
+# So this bounds how long to wait before falling back, on a run that either
+# finishes in ~5 minutes or is already wedged. 1500s is 4.7x the observed
+# session-0 parallel time, leaving room for a gate running while an agent also
+# has the machine, and still caps a wedged parallel attempt at 25 minutes rather
+# than the 45 the old 2700s cost.
 #
-# Do NOT raise this to "fix" a hanging gate. It is not a timeout-sizing problem;
-# check `Get-Process python` for leaked workers first (`_sweep_stray_pytest`),
-# then assume xdist startup under the task.
-TEST_GATE_TIMEOUT_SECONDS: int = 600
+# Do NOT raise this to "fix" a hanging gate. Check `Get-Process python` for
+# leaked workers first (`_sweep_stray_pytest`), then assume the mixer deadlock.
+TEST_GATE_TIMEOUT_SECONDS: int = 1500
 
 # Substring identifying a gate that never finished, as opposed to one that
 # ran and found failures. `_run_test_gate` puts it in the timeout message.
