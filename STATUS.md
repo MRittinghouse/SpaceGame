@@ -1,23 +1,23 @@
 # Ralph Status
 
-_Updated: 2026-08-29 11:33:55_
+_Updated: 2026-08-29 11:52:49_
 
-## CRASH-LOOP
+## Harness Did Not Run
 
-Supervisor stopped after repeated failures.
-Reason: stopping: 3 consecutive failures
-Nothing will resume until a human intervenes.
+Baseline capture FAILED: pytest exited 1; tail: C:\Users\matth\PycharmProjects\SpaceGame\spacegame\engine\game.py:269: Warning: no fast renderer available
+    self.screen = pygame.display.set_mode(
 
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_views/test_dialogue_response_tooltip.py::TestTooltipGeometry::test_right_side_clipping_flips_to_left
+1 failed, 11040 passed, 100 skipped, 41 warnings in 322.73s (0:05:22). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **49 seconds ago**
-- Beat PID: 19032 -- **NOT RUNNING**
+- Last beat: **28 seconds ago**
+- Beat PID: 2656 -- alive
 
 ## Queue
 
@@ -29,8 +29,8 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 
 ## Push
 
-- last push: **OK** (26 seconds ago)
-- last successful push: 26 seconds ago
+- last push: **OK** (19 minutes ago)
+- last successful push: 19 minutes ago
 
 ## Blocks drift
 
@@ -41,9 +41,3 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- harness exit rc=3
-- harness exit rc=4
-- harness exit rc=3
