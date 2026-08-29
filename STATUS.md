@@ -1,36 +1,38 @@
 # Ralph Status
 
-_Updated: 2026-08-29 11:52:49_
+_Updated: 2026-08-29 13:15:33_
 
 ## Harness Did Not Run
 
-Baseline capture FAILED: pytest exited 1; tail: C:\Users\matth\PycharmProjects\SpaceGame\spacegame\engine\game.py:269: Warning: no fast renderer available
-    self.screen = pygame.display.set_mode(
+harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
 
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ===========================
-FAILED tests/test_views/test_dialogue_response_tooltip.py::TestTooltipGeometry::test_right_side_clipping_flips_to_left
-1 failed, 11040 passed, 100 skipped, 41 warnings in 322.73s (0:05:22). Aborting run to avoid running agents with no baseline.
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
+
+## STALE HEARTBEAT
+
+No beat in over 10 minutes (15 minutes ago) -- past the age at which the supervisor kills a harness as wedged. The process may have died, or the machine rebooted mid-sprint and left this file behind; its age alone does not mean a run is live.
 
 ## Now
 
-- Sprint: **(between sprints)**
-- Phase: **-**
-- Last beat: **28 seconds ago**
-- Beat PID: 2656 -- alive
+- Sprint: **A2-5**
+- Phase: **review**
+- Last beat: **15 minutes ago** -- **STALE**
+- Beat PID: 13388 -- **NOT RUNNING**
 
 ## Queue
 
 - total: 88
-- todo: 34
-- eligible: 4
-- in flight: none
+- todo: 33
+- eligible: 3
+- in flight: A2-5 (in-progress (reviewing))
 - blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (19 minutes ago)
-- last successful push: 19 minutes ago
+- last push: **OK** (83 minutes ago)
+- last successful push: 83 minutes ago
 
 ## Blocks drift
 
