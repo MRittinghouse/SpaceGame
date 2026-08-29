@@ -1,10 +1,12 @@
 # Ralph Status
 
-_Updated: 2026-08-29 14:41:43_
+_Updated: 2026-08-29 14:41:47_
 
-## Harness Did Not Run
+## CRASH-LOOP
 
-harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
+Supervisor stopped after repeated failures.
+Reason: stopping: 3 consecutive failures
+Nothing will resume until a human intervenes.
 
 ## NO LIVE HARNESS
 
@@ -31,8 +33,8 @@ No beat in over 10 minutes (24 minutes ago) -- past the age at which the supervi
 
 ## Push
 
-- last push: **OK** (9 minutes ago)
-- last successful push: 9 minutes ago
+- last push: **OK** (just now)
+- last successful push: just now
 
 ## Blocks drift
 
@@ -46,5 +48,6 @@ No beat in over 10 minutes (24 minutes ago) -- past the age at which the supervi
 
 ## Recent
 
+- harness exit rc=4
 - harness exit rc=4
 - harness exit rc=4
