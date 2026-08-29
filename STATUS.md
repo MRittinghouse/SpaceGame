@@ -1,21 +1,17 @@
 # Ralph Status
 
-_Updated: 2026-08-29 00:50:45_
+_Updated: 2026-08-29 03:09:36_
 
 ## Harness Did Not Run
 
-harness exited with code 1 (an exit code this supervisor does not recognise) and STATUS.md was NOT updated. This is NOT a pre-flight failure: that code is 4, and this is not it. The harness got as far as its own exit handler and tried to write STATUS.md; the WRITE failed -- a full or read-only disk, a permissions change on STATUS.md, or a rendering bug. `_write_status_snapshot` swallows that failure by design (a broken status file must never end a run it is only trying to report on), so the reason is a single line in `ralph/logs/harness.log`: search it for `STATUS.md write failed`. The run itself may well have been fine.
-
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
+Baseline capture FAILED: pytest never finished: 600s in parallel, then 7200s serially. This is a real hang, not an xdist fault.. Aborting run to avoid running agents with no baseline.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **16 seconds ago**
-- Beat PID: 43556 -- **NOT RUNNING**
+- Last beat: **28 seconds ago**
+- Beat PID: 40300 -- alive
 
 ## Queue
 
@@ -27,8 +23,8 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 
 ## Push
 
-- last push: **OK** (15 seconds ago)
-- last successful push: 15 seconds ago
+- last push: **OK** (2 hours ago)
+- last successful push: 2 hours ago
 
 ## Blocks drift
 
@@ -39,9 +35,3 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- harness exit rc=0
-- harness exit rc=0
-- harness exit rc=3
