@@ -567,8 +567,15 @@ class BaselineCaptureError(RuntimeError):
     3. Unparseable output (zero exit but no 'N passed' line found).
 
     On startup, the harness must abort when it sees this; proceeding with a
-    zero baseline means agents cannot detect new regressions.
+    zero baseline means agents cannot detect new regressions -- except for (1),
+    which `_capture_test_baseline` retries once. `was_hang` is what separates
+    them: a suite that ran and was red is evidence about the code, one that never
+    finished is evidence about the machine.
     """
+
+    def __init__(self, message: str, *, was_hang: bool = False) -> None:
+        super().__init__(message)
+        self.was_hang = was_hang
 
 
 def _parse_pytest_counts(output: str) -> Optional[tuple[int, int]]:
@@ -638,10 +645,17 @@ PYTEST_BASETEMP: Path = (
 # timed out on contention and stranded 18 downstream sprints, which is the
 # exact cascade this arc was shaped to avoid.
 #
-# A serial run of ~11,000 tests is roughly 8x the parallel wall clock, so the
-# old 2400s serial budget could not finish one even in principle. Both budgets
-# are now sized against the slowest OBSERVED run rather than the fastest.
-SERIAL_RETRY_TIMEOUT_SECONDS: int = 7200
+# The serial fallback is the run that actually has to finish, so this is a real
+# budget rather than a bound on dead time. Measured under the Scheduled Task:
+# 1249s (20:48) for ~11,140 tests. 3000s is a 2.4x margin, which covers a gate
+# running while an agent also has the machine.
+#
+# It was 7200s, sized when no serial run had ever completed and the estimate was
+# "roughly 8x the parallel wall clock". Now that one has, the real number is
+# known and 7200s only delayed the retry below: `_capture_test_baseline` gets a
+# second attempt when the suite hangs, and at 7200s a single hang consumed the
+# entire budget for both.
+SERIAL_RETRY_TIMEOUT_SECONDS: int = 3000
 
 
 def _pytest_gate_cmd(*extra: str, workers: Optional[str] = None) -> list[str]:
@@ -800,14 +814,52 @@ def _run_test_gate(test_baseline: tuple[int, int]) -> Optional[tuple[str, str]]:
 
 
 def _capture_test_baseline() -> tuple[int, int]:
-    """Run pytest -q to capture the current test pass/skip baseline.
+    """Capture the baseline, retrying once if the suite never finished.
+
+    A suite that RAN and was red is evidence about the code: it must stop the
+    run, and re-running it would only burn 20 minutes to reach the same answer.
+    A suite that never finished is evidence about the machine, and is worth one
+    more attempt. `d61a23e` drew exactly this distinction for the per-sprint
+    gate; baseline capture kept treating both as terminal.
+
+    That mattered because the hang is intermittent. Measured 2026-08-29 under
+    the Scheduled Task, on the same tree, back to back: one serial baseline
+    finished in 1249s, the next hung indefinitely inside
+    `pygame.mixer.music.unpause()` (py-spy named it), reached from the crawler's
+    pause-menu handling in
+    `tests/test_crawler/test_integration.py::...::test_crawler_determinism_across_two_runs`.
+    pytest-timeout cannot rescue that: its timer thread was armed for the test,
+    but the block is in a C call holding the GIL, so the timer never ran. Only
+    `run_with_hard_timeout`'s out-of-process kill bounds it.
+
+    So a coin-flip fault in one test was ending seven-day runs at startup. One
+    retry turns that into a delay. The underlying SDL_mixer deadlock is NOT fixed
+    here and still deserves its own sprint.
+
+    Returns:
+        ``(passing, skipped)`` counts extracted from pytest output.
+
+    Raises:
+        BaselineCaptureError: If the suite is red, unparseable, or hung twice.
+    """
+    try:
+        return _capture_test_baseline_once()
+    except BaselineCaptureError as first:
+        if not first.was_hang:
+            raise
+        log(f"Baseline capture hung ({first}). Retrying once before giving up.")
+
+    return _capture_test_baseline_once()
+
+
+def _capture_test_baseline_once() -> tuple[int, int]:
+    """One baseline attempt. See `_capture_test_baseline` for the retry policy.
 
     Returns:
         ``(passing, skipped)`` counts extracted from pytest output.
 
     Raises:
         BaselineCaptureError: On timeout, subprocess error, or unparseable output.
-            The harness main loop catches this and aborts before picking up any sprint.
     """
     try:
         result = _run_pytest_with_serial_fallback(timeout_seconds=TEST_GATE_TIMEOUT_SECONDS)
@@ -815,7 +867,8 @@ def _capture_test_baseline() -> tuple[int, int]:
         raise BaselineCaptureError(
             f"pytest never finished: {TEST_GATE_TIMEOUT_SECONDS}s in parallel, then "
             f"{SERIAL_RETRY_TIMEOUT_SECONDS}s serially. This is a real hang, not an "
-            "xdist fault."
+            "xdist fault.",
+            was_hang=True,
         ) from exc
     except FileNotFoundError as exc:
         raise BaselineCaptureError(f"FileNotFoundError: {exc}") from exc

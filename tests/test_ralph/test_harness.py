@@ -1546,13 +1546,15 @@ class TestCaptureTestBaseline:
         ) as runner:
             with pytest.raises(harness.BaselineCaptureError, match="never finished"):
                 harness._capture_test_baseline()
-        assert runner.call_count == 2, (
-            "baseline capture must retry serially before aborting the whole run; "
-            f"it made {runner.call_count} attempt(s)"
+        assert runner.call_count == 4, (
+            "baseline capture must fall back to serial before aborting, and the whole "
+            "attempt is retried once when it hangs (see TestBaselineCaptureRetriesOnHang), "
+            f"so a total hang is 2 attempts x (parallel, serial) = 4 runs; got "
+            f"{runner.call_count}"
         )
-        assert (
-            runner.call_args_list[1].args[0][runner.call_args_list[1].args[0].index("-n") + 1]
-            == "0"
+        workers = [c.args[0][c.args[0].index("-n") + 1] for c in runner.call_args_list]
+        assert workers == [config.TEST_WORKERS, "0", config.TEST_WORKERS, "0"], (
+            f"expected parallel-then-serial on each of the two attempts, got {workers}"
         )
 
     def test_nonzero_exit_raises_baseline_capture_error(self) -> None:
@@ -3473,3 +3475,72 @@ class TestGateTimeoutIsInfraNotBlocked:
             "a red suite must not be mistaken for a timeout, or a real breakage "
             "would be retried forever instead of blocking"
         )
+
+
+# ---------------------------------------------------------------------------
+# An intermittent hang must not end the run
+# ---------------------------------------------------------------------------
+
+
+class TestBaselineCaptureRetriesOnHang:
+    """A baseline that never finished gets one more attempt; a red one does not.
+
+    Measured 2026-08-29: `pygame.mixer.music.unpause()` deadlocks intermittently
+    under the Scheduled Task (session 0), reached from
+    `tests/test_crawler/test_integration.py::...::test_crawler_determinism_across_two_runs`
+    via the crawler's pause-menu handling. py-spy named it directly. Two serial
+    baseline runs on the same tree: one finished in 1249s, the next hung
+    indefinitely on that call.
+
+    pytest-timeout cannot rescue it. Its timer thread was armed for that exact
+    test, but the block is inside a C call holding the GIL, so the timer never
+    got to run. Only an out-of-process bound catches this, which is what
+    `run_with_hard_timeout` is.
+
+    `_capture_test_baseline` aborted the whole run (rc 3) on the first hang, so a
+    coin-flip fault in one test ended a seven-day unattended run. This mirrors the
+    distinction `d61a23e` drew for the gate: a suite that RAN and was red is
+    evidence about the code and must stop the run; one that never finished is
+    evidence about the machine, and is worth one more try.
+    """
+
+    def _ok_result(self) -> "subprocess.CompletedProcess[str]":
+        return subprocess.CompletedProcess(
+            args=["pytest"], returncode=0, stdout="11038 passed, 100 skipped\n", stderr=""
+        )
+
+    def test_a_hang_is_retried_once_and_can_succeed(self) -> None:
+        calls: list[int] = []
+
+        def fake(*_args: object, **_kwargs: object) -> "subprocess.CompletedProcess[str]":
+            calls.append(1)
+            if len(calls) == 1:
+                raise subprocess.TimeoutExpired(cmd="pytest", timeout=600)
+            return self._ok_result()
+
+        with patch.object(harness, "_run_pytest_with_serial_fallback", side_effect=fake):
+            assert harness._capture_test_baseline() == (11038, 100)
+        assert len(calls) == 2, f"expected one retry after a hang, got {len(calls)} attempt(s)"
+
+    def test_two_hangs_still_fail(self) -> None:
+        def always_hang(*_a: object, **_k: object) -> "subprocess.CompletedProcess[str]":
+            raise subprocess.TimeoutExpired(cmd="pytest", timeout=600)
+
+        with patch.object(harness, "_run_pytest_with_serial_fallback", side_effect=always_hang):
+            with pytest.raises(harness.BaselineCaptureError):
+                harness._capture_test_baseline()
+
+    def test_a_red_suite_is_not_retried(self) -> None:
+        """A suite that ran and failed is evidence about the code, not the machine."""
+        calls: list[int] = []
+
+        def red(*_a: object, **_k: object) -> "subprocess.CompletedProcess[str]":
+            calls.append(1)
+            return subprocess.CompletedProcess(
+                args=["pytest"], returncode=1, stdout="1 failed, 11037 passed\n", stderr=""
+            )
+
+        with patch.object(harness, "_run_pytest_with_serial_fallback", side_effect=red):
+            with pytest.raises(harness.BaselineCaptureError):
+                harness._capture_test_baseline()
+        assert len(calls) == 1, "a red suite must not be re-run by baseline capture"
