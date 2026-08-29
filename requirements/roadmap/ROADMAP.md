@@ -12181,7 +12181,7 @@ cohesion sprints.
 - Started: 2026-08-29 13:23
 - Completed: 2026-08-29 15:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (this planner commits after writing this block)
+- Commits: 3a605a6
 - New_sprints_proposed: none
 - Polish_items_folded_in: Empire-trio distinctness AC (Spec F must-not-collapse coverage completed); truth-avoids-pursuit-vocabulary AC (mechanically-testable form of "not covertly vengeful"); community/wealth discriminant substring sets made concrete; test_real_lenses count-bump AC named explicitly; prose-anti-patterns scanner AC pinned; baseline test count pinned to 11041/100.
 - Decisions_locked: 6
