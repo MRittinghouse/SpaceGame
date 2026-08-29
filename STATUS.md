@@ -1,21 +1,17 @@
 # Ralph Status
 
-_Updated: 2026-08-28 21:58:23_
+_Updated: 2026-08-29 00:09:48_
 
-## TEST SUITE FAILING
+## Harness Did Not Run
 
-The harness stopped: the test-suite gate found a red tree, so no further sprint will be authored on top of it. Nothing is broken about the harness itself -- this is it refusing to build on a break.
-
-```
-A2-4: test-suite gate FAILED: the test suite did not finish within 900s in parallel, nor within 2400s serially. Treated as a failure: an unbounded suite is indistinguishable from a hung one, and neither may be built on.
-```
+Baseline capture FAILED: pytest never finished: 600s in parallel, then 7200s serially. This is a real hang, not an xdist fault.. Aborting run to avoid running agents with no baseline.
 
 ## Now
 
-- Sprint: **A2-4**
-- Phase: **review**
-- Last beat: **25 seconds ago**
-- Beat PID: 44084 -- alive
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **28 seconds ago**
+- Beat PID: 43488 -- alive
 
 ## Queue
 
@@ -27,8 +23,8 @@ A2-4: test-suite gate FAILED: the test suite did not finish within 900s in paral
 
 ## Push
 
-- last push: **OK** (just now)
-- last successful push: just now
+- last push: **OK** (2 hours ago)
+- last successful push: 2 hours ago
 
 ## Blocks drift
 
@@ -39,11 +35,3 @@ A2-4: test-suite gate FAILED: the test suite did not finish within 900s in paral
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- A2-2 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)
-- A2-3 ok
-- A2-3 baseline-refresh FAILED (pytest never finished: 600s in parallel, then 2400s serially. This is a real hang, not an xdist fault.)
-- A2-4 blocked
-- A2-4 TEST-GATE FAILED
