@@ -126,8 +126,10 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
-| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4C](#a2-4c--second-oblique-surface-wreckers-secondary-contacts--malia-promotion-lines) | Second oblique surface: Wreckers' secondary contacts + Malia promotion lines | Act II | M | todo | A2-4A |
+| [A2-4D](#a2-4d--lens-gated-station-chatter) | Lens-gated station chatter | Act II | L | todo | A2-4A |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11340,7 +11342,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4A — First oblique investment consumer
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11350,45 +11352,151 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` (success criterion 3; "The world must move without the player" for the reactor mindset)
 - `docs/superpowers/specs/2026-08-27-act-two-decomposition.md` (Q1 locked resolution; the consequence for the telegraph invariant)
 - `spacegame/models/lens_investment.py` (A2-4's API — `is_at_or_above`, `get_investment`)
-- `data/narrative/lenses.json` after A2-5/A2-6 (the 16 real lens records with real `voice` fields to key content off)
-- `requirements/lens_authoring_guide.md` (A2-2's guide — the per-lens voice notes this sprint's authored content follows)
+- `data/narrative/lenses.json` (the 16 real lens records with real `voice` fields to key content off — landed by A2-5/A2-6)
+- `requirements/lens_authoring_guide.md` (A2-2's guide — per-lens voice notes; §2 wealth / community / vengeance registers are load-bearing for this sprint's authored content)
+- `spacegame/models/lens.py` (`Lens` dataclass shape — `lens_id`, `voice`)
 - `spacegame/models/ambient_dialogue.py` and its consumer views (the closest existing pattern — an author-driven pool with runtime filtering)
+- `spacegame/models/station_chatter.py` (small filtered-pool model with `to_dict`/`from_dict`; the shape the reactor's pool loader mirrors)
+- `spacegame/data_loader.py:182-234` (`load_all` sequencing — the `_safe_load` slot where `lens_reactions` wires in, after `load_lenses`) and `spacegame/data_loader.py:738-766` (`load_lenses` pattern to mirror)
+- `spacegame/views/wreckers_guild_view.py:451-495` (Malia's enrollment pitch — the locked wire-in seam) and `spacegame/views/wreckers_guild_view.py:962-975` (`_render_enrollment_pitch`, the render surface whose middle spoken line the reactor replaces)
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (the whitelist file A2-4A extends by exactly one entry for `lens_reactor.py`)
+- `tests/test_data/test_cross_references.py:1-40` (shared `_get_loader()` fixture pattern the new cross-reference test mirrors)
 - `requirements/agent_principles.md` (in full)
 - `requirements/aurelia_voice_examples.md` (in full — mandatory for any authored NPC line)
+- `requirements/dialogue_writing_guide.md` §8 (skill-check grading ladder — Malia's authored lines target grade B or A when the line reads a skill approach; the pool is not all social-skill lines)
 
 **Touch zones.**
-- `spacegame/models/lens_reactor.py` (NEW) — the oblique-readout dispatcher. Chooses one from a pool given `(player, context)`.
-- `data/narrative/lens_reactions.json` (NEW) — the authored pool. Per-lens, threshold-keyed lines/mission-offer tags. Small on landing: one consumer surface (NPC greeting variant) with authored content for at least three of the sixteen lenses.
-- `spacegame/data_loader.py` — new `_parse_lens_reactions()` + `load_lens_reactions()`, mirroring A2-1's `load_lenses` pattern.
-- ONE existing view file (locked in planning) that already renders an NPC greeting — the seam this sprint wires into. Candidate: a station-hub greeting or a Wreckers' Guild Hall Malia line, chosen in the plan phase.
-- `tests/test_models/test_lens_reactor.py` (NEW)
-- `tests/test_data/test_lens_reactions_cross_references.py` (NEW — every `lens_id` referenced in `lens_reactions.json` must exist in `DataLoader.lenses`, matching the cross-reference discipline pattern)
-- `tests/test_scenarios/test_scenario_oblique_readout.py` (NEW — the real production-path scenario test that A2-4's AC5 was originally shaped for; this is the sprint that earns that assertion)
-- `tests/test_compliance/test_lens_investment_never_rendered.py` (extend the AC4 whitelist from A2-4 to permit `lens_reactor.py` to read `player.lens_investment` — with a code comment explaining why the reactor is the sole legal reader outside the model layer)
+- `spacegame/models/lens_reactor.py` (NEW) — the oblique-readout dispatcher. Chooses one variant from a pool given `(player, context)`; returns `None` when no lens is above the lowest threshold so the caller falls back to its default.
+- `data/narrative/lens_reactions.json` (NEW) — the authored pool. Per-lens, threshold-keyed lines. Single file on landing per the locked file-shape decision below.
+- `spacegame/data_loader.py` — new `_parse_lens_reactions()` + `load_lens_reactions()` mirroring `load_lenses`; wired into `load_all()` immediately after `load_lenses` so cross-references validate against the freshly loaded registry; adds `self.lens_reactions: dict[str, LensReactionPool]` to `__init__`.
+- `spacegame/views/wreckers_guild_view.py` — `_render_enrollment_pitch` calls the reactor for the middle spoken line (line index 1 in the current three-line block: Malia's `"Heard you do real work..."` sentence and its follow-on); falls back to the current hardcoded string when the reactor returns `None`. `WRECKERS_GUILD_HALL_GREETING_CONTEXT` (string constant, e.g. `"wreckers_guild_hall_greeting"`) exported from the view module and referenced by both the reactor call site and the tests.
+- `tests/test_models/test_lens_reactor.py` (NEW) — reactor unit tests: default fallback, per-lens variant selection, deterministic seeding, tier resolution, empty-pool safety, no-crash-on-missing-context.
+- `tests/test_data/test_lens_reactions_cross_references.py` (NEW — every `lens_id` referenced in `lens_reactions.json` must exist in `DataLoader.lenses`; matches the discipline pattern in `test_cross_references.py`).
+- `tests/test_scenarios/test_scenario_oblique_readout.py` (NEW — the real production-path scenario test that A2-4's AC5 was originally shaped for; this is the sprint that earns that assertion).
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (extend `_ALLOWLIST` with the single entry `"spacegame/models/lens_reactor.py"`; add a code comment in that file explaining why the reactor is the sole legal reader outside the model layer, and update the guardrail test if needed).
+- `tests/test_writing_bible_compliance.py` (already scans `data/narrative/**` per project convention — no code change; the new JSON file must pass its scan on landing).
 
 **Deliverables.**
-- `LensReactor` class with a single primary method `choose_variant(player, context: str, options: dict[str, list[str]]) -> str` that inspects `player.lens_investment`, resolves the dominant lens above threshold for the passed `context`, and returns one of the pool's authored strings for that lens. Deterministic seeding (based on `game_day` + `context` + `player.name`) so tests can assert exact output.
-- Authored content in `data/narrative/lens_reactions.json` for at least three lenses (Wealth, Community, Vengeance are the strongest candidates per Spec F's "emotional centre" and "sharpest" callouts), each with two threshold tiers (mid ~40, high ~80) worth of greeting-line variants.
-- The chosen wire-in view uses the reactor's output in place of its existing default greeting line, and the default is still returned when no lens is above the lowest threshold (so a fresh player sees no regression in the existing feel of that surface).
-- Scenario test at `tests/test_scenarios/test_scenario_oblique_readout.py` that drives one lens above threshold, calls the reactor via the real production path (not a test stub), and asserts the returned string comes from the lens's authored pool — not the default. This is the assertion the original A2-4 AC5 targeted.
+- `LensReactor` class in `spacegame/models/lens_reactor.py` with the primary method
+  `choose_variant(player: Player, context: str, game_day: int) -> Optional[str]`.
+  Inspects `player.lens_investment` against the loaded `LensReactionPool` for the passed `context`, resolves the dominant lens (highest investment above the lowest configured threshold, ties broken by registry order), picks a tier (`mid`, `high`) based on which threshold the lens has crossed, and returns one of the pool's authored strings for that lens+tier. Returns `None` when no lens is above the lowest threshold. Deterministic seeding derived from `(context, game_day, player.name)` so tests can assert exact output.
+- `LensReactionPool` dataclass in the same module: `context: str`, `tiers: dict[str, LensReactionTier]` keyed by `lens_id`, where `LensReactionTier` holds `{"mid": tuple[str, ...], "high": tuple[str, ...]}` with `mid_threshold: int = 40` and `high_threshold: int = 80` defaults. `@dataclass(frozen=True)` per Scanner B convention.
+- Authored content in `data/narrative/lens_reactions.json` for the `wreckers_guild_hall_greeting` context, for three lenses per the sprint-suggested trio (see Locked decision D3 below for lens choice + rationale): each lens gets four lines at the mid tier and three lines at the high tier (7 lines per lens × 3 lenses = 21 authored lines). Every line stays in Malia Torres' voice (see `requirements/character_voices.md` if it names Malia; otherwise infer from `wreckers_guild_view.py` — direct, working-class, "kid" address at apprentice tier only, no romanticism about salvage).
+- `_parse_lens_reactions()` + `load_lens_reactions()` on `DataLoader`, one `_safe_load` entry in `load_all`. Duplicate context ids fail-loud with `ValueError` matching the `load_lenses` precedent.
+- `WreckersGuildView._render_enrollment_pitch` calls `LensReactor.choose_variant(...)`; when it returns a line, that line replaces the middle spoken sentence (line index 1: `"Heard you do real work. Guild takes a cut, you take the rest."`) while the framing narration (line 0) and the closing sentence (line 2) stay put. When the reactor returns `None`, the current three-line block renders unchanged — a fresh player sees no regression.
+- Cross-reference test at `tests/test_data/test_lens_reactions_cross_references.py` asserting every `lens_id` in the pool exists in `DataLoader.lenses`, and every `context` string is non-empty, and no lens+tier list is empty.
+- Scenario test at `tests/test_scenarios/test_scenario_oblique_readout.py` that (a) builds a Player, (b) raises `wealth` investment above the mid threshold via `LensInvestment.add_investment`, (c) instantiates `WreckersGuildView` for an unenrolled player, (d) calls `_render_enrollment_pitch` against a dummy Surface, (e) inspects the rendered lines and asserts the middle line is one of the authored `wealth` mid-tier variants — not the default. Second player with 0 investment: default line renders. This is the assertion the original A2-4 AC5 targeted.
 
 **Acceptance criteria.**
-1. `LensReactor.choose_variant` returns a lens-specific line when at least one lens exceeds its lowest threshold; returns the default when none does.
-2. Content-integrity guard: every `lens_id` in `data/narrative/lens_reactions.json` exists in `DataLoader.lenses` (once A2-5/A2-6 have landed the lens registry). A malformed lens_id fails the build.
-3. Deterministic: given the same `(player, context, game_day)`, `choose_variant` returns the same string across runs — no random-per-call flake.
-4. The wired-in view calls the reactor on its render/refresh path; a scenario test drives one lens high and asserts the view's rendered greeting text changes.
-5. Every authored line passes voice-check against `requirements/aurelia_voice_examples.md`'s 16-item diagnostic and `dialogue_writing_guide.md` §8 ladder (Grade B or A for social-skill lines).
-6. AC4 from A2-4 still holds — the compliance test that ensures no view reads investment gains ONE whitelist entry for `lens_reactor.py` (with a code comment justifying it), and NO other whitelist entries.
-7. 15+ new tests.
-8. Full suite green; no regression from baseline.
+1. `LensReactor.choose_variant(player, context, game_day)` returns a lens-specific string when at least one lens exceeds its mid threshold; returns `None` when none does; returns `None` when the passed `context` is unknown to the pool (fail-quiet, since a caller's default fallback path is well-defined and the reactor is not a validation surface).
+2. Content-integrity guard: every `lens_id` in `data/narrative/lens_reactions.json` exists in `DataLoader.lenses`. A malformed lens_id fails the build.
+3. Deterministic: given the same `(player.name, context, game_day)`, `choose_variant` returns the same string across two independent calls. The RNG seed derivation is not sensitive to unrelated `player` state changes (e.g. moving to a new system between two calls on the same day does not change the returned string).
+4. The `WreckersGuildView._render_enrollment_pitch` render path calls the reactor; the scenario test drives one lens above threshold and asserts the rendered middle line comes from that lens's authored pool. The default line still renders when investment is zero.
+5. Tier resolution: a lens whose investment is `>= high_threshold` draws from the `high` tier pool; a lens between `mid_threshold` and `high_threshold` draws from the `mid` tier pool. Verified per-lens with unit tests at boundary and above.
+6. Dominant-lens resolution: when two lenses are both above threshold, the reactor picks the one with strictly higher investment; ties break by lens registry (dict) iteration order.
+7. Every authored line passes voice-check against `requirements/aurelia_voice_examples.md`'s 16-item diagnostic and stays in Malia's voice. Voice-check happens in review; the Writing Bible compliance scanner (mechanical tells — em-dashes, `--`, banned phrases, banned names) is run against the new JSON file on landing.
+8. AC4 from A2-4 still holds — the compliance test whitelist gains **exactly one** entry (`spacegame/models/lens_reactor.py`) with a code comment justifying it. No other whitelist entries are added. The guardrail test (`test_forbidden_tokens_are_findable_in_the_model_layer`) still passes.
+9. Save/load round-trip: since the reactor is stateless (no `to_dict`/`from_dict`) and the pool is loaded from JSON like any other DataLoader content, no save-migration work is needed. Scenario test asserts a Player with lens_investment saved and reloaded (via `SaveManager`) still triggers the same reactor output after reload.
+10. 15+ new tests across the three new test files.
+11. Full suite green; pass count >= 11063 (pre-phase baseline).
+
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing test to write first, and gotchas.
+
+1. **Extend the compliance whitelist for `lens_reactor.py`.**
+   - Files: `tests/test_compliance/test_lens_investment_never_rendered.py`.
+   - Failing test: none — this is a whitelist update that clears the way for later tasks. The scan is currently vacuously green (no offending files); once `lens_reactor.py` lands in task 2 it would fail without the whitelist entry, so this task lands first.
+   - Change: replace `_ALLOWLIST: set[str] = set()` with `_ALLOWLIST: set[str] = {"spacegame/models/lens_reactor.py"}` and expand the file-level docstring (or add a targeted comment above the allowlist) explaining that the reactor is the single legal reader outside the model layer, per A2-4A. Cross-reference the A2-4 AC4 rationale.
+   - Gotchas: do NOT add any second whitelist entry — the whole point of the friction is that every future reader has its own justification. If a later task discovers a legitimate second reader, log it as a follow-up sprint, do not silently expand the allowlist.
+
+2. **Create `spacegame/models/lens_reactor.py` — `LensReactionTier`, `LensReactionPool`, `LensReactor` skeleton.**
+   - Files: `spacegame/models/lens_reactor.py` (NEW).
+   - Failing tests: `tests/test_models/test_lens_reactor.py::TestLensReactorBasics::test_choose_variant_returns_none_when_no_lens_above_threshold`, `test_choose_variant_returns_none_when_context_unknown`, `test_choose_variant_returns_authored_line_when_wealth_above_mid_threshold`, `test_choose_variant_returns_high_tier_line_when_wealth_above_high_threshold`, `test_boundary_of_mid_threshold_selects_mid_tier`, `test_boundary_of_high_threshold_selects_high_tier`.
+   - Gotchas: `LensReactionPool` and `LensReactionTier` must be `@dataclass(frozen=True)` — Scanner B fails the build otherwise (see CLAUDE.md "module-level content tables"). The reactor takes the pool registry as a constructor argument (mirroring `LensInvestment.record_action`'s registry-as-parameter pattern) — do NOT import `data_loader` from inside the reactor module; keep the layer discipline. `choose_variant` uses `random.Random(seed).choice(lines)` where `seed = hash((context, game_day, player.name))`. Do NOT read `player.game_day` — take `game_day` as a parameter so the reactor stays pure and the call site is explicit about which day drives the pick.
+
+3. **Implement dominant-lens resolution and tier selection.**
+   - Files: `spacegame/models/lens_reactor.py`.
+   - Failing tests: `TestDominantLensResolution::test_two_lenses_above_threshold_higher_wins`, `test_tie_broken_by_lens_registry_order`, `test_unauthored_lens_above_threshold_is_ignored` (a lens that the player has invested in but which has no authored pool entry for this context — the reactor skips it, does not crash).
+   - Gotchas: iterate the pool's `tiers` dict (which is keyed by `lens_id`) — do NOT iterate `player.lens_investment._values` (that violates the `_values` privacy contract, and the pool is the source of truth about which lenses have authored content for this context anyway). "Above threshold" means `>= mid_threshold` on the pool; the reactor does not need the full lens registry, just the pool's known lens_ids and their thresholds.
+
+4. **Author `data/narrative/lens_reactions.json` for three lenses at the `wreckers_guild_hall_greeting` context.**
+   - Files: `data/narrative/lens_reactions.json` (NEW).
+   - Failing test: `tests/test_data/test_lens_reactions_cross_references.py::TestLensReactionsCrossReferences::test_every_lens_id_exists_in_registry` (fails until the JSON exists and the loader wires up in task 5).
+   - Content plan: three lenses × two tiers × 3-4 lines each ≈ 21 authored lines. Per the D3 decision below, the lenses are **wealth**, **community**, **crime** (see Locked decisions). Every line is spoken by Malia Torres — one voice across all three lens variants; the *content* shifts, not the *speaker's register*. Malia adapts what she notices about the player to what the player has been doing:
+     - **wealth (mid)**: Malia frames the pitch in terms of margin — "Guild takes a cut, you keep the rest that walks off registry." (mid) → **wealth (high)**: "Word gets around. You move volume. Guild cut's the same either way — but the routes you get offered stop being the ones I put on the board." (high — Malia acknowledges the player's reputation without changing her price)
+     - **community (mid)**: pitch frames Guild work as shared: "It's not charity. People who do this work look after each other, that's all." → **community (high)**: "You've been running for the yards that don't have Guild coverage. I've noticed. So has Paz."
+     - **crime (mid)**: Malia acknowledges the player has been moving off-manifest work: "Half the cargo on our board never had a manifest. Nobody here's going to file paperwork on you." → **crime (high)**: "You already know the answer. Guild takes a cut, questions don't get asked, and the yard boss looks the other way. Standard rate."
+   - Voice discipline (see gotchas below): every line must pass the 16-item diagnostic. No em-dashes (`—`), no `--`, no "couldn't help but", no "a testament to", no parallel-negation triplets, no "captain" address, no reverence-of-the-ordinary, no aphoristic wisdom. Malia is direct, calibrated, working-class — her register is established in `wreckers_guild_view.py:967` and `:806-818`. Every authored line is proofread aloud against those established Malia lines and adjusted if the register drifts.
+   - Gotchas: JSON schema mirrors the `lenses.json` shape: top-level `{"lens_reactions": [{context, tiers: {lens_id: {mid: [...], high: [...]}, ...}}, ...]}`. Do NOT invent per-line metadata (weight, cooldown, etc.) beyond what the tier structure holds — A2-4A ships the minimum shape; downstream sprints extend as they need. Snake-case all keys.
+
+5. **Wire `_parse_lens_reactions()` + `load_lens_reactions()` into `DataLoader`.**
+   - Files: `spacegame/data_loader.py`.
+   - Failing test: `tests/test_models/test_lens_reactor.py::TestLensReactorDataLoader::test_load_lens_reactions_returns_dict_keyed_by_context`, `test_duplicate_context_id_fails_loud`, `test_missing_file_returns_empty_dict_and_warns`.
+   - Change: add `self.lens_reactions: dict[str, LensReactionPool] = {}` to `__init__`; add `load_lens_reactions()` mirroring `load_lenses` at `spacegame/data_loader.py:738-766`; append `self._safe_load("lens_reactions", self.load_lens_reactions)` to `load_all` on the line **immediately after** the `lenses` entry at line 234 (order matters for the cross-reference test to see the registry loaded first). Import inside the method to break potential cycles, per `load_lenses` precedent.
+   - Gotchas: use `Dict[str, "LensReactionPool"]` return type quoted to break the circular-import risk. Fail-loud on duplicate context ids to match `load_lenses` semantics. Do NOT validate lens_ids inside the loader — that's the cross-reference test's job (matches the `lenses.json` precedent, which does not validate `investment_from` tags at load time).
+
+6. **Wire the reactor into `WreckersGuildView._render_enrollment_pitch`.**
+   - Files: `spacegame/views/wreckers_guild_view.py`.
+   - Failing test: `tests/test_scenarios/test_scenario_oblique_readout.py::TestObliqueReadoutInWreckersHall::test_high_wealth_investment_swaps_malia_middle_line`, `test_zero_investment_renders_default_line`, `test_reactor_returns_none_falls_back_to_default`.
+   - Change: import `LensReactor` (this is the whitelisted reader; the compliance test permits it). Add `WRECKERS_GUILD_HALL_GREETING_CONTEXT = "wreckers_guild_hall_greeting"` as a module constant. In `_render_enrollment_pitch`, call `LensReactor(data_loader.lens_reactions).choose_variant(self.player, WRECKERS_GUILD_HALL_GREETING_CONTEXT, self.player.game_day)`; when the return is non-`None`, splice it into the `lines` list at index 1 in place of the current `"Heard you do real work..."` sentence. When `None`, keep the current three-line block untouched.
+   - Gotchas: the view already has `self.data_loader` — reuse it, do NOT call `get_data_loader()` a second time inside the render path (redundant). `player.game_day` is an existing field. Do NOT reformat the surrounding rendering code — the change is one-in-one-out on line index 1. Since the reactor call happens every frame during rendering, and `random.Random(seed).choice(...)` is O(1) after seeding, no caching is required — but the seed's derivation from `(context, game_day, player.name)` guarantees that within a single game_day the line does not flicker frame-to-frame. Verify with a scenario test that iterates the render twice and asserts the same line.
+
+7. **Scenario test — end-to-end production path.**
+   - Files: `tests/test_scenarios/test_scenario_oblique_readout.py` (NEW).
+   - Tests: `TestObliqueReadoutInWreckersHall::test_high_wealth_investment_swaps_malia_middle_line`, `test_zero_investment_renders_default_line`, `test_line_is_stable_within_a_game_day`, `test_save_load_roundtrip_preserves_reactor_output`.
+   - Gotchas: use `pygame.Surface((800, 600))` and `pygame.font.init()` inside the test setup — the pygame audio driver is already dummy'd by `tests/conftest.py`. Do NOT rely on `SDL_VIDEODRIVER=dummy` unless the test also imports `pygame_gui` (it doesn't for a headless render capture). Capture rendered lines by monkey-patching `self.body_font.render` to record its calls and asserting the recorded strings, per the pattern already used in ~5 places under `tests/test_ui_layout/` — do not screenshot-compare. The `SaveManager` round-trip test uses the same pattern as `test_scenario_investment_persists.py::TestInvestmentSaveLoadRoundTrip`.
+
+8. **Cross-reference test — every referenced lens_id exists.**
+   - Files: `tests/test_data/test_lens_reactions_cross_references.py` (NEW).
+   - Tests: `TestLensReactionsCrossReferences::test_every_lens_id_exists_in_registry`, `test_no_empty_line_lists`, `test_every_context_string_is_snake_case`.
+   - Gotchas: use the `_get_loader()` shared cache from `test_cross_references.py` — do NOT construct a fresh `DataLoader` per test (multiplies the JSON parse cost). Assert on the full loaded registry (post-`load_all`) so the test also implicitly proves the sequencing in task 5 is correct.
+
+9. **Sweep: run `ruff format` + `ruff check` on touched files only; mypy against baseline; full test suite.**
+   - Files: none (verification).
+   - Commands: `ruff format spacegame/models/lens_reactor.py spacegame/data_loader.py spacegame/views/wreckers_guild_view.py tests/test_models/test_lens_reactor.py tests/test_data/test_lens_reactions_cross_references.py tests/test_scenarios/test_scenario_oblique_readout.py tests/test_compliance/test_lens_investment_never_rendered.py`; `ruff check` on the same set; `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` (must exit 0); `python -m pytest -n auto -q` (pass count >= 11063; new test count 15+).
+   - Gotchas: `mypy-baseline.txt` MUST NOT be regenerated (CLAUDE.md rule). If new mypy errors surface on `lens_reactor.py` or on the `wreckers_guild_view.py` reactor call site, fix them; do not absorb into the baseline.
+
+**Cross-sprint reactions to author.**
+
+The wire-in surface is narrow (one NPC's greeting at one venue), so the reaction surface is intentionally small. Concrete reactions this sprint's *existence* should trigger elsewhere — flagged for follow-up sprints, not folded in here:
+
+- `data/dialogue/dialogues.json` (Wreckers' secondary contacts: Paz Reina, Daro Teck, Ife Obi) — none of them currently reference the player's dominant lens; a follow-up sprint could give each a one-line reaction on the first visit after a lens crosses the high threshold. Not folded in: A2-4A's charter is *one* consumer surface; expanding to three more dialogue trees blows past M sizing. Proposed as **A2-4C — Wreckers' secondary contacts oblique reactions** below.
+- `spacegame/models/station_chatter.py` and its data — station chatter is currently gated by `required_flags` / `excluded_flags`; extending the schema to permit a `lens_above_threshold: {lens_id, tier}` filter would let ambient overhears reflect the player's dominant lens. Not folded in: schema extension + data authoring across every station is L-sized. Proposed as **A2-4D — Lens-gated station chatter** below.
+- Malia's `_promotion_message` at `wreckers_guild_view.py:806-818` — a lens-aware variant of her three promotion lines (`apprentice`, `journeyman`, `master`) is a very natural place for oblique reaction. Not folded in: promotion is a rare event; A2-4A's chosen seam (the enrollment pitch) covers a strictly more visible surface. Flagged as a candidate for A2-4C's scope.
+- Crew banter (`data/crew/`) — no crew member has a personal stake in the *Wreckers' Guild Hall* venue specifically that would earn a banter line reacting to Malia's changed greeting. Correctly no cross-sprint reaction needed for banter.
+- Journal entries — no new journal entry warranted; the reactor's output is ephemeral flavor, not a discrete event the player would want recorded. Correctly none.
 
 **Risks / open questions.**
-- Which existing view is the wire-in seam? To be locked in planning. Candidates: station hub greeting variant, Malia at Wreckers' Guild Hall, or a market-vendor line. The seam should already render a single string (not a full dialogue tree) so this sprint stays under M size.
-- Should the reactor's authored pool land as one file or one-file-per-lens? Locked-in-planning candidate: single file to start (parallels A2-1's single `lenses.json`); split when the pool exceeds ~200 lines.
-- Should A2-4A introduce a per-lens `dominant_lens` computation on `LensInvestment`, or keep the resolution logic inside the reactor? Recommend the latter — keeps `LensInvestment` a pure state store and puts resolution alongside the content that consumes it.
+
+- ~~Which existing view is the wire-in seam?~~ **Locked (D1): `WreckersGuildView._render_enrollment_pitch`, replacing the middle spoken line (index 1 of the current three-line block).** Rationale: it is a directed NPC greeting (Malia speaking to the player), a single string surface, already named as a candidate in the original sprint text, and the seam is well-scoped — the flanking narration (`"Malia Torres, Wrench, looks up from a stripped reactor housing."`) and closing sentence stay put, so the reactor's variability is bounded to Malia's spoken pitch. The station-hub chatter alternative was considered and rejected as ambient (overheard), not directed NPC address; the decomposition doc's Q1 resolution is explicit that the readout is "how NPCs address you and what work you are offered" — chatter is neither. The enrollment-pitch-only visibility gap (unenrolled players only) is acceptable for a first consumer: mechanism-proof + one production surface; follow-up sprints A2-4C / A2-4D extend to more seams.
+
+- ~~Should the reactor's authored pool land as one file or one-file-per-lens?~~ **Locked (D2): single file `data/narrative/lens_reactions.json`.** Rationale: parallels A2-1's single `lenses.json` and A2-5's decision to keep the sixteen lenses in one file. The per-context grouping (one entry per NPC greeting seam, not per lens) keeps the file navigable — a reviewer sees all sixteen possible lens variants for one greeting in one block. Split threshold: file exceeds ~200 lines OR a single `context` block exceeds ~60 lines (whichever comes first); at that point a followup sprint refactors to per-context files. Not needed for A2-4A's ~21 authored lines in one context.
+
+- ~~Should A2-4A introduce a per-lens `dominant_lens` computation on `LensInvestment`, or keep the resolution logic inside the reactor?~~ **Locked (D3): resolution inside the reactor.** Rationale: keeps `LensInvestment` a pure state store (matches its module docstring's "does not answer 'should the world react?'"); puts resolution alongside the content that consumes it; and lets a future second reactor (with different tie-breaking rules or a different tier ladder) implement its own resolution without an API war on the model. A2-8's telegraph reader is the next likely consumer and it will want its own resolution rules — better it lives outside `LensInvestment`.
+
+- ~~Which three lenses get authored content in this sprint?~~ **Locked (D4): wealth, community, crime.** Rationale: the sprint text suggested wealth/community/vengeance per Spec F's "sharpest" lens callouts, but **vengeance is a stretch for Malia's Wreckers' Guild register** — she is a salvage-yard supervisor, not a bounty hunter, and forcing vengeance content on her would collapse two lenses into one voice (an explicit failure mode called out in `lens_authoring_guide.md` §5). Crime, by contrast, fits the Wreckers' setting natively (off-registry cargo, salvage that never had a manifest), and gives the trio real range: **wealth** is optimization language, **community** is shared-labor language, **crime** is transactional-oblique language. Voice discipline across the three is the primary review focus per `agent_principles.md` "Variety across a cast" — three variants of one Malia line must not sound interchangeable. Vengeance is a natural addition in A2-4C, wired to a different NPC (e.g., Paz Reina, the Wreck Navigator, whose "tracking a hull" job is closer to vengeance's pursuit register).
+
+- ~~What are the mid / high thresholds?~~ **Locked (D5): mid = 40, high = 80, per the sprint's suggested defaults.** Rationale: A2-8 owns collision thresholds and may choose different numbers; A2-4A's oblique-signal thresholds are independent and can be lower than A2-8's collision thresholds (the whole point of oblique signals is that they precede the collision). If A2-8 lands with a threshold ladder that makes 40/80 unreachable-in-practice, A2-4C or a followup can retune — the numbers live in the `LensReactionPool` dataclass defaults, not in a hundred call sites.
+
+- ~~Should the reactor be a plain function or a class?~~ **Locked (D6): a class `LensReactor(pool_registry: dict[str, LensReactionPool])` with an instance method `choose_variant(...)`.** Rationale: takes the pool registry once at construction, mirroring `AmbientDialogueManager(lines)` and `StationChatterManager(lines)` — established pattern in `models/`. A plain function would have to re-fetch the registry per call. The view constructs `LensReactor(data_loader.lens_reactions)` once at `on_enter()` (like it does for `AmbientDialogueManager`) and reuses on every render.
 
 **Activity log.**
 - 2026-08-28 — todo (created by A2-4 planner; addresses the AC5 scope gap surfaced during A2-4 planning)
+- 2026-08-30 23:34 — harness: plan phase starting
+- 2026-08-30 23:59 — planning complete; verified all 8 declared context docs exist plus 5 supplementary reads added to Context (`lens.py`, `station_chatter.py`, `data_loader.py:182-234` + `:738-766` for load-order and pattern, `wreckers_guild_view.py:451-495` + `:962-975` for the seam and render surface, `test_compliance/test_lens_investment_never_rendered.py` for the whitelist target, `test_cross_references.py:1-40` for the fixture pattern, `dialogue_writing_guide.md §8`); locked 6 open decisions (wire-in seam is Wreckers' Guild Hall enrollment pitch; single-file pool; resolution inside reactor; three lenses = wealth/community/crime instead of the suggested vengeance; thresholds 40/80; reactor is a class with pool-as-constructor-arg); revised D4 to swap vengeance→crime with rationale grounded in `lens_authoring_guide.md §5` "reskin failure mode" and Malia's established voice; expanded Deliverables from 4 items to 7 (specified reactor+pool+tier dataclass shapes, named the module constant for the context id, described exact splice point in `_render_enrollment_pitch`); expanded Touch zones from 7 items to 8 (added `spacegame/views/wreckers_guild_view.py` explicitly, added the writing-bible-scanner note); expanded Acceptance criteria from 8 to 11 (split tier-resolution and dominant-lens-resolution into separate testable ACs, added save-load roundtrip AC, added fail-quiet-on-unknown-context AC, added determinism-not-sensitive-to-unrelated-state AC, updated pass-count baseline to 11063); drafted 9-task plan with per-task failing tests and gotchas; proposed 2 new sprints (A2-4C for extending oblique reactions to Wreckers' secondary contacts + Malia's promotion messages; A2-4D for lens-gated station chatter as an infrastructure extension); cross-sprint reactions: 3 candidate targets flagged, 2 proposed as new sprints, correctly no crew-banter or journal reactions needed for this narrow seam. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-30 23:34
+- Completed: 2026-08-30 23:59
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending>
+- New_sprints_proposed: A2-4C, A2-4D
+- Polish_items_folded_in: writing-bible-scanner-runs-on-new-json, save-load-roundtrip-scenario-test, view-render-line-stability-within-game-day, cross-reference-test-uses-shared-loader-fixture
+- Decisions_locked: 6
+- Notes: All dependencies (A2-4, A2-5, A2-6) confirmed done. Verified all context docs exist. Locked the wire-in seam to Malia's Wreckers' Guild Hall enrollment pitch (middle spoken line only) — matches Q1's "NPC address" requirement more cleanly than the ambient chatter alternative. Swapped the suggested vengeance→crime for D4 because vengeance is voice-mismatched to Malia's salvage-supervisor register; deferred vengeance to A2-4C on Paz Reina (Wreck Navigator, pursuit register). Pass-count baseline updated 10937→11063.
 
 **Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). Sequenced late in Tier 1, but a natural pickup once the three prerequisites are done. If A2-5 / A2-6 are still `todo` when A2-4 finishes, this sprint stays blocked — that is expected, not a defect.
 
@@ -11439,6 +11547,90 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - 2026-08-28 — todo (created by A2-4 planner; addresses the "accrual API is unreachable in production" scope gap surfaced during A2-4 planning)
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). If A2-5/A2-6 haven't populated `lenses.json` when this sprint is picked up, block — the audit-table can only be built against the real tag list.
+
+#### A2-4C — Second oblique surface: Wreckers' secondary contacts + Malia promotion lines
+
+**Status**: todo
+**Phase**: Act II | **Size**: M | **Effort**: 3-5 days
+**Depends on**: A2-4A | **Blocks**: none
+
+**Goal.** Extend the `LensReactor` (built in A2-4A) to a second and third venue-adjacent surface: the three Wreckers' Guild Hall secondary contacts (Paz Reina, Daro Teck, Ife Obi) and Malia's promotion messages. A2-4A proved one surface end-to-end; this sprint takes the same reactor and authors content for adjacent surfaces at the same venue, adding lens coverage (vengeance on Paz's pursuit register; legacy on Daro's engineering register) that A2-4A deliberately deferred.
+
+**Context to read.**
+- `spacegame/models/lens_reactor.py` (the reactor A2-4A shipped — reused unchanged)
+- `data/narrative/lens_reactions.json` (A2-4A's authored pool — extend, don't rewrite)
+- `spacegame/views/wreckers_guild_view.py:806-818` (`_promotion_message` — one of the wire-in sites)
+- `spacegame/views/wreckers_guild_view.py:526-545` (secondary contact dialogue-open path — the seam for the contacts dock)
+- `data/dialogue/dialogues.json` (Paz, Daro, Ife trees — locate the start_node line the reactor variant swaps in for)
+- `requirements/lens_authoring_guide.md` §2 (per-lens voice notes for vengeance / legacy / discovery)
+- `requirements/aurelia_voice_examples.md` (in full)
+
+**Touch zones.**
+- `data/narrative/lens_reactions.json` (extend with three new contexts: `wreckers_paz_start`, `wreckers_daro_start`, `wreckers_ife_start`, plus `wreckers_promotion_apprentice`, `wreckers_promotion_journeyman`, `wreckers_promotion_master`)
+- `spacegame/views/wreckers_guild_view.py` (wire the reactor into `_promotion_message` and into the contact dialogue start-node render path)
+- `tests/test_scenarios/test_scenario_oblique_readout.py` (extend with new-surface scenario tests)
+- `tests/test_data/test_lens_reactions_cross_references.py` (existing coverage extends automatically to the new contexts)
+
+**Deliverables.**
+- Authored content in `data/narrative/lens_reactions.json` for six new contexts. Lens coverage extended to include **vengeance** (Paz Reina's Wreck Navigator register — pursuit, tracking hulls) and **legacy** (Daro's engineering register — what the wreck tells us about the ship's yard of origin) alongside the wealth/community/crime trio already established.
+- Reactor calls at both wire-in sites; fall back to the existing default when the reactor returns `None`.
+- New scenario tests proving the extended surface works end-to-end.
+
+**Acceptance criteria.**
+1. Six new contexts in `lens_reactions.json`, each with authored content for at least three lenses at both mid and high tiers.
+2. Reactor wires into both `_promotion_message` and the secondary-contact start-node render.
+3. Every new authored line passes voice-check per `aurelia_voice_examples.md`.
+4. Full suite green; no regression.
+
+**Risks / open questions.**
+- Should Malia's three promotion lines (`apprentice`, `journeyman`, `master`) each get their own context, or share one? Recommend one context each — the tone at each promotion tier is different enough that the pool would collapse otherwise.
+
+**Activity log.**
+- 2026-08-30 — todo (created by A2-4A planner; expands the reactor to more surfaces at the same venue, and picks up the vengeance/legacy lenses A2-4A deferred)
+
+**Notes.** Depends on A2-4A. Same-venue expansion — this is deliberately a sibling of A2-4A rather than a merge into it, to keep A2-4A's charter narrow (one surface, well-authored). The reactor code does not change.
+
+#### A2-4D — Lens-gated station chatter
+
+**Status**: todo
+**Phase**: Act II | **Size**: L | **Effort**: 7-10 days
+**Depends on**: A2-4A | **Blocks**: none
+
+**Goal.** Extend `StationChatterManager` to filter chatter lines by the player's dominant lens (adding a new filter field on `ChatterLine`), and author lens-aware chatter across every station. Currently chatter lines filter on `required_flags` / `excluded_flags` only. This sprint adds a `lens_above_threshold: {lens_id, tier}` filter and authors reactive station chatter for the wealth / community / crime / vengeance / discovery lenses across the ~15 station chatter files.
+
+**Context to read.**
+- `spacegame/models/station_chatter.py` (extend the schema)
+- `spacegame/models/lens_reactor.py` (A2-4A's reactor — the pattern to mirror in the chatter loader's cross-reference test)
+- `data/station_chatter/` (the authored chatter files this sprint extends)
+- `requirements/lens_authoring_guide.md` §5 (self-audit checklist; reskin failure mode)
+- `requirements/aurelia_voice_examples.md`
+
+**Touch zones.**
+- `spacegame/models/station_chatter.py` (add `lens_above_threshold: dict[str, str] = field(default_factory=dict)` on `ChatterLine`; extend `get_chatter` to filter on it)
+- `data/station_chatter/*.json` (add lens-aware chatter across every station; scope by tier — mid tier = ~2 lines per station per lens, high tier = ~1 line per station per lens)
+- `tests/test_models/test_station_chatter.py` (extend with lens-filter tests)
+- `tests/test_writing_bible_compliance.py` (already scans; no code change)
+
+**Deliverables.**
+- Extended `ChatterLine` schema with backward-compatible default (empty dict = no lens gate).
+- Authored lens-gated chatter across every station.
+- Cross-reference test asserting every `lens_id` in a chatter line's `lens_above_threshold` exists in `DataLoader.lenses`.
+- Save/load compatibility: old saves with no lens-gated chatter selections still load.
+
+**Acceptance criteria.**
+1. `ChatterLine.lens_above_threshold` filters correctly at mid and high tiers.
+2. Every authored lens-gated chatter line passes voice-check.
+3. Backward compatibility: chatter lines without the new field behave as before.
+4. Full suite green; no regression.
+
+**Risks / open questions.**
+- Should lens-gated chatter *replace* generic chatter, or supplement it? Recommend supplement — generic chatter is the base pool, lens-gated additions surface when investment crosses threshold. This preserves the "world moves without you" feel for players with no dominant lens.
+- Ambient chatter feels different from directed NPC address. Spec F's Q1 said "how NPCs address you and what work you are offered" — chatter is ambient, not directed. This sprint is a stretch of the Q1 language: overheard chatter that changes based on the player's lens is a form of world-behavior signal, but it is not directly "NPC address." Flag this as an open interpretation for the planner to lock — the honest answer may be that A2-4D is a nice-to-have rather than a core Q1 fulfillment.
+
+**Activity log.**
+- 2026-08-30 — todo (created by A2-4A planner; extends the reactor pattern to ambient chatter across every station)
+
+**Notes.** L-sized: schema change + data authoring across ~15 station files is significantly more work than A2-4A's one-venue scope. The Q1 interpretation question flagged above is genuinely open — a planner should lock before implementation begins.
 
 # Act II Ambition - sprint sections A2-5 through A2-21
 
