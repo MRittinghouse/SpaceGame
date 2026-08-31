@@ -12635,7 +12635,7 @@ crew-banter reactivity - not this one.
 - Started: 2026-08-30 22:22
 - Completed: 2026-08-30 23:05
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending — recorded post-commit)
+- Commits: d2aac78
 - New_sprints_proposed: none
 - Polish_items_folded_in: round-robin-telegraph-redelivery, compliance-guard-green-assertion
 - Decisions_locked: 8
