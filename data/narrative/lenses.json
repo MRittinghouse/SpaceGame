@@ -154,6 +154,160 @@
         "contact with union coordinators who hold unauthorized stoppage records",
         "access to labor data that management's official filing contradicts"
       ]
+    },
+    {
+      "lens_id": "empire",
+      "name": "Empire",
+      "core_fantasy": "Conquer territory and establish a sovereign state that answers to no flag but your own.",
+      "question": "Why influence governments when you can become one?",
+      "sees": "A system with no recognized sovereign, or one flying a flag that cannot afford to defend its territory.",
+      "wants": "A territorial claim, the supply lines to hold it, and a cost structure that survives the first challenge to its borders.",
+      "trades": "Legitimacy, neutrality, and any relationship with the powers being displaced.",
+      "investment_from": [
+        "territory_investment_purchased",
+        "politics_dispute_resolved_annex"
+      ],
+      "minigame_shape": "Territory and logistics of holding: borders, supply lines, the cost of sovereignty",
+      "voice": "Strategic, patient; frames every present move in terms of five years out; names the cost of holding before stating what something is worth to take.",
+      "tier_unlocks": [
+        "access to colonial administrators evaluating which flag can guarantee shipping lanes through the next political cycle",
+        "logistics contracts that political offices cannot broker",
+        "transit agreements that require sovereign authority to issue"
+      ]
+    },
+    {
+      "lens_id": "community",
+      "name": "Community",
+      "core_fantasy": "Build the home you never had, so nobody who depends on you lives the way your father did.",
+      "question": "Nobody near me will be poor the way he was -- but how many people can you actually reach before the resources run out?",
+      "sees": "Families in transit shelters, cryo pods waiting for a settlement permit, and the housing queue that decides who gets in this cycle.",
+      "wants": "Enough coordination and supply to give people a stable address and something to come back to.",
+      "trades": "Speed, cleaner options that avoid asking who gets left behind, and the comfort of working a problem with a single solution.",
+      "investment_from": [
+        "investment_tier_purchased:community",
+        "wreckers_guild_contract_completed",
+        "crew_loyalty_gained"
+      ],
+      "minigame_shape": "Logistics and triage: housing allocations, supply rationing, who gets in and who is turned away",
+      "voice": "Specific about whose needs; plain-spoken; converts every offer into concrete numbers -- shelter for how many families, food for how many weeks.",
+      "tier_unlocks": [
+        "access to settlement administrators who manage camp permits and housing queues",
+        "supply networks that transit communities use when official channels are closed"
+      ]
+    },
+    {
+      "lens_id": "legacy",
+      "name": "Legacy",
+      "core_fantasy": "Make your existence matter after you are gone -- not through fame, but through what survives you.",
+      "question": "How does history remember you, and does the official record match what you actually built?",
+      "sees": "An institution that will outlast its founders, a gap in the record where real contributors went unnamed, or a project whose long-horizon return no one else will fund.",
+      "wants": "A structure -- an archive, an institution, a trained successor -- that continues the work after the person behind it is gone.",
+      "trades": "Immediate credit, the comfort of outcomes you live to see, and recognition that comes from visible rather than foundational work.",
+      "investment_from": [
+        "okafor_research_project_funded",
+        "institution_founded"
+      ],
+      "minigame_shape": "Long-horizon investment: institutions, proteges, and records that outlive the people who built them",
+      "voice": "Measured, long-horizon; distinguishes the record from the impact; talks in decades and specific institutions, not in vague futures.",
+      "tier_unlocks": [
+        "access to archivists who hold founding and labor records that official histories omit",
+        "institutional filing rights that protect a project past any single contributor's involvement"
+      ]
+    },
+    {
+      "lens_id": "faith",
+      "name": "Faith",
+      "core_fantasy": "Search for meaning in an incomprehensibly large universe that has already taken everything you knew.",
+      "question": "Is there anything out here that means anything, or is the question itself the point?",
+      "sees": "A pilgrimage route with a registered terminus, a phenomenon that resists the standard explanation, or a community organized around a shared interpretation of the void.",
+      "wants": "A firsthand encounter with whatever resists ordinary explanation -- not an answer, but a better question than the one you arrived with.",
+      "trades": "Certainty, the efficiency of a settled worldview, and anyone who needs the question closed before moving forward.",
+      "investment_from": [
+        "deep_shafts_pilgrimage_visited",
+        "dialogue_completed:faith"
+      ],
+      "minigame_shape": "Interpretation: pilgrimage routes, phenomena that resist explanation, doctrine as a living argument",
+      "voice": "Interpretive, unhurried; comfortable with ambiguity; names phenomena before assigning meaning; does not speak of the void as an entity.",
+      "tier_unlocks": [
+        "access to pilgrim registrars who connect travelers with communities expecting them",
+        "records of routes whose outcomes do not match the official classification"
+      ]
+    },
+    {
+      "lens_id": "transcendence",
+      "name": "Transcendence",
+      "core_fantasy": "Push beyond ordinary humanity -- not as aspiration, but as a sequence of specific and irreversible choices.",
+      "question": "Must humanity remain human, and what does the answer cost the person who acts on it?",
+      "sees": "An experimental rig with no registry entry, a clinic running components not on the open approval list, or a modification that closes one capability while opening another.",
+      "wants": "An integration that extends what the baseline can process, with full understanding of what each step closes off permanently.",
+      "trades": "Reversibility, the option of a fully standard body, and anyone who cannot operate alongside what the modification makes you.",
+      "investment_from": [
+        "okafor_research_project_funded:high_risk",
+        "ship_upgrade_installed:experimental"
+      ],
+      "minigame_shape": "Irreversible upgrades with real costs: each integration closes a door while opening another",
+      "voice": "Precise about limits and costs; names each modification by its functional change and what it closes; uses 'integrated' and 'closed' rather than 'augmented' or 'enhanced'.",
+      "tier_unlocks": [
+        "access to integration technicians who broker components not on the open registry",
+        "modification networks available only to operators who have cleared the prerequisite research"
+      ]
+    },
+    {
+      "lens_id": "connection",
+      "name": "Connection",
+      "core_fantasy": "Build intimate relationships -- crew, found family, friendship -- instead of institutions.",
+      "question": "With everything that was lost, who is left, and what does it take to not lose them too?",
+      "sees": "A crewmember who has not been asked how they are in a long time, a message that went unanswered, or a relationship fraying under the pressure of the next job.",
+      "wants": "Enough time and presence to maintain the specific people who matter, not the abstract category of connection.",
+      "trades": "Efficiency, the emotional distance that comes from treating crew as an asset, and the speed that comes from never stopping to ask.",
+      "investment_from": [
+        "crew_loyalty_gained",
+        "dialogue_completed:crew_personal"
+      ],
+      "minigame_shape": "Relationship maintenance under pressure: time as the scarce resource, specific people over categories",
+      "voice": "Specific about who and when; uses first names; returns to earlier conversations; does not generalize from one person to a type.",
+      "tier_unlocks": [
+        "informal correspondence networks that carry messages between isolated settlements",
+        "introductions available only through someone who vouches personally rather than professionally"
+      ]
+    },
+    {
+      "lens_id": "truth",
+      "name": "Truth",
+      "core_fantasy": "Determine what really happened -- to the supernova, to the station, to the people who were supposed to prevent it.",
+      "question": "The supernova may not have been what you were told -- so what do you do when the explanation has a source and the source has an interest?",
+      "sees": "A transponder placement that does not match the official manifest, a correction that was never filed, or a record that two separate sources describe differently.",
+      "wants": "A coherent account assembled from primary sources, with every gap in the official record explained or documented as a gap.",
+      "trades": "The comfort of a settled answer, the efficiency of accepting the first plausible explanation, and any relationship with people whose account requires the official version to stand.",
+      "investment_from": [
+        "investigation_flag_set",
+        "dialogue_completed:evidence"
+      ],
+      "minigame_shape": "Deduction: primary sources, contradictions, assembling a coherent account from fragments",
+      "voice": "Methodical, source-skeptical; attaches uncertainty explicitly; distinguishes 'suggest' from 'confirm' and 'placed' from 'was'; uncomfortable with conclusions that arrived too easily.",
+      "tier_unlocks": [
+        "access to signals analysts who cross-index transponder logs against official shipping records",
+        "archive materials predating the current jurisdiction's official record"
+      ]
+    },
+    {
+      "lens_id": "preservation",
+      "name": "Preservation",
+      "core_fantasy": "Protect what remains when extraction is hours away and you cannot save everything -- choose what survives.",
+      "question": "You could not save your home -- can you stop the next site, archive, or community from disappearing the same way?",
+      "sees": "A site with an active preservation claim and a competing extraction permit, a cargo hold of unregistered cultural materials, or an archive that has no copy anywhere else.",
+      "wants": "A documented record or physical recovery before the extraction window closes and the site is legally stripped.",
+      "trades": "Speed on other priorities, the option of neutrality where both claimants have legal standing, and any clean exit from a system whose extraction economy is ongoing.",
+      "investment_from": [
+        "deep_shafts_pilgrimage_visited",
+        "wreckers_guild_contract_completed:preservation"
+      ],
+      "minigame_shape": "Rescue and archival under time pressure: choosing what to save before the extraction window closes",
+      "voice": "Specific about what exists and how long it has left; states replacement costs and recovery windows; distinguishes 'recoverable' from 'gone'; does not romanticize loss.",
+      "tier_unlocks": [
+        "access to recovery coordinators who hold active preservation claims on sites at risk",
+        "cultural salvage filing rights that can pause an extraction permit"
+      ]
     }
   ]
 }

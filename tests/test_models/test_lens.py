@@ -245,21 +245,20 @@ class TestLensRegistry:
         with pytest.raises(ValueError, match="minigame_shape"):
             loader.load_lenses()
 
-    def test_real_lenses_json_loads_a2_5_entries(self) -> None:
-        """The real data/narrative/lenses.json loads the A2-5 lens definitions cleanly.
+    def test_real_lenses_json_loads_all_sixteen_entries(self) -> None:
+        """The real data/narrative/lenses.json loads all sixteen lens definitions cleanly.
 
-        Before A2-5 the file was an empty stub; after A2-5 it carries eight entries.
-        This test is updated in lockstep -- it verifies the file loads without error
-        and produces the expected count rather than asserting the stub is empty.
+        A2-5 landed eight entries (vengeance through revolution); A2-6 appended the
+        second eight (empire through preservation). This test verifies the file loads
+        without error and produces the full sixteen-id set.
         """
         from spacegame.config import PROJECT_ROOT
         from spacegame.data_loader import DataLoader
 
         loader = DataLoader(data_dir=PROJECT_ROOT / "data")
         loader.load_lenses()
-        assert len(loader.lenses) == 8, (
-            f"Expected 8 lenses from A2-5; found {len(loader.lenses)}. "
-            "Update this count when A2-6 lands."
+        assert len(loader.lenses) == 16, (
+            f"Expected 16 lenses after A2-6; found {len(loader.lenses)}."
         )
         expected_ids = {
             "vengeance",
@@ -270,5 +269,76 @@ class TestLensRegistry:
             "justice",
             "crime",
             "revolution",
+            "empire",
+            "community",
+            "legacy",
+            "faith",
+            "transcendence",
+            "connection",
+            "truth",
+            "preservation",
         }
         assert set(loader.lenses.keys()) == expected_ids
+
+
+class TestCommunityWealthSameWound:
+    """Unit-test the community/wealth 'same wound' constraint against the real JSON.
+
+    Loads data/narrative/lenses.json directly (not via singleton) so this test
+    can run in isolation from the full load_all() chain. Skip-cleanly if either
+    lens is absent (guards against a partial JSON state during development).
+    """
+
+    _COMMUNITY_DISCRIMINANTS: frozenset[str] = frozenset(
+        {"survivors", "cryo", "families", "housing", "shelter", "people"}
+    )
+    _WEALTH_DISCRIMINANTS: frozenset[str] = frozenset(
+        {"supply", "gap", "route", "margin", "tonnage", "price"}
+    )
+
+    def _load_real(self) -> dict:
+        from spacegame.config import PROJECT_ROOT
+        from spacegame.data_loader import DataLoader
+
+        loader = DataLoader(data_dir=PROJECT_ROOT / "data")
+        loader.load_lenses()
+        return loader.lenses
+
+    def test_community_sees_not_equal_to_wealth_sees(self) -> None:
+        """community.sees and wealth.sees must be distinct strings."""
+        lenses = self._load_real()
+        comm = lenses.get("community")
+        wlth = lenses.get("wealth")
+        if comm is None or wlth is None:
+            pytest.skip("'community' or 'wealth' not yet in lenses.json.")
+        assert comm.sees != wlth.sees, (
+            "community.sees == wealth.sees -- the same wound must produce opposite readings."
+        )
+
+    def test_community_sees_contains_person_word(self) -> None:
+        """community.sees must contain at least one person-focused discriminant word."""
+        lenses = self._load_real()
+        comm = lenses.get("community")
+        wlth = lenses.get("wealth")
+        if comm is None or wlth is None:
+            pytest.skip("'community' or 'wealth' not yet in lenses.json.")
+        sees_lower = comm.sees.lower()
+        found = any(word in sees_lower for word in self._COMMUNITY_DISCRIMINANTS)
+        assert found, (
+            f"community.sees does not contain a person discriminant from "
+            f"{sorted(self._COMMUNITY_DISCRIMINANTS)!r}: {comm.sees!r}"
+        )
+
+    def test_wealth_sees_contains_market_word(self) -> None:
+        """wealth.sees must contain at least one market-focused discriminant word."""
+        lenses = self._load_real()
+        comm = lenses.get("community")
+        wlth = lenses.get("wealth")
+        if comm is None or wlth is None:
+            pytest.skip("'community' or 'wealth' not yet in lenses.json.")
+        sees_lower = wlth.sees.lower()
+        found = any(word in sees_lower for word in self._WEALTH_DISCRIMINANTS)
+        assert found, (
+            f"wealth.sees does not contain a market discriminant from "
+            f"{sorted(self._WEALTH_DISCRIMINANTS)!r}: {wlth.sees!r}"
+        )
