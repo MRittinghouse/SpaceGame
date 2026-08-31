@@ -134,7 +134,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
-| [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
+| [A2-11](#a2-11--scars) | Scars | Act II | M | in-progress | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14242,32 +14242,36 @@ convention documented on `ChatterLine` is the API those sprints consume.
 **Activity log.**
 - 2026-08-27 - todo (created)
 - 2026-08-31 19:20 — harness: plan phase starting
-- 2026-08-31 — planning complete; confirmed all 4 context docs exist; folded the
+- 2026-08-31 — planning complete (commit 43d6ec4); confirmed all 4 context docs exist;
+  folded invariant compliance test (AC4) and voice-check anchor (AC5); locked 4 open
+  decisions (no code-path change to `get_chatter`, compliance-test enforcement of the
+  scar/one_shot invariant, no `NPC.dialogue_states` work in this sprint, real-system-id
+  + test-only-flag demo line placement); filled in 6-task Plan section; cross-sprint
+  reactions section confirms none belong to this sprint. PHASE_OK
 - 2026-08-31 19:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
-  invariant compliance test (AC4) and the voice-check anchor (AC5) into the sprint;
-  locked 4 open decisions (no code-path change to `get_chatter`, compliance-test
-  enforcement of the scar/one_shot invariant, no `NPC.dialogue_states` work in this
-  sprint, real-system-id + test-only-flag demo line placement); filled in 6-task Plan
-  section; cross-sprint reactions section confirms none belong to this sprint.
-  PHASE_OK
+- 2026-08-31 19:51 — harness: plan phase starting (re-dispatch after recovery reset)
+- 2026-08-31 19:52 — re-verification: prior planning by 43d6ec4/c56230b is complete and
+  intact — Plan section has 6 sequenced tasks with file paths + test surfaces + gotchas,
+  4 open questions locked with rationale, testable acceptance criteria (AC1-6),
+  cross-sprint reactions section correctly declares none. All 4 context-to-read paths
+  re-verified present. No implementation commits exist. No re-planning warranted; the
+  sprint is ready for implement. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 19:20
-- Completed: 2026-08-31
+- Started: 2026-08-31 19:51
+- Completed: 2026-08-31 19:52
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 43d6ec4
+- Commits: <hash to be recorded post-commit>
 - New_sprints_proposed: none
-- Polish_items_folded_in: compliance-invariant-test, voice-check-anchor-criterion
-- Decisions_locked: 4
-- Notes: All 4 Context-to-read docs verified present. Sprint is intentionally small — no
-  production filter change; the existing `StationChatterManager` already delivers the
-  required semantics for a `required_flags=[lens_closed_*]`, `one_shot=False` line, so
-  the value-add is a docstring convention + one JSON demo + tests that prove the mechanism
-  end-to-end without invoking A2-8's view layer. Downstream sprints A2-12 through A2-19
-  each author their own scar content and their own cross-sprint reactions; A2-11 is the
-  mechanism proof, not narrative content.
+- Polish_items_folded_in: none (folded in prior planning pass — compliance-invariant-test, voice-check-anchor-criterion)
+- Decisions_locked: 0 (all 4 locked in prior planning pass)
+- Notes: Re-dispatch after stuck-sprint recovery reset. Prior planning (commits 43d6ec4,
+  c56230b) is complete and correct — Plan section fully populated, decisions locked,
+  ACs testable, cross-sprint reactions addressed. All 4 context-to-read paths
+  re-verified present. No implementation commits exist. Emitting PHASE_OK to advance
+  the sprint to implement rather than duplicate work already in the roadmap.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
