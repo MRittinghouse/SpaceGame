@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | done | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11533,7 +11533,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11731,6 +11731,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 — review complete; all acceptance criteria met; no critical findings; 1 minor observation noted (tautological tests for view/engine wires). PHASE_OK
 - 2026-08-31 02:42 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: ======================= warnings summary ===============================
 - 2026-08-31 02:47 — session: reset blocked -> todo. The gate failed on test_lens_investment_gap_manifest.py and the parallel re-check reproduced it, so the sprint was blocked and the run stopped. That re-check was the bug: it re-ran the failures at -n 8, under the same load that produced the flake. Verified afterwards on the same commit: the test passes standalone, and a full suite over that tree is green at 11129 passing (the only failure was a different flake, test_heartbeat thread timing). A2-4B work is sound and committed. The re-check now runs serially so load is not a variable.
+- 2026-08-31 04:13 — harness: plan phase starting
 tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
   C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
     surf = pygame.display.set_mode((1280, 720), flags=flags)
@@ -11748,21 +11749,19 @@ tests/test_crawler/test_reachability.py: 9 warnings
 =========================== short test summary info ===========================
 FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManifest::test_every_wired_tag_has_a_grep_hit_in_production_code
 1 failed, 11129 passed, 100 skipped, 42 warnings in 325.93s (0:05:25)
+- 2026-08-31 04:20 — re-planning: sprint already implemented and green. Verified: (a) implementation commit `afdf67e` shipped all 9 production wires + 3 new test files (35 tests total, per commit message and `git show --stat`); (b) commit `8737388` fixed the environment-dependent grep-shellout in the gap-manifest test that caused the prior blocked gate (grep.exe is on Git Bash PATH but not the machine PATH the Scheduled Task inherits); (c) `Player.record_lens_action` facade exists at `spacegame/models/player.py:445`; (d) test files exist at all three declared paths; (e) targeted local run `pytest tests/test_models/test_lens_investment_hooks.py tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py tests/test_compliance/test_lens_investment_gap_manifest.py -q` returns 35 passed in 1.38s; (f) pre-phase baseline for this launch is 11133 pass / 100 skip, which exactly matches the "Suite green at 11133 passed / 100 skipped" recorded in commit `8737388`'s message. No re-plan needed — the plan on record produced the shipped work. Emitting PHASE_OK so the dispatcher advances the sprint through implement (which will verify rather than duplicate) and on to review. PHASE_OK
+
 **Last phase report.**
-- Phase: review
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31
-- Completed: 2026-08-31
-- Files_changed: none
-- Commits: none
-- Tests_passing: 11129
-- Acceptance_criteria_verified: 8/8
-- Polish_items_verified: n/a
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 0
-- Single_tighten: Tests for 10/12 view/engine-layer wires inline the conditional logic in-test rather than calling through production methods — they document intent, not behavior. The grep-hit compliance test partially compensates. On a future pass, TestMissionCompletionWires and view-layer tests should be rewritten to call through actual game.py / view methods using the dummy-SDL infrastructure.
-- Followup_sprints_added: none
-- Notes: Plan audit: sound; facade + gap-manifest approach are defensible; locked decisions (amount tiers, exact-match colon semantics, facade pattern) hold. Production wires confirmed correct across 8 files. Structural invariant AC6 holds (grep: zero direct lens_investment refs in views/ or engine/). Gap count 14 wired / 20 gap (plan said 12/22) — partition test validates against live lenses.json, passes. Pre-existing xdist flaky (test_no_new_consumer_only_flags) passes standalone; not a regression.
+- Started: 2026-08-31 04:13
+- Completed: 2026-08-31 04:20
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (this planning commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented and verified)
+- Decisions_locked: 0 (all six decisions locked in prior plan phases still hold: facade indirection, gap-manifest partition, amount tier calibration 1/3/5/10, exact-match colon-qualifier semantics, no observer hook, no upper cap)
+- Notes: Sprint was already implemented per commit `afdf67e` and its follow-up fix `8737388`. Verified 35 A2-4B tests pass locally (1.38s) and the pre-phase baseline of 11133/100 matches the state committed by `8737388`. Per plan.md's "if the sprint is ALREADY IMPLEMENTED, your sentinel is PHASE_OK" rule, emitting PHASE_OK rather than PHASE_BLOCKED — the dispatcher's implementer will re-verify, and reviewer + gate will run against the shipped tree. Sprint status field remains `in-progress (planning)` in the header; the dispatcher will advance it. No roadmap content beyond the activity log and phase report was modified.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
