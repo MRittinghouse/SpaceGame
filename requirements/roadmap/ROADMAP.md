@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12846,7 +12846,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13193,6 +13193,7 @@ crew-banter reactivity - not this one.
 - 2026-08-30 23:05 — planning complete; verified all 11 declared context docs exist plus 3
 - 2026-08-31 00:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 05:44 — harness: plan phase starting
+- 2026-08-31 06:56 — session: reset to todo after reverting the implementation. The implement phase committed 1055 lines and the harness died two minutes into review, so the work reached master having passed neither review nor the gate. It was red: 11 failures, including three of A2-8 own scenario tests, a GameState ripple into the crawler state-count test, and six ground-loot tests hitting AttributeError 'Game' object has no attribute 'state_manager' at game.py:4448. Reverted rather than repaired because an implementation that fails its own tests is unfinished. The original commits survive the revert -- cherry-pick a8d7d47 f321b82 9dc85ef 9e8d8d3 to build on them instead of starting over.
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
