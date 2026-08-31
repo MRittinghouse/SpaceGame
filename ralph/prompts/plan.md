@@ -21,6 +21,36 @@ Set `PHASE_BLOCKED: missing context — <doc paths>` in your sentinel. The dispa
 
 This is a hard rule. Planning around guesses about missing context produces sprints that fail in implementation.
 
+## If the sprint is ALREADY IMPLEMENTED, your sentinel is `PHASE_OK`
+
+You will sometimes be handed a sprint whose work already exists. Stuck-sprint
+recovery resets a sprint to `todo` when its `last_touched_at` goes stale, and a
+common cause is an agent that committed its work and then died before writing
+its sentinel. A missing sentinel is not missing work.
+
+So before planning, check: does `git log` already contain commits for this
+sprint, and do its acceptance criteria already pass?
+
+If so, **write `PHASE_OK`** with a note saying the sprint was already
+implemented, naming the commit, and recording what you ran to verify it. Do NOT
+re-plan work that exists, and do NOT try to route yourself to a later phase —
+the dispatcher decides that. `PHASE_OK` moves the sprint on to implement, where
+the implementer will verify rather than duplicate, and then to review, which is
+what you want: the work still earns its review and its test gate.
+
+**Do not use `PHASE_BLOCKED` for this.** `PHASE_BLOCKED` means "a human needs to
+look at this" and the dispatcher treats it as terminal — it never retries a
+blocked phase, because an agent writing `PHASE_BLOCKED` has made a judgement
+that re-running will not change. Using it to mean "there is nothing to do here,
+move me along" strands the sprint and everything that depends on it.
+
+This is measured, not hypothetical. On 2026-08-30, A2-5 and A2-6 were both
+handed to planners in exactly this state minutes apart. A2-5's planner wrote
+`PHASE_OK`; it went implement → review → gate → done in 35 minutes. A2-6's wrote
+`PHASE_BLOCKED: already implemented`; it was marked blocked, which stranded
+A2-4A and A2-4B, and needed a human to unstick it. Same situation, opposite
+outcomes, decided only by which sentinel the agent chose.
+
 ## Your job
 
 1. **Assess vision alignment**. Does the sprint as written reflect the strategic vision the doc commits to? If the sprint is a pale shadow of what the vision describes (e.g., "a contract board" when the vision says "a contract board with membership tiers, recurring NPCs, lockout consequences"), expand it.
