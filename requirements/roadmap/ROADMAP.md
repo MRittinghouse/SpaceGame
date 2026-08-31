@@ -132,7 +132,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
-| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
+| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | in-progress | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
@@ -13544,7 +13544,7 @@ crew-banter reactivity - not this one.
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: S | **Effort**: 2-3 days
 **Depends on**: A2-8 | **Blocks**: A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19
 
@@ -13714,30 +13714,34 @@ crew banter, or UI copy that any other sprint would react to).
 - 2026-08-27 - todo (created)
 - 2026-08-31 16:42 — harness: plan phase starting
 - 2026-08-31 17:15 — planning complete; verified all 4 context docs exist; folded 2
-- 2026-08-31 17:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   additional invariants (telegraph_lines non-empty, collision_requires in range) into
   the deliverables + meta-tests; locked 3 decisions (empty-registry handling, injection
   mechanism, scope expansion); Plan section filled with 5 tasks; cross-sprint reactions
   = none. PHASE_OK
+- 2026-08-31 17:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 17:21 — harness: plan phase starting
+- 2026-08-31 17:25 — sprint already implemented at commit a424bac
+  (tests/test_compliance/test_dilemma_integrity.py exists, 19 passed + 1 skipped locally,
+  matching planned expectation of 6 real-content tests including 1 skip + 12 meta-tests
+  ≈ 20 total). No re-planning needed; routing on to implement/review. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 16:42
-- Completed: 2026-08-31 17:15
+- Started: 2026-08-31 17:21
+- Completed: 2026-08-31 17:25
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 212e558
+- Commits: none (planning was already committed at 212e558; implementation at a424bac)
 - New_sprints_proposed: none
-- Polish_items_folded_in: test_telegraph_lines_non_empty; test_collision_requires_within_pole_count
-- Decisions_locked: 3
-- Notes: Sprint is test-only, one new file (tests/test_compliance/test_dilemma_integrity.py).
-  Verified all 4 context docs exist. Verified A2-9 has no existing commits and the target
-  file does not exist. Kept touch zones as originally spec'd. Folded two additional
-  documented invariants into scope (both one-line helpers, same pattern); the folding
-  keeps sprint at size S. Locked injection mechanism to pure in-memory fixtures over
-  filesystem/monkeypatch paths. Locked empty-registry handling to skip-on-"content landed"
-  + vacuous-pass on invariant tests. No cross-sprint reactions to author (foundational
-  compliance guard, no player-facing surface).
+- Polish_items_folded_in: none (already folded in prior plan phase at 212e558)
+- Decisions_locked: 0 (all 3 locked in prior plan phase)
+- Notes: Sprint already implemented at commit a424bac before the stuck-sprint recovery
+  reset it to todo. Verified by (a) `git log --oneline | grep A2-9` showing the
+  implementation commit, (b) `test -f tests/test_compliance/test_dilemma_integrity.py`
+  present, (c) `pytest tests/test_compliance/test_dilemma_integrity.py -q` reporting
+  "19 passed, 1 skipped in 0.16s" — matches the plan's expected shape. Per harness
+  instructions for the already-implemented case, emitting PHASE_OK so the dispatcher
+  routes to implement (which will verify rather than duplicate) and then review.
 ---
 
 #### A2-10 — Permanent closure + save/load
