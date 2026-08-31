@@ -11588,7 +11588,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - Started: 2026-08-30 23:46
 - Completed: 2026-08-31 00:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (recorded post-commit)
+- Commits: c8c90a4
 - New_sprints_proposed: none
 - Polish_items_folded_in: gap-manifest compliance test (structural guard against tag drift); facade-method indirection to preserve A2-4 AC4 without allowlist entries; explicit calibration table for amount-per-tag
 - Decisions_locked: 4
