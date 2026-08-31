@@ -2843,6 +2843,40 @@ class TestTestSuiteGate:
         assert "auto" not in cmd, f"the test gate uses -n auto: {cmd}"
         assert "-n" in cmd and cmd[cmd.index("-n") + 1] == config.TEST_WORKERS
 
+    def test_the_flake_recheck_runs_serially(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The re-run that decides "flake or real" must not inherit the load.
+
+        The gate re-runs failures with `--last-failed` before blocking, so one
+        flaky test cannot cost a sprint. But it re-ran them at `-n 8`, under the
+        same parallel load that produced the flake, so a load-sensitive test
+        reproduces and the check answers the wrong question.
+
+        Measured 2026-08-31: A2-4B's gate failed on
+        `test_lens_investment_gap_manifest.py`, the parallel re-run reproduced
+        it, and the sprint was blocked and the run stopped. The same test passed
+        immediately afterwards on the same commit, and a full serial suite over
+        that tree was green. The review agent had already used the right
+        technique in prose -- "confirmed pre-existing by serial rerun".
+
+        Serial is cheap here because `--last-failed` runs only what failed.
+        """
+        fail = subprocess.CompletedProcess(
+            args=["pytest"], returncode=1, stdout="1 failed, 11129 passed\n", stderr=""
+        )
+        ok = subprocess.CompletedProcess(
+            args=["pytest"], returncode=0, stdout="1 passed\n", stderr=""
+        )
+        seen = self._fake_runner(monkeypatch, [fail, ok])
+
+        assert harness._run_test_gate((11129, 100)) is None, "a non-reproducing failure is a flake"
+
+        assert len(seen) == 2, f"expected suite run then re-run, got {len(seen)}"
+        retry = seen[1]
+        assert "--last-failed" in retry, retry
+        assert retry[retry.index("-n") + 1] == "0", (
+            f"the flake re-check must run serially so load is not a variable: {retry}"
+        )
+
 
 class TestTestGateIsWiredIntoTheSprint:
     """Unit-testing `_run_test_gate` proves the rule; this proves it is

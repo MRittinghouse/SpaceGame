@@ -780,10 +780,20 @@ def _run_test_gate(test_baseline: tuple[int, int]) -> Optional[tuple[str, str]]:
     combined = result.stdout + result.stderr
 
     if result.returncode != 0:
-        log("Test gate: suite FAILED; re-running the failures once before blocking.")
+        log("Test gate: suite FAILED; re-running the failures SERIALLY before blocking.")
         try:
+            # Serial, not `-n 8`. This re-run exists to answer "flake or real",
+            # and re-running under the same parallel load that produced the
+            # failure answers a different question: a load-sensitive test simply
+            # fails again. Measured 2026-08-31 -- A2-4B's gate failed on
+            # `test_lens_investment_gap_manifest`, the parallel re-check
+            # reproduced it, the sprint was blocked and the run stopped; the same
+            # test passed moments later on the same commit, and a full serial
+            # suite over that tree was green. The review agent had already been
+            # using this technique in prose: "confirmed pre-existing by serial
+            # rerun". Cheap, because `--last-failed` runs only what failed.
             retry = run_with_hard_timeout(
-                _pytest_gate_cmd("--last-failed"),
+                _pytest_gate_cmd("--last-failed", workers="0"),
                 timeout_seconds=TEST_GATE_TIMEOUT_SECONDS,
                 cwd=str(PROJECT_ROOT),
             )

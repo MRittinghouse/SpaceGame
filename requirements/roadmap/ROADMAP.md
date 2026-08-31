@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | blocked | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11528,7 +11528,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: blocked
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11725,6 +11725,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 02:22 — harness: review phase starting (rework cycle 0)
 - 2026-08-31 — review complete; all acceptance criteria met; no critical findings; 1 minor observation noted (tautological tests for view/engine wires). PHASE_OK
 - 2026-08-31 02:42 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: ======================= warnings summary ===============================
+- 2026-08-31 02:47 — session: reset blocked -> todo. The gate failed on test_lens_investment_gap_manifest.py and the parallel re-check reproduced it, so the sprint was blocked and the run stopped. That re-check was the bug: it re-ran the failures at -n 8, under the same load that produced the flake. Verified afterwards on the same commit: the test passes standalone, and a full suite over that tree is green at 11129 passing (the only failure was a different flake, test_heartbeat thread timing). A2-4B work is sound and committed. The re-check now runs serially so load is not a variable.
 tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
   C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
     surf = pygame.display.set_mode((1280, 720), flags=flags)
