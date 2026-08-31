@@ -23,6 +23,10 @@ class TestGroundLootBonusApplication:
         game.ground_contract_manager = None
         game.ambient_dialogue = None
         game._mission_notifications = []
+        # A2-8: _after_player_action reads state_manager.current_state to
+        # suppress dilemma checks while the resolution modal is up. A
+        # real Game always has this; the mocked fixture must provide it.
+        game.state_manager = MagicMock(current_state=None)
 
         # Level up combat_scavenger to desired level
         if bonus_level > 0:
