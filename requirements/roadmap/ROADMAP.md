@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13288,6 +13288,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 14:28 — harness: review phase starting (rework cycle 0)
 - 2026-08-31 15:44 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-08-31 16:06 — harness: plan phase starting
+- 2026-08-31 16:10 — harness: implement phase starting (rework cycle 0)
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13483,18 +13484,42 @@ crew-banter reactivity - not this one.
   dispatcher routes the sprint through implement (verifier) → review →
   gate → done. Kept this pass cheap (< 5 min of tool time) so subsequent
   phases have runway. PHASE_OK
+- 2026-08-31 (seventh implement-verify pass on already-implemented sprint)
+  — implementer re-entered on the same 5 A2-8 commits (2d4f20f, 4b5f950,
+  cc61422, 9964285, 39566ec), all confirmed intact on master via
+  `git log --oneline master | grep`. Followed the cheap-check-first
+  playbook: read sprint section + git log only, did NOT re-read
+  Context-to-read docs (prior re-runs measured 20+ min doing so and
+  starved the review phase). Ran the sprint's own test surface + all
+  ripple/compliance targets in two invocations: 55 pass across
+  test_dilemma / test_scenario_dilemma_thresholds /
+  test_dilemma_resolution_view (1.02s); 38 pass across
+  test_crawler/test_coverage / test_engine/test_ground_loot_bonus /
+  test_compliance/test_lens_investment_never_rendered /
+  test_scenarios/test_scenario_save_load /
+  test_engine/test_mission_notifications (0.95s). Total 93 pass across
+  the sprint's touch surface. Working tree clean apart from the harness's
+  own status/activity-log ROADMAP edit. All 12 acceptance criteria still
+  hold per the six prior verifications. PHASE_OK — routing forward to
+  review → gate → done.
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 15fd6c5
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented and reviewed; no re-plan needed)
-- Decisions_locked: 0 (all 8 previously locked; none re-opened)
-- Notes: Sixth re-plan on an already-implemented, already-reviewed sprint that keeps being reset by harness stuck-sprint recovery. All 5 A2-8 commits (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec) intact on master; 55 sprint tests pass in 1.00s. Ran the cheap check only (sprint section + git log + one pytest invocation) — did not re-read Context-to-read, per playbook, to preserve runway for downstream phases. Emitting PHASE_OK so the dispatcher can move the sprint through implement (verifier) → review → gate → done.
+- Files_changed: requirements/roadmap/ROADMAP.md (activity log only; no code changes needed — all 5 A2-8 implementation commits already on master)
+- Commits: none this pass (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec landed in prior passes)
+- Tests_added: 0 this pass (28 previously added and still passing)
+- Tests_baseline: 11208
+- Tests_passing: 93 across sprint touch surface (full suite not re-run — prior verifier + reviewer passes both measured 11206-11207 under -n auto with one known pre-existing xdist timeout on test_no_new_consumer_only_flags unrelated to A2-8)
+- Tests_skipped: n/a this pass
+- Lint_clean: yes (verified in prior implement pass on all 15 touched files)
+- Format_clean: yes (verified in prior implement pass on all 15 touched files)
+- SI3_scanner_clean: n/a (no new flags this pass)
+- Writing_bible_clean: n/a (no player-facing content this pass)
+- Touch_zones_respected: yes
+- Notes: Seventh implement-verify pass on the already-implemented, already-reviewed A2-8. Kept the pass cheap per playbook (< 3 min of tool time) so review has runway. All A2-8 files present, sprint tests green (93/93), 12 acceptance criteria hold. Emitting PHASE_OK so the dispatcher can finally route the sprint through review → gate → done.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
