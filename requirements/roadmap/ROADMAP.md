@@ -11724,7 +11724,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - Started: 2026-08-31 01:51
 - Completed: 2026-08-31 02:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 18b65eb
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (prior plan already folded in the gap-manifest test, facade indirection, and calibration table; this re-planning only refreshed baseline and one drifted line number)
 - Decisions_locked: 0 new (4 locked in the 2026-08-30 pass remain sound; nothing re-opened)
