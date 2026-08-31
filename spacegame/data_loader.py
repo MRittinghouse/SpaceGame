@@ -63,6 +63,7 @@ if TYPE_CHECKING:
     from spacegame.models.forge_upgrade import ForgeUpgrade
     from spacegame.models.ground_equipment import GroundEquipment
     from spacegame.models.lens import Lens
+    from spacegame.models.lens_reaction import LensReaction
     from spacegame.models.politics_dispute import PoliticsDisputeTemplate
     from spacegame.models.ship_module import ShipModule
     from spacegame.models.ship_part import ShipPart
@@ -156,6 +157,8 @@ class DataLoader:
         self.lenses: Dict[str, "Lens"] = {}
         # A2-3: capstone registry keyed by capstone_id.
         self.capstones: Dict[str, "Capstone"] = {}
+        # A2-4A: lens reaction pool (list, not dict -- multiple records per lens_id are legal).
+        self.lens_reactions: list["LensReaction"] = []
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -233,6 +236,7 @@ class DataLoader:
         self._safe_load("balance_config", self.load_balance_config)
         self._safe_load("lenses", self.load_lenses)
         self._safe_load("capstones", self.load_capstones)
+        self._safe_load("lens_reactions", self.load_lens_reactions)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -795,6 +799,48 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.capstones)} capstones")
         return self.capstones
+
+    def load_lens_reactions(self) -> list["LensReaction"]:
+        """Load lens reaction pool from data/narrative/lens_reactions.json.
+
+        Must be called after ``load_lenses`` so the cross-reference validation
+        can check every lens_id against the populated registry.
+
+        Returns:
+            List of LensReaction records (empty when file is absent).
+
+        Raises:
+            ValueError: If called before lenses are loaded, or if any record
+                references an unknown lens_id or has missing/invalid fields.
+        """
+        from spacegame.models.lens_reaction import LensReaction
+
+        if not self.lenses:
+            raise ValueError(
+                "load_lens_reactions must be called after load_lenses; "
+                "self.lenses is empty -- check load_all ordering."
+            )
+
+        file_path = self.data_dir / "narrative" / "lens_reactions.json"
+        if not file_path.exists():
+            logger.warning(f"Lens reactions not found: {file_path}")
+            return self.lens_reactions
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.lens_reactions = []
+        for raw in data.get("lens_reactions", []):
+            record = LensReaction.from_dict(raw)
+            if record.lens_id not in self.lenses:
+                raise ValueError(
+                    f"lens_reactions.json references unknown lens_id "
+                    f"'{record.lens_id}'; add it to lenses.json first."
+                )
+            self.lens_reactions.append(record)
+
+        logger.info(f"Loaded {len(self.lens_reactions)} lens reactions")
+        return self.lens_reactions
 
     def load_factions(self) -> Dict[str, Faction]:
         """Load faction definitions from JSON."""

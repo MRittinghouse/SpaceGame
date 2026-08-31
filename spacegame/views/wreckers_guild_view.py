@@ -157,6 +157,12 @@ class WreckersGuildView(BaseView):
         # Cached offer list for the current visit (for tests + hover)
         self._offer_template_ids: list[str] = []
 
+        # A2-4A: lens reactor for oblique-readout enrollment pitch.
+        # Constructed from the DataLoader pool; the reactor returns str, never numbers.
+        from spacegame.models.lens_reactor import LensReactor
+
+        self._lens_reactor = LensReactor(get_data_loader().lens_reactions)
+
         # Last completed mission id — exposed for tests/UX confirmation flow.
         self._last_completed_id: Optional[str] = None
 
@@ -959,15 +965,31 @@ class WreckersGuildView(BaseView):
         # Bind tier_id to suppress unused-variable warnings under mypy strict.
         _ = tier_id
 
+    def _greeting_lines(self) -> list[str]:
+        """Return the two enrollment-pitch lines: stage direction + Malia's spoken line.
+
+        The stage direction is always fixed. The spoken line is chosen by the
+        lens reactor when at least one lens qualifies; otherwise the standing
+        default is returned unchanged. This helper is extracted for testability
+        without a pygame Surface.
+        """
+        stage_direction = "Malia Torres, Wrench, looks up from a stripped reactor housing."
+        default_spoken = (
+            "Heard you do real work. Guild takes a cut, you take the rest. "
+            "Standing builds with completed contracts. Say the word."
+        )
+        spoken = self._lens_reactor.choose_variant(
+            self.player,
+            "wreckers_hall_enrollment_pitch",
+            {"default": [default_spoken]},
+        )
+        return [stage_direction, spoken]
+
     def _render_enrollment_pitch(self, screen: pygame.Surface) -> None:
         """Render the unenrolled-state body: Malia's pitch + a Sign On button."""
         body_y = BOARD_TOP_Y
         draw_panel(screen, (PANEL_X, body_y, PANEL_W, BOARD_H), alpha=210)
-        lines = [
-            "Malia Torres, Wrench, looks up from a stripped reactor housing.",
-            '"Heard you do real work. Guild takes a cut, you take the rest. ',
-            'Standing builds with completed contracts. Say the word."',
-        ]
+        lines = self._greeting_lines()
         ty = body_y + scale_y(20)
         for line in lines:
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)

@@ -1,0 +1,64 @@
+{
+  "lens_reactions": [
+    {
+      "lens_id": "wealth",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 40,
+      "lines": [
+        "Heard you moved thirty tonnes last week. Guild takes a cut of contract work, same as anyone. Say the word.",
+        "You know the numbers. Guild route work runs fifteen percent above standard rates at Journeyman. Think on it.",
+        "Contract pays on delivery. Better margin than spot runs. You know how the math goes."
+      ]
+    },
+    {
+      "lens_id": "wealth",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 80,
+      "lines": [
+        "At your volume, Guild affiliation pays back inside one job. What you get beyond that is access to contracts that never post open.",
+        "Thirty percent of Guild-exclusive contracts don't hit the open market. You've been trading on what's left.",
+        "Running at scale, the Guild cut's noise. The standing is what matters. Opens the board to you."
+      ]
+    },
+    {
+      "lens_id": "community",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 40,
+      "lines": [
+        "You know how many families run on what the Guild moves? Contract work keeps supply lines honest. Say the word.",
+        "Guild routes keep three dock crews employed through the dry season. Real work, real people. You in?",
+        "Salvage work you'd be running keeps parts flowing to settlements that can't buy new. Counts for something."
+      ]
+    },
+    {
+      "lens_id": "community",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 80,
+      "lines": [
+        "At your standing, you'd have a say in which contracts roll out. Which communities get first access to the board.",
+        "You've been doing it anyway. Guild means the people you're running for can count on the next run too.",
+        "Guild work isn't glamorous. But it's consistent. Communities can plan around consistent."
+      ]
+    },
+    {
+      "lens_id": "vengeance",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 40,
+      "lines": [
+        "Guild contracts put you in places. If you're working something, access is worth more than it looks.",
+        "You're patient. That counts. Contract work builds access. Access turns up things people don't expect to turn up.",
+        "Guild routes cover eleven systems in the Reach. If you've got a list, that's likely useful."
+      ]
+    },
+    {
+      "lens_id": "vengeance",
+      "context": "wreckers_hall_enrollment_pitch",
+      "threshold": 80,
+      "lines": [
+        "At your reach, Guild affiliation just makes the movement clean. Ships come and go through Guild routes; nobody asks twice.",
+        "You've been at this long enough to know the work is cover. Guild contracts get you through doors with less friction.",
+        "Whatever you're tracking, you're further than when you started. Guild routes, you keep moving without drawing attention."
+      ]
+    }
+  ]
+}
