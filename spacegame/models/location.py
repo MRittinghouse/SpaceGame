@@ -4,7 +4,7 @@ Represents visitable locations within star systems — markets, repair bays,
 cantinas, and unique points of interest.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -21,6 +21,9 @@ class Location:
         system_id: ID of the star system this location belongs to.
         repair_cost_per_hp: Credits per hull point for repair_bay type.
             Zero for non-repair locations.
+        lens_readings: Maps lens_id to a one-or-two-sentence reading of this
+            location through that motivational lens. Empty for most locations;
+            only narratively significant places carry authored readings.
     """
 
     id: str
@@ -30,6 +33,18 @@ class Location:
     flavor_text: str
     system_id: str
     repair_cost_per_hp: int = 0
+    lens_readings: dict[str, str] = field(default_factory=dict)
+
+    def reading_for(self, lens_id: str) -> str:
+        """Return the reading for a specific lens, or '' if none is authored.
+
+        Args:
+            lens_id: The lens identifier to look up.
+
+        Returns:
+            The authored reading string, or empty string if not present.
+        """
+        return self.lens_readings.get(lens_id, "")
 
     def to_dict(self) -> dict:
         """Serialize to dictionary.
@@ -45,6 +60,7 @@ class Location:
             "flavor_text": self.flavor_text,
             "system_id": self.system_id,
             "repair_cost_per_hp": self.repair_cost_per_hp,
+            "lens_readings": self.lens_readings,
         }
 
     @classmethod
@@ -65,4 +81,5 @@ class Location:
             flavor_text=data.get("flavor_text", ""),
             system_id=data.get("system_id", ""),
             repair_cost_per_hp=data.get("repair_cost_per_hp", 0),
+            lens_readings=data.get("lens_readings", {}),
         )
