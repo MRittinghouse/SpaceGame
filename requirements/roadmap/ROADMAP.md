@@ -13996,18 +13996,25 @@ those sprints consume.
   no journal/tutorial content this sprint), filled in 7-task Plan section. PHASE_OK
 - 2026-08-31 — harness: stuck-sprint recovery — reset to todo (implementer committed work then died before writing sentinel).
 - 2026-08-31 — plan re-invocation: work already implemented in commit 084dcec ("A2-10: permanent closure + save/load — resolve(), tier_unlocks_granted, closed-lens guard"). Verified all 7 planned tasks' files are touched (dilemma.py resolve() + tier_unlocks_granted, player.py record_lens_action guard, game.py delegate, 4 test files added). Ran the 4 sprint test files (test_dilemma.py, test_lens_investment_hooks.py, test_scenario_dilemma_permanent_closure.py, test_scenario_dilemma_view_pop.py): 99 passed, 0 failed. Emitting PHASE_OK so dispatcher advances to implement (verify-only) then review. PHASE_OK
+- 2026-08-31 — implement (verify-only): confirmed work from 084dcec still passes. Fixed 3 ruff lint errors (F401 unused import DilemmaRuntimeState, F401/F841 unused WINDOW_WIDTH/WINDOW_HEIGHT/screen in view_pop test) in commit b365934. Sprint tests 99/99 green. Full suite 11257 passed (2 known xdist flakes that pass individually). Lint clean, format clean on all touched files. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 (recovery re-plan)
+- Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 923c7bb (roadmap-only; sprint work itself is in prior commit 084dcec)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (work already implemented)
-- Decisions_locked: 0 (all 5 locked in prior plan run 18:08–18:40; nothing new to lock)
-- Notes: Sprint already implemented in commit 084dcec — a stuck-sprint recovery reset the status to todo after the implementer committed work but died before writing its sentinel. Verified cheaply per AGENT_GUIDE: git log + targeted test run (99/99 passed across the 4 sprint test files). Not re-planning; not `PHASE_BLOCKED` (that would strand A2-11 through A2-20). Dispatcher will route to implement (verify-only) and then review, which is where this sprint needs to land.
+- Files_changed: tests/test_scenarios/test_scenario_dilemma_permanent_closure.py, tests/test_scenarios/test_scenario_dilemma_view_pop.py, requirements/roadmap/ROADMAP.md
+- Commits: 084dcec (sprint work), b365934 (lint cleanup)
+- Tests_added: 99 (across 4 sprint test files from 084dcec)
+- Tests_baseline: 11259
+- Tests_passing: 11257 (2 known xdist flakes; both pass individually — pre-existing contention documented in memory)
+- Tests_skipped: 101
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no new flags added in this agent pass)
+- Writing_bible_clean: n/a (no player-facing content)
+- Touch_zones_respected: yes
+- Notes: Work was already committed in 084dcec; this agent verified all 9 acceptance criteria are satisfied by existing tests, fixed 3 ruff lint errors in the sprint test files, and confirmed 99/99 sprint tests green. The 2 full-suite failures are pre-existing xdist flakes (both pass in serial runs), not sprint regressions.
 ---
 
 #### A2-11 — Scars
