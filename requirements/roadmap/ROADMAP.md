@@ -129,7 +129,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
-| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | in-progress | A2-1 |
+| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
@@ -11791,7 +11791,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12191,24 +12191,24 @@ cohesion sprints.
 - 2026-08-30 22:55 — planner re-entered after 8221ec6 reset blocked -> todo. Work is already on disk at commit 58da3d9 ("A2-6: lens definitions 9-16") and its tests are green. Verified: `data/narrative/lenses.json` has 16 lens dicts in the expected insertion order (vengeance, wealth, political_power, exploration, discovery, justice, crime, revolution, empire, community, legacy, faith, transcendence, connection, truth, preservation); `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_compliance/test_prose_anti_patterns.py -q` = 92 passed / 1 skipped in 0.87s. The three new test classes named in the sprint's Deliverables are present in `test_lens_content_uniqueness.py` (`TestEmpireTrioDistinctness`, `TestCommunityWealthSameWound`, `TestTruthVengeanceCompatibility`). Writing PHASE_OK per the updated planner prompt (91c263a, "tell planners what to do when the sprint is already implemented") so the dispatcher routes implement -> review -> gate; the implementer will verify rather than duplicate, and the reviewer will re-verify against the 11063/100 pre-phase baseline. PHASE_OK
 - 2026-08-30 22:55 — harness: implement phase starting (rework cycle 0)
 - 2026-08-30 23:10 — implementation verified: work already on disk at 58da3d9; all 9 acceptance criteria confirmed green (92 lens-surface tests pass, full suite 11063/100, lint/format clean). PHASE_OK
-
+- 2026-08-30 23:08 — harness: review phase starting (rework cycle 0)
+- 2026-08-30 23:30 — review complete; all 9 acceptance criteria verified, plan audit sound, content quality strong. One parallel-run timeout flake (test_dialogue_integrity.py::test_no_new_consumer_only_flags, 82s runtime) confirmed pre-existing by serial rerun — unrelated to A2-6 touch zones. PHASE_OK
+- 2026-08-30 23:29 — harness: review passed, marking done
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-30 22:55
-- Completed: 2026-08-30 23:10
-- Files_changed: data/narrative/lenses.json, tests/test_compliance/test_lens_content_uniqueness.py, tests/test_models/test_lens.py
-- Commits: 58da3d9 (implementation committed 2026-08-30 21:21 by supervisor after agent crash)
-- Tests_added: 17 (TestEmpireTrioDistinctness: 4, TestCommunityWealthSameWound: 3, TestTruthVengeanceCompatibility: 3, TestCommunityWealthSameWound in test_lens.py: 3, test_real_lenses_json count-bump: 1, investment_from tag pattern: 1, minigame_shape uniqueness extended: 1, authoring-guide drift check: 1)
-- Tests_baseline: 11063
-- Tests_passing: 11063
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: All work was already on disk at 58da3d9. Verified all 9 ACs: 16 lenses loaded, 17 uniqueness tests pass, community/wealth same-wound tests pass, investment_from regex clean, empire trio distinctness passes, truth/vengeance compatibility passes, count bump to 16, prose anti-patterns scanner clean, full suite green at 11063/100 (2 xdist flaky failures confirmed pre-existing by serial rerun).
+- Started: 2026-08-30 23:08
+- Completed: 2026-08-30 23:30
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11063 (11062+1 xdist timeout flake in test_dialogue_integrity.py, confirmed pre-existing by serial rerun at 82s)
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: connection.sees "a message that went unanswered" is slightly passive compared to the rest of the lens's register (which is specific and active); "a message sitting unanswered in the queue" would have sharper texture. Not a blocker -- current phrasing passes all tests and reads correctly.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; locked decisions on forward-referenced tags, prose-field length, tier_unlocks count, no-guide-paste voice, Legacy/Preservation fresh NPCs, and test-file location all defensible. Eight lenses deliver strong, distinct registers: Truth's source-skeptical methodical voice and Faith's "better question than the one you arrived with" wants are the standout craft moments. Timeout flake in dialogue integrity test is pre-existing (slow full-scan test, 82s serial, unrelated to lenses.json).
 ---
 
 #### A2-7 — Per-lens readings on locations
