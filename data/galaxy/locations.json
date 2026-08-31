@@ -132,7 +132,14 @@
         "name": "The Deep Shafts",
         "location_type": "unique",
         "description": "The oldest mining tunnels in Breakstone. Section 3 preserves the cargo bay where the Uprising began.",
-        "flavor_text": "The walls here are scarred with a century of drill marks. A bronze plaque marks where Sora Takahashi spoke. Miners still leave flowers."
+        "flavor_text": "The walls here are scarred with a century of drill marks. A bronze plaque marks where Sora Takahashi spoke. Miners still leave flowers.",
+        "lens_readings": {
+          "community": "The walls still carry the strike marks from the day 3,000 miners refused to leave. Every crack in this rock is someone's decision.",
+          "revolution": "Section 3 is where the foremen lost control. Workers gathered here and did not disperse, and the Expanse is different now because of it.",
+          "preservation": "The shaft markers from the Uprising year still hang above the entrance. Nobody has taken them down, and nobody will.",
+          "legacy": "Sora Takahashi spent her last shift in this tunnel. The memorial plaque is small, but the miners keep the dust off it.",
+          "faith": "The older workers call this the honest rock. It does not lie about how hard the work is, and it gives back what you put in."
+        }
       },
       {
         "id": "breakstone_investment",
@@ -333,7 +340,14 @@
         "name": "Restricted Research Wing",
         "location_type": "unique",
         "description": "Entire sections of Nova are off-limits. Armed guards, biometric locks, and persistent rumors about what's inside.",
-        "flavor_text": "A researcher hurries past with a sealed container. She doesn't make eye contact. The guard watches you watch her."
+        "flavor_text": "A researcher hurries past with a sealed container. She doesn't make eye contact. The guard watches you watch her.",
+        "lens_readings": {
+          "truth": "What fills those sealed containers has never been published. The guards follow orders that predate the current administration by twelve years.",
+          "discovery": "Most of what lines these corridors is classified. Whether it answers old questions or creates new ones, no one outside has seen it.",
+          "transcendence": "The experiments past that security threshold were not supposed to leave traces. Some researchers who worked here say they still do.",
+          "crime": "The work behind those biometric locks is legal only because the people doing it wrote the definitions. That is a meaningful distinction.",
+          "justice": "Someone decided what research is too dangerous for the public to know. Whether they were right is the exact question the labs were built to avoid."
+        }
       },
       {
         "id": "nova_research_investment",
@@ -461,7 +475,14 @@
         "name": "Debris Field Operations",
         "location_type": "salvaging",
         "description": "The richest salvage grounds in the Expanse. Old battles and abandoned stations provide endless material.",
-        "flavor_text": "Wrecker crews launch at dawn and return at dusk with holds full of history. One person's wreck is another's livelihood."
+        "flavor_text": "Wrecker crews launch at dawn and return at dusk with holds full of history. One person's wreck is another's livelihood.",
+        "lens_readings": {
+          "wealth": "The salvage calculations here favor those who got here first. Three hours in good debris covers six months of running costs.",
+          "preservation": "Most of what floats out there is still useful to someone. Wreckers catalogued intact components from seven ship classes last season alone.",
+          "discovery": "No two salvage runs surface the same cargo. The field shifts after every tidal pass, so yesterday's clear patch is today's find.",
+          "community": "Wreckers don't work this field alone. Two-person pulls are standard here, and someone always broadcasts when fresh wreckage drifts in.",
+          "vengeance": "Half the hulks here fell in disputes over exactly this kind of territory. The crews who claimed it are gone. The wreckage stays."
+        }
       },
       {
         "id": "crimson_wreckers_guild",

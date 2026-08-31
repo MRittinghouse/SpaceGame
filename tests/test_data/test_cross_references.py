@@ -885,3 +885,73 @@ class TestCrewCrossReferences:
                     f"'{template.faction_id}' does not exist in factions"
                 )
         assert not errors, "\n".join(errors)
+
+
+# ---------------------------------------------------------------------------
+# A2-7 — Lens reading cross-reference validation
+# ---------------------------------------------------------------------------
+
+
+class TestLensReadingReferences:
+    """Every key in every location's lens_readings must be a real lens id (A2-7)."""
+
+    def test_every_lens_reading_key_is_a_real_lens_id(self) -> None:
+        """Walk all locations: every lens_readings key must be in loader.lenses."""
+        loader = _get_loader()
+        lens_ids = set(loader.lenses.keys())
+        errors = []
+        for system_id, locs in loader.locations.items():
+            for loc in locs:
+                for lens_key in loc.lens_readings:
+                    if lens_key not in lens_ids:
+                        errors.append(
+                            f"Location '{loc.id}' in system '{system_id}' references "
+                            f"lens '{lens_key}' which does not exist"
+                        )
+        assert not errors, "\n".join(errors)
+
+    def test_injected_bad_lens_id_fails_the_check(self) -> None:
+        """A location with a bogus lens_readings key is caught by the guard."""
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from spacegame.data_loader import DataLoader
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            galaxy_dir = tmp_path / "galaxy"
+            galaxy_dir.mkdir()
+            bad_locations_data = {
+                "locations": {
+                    "test_system": [
+                        {
+                            "id": "bad_loc",
+                            "name": "Bad Location",
+                            "location_type": "market",
+                            "description": "Has a bad lens id.",
+                            "flavor_text": "",
+                            "repair_cost_per_hp": 0,
+                            "lens_readings": {"not_a_real_lens": "Something suspicious."},
+                        }
+                    ]
+                }
+            }
+            (galaxy_dir / "locations.json").write_text(
+                json.dumps(bad_locations_data), encoding="utf-8"
+            )
+            scratch_loader = DataLoader(data_dir=tmp_path)
+            scratch_loader.load_locations()
+            # lenses is empty (no lenses.json in tmp_path) — all keys are bad
+            lens_ids: set[str] = set(scratch_loader.lenses.keys())
+            errors = []
+            for system_id, locs in scratch_loader.locations.items():
+                for loc in locs:
+                    for lens_key in loc.lens_readings:
+                        if lens_key not in lens_ids:
+                            errors.append(
+                                f"Location '{loc.id}' in system '{system_id}' references "
+                                f"lens '{lens_key}' which does not exist"
+                            )
+            assert errors, "Expected the guard to flag the bad lens id but it did not"
+            assert any("not_a_real_lens" in e for e in errors)
