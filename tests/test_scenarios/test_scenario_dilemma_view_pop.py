@@ -19,7 +19,7 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 import pygame
 import pygame_gui
 
-from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
+from spacegame.config import GameState
 from spacegame.engine.state_manager import StateManager
 from spacegame.models.dilemma import Dilemma, DilemmaOutcome
 from spacegame.views.base_view import BaseView
@@ -88,7 +88,6 @@ class TestDilemmaViewPopState:
         """Pushing DILEMMA_RESOLUTION over TRADING, then popping, gives TRADING."""
         ensure_pygame()
         ui_manager = fresh_ui_manager()
-        screen = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
 
         state_manager = StateManager()
         mock_trading = _MockView()

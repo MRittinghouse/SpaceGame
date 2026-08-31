@@ -14,7 +14,6 @@ from spacegame.constants.flags import dilemma_resolved, lens_closed
 from spacegame.models.dilemma import (
     Dilemma,
     DilemmaOutcome,
-    DilemmaRuntimeState,
     check_dilemmas,
     resolve,
 )
