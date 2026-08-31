@@ -13225,7 +13225,7 @@ crew-banter reactivity - not this one.
 - Started: 2026-08-31 05:44
 - Completed: 2026-08-31 (re-verification pass)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: ae2c98f
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (prior planning already folded in round-robin-telegraph-redelivery
   and compliance-guard-green-assertion; this pass added nothing further)
