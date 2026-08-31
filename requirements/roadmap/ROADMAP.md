@@ -128,7 +128,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
-| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | in-progress | A2-1 |
+| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11771,7 +11771,7 @@ sprints.
 - 2026-08-30 21:55 — implementation agent: another false-positive stuck-sprint recovery. Sprint A2-5 was fully implemented at commit 8f63460 and reviewed PHASE_OK 2026-08-29 14:30. Verified live: 16 lenses loaded, targeted compliance suite 56 passed / 1 expected skip (test_lens_content_uniqueness, test_lens_registry, test_lens_authoring_guide, test_prose_anti_patterns), lint clean, format clean. Full parallel suite shows 11062/100 with 1 flaky xdist failure (test_no_new_consumer_only_flags passes in isolation — pre-existing session-0 contention documented in project memory, not caused by A2-5). No code changes made. PHASE_OK
 - 2026-08-30 21:50 — harness: review phase starting (rework cycle 0)
 - 2026-08-30 22:30 — review complete; all 9 acceptance criteria verified; plan audit sound; zero critical findings; one minor observation noted. Pre-existing xdist flake (test_no_new_consumer_only_flags) passes in isolation — not caused by A2-5. PHASE_OK
-
+- 2026-08-30 22:08 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK

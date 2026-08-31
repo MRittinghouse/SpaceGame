@@ -1,40 +1,26 @@
 # Ralph Status
 
-_Updated: 2026-08-29 14:41:47_
-
-## CRASH-LOOP
-
-Supervisor stopped after repeated failures.
-Reason: stopping: 3 consecutive failures
-Nothing will resume until a human intervenes.
-
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
-
-## STALE HEARTBEAT
-
-No beat in over 10 minutes (24 minutes ago) -- past the age at which the supervisor kills a harness as wedged. The process may have died, or the machine rebooted mid-sprint and left this file behind; its age alone does not mean a run is live.
+_Updated: 2026-08-30 22:13:59_
 
 ## Now
 
-- Sprint: **A2-6**
-- Phase: **implement**
-- Last beat: **24 minutes ago** -- **STALE**
-- Beat PID: 38720 -- **NOT RUNNING**
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **15 seconds ago**
+- Beat PID: 13356 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 32
-- eligible: 2
-- in flight: A2-5 (in-progress (reviewing)), A2-6 (in-progress (implementing))
+- todo: 33
+- eligible: 3
+- in flight: none
 - blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (just now)
-- last successful push: just now
+- last push: **OK** (32 hours ago)
+- last successful push: 32 hours ago
 
 ## Blocks drift
 
@@ -48,6 +34,4 @@ No beat in over 10 minutes (24 minutes ago) -- past the age at which the supervi
 
 ## Recent
 
-- harness exit rc=4
-- harness exit rc=4
-- harness exit rc=4
+- A2-5 ok
