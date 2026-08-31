@@ -132,7 +132,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
-| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | in-progress | A2-8 |
+| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
@@ -13544,7 +13544,7 @@ crew-banter reactivity - not this one.
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: S | **Effort**: 2-3 days
 **Depends on**: A2-8 | **Blocks**: A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19
 
@@ -13715,6 +13715,8 @@ crew banter, or UI copy that any other sprint would react to).
 - 2026-08-31 16:42 — harness: plan phase starting
 - 2026-08-31 17:15 — planning complete; verified all 4 context docs exist; folded 2
 - 2026-08-31 17:24 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 17:38 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 18:02 — harness: review passed, marking done
   additional invariants (telegraph_lines non-empty, collision_requires in range) into
   the deliverables + meta-tests; locked 3 decisions (empty-registry handling, injection
   mechanism, scope expansion); Plan section filled with 5 tasks; cross-sprint reactions
@@ -13728,27 +13730,25 @@ crew banter, or UI copy that any other sprint would react to).
 - 2026-08-31 17:45 — implementation verify-only: sprint file 19 passed + 1 skipped;
   lint/format clean; full suite 11223 passed + 4 xdist-flaky (those 4 pass serially,
   pre-existing known issue); baseline effective match 11227. All 6 AC satisfied. PHASE_OK
+- 2026-08-31 18:00 — review complete; all 6 AC verified against sprint file and model;
+  lint/format clean; compliance suite 139 passed, 3 skipped; no critical findings;
+  single tighten noted (set-dedup gap in pole/outcome mismatch helper). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 17:35
-- Completed: 2026-08-31 17:45
+- Started: 2026-08-31 17:50
+- Completed: 2026-08-31 18:00
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: a424bac (pre-existing implementation commit)
-- Tests_added: 19 (plus 1 skip)
-- Tests_baseline: 11227
-- Tests_passing: 11223 (+ 4 xdist-flaky that pass serially = effective 11227)
-- Tests_skipped: 101
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Verify-only pass. Implementation committed at a424bac before stuck-sprint
-  recovery. Sprint file: 19 passed + 1 skipped. 4 suite failures are pre-existing
-  xdist flakiness (confirmed: all 4 pass when run serially). All 6 AC satisfied by
-  existing tests/test_compliance/test_dilemma_integrity.py.
+- Commits: none
+- Tests_passing: 11227 (effective; compliance suite 139 passed + 3 skipped; sprint file 19 passed + 1 skipped)
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: _dilemmas_with_pole_outcome_mismatch uses set() comparison — a dilemma with duplicate poles matching duplicate outcome winning_lens_ids would pass; a len() guard would close this. Not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all 3 locked decisions defensible. Sprint is test-only (no model or engine changes); helpers follow the test_findings_register.py pattern exactly; skip message matches AC 4 verbatim; meta-verification covers all 6 invariant pairs; lint/format clean.
 ---
 
 #### A2-10 — Permanent closure + save/load
