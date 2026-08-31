@@ -132,7 +132,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
-| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
+| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | in-progress | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
@@ -13544,7 +13544,7 @@ crew-banter reactivity - not this one.
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: S | **Effort**: 2-3 days
 **Depends on**: A2-8 | **Blocks**: A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19
 
@@ -13571,10 +13571,12 @@ threshold pair fails silently instead of loudly.
 
 **Deliverables.**
 - `tests/test_compliance/test_dilemma_integrity.py` with, at minimum:
-  - `test_register_exists_and_has_rows`-equivalent: loads `DataLoader.dilemmas` and asserts
-    at least one dilemma is present once any dilemma-content sprint has landed; does not
-    fail (skips with a clear message) if zero dilemmas exist yet, since this sprint is
-    expected to land before any of A2-12 through A2-19 do.
+  - `test_register_present_when_any_content_landed`: loads `DataLoader.dilemmas` and asserts
+    at least one dilemma is present once any dilemma-content sprint has landed; when the
+    registry is empty, `pytest.skip(...)` with a named reason ("no dilemma content yet;
+    A2-12..A2-19 will populate this"), so the vacuous-pass path is explicit rather than
+    silent. All other invariant tests below run unconditionally against the empty registry
+    and pass vacuously (empty registry → no offenders), which is the correct behaviour.
   - `test_every_outcome_has_tier_unlocks`: every `DilemmaOutcome` in every loaded `Dilemma`
     has a non-empty `tier_unlocks` list. Failure message lists `dilemma_id` and
     `winning_lens_id` for every offending outcome.
@@ -13587,24 +13589,154 @@ threshold pair fails silently instead of loudly.
   - `test_poles_and_outcomes_agree`: every `Dilemma.poles` entry has exactly one matching
     `DilemmaOutcome.winning_lens_id`, and vice versa (catches a dilemma authored with a
     typo'd pole/outcome mismatch).
+  - `test_telegraph_lines_non_empty` (folded in during planning): every `Dilemma` has
+    `len(telegraph_lines) >= 1`. Rationale: the model docstring on `Dilemma` explicitly
+    requires this ("the round-robin cursor arithmetic requires it"); a dilemma authored with
+    an empty list would `IndexError` at runtime the first time the telegraph fired. Same
+    "fail at build, not in play" pattern as the two named invariants.
+  - `test_collision_requires_within_pole_count` (folded in during planning): every `Dilemma`
+    has `1 <= collision_requires <= len(poles)`. Rationale: `collision_requires > len(poles)`
+    makes `check_collision` return False forever (dilemma can never fire, silent bug);
+    `collision_requires < 1` makes it fire immediately (dilemma always fires with zero
+    investment, also silent). One-line addition, same pattern.
+- All invariant checks are implemented as **pure module-level helper functions**
+  (`_outcomes_with_empty_tier_unlocks(dilemmas) -> list[tuple[str, str]]`,
+  `_dilemmas_with_bad_thresholds(dilemmas) -> list[tuple[str, int, int]]`, etc.) that
+  return offender lists. The `test_*` methods invoke these helpers against
+  `DataLoader.dilemmas`; the meta-verification tests (ACs 1-3) invoke the same helpers
+  against in-memory synthetic `Dilemma`/`DilemmaOutcome` instances. This shape means the
+  meta-tests never write to the data directory and never mutate the singleton loader.
+
+**Plan.**
+
+Task 1 — **Skeleton and pure helpers.** Create
+`tests/test_compliance/test_dilemma_integrity.py`. Add the module docstring (one short
+paragraph, following the shape of `test_findings_register.py`) and the six pure
+module-level helper functions listed under Deliverables. Add a small
+`_load_dilemmas() -> dict[str, Dilemma]` wrapper that calls `get_data_loader()`. No test
+methods yet — this task exists so the helpers can be reviewed in isolation before the
+tests wire them up.
+- Touches: `tests/test_compliance/test_dilemma_integrity.py` (NEW).
+- Test surface: `pytest tests/test_compliance/test_dilemma_integrity.py --collect-only`
+  passes (file imports cleanly).
+- Risk: none — pure functions over the model layer.
+
+Task 2 — **Real-content tests** (`class TestDilemmaIntegrity`). Six methods, one per
+invariant, each following the same shape: call `_load_dilemmas()`, pass to the matching
+helper, assert the returned offender list is empty with an f-string failure message that
+names every offender's `dilemma_id` plus the relevant field values. First method
+(`test_register_present_when_any_content_landed`) uses `pytest.skip(...)` with a named
+reason when the registry is empty. The other five run unconditionally.
+- Touches: same file.
+- Test surface: `pytest tests/test_compliance/test_dilemma_integrity.py -v` — 1 skip
+  (the "content landed" test), 5 vacuous passes.
+- Risk: none — helpers already exist from Task 1.
+
+Task 3 — **Synthetic-fixture meta-tests** (`class TestDilemmaIntegrityMetaVerification`).
+For each of the two named invariants plus the four folded/spec'd extras, construct one
+bad-fixture `Dilemma` (or `DilemmaOutcome`) in-memory, confirm the corresponding helper
+returns exactly one offender. Then construct the fixed variant, confirm the helper returns
+an empty list. Explicitly covers ACs 1 (empty `tier_unlocks`), 2 (equal thresholds), 3
+(telegraph above collision); the other three (closes empty, pole/outcome mismatch,
+telegraph_lines empty, collision_requires out of range) get the same meta-verification
+treatment for parity.
+- Touches: same file.
+- Test surface: 12 additional passing tests (six invariants × good/bad pair).
+- Risk: `DilemmaOutcome`'s `narration_summary` field is required — meta-fixtures must
+  supply a valid string, not omit it. Verified against `spacegame/models/dilemma.py:47-72`.
+
+Task 4 — **Format + lint scoped to the new file.** Run
+`ruff format tests/test_compliance/test_dilemma_integrity.py` and
+`ruff check tests/test_compliance/test_dilemma_integrity.py`. MyPy runs project-wide via
+the ratchet (`python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline
+filter`); this sprint touches no `spacegame/` code so the ratchet should be a no-op, but
+run it to confirm.
+- Risk: `AGENT_GUIDE.md` line 110 forbids the project-wide `ruff format spacegame/ tests/`
+  form during sprint work; scope stays limited to the one new file.
+
+Task 5 — **Full-suite verification** (AC 5). Run `pytest -n auto -q`; record the pass
+count in the phase report. Bar: pass count ≥ 11208 (pre-phase baseline). New tests should
+push the count to roughly 11208 + 6 real-content tests + 12 meta-verification tests = 11226,
+with 100 pre-existing skips + 1 new skip = 101.
+- Risk: xdist startup issues on this machine per `memory/ralph_suite_speed_and_stray_contention.md`.
+  If `-n auto` hangs, fall back to serial (`pytest -q`); the sprint's test set is small
+  enough that serial adds <5s.
+
+**Cross-sprint reactions to author.** None (foundational compliance guard, no player-facing
+surface — this sprint adds a build-time test and nothing else; there is no NPC, mission,
+crew banter, or UI copy that any other sprint would react to).
 
 **Acceptance criteria.**
 1. A synthetic `Dilemma` fixture with an outcome carrying `tier_unlocks=[]` fails
    `test_every_outcome_has_tier_unlocks` with a message naming the specific dilemma and pole
-   - verified by a test that injects the fixture via a temp data file or monkeypatched
-   loader, confirms the failure, then confirms removing the empty list makes it pass.
+   - verified by a meta-test that constructs the fixture in memory, invokes the helper
+   directly, confirms the offender list is `[(dilemma_id, winning_lens_id)]`, then confirms
+   the fixed variant (with `tier_unlocks=["some_flag"]`) yields `[]`.
 2. A synthetic `Dilemma` fixture with `telegraph_threshold=80, collision_threshold=80` (equal,
    not strictly less) fails `test_telegraph_strictly_below_collision` - verified the same way.
 3. A synthetic `Dilemma` fixture with `telegraph_threshold=90, collision_threshold=80`
    (telegraph above collision) also fails the same test.
 4. Running these tests against zero real dilemma content (the state immediately after this
-   sprint lands, before A2-12 runs) does not fail the suite - it either skips with a named
-   reason or passes vacuously, verified explicitly rather than left to chance.
-5. Full suite green; no regression from baseline.
+   sprint lands, before A2-12 runs) does not fail the suite - the "content landed" test
+   skips with the named reason `"no dilemma content yet; A2-12..A2-19 will populate this"`
+   and every other invariant test passes vacuously. Both branches are exercised: the skip
+   path today (registry empty), and once a real dilemma lands the skip is silently
+   converted to a pass without any test change required.
+5. Every synthetic-fixture pair in the meta-verification class exhibits the same
+   good/bad shape as ACs 1-3 — a bad fixture produces an offender, the fixed variant
+   produces none. This covers the four spec'd/folded invariants beyond the two named
+   ones: `closes` empty, pole/outcome mismatch, `telegraph_lines` empty,
+   `collision_requires` out of range.
+6. Full suite green; pass count ≥ 11208 (pre-phase baseline). No regression from baseline.
+
+**Risks / open questions.**
+- **[LOCKED]** Empty-registry behaviour: `pytest.skip(...)` on the "content landed" test
+  with a named reason; vacuous pass on every other invariant test. Rationale: skip makes
+  the "waiting for A2-12" state legible in test output; vacuous pass on the invariant
+  tests avoids threading `pytest.skip` through six methods where it adds noise (empty
+  offender list on empty input is already the correct answer).
+- **[LOCKED]** Meta-verification injection mechanism: pure in-memory `Dilemma` /
+  `DilemmaOutcome` construction passed to the module-level helpers, NOT temp JSON files
+  or monkeypatched loaders. Rationale: filesystem-touching tests are slower, race with
+  the singleton loader, and require setup/teardown; pure helpers give the same coverage
+  with none of that. The tradeoff is that the meta-tests don't exercise `DataLoader`'s
+  glob/parse path — but that path is already covered by `tests/test_data_loader.py`.
+- **[LOCKED]** Scope expansion: two invariants folded in during planning
+  (`telegraph_lines` non-empty, `collision_requires` within `1..len(poles)`) beyond the
+  five deliverables originally spec'd. Rationale: both are documented invariants in the
+  A2-8 model layer (`telegraph_lines` is required by the round-robin cursor per the
+  `Dilemma` docstring; `collision_requires` out of range produces silent-failure
+  dilemmas). One-line helper each, same pattern, and this sprint's whole purpose is
+  "make invariants build-failing instead of hoped-for" — leaving two documented
+  invariants unenforced defeats that. Total sprint size stays S.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-31 16:42 — harness: plan phase starting
+- 2026-08-31 17:15 — planning complete; verified all 4 context docs exist; folded 2
+  additional invariants (telegraph_lines non-empty, collision_requires in range) into
+  the deliverables + meta-tests; locked 3 decisions (empty-registry handling, injection
+  mechanism, scope expansion); Plan section filled with 5 tasks; cross-sprint reactions
+  = none. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-31 16:42
+- Completed: 2026-08-31 17:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (planner about to commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: test_telegraph_lines_non_empty; test_collision_requires_within_pole_count
+- Decisions_locked: 3
+- Notes: Sprint is test-only, one new file (tests/test_compliance/test_dilemma_integrity.py).
+  Verified all 4 context docs exist. Verified A2-9 has no existing commits and the target
+  file does not exist. Kept touch zones as originally spec'd. Folded two additional
+  documented invariants into scope (both one-line helpers, same pattern); the folding
+  keeps sprint at size S. Locked injection mechanism to pure in-memory fixtures over
+  filesystem/monkeypatch paths. Locked empty-registry handling to skip-on-"content landed"
+  + vacuous-pass on invariant tests. No cross-sprint reactions to author (foundational
+  compliance guard, no player-facing surface).
 ---
 
 #### A2-10 — Permanent closure + save/load
