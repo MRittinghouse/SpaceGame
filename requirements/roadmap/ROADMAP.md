@@ -12492,7 +12492,7 @@ the data, prove the shape, guard the invariants. Nothing more.
 - Started: 2026-08-30 22:17
 - Completed: 2026-08-30 22:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending)
+- Commits: 85160c1
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (all follow-ups logged as cross-sprint reactions for
   downstream sprints; A2-7 stays infrastructure-only per its "one-time code change so
