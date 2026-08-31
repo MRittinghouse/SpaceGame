@@ -126,7 +126,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
-| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | in-progress | A2-4, A2-5, A2-6 |
+| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | blocked | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
@@ -11340,7 +11340,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4A — First oblique investment consumer
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11505,7 +11505,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - 2026-08-31 02:10 — test red: 7 scenario tests written and confirmed failing (no _greeting_lines)
 - 2026-08-31 02:20 — wire-in complete (_greeting_lines helper + reactor in __init__); all 7 scenario tests green; fixed compliance scanner hit (comment contained forbidden token); committed 3633355
 - 2026-08-31 02:35 — full suite: 11094 passed, 100 skipped (+31 tests vs baseline 11063); known-flaky test_dialogue_integrity::test_no_new_consumer_only_flags fails under xdist but passes in isolation (83s test + parallel contention, pre-existing). All gates green. PHASE_OK
-
+- 2026-08-31 02:44 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: implement
 - Outcome: PHASE_OK
