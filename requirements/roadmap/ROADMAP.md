@@ -12196,7 +12196,7 @@ cohesion sprints.
 - Started: 2026-08-30 22:51
 - Completed: 2026-08-30 22:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 58da3d9 (prior implementation, already on master); this plan-phase note pending
+- Commits: 58da3d9 (prior implementation, already on master); ee38cb3 (this plan-phase note)
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (implementation already committed at 58da3d9; prior plan at 3a605a6 already locked all 6 open questions)
 - Decisions_locked: 0 (all six locked at 3a605a6)
