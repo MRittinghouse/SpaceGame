@@ -13329,7 +13329,7 @@ crew-banter reactivity - not this one.
 - Started: 2026-08-31 07:42
 - Completed: 2026-08-31 (post-revert re-plan)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (this phase's commit hash — see below)
+- Commits: cc46ac3
 - New_sprints_proposed: none
 - Polish_items_folded_in: none new this pass (prior planning already folded in
   round-robin telegraph re-delivery and compliance-guard-green assertion)
