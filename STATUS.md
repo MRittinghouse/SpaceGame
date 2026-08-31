@@ -1,17 +1,6 @@
 # Ralph Status
 
-_Updated: 2026-08-31 10:30:19_
-
-## Harness Did Not Run
-
-Baseline capture FAILED: pytest exited 1; tail: derer available
-    self.screen = pygame.display.set_mode(
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ===========================
-FAILED tests/test_engine/test_combat_atmosphere.py::TestDebrisRendering::test_dangerous_debris_uses_hud_warning
-FAILED tests/test_ralph/test_heartbeat.py::TestHeartbeat::test_thread_beats_repeatedly_then_stops
-2 failed, 11205 passed, 100 skipped, 42 warnings in 339.90s (0:05:39). Aborting run to avoid running agents with no baseline.
+_Updated: 2026-08-31 10:37:15_
 
 ## STARVED
 
@@ -31,16 +20,12 @@ STRANDED: 1 sprint(s) started and unfinished, 0 eligible. This is NOT completion
   A run was killed or stopped mid-sprint. Stuck-sprint recovery resets these to todo once they have gone untouched for IN_PROGRESS_STALE_MINUTES, so the next harness launch reclaims them; nothing further happens until then.
 ```
 
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
-
 ## Now
 
-- Sprint: **S**
-- Phase: **plan**
-- Last beat: **just now**
-- Beat PID: 35512 -- **NOT RUNNING**
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **29 seconds ago**
+- Beat PID: 37360 -- alive
 
 ## Queue
 
