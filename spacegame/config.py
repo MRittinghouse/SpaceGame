@@ -341,6 +341,9 @@ class GameState(Enum):
     GROUND_EXPLORATION = "ground_exploration"
     GROUND_RESULT = "ground_result"
 
+    # Act II dilemma states (A2-8+)
+    DILEMMA_RESOLUTION = "dilemma_resolution"
+
 
 # ============================================================================
 # PATHS
