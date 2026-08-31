@@ -129,8 +129,8 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
-| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | blocked | A2-1 |
-| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
+| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
+| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | in-progress | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
@@ -11791,7 +11791,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: blocked
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12186,6 +12186,7 @@ cohesion sprints.
 - 2026-08-30 22:14 — harness: plan phase starting
 - 2026-08-30 22:15 — planner re-entered after stuck-sprint recovery; A2-6 was already implemented at commit 58da3d9 ("A2-6: lens definitions 9-16") on 2026-08-30 21:21, which shipped `data/narrative/lenses.json` at 16 entries plus the extended test surfaces in `test_lens_content_uniqueness.py` and `test_lens.py`. Verified: `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py` = 79 passed / 1 skipped; `pytest tests/test_compliance/test_prose_anti_patterns.py` = 13 passed. Re-planning would produce a plan for work that no longer exists; the harness should route this sprint straight to review. PHASE_BLOCKED: already implemented at 58da3d9 (see also A2-5's identical 8f63460 recovery precedent).
 - 2026-08-30 22:16 — harness: plan phase outcome=blocked, marking blocked. already implemented at 58da3d9 (see also A2-5's identical 8f63460 recovery precedent).
+- 2026-08-30 22:18 — operator/session: reset blocked -> todo. The plan phase reported PHASE_BLOCKED "already implemented at 58da3d9" and the harness treated that as a terminal block, stranding A2-4A and A2-4B which both depend on A2-6. A2-5 hit the identical state minutes earlier and its planner emitted an ok sentinel instead, so it routed implement -> review -> gate -> done. Same situation, opposite outcome, decided by which sentinel the agent happened to write. A2-6 work is verified complete: 58da3d9 ships lenses.json at 16 entries plus extended test surfaces; lens surfaces 79 passed/1 skipped; full suite green at 11063 passing (which includes A2-6 tests). Reset to todo rather than done so it still goes through review.
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_BLOCKED
@@ -12201,7 +12202,7 @@ cohesion sprints.
 
 #### A2-7 — Per-lens readings on locations
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12265,7 +12266,7 @@ ever touches JSON.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
-
+- 2026-08-30 22:17 — harness: plan phase starting
 ---
 
 #### A2-8 — Dilemma model + threshold collision
