@@ -292,6 +292,22 @@ class Crawler:
         factory = self._fixtures.game_factory or Game
         self.game = factory()
 
+        # Never let the crawler talk to SDL_mixer. `pygame.mixer.music.unpause()`
+        # deadlocks intermittently and never returns, and because it blocks in a
+        # C call holding the GIL, pytest-timeout cannot interrupt it -- the whole
+        # pytest process wedges until killed from outside. py-spy caught it twice
+        # on live runs, both through this crawler's pause-menu handling, and it
+        # repeatedly took down the ralph harness's baseline and test gate.
+        #
+        # A headless fuzzer driving thousands of pause/resume cycles gains
+        # nothing from audio. Disabled per-instance, NOT through
+        # `get_audio_manager()`: that singleton is process-global, and under
+        # `pytest -n 0` this shares a process with tests asserting real mixer
+        # behaviour.
+        audio = getattr(self.game, "audio_manager", None)
+        if audio is not None and hasattr(audio, "disable"):
+            audio.disable()
+
         # Belt-and-braces: re-seed via Game.seed_rngs.
         if hasattr(self.game, "seed_rngs"):
             self.game.seed_rngs(self.config.seed)

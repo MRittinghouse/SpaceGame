@@ -119,3 +119,47 @@ class TestCrawlerBootstrap:
         )
         crawler.boot()
         assert crawler.coverage.states_reached["MAIN_MENU"] is True
+
+
+class TestCrawlerDisablesAudio:
+    """The crawler must not drive SDL_mixer.
+
+    `pygame.mixer.music.unpause()` deadlocks intermittently and never returns.
+    py-spy caught it twice on live runs, both times inside a crawler step:
+
+        resume_music -> _close_pause_menu -> _handle_pause_menu
+        -> Game.step -> Crawler.step_once
+
+    It blocks in a C call holding the GIL, so pytest-timeout's thread method
+    cannot fire; the entire pytest process wedges until killed from outside.
+    That repeatedly took down the ralph harness's baseline and test gate, in
+    both an interactive session and under the Scheduled Task.
+
+    The crawler is a headless fuzzer that drives thousands of pause/resume
+    cycles, so the audio is pure liability. It disables audio on its own Game
+    instance -- not on the `get_audio_manager()` singleton, which is
+    process-global and shared with tests asserting real mixer behaviour.
+    """
+
+    def test_boot_disables_audio_on_the_game(self) -> None:
+        crawler = Crawler(seed=1, actions=1)
+        crawler.boot()
+        assert crawler.game.audio_manager.enabled is False, (
+            "crawler booted a Game whose audio manager still talks to SDL_mixer"
+        )
+
+    def test_boot_tolerates_a_game_without_an_audio_manager(self) -> None:
+        """Fixture-injected fakes need not have one."""
+
+        class BareGame:
+            def __init__(self) -> None:
+                self.state_manager = FakeStateManager()
+
+            def seed_rngs(self, seed: int) -> None:
+                pass
+
+            def initialize_states(self) -> None:
+                pass
+
+        crawler = Crawler(seed=1, actions=1, fixtures=CrawlerFixtures(game_factory=BareGame))
+        crawler.boot()  # must not raise

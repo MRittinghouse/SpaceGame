@@ -82,6 +82,31 @@ class AudioManager:
         logger.info("Audio system initialized")
         self._load_manifest()
 
+    @property
+    def enabled(self) -> bool:
+        """True when this manager will actually talk to SDL_mixer."""
+        return self._enabled
+
+    def disable(self) -> None:
+        """Turn every audio call on this instance into a no-op, permanently.
+
+        For headless drivers that boot a real ``Game`` but must not touch
+        SDL_mixer. ``pygame.mixer.music.unpause()`` deadlocks intermittently and
+        never returns; because it blocks inside a C call holding the GIL,
+        pytest-timeout cannot interrupt it and the whole process wedges until
+        killed from outside. Measured twice on live runs, both reached through
+        the crawler's pause-menu handling, and it repeatedly took down the ralph
+        harness's test gate.
+
+        Per-instance on purpose. Disabling via ``get_audio_manager()`` would be
+        process-global, and under ``pytest -n 0`` the crawler shares a process
+        with tests that assert real mixer behaviour.
+
+        Idempotent, and there is deliberately no re-enable: a caller that wants
+        audio should not have disabled it.
+        """
+        self._enabled = False
+
     def _load_manifest(self) -> None:
         """Load audio manifest mapping IDs to file paths."""
         manifest_path = self._audio_dir / "manifest.json"

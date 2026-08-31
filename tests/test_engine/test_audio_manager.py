@@ -319,3 +319,52 @@ class TestSettingsPersistence:
             assert isinstance(mgr, AudioManager)
         finally:
             mod._audio_manager = old
+
+
+# ---------------------------------------------------------------------------
+# Explicit disable — headless drivers must not touch SDL_mixer
+# ---------------------------------------------------------------------------
+
+
+class TestAudioManagerDisable:
+    """`disable()` makes every audio call a no-op for the rest of the run.
+
+    Motivation is a measured deadlock, not tidiness. `pygame.mixer.music.unpause()`
+    wedges intermittently and does not return; py-spy caught it twice on live
+    runs, both reached the same way::
+
+        resume_music (spacegame/engine/audio_manager.py)
+        _close_pause_menu (spacegame/engine/game.py)
+        step (spacegame/engine/game.py)
+        step_once (tools/crawler/crawler.py)
+        test_crawler_determinism_across_two_runs (tests/test_crawler/...)
+
+    It holds the GIL inside a C call, so pytest-timeout's thread method cannot
+    fire and the whole pytest process wedges until something kills it from
+    outside. That took down the ralph harness's baseline and gate repeatedly.
+
+    The crawler is a headless fuzzer driving thousands of pause/resume cycles,
+    so it has no reason to be talking to SDL_mixer at all. `disable()` is how it
+    opts out, per-instance -- deliberately NOT via the `get_audio_manager()`
+    singleton, which is process-global and shared with the tests below that
+    assert real mixer behaviour.
+    """
+
+    def test_disable_makes_music_calls_no_ops(self) -> None:
+        mgr = AudioManager()
+        mgr.disable()
+        assert not mgr.enabled
+
+        # Would raise or block if these reached SDL_mixer.
+        with patch("pygame.mixer.music.unpause") as unpause:
+            with patch("pygame.mixer.music.pause") as pause:
+                mgr.resume_music()
+                mgr.pause_music()
+        unpause.assert_not_called()
+        pause.assert_not_called()
+
+    def test_disable_is_idempotent(self) -> None:
+        mgr = AudioManager()
+        mgr.disable()
+        mgr.disable()
+        assert not mgr.enabled
