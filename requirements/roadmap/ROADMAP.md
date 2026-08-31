@@ -128,8 +128,8 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
-| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | in-progress | A2-1 |
-| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | in-progress | A2-1 |
+| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
+| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: in-progress (reviewing)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11764,7 +11764,7 @@ sprints.
 - 2026-08-29 14:02 — implementation agent: verified existing commit 8f63460; all A2-5 acceptance criteria satisfied. Ran targeted compliance suite (47/47 pass, 1 expected skip); compliance+model+writing_bible (6385 passed, 4 skipped); dialogue_integrity (19/19 passed); non-slow directories (1506/1506 passed). -n auto run has pre-existing xdist worker-crash in session-0 (documented in memory); not a new regression. Lint clean, format clean, mypy clean. PHASE_OK
 - 2026-08-29 12:49 — harness: review phase starting (rework cycle 0)
 - 2026-08-29 14:30 — review complete; all 9 acceptance criteria verified; plan audit sound; zero critical findings; one minor observation noted. PHASE_OK
-
+- 2026-08-30 21:28 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
@@ -11784,7 +11784,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: in-progress (implementing)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12175,6 +12175,7 @@ cohesion sprints.
 - 2026-08-29 13:23 — harness: plan phase starting
 - 2026-08-29 15:15 — planning complete; verified all 6 context-to-read docs exist; the file listed as `tests/test_compliance/test_lens_content_uniqueness.py` is EXTEND (A2-5 landed it) rather than NEW as the original section said; locked 6 open decisions (forward-referenced tags, prose-field length, tier_unlocks count, no-guide-paste voice, Legacy/Preservation NPCs are fresh not character_voices.md, distinctness test file location, no additional empty-registry guard); expanded acceptance criteria from 5 to 9 (added Empire-trio distinctness, truth-avoids-pursuit-vocabulary, test_real_lenses count-bump, prose-anti-patterns scanner clean, and baseline pin to 11041/100); added 7-task Plan section with test surfaces and gotchas; added Cross-sprint reactions (foundational data, mechanical surface only, no player-facing content). PHASE_OK
 - 2026-08-29 13:32 — harness: implement phase starting (rework cycle 0)
+- 2026-08-30 21:28 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
