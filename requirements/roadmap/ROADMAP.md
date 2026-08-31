@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | blocked | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | blocked | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12271,7 +12271,7 @@ ever touches JSON.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -12280,7 +12280,7 @@ only when the required poles cross threshold simultaneously, the guaranteed-deli
 telegraph mechanism, and the modal view the player resolves a collision through. This is the
 mechanical core every one of the eight dilemma-content sprints and the two integrity/closure
 sprints build on. No real dilemma content is authored here - this sprint proves the engine
-with one synthetic test fixture, the same way A2-1 proves the lens registry before A2-5/A2-6
+with synthetic test fixtures, the same way A2-1 proves the lens registry before A2-5/A2-6
 add real lenses.
 
 **Context to read.**
@@ -12292,8 +12292,9 @@ add real lenses.
 - `spacegame/models/ambient_dialogue.py` - `AmbientLine`, `AmbientDialogueManager`; the
   telegraph reuses this fire-and-forget delivery shape rather than requiring the player to
   seek out a conversation.
-- `spacegame/engine/game.py` lines ~4388-4412 (`_trigger_crew_reaction`) - the existing
-  `action_type`-keyed hook point investment-raising and telegraph-checking both attach to.
+- `spacegame/engine/game.py` lines ~4388-4412 (`_trigger_crew_reaction`) and the seven call
+  sites (grep `_trigger_crew_reaction`) - the existing `action_type`-keyed hook point that
+  investment-raising and telegraph-checking both attach to.
 - `spacegame/views/tutorial_narration_modal.py` and `spacegame/views/event_notification_view.py`
   - the existing push-state overlay pattern this sprint's dilemma-resolution modal follows.
 - `spacegame/engine/state_manager.py` - `push_state()` / `pop_state()`.
@@ -12301,28 +12302,44 @@ add real lenses.
 - `spacegame/constants/flags.py` and `requirements/si3_flag_registry_cookbook.md` - the flag
   is written by the dilemma engine and read by dialogue/station-chatter, a cross-module flag
   by the cookbook's own rule, so it belongs here, not inline.
-- `spacegame/data_loader.py` - an existing `_parse_*` method (e.g. `_parse_mission`) as the
-  template for `_parse_dilemmas()`.
+- `spacegame/data_loader.py` - `load_lenses()` at line 738 is the direct template for
+  `load_dilemmas()` (glob + duplicate-id check).
+- `spacegame/models/lens_investment.py` module docstring - names the dilemma engine and
+  telegraph as the *legitimate* model-layer readers of `player.lens_investment`. Compliance
+  test `tests/test_compliance/test_lens_investment_never_rendered.py` forbids `engine/` and
+  `views/` from touching the store - the load-bearing consequence for A2-8 is that the
+  collision/telegraph check must go through a model-layer coordinator, not a direct read
+  from `game.py`.
+- `spacegame/models/capstone.py` `should_fire()` at line 141 - the module-level pure
+  predicate shape this sprint follows for `check_collision` / `check_telegraph`.
+- `spacegame/save_manager.py` lines 443-463 - the exact splice window (adjacent to
+  `lens_investment`) where `dilemma_state` serialization is inserted.
 
 **Touch zones.**
 - `spacegame/models/dilemma.py` (NEW)
 - `data/narrative/dilemmas/` (NEW directory; this sprint adds no real dilemma files, only a
-  `.gitkeep` or equivalent plus test fixtures under `tests/`)
-- `spacegame/data_loader.py` (`_parse_dilemmas()`, `DataLoader.dilemmas: dict[str, Dilemma]`)
-- `spacegame/models/player.py` (new fields, see Deliverables)
+  `.gitkeep` sentinel. Test fixtures live inline in test files via `Dilemma(...)`
+  construction so A2-9's future integrity guard has no bogus fixture in production data)
+- `spacegame/data_loader.py` (`load_dilemmas()`, `DataLoader.dilemmas: dict[str, Dilemma]`)
+- `spacegame/models/player.py` (add `dilemma_state: DilemmaRuntimeState` field)
+- `spacegame/save_manager.py` (splice `dilemma_state` serialization adjacent to
+  `lens_investment`)
 - `spacegame/constants/flags.py` (`dilemma_telegraphed(dilemma_id)`,
-  `dilemma_resolved(dilemma_id)`, `lens_closed(lens_id)` helpers)
-- `spacegame/engine/game.py` (telegraph check + collision check wired alongside
-  `_trigger_crew_reaction` call sites; new state transition handling)
+  `dilemma_resolved(dilemma_id)`, `lens_closed(lens_id)` helpers + inverse extractors)
+- `spacegame/engine/game.py` (new `_after_player_action(action_type)` wrapper that calls
+  `_trigger_crew_reaction` then the model-layer `check_dilemmas` coordinator; replaces the
+  seven `_trigger_crew_reaction(x)` call sites; new state-registration for
+  `GameState.DILEMMA_RESOLUTION`)
 - `spacegame/config.py` (`GameState.DILEMMA_RESOLUTION`)
 - `spacegame/views/dilemma_resolution_view.py` (NEW)
 - `tests/test_models/test_dilemma.py` (NEW)
 - `tests/test_scenarios/test_scenario_dilemma_thresholds.py` (NEW)
+- `tests/test_scenarios/test_scenario_save_load.py` (extend with `TestSaveLoadDilemmaState`)
 
 **Deliverables.**
 - `spacegame/models/dilemma.py`:
   - `DilemmaOutcome` dataclass: `winning_lens_id: str`, `closes: list[str]` (lens ids
-    permanently closed by this outcome), `tier_unlocks: list[str]` (non-empty; not
+    permanently closed by this outcome), `tier_unlocks: list[str]` (not
     enforced yet - A2-9 adds the build-failing guard), `outcome_flag: str`,
     `narration_summary: str`. `to_dict()`/`from_dict()`.
   - `Dilemma` dataclass: `id: str`, `poles: list[str]` (2 or 3 lens ids - the model must not
@@ -12331,36 +12348,62 @@ add real lenses.
     triangle), `telegraph_threshold: int`, `collision_threshold: int`, `telegraph_npc_id:
     str`, `telegraph_lines: list[str]`, `outcomes: list[DilemmaOutcome]` (one per pole).
     `to_dict()`/`from_dict()`.
-  - `check_collision(dilemma: Dilemma, investment: LensInvestment) -> bool` - pure function,
-    true iff at least `collision_requires` of `dilemma.poles` individually have investment
-    `>= dilemma.collision_threshold`.
-  - `check_telegraph(dilemma: Dilemma, investment: LensInvestment) -> bool` - true iff at
-    least `collision_requires` of `dilemma.poles` individually have investment `>=
+  - `DilemmaRuntimeState` dataclass: `telegraphed: set[str]` (dilemma ids where the
+    telegraph has fired at least once), `telegraph_cursor: dict[str, int]` (per-dilemma
+    round-robin index into `telegraph_lines` so re-deliveries cycle rather than repeat one
+    line; wraps modulo `len(telegraph_lines)`), `resolved: dict[str, str]` (dilemma id to
+    winning lens id), `closed_lenses: set[str]` (populated by A2-10, but the field ships now
+    so A2-10 needs no save migration). `to_dict()`/`from_dict()` with missing-key defaults.
+  - `check_collision(dilemma, investment) -> bool` - pure module-level function, true iff at
+    least `dilemma.collision_requires` of `dilemma.poles` individually have investment `>=
+    dilemma.collision_threshold`. Follows the `capstone.should_fire()` predicate shape.
+  - `check_telegraph(dilemma, investment) -> bool` - true iff at least
+    `dilemma.collision_requires` of `dilemma.poles` individually have investment `>=
     dilemma.telegraph_threshold`.
-- `DataLoader._parse_dilemmas()` globs `data/narrative/dilemmas/*.json`, each file shaped
-  `{"dilemmas": [...]}` with exactly one entry; populates `DataLoader.dilemmas`.
-- `Player.dilemma_state: DilemmaRuntimeState` (new small dataclass in `dilemma.py`, or plain
-  fields directly on `Player` - implementer's call, but must include at minimum:
-  `telegraphed: set[str]` (dilemma ids where the telegraph has fired at least once),
-  `resolved: dict[str, str]` (dilemma id to winning lens id), `closed_lenses: set[str]`.
-  Default-constructed, round-trips via `to_dict()`/`from_dict()` with missing-key defaults
-  per CLAUDE.md Save Migration rules.
-- Telegraph delivery: on every `action_type` event that also feeds `_trigger_crew_reaction`,
-  `Game` also checks each loaded dilemma's `check_telegraph()`. On first crossing, force-
-  deliver the telegraph line immediately via `self._mission_notifications.append(...)` (not
-  a random ambient-dialogue roll) and set `dialogue_flags[flags.dilemma_telegraphed(id)]`.
-  On every subsequent qualifying action while the dilemma remains uncollided, re-deliver
-  (persist, per the decomposition's Q1+Q2 consequence) rather than staying silent.
-- Collision: when `check_collision()` first becomes true for a dilemma not yet in
-  `player.dilemma_state.resolved`, `Game` pushes `GameState.DILEMMA_RESOLUTION` via
-  `push_state()`. `DilemmaResolutionView` presents the dilemma's poles as buttons (one per
-  pole currently at/above `collision_threshold`, plus any pole below threshold if
-  `len(poles) > collision_requires`, i.e. D3's third option) with no dismiss/cancel control.
-  Selecting one calls a resolution function (this sprint provides the plumbing; A2-10 owns
-  what "resolve" actually writes to the save).
-- `flags.py` additions: `dilemma_telegraphed(dilemma_id: str) -> str`,
-  `dilemma_resolved(dilemma_id: str) -> str`, `lens_closed(lens_id: str) -> str`, each with
-  the paired extractor per the SI-3 cookbook's parameterized-helper shape.
+  - `DilemmaCheckResult` dataclass: `newly_telegraphed: list[str]`,
+    `re_telegraphed: list[str]`, `newly_collided: list[str]`. Small typed return so the
+    engine coordinator can dispatch without a `dict[str, Any]`.
+  - `check_dilemmas(player, dilemmas) -> DilemmaCheckResult` module-level coordinator - the
+    only function `game.py` calls. Reads `player.lens_investment` inside the model layer so
+    the compliance test (which bans `lens_investment` tokens under `spacegame/engine/`)
+    stays green. Classifies each loaded dilemma into one of the three lists based on prior
+    `player.dilemma_state.telegraphed`/`resolved` sets and current investment.
+- `DataLoader.load_dilemmas()` globs `data/narrative/dilemmas/*.json`, each file shaped
+  `{"dilemmas": [...]}` with exactly one entry; populates `DataLoader.dilemmas`; empty
+  directory is not an error (returns `{}`). Directly mirrors `load_lenses()` including the
+  duplicate-id ValueError.
+- `Player.dilemma_state: DilemmaRuntimeState = field(default_factory=DilemmaRuntimeState)`.
+- `save_manager.py`: serialize `player.dilemma_state.to_dict()` under key `"dilemma_state"`
+  adjacent to `"lens_investment"`; load path defaults to `DilemmaRuntimeState()` when the
+  key is missing (legacy save).
+- Telegraph delivery: `_after_player_action(action_type)` calls the existing
+  `_trigger_crew_reaction(action_type)` then invokes `check_dilemmas`. For each dilemma id
+  in `newly_telegraphed`: append `f'{npc_name}: "{telegraph_lines[0]}"'` to
+  `self._mission_notifications`, set `dilemma_state.telegraphed.add(id)`, set
+  `dialogue_flags[flags.dilemma_telegraphed(id)] = True`, set
+  `dilemma_state.telegraph_cursor[id] = 1`. For each id in `re_telegraphed`: append the
+  next line using the cursor (mod `len(telegraph_lines)`), increment the cursor. No rate
+  limit - the decomposition's Q1+Q2 consequence requires persistence.
+- Collision: for each id in `newly_collided` (and only if `state_manager.current_state !=
+  GameState.DILEMMA_RESOLUTION`), the engine ensures `DilemmaResolutionView` is registered
+  (lazy `_ensure_dilemma_resolution_view(dilemma)` factory following the
+  `_ensure_ground_briefing_view` pattern) and calls `state_manager.push_state(...)`.
+  `_after_player_action` is a no-op whenever `state_manager.current_state ==
+  GameState.DILEMMA_RESOLUTION` so a queued follow-up action can't stack a second modal.
+- `DilemmaResolutionView(ui_manager, dilemma, on_resolve)`: constructor takes a `Dilemma`
+  and a `Callable[[str], None]` (the winning `lens_id`). Renders full-screen dim backdrop
+  plus centered panel (the `EventNotificationView` pattern), one button per pole eligible
+  for selection: every pole currently `>= dilemma.collision_threshold` PLUS any pole below
+  threshold if `len(poles) > collision_requires` (the D3 third-option case). No cancel
+  button, no Esc-to-dismiss handler. On button press: view calls `on_resolve(lens_id)` and
+  sets its own `dismissed` flag; engine `update()` sees `dismissed`, writes
+  `dilemma_state.resolved[id] = lens_id`, sets `dialogue_flags[flags.dilemma_resolved(id)]
+  = True`, calls `state_manager.pop_state()`. A2-10 extends the resolve callback with the
+  actual close-lens walk plus `tier_unlocks` flag setting; A2-8 ships just the plumbing.
+- `flags.py` additions per SI-3 parameterized-helper shape:
+  `dilemma_telegraphed(dilemma_id) -> str`, `dilemma_resolved(dilemma_id) -> str`,
+  `lens_closed(lens_id) -> str`, each with paired `extract_*` inverse; each with a
+  `_PREFIX` module constant referenced by both setter and extractor.
 
 **Acceptance criteria.**
 1. `check_collision()` returns `False` when only one pole of a two-pole dilemma is at or
@@ -12376,23 +12419,233 @@ add real lenses.
    to 90 and leaves the other at 0, confirms no collision fires and `GameState` never
    transitions to `DILEMMA_RESOLUTION`. Then drives both to 90, confirms the state
    transitions and the notification queue contains no further telegraph re-delivery once
-   `DILEMMA_RESOLUTION` is active. This satisfies design-spec Success Criterion 4.
+   `DILEMMA_RESOLUTION` is active. Satisfies design-spec Success Criterion 4.
 5. The telegraph line is delivered on the first qualifying action after crossing
    `telegraph_threshold` without requiring the player to initiate dialogue with
    `telegraph_npc_id` - verified by a scenario test that never calls any dialogue-open method
    and still observes the telegraph in `_mission_notifications`.
 6. A three-pole synthetic fixture (`collision_requires=2`) collides when exactly two of
    three poles cross threshold and the third remains at 0, proving the model is not
-   hard-coded to pairs.
+   hard-coded to pairs. The resolution view exposes a button for the third (below-threshold)
+   pole per the D3 rule.
 7. Save/load round-trips `player.dilemma_state` with an in-progress telegraphed-but-not-
-   resolved dilemma, verified in `tests/test_scenarios/test_scenario_save_load.py` (extend
-   the existing scenario rather than duplicating it).
-8. Full suite green; no regression from baseline. 20+ new tests across the two new test
-   files.
+   resolved dilemma including its `telegraph_cursor`, verified in
+   `tests/test_scenarios/test_scenario_save_load.py` (new `TestSaveLoadDilemmaState` class,
+   not a duplicate scenario file).
+8. Telegraph re-delivery cycles through `telegraph_lines` in order on subsequent qualifying
+   actions rather than repeating line[0] - verified by driving three back-to-back qualifying
+   actions with a synthetic dilemma having `telegraph_lines=["a", "b", "c"]` and asserting
+   `_mission_notifications` contains all three strings in order.
+9. Compliance guard `tests/test_compliance/test_lens_investment_never_rendered.py` remains
+   green: neither `spacegame/engine/game.py` nor `spacegame/views/dilemma_resolution_view.py`
+   contains the tokens `LensInvestment`, `lens_investment`, or
+   `from spacegame.models.lens_investment`. Enforces the "engine never reads investment
+   directly, always via the model-layer coordinator" rule.
+10. Full suite green; pass count `>=` baseline 11063 (pre-phase item L). 20+ new tests
+    across the new test files.
+
+**Risks / open questions.**
+
+Locked decisions (each removed from open questions with rationale):
+- ~~Where does the telegraph/collision check live in the engine call chain?~~ **Locked:
+  new `_after_player_action(action_type)` wrapper on `Game` that calls
+  `_trigger_crew_reaction` then `check_dilemmas`, and all seven existing
+  `_trigger_crew_reaction(x)` call sites migrate to the wrapper.** Rationale: keeps the
+  crew-reaction and dilemma-check paths in lockstep so a future action_type can't be added
+  that fires one but not the other. Uses one grep-able seam instead of seven parallel
+  edits.
+- ~~How does `game.py` avoid the `lens_investment` compliance-scan hit?~~ **Locked:
+  model-layer `check_dilemmas(player, dilemmas) -> DilemmaCheckResult` coordinator.**
+  Rationale: the compliance test in `tests/test_compliance/test_lens_investment_never_rendered.py`
+  forbids the tokens `LensInvestment`/`lens_investment` under `spacegame/engine/` or
+  `spacegame/views/`. A direct `player.lens_investment.is_at_or_above(...)` in `game.py`
+  fails the scan. Coordinator in `models/dilemma.py` reads the store, engine calls a plain
+  function - clean layering, and the compliance-test module docstring already names the
+  dilemma engine as a legitimate model-layer reader.
+- ~~Telegraph re-delivery on repeat: same line, rotate lines, or rate-limit?~~ **Locked:
+  round-robin through `telegraph_lines` via per-dilemma `telegraph_cursor`, no rate
+  limit.** Rationale: decomposition Q1+Q2 requires persistence ("the world keeps
+  signalling — repeated approaches from the telegraphing character as investment climbs,
+  rather than one line that can be walked past"). Cycling gives the character something
+  new to say each time rather than parroting; wrap-around handles authors who only wrote
+  one line. Rate-limiting would risk the collision landing between silences, which is the
+  ambush the spec explicitly forbids.
+- ~~Suppression while modal active?~~ **Locked: `_after_player_action` is a no-op
+  whenever `state_manager.current_state == GameState.DILEMMA_RESOLUTION`.** Rationale:
+  prevents a queued action mid-resolution from stacking a second modal, and matches the
+  scenario-test assertion in AC4 (no further telegraph once resolution is active).
+- ~~Modal backdrop: cache prior view or draw over blank?~~ **Locked: full-screen dim
+  backdrop plus centered panel, matching `EventNotificationView`.** Rationale: the
+  existing state-manager `render()` only calls the top state, so the underlying view is
+  not visible without extra caching logic. `EventNotificationView` already establishes the
+  convention. YAGNI to build a screenshot-cache for the first modal in this style.
+- ~~`data/narrative/dilemmas/` production content or empty?~~ **Locked: create the
+  directory with a `.gitkeep`; no JSON fixture files land in `data/`.** Rationale: A2-9's
+  integrity guard will fail the build on any dilemma missing `tier_unlocks`; a synthetic
+  fixture in production data would either force A2-9 to allowlist it or force A2-8 to
+  invent bogus `tier_unlocks`. Inline test fixtures via `Dilemma(...)` construction keep
+  A2-9's future guard clean and match the A2-1 pattern (lens registry ships empty until
+  A2-5/A2-6 authors real content).
+- ~~`Player.dilemma_state` shape: fields directly on Player, or sub-dataclass?~~
+  **Locked: `DilemmaRuntimeState` dataclass co-located in `spacegame/models/dilemma.py`.**
+  Rationale: matches the `WreckersGuildState` / `DeepShaftsState` / `AuctionState` pattern
+  already established on `Player`. Keeps the serialization surface a single `to_dict()`
+  call and gives A2-10 one place to extend when it adds closure semantics.
+- ~~Include `closed_lenses` field now or defer to A2-10?~~ **Locked: ship the field
+  now (empty by default), populate in A2-10.** Rationale: field-forward avoids a save
+  migration between A2-8 and A2-10. CLAUDE.md's Save Migration rule allows the reverse
+  (loading a legacy save with the field missing defaults to `set()`), but pre-declaring
+  the field means A2-10 only adds behavior, not schema.
+
+No unresolved open questions remain. If implementation surfaces one, block; do not guess.
+
+**Plan.**
+
+1. **Model foundations.** Create `spacegame/models/dilemma.py` with `DilemmaOutcome`,
+   `Dilemma`, `DilemmaRuntimeState`, `DilemmaCheckResult` dataclasses, `to_dict()`/
+   `from_dict()` on each of the three that persist, and pure module-level predicates
+   `check_collision(dilemma, investment)` and `check_telegraph(dilemma, investment)`. TDD in
+   `tests/test_models/test_dilemma.py`: predicate truth tables for 2-pole and 3-pole
+   fixtures, `collision_requires=2` on a 3-pole covering the "exactly two above" case,
+   telegraph-strictly-before-collision, `to_dict`/`from_dict` round-trip preservation of
+   `telegraph_cursor` values. Gotcha: predicates count poles individually above threshold,
+   not the sum - a 2-pole 90/10 must not collide. Files: `models/dilemma.py`,
+   `tests/test_models/test_dilemma.py`.
+2. **Model coordinator.** Add `check_dilemmas(player, dilemmas) -> DilemmaCheckResult`
+   module-level function in `dilemma.py` that reads `player.lens_investment` and
+   `player.dilemma_state` and classifies each loaded dilemma into `newly_telegraphed`,
+   `re_telegraphed`, `newly_collided`. Resolved dilemmas are skipped entirely. TDD:
+   synthetic player + registry; verify newly-telegraphed appears exactly once (moves to
+   re-telegraph on subsequent call after `telegraphed.add`); collision only for
+   never-resolved dilemmas; suppression in the caller is orthogonal (function is pure).
+   Gotcha: the same call cycle may put a dilemma in BOTH newly_telegraphed AND
+   newly_collided when the player's first qualifying action jumps investment past both
+   thresholds at once; the engine must fire the telegraph append then the modal push, in
+   that order, so the notification is visible in the queue when the modal opens. Files:
+   `models/dilemma.py`, `tests/test_models/test_dilemma.py`.
+3. **Data loader.** Add `DataLoader.dilemmas: dict[str, Dilemma] = {}` init, `load_dilemmas()`
+   method mirroring `load_lenses()` at line 738 (glob, duplicate-id `ValueError`, empty
+   directory returns `{}`). Wire into `load_all()`. Create empty `data/narrative/dilemmas/`
+   directory with a `.gitkeep` sentinel. TDD in `tests/test_data/test_data_loader.py` (or
+   colocated with existing lens-loader tests): empty directory OK, valid file loads,
+   duplicate-id file raises, malformed JSON raises with file name in message. Gotcha:
+   `load_dilemmas()` must not be called at module import time - it runs from `load_all()`,
+   and the data directory ships empty so production calls return `{}` in this sprint.
+   Files: `spacegame/data_loader.py`, `data/narrative/dilemmas/.gitkeep`.
+4. **Flags registry.** Add `dilemma_telegraphed(id)`, `dilemma_resolved(id)`,
+   `lens_closed(lens_id)` parameterized helpers to `spacegame/constants/flags.py` under a
+   new `# --- Dilemmas ---` section, each with a `_PREFIX` module constant and an
+   `extract_*` inverse (per SI-3 cookbook). TDD alongside the existing flag helper tests:
+   round-trip `id -> flag -> id` for each helper. Gotcha: call the helper inline at the
+   `dialogue_flags[...]` site (cookbook's rule) so the flag-integrity scanner traces the
+   producer/consumer.
+5. **Player wiring + save round-trip.** Add
+   `dilemma_state: DilemmaRuntimeState = field(default_factory=DilemmaRuntimeState)` to
+   `Player` (import from `models/dilemma.py`). Splice `"dilemma_state":
+   player.dilemma_state.to_dict()` into `save_manager.py`'s `_player_to_dict` (line 446
+   region, adjacent to `lens_investment`), and mirror the load-side default-to-empty in the
+   `from_dict` walk (line 619 region). Extend
+   `tests/test_scenarios/test_scenario_save_load.py` with a new `TestSaveLoadDilemmaState`
+   class asserting: telegraphed-but-not-resolved dilemma preserves `telegraphed` set,
+   `telegraph_cursor` cursor values, and `resolved` map; a legacy save without the
+   `dilemma_state` key loads with a default-empty state and no crash. Gotcha: `Player`
+   already imports non-view models; adding the import is a plain change - but the field's
+   `default_factory` avoids any `__init__` reorder that could break the many callers
+   constructing `Player` positionally in tests. Files: `spacegame/models/player.py`,
+   `spacegame/save_manager.py`, `tests/test_scenarios/test_scenario_save_load.py`.
+6. **GameState + view.** Add `GameState.DILEMMA_RESOLUTION = "dilemma_resolution"` to
+   `spacegame/config.py`. Create `spacegame/views/dilemma_resolution_view.py` extending
+   `BaseView`: `__init__(ui_manager, dilemma, on_resolve, current_investment)` where
+   `current_investment: dict[str, int]` is a snapshot passed by the engine so the view
+   never touches `player.lens_investment` (compliance-scan clean). One button per eligible
+   pole: `>=collision_threshold` always; below-threshold poles included iff
+   `len(dilemma.poles) > dilemma.collision_requires`. Full-screen dim + centered panel per
+   `EventNotificationView`. No Esc handler, no cancel button. On button press call
+   `on_resolve(pole_lens_id)` and set `self.dismissed = True`. TDD in
+   `tests/test_ui_layout/test_dilemma_resolution_view.py` (matches project convention for
+   view smoke tests): headless smoke, right button count for 2-pole vs 3-pole D3, callback
+   receives the selected `lens_id`. Gotcha: pass `current_investment` in as a
+   `dict[str, int]` snapshot rather than the `LensInvestment` object so the view file
+   contains no forbidden token.
+7. **Engine wiring.** Add `_after_player_action(action_type: str)` to `Game`. Body: no-op
+   if `self.state_manager.current_state == GameState.DILEMMA_RESOLUTION`; else call
+   `_trigger_crew_reaction(action_type)`; call `check_dilemmas(self.player,
+   dl.dilemmas)`; iterate newly_telegraphed then re_telegraphed appending to
+   `_mission_notifications` using the round-robin cursor + npc name lookup; for the first
+   `newly_collided` id (if any), build the investment snapshot dict, call
+   `_ensure_dilemma_resolution_view(dilemma, snapshot)`, and `push_state`. Register a new
+   lazy factory `_ensure_dilemma_resolution_view` following the ground-briefing factory
+   shape. Migrate all seven existing `_trigger_crew_reaction(x)` call sites to
+   `_after_player_action(x)`. Add a pop-and-write handler triggered when the view's
+   `dismissed` flag is observed in the engine's frame update: writes `resolved`,
+   `dilogue_flags`, and pops the state. Gotcha: the view's `on_resolve` callback captures
+   the resolution write but the state-pop belongs to the engine's frame loop (matches the
+   `EventNotificationView` `is_dismissed()` polling pattern) - do NOT pop from inside the
+   callback because pygame_gui teardown mid-event-handler destabilizes. Files:
+   `spacegame/engine/game.py`, `spacegame/config.py`.
+8. **Scenario coverage.** New `tests/test_scenarios/test_scenario_dilemma_thresholds.py`:
+   full engine-level scenarios covering AC4, AC5, AC6, AC8. Uses `_helpers.fresh_player`
+   and constructs a minimal `Game` with hand-built dilemmas injected into
+   `data_loader.dilemmas`. Drives `_after_player_action` calls directly rather than
+   simulating combat/mission flows (faster + isolates the mechanism). Asserts on
+   `_mission_notifications`, `state_manager.current_state`, `player.dilemma_state`,
+   `player.dialogue_flags`. Gotcha: several scenarios need the data loader's `dilemmas`
+   dict to be monkey-patchable per test - the loader singleton persists across tests, so
+   use a `try/finally` to restore or a pytest fixture that clears/repopulates.
+
+**Cross-sprint reactions to author.** None from this sprint itself (foundational engine; no
+player-facing content authored here). The dilemma mechanism produces two future reaction
+surfaces that later sprints own:
+- Telegraph line delivery: the actual telegraph_lines strings and `telegraph_npc_id` are
+  authored in A2-12 through A2-19 (one per dilemma). Each of those sprints is the point
+  where crew banter, ambient dialogue, and news should be checked for reactions to a
+  telegraph firing (e.g., "Priya (overhearing): she isn't wrong, captain").
+- Dilemma-resolved consequences: `flags.dilemma_resolved(id)` and `flags.lens_closed(id)`
+  are written by this sprint's engine wiring but consumed by A2-11 (Scars) for the
+  refusing-NPC surface and by A2-10 for the closure/tier-unlock semantics. Nothing existing
+  in the game today reacts to these flags, so no cross-sprint reactions are stranded by
+  A2-8; the reactions belong to A2-10 and A2-11.
+
+If A2-12+ authors deliver a dilemma whose telegraphing NPC is an existing crew member
+(e.g., Marcus for D2 Wealth↔Community given his backstory), that sprint owns the
+crew-banter reactivity - not this one.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-30 22:22 — harness: plan phase starting
+- 2026-08-30 23:05 — planning complete; verified all 11 declared context docs exist plus 3
+  supplementary reads (lens_investment.py compliance-test docstring, capstone.py
+  should_fire() as predicate template, save_manager.py splice window); extended touch
+  zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
+  as extension target rather than duplicate scenario file); folded in 2 polish items
+  (round-robin telegraph re-delivery in AC8, compliance-scan-remains-green in AC9);
+  locked 8 open decisions (engine wrapper location, model-layer coordinator to satisfy
+  compliance test, round-robin cursor with no rate limit, suppression while modal active,
+  full-screen backdrop matching EventNotificationView, empty data directory with .gitkeep,
+  DilemmaRuntimeState sub-dataclass matching WreckersGuildState pattern, closed_lenses
+  field forward-shipped for A2-10); expanded acceptance criteria from 8 to 10 (added AC8
+  round-robin cycling assertion, added AC9 compliance-guard-green assertion, tightened
+  AC10 baseline to 11063); drafted 8-task plan with per-task failing tests and gotchas;
+  cross-sprint reactions: none from this sprint (foundational engine), with pointers to
+  A2-10, A2-11, and A2-12 through A2-19 as the reaction owners. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-30 22:22
+- Completed: 2026-08-30 23:05
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (pending — recorded post-commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: round-robin-telegraph-redelivery, compliance-guard-green-assertion
+- Decisions_locked: 8
+- Notes: Verified all 11 context docs exist. Critical constraint surfaced: A2-4's compliance
+  test forbids `spacegame/engine/` and `spacegame/views/` from referencing
+  `LensInvestment`/`lens_investment` tokens, so this sprint's engine wiring must go through
+  a model-layer coordinator (`check_dilemmas`) rather than a direct
+  `player.lens_investment.is_at_or_above(...)` call from `game.py`. That single decision
+  reshaped the deliverables and produced AC9 as a structural guard. No new sprints proposed
+  because A2-9, A2-10, A2-11 already cover the downstream closure/integrity/scars work.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
