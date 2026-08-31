@@ -11717,19 +11717,29 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 01:46 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 01:51 — harness: plan phase starting
 - 2026-08-31 02:10 — re-planning: verified no implementation commits landed yet (git log shows only c8c90a4 / b0c0142 planning commits for A2-4B); confirmed all 7 context docs still exist at declared paths; spot-checked all touch-zone line numbers against current code — one drift found (`views/wreckers_guild_view.py` `completed_contract_count += 1` moved from 767 → 773; audit table row 23 and touch-zone line updated); refreshed AC8 test-suite baseline from 11063 → 11095 (matches harness-reported pre-phase baseline); all locked decisions from prior plan remain sound (facade indirection, gap-manifest approach, amount-per-tag calibration, colon-qualifier semantics) — no re-litigation needed. Cross-sprint reactions: still none authored in this sprint (A2-4B remains foundational plumbing; the reactor A2-4A now shipped and will consume this sprint's accrual once wired). Plan is ready for implementation as written. PHASE_OK
+- 2026-08-31 02:15 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 02:20 — test red: 24 hook tests written; all fail (AttributeError: record_lens_action)
+- 2026-08-31 02:35 — Player.record_lens_action facade added; sold_cargo + trade_profit_large wired in sell_commodity; reach_system_first_visit wired in travel_to_system; crew_loyalty_gained wired in adjust_loyalty (optional player param threaded through adjust_loyalty_all/_for_faction); combat_victory_named_target wired in combat_view; mission:bounty/:smuggling + politics_vote_won wired in game.py; view-layer tags (wreckers/deep_shafts/okafor/trading) wired; all 24 hook tests green
+- 2026-08-31 02:45 — gap manifest test (4 tests) written and green; scenario test (7 tests) written and green after correcting two test assumptions (wreckers_guild_contract_completed maps only to community; nexus_prime pre-seeded in systems_visited via Player.__post_init__)
+- 2026-08-31 02:55 — full suite: 11129 passed, 100 skipped (+34 vs baseline 11095); mypy baseline exit 0; lint+format clean on all touched files; committed afdf67e. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 01:51
-- Completed: 2026-08-31 02:10
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 18b65eb
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (prior plan already folded in the gap-manifest test, facade indirection, and calibration table; this re-planning only refreshed baseline and one drifted line number)
-- Decisions_locked: 0 new (4 locked in the 2026-08-30 pass remain sound; nothing re-opened)
-- Notes: Sprint had been fully planned at 2026-08-30 23:46–00:15 (commit c8c90a4) then reset to todo by stuck-sprint recovery. Verified plan is still valid and current: no implementation commits, all context docs present, only minor drift (one line-number shift, baseline count refresh). Ready for implementer.
-- Notes: Audit against the shipped `data/narrative/lenses.json` shows 12 of 34 unique `investment_from` tags have real production emitters today; 22 are aspirational and belong to future feature sprints. Sprint scope revised to wire the 12 honestly and gap-flag the 22 with rationales, per the sprint author's explicit "do not invent gameplay" guidance in Risks. `Player.record_lens_action` facade is the mechanism that lets views/engine wire in without breaking A2-4's `test_lens_investment_never_rendered.py` compliance test — the string `lens_investment` never appears in `views/` or `engine/`.
+- Started: 2026-08-31 02:15
+- Completed: 2026-08-31 02:55
+- Files_changed: spacegame/models/player.py, spacegame/models/crew.py, spacegame/views/combat_view.py, spacegame/engine/game.py, spacegame/views/wreckers_guild_view.py, spacegame/views/deep_shafts_view.py, spacegame/views/okafor_view.py, spacegame/views/trading_view.py, tests/test_models/test_lens_investment_hooks.py, tests/test_compliance/test_lens_investment_gap_manifest.py, tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py
+- Commits: afdf67e
+- Tests_added: 35
+- Tests_baseline: 11095
+- Tests_passing: 11129
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Player.record_lens_action facade (local import avoids circular dep). 12 tags wired across 8 production files. auction_won wired via _on_lot_won callback in game.py (option b — caller has player ref). Gap manifest enforces wired/gap partition against live lenses.json. Pre-existing xdist flaky test (test_no_new_consumer_only_flags) unchanged.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
