@@ -241,6 +241,26 @@ def check_telegraph(dilemma: Dilemma, investment: Any) -> bool:
     )
 
 
+def build_investment_snapshot(dilemma: Dilemma, player: Any) -> dict[str, int]:
+    """Return the immutable per-pole snapshot the resolution view needs.
+
+    Model-layer helper so the engine can hand
+    :class:`spacegame.views.dilemma_resolution_view.DilemmaResolutionView`
+    a plain ``dict[str, int]`` without importing the investment
+    substrate directly (the compliance scanner for that substrate
+    forbids the engine and views from touching its tokens).
+
+    Args:
+        dilemma: The collided dilemma. Only its ``poles`` are read.
+        player: Anything exposing ``lens_investment.get_investment(pole)``.
+
+    Returns:
+        A fresh dict mapping each pole id to its current investment
+        value. Missing poles read as 0 via ``get_investment``.
+    """
+    return {pole: player.lens_investment.get_investment(pole) for pole in dilemma.poles}
+
+
 def check_dilemmas(player: Any, dilemmas: dict[str, Dilemma]) -> DilemmaCheckResult:
     """Classify every loaded dilemma against a player's current state.
 
