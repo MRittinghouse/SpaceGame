@@ -11504,7 +11504,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - Started: 2026-08-31 00:36
 - Completed: 2026-08-31 01:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (recorded on commit)
+- Commits: d5455a1
 - New_sprints_proposed: none
 - Polish_items_folded_in: single-line refactor of `_render_enrollment_pitch` (mechanically necessary for the seam); Writing Bible scanner integration test (structural voice-check enforcement); explicit tie-break rule (alphabetical by lens_id) on the reactor's dominant-lens resolution
 - Decisions_locked: 4
