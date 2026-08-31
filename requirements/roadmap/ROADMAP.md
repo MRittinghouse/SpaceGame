@@ -11340,7 +11340,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4A — First oblique investment consumer
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11508,17 +11508,26 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - 2026-08-31 02:44 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 03:34 — harness: plan phase starting
 - 2026-08-31 03:40 — planning re-entered on a sprint that is already fully implemented. Confirmed on disk: `spacegame/models/lens_reaction.py`, `spacegame/models/lens_reactor.py`, `data/narrative/lens_reactions.json`, `tests/test_models/test_lens_reactor.py`, `tests/test_data/test_lens_reactions_cross_references.py`, `tests/test_scenarios/test_scenario_oblique_readout.py` all present; git log shows commits `ce0aaec` (LensReaction + LensReactor), `3633355` (lens_reactions.json + DataLoader + view wire-in), `bf9ff84` (activity-log update) landed on 2026-08-31 between 01:45 and 02:35. Re-ran `python -m pytest tests/test_models/test_lens_reactor.py tests/test_data/test_lens_reactions_cross_references.py tests/test_scenarios/test_scenario_oblique_readout.py -q`: 32 passed in 1.80s. Stuck-sprint recovery reset the sprint to `todo` at 02:44 because the previous run left the status field stale at `in-progress (planning)` after implementation finished, not because the work was missing. Nothing to re-plan; the sprint is done. Emitting PHASE_OK per plan.md's "if the sprint is ALREADY IMPLEMENTED" rule so the dispatcher can advance it toward review rather than re-doing work. PHASE_OK
+- 2026-08-31 03:38 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 04:00 — re-verification: all six deliverable files confirmed on disk; 32 sprint-scoped tests pass in 1.86s; full suite 11132 passed, 100 skipped (1 pre-existing xdist flake in test_dialogue_integrity passes in isolation at 83s); lint clean; format clean; mypy baseline clean. Sprint already fully implemented in commits ce0aaec + 3633355 + bf9ff84. PHASE_OK
+
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 03:34
-- Completed: 2026-08-31 03:40
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 765e47f
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented; no re-planning)
-- Decisions_locked: 0
-- Notes: Sprint already implemented in commits ce0aaec + 3633355 (see 2026-08-31 01:45 – 02:35 activity-log entries). All six deliverable files present on disk; 32 sprint-scoped tests pass in 1.80s. Stuck-sprint recovery reset a stale status field, not missing work. Emitting PHASE_OK per plan.md guidance so the dispatcher routes through review rather than re-implementing existing work; NOT using PHASE_BLOCKED (that sentinel would strand A2-4A per plan.md's explicit warning). Prior implement-phase report (rework cycle 0) is preserved above the activity log body via the commit trail; overwriting it here per template rules.
+- Started: 2026-08-31 03:38
+- Completed: 2026-08-31 04:00
+- Files_changed: spacegame/models/lens_reaction.py, spacegame/models/lens_reactor.py, data/narrative/lens_reactions.json, spacegame/data_loader.py, spacegame/views/wreckers_guild_view.py, tests/test_models/test_lens_reactor.py, tests/test_data/test_lens_reactions_cross_references.py, tests/test_scenarios/test_scenario_oblique_readout.py
+- Commits: ce0aaec, 3633355, bf9ff84
+- Tests_added: 32
+- Tests_baseline: 11133
+- Tests_passing: 11132 (xdist run; 11133 in isolation — pre-existing flake in test_dialogue_integrity::test_no_new_consumer_only_flags, documented in prior phase report)
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Sprint was already implemented in a prior session (commits ce0aaec + 3633355 + bf9ff84). Re-verification confirms all 8 acceptance criteria satisfied: LensReactor + LensReaction models, authored lens_reactions.json (18 lines across 3 lenses × 2 tiers × 3 variants), DataLoader integration, _greeting_lines wire-in to WreckersGuildView, and full cross-reference + scenario test coverage.
 
 **Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). All three are `done` as of 2026-08-30. A2-4B is in-progress and provides the `player.record_lens_action` production emitters that the scenario test in Task 7 exercises; Task 7's gotchas record a fallback for the case where A2-4B is not yet done at A2-4A's implement time.
 
