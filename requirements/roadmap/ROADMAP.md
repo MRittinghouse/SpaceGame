@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | done | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | done | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
@@ -11533,7 +11533,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11736,6 +11736,8 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 06:45 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
 - 2026-08-31 07:01 — harness: plan phase starting
 - 2026-08-31 07:06 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 07:18 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 07:36 — harness: review passed, marking done
 tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
   C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
     surf = pygame.display.set_mode((1280, 720), flags=flags)
@@ -11758,24 +11760,23 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 - 2026-08-31 07:01 — harness: plan phase starting (post-stuck-recovery re-plan)
 - 2026-08-31 — re-plan: sprint already fully implemented. Verified: (a) implementation commit `afdf67e` (2026-08-31 02:19) ships the `Player.record_lens_action` facade at `spacegame/models/player.py:445` and all 12 production wires — `sold_cargo`/`trade_profit_large`/`reach_system_first_visit` in `models/player.py`, `crew_loyalty_gained` in `models/crew.py:432`, `combat_victory_named_target` in `views/combat_view.py:2157`, `mission_completed:bounty|smuggling` at `engine/game.py:5905,5907`, `politics_vote_won` at `engine/game.py:3211`, `auction_won` at `engine/game.py:2744`, `wreckers_guild_contract_completed` at `views/wreckers_guild_view.py:775`, `deep_shafts_pilgrimage_visited` at `views/deep_shafts_view.py:169`, `okafor_research_project_funded`[+`:high_risk`] at `views/okafor_view.py:798,800`, `black_market_sale` at `views/trading_view.py:1139` (all matched via grep); (b) three new test files exist at declared paths; (c) targeted run `pytest tests/test_models/test_lens_investment_hooks.py tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py tests/test_compliance/test_lens_investment_gap_manifest.py tests/test_compliance/test_lens_investment_never_rendered.py -q` returns 38 passed in 1.39s (the +3 vs the 35 tests reported in commit message is the pre-existing `test_lens_investment_never_rendered.py` compliance test that A2-4B did not add but must continue to pass — AC6); (d) no touch-zone files have been modified after `afdf67e` (git log confirms). Sprint stalled after the prior review's blocked gate (flaky grep-shellout in gap manifest, later fixed by `8737388`) and stuck-sprint recovery reset it to `todo`; the actual work is intact. Emitting PHASE_OK so the dispatcher advances to implement (re-verify pass, no code change) and review. PHASE_OK
 - 2026-08-31 — implement (re-verify, rework cycle 1): all 35 sprint-scoped tests pass in 1.38s; full suite 11185 passed, 100 skipped (1 pre-existing xdist flake `test_no_new_consumer_only_flags` — passes standalone in 89s, unchanged pre-existing behaviour from prior sessions); mypy baseline exit 0 (0 new errors); lint clean on all touched files; format clean on all touched files; no touch-zone drift since `afdf67e`. All 8 acceptance criteria satisfied. PHASE_OK
+- 2026-08-31 — review complete; all 8 acceptance criteria verified; 0 critical findings; 1 minor observation (scenario test manually calls facade for combat action rather than driving through combat_view — isolated to the scenario, not a correctness issue; hook tests cover the view wire separately). Full suite 11185 passed, 100 skipped; the 1 failure (`test_no_new_consumer_only_flags`) is the documented pre-existing xdist flake confirmed passing standalone in 89s. AC6 structural invariant clean — zero `LensInvestment`/`lens_investment` references in views/ or engine/. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 07:06
-- Completed: 2026-08-31 07:30
-- Files_changed: spacegame/models/player.py, spacegame/models/crew.py, spacegame/engine/game.py, spacegame/views/combat_view.py, spacegame/views/deep_shafts_view.py, spacegame/views/okafor_view.py, spacegame/views/trading_view.py, spacegame/views/wreckers_guild_view.py, tests/test_models/test_lens_investment_hooks.py, tests/test_compliance/test_lens_investment_gap_manifest.py, tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py
-- Commits: afdf67e (main implementation), 8737388 (gap-manifest grep fix)
-- Tests_added: 35
-- Tests_baseline: 11186
+- Started: 2026-08-31 07:40
+- Completed: 2026-08-31 07:55
+- Files_changed: none
+- Commits: none
 - Tests_passing: 11185
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: n/a
-- Touch_zones_respected: yes
-- Notes: Implementation already committed at `afdf67e` (2026-08-31 02:19). This re-verify pass confirmed all 12 production wires exist at declared locations; 35 sprint-scoped tests pass; 1 pre-existing xdist flake (`test_no_new_consumer_only_flags`) passes in isolation at 89s — not introduced by this sprint. MyPy 0 new errors.
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: The scenario test's combat action calls `player.record_lens_action("combat_victory_named_target", 10)` directly rather than driving through `combat_view.py:2157`. The test comment is honest ("simulate the emit path"), and the hook test covers the view wire, but the scenario name promises "real gameplay actions" and this action is synthetic. Minor clarity gap, not a correctness issue.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all 4 locked decisions defensible (facade indirection, gap-manifest partition, amount calibration 1/3/5/10, colon-qualifier exact-match). The plan's intro text says "12 wired / 22 gap" but the actual audit table and gap manifest have 14 wired / 20 gap — a minor planning-text inconsistency that does not affect the implementation (partition test enforces correctness). All 12 production emitters present at declared file:line locations; 14 tags in WIRED_TAGS plus 20 in GAP_TAGS partition all 34 investment_from tags exactly. Mypy 0 new errors; lint+format clean.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
