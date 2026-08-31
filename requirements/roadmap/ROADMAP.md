@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11769,24 +11769,24 @@ sprints.
 - 2026-08-30 21:35 — planner: sprint is already fully implemented (commit 8f63460 in git log) AND reviewed (2026-08-29 14:30 PHASE_OK from the prior review, all 9 acceptance criteria verified). Downstream sprint A2-6 (commit 58da3d9) has already landed sixteen-lens content on top of A2-5, further confirming completion. Verified live: `get_data_loader().lenses` returns all 16 lens ids; running `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_models/test_lens.py -q` yields 79 passed / 1 skipped (the always-skipping empty-registry guard noted in the prior review's single_tighten). No re-planning work exists; the plan section is already filled, decisions locked, activity log rich. The reset-to-todo at 21:28 was a false-positive stuck-sprint recovery — the review phase completed 2026-08-29 14:30 but the dispatcher's state must have never advanced past 'in-progress (reviewing)' and its 24h+ stale-state timer fired on 2026-08-30 21:28. Re-implementing would revert or duplicate committed work; re-planning has nothing to add. PHASE_BLOCKED: sprint already completed at 8f63460 and reviewed PHASE_OK — dispatcher should mark A2-5 done, not re-run the phase pipeline. A2-6 building on top is proof the work landed cleanly.
 - 2026-08-30 21:37 — harness: implement phase starting (rework cycle 0)
 - 2026-08-30 21:55 — implementation agent: another false-positive stuck-sprint recovery. Sprint A2-5 was fully implemented at commit 8f63460 and reviewed PHASE_OK 2026-08-29 14:30. Verified live: 16 lenses loaded, targeted compliance suite 56 passed / 1 expected skip (test_lens_content_uniqueness, test_lens_registry, test_lens_authoring_guide, test_prose_anti_patterns), lint clean, format clean. Full parallel suite shows 11062/100 with 1 flaky xdist failure (test_no_new_consumer_only_flags passes in isolation — pre-existing session-0 contention documented in project memory, not caused by A2-5). No code changes made. PHASE_OK
+- 2026-08-30 21:50 — harness: review phase starting (rework cycle 0)
+- 2026-08-30 22:30 — review complete; all 9 acceptance criteria verified; plan audit sound; zero critical findings; one minor observation noted. Pre-existing xdist flake (test_no_new_consumer_only_flags) passes in isolation — not caused by A2-5. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-30 21:37
-- Completed: 2026-08-30 21:55
-- Files_changed: none (implementation already complete at commit 8f63460)
-- Commits: none (verification only)
-- Tests_added: 0
-- Tests_baseline: 11063
-- Tests_passing: 11062 (parallel) / 11063 (serial; 1 xdist-flaky test confirmed passing in isolation)
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a (no new flags introduced)
-- Writing_bible_clean: yes (test_prose_anti_patterns.py 13/13 pass)
-- Touch_zones_respected: yes
-- Notes: Third recovery of a false-positive stuck-sprint. Sprint shipped 2026-08-29 at 8f63460, reviewed PHASE_OK same day. All 9 acceptance criteria satisfied per prior review. The single suite failure (test_no_new_consumer_only_flags) is the pre-existing xdist session-0 contention documented in project memory — it passes when run in isolation and is not caused by A2-5 which touches no dialogue flags.
+- Started: 2026-08-30 21:50
+- Completed: 2026-08-30 22:30
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11063 (serial; 11062 parallel due to pre-existing xdist flake confirmed passing in isolation)
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: AC9/AC2 predict test_scan_guard_is_not_silent_on_empty_registry would move from skip to pass after A2-5 landed, but it permanently skips because it deliberately creates an empty tmp_path registry to validate the empty-case guard. The AC text was an incorrect prediction about test behavior (not an implementation bug); future ACs in this arc should say "correctly and permanently skips" rather than "moves to pass."
+- Followup_sprints_added: none
+- Notes: Plan audit sound; locked decisions on tag scope, field length, forward-ref tags, tier_unlocks count, distinctness-test location, voice sourcing all defensible. Eight lens records authored with strong, distinct, working-galaxy voice. test_registry_drift_check activated from skip to pass (AC7). test_prose_anti_patterns.py 13/13 pass (AC8).
 ---
 
 #### A2-6 — Lens definitions 9-16
