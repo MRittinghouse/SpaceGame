@@ -157,6 +157,47 @@ class TestStuckSprintRecovery:
         # Only SA-1 should have been recovered.
         assert recovered == 1
 
+    def test_recently_touched_is_reclaimed_when_we_hold_the_lock(self, isolated_roadmap) -> None:
+        """Holding the lock proves no other harness is running, so reclaim now.
+
+        Recovery skipped any in-flight sprint touched within
+        IN_PROGRESS_STALE_MINUTES (60), on the grounds that "another run may be
+        active". By the time recovery runs, `_acquire_lock` has already
+        succeeded, and a second harness would have been refused the lock and
+        exited. So the sprint cannot belong to a live run and the 60-minute wait
+        buys nothing.
+
+        It costs a great deal. Measured 2026-08-31: the supervisor is killed
+        every 61-79 minutes by something still unidentified, so after each death
+        the sprint it was running sat in flight for a full hour before recovery
+        would touch it -- by which time the *next* supervisor was itself near
+        the end of its life. A2-8 was picked up seven times and never finished;
+        on the closest attempt it passed review and died 47 seconds into the
+        test gate. The stale threshold and the death interval are the same size,
+        which turns them into a resonance rather than two independent limits.
+
+        The harness log said it outright, one second apart:
+
+            Stale lock from PID 6148 found; removing.
+            Sprint A2-8 is in flight ... but recently touched ... Skipping
+            recovery; another run may be active.
+
+        It had just proved the previous holder was dead, then declined to act
+        on it.
+        """
+        state = HarnessState()
+        sprint_state = state.for_sprint("SA-1")
+        sprint_state.last_touched_at = datetime.now().isoformat()
+        state.save()
+
+        # Without the lock we keep the old, cautious behaviour.
+        assert harness._recover_stuck_sprints(state, holds_exclusive_lock=False) == 0
+        assert "in-progress" in roadmap_state.parse_sprints()["SA-1"].status
+
+        # Holding it, the sprint is provably abandoned.
+        assert harness._recover_stuck_sprints(state, holds_exclusive_lock=True) == 1
+        assert roadmap_state.parse_sprints()["SA-1"].status == "todo"
+
     def test_review_sprint_is_recovered(self, isolated_roadmap) -> None:
         """M2: `review` was reclaimed by nothing at all.
 

@@ -1862,14 +1862,40 @@ def _pid_alive(pid: int) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def _recover_stuck_sprints(state: "HarnessState") -> int:
+def _recover_stuck_sprints(state: "HarnessState", holds_exclusive_lock: bool = False) -> int:
     """Reset sprints left in flight by a prior run back to `todo`.
 
     A sprint is stale if:
       - `triage.is_in_flight` recognises its Status -- `in-progress (*)` OR
         `review`
-      - Its state.json `last_touched_at` is older than IN_PROGRESS_STALE_MINUTES
+      - AND EITHER we hold the harness lock (see `holds_exclusive_lock`), OR its
+        state.json `last_touched_at` is older than IN_PROGRESS_STALE_MINUTES
         (or there's no state for it at all)
+
+    `holds_exclusive_lock` short-circuits the age test, because when it is true
+    the age test cannot tell us anything we do not already know. `_acquire_lock`
+    has already succeeded by the time this runs, and a second harness would have
+    been refused the lock and exited -- so an in-flight sprint provably belongs
+    to a run that is gone, whatever its timestamp says.
+
+    Waiting the full hour anyway was actively harmful. Measured 2026-08-31: the
+    supervisor is killed every 61-79 minutes by something still unidentified
+    (HANDOFF open question 1), so after each death the sprint it was running sat
+    in flight for a full IN_PROGRESS_STALE_MINUTES before recovery would touch
+    it -- by which point the NEXT supervisor was itself near the end of its
+    life, and the sprint got only the tail of a window it needed all of. The
+    stale threshold (60 min) and the death interval (61-79 min) are the same
+    size, which makes them a resonance rather than two independent limits. A2-8
+    was picked up seven times and never finished; on the closest attempt it
+    passed review and died 47 seconds into the test gate.
+
+    The log stated the contradiction one second apart:
+
+        Stale lock from PID 6148 found; removing.
+        Sprint A2-8 is in flight ... but recently touched ... Skipping
+        recovery; another run may be active.
+
+    It had just proved the previous holder was dead, then declined to act on it.
 
     `review` was added by M2, and its absence was not a detail: `review` is
     what a STOP honoured after implement leaves behind, and NOTHING reclaimed
@@ -1906,7 +1932,9 @@ def _recover_stuck_sprints(state: "HarnessState") -> int:
         else:
             last_touched = None
 
-        is_stale = last_touched is None or (now - last_touched) > stale_threshold
+        is_stale = (
+            holds_exclusive_lock or last_touched is None or (now - last_touched) > stale_threshold
+        )
         if not is_stale:
             log(
                 f"Sprint {sprint_id} is in flight (status={sprint.status!r}) but recently "
@@ -2327,7 +2355,10 @@ def main() -> int:
 
         # Stuck-sprint recovery (item D).
         if not args.skip_recovery:
-            recovered = _recover_stuck_sprints(state)
+            # The lock is held (acquired above), so any in-flight sprint provably
+            # belongs to a run that is gone -- reclaim it now rather than waiting
+            # out IN_PROGRESS_STALE_MINUTES.
+            recovered = _recover_stuck_sprints(state, holds_exclusive_lock=True)
             if recovered:
                 log(f"Recovered {recovered} stuck sprint(s) from prior run.")
                 # Commit the recovery edits so they don't drift into
