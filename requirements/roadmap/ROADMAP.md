@@ -13544,7 +13544,7 @@ crew-banter reactivity - not this one.
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: S | **Effort**: 2-3 days
 **Depends on**: A2-8 | **Blocks**: A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19
 
@@ -13714,6 +13714,7 @@ crew banter, or UI copy that any other sprint would react to).
 - 2026-08-27 - todo (created)
 - 2026-08-31 16:42 — harness: plan phase starting
 - 2026-08-31 17:15 — planning complete; verified all 4 context docs exist; folded 2
+- 2026-08-31 17:24 — harness: implement phase starting (rework cycle 0)
   additional invariants (telegraph_lines non-empty, collision_requires in range) into
   the deliverables + meta-tests; locked 3 decisions (empty-registry handling, injection
   mechanism, scope expansion); Plan section filled with 5 tasks; cross-sprint reactions
@@ -13724,24 +13725,30 @@ crew banter, or UI copy that any other sprint would react to).
   (tests/test_compliance/test_dilemma_integrity.py exists, 19 passed + 1 skipped locally,
   matching planned expectation of 6 real-content tests including 1 skip + 12 meta-tests
   ≈ 20 total). No re-planning needed; routing on to implement/review. PHASE_OK
+- 2026-08-31 17:45 — implementation verify-only: sprint file 19 passed + 1 skipped;
+  lint/format clean; full suite 11223 passed + 4 xdist-flaky (those 4 pass serially,
+  pre-existing known issue); baseline effective match 11227. All 6 AC satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 17:21
-- Completed: 2026-08-31 17:25
+- Started: 2026-08-31 17:35
+- Completed: 2026-08-31 17:45
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none (planning was already committed at 212e558; implementation at a424bac)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (already folded in prior plan phase at 212e558)
-- Decisions_locked: 0 (all 3 locked in prior plan phase)
-- Notes: Sprint already implemented at commit a424bac before the stuck-sprint recovery
-  reset it to todo. Verified by (a) `git log --oneline | grep A2-9` showing the
-  implementation commit, (b) `test -f tests/test_compliance/test_dilemma_integrity.py`
-  present, (c) `pytest tests/test_compliance/test_dilemma_integrity.py -q` reporting
-  "19 passed, 1 skipped in 0.16s" — matches the plan's expected shape. Per harness
-  instructions for the already-implemented case, emitting PHASE_OK so the dispatcher
-  routes to implement (which will verify rather than duplicate) and then review.
+- Commits: a424bac (pre-existing implementation commit)
+- Tests_added: 19 (plus 1 skip)
+- Tests_baseline: 11227
+- Tests_passing: 11223 (+ 4 xdist-flaky that pass serially = effective 11227)
+- Tests_skipped: 101
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: n/a
+- Touch_zones_respected: yes
+- Notes: Verify-only pass. Implementation committed at a424bac before stuck-sprint
+  recovery. Sprint file: 19 passed + 1 skipped. 4 suite failures are pre-existing
+  xdist flakiness (confirmed: all 4 pass when run serially). All 6 AC satisfied by
+  existing tests/test_compliance/test_dilemma_integrity.py.
 ---
 
 #### A2-10 — Permanent closure + save/load
