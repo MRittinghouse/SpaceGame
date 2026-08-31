@@ -11492,7 +11492,7 @@ The wire-in surface is narrow (one NPC's greeting at one venue), so the reaction
 - Started: 2026-08-30 23:34
 - Completed: 2026-08-30 23:59
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 3486fa1
 - New_sprints_proposed: A2-4C, A2-4D
 - Polish_items_folded_in: writing-bible-scanner-runs-on-new-json, save-load-roundtrip-scenario-test, view-render-line-stability-within-game-day, cross-reference-test-uses-shared-loader-fixture
 - Decisions_locked: 6
