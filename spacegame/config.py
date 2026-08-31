@@ -341,6 +341,11 @@ class GameState(Enum):
     GROUND_EXPLORATION = "ground_exploration"
     GROUND_RESULT = "ground_result"
 
+    # Act II dilemma resolution (A2-8). Modal overlay pushed on top of
+    # whatever state the player was in when the collision fired; popped
+    # back to that state after the player picks a pole.
+    DILEMMA_RESOLUTION = "dilemma_resolution"
+
 
 # ============================================================================
 # PATHS

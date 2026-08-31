@@ -18,12 +18,12 @@ from tools.crawler.crawler import Crawler, CrawlerFixtures
 
 
 class TestCoverageTracker:
-    def test_all_41_states_are_present_after_init(self) -> None:
+    def test_all_states_are_present_after_init(self) -> None:
         tracker = CoverageTracker()
-        assert len(tracker.states_reached) == 41
+        assert len(tracker.states_reached) == len(GameState)
         assert all(v is False for v in tracker.states_reached.values())
 
-    def test_coverage_report_lists_all_41_states(self) -> None:
+    def test_coverage_report_lists_all_states(self) -> None:
         tracker = CoverageTracker()
         for state in GameState:
             assert state.name in tracker.states_reached
