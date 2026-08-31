@@ -7,9 +7,11 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
+from ralph import proc
 from ralph.proc import atomic_write, run_with_hard_timeout
 
 
@@ -207,4 +209,63 @@ class TestRunWithHardTimeout:
         assert not _pid_alive(grandchild_pid), (
             f"grandchild PID {grandchild_pid} is still alive after the timeout fired -- "
             f"the process-tree kill silently failed"
+        )
+
+
+class TestChildrenDoNotShareTheParentConsole:
+    """Console apps must be spawned detached from the parent's console.
+
+    Root cause of the supervisor deaths, as far as the evidence goes. Six
+    harness+supervisor pairs died together on 2026-08-30/31, leaving no Python
+    exception, no `atexit` line, no `faulthandler` output and no Task Scheduler
+    termination event. Windows Error Reporting did record something, at 22:36:10
+    and 04:31:32 -- within five seconds of two of the deaths -- and it was not
+    Python:
+
+        P1: powershell.exe
+        P3: System.ComponentModel.Win32Exception
+        P5: Microsoft.PowerShell.ConsoleControl+<>c.<.cctor>b__106_1
+
+    A PowerShell console-host failure. The supervisor spawns PowerShell
+    periodically (`_pid_command_line`, to check whether the harness PID is still
+    a live harness), and every child inherited the parent's console, so a child
+    that takes the console down takes every attached process with it. That
+    explains what nothing else did: both processes dying at the same instant
+    with no Python-level shutdown of either.
+
+    `CREATE_NO_WINDOW` gives each child its own console, so a crashing child can
+    no longer reach the supervisor. `CREATE_NEW_PROCESS_GROUP` was already set,
+    but that governs signal delivery, not console attachment.
+    """
+
+    def test_run_with_hard_timeout_detaches_the_console(self) -> None:
+        if sys.platform != "win32":
+            pytest.skip("console attachment is a Windows concern")
+
+        captured: dict = {}
+        real_popen = subprocess.Popen
+
+        class _FakePopen:
+            def __init__(self, cmd, **kwargs):
+                captured.update(kwargs)
+                self._inner = real_popen(
+                    [sys.executable, "-c", "pass"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+
+            def __getattr__(self, name):
+                return getattr(self._inner, name)
+
+        with patch.object(subprocess, "Popen", _FakePopen):
+            proc.run_with_hard_timeout([sys.executable, "-c", "pass"], timeout_seconds=30)
+
+        flags = captured.get("creationflags", 0)
+        assert flags & subprocess.CREATE_NO_WINDOW, (
+            "children must not inherit the parent console; a crashing child "
+            f"otherwise kills the supervisor. creationflags={flags:#x}"
+        )
+        assert flags & subprocess.CREATE_NEW_PROCESS_GROUP, (
+            "CREATE_NEW_PROCESS_GROUP must be preserved so taskkill /T still "
+            f"reaches the whole tree. creationflags={flags:#x}"
         )

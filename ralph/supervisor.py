@@ -400,6 +400,15 @@ def _pid_command_line(pid: int) -> Optional[str]:
             capture_output=True,
             text=True,
             timeout=15,
+            # Own console, not ours. This is the call site implicated in the
+            # supervisor deaths: it runs periodically while a sprint is in
+            # flight, and Windows Error Reporting caught `powershell.exe`
+            # crashing in `Microsoft.PowerShell.ConsoleControl` within five
+            # seconds of two of them. A child crashing a shared console kills
+            # everything attached to it, which is why the supervisor and its
+            # harness always died together with no Python-level shutdown of
+            # either. See `proc.run_with_hard_timeout` for the same reasoning.
+            creationflags=subprocess.CREATE_NO_WINDOW,
         )
     except (OSError, subprocess.TimeoutExpired):
         return None

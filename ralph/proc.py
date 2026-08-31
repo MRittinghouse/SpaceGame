@@ -116,7 +116,24 @@ def run_with_hard_timeout(
     }
     if sys.platform == "win32":
         # CREATE_NEW_PROCESS_GROUP lets taskkill /T kill the full tree.
-        popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+        #
+        # CREATE_NO_WINDOW gives the child its own console instead of attaching
+        # it to ours. That is not cosmetic: a console is shared state, and a
+        # child that crashes it takes down every process attached to it. Six
+        # supervisor+harness pairs died together on 2026-08-30/31 with no Python
+        # exception, no atexit, no faulthandler output and no Task Scheduler
+        # termination event -- but Windows Error Reporting recorded
+        # `powershell.exe` failing with a System.ComponentModel.Win32Exception
+        # in `Microsoft.PowerShell.ConsoleControl`, within five seconds of two of
+        # them. The supervisor spawns PowerShell periodically to check whether
+        # the harness PID is still a live harness, and those children shared its
+        # console.
+        #
+        # CREATE_NEW_PROCESS_GROUP governs signal delivery, not console
+        # attachment, so it did not cover this.
+        popen_kwargs["creationflags"] = (
+            subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
+        )
     else:
         popen_kwargs["start_new_session"] = True  # os.setsid() equivalent
 
