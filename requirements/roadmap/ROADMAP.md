@@ -133,7 +133,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
-| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | in-progress | A2-8 |
+| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
@@ -13753,7 +13753,7 @@ crew banter, or UI copy that any other sprint would react to).
 
 #### A2-10 — Permanent closure + save/load
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-8 | **Blocks**: A2-11, A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19, A2-20
 
@@ -13987,6 +13987,7 @@ those sprints consume.
 - 2026-08-27 - todo (created)
 - 2026-08-31 18:08 — harness: plan phase starting
 - 2026-08-31 — planning complete; sprint has all A2-8 plumbing in place, added
+- 2026-08-31 18:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   `tier_unlocks_granted` field spec, expanded acceptance from 6 criteria to 9 (added
   triangle-dilemma coverage, warning-log verification for idempotency, legacy-load
   default, coordinator-skip regression), locked 5 open decisions (closed-lens guard
