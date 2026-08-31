@@ -129,7 +129,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
-| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
+| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | in-progress | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
@@ -11791,7 +11791,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12183,17 +12183,20 @@ cohesion sprints.
 - 2026-08-29 15:15 — planning complete; verified all 6 context-to-read docs exist; the file listed as `tests/test_compliance/test_lens_content_uniqueness.py` is EXTEND (A2-5 landed it) rather than NEW as the original section said; locked 6 open decisions (forward-referenced tags, prose-field length, tier_unlocks count, no-guide-paste voice, Legacy/Preservation NPCs are fresh not character_voices.md, distinctness test file location, no additional empty-registry guard); expanded acceptance criteria from 5 to 9 (added Empire-trio distinctness, truth-avoids-pursuit-vocabulary, test_real_lenses count-bump, prose-anti-patterns scanner clean, and baseline pin to 11041/100); added 7-task Plan section with test surfaces and gotchas; added Cross-sprint reactions (foundational data, mechanical surface only, no player-facing content). PHASE_OK
 - 2026-08-29 13:32 — harness: implement phase starting (rework cycle 0)
 - 2026-08-30 21:28 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
+- 2026-08-30 22:14 — harness: plan phase starting
+- 2026-08-30 22:15 — planner re-entered after stuck-sprint recovery; A2-6 was already implemented at commit 58da3d9 ("A2-6: lens definitions 9-16") on 2026-08-30 21:21, which shipped `data/narrative/lenses.json` at 16 entries plus the extended test surfaces in `test_lens_content_uniqueness.py` and `test_lens.py`. Verified: `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py` = 79 passed / 1 skipped; `pytest tests/test_compliance/test_prose_anti_patterns.py` = 13 passed. Re-planning would produce a plan for work that no longer exists; the harness should route this sprint straight to review. PHASE_BLOCKED: already implemented at 58da3d9 (see also A2-5's identical 8f63460 recovery precedent).
+
 **Last phase report.**
 - Phase: plan
-- Outcome: PHASE_OK
-- Started: 2026-08-29 13:23
-- Completed: 2026-08-29 15:15
+- Outcome: PHASE_BLOCKED
+- Started: 2026-08-30 22:14
+- Completed: 2026-08-30 22:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3a605a6
+- Commits: pending (this planner note)
 - New_sprints_proposed: none
-- Polish_items_folded_in: Empire-trio distinctness AC (Spec F must-not-collapse coverage completed); truth-avoids-pursuit-vocabulary AC (mechanically-testable form of "not covertly vengeful"); community/wealth discriminant substring sets made concrete; test_real_lenses count-bump AC named explicitly; prose-anti-patterns scanner AC pinned; baseline test count pinned to 11041/100.
-- Decisions_locked: 6
-- Notes: Sprint is data-only, sibling of A2-5 which already shipped. Touch zone note corrected to reflect that the compliance test file exists and is EXTEND, and the `test_real_lenses_json_loads_a2_5_entries` test must have its count bumped 8→16 per its own docstring anticipation. Legacy and Preservation voice guidance intentionally kept generic to accommodate the fresh NPCs A2-16 (Amrit Solheim, Farrow Institute) and A2-17 (Junho Virtanen, Long Yard) will author, rather than binding to the Kweon/Brygaard voice sheets in character_voices.md that A2-16/A2-17 explicitly avoid. Cross-sprint reactions: none (foundational data schema; player-facing surface belongs to A2-7 and A2-12 through A2-19).
+- Polish_items_folded_in: none (implementation already committed at 58da3d9)
+- Decisions_locked: 0 (prior plan at 3a605a6 already locked all 6 open questions)
+- Notes: Stuck-sprint recovery reset this sprint to `todo`, but the implementation is already on disk from commit 58da3d9 (2026-08-30 21:21). The prior implementation agent was killed after writing the files but before committing; the recovery commit landed its work verbatim. All sprint deliverables are present: `data/narrative/lenses.json` has 16 entries with the correct ids in insertion order (vengeance, wealth, political_power, exploration, discovery, justice, crime, revolution, empire, community, legacy, faith, transcendence, connection, truth, preservation), `test_lens_content_uniqueness.py` carries the three new test classes (`TestEmpireTrioDistinctness`, `TestCommunityWealthSameWound`, `TestTruthVengeanceCompatibility`), and `test_lens.py` reflects the count-bump to 16. Lens surfaces pass 79/1-skipped and the prose anti-patterns scanner passes 13/0. Blocking rather than emitting PHASE_OK because re-planning would author a plan for work already done; per the A2-5 precedent (1ad04d6, "PHASE_BLOCKED (already implemented at 8f63460 and reviewed PHASE_OK)"), the correct routing is straight to review. Reviewer should re-verify the 79/1-skipped lens-surface delta and the 11063/100 full-suite baseline, then finalize.
 ---
 
 #### A2-7 — Per-lens readings on locations
