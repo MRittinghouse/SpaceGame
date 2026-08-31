@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | in-progress | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11528,7 +11528,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11714,7 +11714,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-28 — todo (created by A2-4 planner; addresses the "accrual API is unreachable in production" scope gap surfaced during A2-4 planning)
 - 2026-08-30 23:46 — harness: plan phase starting
 - 2026-08-31 00:15 — planning complete; verified all 7 declared context docs exist; built the 34-row audit table by grepping production code for every tag in the union of `investment_from` across the shipped `data/narrative/lenses.json` (12 tags map to existing emitters, 22 tags are gap-flagged — the acceptance of gaps is explicit per the sprint author's "Do NOT invent gameplay just to have a place to emit" note); locked 4 open decisions (amount calibration to a 1/3/5/10 tier scheme; gap-flag rather than invent for the 22 unmapped tags; carry forward A2-4's exact-match colon-qualifier semantics; introduce `Player.record_lens_action` facade to preserve A2-4's `test_lens_investment_never_rendered.py` structural invariant without allowlist entries); revised AC1 to make the wired/gap partition explicit and mechanically verifiable via `test_lens_investment_gap_manifest.py`; expanded Touch zones from 4 lines to 12 lines matching every audit-table wire target and adding the gap manifest test; expanded Acceptance criteria from 7 to 8 (added AC6 to explicitly preserve A2-4 AC4's structural invariant); drafted 10-task plan with per-task failing tests and gotchas; new sprints proposed: NONE (per planning guidance "Conservative on scope expansion" — the 22 gap tags belong to future feature sprints that will add both the gameplay AND the emitter as one cohesive unit, not to a stub sprint that only adds emitters); cross-sprint reactions: none from this sprint itself (foundational wiring, no player-facing content authored), with pointers to A2-4A for the reactor and follow-up crew-banter / contract-offer sprints for the observable surface. PHASE_OK
-
+- 2026-08-31 01:46 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
