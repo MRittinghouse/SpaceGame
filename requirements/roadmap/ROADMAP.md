@@ -11497,18 +11497,32 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - 2026-08-31 00:32 — session: reset blocked -> todo. The plan phase failed validation because the planner edited A2-4B while planning A2-4A: "sprints modified outside claim: ['A2-4B']". The rule was already stated in plan.md, so this was an agent violating an explicit instruction rather than an undefined case -- but the two sprints were split from one and their boundary is genuinely arguable, and the prompt offered no legal way to record "the neighbour needs to change". It now does. A2-4A's roadmap changes were rolled back by the validator, so a re-plan duplicates nothing.
 - 2026-08-31 00:36 — harness: plan phase starting
 - 2026-08-31 01:20 — planning complete; verified all 8 declared context docs exist; confirmed sprint work is not implemented (no `lens_reactor.py`, no `lens_reactions.json`, no test files); locked 4 open decisions (wire-in seam = `wreckers_guild_view.py::_render_enrollment_pitch`; single-file authored pool; resolution logic inside reactor not on LensInvestment; NO compliance-test whitelist entry needed because the reactor lives in `models/` which the scanner does not scan); revised AC6 from "gains ONE whitelist entry" to "invariant preserved without any whitelist entry" — the sprint's original AC6 was factually wrong about how the compliance scanner works, corrected here after inspecting `test_lens_investment_never_rendered.py` and confirming its scan targets only `views/` and `engine/`; expanded Touch zones from 8 lines to 8 lines with concrete file responsibilities and the exact seam site; expanded Deliverables to specify the tie-break rule, the deterministic seed formula, the caller default contract; drafted 8-task plan with per-task failing tests and gotchas; new sprints proposed: NONE (per planning guidance "Conservative on scope expansion"); cross-sprint reactions flagged for four future polish/adoption sprints (post-enrollment Malia message, Marcus crew banter, Kweon greeting, Old Sten memorial greeting) with pointers, none bundled here. PHASE_OK
+- 2026-08-31 01:30 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 01:35 — test red: 15 unit tests for LensReaction + LensReactor written and confirmed failing (ModuleNotFoundError)
+- 2026-08-31 01:45 — test green: LensReaction and LensReactor implemented; all 15 unit tests pass; committed ce0aaec
+- 2026-08-31 01:55 — test red: 10 cross-reference tests written and confirmed failing (no DataLoader attribute)
+- 2026-08-31 02:05 — authored lens_reactions.json (6 records, 18 lines; Wealth/Community/Vengeance x mid/high); DataLoader updated; all 10 cross-reference tests green
+- 2026-08-31 02:10 — test red: 7 scenario tests written and confirmed failing (no _greeting_lines)
+- 2026-08-31 02:20 — wire-in complete (_greeting_lines helper + reactor in __init__); all 7 scenario tests green; fixed compliance scanner hit (comment contained forbidden token); committed 3633355
+- 2026-08-31 02:35 — full suite: 11094 passed, 100 skipped (+31 tests vs baseline 11063); known-flaky test_dialogue_integrity::test_no_new_consumer_only_flags fails under xdist but passes in isolation (83s test + parallel contention, pre-existing). All gates green. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 00:36
-- Completed: 2026-08-31 01:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: d5455a1
-- New_sprints_proposed: none
-- Polish_items_folded_in: single-line refactor of `_render_enrollment_pitch` (mechanically necessary for the seam); Writing Bible scanner integration test (structural voice-check enforcement); explicit tie-break rule (alphabetical by lens_id) on the reactor's dominant-lens resolution
-- Decisions_locked: 4
-- Notes: Locked seam is Malia at Wreckers' Guild Hall — the pre-enrollment pitch (`wreckers_guild_view.py:962-975`), Malia's spoken lines. Rationale: persistent per-visit render, distinct authored NPC voice, venue that organically accrues Community+Preservation (so Community-lens variants sit on the accruing NPC while Wealth+Vengeance prove lens-general reading). AC6 corrected: the compliance test's scan is `views/` + `engine/` only, so the reactor at `spacegame/models/lens_reactor.py` needs no whitelist entry; the wire-in view calls the reactor's `str`-returning API and never touches the forbidden tokens. This mirrors A2-4B's `Player.record_lens_action` facade discipline. Cross-sprint reactions flagged for four future sprints (post-enrollment Malia welcome, Marcus crew banter, Kweon greeting, Old Sten memorial); none bundled. Test surface: 4 new test files, ≥15 new tests.
+- Started: 2026-08-31 01:30
+- Completed: 2026-08-31 02:35
+- Files_changed: spacegame/models/lens_reaction.py, spacegame/models/lens_reactor.py, data/narrative/lens_reactions.json, spacegame/data_loader.py, spacegame/views/wreckers_guild_view.py, tests/test_models/test_lens_reactor.py, tests/test_data/test_lens_reactions_cross_references.py, tests/test_scenarios/test_scenario_oblique_readout.py
+- Commits: ce0aaec, 3633355
+- Tests_added: 32
+- Tests_baseline: 11063
+- Tests_passing: 11094
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: LensReaction + LensReactor complete. 18 authored lines (3 lenses x 2 tiers x 3 variants) in Malia Torres Wrench voice. DataLoader loads lens_reactions after lenses (ordering guard). WreckersGuildView._greeting_lines() extracted for testability; fresh player sees unchanged default. Fixed compliance scanner hit (comment text included forbidden string). known-flaky dialogue_integrity test passes in isolation; pre-existing xdist contention.
 
 **Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). All three are `done` as of 2026-08-30. A2-4B is in-progress and provides the `player.record_lens_action` production emitters that the scenario test in Task 7 exercises; Task 7's gotchas record a fallback for the case where A2-4B is not yet done at A2-4A's implement time.
 
