@@ -926,8 +926,16 @@ def _recheck_baseline_failures_serially(
     counts = _parse_pytest_counts(combined)
     failed_match = re.search(r"(\d+) failed", combined)
     if counts is None or failed_match is None:
+        log(
+            "Baseline: red suite, but its summary line could not be parsed, so the "
+            "failures cannot be re-checked serially. Treating the suite as red."
+        )
         return None
 
+    log(
+        f"Baseline: {failed_match.group(1)} failure(s); re-running just those serially "
+        "to tell a load flake from a real break."
+    )
     try:
         recheck = run_with_hard_timeout(
             _pytest_gate_cmd("--last-failed", workers="0"),
@@ -939,6 +947,10 @@ def _recheck_baseline_failures_serially(
         return None
 
     if recheck.returncode != 0:
+        log(
+            "Baseline: the failures reproduced serially, so they are real. "
+            "Treating the suite as red."
+        )
         return None
 
     passed, skipped = counts

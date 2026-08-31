@@ -59,13 +59,42 @@ class TestHeartbeat:
     def test_thread_beats_repeatedly_then_stops(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
+        """Beats until stopped, and stops once it is -- waited on, not slept at.
+
+        The original slept 0.3s to see a beat, then a fixed 0.2s after
+        `stop.set()` before sampling the value it expected to stay frozen. That
+        grace is only 4x the 0.05s interval, and the loop can be mid-
+        `stop.wait(interval)` when the event is set, so one more beat can land
+        AFTER the sample and fail the final comparison.
+
+        Measured 2026-08-31: it failed a baseline capture under the Scheduled
+        Task, which runs ~5x slower than an interactive session, while passing
+        locally every time. A fixed sleep encodes an assumption about machine
+        speed; waiting for the condition does not.
+        """
+        interval = 0.05
         monkeypatch.setattr(heartbeat, "HEARTBEAT_PATH", tmp_path / "hb.json")
-        stop = heartbeat.start_heartbeat_thread(lambda: ("S", "plan"), interval_seconds=0.05)
-        time.sleep(0.3)
-        first = heartbeat.read_heartbeat()
-        assert first is not None
+        stop = heartbeat.start_heartbeat_thread(lambda: ("S", "plan"), interval_seconds=interval)
+
+        deadline = time.monotonic() + 10.0
+        while heartbeat.read_heartbeat() is None and time.monotonic() < deadline:
+            time.sleep(interval)
+        assert heartbeat.read_heartbeat() is not None, "thread never wrote a beat"
+
         stop.set()
-        time.sleep(0.2)
+
+        # Wait for the loop to finish its last write rather than assuming a
+        # fixed grace period covers it.
         frozen = heartbeat.read_heartbeat()
-        time.sleep(0.3)
+        settle_deadline = time.monotonic() + 10.0
+        while time.monotonic() < settle_deadline:
+            time.sleep(interval * 4)
+            current = heartbeat.read_heartbeat()
+            if current == frozen:
+                break
+            frozen = current
+        else:
+            pytest.fail("heartbeat never settled after stop was set")
+
+        time.sleep(interval * 6)
         assert heartbeat.read_heartbeat() == frozen, "thread kept beating after stop"
