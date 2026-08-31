@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | in-progress | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11528,7 +11528,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11548,7 +11548,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - `spacegame/models/bidding.py` (wire `auction_won` where `auction_lots_won_total` increments at line ~1411)
 - `spacegame/models/crew.py` (wire `crew_loyalty_gained` inside `adjust_loyalty` when amount > 0)
 - `spacegame/engine/game.py` (wire `mission_completed:bounty|smuggling` in the completion loop at line ~5911, and `politics_vote_won` in `_on_dispute_outcome` at line ~3207 when `category == "win"`)
-- `spacegame/views/wreckers_guild_view.py` (wire `wreckers_guild_contract_completed` at line ~767 after `completed_contract_count += 1`)
+- `spacegame/views/wreckers_guild_view.py` (wire `wreckers_guild_contract_completed` at line ~773 after `completed_contract_count += 1`)
 - `spacegame/views/deep_shafts_view.py` (wire `deep_shafts_pilgrimage_visited` at line ~164 after `apply_visit`)
 - `spacegame/views/okafor_view.py` (wire `okafor_research_project_funded` and `okafor_research_project_funded:high_risk` at line ~796 after `fund_project`)
 - `spacegame/views/trading_view.py` (wire `black_market_sale` at line ~1119 on the sell path when `_black_market_mode` is True)
@@ -11574,7 +11574,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 5. Amount-per-event is calibrated per the audit table's Amount column. Locked in planning: `1` for routine per-transaction events (`sold_cargo`, `crew_loyalty_gained`), `3` for medium events (`trade_profit_large`, `black_market_sale`, `deep_shafts_pilgrimage_visited`), `5` for larger recurring events (`reach_system_first_visit`, `wreckers_guild_contract_completed`), `10` for milestones (`combat_victory_named_target`, `mission_completed:bounty|smuggling`, `auction_won`, `politics_vote_won`, `okafor_research_project_funded`[+ `:high_risk`]).
 6. Structural invariant from A2-4 AC4 preserved: no file under `spacegame/views/` or `spacegame/engine/` references the string `LensInvestment` or the attribute `lens_investment`. The facade `player.record_lens_action(...)` is the only permitted write path from those layers. The existing compliance test (`test_lens_investment_never_rendered.py`) continues to pass unchanged (verified as a side effect of the full suite green).
 7. 20+ new tests across the three new test files.
-8. Full suite green; no regression from baseline (pre-phase: 11063 pass / 100 skip).
+8. Full suite green; no regression from baseline (pre-phase: 11095 pass / 100 skip).
 
 **Plan.**
 
@@ -11606,7 +11606,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 | 20 | `territory_investment_purchased` | empire | GAP — no territory purchasing mechanic; future Empire arc sprint | — | gap |
 | 21 | `politics_dispute_resolved_annex` | empire | GAP — see #15 | — | gap |
 | 22 | `investment_tier_purchased:community` | community | GAP — see #6 | — | gap |
-| 23 | `wreckers_guild_contract_completed` | community, preservation | `views/wreckers_guild_view.py:767` after `completed_contract_count += 1` | 5 | wire (accrues on TWO lenses per record_action semantics) |
+| 23 | `wreckers_guild_contract_completed` | community, preservation | `views/wreckers_guild_view.py:773` after `completed_contract_count += 1` | 5 | wire (accrues on TWO lenses per record_action semantics) |
 | 24 | `crew_loyalty_gained` | community, connection | `models/crew.py:393` `adjust_loyalty` when `amount > 0` | 1 | wire (accrues on TWO lenses) |
 | 25 | `okafor_research_project_funded` | legacy | `views/okafor_view.py:796` after `fund_project` (any `risk_tier`) | 10 | wire |
 | 26 | `institution_founded` | legacy | GAP — no institution-founding mechanic; future Legacy arc sprint | — | gap |
@@ -11688,7 +11688,7 @@ Task-by-task breakdown for the implement phase. Each task lists files touched, t
 
 10. **Sweep: run `ruff format` + `ruff check` on touched files; mypy against baseline; full test suite.**
     - Files: none (verification).
-    - Commands: `ruff format` on the 9 production files + 3 new test files; `ruff check` on the same set; `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` (must exit 0); `python -m pytest -n auto -q` (pass count >= 11063, new test count 20+).
+    - Commands: `ruff format` on the 9 production files + 3 new test files; `ruff check` on the same set; `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` (must exit 0); `python -m pytest -n auto -q` (pass count >= 11095, new test count 20+).
     - Gotchas: do NOT regenerate `mypy-baseline.txt` (per CLAUDE.md). If new mypy errors surface on `player.record_lens_action`, add correct type hints inline. The Optional `player` parameter added in Task 3 (`crew.py::adjust_loyalty`) requires threading through `adjust_loyalty_all` and `adjust_loyalty_for_faction`; verify all internal call sites are updated.
 
 **Cross-sprint reactions to author.**
@@ -11708,23 +11708,27 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - ~~If A2-5/A2-6 invented tags with no existing production emitter, add or gap-flag~~ **Locked in planning**: 22 of 34 tags are gap-flagged, 12 are wired. The gap manifest test (`test_lens_investment_gap_manifest.py`) enforces the partition. No gameplay is invented in this sprint. Future feature sprints that add the missing systems (mission_lawfulness, council seats, territory purchases, etc.) will wire their own emitters as part of their own scope. AC1 revised accordingly so the sprint is completable.
 - ~~Tags qualified by a colon (`mission_completed:bounty`) are handled by caller emitting the qualified form~~ **Confirmed in A2-4 planning; carried forward unchanged**: `record_action`'s exact-match semantics mean the caller emits the full qualified tag string. Task 5 emits `mission_completed:bounty` verbatim from `game.py`, not `mission_completed` + a bounty flag.
 - ~~Structural invariant conflict: A2-4 forbids `views/` and `engine/` from touching `lens_investment`, but this sprint's wires are mostly in views/engine~~ **Locked in planning**: introduce a `Player.record_lens_action(action_tag, amount)` facade. The facade name does not contain the forbidden `lens_investment` substring, so the existing compliance test (`test_lens_investment_never_rendered.py`) continues to pass unchanged with no allowlist entries. This preserves A2-4 AC4 structurally rather than eroding it. The lower-level `LensInvestment.record_action(tag, amount, lenses)` remains the model-layer entry point; the facade layers on top and hides the registry lookup so views/engine never touch either the class or the attribute directly. Documented in the module docstring at the facade site so future planners see why the indirection exists.
-- Test-suite runtime: A2-4's post-review test gate hit a 900s timeout under stray-pytest contention (see A2-4 activity log 2026-08-28 21:58). The harness fix landed (fa49b6f, 97f7497, d61a23e) — planner has verified pre-phase baseline of 11063 passing / 100 skipped, so contention is no longer a blocker. If it recurs, the harness will retry via INFRA_ERROR rather than stranding this sprint.
+- Test-suite runtime: A2-4's post-review test gate hit a 900s timeout under stray-pytest contention (see A2-4 activity log 2026-08-28 21:58). The harness fix landed (fa49b6f, 97f7497, d61a23e) — planner has verified pre-phase baseline of 11095 passing / 100 skipped, so contention is no longer a blocker. If it recurs, the harness will retry via INFRA_ERROR rather than stranding this sprint.
 
 **Activity log.**
 - 2026-08-28 — todo (created by A2-4 planner; addresses the "accrual API is unreachable in production" scope gap surfaced during A2-4 planning)
 - 2026-08-30 23:46 — harness: plan phase starting
 - 2026-08-31 00:15 — planning complete; verified all 7 declared context docs exist; built the 34-row audit table by grepping production code for every tag in the union of `investment_from` across the shipped `data/narrative/lenses.json` (12 tags map to existing emitters, 22 tags are gap-flagged — the acceptance of gaps is explicit per the sprint author's "Do NOT invent gameplay just to have a place to emit" note); locked 4 open decisions (amount calibration to a 1/3/5/10 tier scheme; gap-flag rather than invent for the 22 unmapped tags; carry forward A2-4's exact-match colon-qualifier semantics; introduce `Player.record_lens_action` facade to preserve A2-4's `test_lens_investment_never_rendered.py` structural invariant without allowlist entries); revised AC1 to make the wired/gap partition explicit and mechanically verifiable via `test_lens_investment_gap_manifest.py`; expanded Touch zones from 4 lines to 12 lines matching every audit-table wire target and adding the gap manifest test; expanded Acceptance criteria from 7 to 8 (added AC6 to explicitly preserve A2-4 AC4's structural invariant); drafted 10-task plan with per-task failing tests and gotchas; new sprints proposed: NONE (per planning guidance "Conservative on scope expansion" — the 22 gap tags belong to future feature sprints that will add both the gameplay AND the emitter as one cohesive unit, not to a stub sprint that only adds emitters); cross-sprint reactions: none from this sprint itself (foundational wiring, no player-facing content authored), with pointers to A2-4A for the reactor and follow-up crew-banter / contract-offer sprints for the observable surface. PHASE_OK
 - 2026-08-31 01:46 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 01:51 — harness: plan phase starting
+- 2026-08-31 02:10 — re-planning: verified no implementation commits landed yet (git log shows only c8c90a4 / b0c0142 planning commits for A2-4B); confirmed all 7 context docs still exist at declared paths; spot-checked all touch-zone line numbers against current code — one drift found (`views/wreckers_guild_view.py` `completed_contract_count += 1` moved from 767 → 773; audit table row 23 and touch-zone line updated); refreshed AC8 test-suite baseline from 11063 → 11095 (matches harness-reported pre-phase baseline); all locked decisions from prior plan remain sound (facade indirection, gap-manifest approach, amount-per-tag calibration, colon-qualifier semantics) — no re-litigation needed. Cross-sprint reactions: still none authored in this sprint (A2-4B remains foundational plumbing; the reactor A2-4A now shipped and will consume this sprint's accrual once wired). Plan is ready for implementation as written. PHASE_OK
+
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-30 23:46
-- Completed: 2026-08-31 00:15
+- Started: 2026-08-31 01:51
+- Completed: 2026-08-31 02:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: c8c90a4
+- Commits: pending
 - New_sprints_proposed: none
-- Polish_items_folded_in: gap-manifest compliance test (structural guard against tag drift); facade-method indirection to preserve A2-4 AC4 without allowlist entries; explicit calibration table for amount-per-tag
-- Decisions_locked: 4
+- Polish_items_folded_in: none (prior plan already folded in the gap-manifest test, facade indirection, and calibration table; this re-planning only refreshed baseline and one drifted line number)
+- Decisions_locked: 0 new (4 locked in the 2026-08-30 pass remain sound; nothing re-opened)
+- Notes: Sprint had been fully planned at 2026-08-30 23:46–00:15 (commit c8c90a4) then reset to todo by stuck-sprint recovery. Verified plan is still valid and current: no implementation commits, all context docs present, only minor drift (one line-number shift, baseline count refresh). Ready for implementer.
 - Notes: Audit against the shipped `data/narrative/lenses.json` shows 12 of 34 unique `investment_from` tags have real production emitters today; 22 are aspirational and belong to future feature sprints. Sprint scope revised to wire the 12 honestly and gap-flag the 22 with rationales, per the sprint author's explicit "do not invent gameplay" guidance in Risks. `Player.record_lens_action` facade is the mechanism that lets views/engine wire in without breaking A2-4's `test_lens_investment_never_rendered.py` compliance test — the string `lens_investment` never appears in `views/` or `engine/`.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
