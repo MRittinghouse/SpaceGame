@@ -130,7 +130,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
-| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
+| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | in-progress | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
@@ -12546,7 +12546,7 @@ cohesion sprints.
 
 #### A2-7 — Per-lens readings on locations
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12608,11 +12608,230 @@ ever touches JSON.
    fifth lens's reading purely in test data and loads it successfully.
 6. Full suite green; no regression from baseline.
 
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing
+test to write first, and any gotchas. Order matters: model shape first, then round-trip,
+then cross-reference guard, then authored content, then extensibility proof, then sweep.
+
+1. **Extend `Location` dataclass with `lens_readings: dict[str, str]` and `reading_for()` helper.**
+   - Files: `spacegame/models/location.py`.
+   - Tests (new class `TestLocationLensReadings` in `tests/test_models/test_location.py`):
+     - `test_default_lens_readings_is_empty_dict` — construct a `Location(...)` with only
+       the existing seven fields; assert `loc.lens_readings == {}`.
+     - `test_lens_readings_may_be_populated` — construct with
+       `lens_readings={"vengeance": "..."}`; assert dict-access returns the string.
+     - `test_reading_for_returns_string_when_present` — populated dict, returns the value.
+     - `test_reading_for_returns_empty_string_when_absent` — dict without the key returns
+       `""`, not `None`, and does NOT raise (this locks the `str` (not `Optional[str]`)
+       contract per the deliverable).
+   - Gotchas: use `field(default_factory=dict)`, not `= {}` (mutable-default trap). See
+     `spacegame/models/player.py:70` for the identical pattern on
+     `faction_reputation: dict[str, int]`. Import `field` from `dataclasses` at the top;
+     the module currently only imports `dataclass`. Keep `Location` non-frozen — the
+     loader still mutates `system_id` at `data_loader.py:2244`.
+
+2. **Update `to_dict()` / `from_dict()` to round-trip `lens_readings`.**
+   - Files: `spacegame/models/location.py`.
+   - Tests (extend `TestLocationLensReadings`):
+     - `test_to_dict_includes_lens_readings` — populated dict survives `to_dict()`.
+     - `test_from_dict_accepts_lens_readings` — populated dict survives `from_dict()`.
+     - `test_from_dict_defaults_lens_readings_when_missing` — pre-A2-7-shaped input dict
+       (no `lens_readings` key) yields `loc.lens_readings == {}` rather than raising.
+       This is AC 2 verbatim.
+     - `test_round_trip_preserves_lens_readings` — `Location.from_dict(loc.to_dict())`
+       equality on `lens_readings`. This is AC 1.
+   - Gotchas: `to_dict()` emits `"lens_readings"` unconditionally so the round-trip is
+     symmetric even when empty. `from_dict()` uses `data.get("lens_readings", {})` — per
+     CLAUDE.md Save Migration rule "New fields: use `data.get('new_field', default)`".
+     Do NOT deep-copy the dict; JSON deserialization already produces a fresh one, and
+     the tests assert value equality, not identity.
+
+3. **Add lens-id cross-reference validation to `test_cross_references.py`.**
+   - Files: `tests/test_data/test_cross_references.py`.
+   - Add `class TestLensReadingReferences:` with:
+     - `test_every_lens_reading_key_is_a_real_lens_id` — walk `_get_loader().locations`,
+       walk each location's `lens_readings`, assert every key is in `loader.lenses`.
+       Error message shape mirrors the file's existing pattern: `"Location '{loc.id}' in
+       system '{system_id}' references lens '{lens_key}' which does not exist"`.
+     - `test_injected_bad_lens_id_fails_the_check` — instantiate a scratch
+       `DataLoader(data_dir=tmp_path)` populated with a synthetic
+       `locations.json` whose one location has `lens_readings={"not_a_real_lens": "..."}`
+       and a copy of `lenses.json` (or just skip loading lenses and use an empty
+       `loader.lenses`); run the same walk logic; assert it flags the bad key. This
+       proves the guard actually fires. AC 3.
+   - Gotchas: the file uses a module-global `_loader_cache` — do NOT mutate it. Use
+     `tmp_path` for the negative case. If a helper `_load_lenses_from_project()` is
+     needed for the scratch loader, place it inline in the test rather than exporting
+     new API. Load order in `data_loader.py:load_all()` runs `load_locations()` at
+     line 227 BEFORE `load_lenses()` at line 237 — the cross-reference check runs after
+     `load_all()` completes, so ordering is not a concern for the positive test.
+
+4. **Author `lens_readings` for three narratively-weighty locations.**
+   - Files: `data/galaxy/locations.json`.
+   - Three locations, at least four lens readings each (AC 4 floor; author five to match
+     the design-spec derelict-hauler-table density and to distribute lens coverage):
+     - `breakstone / breakstone_deep_mines` (unique — Sora Takahashi memorial, Uprising
+       origin, `locations.json:131`): lenses `community`, `revolution`, `preservation`,
+       `legacy`, `faith`.
+     - `nova_research / nova_restricted_labs` (unique — sealed containers, biometric
+       locks, `locations.json:332`): lenses `truth`, `discovery`, `transcendence`,
+       `crime`, `justice`.
+     - `crimson_reach / crimson_salvaging` (salvaging — active wrecker debris fields,
+       `locations.json:460`): lenses `wealth`, `preservation`, `discovery`, `community`,
+       `vengeance`.
+   - Tests (new class `TestLensReadingsContent` in `tests/test_models/test_location.py`):
+     - `test_authored_locations_have_lens_readings` — the three ids exist in loader,
+       each with `>=4` `lens_readings` entries. AC 4 coverage floor.
+     - `test_no_two_readings_for_the_same_location_share_more_than_half_their_words` —
+       for every location that carries any `lens_readings`, for every pair, tokenise
+       both readings (lowercased, punctuation stripped, small stopword set removed),
+       compute Jaccard similarity, assert `< 0.5`. AC 4 anti-duplicate clause.
+     - Stopword set (inline in the test — no new dependency): `{"the","a","an","and",
+       "or","of","in","to","is","are","that","this","it","on","with","for","by","as",
+       "at","from","but"}`. Punctuation-strip set: `.,;:!?"()'`.
+   - Voice check — every string must pass:
+     - No em-dashes (`—`, `–`). Hyphens fine.
+     - No banned phrases: `"couldn't help but"`, `"a testament to"`, parallel-negation
+       `"no X, no Y"` (Reach tagline excepted, but readings for these three locations
+       are not Reach tagline material).
+     - No banned names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose).
+     - Deep Shafts readings do NOT put Marcus or his father into the text; the memorial
+       predates Marcus and the reading is a lens-flavored observation of the *place*.
+       Same rule for `crimson_salvaging` (do not insert Malia Torres — the guild hall
+       already carries her voice at the *neighbouring* `crimson_wreckers_guild`
+       location).
+     - Length: one or two sentences per reading, roughly 80-180 chars, matching the
+       density of the derelict-hauler table in
+       `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` lines 55-62.
+   - Voice sweep: `grep -n "—\|–\|couldn't help but\|a testament to" data/galaxy/locations.json`
+     must return zero hits inside authored readings.
+
+5. **Prove the "add a new lens's reading with zero code change" property.**
+   - Files: `tests/test_models/test_location.py`.
+   - Test (new class `TestLensReadingsExtensibility`):
+     - `test_novel_lens_reading_loads_without_code_change` — write a synthetic
+       `locations.json` under `tmp_path/galaxy/locations.json` whose one location has
+       `lens_readings={"exploration": "..."}` (a real lens id that none of task 4's
+       three example locations touched, verified by inspecting the task-4 sets); call
+       `DataLoader(data_dir=tmp_path).load_locations()`; assert the returned Location has
+       the reading intact and `reading_for("exploration")` returns the string. AC 5.
+   - Gotchas: the loader mutates `loc_data["system_id"]` in-place at
+     `data_loader.py:2244` — do NOT pre-populate `system_id` in the synthetic dict; the
+     loader sets it from the outer key. Synthetic JSON shape must be
+     `{"locations": {"some_system": [{...}]}}`.
+
+6. **Sweep: format touched files, mypy the changes, run full suite, validate every AC.**
+   - Files: none (verification only).
+   - Format scope (per AGENT_GUIDE.md — never project-wide):
+     `ruff format spacegame/models/location.py tests/test_models/test_location.py tests/test_data/test_cross_references.py`.
+     JSON has no formatter; verify parse via
+     `python -c "import json; json.load(open('data/galaxy/locations.json'))"`.
+   - Lint scope:
+     `ruff check spacegame/models/location.py tests/test_models/test_location.py tests/test_data/test_cross_references.py`.
+   - Type check: `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter`
+     must exit 0. One `dict[str, str]` field and one `str`-returning helper should
+     introduce zero new mypy errors; if any appear, fix them — do NOT regenerate the
+     baseline (CLAUDE.md ratchet rule, this is not a types-only commit).
+   - Suite: `pytest -n auto -q`. Baseline is 11133 passing / 100 skipped as of the
+     pre-phase snapshot; expect roughly 11141+ passing after the ~8-10 new tests land.
+     New failures vs. baseline are a blocker.
+   - Walk every AC (1-6) in the Activity log entry and name the specific test that
+     validates it.
+
+**Cross-sprint reactions to author.**
+
+This is a data-schema-population sprint. Its own player-facing surface is nil —
+`lens_readings` is a dict on `Location` that no view currently reads. First consumer will
+be either A2-4B (already implementing investment-hook wiring at location visits) or a
+later "lens-tinted station hub" sprint that inspects `player.lens_investment` to choose
+which reading to surface at the flavor-text slot. Authoring real content for three
+specific locations means those locations are now instrumented for future reactions. Log
+the follow-ups so a later planner does not have to rediscover the surface:
+
+- `spacegame/views/station_layouts.py:959` — future: swap `zone.location.flavor_text` for
+  `zone.location.reading_for(dominant_lens_id)` when the player has any lens investment
+  past a threshold, so a wealth-invested player sees the `crimson_salvaging` wealth
+  reading rather than the generic Debris Field flavor. Fires on station-hub entry.
+  **Not authored here** — `LensInvestment` does not expose a `dominant_lens_id` helper
+  yet; A2-4B does not add one either. Belongs to a follow-up (candidate ID `A2-4C` or a
+  later cohesion sprint) once the helper lands.
+- `data/crew/ambient_dialogue.json` — future: Marcus-specific line at
+  `breakstone_deep_mines` acknowledging the community reading. Fires when Marcus is on
+  crew AND `flags.attended_silent_shaft()` is set (an existing SA-2 flag registered at
+  `spacegame/constants/flags.py:563`) AND the player carries any `community` or
+  `preservation` lens investment. **Not authored here** — the ambient-line schema, the
+  crew-context filter, and the lens-investment gate all exist today; the missing piece is
+  the authored line. Belongs to a follow-up crew-banter sprint.
+- `spacegame/views/wreckers_guild_view.py` — future: Malia arbitrator flavor swap at the
+  guild hall (`WreckersGuildView`, `spacegame/views/wreckers_guild_view.py:95`) that
+  reflects the player's dominant lens (crime vs. community vs. preservation reads
+  Malia's mediation differently). Fires on guild-hall entry. **Not authored here** — same
+  dependency on a dominant-lens helper.
+
+None of these three are within A2-7's scope; none are urgent. Documenting them keeps
+future planners from re-discovering the surface. A2-7's contract stays narrow: author the
+data, prove the shape, guard the invariants. Nothing more.
+
+**Risks / open questions.** (Decisions locked during planning; struck through for clarity.)
+
+- ~~Should `reading_for()` live on `Location` or on `DataLoader`?~~ **Locked: on
+  `Location`.** The sprint deliverable names `Location.reading_for(lens_id: str) -> str`;
+  the model owns its own field. A `DataLoader` helper would add a lookup hop for no
+  benefit and diverge from the existing `Location.to_dict()`-on-the-model pattern.
+- ~~Return type of `reading_for()`: `str` or `Optional[str]`?~~ **Locked: `str`, empty
+  string on miss.** Matches the deliverable verbatim; keeps view-layer callers free of
+  `if reading is None` boilerplate; empty-string is already the convention for missing
+  `flavor_text` at `spacegame/views/station_layouts.py:959`. "Nothing to say through
+  this lens" is the honest reading.
+- ~~Which three locations get real `lens_readings`?~~ **Locked:
+  `breakstone_deep_mines`, `nova_restricted_labs`, `crimson_salvaging`.** Each carries
+  independent narrative weight from the SA-2 / world-of-restricted-research /
+  Wreckers'-Guild work; their location types are the sprint's requested `unique` /
+  `salvaging` shape; each supports five clean lens readings without contrivance.
+  Rejected: `fulcrum_core` (its narrative surface is the Threshold arc, not Act II
+  ambition), `crimson_wreckers_guild` (Malia's arbitrator voice is already the
+  guild-hall flavor; adding lens readings would compete with it rather than complement).
+- ~~Which lens ids per location?~~ **Locked as listed in Task 4.** Each triple was
+  picked for narrative fit *and* to distribute lens coverage across the registry (Deep
+  Shafts covers memorial-adjacent lenses, Nova covers restriction-and-transformation
+  lenses, Debris Field covers pragmatist lenses). Together the three exercise 12 of 16
+  lens ids; the remaining four (`political_power`, `exploration`, `empire`,
+  `connection`) will land through future content sprints when their natural venues
+  arrive (Havens Congress for `political_power`, deep-space anomalies for `exploration`,
+  Fulcrum-arc territories for `empire`, cantina/crew hubs for `connection`).
+- ~~"Share more than half their words" — what metric?~~ **Locked: Jaccard similarity
+  < 0.5 on lowercased, punctuation-stripped, stopword-filtered word sets.** Jaccard is
+  symmetric and well-defined; stopword filtering avoids false positives from every
+  sentence sharing `the`/`a`; 0.5 is the exact threshold AC 4 names. Stopword set is
+  small and inline (no NLTK dependency); listed in Task 4.
+- ~~Should the sprint add a separate `_parse_location()` in `DataLoader` or a runtime
+  type-guard for `lens_readings` shape?~~ **Locked: no separate parser, no runtime
+  type-guard beyond what `dict.items()` iteration produces.** `Location.from_dict()`
+  already does shape-tolerance per Save Migration rules; the Task-3 cross-reference test
+  catches the semantic error (bad lens ids); mypy strict catches type errors at
+  authoring time. Adding a defensive runtime guard is coding against a case that cannot
+  happen once JSON parses.
+
 **Activity log.**
 - 2026-08-27 - todo (created)
 - 2026-08-30 22:17 — harness: plan phase starting
 - 2026-08-30 22:22 — harness: plan phase outcome=blocked, marking blocked. roadmap validation failed: sprints modified outside claim: ['A2-6']. Claimed sprint was A2-7. (not retrying -- a commit referencing A2-7 already landed this attempt; re-running risks duplicating partial work)
 - 2026-08-30 22:45 — session: reset blocked -> todo. This block was not the agent doing. This session edited A2-6 status while A2-7 plan phase was in flight, and the claim validator correctly attributed the out-of-claim change to A2-7: 'sprints modified outside claim: [A2-6]'. The planner own work was sound and was committed at 85160c1. Nothing depends on A2-7, so nothing was stranded.
+- 2026-08-31 04:51 — harness: plan phase starting
+- 2026-08-31 05:00 — planning complete; six-task Plan section authored (model shape → round-trip → cross-ref guard → authored content → extensibility proof → sweep). Six open decisions locked (helper location, return type, three example locations, per-location lens coverage of 12 of 16 registry ids, Jaccard-0.5 similarity metric, no separate parser). Three cross-sprint reactions logged as future follow-ups (station-hub flavor swap, Marcus ambient at Deep Shafts, Malia flavor at Wreckers' Guild) — all blocked on a dominant-lens helper that neither this sprint nor A2-4B adds. No polish items folded in; the sprint stays intentionally infrastructure-only per its "one-time code change so every later location author only ever touches JSON" contract. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-31 04:51
+- Completed: 2026-08-31 05:00
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (pending)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (all downstream; see Cross-sprint reactions to author)
+- Decisions_locked: 6
+- Notes: Verified all five Context-to-read docs exist. Verified sprint is NOT already implemented — `Location` has no `lens_readings` field as of the pre-phase snapshot. Prior planning (commit 85160c1) was reverted by the harness's outcome=error finalize commit 3c533be after a mid-phase edit-outside-claim; this re-plan reproduces the six-task structure with re-verified file-line references (`data_loader.py:2244`, `player.py:70`, `station_layouts.py:959`, `flags.py:563`, `wreckers_guild_view.py:95`) and re-verified location ids (`breakstone_deep_mines`, `nova_restricted_labs`, `crimson_salvaging`). Baseline is 11133/100.
 ---
 
 #### A2-8 — Dilemma model + threshold collision
