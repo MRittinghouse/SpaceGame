@@ -13490,7 +13490,7 @@ crew-banter reactivity - not this one.
 - Started: 2026-08-31
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 15fd6c5
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented and reviewed; no re-plan needed)
 - Decisions_locked: 0 (all 8 previously locked; none re-opened)
