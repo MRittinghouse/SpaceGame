@@ -11791,7 +11791,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12189,18 +12189,26 @@ cohesion sprints.
 - 2026-08-30 22:45 — session: reset blocked -> todo (second attempt). The plan phase wrote PHASE_BLOCKED 'already implemented at 58da3d9', which the dispatcher treats as terminal, stranding A2-4A and A2-4B. Work is verified complete at 58da3d9: lenses.json at 16 entries plus extended test surfaces, and the full suite is green at 11063 passing, a baseline that already includes A2-6 own tests. ralph/prompts/plan.md now tells planners to write PHASE_OK in this situation (91c263a), so the re-run should route implement -> review -> gate normally. Reset to todo rather than done so it still earns its review.
 - 2026-08-30 22:51 — harness: plan phase starting
 - 2026-08-30 22:55 — planner re-entered after 8221ec6 reset blocked -> todo. Work is already on disk at commit 58da3d9 ("A2-6: lens definitions 9-16") and its tests are green. Verified: `data/narrative/lenses.json` has 16 lens dicts in the expected insertion order (vengeance, wealth, political_power, exploration, discovery, justice, crime, revolution, empire, community, legacy, faith, transcendence, connection, truth, preservation); `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_compliance/test_prose_anti_patterns.py -q` = 92 passed / 1 skipped in 0.87s. The three new test classes named in the sprint's Deliverables are present in `test_lens_content_uniqueness.py` (`TestEmpireTrioDistinctness`, `TestCommunityWealthSameWound`, `TestTruthVengeanceCompatibility`). Writing PHASE_OK per the updated planner prompt (91c263a, "tell planners what to do when the sprint is already implemented") so the dispatcher routes implement -> review -> gate; the implementer will verify rather than duplicate, and the reviewer will re-verify against the 11063/100 pre-phase baseline. PHASE_OK
+- 2026-08-30 22:55 — harness: implement phase starting (rework cycle 0)
+- 2026-08-30 23:10 — implementation verified: work already on disk at 58da3d9; all 9 acceptance criteria confirmed green (92 lens-surface tests pass, full suite 11063/100, lint/format clean). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-30 22:51
-- Completed: 2026-08-30 22:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 58da3d9 (prior implementation, already on master); ee38cb3 (this plan-phase note)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (implementation already committed at 58da3d9; prior plan at 3a605a6 already locked all 6 open questions)
-- Decisions_locked: 0 (all six locked at 3a605a6)
-- Notes: Sprint is already implemented at 58da3d9 (2026-08-30 21:21). Verified: lens JSON at 16 entries in the expected insertion order; the three new test classes present in `test_lens_content_uniqueness.py`; lens-surface suite green at 92 passed / 1 skipped. Writing PHASE_OK per the updated planner prompt (91c263a) so the sprint routes normally through implement (which will verify rather than duplicate) and review. This is the exact fix the prompt update was made for -- the prior planner emitted PHASE_BLOCKED here on 2026-08-30 22:15, which stranded A2-4A and A2-4B and needed a human unstick (8221ec6).
+- Started: 2026-08-30 22:55
+- Completed: 2026-08-30 23:10
+- Files_changed: data/narrative/lenses.json, tests/test_compliance/test_lens_content_uniqueness.py, tests/test_models/test_lens.py
+- Commits: 58da3d9 (implementation committed 2026-08-30 21:21 by supervisor after agent crash)
+- Tests_added: 17 (TestEmpireTrioDistinctness: 4, TestCommunityWealthSameWound: 3, TestTruthVengeanceCompatibility: 3, TestCommunityWealthSameWound in test_lens.py: 3, test_real_lenses_json count-bump: 1, investment_from tag pattern: 1, minigame_shape uniqueness extended: 1, authoring-guide drift check: 1)
+- Tests_baseline: 11063
+- Tests_passing: 11063
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: All work was already on disk at 58da3d9. Verified all 9 ACs: 16 lenses loaded, 17 uniqueness tests pass, community/wealth same-wound tests pass, investment_from regex clean, empire trio distinctness passes, truth/vengeance compatibility passes, count bump to 16, prose anti-patterns scanner clean, full suite green at 11063/100 (2 xdist flaky failures confirmed pre-existing by serial rerun).
 ---
 
 #### A2-7 — Per-lens readings on locations
