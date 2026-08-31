@@ -1026,7 +1026,40 @@ def main() -> int:
         crashes = 0
 
 
+def _log_interpreter_exit() -> None:
+    """Record that the Python interpreter shut down under its own control.
+
+    The distinction this exists to draw: the `except BaseException` handler below
+    already logs any Python-level death, and it logged NOTHING at four supervisor
+    deaths on 2026-08-30/31 (22:36, 00:28, 01:30, 04:44), each reported by Task
+    Scheduler as the action "completing" with return code 2147942401
+    (0x80070001), with no Id 111 termination event and no crash record.
+
+    So the cause is either an external TerminateProcess or a C-level crash, and
+    those look identical from outside. An `atexit` line separates them: if this
+    appears in the log, the interpreter chose to exit and the fault is in our
+    code; if it never appears, nothing Python-level ran on the way out and the
+    process was killed from outside. `faulthandler` covers the third case, a
+    hard crash, which would otherwise write a traceback to a stderr that Task
+    Scheduler discards.
+    """
+    _log("supervisor: interpreter exiting (atexit reached)")
+
+
 if __name__ == "__main__":
+    import atexit
+    import faulthandler
+
+    # Task Scheduler discards the supervisor's stderr, so a hard crash would
+    # leave no trace at all. Point faulthandler at the log we keep.
+    try:
+        _fault_log = open(SUPERVISOR_LOG_PATH, "a", encoding="utf-8", buffering=1)
+        faulthandler.enable(file=_fault_log)
+    except OSError:
+        faulthandler.enable()
+
+    atexit.register(_log_interpreter_exit)
+
     try:
         sys.exit(main())
     except SystemExit:
