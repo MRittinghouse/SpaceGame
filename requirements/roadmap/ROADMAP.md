@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13285,6 +13285,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 14:06 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 14:12 — harness: plan phase starting
 - 2026-08-31 14:16 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 14:28 — harness: review phase starting (rework cycle 0)
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13448,30 +13449,37 @@ crew-banter reactivity - not this one.
   2d4f20f~1..39566ec` returns exactly 12 files, all inside the sprint's
   declared touch zones. All 12 acceptance criteria hold as verified by the
   prior 5 planner passes and re-confirmed here. PHASE_OK.
+- 2026-08-31 (review) — independent review pass. Plan audit: sound; all 8
+  locked decisions defensible; task breakdown correctly captured the
+  revert-autopsy failure modes (Tasks 2.1/6.1/7.1). Ran 93 sprint tests
+  independently — all pass (1.44s). Read all key implementation files:
+  dilemma.py, dilemma_resolution_view.py, game.py _after_player_action /
+  _tick_dilemma_engine / _deliver_telegraph / _push_dilemma_modal /
+  _handle_dilemma_resolution, save_manager.py splice, player.py field,
+  flags.py additions, test_scenario_dilemma_thresholds.py, test_coverage.py.
+  Ruff lint clean on all touched files. Compliance guard verified by grep
+  (no LensInvestment/lens_investment tokens in engine/ or views/). Full
+  suite under -n auto: 11206 pass, 100 skip, 1 failure on
+  test_no_new_consumer_only_flags — confirmed pre-existing xdist timeout
+  (passes serially in 88s; A2-8 does not touch test_data/ or the scanner).
+  All 12 acceptance criteria independently verified. Single tighten
+  identified (see phase report). No critical findings. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 (verifier pass on already-implemented sprint)
+- Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: none (this verifier pass; sprint work already on master across 5 commits)
-- Commits: 2d4f20f, 4b5f950, cc61422, 9964285, 39566ec (all pre-existing)
-- Tests_added: 0 (this pass; the 5 commits added 39 in test_dilemma, 12 in
-  test_scenario_dilemma_thresholds, view smoke tests, 4 in TestSaveLoadDilemmaState)
-- Tests_baseline: 11207
-- Tests_passing: 11206 (one xdist timeout on unrelated slow scanner; 19/19 pass serially)
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes (serial run; 19/19)
-- Writing_bible_clean: n/a (sprint authors no player-facing content — foundational engine only)
-- Touch_zones_respected: yes (git diff 2d4f20f~1..39566ec = 12 files, all in declared zones)
-- Notes: Verifier pass on already-implemented sprint per the "cheap check first"
-  playbook. All 5 A2-8 commits (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec)
-  intact on master. 93 pass across sprint's own tests + ripples + compliance.
-  Lint + format clean. SI-3 green serially. Full suite meets baseline modulo one
-  pre-existing xdist timeout unrelated to A2-8. All 12 acceptance criteria hold.
-  PHASE_OK → route to review.
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11206 (1 pre-existing xdist timeout on test_no_new_consumer_only_flags; passes serially in 88s)
+- Acceptance_criteria_verified: 12/12
+- Polish_items_verified: 2/2 (round-robin re-delivery AC8; compliance-guard-green AC9)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: dilemma_resolution_view.py:183 — "A CHOICE ARRIVES" is hard-coded; future per-dilemma content sprints may want a dilemma-specific header field on the Dilemma model. Acceptable YAGNI for a plumbing-only sprint; A2-10/A2-11 own the skin.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 8 locked decisions defensible. All 12 ACs verified independently. Writing bible clean (three terse UI strings, no GenAI tells, no em-dashes). Pre-existing xdist timeout is unrelated to A2-8 and passes serially.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
