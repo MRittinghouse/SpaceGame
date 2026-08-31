@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13279,6 +13279,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 10:38 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 10:44 — harness: plan phase starting
 - 2026-08-31 11:50 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 11:56 — harness: plan phase starting
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13365,28 +13366,44 @@ crew-banter reactivity - not this one.
   so the dispatcher routes the sprint through implement (which will verify) and then
   through review, which is where reset-to-todo of already-shipped work belongs.
   PHASE_OK
+- 2026-08-31 (third re-plan on already-implemented sprint after another stuck-sprint
+  reset 8f0d089) — planner re-entered again; sprint had been in-progress and was
+  reset to todo by harness recovery. All 5 A2-8 implementation commits (2d4f20f,
+  4b5f950, cc61422, 9964285, 39566ec) remain intact on master; `git log --oneline`
+  shows them present, and 8f0d089 is a bare harness-recovery status reset with no
+  code revert. Re-verified the sprint's test surface still passes: 71 pass across
+  test_dilemma / test_scenario_dilemma_thresholds / test_dilemma_resolution_view /
+  test_coverage / test_ground_loot_bonus / test_lens_investment_never_rendered;
+  22 pass across test_scenario_save_load + test_mission_notifications (including
+  the 4 in TestSaveLoadDilemmaState). All 12 acceptance criteria still hold.
+  Pre-phase baseline is now 11207 (same as the last re-plan); AC12's pass-count
+  bar is met. Per the playbook, emitting PHASE_OK — not PHASE_BLOCKED — so the
+  dispatcher routes the sprint through implement (verifier) and review. This is
+  the fourth planner run in a row that has found the work already in place; the
+  underlying pathology is a stuck-sprint recovery mechanism resetting a completed
+  sprint before it advances to done, not anything wrong with the plan or the
+  implementation. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 (second re-plan; post stuck-sprint reset d71b900)
+- Started: 2026-08-31 (third re-plan; post stuck-sprint reset 8f0d089)
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: faea658
+- Commits: pending
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint is already implemented; nothing to fold)
 - Decisions_locked: 0 (all 8 prior decisions still hold; no new opens surfaced)
-- Notes: Sprint is STILL ALREADY IMPLEMENTED on master across the same 5 commits
-  (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec) that landed after the previous re-plan.
-  d71b900 was a harness-recovery reset, not a code revert — none of the A2-8 commits
-  were rolled back. Re-verified by running the sprint's own tests (71 pass across
-  dilemma model/scenario/view + ripple targets + compliance guard), save/load extension
-  (12 pass in test_scenario_save_load; 4 pass in TestSaveLoadDilemmaState), and
-  mission-notifications touch zone (10 pass). All 12 acceptance criteria hold. Baseline
-  advanced from 11186 to 11207 since the last plan, so AC12's "pass count >= baseline"
-  bar is still met. Per the playbook, emitting PHASE_OK — not PHASE_BLOCKED — so the
-  dispatcher routes through implement (verifier) and review. No roadmap changes to
-  the plan itself; this activity log entry + report is the phase's only edit.
+- Notes: Sprint remains ALREADY IMPLEMENTED on master across the same 5 commits
+  (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec). 8f0d089 was another harness
+  stuck-sprint recovery reset, not a code revert — none of the A2-8 commits were
+  rolled back. Re-verified: 71 pass in the sprint's own test surface + ripple
+  targets + compliance guard, 22 pass across save/load and mission-notifications,
+  including all 4 tests in TestSaveLoadDilemmaState. Baseline still 11207; AC12's
+  bar met. Per the playbook, PHASE_OK routes the sprint through implement
+  (verifier) and review, which is where reset-to-todo of already-shipped work
+  belongs. No roadmap changes to the plan itself; this activity log entry +
+  report is the phase's only edit.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
