@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13287,6 +13287,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 14:16 — harness: implement phase starting (rework cycle 0)
 - 2026-08-31 14:28 — harness: review phase starting (rework cycle 0)
 - 2026-08-31 15:44 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
+- 2026-08-31 16:06 — harness: plan phase starting
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13465,22 +13466,35 @@ crew-banter reactivity - not this one.
   (passes serially in 88s; A2-8 does not touch test_data/ or the scanner).
   All 12 acceptance criteria independently verified. Single tighten
   identified (see phase report). No critical findings. PHASE_OK
+- 2026-08-31 (sixth re-plan on already-implemented sprint after another
+  stuck-sprint reset 7f3ce or similar harness recovery) — planner re-entered
+  after harness recovery reset the sprint's status to todo, following an
+  already-successful review (5b28984 A2-8: review complete — PHASE_OK, all
+  12 acceptance criteria verified). Followed the cheap-check-first playbook:
+  read only the sprint section + `git log`, did NOT re-read Context-to-read
+  docs (measured 2026-08-31: doing so on prior re-plans took 16 min and
+  starved the review phase). Confirmed all 5 A2-8 implementation commits
+  still present on master via `git log --oneline master | grep -E
+  "(2d4f20f|4b5f950|cc61422|9964285|39566ec)"` — returns all 5. Ran the
+  sprint's own test surface: 55 pass across test_dilemma /
+  test_scenario_dilemma_thresholds / test_dilemma_resolution_view in 1.00s.
+  All A2-8 files present in the tree. Nothing has been re-reverted since
+  the last review. Per playbook: PHASE_OK, not PHASE_BLOCKED — the
+  dispatcher routes the sprint through implement (verifier) → review →
+  gate → done. Kept this pass cheap (< 5 min of tool time) so subsequent
+  phases have runway. PHASE_OK
 
 **Last phase report.**
-- Phase: review
+- Phase: plan
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: none
-- Commits: none
-- Tests_passing: 11206 (1 pre-existing xdist timeout on test_no_new_consumer_only_flags; passes serially in 88s)
-- Acceptance_criteria_verified: 12/12
-- Polish_items_verified: 2/2 (round-robin re-delivery AC8; compliance-guard-green AC9)
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 0
-- Single_tighten: dilemma_resolution_view.py:183 — "A CHOICE ARRIVES" is hard-coded; future per-dilemma content sprints may want a dilemma-specific header field on the Dilemma model. Acceptable YAGNI for a plumbing-only sprint; A2-10/A2-11 own the skin.
-- Followup_sprints_added: none
-- Notes: Plan audit sound; all 8 locked decisions defensible. All 12 ACs verified independently. Writing bible clean (three terse UI strings, no GenAI tells, no em-dashes). Pre-existing xdist timeout is unrelated to A2-8 and passes serially.
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending>
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented and reviewed; no re-plan needed)
+- Decisions_locked: 0 (all 8 previously locked; none re-opened)
+- Notes: Sixth re-plan on an already-implemented, already-reviewed sprint that keeps being reset by harness stuck-sprint recovery. All 5 A2-8 commits (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec) intact on master; 55 sprint tests pass in 1.00s. Ran the cheap check only (sprint section + git log + one pytest invocation) — did not re-read Context-to-read, per playbook, to preserve runway for downstream phases. Emitting PHASE_OK so the dispatcher can move the sprint through implement (verifier) → review → gate → done.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
