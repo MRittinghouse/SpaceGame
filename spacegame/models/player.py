@@ -456,16 +456,38 @@ class Player:
         directly (preserves A2-4 AC4 structural invariant). The facade resolves
         the lens registry from the DataLoader so callers need not know about it.
 
+        Lenses in ``dilemma_state.closed_lenses`` are silently suppressed
+        (A2-10): a stray call from a mission or event handler must not crash
+        the game, but it also must not reopen a closed path.
+
         Args:
             action_tag: Qualified action identifier (e.g. ``"sold_cargo"``).
             amount: Non-negative integer to accrue on each matching lens.
 
         Returns:
-            List of lens_ids that were incremented.
+            List of lens_ids that were actually incremented (closed lenses
+            are not included).
         """
         from spacegame.data_loader import get_data_loader
+        from spacegame.utils.logger import logger
 
-        return self.lens_investment.record_action(action_tag, amount, get_data_loader().lenses)
+        all_lenses = get_data_loader().lenses
+        closed = self.dilemma_state.closed_lenses
+        if closed:
+            open_lenses = {lid: lens for lid, lens in all_lenses.items() if lid not in closed}
+            suppressed = [
+                lid
+                for lid in all_lenses
+                if lid in closed and action_tag in all_lenses[lid].investment_from
+            ]
+            for lid in suppressed:
+                logger.warning(
+                    "record_lens_action: lens '%s' is closed; suppressing investment for action '%s'.",
+                    lid,
+                    action_tag,
+                )
+            return self.lens_investment.record_action(action_tag, amount, open_lenses)
+        return self.lens_investment.record_action(action_tag, amount, all_lenses)
 
     def sell_commodity(
         self, commodity_id: str, quantity: int, price_per_unit: int

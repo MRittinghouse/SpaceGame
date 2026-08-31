@@ -8,6 +8,8 @@ Covers:
   dilemmas into newly_telegraphed / re_telegraphed / newly_collided
   from a player's investment + runtime state.
 - ``DataLoader.load_dilemmas`` glob + duplicate-id behavior.
+- A2-10: ``tier_unlocks_granted`` field, ``resolve()`` function,
+  coordinator skip regression test.
 """
 
 from __future__ import annotations
@@ -484,3 +486,294 @@ class TestDilemmaFlagHelpers:
         assert dilemma_telegraphed("x") != dilemma_resolved("x")
         assert dilemma_resolved("x") != lens_closed("x")
         assert dilemma_telegraphed("x") != lens_closed("x")
+
+
+# =============================================================================
+# A2-10 tests
+# =============================================================================
+
+
+def _pair_dilemma_with_closes() -> Dilemma:
+    """Two-pole dilemma where each outcome closes the other pole."""
+    return Dilemma(
+        id="d_test_closure",
+        poles=["wealth", "community"],
+        collision_requires=2,
+        telegraph_threshold=55,
+        collision_threshold=80,
+        telegraph_npc_id="priya_osei",
+        telegraph_lines=["test_line"],
+        outcomes=[
+            DilemmaOutcome(
+                winning_lens_id="wealth",
+                closes=["community"],
+                tier_unlocks=["tier_commerce_deep"],
+                outcome_flag="outcome_chose_wealth",
+                narration_summary="You chose wealth.",
+            ),
+            DilemmaOutcome(
+                winning_lens_id="community",
+                closes=["wealth"],
+                tier_unlocks=["tier_social_deep"],
+                outcome_flag="outcome_chose_community",
+                narration_summary="You chose community.",
+            ),
+        ],
+    )
+
+
+def _triangle_dilemma_with_closes() -> Dilemma:
+    """Three-pole dilemma where winner closes both other poles."""
+    return Dilemma(
+        id="d_test_triangle_closure",
+        poles=["order", "freedom", "faith"],
+        collision_requires=2,
+        telegraph_threshold=55,
+        collision_threshold=80,
+        telegraph_npc_id="priya_osei",
+        telegraph_lines=["tri_line"],
+        outcomes=[
+            DilemmaOutcome(
+                winning_lens_id="order",
+                closes=["freedom", "faith"],
+                tier_unlocks=["tier_order_deep"],
+                outcome_flag="outcome_chose_order",
+                narration_summary="You chose order.",
+            ),
+            DilemmaOutcome(
+                winning_lens_id="freedom",
+                closes=["order", "faith"],
+                tier_unlocks=["tier_freedom_deep"],
+                outcome_flag="outcome_chose_freedom",
+                narration_summary="You chose freedom.",
+            ),
+            DilemmaOutcome(
+                winning_lens_id="faith",
+                closes=["order", "freedom"],
+                tier_unlocks=["tier_faith_deep"],
+                outcome_flag="outcome_chose_faith",
+                narration_summary="You chose faith.",
+            ),
+        ],
+    )
+
+
+def _fresh_player_stub() -> object:
+    """Duck-typed player stub with dilemma_state and dialogue_flags."""
+
+    class _Stub:
+        pass
+
+    stub = _Stub()
+    stub.dilemma_state = DilemmaRuntimeState()
+    stub.dialogue_flags: dict[str, bool] = {}
+    stub.lens_investment = LensInvestment(_values={"wealth": 90, "community": 90})
+    return stub
+
+
+class TestTierUnlocksGrantedField:
+    """A2-10 Task 1: tier_unlocks_granted field on DilemmaRuntimeState (AC8)."""
+
+    def test_empty_dict_is_default(self) -> None:
+        state = DilemmaRuntimeState()
+        assert state.tier_unlocks_granted == {}
+
+    def test_round_trip_empty(self) -> None:
+        state = DilemmaRuntimeState()
+        restored = DilemmaRuntimeState.from_dict(state.to_dict())
+        assert restored.tier_unlocks_granted == {}
+
+    def test_round_trip_populated(self) -> None:
+        state = DilemmaRuntimeState()
+        state.tier_unlocks_granted["wealth"] = ["tier_commerce_deep", "tier_trade"]
+        restored = DilemmaRuntimeState.from_dict(state.to_dict())
+        assert restored.tier_unlocks_granted == {"wealth": ["tier_commerce_deep", "tier_trade"]}
+
+    def test_legacy_save_without_key_loads_empty(self) -> None:
+        """AC8: a save dict missing tier_unlocks_granted loads with empty default."""
+        legacy = {
+            "telegraphed": [],
+            "telegraph_cursor": {},
+            "resolved": {},
+            "closed_lenses": [],
+            # tier_unlocks_granted key is absent
+        }
+        state = DilemmaRuntimeState.from_dict(legacy)
+        assert state.tier_unlocks_granted == {}, "Missing key must default to empty dict"
+
+    def test_to_dict_key_is_present(self) -> None:
+        state = DilemmaRuntimeState()
+        d = state.to_dict()
+        assert "tier_unlocks_granted" in d
+
+    def test_to_dict_key_order_sorted(self) -> None:
+        """Dict keys should be sorted for byte-stable saves."""
+        state = DilemmaRuntimeState()
+        state.tier_unlocks_granted["z_lens"] = ["z_unlock"]
+        state.tier_unlocks_granted["a_lens"] = ["a_unlock"]
+        d = state.to_dict()
+        keys = list(d["tier_unlocks_granted"].keys())
+        assert keys == sorted(keys)
+
+
+class TestResolve:
+    """A2-10 Task 2: resolve() function (AC1, AC2, AC3)."""
+
+    def test_pair_dilemma_sets_outcome_flag(self) -> None:
+        """AC1: winning outcome_flag is set in dialogue_flags."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert player.dialogue_flags.get("outcome_chose_wealth") is True
+
+    def test_pair_dilemma_sets_dilemma_resolved_flag(self) -> None:
+        """AC1: dilemma_resolved flag is set."""
+        from spacegame.constants.flags import dilemma_resolved
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert player.dialogue_flags.get(dilemma_resolved("d_test_closure")) is True
+
+    def test_pair_dilemma_closes_losing_lens(self) -> None:
+        """AC1: losing lens added to closed_lenses."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert "community" in player.dilemma_state.closed_lenses
+
+    def test_pair_dilemma_sets_lens_closed_flag(self) -> None:
+        """AC1: lens_closed flag is set for the losing lens."""
+        from spacegame.constants.flags import lens_closed
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert player.dialogue_flags.get(lens_closed("community")) is True
+
+    def test_pair_dilemma_records_tier_unlocks(self) -> None:
+        """AC1: tier_unlocks stored in tier_unlocks_granted."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert player.dilemma_state.tier_unlocks_granted.get("wealth") == ["tier_commerce_deep"]
+
+    def test_pair_dilemma_records_resolved(self) -> None:
+        """AC1: resolved dict records chosen lens."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert player.dilemma_state.resolved.get("d_test_closure") == "wealth"
+
+    def test_pair_dilemma_only_winning_pole_not_closed(self) -> None:
+        """AC1: winning pole itself is not added to closed_lenses."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        assert "wealth" not in player.dilemma_state.closed_lenses
+
+    def test_triangle_dilemma_closes_both_losing_lenses(self) -> None:
+        """AC2: triangle — both non-winning lenses added to closed_lenses."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _triangle_dilemma_with_closes()
+        player = _fresh_player_stub()
+        player.lens_investment = LensInvestment(_values={"order": 90, "freedom": 90, "faith": 50})
+        resolve(dilemma, "order", player)
+        assert "freedom" in player.dilemma_state.closed_lenses
+        assert "faith" in player.dilemma_state.closed_lenses
+
+    def test_triangle_dilemma_sets_lens_closed_flag_for_each(self) -> None:
+        """AC2: lens_closed flag for each of the two losing lenses."""
+        from spacegame.constants.flags import lens_closed
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _triangle_dilemma_with_closes()
+        player = _fresh_player_stub()
+        player.lens_investment = LensInvestment(_values={"order": 90, "freedom": 90, "faith": 50})
+        resolve(dilemma, "order", player)
+        assert player.dialogue_flags.get(lens_closed("freedom")) is True
+        assert player.dialogue_flags.get(lens_closed("faith")) is True
+
+    def test_double_resolve_is_noop(self) -> None:
+        """AC3: calling resolve twice does not change state after first call."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+
+        # Capture state after first resolve
+        closed_before = set(player.dilemma_state.closed_lenses)
+        unlocks_before = list(player.dilemma_state.tier_unlocks_granted.get("wealth", []))
+        flags_before = dict(player.dialogue_flags)
+
+        resolve(dilemma, "wealth", player)
+
+        assert player.dilemma_state.closed_lenses == closed_before
+        assert player.dilemma_state.tier_unlocks_granted.get("wealth") == unlocks_before
+        assert player.dialogue_flags == flags_before
+
+    def test_double_resolve_does_not_raise(self) -> None:
+        """AC3: double resolve must not raise."""
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+        resolve(dilemma, "wealth", player)  # must not raise
+
+    def test_double_resolve_emits_warning(self, caplog: pytest.LogCaptureFixture) -> None:
+        """AC3: double resolve emits a warning containing both ids."""
+        import logging
+
+        from spacegame.models.dilemma import resolve
+
+        dilemma = _pair_dilemma_with_closes()
+        player = _fresh_player_stub()
+        resolve(dilemma, "wealth", player)
+
+        with caplog.at_level(logging.WARNING, logger="spacegame"):
+            resolve(dilemma, "wealth", player)
+
+        assert any(
+            "d_test_closure" in r.message and "wealth" in r.message
+            for r in caplog.records
+            if r.levelno == logging.WARNING
+        ), f"Expected warning with both ids, got: {[r.message for r in caplog.records]}"
+
+
+class TestCoordinatorSkipResolved:
+    """A2-10 Task 5: coordinator skips resolved dilemmas (regression fence)."""
+
+    def test_resolved_dilemma_not_in_result(self) -> None:
+        """A resolved dilemma does not appear in newly_telegraphed or newly_collided."""
+        dilemma = _pair_dilemma_with_closes()
+        runtime = DilemmaRuntimeState()
+        runtime.resolved["d_test_closure"] = "wealth"
+        player = _player_stub({"wealth": 90, "community": 90}, runtime)
+        result = check_dilemmas(player, {"d_test_closure": dilemma})
+        assert "d_test_closure" not in result.newly_telegraphed
+        assert "d_test_closure" not in result.re_telegraphed
+        assert "d_test_closure" not in result.newly_collided
+
+    def test_resolved_dilemma_skipped_even_at_threshold(self) -> None:
+        """Even with both poles at collision threshold, skip if already resolved."""
+        dilemma = _pair_dilemma_with_closes()
+        runtime = DilemmaRuntimeState()
+        runtime.resolved["d_test_closure"] = "community"
+        player = _player_stub({"wealth": 100, "community": 100}, runtime)
+        result = check_dilemmas(player, {"d_test_closure": dilemma})
+        assert result.newly_collided == []

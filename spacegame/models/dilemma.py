@@ -1,4 +1,4 @@
-"""Dilemma engine data + coordinator (A2-8).
+"""Dilemma engine data + coordinator (A2-8/A2-10).
 
 Ships the model layer for Act II's dilemma system:
 
@@ -10,7 +10,8 @@ Ships the model layer for Act II's dilemma system:
   flag, and the narration line the resolution view surfaces.
 - :class:`DilemmaRuntimeState` — the per-save runtime bookkeeping
   (telegraphed set, per-dilemma telegraph cursor, resolved map,
-  closed-lens set). Lives on ``Player.dilemma_state``.
+  closed-lens set, tier_unlocks_granted map). Lives on
+  ``Player.dilemma_state``.
 - :class:`DilemmaCheckResult` — the small typed result returned by the
   coordinator so ``engine/game.py`` can dispatch without a
   ``dict[str, Any]``.
@@ -22,17 +23,16 @@ Ships the model layer for Act II's dilemma system:
   compliance guard ``tests/test_compliance/test_lens_investment_never_rendered.py``
   can continue to forbid ``LensInvestment`` tokens under
   ``spacegame/engine/`` and ``spacegame/views/``.
-
-A2-10 will extend this module (or the resolve callback) with the
-close-lens walk and ``tier_unlocks`` flag setting. A2-8 ships the
-plumbing only — no real dilemma data lives in
-``data/narrative/dilemmas/`` yet.
+- :func:`resolve` — A2-10 entry point: apply a chosen outcome,
+  permanently close losing lenses, write flags, record tier unlocks.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
+
+from spacegame.utils.logger import logger
 
 
 @dataclass
@@ -144,25 +144,34 @@ class DilemmaRuntimeState:
     ``closed_lenses``: set of lens ids that dilemma resolution has
     permanently closed. Populated by A2-10; A2-8 ships the field so
     A2-10 requires no save migration.
+
+    ``tier_unlocks_granted``: winning lens id → list of tier unlock
+    flags granted when that lens won. A queryable record for A2-12+
+    sprints to read; this sprint does not fire game-system side effects.
     """
 
     telegraphed: set[str] = field(default_factory=set)
     telegraph_cursor: dict[str, int] = field(default_factory=dict)
     resolved: dict[str, str] = field(default_factory=dict)
     closed_lenses: set[str] = field(default_factory=set)
+    tier_unlocks_granted: dict[str, list[str]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-safe dict.
 
         Sets are emitted as sorted lists so the save file is stable
         (byte-identical for the same in-memory state); the loader
-        rehydrates them as sets.
+        rehydrates them as sets. Dict keys in tier_unlocks_granted are
+        sorted for the same byte-stability property.
         """
         return {
             "telegraphed": sorted(self.telegraphed),
             "telegraph_cursor": dict(self.telegraph_cursor),
             "resolved": dict(self.resolved),
             "closed_lenses": sorted(self.closed_lenses),
+            "tier_unlocks_granted": {
+                k: list(v) for k, v in sorted(self.tier_unlocks_granted.items())
+            },
         }
 
     @classmethod
@@ -179,6 +188,7 @@ class DilemmaRuntimeState:
         telegraph_cursor_raw = data.get("telegraph_cursor", {})
         resolved_raw = data.get("resolved", {})
         closed_lenses_raw = data.get("closed_lenses", [])
+        tier_unlocks_raw = data.get("tier_unlocks_granted", {})
         return cls(
             telegraphed=set(telegraphed_raw) if isinstance(telegraphed_raw, list) else set(),
             telegraph_cursor=(
@@ -187,6 +197,11 @@ class DilemmaRuntimeState:
             resolved=dict(resolved_raw) if isinstance(resolved_raw, dict) else {},
             closed_lenses=(
                 set(closed_lenses_raw) if isinstance(closed_lenses_raw, list) else set()
+            ),
+            tier_unlocks_granted=(
+                {k: list(v) for k, v in tier_unlocks_raw.items()}
+                if isinstance(tier_unlocks_raw, dict)
+                else {}
             ),
         )
 
@@ -263,6 +278,59 @@ def build_investment_snapshot(dilemma: Dilemma, player: Any) -> dict[str, int]:
         integer investment for each pole.
     """
     return {pole: player.lens_investment.get_investment(pole) for pole in dilemma.poles}
+
+
+def resolve(dilemma: Dilemma, chosen_lens_id: str, player: Any) -> None:
+    """Apply a dilemma resolution: set flags, close losing lenses, record tier unlocks.
+
+    Idempotent: calling a second time for an already-resolved dilemma
+    emits a warning and returns without changing any state.
+
+    Args:
+        dilemma: The dilemma being resolved.
+        chosen_lens_id: The lens id the player chose (must match one
+            outcome's ``winning_lens_id``).
+        player: Any object exposing ``dilemma_state`` (a
+            :class:`DilemmaRuntimeState`) and ``dialogue_flags``
+            (a ``dict[str, bool]``).
+    """
+    from spacegame.constants import flags as flag_registry
+
+    runtime: DilemmaRuntimeState = player.dilemma_state
+
+    # Idempotency guard — must be FIRST so stale chosen_lens_id can't KeyError.
+    if dilemma.id in runtime.resolved:
+        logger.warning(
+            "resolve() called on already-resolved dilemma '%s' (lens '%s'); ignoring.",
+            dilemma.id,
+            chosen_lens_id,
+        )
+        return
+
+    outcome = next(
+        (o for o in dilemma.outcomes if o.winning_lens_id == chosen_lens_id),
+        None,
+    )
+    if outcome is None:
+        logger.warning(
+            "resolve() found no outcome for lens '%s' in dilemma '%s'; ignoring.",
+            chosen_lens_id,
+            dilemma.id,
+        )
+        return
+
+    # Write outcome flag and dilemma-resolved flag.
+    player.dialogue_flags[outcome.outcome_flag] = True
+    player.dialogue_flags[flag_registry.dilemma_resolved(dilemma.id)] = True
+
+    # Close every lens the outcome names as closed.
+    for lens_id in outcome.closes:
+        runtime.closed_lenses.add(lens_id)
+        player.dialogue_flags[flag_registry.lens_closed(lens_id)] = True
+
+    # Record resolution and tier unlocks.
+    runtime.resolved[dilemma.id] = chosen_lens_id
+    runtime.tier_unlocks_granted[chosen_lens_id] = list(outcome.tier_unlocks)
 
 
 def check_dilemmas(player: Any, dilemmas: dict[str, Dilemma]) -> DilemmaCheckResult:

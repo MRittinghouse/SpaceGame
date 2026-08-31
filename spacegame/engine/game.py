@@ -4542,20 +4542,18 @@ class Game:
     def _on_dilemma_resolve(self, chosen_lens_id: str) -> None:
         """Callback wired into DilemmaResolutionView.
 
-        Writes the resolution to runtime state + dialogue_flags. The
-        state pop happens in the frame-loop handler
-        :meth:`_handle_dilemma_resolution` after observing ``dismissed``
-        — pygame_gui teardown mid-event-handler is unstable, so we defer.
-        A2-10 will extend this with the close-lens walk + tier_unlocks
-        flag setting.
+        Delegates to :func:`spacegame.models.dilemma.resolve` which
+        writes all flags, closes losing lenses, and records tier unlocks.
+        State pop happens in :meth:`_handle_dilemma_resolution` after
+        observing ``dismissed`` — pygame_gui teardown mid-event-handler
+        is unstable, so we defer.
         """
-        from spacegame.constants import flags as flag_registry
+        from spacegame.models.dilemma import resolve
 
         dilemma = self._pending_dilemma
         if dilemma is None:
             return
-        self.player.dilemma_state.resolved[dilemma.id] = chosen_lens_id
-        self.player.dialogue_flags[flag_registry.dilemma_resolved(dilemma.id)] = True
+        resolve(dilemma, chosen_lens_id, self.player)
 
     def _handle_dilemma_resolution(self) -> None:
         """Poll the resolution view for dismissal and pop the modal.

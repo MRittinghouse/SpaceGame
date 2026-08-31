@@ -510,3 +510,63 @@ class TestAuctionWire:
         if winner == "player":
             player.record_lens_action("auction_won", 10)
         assert ("auction_won", 10) not in emitted
+
+
+# ---------------------------------------------------------------------------
+# A2-10: closed-lens investment guard
+# ---------------------------------------------------------------------------
+
+
+class TestClosedLensGuard:
+    """AC4: record_lens_action suppresses investment on closed lenses."""
+
+    def test_closed_lens_not_incremented(self) -> None:
+        """A closed lens must not be incremented."""
+        player = fresh_player()
+        # Ensure the "wealth" lens exists and has a matching action tag.
+        _dl()
+        player.dilemma_state.closed_lenses.add("wealth")
+        before = player.lens_investment.get_investment("wealth")
+        player.record_lens_action("sold_cargo", 10)
+        after = player.lens_investment.get_investment("wealth")
+        assert after == before, (
+            f"Closed lens 'wealth' must not be incremented: before={before}, after={after}"
+        )
+
+    def test_closed_lens_emits_warning(self, caplog) -> None:
+        """A closed lens suppression emits a warning."""
+        import logging
+
+        player = fresh_player()
+        _dl()
+        player.dilemma_state.closed_lenses.add("wealth")
+        with caplog.at_level(logging.WARNING, logger="spacegame"):
+            player.record_lens_action("sold_cargo", 10)
+        warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+        assert any("wealth" in r.message for r in warnings), (
+            f"Expected warning mentioning 'wealth', got: {[r.message for r in warnings]}"
+        )
+
+    def test_open_lens_still_incremented_when_sibling_closed(self) -> None:
+        """An open lens must still receive investment even if a sibling is closed."""
+        player = fresh_player()
+        dl = _dl()
+        # Find a lens that matches "sold_cargo" action tag (not "wealth").
+        # In real data the "community" lens uses "sold_cargo" too.
+        player.dilemma_state.closed_lenses.add("wealth")
+        # Get all lenses that match sold_cargo
+        matching = [
+            lens_id
+            for lens_id, lens in dl.lenses.items()
+            if "sold_cargo" in lens.investment_from and lens_id != "wealth"
+        ]
+        if not matching:
+            # No other lens matches; the test is vacuously satisfied.
+            return
+        open_lens = matching[0]
+        before = player.lens_investment.get_investment(open_lens)
+        player.record_lens_action("sold_cargo", 5)
+        after = player.lens_investment.get_investment(open_lens)
+        assert after == before + 5, (
+            f"Open lens '{open_lens}' should have gained 5: before={before}, after={after}"
+        )
