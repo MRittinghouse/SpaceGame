@@ -180,3 +180,78 @@ class TestSaveLoadFullIntegration:
         assert restored.game_day == 80
         assert restored.combats_won == 12
         assert restored.credits_earned_lifetime == 150000
+
+
+class TestSaveLoadDilemmaState:
+    """A2-8 AC7: Player.dilemma_state must round-trip cleanly.
+
+    Regression risk is that a new field on Player gets dropped because
+    it is neither serialized nor deserialized. This scenario also
+    protects legacy saves — a save file predating A2-8 has no
+    ``dilemma_state`` key and must load with the default empty state.
+    """
+
+    def test_default_empty_state_round_trips(self) -> None:
+        """A fresh player has empty dilemma_state; that must survive."""
+        from spacegame.models.dilemma import DilemmaRuntimeState
+
+        player = fresh_player()
+        assert isinstance(player.dilemma_state, DilemmaRuntimeState)
+        assert player.dilemma_state.telegraphed == set()
+
+        restored = round_trip_save(player)
+
+        assert isinstance(restored.dilemma_state, DilemmaRuntimeState)
+        assert restored.dilemma_state.telegraphed == set()
+        assert restored.dilemma_state.telegraph_cursor == {}
+        assert restored.dilemma_state.resolved == {}
+        assert restored.dilemma_state.closed_lenses == set()
+
+    def test_telegraphed_but_not_resolved_round_trips_including_cursor(self) -> None:
+        """AC7: an in-progress telegraphed dilemma preserves cursor + set."""
+        player = fresh_player()
+        player.dilemma_state.telegraphed.add("d_wealth_community")
+        player.dilemma_state.telegraph_cursor["d_wealth_community"] = 2
+
+        restored = round_trip_save(player)
+
+        assert restored.dilemma_state.telegraphed == {"d_wealth_community"}
+        assert restored.dilemma_state.telegraph_cursor == {"d_wealth_community": 2}
+        # Not resolved yet — the resolved map must be empty on restore.
+        assert restored.dilemma_state.resolved == {}
+
+    def test_resolved_and_closed_lenses_round_trip(self) -> None:
+        """Resolved map + closed_lenses set survive save/load."""
+        player = fresh_player()
+        player.dilemma_state.telegraphed.add("d_wealth_community")
+        player.dilemma_state.telegraph_cursor["d_wealth_community"] = 3
+        player.dilemma_state.resolved["d_wealth_community"] = "wealth"
+        player.dilemma_state.closed_lenses.add("community")
+
+        restored = round_trip_save(player)
+
+        assert restored.dilemma_state.telegraphed == {"d_wealth_community"}
+        assert restored.dilemma_state.telegraph_cursor == {"d_wealth_community": 3}
+        assert restored.dilemma_state.resolved == {"d_wealth_community": "wealth"}
+        assert restored.dilemma_state.closed_lenses == {"community"}
+
+    def test_legacy_save_without_dilemma_state_key_loads_cleanly(self) -> None:
+        """A save file predating A2-8 must load with default empty state."""
+        import json
+
+        from spacegame.models.dilemma import DilemmaRuntimeState
+        from spacegame.save_manager import SaveManager
+
+        player = fresh_player()
+        mgr = SaveManager()
+        data = mgr._serialize_player(player)
+        # Simulate a legacy save file: remove the dilemma_state key.
+        data.pop("dilemma_state", None)
+        json_str = json.dumps(data)
+        restored = mgr._deserialize_player(json.loads(json_str))
+
+        assert isinstance(restored.dilemma_state, DilemmaRuntimeState)
+        assert restored.dilemma_state.telegraphed == set()
+        assert restored.dilemma_state.telegraph_cursor == {}
+        assert restored.dilemma_state.resolved == {}
+        assert restored.dilemma_state.closed_lenses == set()

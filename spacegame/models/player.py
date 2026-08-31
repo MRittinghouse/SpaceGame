@@ -11,6 +11,7 @@ from spacegame.models.bidding import AuctionState
 from spacegame.models.captain_memory import CaptainMemory
 from spacegame.models.deep_core import DeepCoreUpgradeState
 from spacegame.models.deep_shafts import DeepShaftsState
+from spacegame.models.dilemma import DilemmaRuntimeState
 from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
 from spacegame.models.forge_buffer import ForgeBufferManager
@@ -81,6 +82,15 @@ class Player:
     # The "no raw number in UI" invariant (AC4) is enforced structurally by
     # ``tests/test_compliance/test_lens_investment_never_rendered.py``.
     lens_investment: LensInvestment = field(default_factory=LensInvestment)
+
+    # A2-8: dilemma engine runtime state (telegraphed set, per-dilemma
+    # telegraph cursor, resolved map, closed_lenses set). Sub-dataclass
+    # matching the WreckersGuildState / DeepShaftsState pattern -- keeps
+    # the serialization surface a single ``to_dict()`` call. A2-10
+    # extends behavior on this field (populating ``closed_lenses`` from
+    # the resolution walk); the shape itself is stable from A2-8 so no
+    # save migration is needed between A2-8 and A2-10.
+    dilemma_state: DilemmaRuntimeState = field(default_factory=DilemmaRuntimeState)
 
     # SA-1: Wreckers' Guild Hall runtime state. None for unenrolled players;
     # the first conversation with Malia at the Hall flips it on. The
