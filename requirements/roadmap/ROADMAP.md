@@ -13725,7 +13725,7 @@ crew banter, or UI copy that any other sprint would react to).
 - Started: 2026-08-31 16:42
 - Completed: 2026-08-31 17:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending (planner about to commit)
+- Commits: 212e558
 - New_sprints_proposed: none
 - Polish_items_folded_in: test_telegraph_lines_non_empty; test_collision_requires_within_pole_count
 - Decisions_locked: 3
