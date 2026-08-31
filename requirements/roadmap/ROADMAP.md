@@ -133,7 +133,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
-| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
+| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | in-progress | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
@@ -13753,7 +13753,7 @@ crew banter, or UI copy that any other sprint would react to).
 
 #### A2-10 — Permanent closure + save/load
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-8 | **Blocks**: A2-11, A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19, A2-20
 
@@ -13988,23 +13988,26 @@ those sprints consume.
 - 2026-08-31 18:08 — harness: plan phase starting
 - 2026-08-31 — planning complete; sprint has all A2-8 plumbing in place, added
 - 2026-08-31 18:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 18:36 — harness: plan phase starting
   `tier_unlocks_granted` field spec, expanded acceptance from 6 criteria to 9 (added
   triangle-dilemma coverage, warning-log verification for idempotency, legacy-load
   default, coordinator-skip regression), locked 5 open decisions (closed-lens guard
   location, `resolve()` shape, idempotency behaviour, no `pop_state()` fix needed,
   no journal/tutorial content this sprint), filled in 7-task Plan section. PHASE_OK
+- 2026-08-31 — harness: stuck-sprint recovery — reset to todo (implementer committed work then died before writing sentinel).
+- 2026-08-31 — plan re-invocation: work already implemented in commit 084dcec ("A2-10: permanent closure + save/load — resolve(), tier_unlocks_granted, closed-lens guard"). Verified all 7 planned tasks' files are touched (dilemma.py resolve() + tier_unlocks_granted, player.py record_lens_action guard, game.py delegate, 4 test files added). Ran the 4 sprint test files (test_dilemma.py, test_lens_investment_hooks.py, test_scenario_dilemma_permanent_closure.py, test_scenario_dilemma_view_pop.py): 99 passed, 0 failed. Emitting PHASE_OK so dispatcher advances to implement (verify-only) then review. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 18:08
-- Completed: 2026-08-31 18:40
+- Started: 2026-08-31 (recovery re-plan)
+- Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: baebc81
+- Commits: none (planning re-run; roadmap update only)
 - New_sprints_proposed: none
-- Polish_items_folded_in: idempotency warning log, legacy-save default for new field, closed-lens investment guard as silent no-op (all folded via expanded ACs and locked decisions rather than new deliverables — no scope creep)
-- Decisions_locked: 5
-- Notes: Verified all 5 Context-to-read paths exist. Sprint is foundational plumbing on top of A2-8's complete substrate; `DilemmaRuntimeState.closed_lenses`, all `flags.*` helpers, save/load wiring, and `pop_state()` semantics already exist. Only new schema is one dict field on `DilemmaRuntimeState`. Reactions belong to A2-11 through A2-20 (called out explicitly, not authored here).
+- Polish_items_folded_in: none (work already implemented)
+- Decisions_locked: 0 (all 5 locked in prior plan run 18:08–18:40; nothing new to lock)
+- Notes: Sprint already implemented in commit 084dcec — a stuck-sprint recovery reset the status to todo after the implementer committed work but died before writing its sentinel. Verified cheaply per AGENT_GUIDE: git log + targeted test run (99/99 passed across the 4 sprint test files). Not re-planning; not `PHASE_BLOCKED` (that would strand A2-11 through A2-20). Dispatcher will route to implement (verify-only) and then review, which is where this sprint needs to land.
 ---
 
 #### A2-11 — Scars
