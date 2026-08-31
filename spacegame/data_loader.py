@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from spacegame.models.combat_complication import CombatComplication
     from spacegame.models.crew_interjection import CrewInterjection
     from spacegame.models.deep_core import DeepCoreUpgrade
+    from spacegame.models.dilemma import Dilemma
     from spacegame.models.enemy_captain import EnemyCaptain
     from spacegame.models.forge_upgrade import ForgeUpgrade
     from spacegame.models.ground_equipment import GroundEquipment
@@ -159,6 +160,11 @@ class DataLoader:
         self.capstones: Dict[str, "Capstone"] = {}
         # A2-4A: lens reaction pool (list, not dict -- multiple records per lens_id are legal).
         self.lens_reactions: list["LensReaction"] = []
+        # A2-8: dilemma registry keyed by dilemma id. Ships empty; the
+        # ``data/narrative/dilemmas/`` directory holds only a ``.gitkeep``
+        # sentinel in this sprint. A2-9 adds the tier_unlocks/telegraph
+        # integrity guard; A2-12..A2-19 author real dilemma content.
+        self.dilemmas: Dict[str, "Dilemma"] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -237,6 +243,7 @@ class DataLoader:
         self._safe_load("lenses", self.load_lenses)
         self._safe_load("capstones", self.load_capstones)
         self._safe_load("lens_reactions", self.load_lens_reactions)
+        self._safe_load("dilemmas", self.load_dilemmas)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -768,6 +775,44 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.lenses)} lenses")
         return self.lenses
+
+    def load_dilemmas(self) -> Dict[str, "Dilemma"]:
+        """Load dilemma registry from ``data/narrative/dilemmas/*.json``.
+
+        Each file must be shaped ``{"dilemmas": [<one entry>]}`` — one
+        dilemma per file so authors can be assigned individual sprints
+        (A2-12 through A2-19) without merge collisions.
+
+        Empty (or missing) directory is not an error and returns ``{}``:
+        A2-8 ships the directory holding only a ``.gitkeep`` sentinel,
+        so production callers get an empty registry until A2-12+ authors
+        the real content.
+
+        Returns:
+            Dict mapping dilemma id to :class:`Dilemma` instance.
+
+        Raises:
+            ValueError: If any file declares a duplicate dilemma id.
+        """
+        from spacegame.models.dilemma import Dilemma
+
+        dir_path = self.data_dir / "narrative" / "dilemmas"
+        if not dir_path.exists():
+            logger.debug(f"Dilemmas directory not found: {dir_path}")
+            return self.dilemmas
+
+        self.dilemmas.clear()
+        for file_path in sorted(dir_path.glob("*.json")):
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for raw in data.get("dilemmas", []):
+                dilemma = Dilemma.from_dict(raw)
+                if dilemma.id in self.dilemmas:
+                    raise ValueError(f"Duplicate dilemma id '{dilemma.id}' in {file_path}.")
+                self.dilemmas[dilemma.id] = dilemma
+
+        logger.info(f"Loaded {len(self.dilemmas)} dilemmas")
+        return self.dilemmas
 
     def load_capstones(self) -> Dict[str, "Capstone"]:
         """Load capstone registry from data/narrative/capstones.json.

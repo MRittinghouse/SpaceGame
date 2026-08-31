@@ -1,0 +1,15 @@
+# A2-8 (Aurelia: A Ledger of Stars).
+#
+# This directory holds one JSON file per Act II dilemma, each shaped
+# {"dilemmas": [<one entry>]}. A2-8 ships only the plumbing --
+# spacegame/models/dilemma.py, spacegame/data_loader.py::load_dilemmas,
+# and the resolution view. Real dilemma content is authored in
+# A2-12 through A2-19 (one per dilemma).
+#
+# This sentinel is deliberate: A2-9's integrity guard will fail the
+# build on any dilemma missing tier_unlocks or with telegraph_threshold
+# >= collision_threshold, so a placeholder JSON here would either force
+# A2-9 to allowlist it or force A2-8 to invent bogus tier_unlocks.
+# Inline test fixtures via Dilemma(...) construction keep A2-9's guard
+# clean and match the A2-1 pattern (lens registry shipped empty until
+# A2-5/A2-6 authored real content).

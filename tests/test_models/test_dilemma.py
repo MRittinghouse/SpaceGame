@@ -7,9 +7,15 @@ Covers:
 - Model-layer coordinator ``check_dilemmas`` that classifies loaded
   dilemmas into newly_telegraphed / re_telegraphed / newly_collided
   from a player's investment + runtime state.
+- ``DataLoader.load_dilemmas`` glob + duplicate-id behavior.
 """
 
 from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
 
 from spacegame.models.dilemma import (
     Dilemma,
@@ -282,3 +288,165 @@ class TestCheckDilemmasClassification:
         result = check_dilemmas(stub, {dilemma.id: dilemma})
         assert result.newly_telegraphed == [dilemma.id]
         assert result.newly_collided == [dilemma.id]
+
+
+class TestLoadDilemmas:
+    """AC (Task 3): DataLoader.load_dilemmas() mirrors load_lenses()."""
+
+    def _write_dilemma_file(self, tmp_path: Path, filename: str, dilemma: dict) -> None:
+        dilemmas_dir = tmp_path / "narrative" / "dilemmas"
+        dilemmas_dir.mkdir(parents=True, exist_ok=True)
+        (dilemmas_dir / filename).write_text(json.dumps({"dilemmas": [dilemma]}), encoding="utf-8")
+
+    def _dilemma_dict(self, dilemma_id: str = "d_test", pole_a: str = "wealth") -> dict:
+        return {
+            "id": dilemma_id,
+            "poles": [pole_a, "community"],
+            "collision_requires": 2,
+            "telegraph_threshold": 55,
+            "collision_threshold": 80,
+            "telegraph_npc_id": "priya_osei",
+            "telegraph_lines": ["only one"],
+            "outcomes": [
+                {
+                    "winning_lens_id": pole_a,
+                    "closes": [pole_a],
+                    "tier_unlocks": [],
+                    "outcome_flag": f"outcome_{pole_a}",
+                    "narration_summary": "test",
+                },
+                {
+                    "winning_lens_id": "community",
+                    "closes": ["community"],
+                    "tier_unlocks": [],
+                    "outcome_flag": "outcome_community",
+                    "narration_summary": "test",
+                },
+            ],
+        }
+
+    def test_missing_directory_returns_empty(self, tmp_path: Path) -> None:
+        """No data/narrative/dilemmas/ directory must not crash the loader."""
+        from spacegame.data_loader import DataLoader
+
+        loader = DataLoader(data_dir=tmp_path)
+        loader.load_dilemmas()
+        assert loader.dilemmas == {}
+
+    def test_empty_directory_returns_empty(self, tmp_path: Path) -> None:
+        """An existing but empty dilemmas directory returns {} rather than raising."""
+        from spacegame.data_loader import DataLoader
+
+        (tmp_path / "narrative" / "dilemmas").mkdir(parents=True)
+        loader = DataLoader(data_dir=tmp_path)
+        loader.load_dilemmas()
+        assert loader.dilemmas == {}
+
+    def test_single_valid_file_loads(self, tmp_path: Path) -> None:
+        from spacegame.data_loader import DataLoader
+
+        self._write_dilemma_file(tmp_path, "d_wealth_community.json", self._dilemma_dict())
+
+        loader = DataLoader(data_dir=tmp_path)
+        loader.load_dilemmas()
+
+        assert set(loader.dilemmas.keys()) == {"d_test"}
+        d = loader.dilemmas["d_test"]
+        assert isinstance(d, Dilemma)
+        assert d.poles == ["wealth", "community"]
+        assert d.telegraph_threshold == 55
+        assert d.collision_threshold == 80
+        assert len(d.outcomes) == 2
+
+    def test_two_files_load_both(self, tmp_path: Path) -> None:
+        from spacegame.data_loader import DataLoader
+
+        self._write_dilemma_file(tmp_path, "a.json", self._dilemma_dict("d_a", "wealth"))
+        self._write_dilemma_file(tmp_path, "b.json", self._dilemma_dict("d_b", "order"))
+
+        loader = DataLoader(data_dir=tmp_path)
+        loader.load_dilemmas()
+        assert set(loader.dilemmas.keys()) == {"d_a", "d_b"}
+
+    def test_duplicate_id_across_files_raises(self, tmp_path: Path) -> None:
+        from spacegame.data_loader import DataLoader
+
+        self._write_dilemma_file(tmp_path, "a.json", self._dilemma_dict("dupe"))
+        self._write_dilemma_file(tmp_path, "b.json", self._dilemma_dict("dupe"))
+
+        loader = DataLoader(data_dir=tmp_path)
+        with pytest.raises(ValueError, match="dupe"):
+            loader.load_dilemmas()
+
+    def test_real_data_directory_loads_cleanly(self) -> None:
+        """A2-8 ships the empty directory + .gitkeep; production load returns {}."""
+        from spacegame.data_loader import get_data_loader
+
+        loader = get_data_loader()
+        loader.load_all()
+        assert isinstance(loader.dilemmas, dict)
+
+
+class TestDilemmaFlagHelpers:
+    """AC (Task 4): the three parameterized helpers round-trip cleanly."""
+
+    def test_dilemma_telegraphed_round_trip(self) -> None:
+        from spacegame.constants.flags import (
+            dilemma_telegraphed,
+            extract_dilemma_telegraphed_id,
+        )
+
+        for dilemma_id in ("d_wealth_community", "d_order_freedom_faith", "d_stability_kin"):
+            flag = dilemma_telegraphed(dilemma_id)
+            assert extract_dilemma_telegraphed_id(flag) == dilemma_id
+
+    def test_dilemma_telegraphed_canonical_prefix(self) -> None:
+        from spacegame.constants.flags import dilemma_telegraphed
+
+        assert dilemma_telegraphed("d_test") == "dilemma_telegraphed_d_test"
+
+    def test_dilemma_telegraphed_returns_none_for_non_matching(self) -> None:
+        from spacegame.constants.flags import extract_dilemma_telegraphed_id
+
+        assert extract_dilemma_telegraphed_id("some_other_flag") is None
+        assert extract_dilemma_telegraphed_id("") is None
+
+    def test_dilemma_resolved_round_trip(self) -> None:
+        from spacegame.constants.flags import (
+            dilemma_resolved,
+            extract_dilemma_resolved_id,
+        )
+
+        for dilemma_id in ("d_wealth_community", "d_debt_liberty"):
+            flag = dilemma_resolved(dilemma_id)
+            assert extract_dilemma_resolved_id(flag) == dilemma_id
+
+    def test_dilemma_resolved_canonical_prefix(self) -> None:
+        from spacegame.constants.flags import dilemma_resolved
+
+        assert dilemma_resolved("d_test") == "dilemma_resolved_d_test"
+
+    def test_lens_closed_round_trip(self) -> None:
+        from spacegame.constants.flags import extract_lens_closed_id, lens_closed
+
+        for lens_id in ("wealth", "community", "revolution", "preservation"):
+            flag = lens_closed(lens_id)
+            assert extract_lens_closed_id(flag) == lens_id
+
+    def test_lens_closed_canonical_prefix(self) -> None:
+        from spacegame.constants.flags import lens_closed
+
+        assert lens_closed("wealth") == "lens_closed_wealth"
+
+    def test_three_prefixes_are_distinct(self) -> None:
+        """The three helpers must not collide — telegraphed / resolved /
+        closed all key the same downstream dialogue_flags dict."""
+        from spacegame.constants.flags import (
+            dilemma_resolved,
+            dilemma_telegraphed,
+            lens_closed,
+        )
+
+        assert dilemma_telegraphed("x") != dilemma_resolved("x")
+        assert dilemma_resolved("x") != lens_closed("x")
+        assert dilemma_telegraphed("x") != lens_closed("x")

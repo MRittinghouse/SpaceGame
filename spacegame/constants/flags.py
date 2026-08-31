@@ -1043,3 +1043,123 @@ def okafor_legacy_clinic_callback_seen() -> str:
     registration needed.
     """
     return "okafor_legacy_clinic_callback_seen"
+
+
+# ---------------------------------------------------------------------------
+# Dilemmas (A2-8)
+# ---------------------------------------------------------------------------
+#
+# A2-8 (requirements/roadmap/ROADMAP.md sprint A2-8). The dilemma engine
+# writes ``dilemma_telegraphed(id)`` when the telegraph fires for the
+# first time, ``dilemma_resolved(id)`` when the resolution view closes
+# out a collision, and ``lens_closed(lens_id)`` for each lens the
+# winning outcome permanently closes. Producers all live in the engine
+# wiring (``engine/game.py::_after_player_action`` and the
+# resolution-view dismiss handler). Consumers cross module boundaries
+# — dialogue gates, station chatter, journal triggers, and later
+# dilemma-content sprints (A2-11 Scars, A2-12 through A2-19) all read
+# these flags. Cross-module = must go through the registry (SI-3 rule).
+#
+# A2-10 owns the actual close-lens walk and ``tier_unlocks`` flag
+# setting; A2-8 ships the parameterized helpers now so producer and
+# consumer sites in that sprint (and A2-11+) can pair through the
+# scanner without a drift bug.
+
+
+_DILEMMA_TELEGRAPHED_PREFIX = "dilemma_telegraphed_"
+
+
+def dilemma_telegraphed(dilemma_id: str) -> str:
+    """Flag set the first time a dilemma's telegraph beat delivers.
+
+    Producer: :func:`spacegame.engine.game.Game._after_player_action`
+    when the model-layer coordinator returns a fresh
+    ``newly_telegraphed`` id — the flag is set alongside the notification
+    append and the ``player.dilemma_state.telegraphed`` set update, so
+    downstream systems can gate on "has the telegraph fired yet" without
+    duplicating the check.
+    Consumers: dialogue gates, journal ``trigger_flag`` entries, and
+    later dilemma-content sprints (A2-11 through A2-19) that surface
+    reactive lines once the telegraph is out.
+
+    ``dilemma_id`` is the id from
+    :class:`spacegame.models.dilemma.Dilemma.id`.
+    """
+    return f"{_DILEMMA_TELEGRAPHED_PREFIX}{dilemma_id}"
+
+
+def extract_dilemma_telegraphed_id(flag_name: str) -> Optional[str]:
+    """Inverse of :func:`dilemma_telegraphed`.
+
+    Returns the ``dilemma_id`` when ``flag_name`` is a telegraphed
+    flag, else ``None``. Consumers that iterate
+    ``player.dialogue_flags`` looking for telegraphed dilemmas go
+    through this helper so the prefix lives in one module.
+    """
+    if flag_name.startswith(_DILEMMA_TELEGRAPHED_PREFIX):
+        return flag_name[len(_DILEMMA_TELEGRAPHED_PREFIX) :]
+    return None
+
+
+_DILEMMA_RESOLVED_PREFIX = "dilemma_resolved_"
+
+
+def dilemma_resolved(dilemma_id: str) -> str:
+    """Flag set when the player closes out a dilemma via the resolution view.
+
+    Producer: :func:`spacegame.engine.game.Game` — the frame handler
+    that observes the :class:`spacegame.views.dilemma_resolution_view.DilemmaResolutionView`
+    ``dismissed`` flag writes the outcome to
+    ``player.dilemma_state.resolved`` and sets this flag before popping
+    the modal.
+    Consumers: A2-10 (closure semantics + tier unlocks), A2-11 (Scars —
+    refusing NPC surfaces), and dialogue gates that key off the
+    specific dilemma being closed out.
+
+    ``dilemma_id`` is the id from
+    :class:`spacegame.models.dilemma.Dilemma.id`.
+    """
+    return f"{_DILEMMA_RESOLVED_PREFIX}{dilemma_id}"
+
+
+def extract_dilemma_resolved_id(flag_name: str) -> Optional[str]:
+    """Inverse of :func:`dilemma_resolved`.
+
+    Returns the ``dilemma_id`` when ``flag_name`` is a resolved flag,
+    else ``None``. Consumers walking ``player.dialogue_flags`` looking
+    for closed-out dilemmas go through this helper.
+    """
+    if flag_name.startswith(_DILEMMA_RESOLVED_PREFIX):
+        return flag_name[len(_DILEMMA_RESOLVED_PREFIX) :]
+    return None
+
+
+_LENS_CLOSED_PREFIX = "lens_closed_"
+
+
+def lens_closed(lens_id: str) -> str:
+    """Flag set when a lens is permanently closed by dilemma resolution.
+
+    Producer: A2-10 (closure walk in the resolution flow). A2-8 ships
+    the helper so producer and consumer land in the same registry entry
+    and the SI-3 scanner traces them without a rename hazard.
+    Consumers: A2-11 (Scars — refusing NPC surfaces read this to know
+    which lens went dark), capstone eligibility guards (a closed lens
+    must not surface its capstone), and dialogue gates for the closed
+    reading.
+
+    ``lens_id`` is the id from :class:`spacegame.models.lens.Lens.lens_id`.
+    """
+    return f"{_LENS_CLOSED_PREFIX}{lens_id}"
+
+
+def extract_lens_closed_id(flag_name: str) -> Optional[str]:
+    """Inverse of :func:`lens_closed`.
+
+    Returns the ``lens_id`` when ``flag_name`` is a lens-closed flag,
+    else ``None``. Consumers walking ``player.dialogue_flags`` looking
+    for closed lenses go through this helper.
+    """
+    if flag_name.startswith(_LENS_CLOSED_PREFIX):
+        return flag_name[len(_LENS_CLOSED_PREFIX) :]
+    return None
