@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12845,7 +12845,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -12866,9 +12866,10 @@ add real lenses.
 - `spacegame/models/ambient_dialogue.py` - `AmbientLine`, `AmbientDialogueManager`; the
   telegraph reuses this fire-and-forget delivery shape rather than requiring the player to
   seek out a conversation.
-- `spacegame/engine/game.py` lines ~4388-4412 (`_trigger_crew_reaction`) and the seven call
-  sites (grep `_trigger_crew_reaction`) - the existing `action_type`-keyed hook point that
-  investment-raising and telegraph-checking both attach to.
+- `spacegame/engine/game.py` line 4392 (`_trigger_crew_reaction` definition) and the eight
+  call sites (grep `self._trigger_crew_reaction(` — 4206, 4330, 4340, 4634, 4637, 5811, 6040,
+  6054) - the existing `action_type`-keyed hook point that investment-raising and
+  telegraph-checking both attach to.
 - `spacegame/views/tutorial_narration_modal.py` and `spacegame/views/event_notification_view.py`
   - the existing push-state overlay pattern this sprint's dilemma-resolution modal follows.
 - `spacegame/engine/state_manager.py` - `push_state()` / `pop_state()`.
@@ -12902,8 +12903,8 @@ add real lenses.
   `dilemma_resolved(dilemma_id)`, `lens_closed(lens_id)` helpers + inverse extractors)
 - `spacegame/engine/game.py` (new `_after_player_action(action_type)` wrapper that calls
   `_trigger_crew_reaction` then the model-layer `check_dilemmas` coordinator; replaces the
-  seven `_trigger_crew_reaction(x)` call sites; new state-registration for
-  `GameState.DILEMMA_RESOLUTION`)
+  eight `_trigger_crew_reaction(x)` call sites at lines 4206, 4330, 4340, 4634, 4637, 5811,
+  6040, 6054; new state-registration for `GameState.DILEMMA_RESOLUTION`)
 - `spacegame/config.py` (`GameState.DILEMMA_RESOLUTION`)
 - `spacegame/views/dilemma_resolution_view.py` (NEW)
 - `tests/test_models/test_dilemma.py` (NEW)
@@ -13015,18 +13016,19 @@ add real lenses.
    contains the tokens `LensInvestment`, `lens_investment`, or
    `from spacegame.models.lens_investment`. Enforces the "engine never reads investment
    directly, always via the model-layer coordinator" rule.
-10. Full suite green; pass count `>=` baseline 11063 (pre-phase item L). 20+ new tests
-    across the new test files.
+10. Full suite green; pass count `>=` baseline 11147 (pre-phase item L; baseline advanced
+    from 11063 to 11147 as A2-4A/B, A2-5, A2-6, A2-7 landed). 20+ new tests across the new
+    test files.
 
 **Risks / open questions.**
 
 Locked decisions (each removed from open questions with rationale):
 - ~~Where does the telegraph/collision check live in the engine call chain?~~ **Locked:
   new `_after_player_action(action_type)` wrapper on `Game` that calls
-  `_trigger_crew_reaction` then `check_dilemmas`, and all seven existing
+  `_trigger_crew_reaction` then `check_dilemmas`, and all eight existing
   `_trigger_crew_reaction(x)` call sites migrate to the wrapper.** Rationale: keeps the
   crew-reaction and dilemma-check paths in lockstep so a future action_type can't be added
-  that fires one but not the other. Uses one grep-able seam instead of seven parallel
+  that fires one but not the other. Uses one grep-able seam instead of eight parallel
   edits.
 - ~~How does `game.py` avoid the `lens_investment` compliance-scan hit?~~ **Locked:
   model-layer `check_dilemmas(player, dilemmas) -> DilemmaCheckResult` coordinator.**
@@ -13149,8 +13151,8 @@ No unresolved open questions remain. If implementation surfaces one, block; do n
    `newly_collided` id (if any), build the investment snapshot dict, call
    `_ensure_dilemma_resolution_view(dilemma, snapshot)`, and `push_state`. Register a new
    lazy factory `_ensure_dilemma_resolution_view` following the ground-briefing factory
-   shape. Migrate all seven existing `_trigger_crew_reaction(x)` call sites to
-   `_after_player_action(x)`. Add a pop-and-write handler triggered when the view's
+   shape. Migrate all eight existing `_trigger_crew_reaction(x)` call sites (lines 4206,
+   4330, 4340, 4634, 4637, 5811, 6040, 6054) to `_after_player_action(x)`. Add a pop-and-write handler triggered when the view's
    `dismissed` flag is observed in the engine's frame update: writes `resolved`,
    `dilogue_flags`, and pops the state. Gotcha: the view's `on_resolve` callback captures
    the resolution write but the state-pop belongs to the engine's frame loop (matches the
@@ -13189,6 +13191,7 @@ crew-banter reactivity - not this one.
 - 2026-08-30 22:22 — harness: plan phase starting
 - 2026-08-30 23:05 — planning complete; verified all 11 declared context docs exist plus 3
 - 2026-08-31 00:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 05:44 — harness: plan phase starting
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13203,24 +13206,39 @@ crew-banter reactivity - not this one.
   AC10 baseline to 11063); drafted 8-task plan with per-task failing tests and gotchas;
   cross-sprint reactions: none from this sprint (foundational engine), with pointers to
   A2-10, A2-11, and A2-12 through A2-19 as the reaction owners. PHASE_OK
+- 2026-08-31 (later) — harness: plan phase re-entered after prior planning committed but
+  status field/dispatcher state was reset. Verified no A2-8 implementation exists: neither
+  `spacegame/models/dilemma.py`, `spacegame/views/dilemma_resolution_view.py`,
+  `data/narrative/dilemmas/`, nor `tests/test_models/test_dilemma.py` are present, and
+  `git log` shows only two plan-phase commits (d2aac78, 68c0ff2). Re-verified all 15
+  context docs exist. Two factual drifts corrected in the existing plan: (a) `_trigger_crew_reaction`
+  call-site count was "seven" but a fresh `grep` returns 8 call sites (4206, 4330, 4340,
+  4634, 4637, 5811, 6040, 6054; line 4392 is the definition) — updated in touch zones,
+  the locked decision, and Task 7; (b) AC10 baseline was 11063 but the current pre-phase
+  baseline is 11147 (A2-4A/B, A2-5, A2-6, A2-7 landed since original planning) — updated.
+  No scope change, no new decisions to lock, no new sprints proposed. Plan otherwise
+  remains sound as authored; ready for implementation. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-30 22:22
-- Completed: 2026-08-30 23:05
+- Started: 2026-08-31 05:44
+- Completed: 2026-08-31 (re-verification pass)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: d2aac78
+- Commits: pending
 - New_sprints_proposed: none
-- Polish_items_folded_in: round-robin-telegraph-redelivery, compliance-guard-green-assertion
-- Decisions_locked: 8
-- Notes: Verified all 11 context docs exist. Critical constraint surfaced: A2-4's compliance
-  test forbids `spacegame/engine/` and `spacegame/views/` from referencing
-  `LensInvestment`/`lens_investment` tokens, so this sprint's engine wiring must go through
-  a model-layer coordinator (`check_dilemmas`) rather than a direct
-  `player.lens_investment.is_at_or_above(...)` call from `game.py`. That single decision
-  reshaped the deliverables and produced AC9 as a structural guard. No new sprints proposed
-  because A2-9, A2-10, A2-11 already cover the downstream closure/integrity/scars work.
+- Polish_items_folded_in: none (prior planning already folded in round-robin-telegraph-redelivery
+  and compliance-guard-green-assertion; this pass added nothing further)
+- Decisions_locked: 0 (8 previously locked; none re-opened)
+- Notes: Sprint had a complete Plan section from prior planning but was reset to todo by
+  stuck-sprint recovery. Confirmed no implementation exists (checked model, view, data dir,
+  and test files — all absent). Re-verified all 15 context docs (11 declared + 4 supplementary)
+  still exist. Corrected two factual drifts: (a) `_trigger_crew_reaction` call-site count from
+  "seven" to "eight" with explicit line numbers (4206, 4330, 4340, 4634, 4637, 5811, 6040,
+  6054); (b) AC10 pass-count baseline from 11063 to 11147. Plan otherwise remains sound as
+  authored; the 8-task breakdown, the model-layer coordinator to satisfy compliance test
+  `test_lens_investment_never_rendered.py`, and the cross-sprint reaction handoff to A2-9/A2-10/
+  A2-11/A2-12-19 are all still correct.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
