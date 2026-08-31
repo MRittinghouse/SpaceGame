@@ -118,6 +118,20 @@ It turned three days of guessing into a named line of code in one command.
    heartbeat-staleness kills (the beat is timer-based), and
    `_sweep_stray_pytest` (it keeps its own supervisor via `os.getppid()`).
 
+   **A console-attachment fix was tried and did NOT work.** WER recorded
+   `powershell.exe` crashing in `Microsoft.PowerShell.ConsoleControl` within 5
+   seconds of two deaths, and the supervisor spawns PowerShell periodically, so
+   `a2b89d9` gave children their own console (`CREATE_NO_WINDOW`). The first
+   supervisor carrying that fix died anyway, at 61 minutes, same return code,
+   same silence. The PowerShell crash was a correlated symptom, not the cause.
+   The commit stays -- not attaching child console apps to a Scheduled Task's
+   console is correct hardening regardless -- but do not count it as the fix.
+
+   **The interval is suspiciously regular:** 61, 65, 69, 71, 79 minutes across
+   the last five. Something periodic outside the process, on roughly an hourly
+   cycle, is the shape to look for. WER captured only 2 of ~7 deaths, so its
+   silence is not evidence either way.
+
    **Next step:** find the killer, not the victim. Windows records nothing today,
    so install Sysmon and watch Event ID 5 (process terminated), or enable
    process auditing, and correlate with the next death. Weak lead worth a glance:
@@ -147,6 +161,21 @@ It turned three days of guessing into a named line of code in one command.
 
    Worth a design decision rather than a patch: branch-per-sprint merged on a
    green gate, or gate-before-push. Not attempted here.
+
+5. **Large sprints may not fit between deaths.** A2-8 (size L) has been picked
+   up five times and never once completed its review phase. Its implementation
+   is committed and green, but a recovered sprint restarts from `plan`, and
+   plan-short-circuit plus implement-re-verify plus review plus gate is roughly
+   45-55 minutes against a 61-79 minute supervisor lifetime -- of which the
+   harness only ever gets the tail. That is close to a livelock for L sprints
+   until the deaths are fixed.
+
+   If the deaths cannot be fixed quickly, the lever is cycle time: let recovery
+   resume a sprint at the phase after its last completed one, instead of
+   restarting the pipeline. The state file already records `last_phase`. Not
+   attempted here -- the current restart-from-plan behaviour is deliberate,
+   because a killed phase can leave partial work, and changing it needs more
+   care than an unattended session should spend.
 
 ## Operating notes
 
