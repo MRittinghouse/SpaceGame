@@ -1,12 +1,12 @@
 # Ralph Status
 
-_Updated: 2026-08-31 14:05:33_
+_Updated: 2026-08-31 14:51:22_
 
 ## STARVED
 
 ```
 STARVED: 28 todo, 0 eligible.
-  A2-8 is IN FLIGHT (in-progress (planning)) and nothing is running it
+  A2-8 is IN FLIGHT (in-progress (reviewing)) and nothing is running it
   SA-F2 (blocked) strands SA-F3, SA-F4, SA-F5, SA-F6, SA-F7, SA-X1, SA-X10, SA-X2, SA-X3, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
 ```
 
@@ -16,7 +16,7 @@ Sprints below are marked started and unfinished, and nothing is running them. Th
 
 ```
 STRANDED: 1 sprint(s) started and unfinished, 0 eligible. This is NOT completion.
-  A2-8 is IN FLIGHT (in-progress (planning)) and nothing is running it
+  A2-8 is IN FLIGHT (in-progress (reviewing)) and nothing is running it
   A run was killed or stopped mid-sprint. Stuck-sprint recovery resets these to todo once they have gone untouched for IN_PROGRESS_STALE_MINUTES, so the next harness launch reclaims them; nothing further happens until then.
 ```
 
@@ -24,21 +24,21 @@ STRANDED: 1 sprint(s) started and unfinished, 0 eligible. This is NOT completion
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **15 seconds ago**
-- Beat PID: 20928 -- alive
+- Last beat: **12 seconds ago**
+- Beat PID: 42076 -- alive
 
 ## Queue
 
 - total: 88
 - todo: 28
 - eligible: 0
-- in flight: A2-8 (in-progress (planning))
+- in flight: A2-8 (in-progress (reviewing))
 - blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (7 minutes ago)
-- last successful push: 7 minutes ago
+- last push: **OK** (46 minutes ago)
+- last successful push: 46 minutes ago
 
 ## Blocks drift
 
