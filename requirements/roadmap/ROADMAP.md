@@ -133,7 +133,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
-| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | in-progress | A2-8 |
+| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
@@ -13753,7 +13753,7 @@ crew banter, or UI copy that any other sprint would react to).
 
 #### A2-10 — Permanent closure + save/load
 
-**Status**: in-progress (planning)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-8 | **Blocks**: A2-11, A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19, A2-20
 
@@ -13989,6 +13989,8 @@ those sprints consume.
 - 2026-08-31 — planning complete; sprint has all A2-8 plumbing in place, added
 - 2026-08-31 18:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 18:36 — harness: plan phase starting
+- 2026-08-31 18:55 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 19:14 — harness: review passed, marking done
   `tier_unlocks_granted` field spec, expanded acceptance from 6 criteria to 9 (added
   triangle-dilemma coverage, warning-log verification for idempotency, legacy-load
   default, coordinator-skip regression), locked 5 open decisions (closed-lens guard
@@ -13997,24 +13999,23 @@ those sprints consume.
 - 2026-08-31 — harness: stuck-sprint recovery — reset to todo (implementer committed work then died before writing sentinel).
 - 2026-08-31 — plan re-invocation: work already implemented in commit 084dcec ("A2-10: permanent closure + save/load — resolve(), tier_unlocks_granted, closed-lens guard"). Verified all 7 planned tasks' files are touched (dilemma.py resolve() + tier_unlocks_granted, player.py record_lens_action guard, game.py delegate, 4 test files added). Ran the 4 sprint test files (test_dilemma.py, test_lens_investment_hooks.py, test_scenario_dilemma_permanent_closure.py, test_scenario_dilemma_view_pop.py): 99 passed, 0 failed. Emitting PHASE_OK so dispatcher advances to implement (verify-only) then review. PHASE_OK
 - 2026-08-31 — implement (verify-only): confirmed work from 084dcec still passes. Fixed 3 ruff lint errors (F401 unused import DilemmaRuntimeState, F401/F841 unused WINDOW_WIDTH/WINDOW_HEIGHT/screen in view_pop test) in commit b365934. Sprint tests 99/99 green. Full suite 11257 passed (2 known xdist flakes that pass individually). Lint clean, format clean on all touched files. PHASE_OK
+- 2026-08-31 — review: all 9 acceptance criteria verified against implementation. Plan audit: sound; locked decisions on guard location, resolve() shape, idempotency, pop_state() no-change, and no-content-this-sprint all defensible and correctly implemented. Sprint tests 99/99 green; full suite 11258 passed (1 xdist flake test_no_new_consumer_only_flags — confirmed pre-existing: passes in isolation both with and without A2-10 changes, slow test ~86s sensitive to parallel contention). Lint and format clean on all touched files. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: tests/test_scenarios/test_scenario_dilemma_permanent_closure.py, tests/test_scenarios/test_scenario_dilemma_view_pop.py, requirements/roadmap/ROADMAP.md
-- Commits: 084dcec (sprint work), b365934 (lint cleanup)
-- Tests_added: 99 (across 4 sprint test files from 084dcec)
-- Tests_baseline: 11259
-- Tests_passing: 11257 (2 known xdist flakes; both pass individually — pre-existing contention documented in memory)
-- Tests_skipped: 101
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a (no new flags added in this agent pass)
-- Writing_bible_clean: n/a (no player-facing content)
-- Touch_zones_respected: yes
-- Notes: Work was already committed in 084dcec; this agent verified all 9 acceptance criteria are satisfied by existing tests, fixed 3 ruff lint errors in the sprint test files, and confirmed 99/99 sprint tests green. The 2 full-suite failures are pre-existing xdist flakes (both pass in serial runs), not sprint regressions.
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
+- Tests_passing: 11258 (1 pre-existing xdist flake passes in isolation; unrelated to sprint)
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: tier_unlocks_granted is keyed by bare chosen_lens_id (e.g. "wealth") not by (dilemma_id, chosen_lens_id) — two future dilemmas sharing a pole name would silently overwrite each other's unlock record; the spec mandates this shape but the Plan doesn't flag it as a known limitation for downstream A2-12+ sprint authors
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 7 Plan tasks implemented correctly. The key design invariant (resolve() idempotency guard fires before any state mutation) is correct and well-tested. The single tighten is a spec-level note for A2-12+ authors, not a blocker for this sprint.
 ---
 
 #### A2-11 — Scars
