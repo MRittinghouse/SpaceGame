@@ -128,7 +128,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
-| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | todo | A2-1 |
+| [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | in-progress | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11765,21 +11765,19 @@ sprints.
 - 2026-08-29 12:49 — harness: review phase starting (rework cycle 0)
 - 2026-08-29 14:30 — review complete; all 9 acceptance criteria verified; plan audit sound; zero critical findings; one minor observation noted. PHASE_OK
 - 2026-08-30 21:28 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
+- 2026-08-30 21:33 — harness: plan phase starting
+- 2026-08-30 21:35 — planner: sprint is already fully implemented (commit 8f63460 in git log) AND reviewed (2026-08-29 14:30 PHASE_OK from the prior review, all 9 acceptance criteria verified). Downstream sprint A2-6 (commit 58da3d9) has already landed sixteen-lens content on top of A2-5, further confirming completion. Verified live: `get_data_loader().lenses` returns all 16 lens ids; running `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_models/test_lens.py -q` yields 79 passed / 1 skipped (the always-skipping empty-registry guard noted in the prior review's single_tighten). No re-planning work exists; the plan section is already filled, decisions locked, activity log rich. The reset-to-todo at 21:28 was a false-positive stuck-sprint recovery — the review phase completed 2026-08-29 14:30 but the dispatcher's state must have never advanced past 'in-progress (reviewing)' and its 24h+ stale-state timer fired on 2026-08-30 21:28. Re-implementing would revert or duplicate committed work; re-planning has nothing to add. PHASE_BLOCKED: sprint already completed at 8f63460 and reviewed PHASE_OK — dispatcher should mark A2-5 done, not re-run the phase pipeline. A2-6 building on top is proof the work landed cleanly.
 **Last phase report.**
-- Phase: review
-- Outcome: PHASE_OK
-- Started: 2026-08-29 14:10
-- Completed: 2026-08-29 14:30
-- Files_changed: none
-- Commits: none
-- Tests_passing: 11041 (47/47 compliance tests pass, 1 always-skipping guard; 79/80 lens+compliance suite)
-- Acceptance_criteria_verified: 9/9
-- Polish_items_verified: n/a
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 0
-- Single_tighten: In `test_lens_registry.py::test_scan_guard_is_not_silent_on_empty_registry`, the assert-branch (lines 170-173) can never be reached since the test always writes 0 entries to tmp_path — the function effectively ends at the `pytest.skip()` call. Dead code; would remove on a second pass. AC2's claim this test would "switch from skip to pass" was a documentation inaccuracy in the AC (it always skips by design); the underlying integrity is satisfied by `test_real_lenses_json_loads_a2_5_entries` in test_lens.py.
-- Followup_sprints_added: none
-- Notes: Plan audit: sound; all 6 locked decisions defensible (forward-referenced tags, 1-sentence fields, verbatim minigame_shape, no guide-paste into voice, compliance-file location for distinctness tests, 1-3 tier_unlocks). All 8 lenses authored correctly: distinct voices, correct investment_from tags matching the spec's minimum starting set exactly, minigame_shape unique case-insensitively, Exploration/Discovery and Political Power/Revolution clearly differentiated. test_registry_drift_check activated from skip to pass (AC7). Prose anti-patterns all clean (AC8). Content reads in working-galaxy register with no GenAI tells.
+- Phase: plan
+- Outcome: PHASE_BLOCKED
+- Started: 2026-08-30 21:33
+- Completed: 2026-08-30 21:35
+- Files_changed: requirements/roadmap/ROADMAP.md (activity-log entry + this phase report only)
+- Commits: none (will commit the log update)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint is already implemented and reviewed; no scope to expand)
+- Decisions_locked: 0 (all 6 were locked in the 2026-08-29 00:52 plan phase; no new decisions surfaced)
+- Notes: False-positive stuck-sprint recovery. Sprint A2-5 shipped 2026-08-29 at commit 8f63460, review PHASE_OK 2026-08-29 14:30, and downstream A2-6 (commit 58da3d9) has already built on it. Live verification: 16 lenses loaded, 79/1 pass/skip on the A2-5 acceptance test surface. Blocking further phase work — dispatcher should mark this sprint done rather than re-planning or re-implementing already-committed work. Root cause of the reset appears to be the dispatcher's own state never advancing past 'in-progress (reviewing)' after the 2026-08-29 14:30 review PHASE_OK sentinel.
 ---
 
 #### A2-6 — Lens definitions 9-16
