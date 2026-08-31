@@ -1,26 +1,26 @@
 # Ralph Status
 
-_Updated: 2026-08-30 23:34:46_
+_Updated: 2026-08-30 23:46:09_
 
 ## Now
 
-- Sprint: **(between sprints)**
-- Phase: **-**
-- Last beat: **6 seconds ago**
+- Sprint: **A2-4A**
+- Phase: **plan**
+- Last beat: **29 seconds ago**
 - Beat PID: 46516 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 31
-- eligible: 3
+- todo: 30
+- eligible: 2
 - in flight: A2-8 (in-progress (planning))
-- blocked: SA-F2, UI-BOUNDS-1
+- blocked: A2-4A, SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (78 minutes ago)
-- last successful push: 78 minutes ago
+- last push: **OK** (11 minutes ago)
+- last successful push: 11 minutes ago
 
 ## Blocks drift
 
@@ -35,3 +35,4 @@ _Updated: 2026-08-30 23:34:46_
 ## Recent
 
 - A2-6 ok
+- A2-4A error
