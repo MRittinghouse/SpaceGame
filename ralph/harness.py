@@ -1360,7 +1360,7 @@ def _preflight_checks(allow_dirty: bool, push_enabled: bool, probe_writes: bool)
         filtered, removed = _filter_harness_managed_dirty(stdout)
         if removed:
             log(f"Note: ignoring harness-managed dirty entries: {removed}")
-        if filtered.strip():
+        if filtered.strip() and not _recover_dirty_tree_from_dead_harness(filtered):
             log(
                 "Working tree is dirty. Agents will commit during phases; "
                 "mixing in unrelated changes pollutes sprint history. "
@@ -1612,6 +1612,70 @@ def _probe_claude_write_permission() -> tuple[bool, str]:
 # ---------------------------------------------------------------------------
 # Lock file (prevents concurrent harness runs)
 # ---------------------------------------------------------------------------
+
+
+def _recover_dirty_tree_from_dead_harness(filtered: str) -> bool:
+    """Stash work abandoned by a harness that died mid-sprint. True if recovered.
+
+    A dirty tree blocks the run, and that is correct: an autonomous run must
+    never fold a human's uncommitted edits into a sprint's commits, or
+    steamroller them. But it is fatal when the dirt is a dead agent's own work.
+    Measured 2026-08-29: A2-6's implement agent wrote 417 lines and was killed
+    before committing. Every later launch failed this check with rc 4, three of
+    those tripped the supervisor's consecutive-failure cap, and the run sat idle
+    for ~20 hours holding completed work it could not get past.
+
+    The lock file is the evidence that separates the two cases. It names the PID
+    of the harness that wrote it; if that PID is not a live harness, a previous
+    run died mid-sprint and everything dirty is its leftovers. With no lock, or
+    a lock held by a running harness, nothing is touched and the caller blocks
+    exactly as before.
+
+    Recovery is `git stash push --include-untracked`, never a discard: the work
+    is fully recoverable with `git stash list` / `git stash pop`, and the label
+    names the dead PID and the time. `--include-untracked` (not `--all`) leaves
+    gitignored harness runtime files alone. Stuck-sprint recovery then resets
+    the sprint to todo, so the work is redone rather than silently lost.
+
+    A human's edits made WHILE a harness was dying are swept up too. That is a
+    deliberate trade: they are recoverable from the stash and loudly logged,
+    whereas the alternative is a run that stops for the rest of the week.
+
+    Args:
+        filtered: `git status --porcelain` output, harness-managed paths already
+            removed. Logged so the stash contents are visible after the fact.
+
+    Returns:
+        True if the tree was stashed and the run may continue.
+    """
+    if not LOCK_FILE.exists():
+        return False
+    try:
+        dead_pid: object = int(LOCK_FILE.read_text(encoding="utf-8").strip())
+    except (ValueError, OSError):
+        # A truncated or unreadable lock is still the fingerprint of a run that
+        # died untidily -- exactly the case this exists for.
+        dead_pid = "unreadable"
+    if isinstance(dead_pid, int) and dead_pid > 0 and _lock_holder_is_live_harness(dead_pid):
+        return False
+
+    label = (
+        f"ralph: work abandoned by harness PID {dead_pid} "
+        f"at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    rc, _out, err = _run_git(["stash", "push", "--include-untracked", "-m", label], timeout=60)
+    if rc != 0:
+        log(f"Could not stash abandoned work ({err.strip() or 'git stash failed'}).")
+        return False
+
+    log(
+        f"Recovered a dirty tree left by dead harness PID {dead_pid}: stashed as "
+        f"{label!r}. Nothing was discarded -- `git stash list` to inspect, "
+        f"`git stash pop` to restore. The sprint it belonged to will be reset to "
+        f"todo and redone."
+    )
+    log(f"Stashed entries:\n{filtered}")
+    return True
 
 
 def _acquire_lock() -> bool:

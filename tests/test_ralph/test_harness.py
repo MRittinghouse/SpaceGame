@@ -3544,3 +3544,71 @@ class TestBaselineCaptureRetriesOnHang:
             with pytest.raises(harness.BaselineCaptureError):
                 harness._capture_test_baseline()
         assert len(calls) == 1, "a red suite must not be re-run by baseline capture"
+
+
+# ---------------------------------------------------------------------------
+# A dead harness's abandoned work must not brick every future launch
+# ---------------------------------------------------------------------------
+
+
+class TestDirtyTreeFromDeadHarnessIsRecovered:
+    """An agent killed before it committed used to stop the run permanently.
+
+    Measured 2026-08-29: A2-6's implement agent wrote 417 lines across three
+    files and died before committing. Every launch after that failed the
+    clean-tree pre-flight check with rc 4, and after three the supervisor
+    stopped for good. The run sat idle for ~20 hours with the completed work
+    sitting in the working tree, and nothing short of a human at the keyboard
+    could have restarted it.
+
+    The clean-tree check itself is right and stays: mixing stray edits into a
+    sprint's commits pollutes its history, and a human's uncommitted work must
+    never be steamrollered by an autonomous run.
+
+    What distinguishes the two cases is evidence. A lock file naming a PID that
+    is no longer a live harness means a previous run died mid-sprint, and the
+    dirt in the tree is its abandoned work. That is recoverable rather than
+    fatal: stash it (recoverable by hand, never discarded), say so loudly, and
+    let stuck-sprint recovery reset the sprint to todo so the work is redone.
+    With no such evidence the tree still blocks the run exactly as before.
+    """
+
+    def test_no_lock_file_means_a_human_edited_and_the_run_still_blocks(
+        self, isolated_roadmap
+    ) -> None:
+        if harness.LOCK_FILE.exists():
+            harness.LOCK_FILE.unlink()
+        with patch.object(harness, "_run_git") as git:
+            assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is False
+        git.assert_not_called(), "must not stash when there is no evidence a harness died"
+
+    def test_live_harness_lock_does_not_stash(self, isolated_roadmap) -> None:
+        harness.LOCK_FILE.write_text("4321", encoding="utf-8")
+        with patch.object(harness, "_lock_holder_is_live_harness", return_value=True):
+            with patch.object(harness, "_run_git") as git:
+                assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is False
+        git.assert_not_called()
+
+    def test_stale_lock_stashes_and_lets_the_run_continue(self, isolated_roadmap) -> None:
+        harness.LOCK_FILE.write_text("13388", encoding="utf-8")
+        with patch.object(harness, "_lock_holder_is_live_harness", return_value=False):
+            with patch.object(harness, "_run_git", return_value=(0, "", "")) as git:
+                assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is True
+
+        argv = git.call_args[0][0]
+        assert argv[:3] == ["stash", "push", "--include-untracked"], argv
+        assert "13388" in argv[-1], f"stash label should name the dead PID: {argv[-1]}"
+
+    def test_a_failed_stash_still_blocks_the_run(self, isolated_roadmap) -> None:
+        """Never proceed on a tree we could not clean."""
+        harness.LOCK_FILE.write_text("13388", encoding="utf-8")
+        with patch.object(harness, "_lock_holder_is_live_harness", return_value=False):
+            with patch.object(harness, "_run_git", return_value=(1, "", "no local changes")):
+                assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is False
+
+    def test_unreadable_lock_counts_as_a_dead_harness(self, isolated_roadmap) -> None:
+        """A truncated lock is still the fingerprint of a run that died untidily."""
+        harness.LOCK_FILE.write_text("not-a-pid", encoding="utf-8")
+        with patch.object(harness, "_run_git", return_value=(0, "", "")) as git:
+            assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is True
+        git.assert_called_once()
