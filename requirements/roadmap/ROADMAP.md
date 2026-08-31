@@ -130,7 +130,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
-| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | in-progress | A2-1 |
+| [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
@@ -12546,7 +12546,7 @@ cohesion sprints.
 
 #### A2-7 — Per-lens readings on locations
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12825,7 +12825,7 @@ data, prove the shape, guard the invariants. Nothing more.
 - 2026-08-31 05:35 — Task 6 sweep complete. Full suite: 11146 passing / 100 skipped vs baseline 11133 / 100 (+13). One pre-existing xdist worker-crash (test_no_new_consumer_only_flags, 83s runtime; passes in serial). Lint/format/mypy clean. Writing Bible scanner 35/35. Touch zones respected. AC1=test_round_trip_preserves_lens_readings, AC2=test_from_dict_defaults_lens_readings_when_missing, AC3=test_every_lens_reading_key_is_a_real_lens_id + test_injected_bad_lens_id_fails_the_check, AC4=test_authored_locations_have_lens_readings + Jaccard test, AC5=test_novel_lens_reading_loads_without_code_change, AC6=suite green. PHASE_OK
 - 2026-08-31 05:22 — harness: review phase starting (rework cycle 0)
 - 2026-08-31 05:38 — review complete; all six acceptance criteria confirmed; plan audit sound; no critical findings; one minor tighten noted (reading_for() docstring is verbose for a 1-line impl); no fixes required. PHASE_OK
-
+- 2026-08-31 05:38 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
