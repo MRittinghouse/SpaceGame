@@ -11514,7 +11514,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - Started: 2026-08-31 03:34
 - Completed: 2026-08-31 03:40
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none (roadmap-only activity-log update)
+- Commits: 765e47f
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented; no re-planning)
 - Decisions_locked: 0
