@@ -1134,6 +1134,9 @@ class TradingView(BaseView):
                 self._show_message(m)
             if not self._black_market_mode:
                 self._apply_trade_reputation()
+            else:
+                # A2-4B: accrue crime investment on black market sales
+                self.player.record_lens_action("black_market_sale", 3)
             self.market.record_sell(commodity_id, quantity)
             self._refresh_tables()
         else:

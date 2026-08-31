@@ -771,6 +771,8 @@ class WreckersGuildView(BaseView):
                         progress[i] = True
             state.clear_active_contract(mission_id)
             state.completed_contract_count += 1
+            # A2-4B: accrue community/preservation investment on contract completion
+            self.player.record_lens_action("wreckers_guild_contract_completed", 5)
             self._last_completed_id = mission_id
             self.player.dialogue_flags[wreckers_contract_completed()] = True
             self._refresh_offers()

@@ -2740,6 +2740,8 @@ class Game:
                         )
 
         def _on_lot_won(lot, sale_price: int) -> None:
+            # A2-4B: accrue wealth investment on auction wins
+            self.player.record_lens_action("auction_won", 10)
             # SA-B4: Reach venue applies the legality penalty BEFORE the
             # auction_first_win flag is set, so the journal auto-entry
             # sees the post-penalty rep value (locked decision §B4.8).
@@ -3205,6 +3207,8 @@ class Game:
                 self._maybe_trigger_dispute_journal(first_partial)
         # First coalition-built win (at least one pre-commit going in).
         if category == "win":
+            # A2-4B: accrue political_power investment on every dispute win
+            self.player.record_lens_action("politics_vote_won", 10)
             had_pre_commit = any(d.pre_committed for d in dispute.delegates.values())
             if had_pre_commit:
                 first_coalition = "first_coalition_won"
@@ -5895,6 +5899,12 @@ class Game:
                 # rather than a reward stat.
                 self._mission_notifications.append(timeliness_comment)
             self.audio_manager.play_sfx("quest_complete")
+
+            # A2-4B: accrue investment for procedural mission completions
+            if mission_id.startswith("proc_bounty_"):
+                self.player.record_lens_action("mission_completed:bounty", 10)
+            elif mission_id.startswith("proc_smuggling_"):
+                self.player.record_lens_action("mission_completed:smuggling", 10)
 
             # Emotional peaks: enhanced effects for key campaign moments
             _PEAK_MISSIONS = {

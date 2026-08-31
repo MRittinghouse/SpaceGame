@@ -2152,6 +2152,10 @@ class CombatView(BaseView):
         self.player.record_captain_encounter(captain_id, outcome)
         self._captain_encounter_recorded = True
 
+        # A2-4B: accrue vengeance investment on named-target victories
+        if outcome in {"killed", "defeated"}:
+            self.player.record_lens_action("combat_victory_named_target", 10)
+
         if not was_wanderer and memory.status == "wanderer":
             self._add_wanderer_journal_entry(captain_id)
 

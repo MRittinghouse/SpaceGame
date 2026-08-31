@@ -390,12 +390,20 @@ class CrewRoster:
                     break
         return messages
 
-    def adjust_loyalty(self, template_id: str, amount: int) -> list[str]:
+    def adjust_loyalty(
+        self,
+        template_id: str,
+        amount: int,
+        player: "Optional[Any]" = None,
+    ) -> list[str]:
         """Adjust loyalty for a specific crew member.
 
         Args:
             template_id: Crew member to adjust.
             amount: Amount to add (positive) or subtract (negative).
+            player: Optional Player reference. When supplied and amount > 0,
+                fires ``player.record_lens_action("crew_loyalty_gained", 1)``
+                for A2-4B investment accrual.
 
         Returns:
             List of newly crossed threshold flags (e.g., "crew_loyalty_elena_reeves_50").
@@ -419,6 +427,10 @@ class CrewRoster:
 
         state["loyalty"] = new_loyalty
 
+        # A2-4B: accrue investment when loyalty increases
+        if player is not None and new_loyalty > old_loyalty:
+            player.record_lens_action("crew_loyalty_gained", 1)
+
         # Check for upward threshold crossings
         # loyalty_flag_offset lowers the threshold (Legend of the Expanse: -10)
         flags: list[str] = []
@@ -429,27 +441,40 @@ class CrewRoster:
                     flags.append(f"crew_loyalty_{template_id}_{threshold}")
         return flags
 
-    def adjust_loyalty_all(self, amount: int) -> list[str]:
+    def adjust_loyalty_all(
+        self,
+        amount: int,
+        player: "Optional[Any]" = None,
+    ) -> list[str]:
         """Adjust loyalty for all recruited crew members.
 
         Args:
             amount: Amount to add (positive) or subtract (negative).
+            player: Optional Player reference threaded through to
+                ``adjust_loyalty`` for A2-4B investment accrual.
 
         Returns:
             List of newly crossed threshold flags.
         """
         all_flags: list[str] = []
         for tid in self._recruited:
-            flags = self.adjust_loyalty(tid, amount)
+            flags = self.adjust_loyalty(tid, amount, player=player)
             all_flags.extend(flags)
         return all_flags
 
-    def adjust_loyalty_for_faction(self, faction_id: str, amount: int) -> list[str]:
+    def adjust_loyalty_for_faction(
+        self,
+        faction_id: str,
+        amount: int,
+        player: "Optional[Any]" = None,
+    ) -> list[str]:
         """Adjust loyalty for all recruited crew matching a faction.
 
         Args:
             faction_id: Faction whose crew members are affected.
             amount: Loyalty adjustment amount.
+            player: Optional Player reference threaded through to
+                ``adjust_loyalty`` for A2-4B investment accrual.
 
         Returns:
             List of newly crossed threshold flags.
@@ -458,7 +483,7 @@ class CrewRoster:
         for tid in self._recruited:
             template = self._templates.get(tid)
             if template and template.faction_id == faction_id:
-                flags = self.adjust_loyalty(tid, amount)
+                flags = self.adjust_loyalty(tid, amount, player=player)
                 all_flags.extend(flags)
         return all_flags
 

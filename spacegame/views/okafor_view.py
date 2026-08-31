@@ -794,6 +794,10 @@ class OkaforView(BaseView):
         if not self.player.deduct_credits(cost):
             return False
         active = fund_project(state, template, self.player.game_day, collaborators)
+        # A2-4B: accrue legacy/transcendence investment on funding
+        self.player.record_lens_action("okafor_research_project_funded", 10)
+        if template.risk_tier == "high":
+            self.player.record_lens_action("okafor_research_project_funded:high_risk", 10)
         # Per-collaborator dialogue flag (SA-R2 hook).
         for researcher_id in collaborators:
             self.player.dialogue_flags[okafor_collaborator_share(researcher_id)] = True

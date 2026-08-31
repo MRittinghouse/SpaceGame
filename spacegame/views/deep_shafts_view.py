@@ -165,6 +165,8 @@ class DeepShaftsView(BaseView):
         self._last_rep_grant = rep_grant
         self._last_journal_unlock = journal_id
         self._apply_rep_grant(rep_grant, is_first_visit)
+        # A2-4B: accrue faith/preservation investment on pilgrimage visit
+        self.player.record_lens_action("deep_shafts_pilgrimage_visited", 3)
         if journal_id is not None:
             self.player.dialogue_flags[journal_id] = True
         # Producer for the ``visited_deep_shafts`` flag. Written as a

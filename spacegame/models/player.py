@@ -442,6 +442,24 @@ class Player:
 
         return (True, f"Purchased {quantity} units for {total_cost:,} CR")
 
+    def record_lens_action(self, action_tag: str, amount: int) -> list[str]:
+        """A2-4B facade: emit an action tag and accrue investment on matching lenses.
+
+        Views and engine call this facade so they never touch ``lens_investment``
+        directly (preserves A2-4 AC4 structural invariant). The facade resolves
+        the lens registry from the DataLoader so callers need not know about it.
+
+        Args:
+            action_tag: Qualified action identifier (e.g. ``"sold_cargo"``).
+            amount: Non-negative integer to accrue on each matching lens.
+
+        Returns:
+            List of lens_ids that were incremented.
+        """
+        from spacegame.data_loader import get_data_loader
+
+        return self.lens_investment.record_action(action_tag, amount, get_data_loader().lenses)
+
     def sell_commodity(
         self, commodity_id: str, quantity: int, price_per_unit: int
     ) -> tuple[bool, str]:
@@ -472,6 +490,11 @@ class Player:
         if profit > self.largest_single_profit:
             self.largest_single_profit = profit
 
+        # A2-4B: accrue investment on trade events
+        self.record_lens_action("sold_cargo", 1)
+        if profit >= 5000:
+            self.record_lens_action("trade_profit_large", 3)
+
         return (True, f"Sold {quantity} units for {total_revenue:,} CR")
 
     def travel_to_system(self, system_id: str, fuel_cost: int) -> tuple[bool, str]:
@@ -491,12 +514,17 @@ class Player:
 
         # Execute travel
         self.ship.consume_fuel(fuel_cost)
+        is_first_visit = system_id not in self.systems_visited
         self.current_system_id = system_id
         self.systems_visited.add(system_id)
         self.game_day += 1  # Turn-based: each jump is one day
         self.decay_criminal_heat(1)
         self.jumps_traveled += 1
         self.fuel_consumed += fuel_cost
+
+        # A2-4B: accrue investment on first visit to a new system
+        if is_first_visit:
+            self.record_lens_action("reach_system_first_visit", 5)
 
         return (True, f"Arrived at {system_id}. Day {self.game_day}")
 
