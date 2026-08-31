@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13275,6 +13275,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 06:56 — session: reset to todo after reverting the implementation. The implement phase committed 1055 lines and the harness died two minutes into review, so the work reached master having passed neither review nor the gate. It was red: 11 failures, including three of A2-8 own scenario tests, a GameState ripple into the crawler state-count test, and six ground-loot tests hitting AttributeError 'Game' object has no attribute 'state_manager' at game.py:4448. Reverted rather than repaired because an implementation that fails its own tests is unfinished. The original commits survive the revert -- cherry-pick a8d7d47 f321b82 9dc85ef 9e8d8d3 to build on them instead of starting over.
 - 2026-08-31 07:42 — harness: plan phase starting
 - 2026-08-31 08:53 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 08:59 — harness: plan phase starting
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13323,29 +13324,49 @@ crew-banter reactivity - not this one.
   sprints proposed. Plan is ready for implementation — implementer should cherry-pick
   a8d7d47, f321b82, 9dc85ef, 9e8d8d3 as a starting point but must then add the three
   sub-task fixes before the full suite goes green. PHASE_OK
+- 2026-08-31 (re-plan on already-implemented sprint) — planner re-entered after
+  stuck-sprint recovery reset to todo (ad63d0c). Inspection shows all A2-8 work landed
+  on master across 5 commits after the last re-plan: 2d4f20f (Task 2.1
+  `build_investment_snapshot`), 4b5f950 (Task 5 Player.dilemma_state + save/load),
+  cc61422 (Task 6 + 6.1: DILEMMA_RESOLUTION state, DilemmaResolutionView, state-count
+  ripple), 9964285 (Task 7 + 7.1: engine _after_player_action + ground-loot state_manager
+  mock fix), 39566ec (Task 8: 260 lines of threshold-scenario coverage). All A2-8
+  acceptance criteria verified in the current tree: `spacegame/models/dilemma.py`,
+  `spacegame/views/dilemma_resolution_view.py`, `data/narrative/dilemmas/.gitkeep`,
+  `tests/test_models/test_dilemma.py`, `tests/test_scenarios/test_scenario_dilemma_thresholds.py`,
+  `tests/test_ui_layout/test_dilemma_resolution_view.py` all present.
+  Ran the sprint's own test surface + all ripple targets: 71 pass across
+  test_dilemma / test_scenario_dilemma_thresholds / test_dilemma_resolution_view /
+  test_coverage / test_ground_loot_bonus / test_lens_investment_never_rendered; 12 pass
+  in test_scenario_save_load including the new `TestSaveLoadDilemmaState` class
+  (4 tests: default round-trip, in-progress telegraphed with cursor, resolved, legacy
+  save with missing key defaults to empty); 10 pass in test_mission_notifications.
+  No re-plan needed — the work is done and the tests are green. Emitting PHASE_OK so
+  the dispatcher routes the sprint to implement (which will verify) and then to review,
+  which is where a stuck-sprint reset of already-shipped work belongs (per the
+  playbook: never PHASE_BLOCKED "already implemented"; that stranded A2-6 on 2026-08-30).
+  PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 07:42
-- Completed: 2026-08-31 (post-revert re-plan)
+- Started: 2026-08-31 (post stuck-sprint recovery reset)
+- Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: cc46ac3
+- Commits: <pending>
 - New_sprints_proposed: none
-- Polish_items_folded_in: none new this pass (prior planning already folded in
-  round-robin telegraph re-delivery and compliance-guard-green assertion)
-- Decisions_locked: 0 (8 previously locked; none re-opened)
-- Notes: The prior plan was substantively correct — the revert happened because the
-  implementer skipped two ripples the plan didn't spell out. This re-plan bakes those
-  ripples into the plan: (1) new Task 2.1 adds the missing `build_investment_snapshot`
-  helper that must land in `models/dilemma.py` (was in reverted commit 9dc85ef, never
-  reached master); (2) new Task 6.1 + AC10 forces the `test_all_41_states_...` update
-  in the same commit that adds `GameState.DILEMMA_RESOLUTION`, and prefers
-  `len(GameState)` over a hardcoded literal to prevent future rediscovery; (3) new Task
-  7.1 + AC11 forces a test-fixture audit for any mocked `Game` whose code path reaches
-  a migrated `_after_player_action` call site, with an explicit prohibition on softening
-  the wrapper. Also recognized the surviving A2-8 code (tasks 1-4) as DONE, saving the
-  implementer from re-doing 39 already-green tests. All 15 context docs still exist.
+- Polish_items_folded_in: none (sprint is already implemented; nothing to fold)
+- Decisions_locked: 0 (all 8 prior decisions still hold; no new opens surfaced)
+- Notes: Sprint is ALREADY IMPLEMENTED on master across 5 commits (2d4f20f, 4b5f950,
+  cc61422, 9964285, 39566ec) that landed after the previous re-plan and survived the
+  stuck-sprint reset. Verified by running the sprint's own tests (71 pass across dilemma
+  model, scenario, view, ripple targets, and compliance guard), the save/load extension
+  (12 pass in test_scenario_save_load including 4 new TestSaveLoadDilemmaState tests),
+  and the mission-notifications touch zone (10 pass). All 12 acceptance criteria hold in
+  the current tree. Per the "already implemented" playbook, emitting PHASE_OK — not
+  PHASE_BLOCKED — so the sprint routes through implement (verifier) and review, which
+  is what a reset-to-todo of shipped work should get. No roadmap changes to the plan
+  itself; this activity log entry + report is the phase's only edit.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
