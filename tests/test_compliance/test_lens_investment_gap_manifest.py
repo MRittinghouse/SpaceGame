@@ -4,13 +4,12 @@ Enforces AC1: every tag in the union of investment_from across all lenses is
 either wired (emitted from real production code) or explicitly gap-flagged with
 a rationale line and a future-sprint pointer.
 
-The grep-hit test catches "emitter site accidentally removed" drift without
+The emitter-hit test catches "emitter site accidentally removed" drift without
 requiring any mock or fake.
 """
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
 
 from spacegame.data_loader import get_data_loader
@@ -157,19 +156,36 @@ class TestGapManifest:
             assert entry.get("future_sprint"), f"Gap tag '{tag}' missing future_sprint"
 
     def test_every_wired_tag_has_a_grep_hit_in_production_code(self) -> None:
-        """Each wired tag appears in a production emit call outside lens_investment.py."""
+        """Each wired tag appears in a production emit call outside lens_investment.py.
+
+        Searched in Python rather than by shelling out to `grep`. The original
+        used `subprocess.run(["grep", ...])`, which passes in Git Bash and fails
+        everywhere else: `grep.exe` ships in `C:\\Program Files\\Git\\usr\\bin`,
+        which only Git Bash puts on PATH. The machine PATH has
+        `C:\\Program Files\\Git\\cmd` (git.exe) and no grep at all.
+
+        So this failed deterministically under the Scheduled Task while passing
+        for every developer running the suite from a Git Bash shell -- it blocked
+        four consecutive harness launches on 2026-08-31 and read as a flake,
+        because the environment that reproduced it was not the one anyone
+        debugged in.
+        """
+        # Read each source once, not once per tag.
+        sources: list[tuple[str, str]] = []
+        for path in sorted(_SPACEGAME_SRC.rglob("*.py")):
+            rel = path.as_posix()
+            if "lens_investment" in rel:
+                continue
+            sources.append((rel, path.read_text(encoding="utf-8", errors="replace")))
+
         for tag in WIRED_TAGS:
-            result = subprocess.run(
-                ["grep", "-r", "--include=*.py", tag, str(_SPACEGAME_SRC)],
-                capture_output=True,
-                text=True,
-            )
             hits = [
-                line
-                for line in result.stdout.splitlines()
-                if "lens_investment.py" not in line and "lens_investment" not in line
+                f"{rel}: {line.strip()}"
+                for rel, text in sources
+                for line in text.splitlines()
+                if tag in line and "lens_investment" not in line
             ]
             assert hits, (
-                f"Wired tag '{tag}' has no grep hit in spacegame/ outside lens_investment.py. "
+                f"Wired tag '{tag}' has no hit in spacegame/ outside lens_investment.py. "
                 f"Either the emitter was removed or the tag was mistyped."
             )
