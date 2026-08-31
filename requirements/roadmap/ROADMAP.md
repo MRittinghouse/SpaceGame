@@ -133,7 +133,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
-| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
+| [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | in-progress | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
@@ -13753,7 +13753,7 @@ crew banter, or UI copy that any other sprint would react to).
 
 #### A2-10 — Permanent closure + save/load
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-8 | **Blocks**: A2-11, A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19, A2-20
 
@@ -13781,52 +13781,229 @@ a closed path. This is Success Criterion 6.
 - `tests/test_scenarios/test_scenario_dilemma_permanent_closure.py` (NEW)
 
 **Deliverables.**
-- `resolve(dilemma: Dilemma, chosen_lens_id: str, player: Player) -> None`:
-  - Looks up the `DilemmaOutcome` for `chosen_lens_id`.
+- New field `tier_unlocks_granted: dict[str, list[str]]` on `DilemmaRuntimeState` (keyed by
+  winning lens id, value is the outcome's `tier_unlocks` list). A2-8 shipped the runtime
+  state class; this sprint adds one field and extends `to_dict()`/`from_dict()` so legacy
+  saves without the key load with an empty default (per CLAUDE.md's Save Migration rule).
+- `resolve(dilemma: Dilemma, chosen_lens_id: str, player: Player) -> None` in
+  `spacegame/models/dilemma.py`:
+  - Looks up the `DilemmaOutcome` whose `winning_lens_id == chosen_lens_id`.
+  - Idempotency guard FIRST: if `dilemma.id in player.dilemma_state.resolved`, logs a
+    `logger.warning()` with both ids and returns without side effects. Must not raise.
   - Sets `player.dialogue_flags[outcome.outcome_flag] = True`.
   - Sets `player.dialogue_flags[flags.dilemma_resolved(dilemma.id)] = True`.
   - For every lens id in `outcome.closes`: adds it to `player.dilemma_state.closed_lenses`
     and sets `player.dialogue_flags[flags.lens_closed(lens_id)] = True`.
   - Records `player.dilemma_state.resolved[dilemma.id] = chosen_lens_id`.
-  - Applies `outcome.tier_unlocks` - this sprint stores them as a permanent, queryable record
-    (`player.dilemma_state.tier_unlocks_granted: dict[str, list[str]]` keyed by winning
-    lens id) rather than firing arbitrary game-system side effects; later sprints/specs that
-    build the actual "deepened" content read this record. Do not invent bespoke per-unlock
-    mechanics here - that is the eight dilemma sprints' job when they define what each
-    specific unlock means.
-  - Idempotency guard: calling `resolve()` again on an already-resolved dilemma is a no-op
-    (logs a warning, does not double-apply or raise).
-- Investment-raising and telegraph/collision checks (`Game`, from A2-8) skip any dilemma
-  whose id is already in `player.dilemma_state.resolved` - a resolved dilemma cannot re-fire.
-- Investment-raising for a lens in `player.dilemma_state.closed_lenses` is rejected (raises
-  or silently no-ops, implementer's choice, but must be tested either way) - a closed path
-  cannot accumulate further investment even if some other system tries to raise it.
-- `DilemmaResolutionView` calls `resolve()` then `pop_state()` back to whatever `GameState`
-  was active before the collision interrupted it (not to `GALAXY_MAP` unconditionally -
-  confirm `StateManager.pop_state()` already restores the prior state; if it does not, that
-  is this sprint's fix, not a new mechanism).
+  - Stores `outcome.tier_unlocks` into
+    `player.dilemma_state.tier_unlocks_granted[chosen_lens_id]` as a list. This sprint is
+    a queryable record of what got unlocked; it does not fire arbitrary game-system side
+    effects. Later sprints (A2-12 through A2-19) read this record when they author the
+    "deepened" content each unlock represents.
+- Investment-raising for a lens in `player.dilemma_state.closed_lenses` is rejected as a
+  silent no-op with `logger.warning()` (never raises — a stray call from a mission or event
+  handler must not crash the game). See "Decisions locked" below for guard placement.
+- Coordinator behavior from A2-8 already skips resolved dilemmas (`check_dilemmas` line
+  297: `if dilemma_id in runtime.resolved: continue`). This sprint verifies that behavior
+  with a regression test but changes no coordinator code.
+- Engine callback `Game._on_dilemma_resolve` (game.py:4542) becomes a thin delegate: builds
+  the `Dilemma` reference and calls `resolve(dilemma, chosen_lens_id, self.player)`. The
+  minimum-flag writes it does today move into `resolve()`.
+- `pop_state()` already restores the prior state (state_manager.py:81) — no code change
+  needed. This sprint proves it with a view-layer test rather than fixing anything.
 
 **Acceptance criteria.**
 1. `resolve()` on a two-pole dilemma sets exactly one `dialogue_flags` entry for the winning
-   outcome's `outcome_flag`, closes the losing lens, and this is verified against a synthetic
-   fixture in `tests/test_models/test_dilemma.py`.
-2. Calling `resolve()` twice on the same dilemma (simulating a bug elsewhere calling it
-   redundantly) does not toggle `closed_lenses` membership, does not duplicate
-   `tier_unlocks_granted` entries, and does not raise.
-3. `tests/test_scenarios/test_scenario_dilemma_permanent_closure.py`: resolve a synthetic
-   dilemma, save to a slot, load from that slot, confirm `player.dilemma_state.closed_lenses`
-   and `dialogue_flags[flags.lens_closed(...)]` both survive the round-trip.
-4. Same scenario, then attempt to raise investment on the closed lens post-load; confirm the
-   investment value in `player.lens_investment` does not increase. This satisfies design-spec
-   Success Criterion 6 ("reloading a later save cannot reopen a closed path").
-5. `DilemmaResolutionView` pushed mid-`TRADING` (or any non-`GALAXY_MAP` state), resolved,
-   returns control to `TRADING`, not to a hardcoded default - verified by a view-layer test
-   using the existing `tests/test_scenarios/_view_harness.py` pattern.
-6. Full suite green; no regression from baseline.
+   outcome's `outcome_flag`, adds the losing lens to `player.dilemma_state.closed_lenses`,
+   sets `dialogue_flags[flags.lens_closed(losing_lens)] = True`, and records the tier
+   unlocks under `tier_unlocks_granted[chosen_lens]`. Verified against a synthetic fixture
+   in `tests/test_models/test_dilemma.py`.
+2. `resolve()` on a three-pole triangle dilemma where the chosen outcome closes the two
+   non-winning lenses populates `closed_lenses` with both losing lens ids and sets a
+   `lens_closed(...)` flag for each. Verified against a synthetic triangle fixture.
+3. Calling `resolve()` twice on the same dilemma is a no-op: `closed_lenses` membership
+   unchanged, `tier_unlocks_granted[chosen_lens]` unchanged (not appended or duplicated),
+   `dialogue_flags` entries unchanged, does not raise, and emits a `logger.warning()`
+   containing both the dilemma id and the passed lens id.
+4. Attempting to raise investment on a closed lens (either via
+   `player.record_action(action_tag, amount)` or the direct model-layer path — whichever
+   the locked-decision guard covers) does not increase `player.lens_investment.get_investment(lens_id)`
+   and emits a `logger.warning()`. Verified with an explicit test that reads the counter
+   before and after.
+5. `tests/test_scenarios/test_scenario_dilemma_permanent_closure.py`: resolve a synthetic
+   dilemma, save to a slot, load from that slot, confirm
+   `player.dilemma_state.closed_lenses`, `player.dilemma_state.tier_unlocks_granted`,
+   `player.dialogue_flags[flags.lens_closed(...)]`, and
+   `player.dialogue_flags[flags.dilemma_resolved(...)]` all survive the round-trip.
+6. Same scenario, then post-load: (a) attempt to raise investment on the closed lens — the
+   investment value does not increase; (b) the coordinator's re-run does not re-fire the
+   resolved dilemma. Together these satisfy design-spec Success Criterion 6 ("reloading a
+   later save cannot reopen a closed path").
+7. `DilemmaResolutionView` pushed mid-`TRADING` (or any non-`GALAXY_MAP` state) then
+   dismissed returns control to `TRADING`, not to a hardcoded default. Verified with a
+   view-layer test that constructs a two-state `StateManager`, pushes the resolution view
+   on top of a mock `TRADING` state, dispatches the button-press event, and asserts
+   `state_manager.current_state == GameState.TRADING` after `_handle_dilemma_resolution`
+   runs.
+8. Legacy save without a `tier_unlocks_granted` key in `dilemma_state` loads cleanly with
+   an empty dict, no warning, no crash. Verified in `tests/test_models/test_dilemma.py`.
+9. Full suite green; pass count ≥ 11227 (pre-phase baseline).
+
+**Risks / open questions.**
+- ~~Where does the closed-lens investment guard live: `LensInvestment.add_investment`,
+  `Player.record_action`, or engine call sites?~~ **Locked: `Player.record_action` (the
+  facade at `spacegame/models/player.py:462`).** Rationale: `LensInvestment` is
+  intentionally decoupled from closure state (its docstring at
+  `spacegame/models/lens_investment.py:14-20` calls this out — it stores raw ints, does not
+  know about dilemma resolution). Adding a `closed_lenses` reference there would flip the
+  dependency. The `Player.record_action` facade is already the choke point every real caller
+  (missions, ground events, combat) uses, and it has access to both `self.lens_investment`
+  and `self.dilemma_state`. Filter the returned `record_action` list by
+  `dilemma_state.closed_lenses` before delegating to `LensInvestment.record_action`, warn
+  once per suppressed lens, and return only the actually-incremented lens ids so callers
+  reporting "you invested in X" don't lie.
+- ~~Should `resolve()` be a module-level function or a `Player` method?~~ **Locked:
+  module-level function in `spacegame/models/dilemma.py`.** Rationale: mirrors the existing
+  `check_dilemmas`, `check_collision`, `check_telegraph`, `build_investment_snapshot`
+  shape in the same module. `Player` is already the largest class in the codebase; adding
+  a dilemma method that fires flags across `dilemma_state`, `dialogue_flags`, and
+  `lens_investment` blurs ownership.
+- ~~Idempotency: raise on double-resolve or silent no-op?~~ **Locked: `logger.warning()` +
+  early return, never raise.** Rationale: this only fires when a bug elsewhere calls the
+  callback twice (a doubled UI event, a state-machine race). Crashing the game to punish
+  a caller bug is the wrong trade — the state is already correct after the first call, so
+  a warning gives visibility without a save-losing crash.
+- ~~Does the sprint need to touch `pop_state()`?~~ **Locked: no.**
+  `StateManager.pop_state` at `spacegame/engine/state_manager.py:81-95` already restores
+  the previous state from the stack. AC7 is a proof test, not a fix.
+- ~~Should this sprint author journal entries for resolutions or add tutorial-overlay
+  first-time content?~~ **Locked: no — foundational plumbing only.** Rationale: the sprint
+  has zero authored narrative content by design (no real dilemma data ships until
+  A2-12 through A2-19). Journal entries and first-time-tip overlays live with the per-
+  dilemma content sprints so the copy travels with the fiction it belongs to. The
+  `tier_unlocks_granted` record is the hook A2-12+ will read.
+
+**Plan.**
+
+Task order for the implementer. Each task lists file(s), test surface, and gotchas.
+
+1. **Extend `DilemmaRuntimeState` with `tier_unlocks_granted`.**
+   - Files: `spacegame/models/dilemma.py` (add field, extend `to_dict()` / `from_dict()`).
+   - Test surface: `tests/test_models/test_dilemma.py` — add a round-trip test that
+     confirms an empty dict serialises to `[]`/`{}` and a populated dict round-trips
+     verbatim. Add a legacy-load test that passes a dict missing the key and asserts
+     empty default (AC8).
+   - Gotcha: match the existing serialisation style — `dilemma_state.to_dict()` currently
+     emits sets as sorted lists for byte stability. `tier_unlocks_granted` is a
+     `dict[str, list[str]]`; preserve list order but sort dict keys if you want the same
+     stable-save property. Follow the existing pattern in the file.
+
+2. **Author `resolve()` in `spacegame/models/dilemma.py`.**
+   - Files: `spacegame/models/dilemma.py`.
+   - Test surface: `tests/test_models/test_dilemma.py` — add a `TestResolve` class covering
+     AC1 (pair dilemma, one closes), AC2 (triangle, two close), AC3 (double-resolve
+     idempotency + warning log via `caplog`).
+   - Gotchas: import `flags` from `spacegame.constants` at module top, not inside the
+     function — the file already has zero circular-import issues. Guard idempotency FIRST
+     (before the outcome lookup) so a stale `chosen_lens_id` on the second call can't
+     KeyError. The warning message must include both the dilemma id and the chosen lens id
+     so a real bug is traceable.
+
+3. **Wire the closed-lens investment guard into `Player.record_action`.**
+   - Files: `spacegame/models/player.py` (the `record_action` method around line 462).
+   - Test surface: `tests/test_models/test_player.py` (or new) — one test that populates
+     `player.dilemma_state.closed_lenses` with a lens id and confirms
+     `player.record_action(action_tag, amount)` for an action that would raise that lens
+     does not change `player.lens_investment.get_investment(lens_id)` and emits a
+     `logger.warning()` (AC4).
+   - Gotchas: the current signature returns the list of raised lens ids. Filter that list
+     to only the ones that were NOT suppressed, then delegate — do not delegate the full
+     set and then subtract, because `LensInvestment.record_action` mutates. Simplest path:
+     iterate `lenses.items()` yourself for the check, or filter the registry passed in.
+     The `LensInvestment.record_action` docstring notes it takes the registry as a
+     parameter for testability — you can pass a filtered dict without breaking that.
+
+4. **Simplify `Game._on_dilemma_resolve` to delegate to `resolve()`.**
+   - Files: `spacegame/engine/game.py` (around line 4542).
+   - Test surface: no direct test — the delegation is exercised by AC5 (round-trip test)
+     and AC7 (view-layer pop-state test) once they land.
+   - Gotchas: the current body writes two flags and one dict entry inline; those all move
+     into `resolve()`. Import `resolve` at method scope (matches the file's local-import
+     pattern) or move the existing `from spacegame.models.dilemma import ...` at the top
+     of `_tick_dilemma_engine`. Do not double-write the flags — after this refactor,
+     `_on_dilemma_resolve` is roughly six lines.
+
+5. **Verify coordinator behavior on resolved dilemmas via regression test.**
+   - Files: none (existing behavior).
+   - Test surface: `tests/test_models/test_dilemma.py` — a `check_dilemmas` test that
+     seeds `runtime.resolved[dilemma.id] = "wealth"`, then re-runs the coordinator with
+     investment above collision threshold, and asserts the dilemma id does not appear in
+     any of the result lists. This is AC6(b) coverage plus a regression fence for A2-8's
+     coordinator skip.
+
+6. **Write the save/load round-trip scenario (AC5, AC6).**
+   - Files: `tests/test_scenarios/test_scenario_dilemma_permanent_closure.py` (NEW).
+   - Test surface: two test methods. First: build a synthetic dilemma fixture, call
+     `resolve()`, `round_trip_save(player)` (helper at
+     `tests/test_scenarios/_helpers.py`), assert all four fields survive
+     (`closed_lenses`, `tier_unlocks_granted`, both flag entries). Second: same setup,
+     round-trip, then call `player.record_action(...)` for the closed lens and confirm
+     no change; also re-run `check_dilemmas` and confirm the resolved dilemma is not
+     re-fired.
+   - Gotchas: use synthetic ids (`"d_test_closure"`, `"wealth"`, `"community"`) so the
+     test does not depend on any real dilemma data landing. The `_helpers.fresh_player`
+     factory is the standard entry point — do not construct `Player` manually.
+
+7. **Write the view-layer pop-state test (AC7).**
+   - Files: `tests/test_scenarios/test_scenario_dilemma_view_pop.py` (NEW) or extend
+     `tests/test_ui/` if a matching file already exists — implementer confirms placement
+     during read.
+   - Test surface: build a `StateManager` with two states — a `MockView` bound to
+     `GameState.TRADING` and a real `DilemmaResolutionView` bound to
+     `GameState.DILEMMA_RESOLUTION`. Push `DILEMMA_RESOLUTION`, dispatch a
+     `pygame_gui.UI_BUTTON_PRESSED` event targeting one of the pole buttons, run the
+     `_handle_dilemma_resolution` polling handler once, and assert
+     `state_manager.current_state == GameState.TRADING`.
+   - Gotchas: use the `_view_harness.py` `ensure_pygame()` + `fresh_ui_manager()`
+     helpers; do not spin up pygame yourself. The `MockView` needs to be a `BaseView`
+     subclass so `on_enter`/`on_exit` don't blow up when the state manager cycles into
+     and out of it.
+
+**Cross-sprint reactions to author.** None from this sprint — foundational plumbing, no
+player-facing narrative content ships here (no real dilemma data lives in
+`data/narrative/dilemmas/` yet). The reaction surface belongs to the sprints downstream
+that consume this plumbing:
+- A2-11 (Scars) reads `flags.lens_closed(lens_id)` for its generic refusing-NPC mechanism.
+- A2-12 through A2-19 (per-dilemma content) each author telegraph copy, outcome narration,
+  and the specific "deepened" content their `tier_unlocks` names — those sprints read
+  `player.dilemma_state.tier_unlocks_granted` to know what to open.
+- A2-20 (Capstones) reads `flags.lens_closed(lens_id)` to gate capstone eligibility so a
+  closed lens's capstone never surfaces.
+
+Do NOT invent reactions in this sprint's scope; the record and the flags are the API
+those sprints consume.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-31 18:08 — harness: plan phase starting
+- 2026-08-31 — planning complete; sprint has all A2-8 plumbing in place, added
+  `tier_unlocks_granted` field spec, expanded acceptance from 6 criteria to 9 (added
+  triangle-dilemma coverage, warning-log verification for idempotency, legacy-load
+  default, coordinator-skip regression), locked 5 open decisions (closed-lens guard
+  location, `resolve()` shape, idempotency behaviour, no `pop_state()` fix needed,
+  no journal/tutorial content this sprint), filled in 7-task Plan section. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-31 18:08
+- Completed: 2026-08-31 18:40
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: idempotency warning log, legacy-save default for new field, closed-lens investment guard as silent no-op (all folded via expanded ACs and locked decisions rather than new deliverables — no scope creep)
+- Decisions_locked: 5
+- Notes: Verified all 5 Context-to-read paths exist. Sprint is foundational plumbing on top of A2-8's complete substrate; `DilemmaRuntimeState.closed_lenses`, all `flags.*` helpers, save/load wiring, and `pop_state()` semantics already exist. Only new schema is one dict field on `DilemmaRuntimeState`. Reactions belong to A2-11 through A2-20 (called out explicitly, not authored here).
 ---
 
 #### A2-11 — Scars
