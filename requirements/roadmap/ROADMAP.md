@@ -131,7 +131,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
-| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | todo | A2-4 |
+| [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
@@ -12852,9 +12852,22 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
+
+**Current state (post-revert, 2026-08-31).** The revert (b65f1db) discarded 4 of
+6 A2-8 commits but LEFT the first two intact: 892b2fc (model + coordinator +
+predicates) and af5707e (loader + flag helpers). Concretely still present on
+master and passing 39 tests: `spacegame/models/dilemma.py` (full Dilemma,
+DilemmaOutcome, DilemmaRuntimeState, DilemmaCheckResult, check_collision,
+check_telegraph, check_dilemmas), `spacegame/data_loader.py::load_dilemmas`,
+`spacegame/constants/flags.py` (dilemma_telegraphed/dilemma_resolved/
+lens_closed helpers and inverse extractors), `data/narrative/dilemmas/.gitkeep`,
+and 39 tests in `tests/test_models/test_dilemma.py`. Tasks 1-4 below are marked
+"verify only — code already committed"; tasks 5-8 remain to be executed and
+gained two explicit failure-mode line items (see Tasks 5.1 and 7.1) from the
+revert autopsy.
 
 **Goal.** Build the dilemma engine: the data model, the collision-detection logic that fires
 only when the required poles cross threshold simultaneously, the guaranteed-delivery
@@ -12914,9 +12927,28 @@ add real lenses.
   6040, 6054; new state-registration for `GameState.DILEMMA_RESOLUTION`)
 - `spacegame/config.py` (`GameState.DILEMMA_RESOLUTION`)
 - `spacegame/views/dilemma_resolution_view.py` (NEW)
-- `tests/test_models/test_dilemma.py` (NEW)
+- `tests/test_models/test_dilemma.py` (already exists from 892b2fc; extend if
+  Task 6 or 7 adds coverage that fits the model file better than the scenario
+  file)
 - `tests/test_scenarios/test_scenario_dilemma_thresholds.py` (NEW)
 - `tests/test_scenarios/test_scenario_save_load.py` (extend with `TestSaveLoadDilemmaState`)
+- `tests/test_ui_layout/test_dilemma_resolution_view.py` (NEW; smoke test for
+  the view — headless button count, 2-pole vs 3-pole, callback receives the
+  right lens id)
+- `tests/test_crawler/test_coverage.py` (update `test_all_41_states_are_present_after_init`
+  and `test_coverage_report_lists_all_41_states` from 41 to 42 — the reverted
+  implementer missed this and the harness died mid-review before catching it;
+  CLAUDE.md's Cross-Cutting Concerns table explicitly names this ripple)
+- `tests/test_engine/test_ground_loot_bonus.py` (add `state_manager` to the
+  mocked `Game` in `_make_game_with_loot_bonus` so the migrated
+  `_after_player_action` call at line 4634/4637 doesn't AttributeError when
+  `_apply_ground_result` reaches the crew-reaction step — this was 6 of the
+  11 failures that forced the revert)
+- `tests/test_engine/test_mission_notifications.py` (audit its three mocked
+  `Game()` constructions at lines 48/239/305; add `state_manager` if any code
+  path reaches a migrated call site — currently they exercise
+  `_trigger_availability` which does not call the migrated sites, so this may
+  be verify-only, but it must be checked, not assumed)
 
 **Deliverables.**
 - `spacegame/models/dilemma.py`:
@@ -12950,6 +12982,12 @@ add real lenses.
     the compliance test (which bans `lens_investment` tokens under `spacegame/engine/`)
     stays green. Classifies each loaded dilemma into one of the three lists based on prior
     `player.dilemma_state.telegraphed`/`resolved` sets and current investment.
+  - `build_investment_snapshot(dilemma, player) -> dict[str, int]` module-level helper - the
+    engine calls this and hands the returned `dict[str, int]` to
+    `DilemmaResolutionView.__init__`. Keeps the view file free of the `lens_investment` /
+    `LensInvestment` tokens the compliance scan forbids under `spacegame/views/`.
+    (This helper was in the reverted commit 9dc85ef but never landed on master and is not
+    yet present in the surviving `spacegame/models/dilemma.py`.)
 - `DataLoader.load_dilemmas()` globs `data/narrative/dilemmas/*.json`, each file shaped
   `{"dilemmas": [...]}` with exactly one entry; populates `DataLoader.dilemmas`; empty
   directory is not an error (returns `{}`). Directly mirrors `load_lenses()` including the
@@ -13023,9 +13061,31 @@ add real lenses.
    contains the tokens `LensInvestment`, `lens_investment`, or
    `from spacegame.models.lens_investment`. Enforces the "engine never reads investment
    directly, always via the model-layer coordinator" rule.
-10. Full suite green; pass count `>=` baseline 11147 (pre-phase item L; baseline advanced
-    from 11063 to 11147 as A2-4A/B, A2-5, A2-6, A2-7 landed). 20+ new tests across the new
-    test files.
+10. **State-count ripple.** `tests/test_crawler/test_coverage.py::test_all_41_states_are_present_after_init`
+    and `test_coverage_report_lists_all_41_states` are updated to reflect that
+    `GameState` now contains 42 members (the addition of `DILEMMA_RESOLUTION`).
+    The assertions should read the true count from `len(GameState)` rather than
+    the hard-coded literal, so a future GameState addition doesn't repeat this
+    two-place-edit trap. Renaming the test methods (`_all_42_states_...`) is
+    also required so the name matches the assertion. This ripple is called out
+    explicitly in CLAUDE.md's Cross-Cutting Concerns table and its omission was
+    one of the 11 failures that forced the last revert.
+11. **Mock-Game state_manager guard.** Every test that constructs a `Game`
+    instance via `patch.object(Game, "__init__", lambda self: None)` and then
+    exercises a code path that reaches a migrated `_after_player_action` call
+    site must have `game.state_manager` populated (e.g. `MagicMock(current_state=None)`).
+    Specifically: `tests/test_engine/test_ground_loot_bonus.py::_make_game_with_loot_bonus`
+    must set `game.state_manager` before returning. This was the AttributeError
+    at `game.py:4448` (six of eleven revert failures). The wrapper itself must
+    NOT be softened with a `getattr(self, "state_manager", None)` guard — a real
+    `Game` always has `state_manager`, and the test fixtures being wrong is not
+    a reason to weaken production code.
+12. Full suite green; pass count `>=` baseline 11186 (pre-phase item L; baseline
+    advanced from 11147 to 11186 after the revert). 20+ new tests across the
+    new test files. All three A2-8 scenario tests that failed in the reverted
+    implementation must pass in the re-implementation (the failing three were
+    named in the revert commit b65f1db); this is a behavioural regression bar
+    the reviewer must confirm, not just a pass-count bar.
 
 **Risks / open questions.**
 
@@ -13084,44 +13144,29 @@ No unresolved open questions remain. If implementation surfaces one, block; do n
 
 **Plan.**
 
-1. **Model foundations.** Create `spacegame/models/dilemma.py` with `DilemmaOutcome`,
-   `Dilemma`, `DilemmaRuntimeState`, `DilemmaCheckResult` dataclasses, `to_dict()`/
-   `from_dict()` on each of the three that persist, and pure module-level predicates
-   `check_collision(dilemma, investment)` and `check_telegraph(dilemma, investment)`. TDD in
-   `tests/test_models/test_dilemma.py`: predicate truth tables for 2-pole and 3-pole
-   fixtures, `collision_requires=2` on a 3-pole covering the "exactly two above" case,
-   telegraph-strictly-before-collision, `to_dict`/`from_dict` round-trip preservation of
-   `telegraph_cursor` values. Gotcha: predicates count poles individually above threshold,
-   not the sum - a 2-pole 90/10 must not collide. Files: `models/dilemma.py`,
-   `tests/test_models/test_dilemma.py`.
-2. **Model coordinator.** Add `check_dilemmas(player, dilemmas) -> DilemmaCheckResult`
-   module-level function in `dilemma.py` that reads `player.lens_investment` and
-   `player.dilemma_state` and classifies each loaded dilemma into `newly_telegraphed`,
-   `re_telegraphed`, `newly_collided`. Resolved dilemmas are skipped entirely. TDD:
-   synthetic player + registry; verify newly-telegraphed appears exactly once (moves to
-   re-telegraph on subsequent call after `telegraphed.add`); collision only for
-   never-resolved dilemmas; suppression in the caller is orthogonal (function is pure).
-   Gotcha: the same call cycle may put a dilemma in BOTH newly_telegraphed AND
-   newly_collided when the player's first qualifying action jumps investment past both
-   thresholds at once; the engine must fire the telegraph append then the modal push, in
-   that order, so the notification is visible in the queue when the modal opens. Files:
-   `models/dilemma.py`, `tests/test_models/test_dilemma.py`.
-3. **Data loader.** Add `DataLoader.dilemmas: dict[str, Dilemma] = {}` init, `load_dilemmas()`
-   method mirroring `load_lenses()` at line 738 (glob, duplicate-id `ValueError`, empty
-   directory returns `{}`). Wire into `load_all()`. Create empty `data/narrative/dilemmas/`
-   directory with a `.gitkeep` sentinel. TDD in `tests/test_data/test_data_loader.py` (or
-   colocated with existing lens-loader tests): empty directory OK, valid file loads,
-   duplicate-id file raises, malformed JSON raises with file name in message. Gotcha:
-   `load_dilemmas()` must not be called at module import time - it runs from `load_all()`,
-   and the data directory ships empty so production calls return `{}` in this sprint.
-   Files: `spacegame/data_loader.py`, `data/narrative/dilemmas/.gitkeep`.
-4. **Flags registry.** Add `dilemma_telegraphed(id)`, `dilemma_resolved(id)`,
-   `lens_closed(lens_id)` parameterized helpers to `spacegame/constants/flags.py` under a
-   new `# --- Dilemmas ---` section, each with a `_PREFIX` module constant and an
-   `extract_*` inverse (per SI-3 cookbook). TDD alongside the existing flag helper tests:
-   round-trip `id -> flag -> id` for each helper. Gotcha: call the helper inline at the
-   `dialogue_flags[...]` site (cookbook's rule) so the flag-integrity scanner traces the
-   producer/consumer.
+1. **Model foundations. [DONE in 892b2fc]** Verify: `spacegame/models/dilemma.py` exists
+   with all four dataclasses and both predicates, and `tests/test_models/test_dilemma.py`
+   is green (39 passing tests as of pre-phase). No implementation action needed unless
+   the verification catches drift.
+2. **Model coordinator. [DONE in 892b2fc]** Verify: `check_dilemmas(player, dilemmas)`
+   is present in `spacegame/models/dilemma.py`, reads `player.lens_investment` and
+   `player.dilemma_state`, classifies dilemmas per the spec. No action needed.
+   **NEW sub-task 2.1 — `build_investment_snapshot(dilemma, player) -> dict[str, int]`.**
+   Add this module-level helper to `spacegame/models/dilemma.py`. Body: iterate
+   `dilemma.poles`, call `player.lens_investment.get(pole)` (or equivalent read), return
+   `{pole_id: current_investment}`. TDD in `tests/test_models/test_dilemma.py`: synthetic
+   player at 60/40 on a 2-pole dilemma returns `{"lens_a": 60, "lens_b": 40}`; unknown pole
+   returns 0; 3-pole D3 returns three keys. This helper was in the reverted commit but
+   never landed and is required by Task 6 (view constructor) and Task 7 (engine snapshot
+   assembly) to keep the compliance-scan green.
+3. **Data loader. [DONE in af5707e]** Verify: `DataLoader.dilemmas: dict[str, Dilemma]`
+   is initialized, `load_dilemmas()` mirrors `load_lenses()`, wired into `load_all()`,
+   and `data/narrative/dilemmas/.gitkeep` is present. Tests cover empty dir, valid file,
+   duplicate-id `ValueError`. No action needed.
+4. **Flags registry. [DONE in af5707e]** Verify: `dilemma_telegraphed(id)`,
+   `dilemma_resolved(id)`, `lens_closed(lens_id)` helpers exist with paired `extract_*`
+   inverses under `# Dilemmas (A2-8)` section of `spacegame/constants/flags.py`.
+   Round-trip tests present. No action needed.
 5. **Player wiring + save round-trip.** Add
    `dilemma_state: DilemmaRuntimeState = field(default_factory=DilemmaRuntimeState)` to
    `Player` (import from `models/dilemma.py`). Splice `"dilemma_state":
@@ -13150,22 +13195,50 @@ No unresolved open questions remain. If implementation surfaces one, block; do n
    receives the selected `lens_id`. Gotcha: pass `current_investment` in as a
    `dict[str, int]` snapshot rather than the `LensInvestment` object so the view file
    contains no forbidden token.
+   **NEW sub-task 6.1 — State-count ripple (AC10).** In the same commit that adds
+   `GameState.DILEMMA_RESOLUTION` to `spacegame/config.py`, update
+   `tests/test_crawler/test_coverage.py`: change the hard-coded `41` in
+   `test_all_41_states_are_present_after_init` (line 23) to `len(GameState)`, rename the
+   method to `test_all_states_are_present_after_init` so the name doesn't drift on the
+   next addition, and do the same for `test_coverage_report_lists_all_41_states` at line
+   26 (it already iterates `GameState`; rename only). Verify with `pytest
+   tests/test_crawler/test_coverage.py -q` before committing. CLAUDE.md's Cross-Cutting
+   Concerns table names this as the standard ripple; forgetting it was one of the 11
+   failures that forced the previous revert. The HUD `_STATE_CONTEXT` map in
+   `spacegame/views/cockpit_hud.py` does NOT need updating — DILEMMA_RESOLUTION is a
+   modal-overlay state that runs above another state, and the HUD is intentionally
+   hidden outside its declared context set.
 7. **Engine wiring.** Add `_after_player_action(action_type: str)` to `Game`. Body: no-op
    if `self.state_manager.current_state == GameState.DILEMMA_RESOLUTION`; else call
    `_trigger_crew_reaction(action_type)`; call `check_dilemmas(self.player,
    dl.dilemmas)`; iterate newly_telegraphed then re_telegraphed appending to
    `_mission_notifications` using the round-robin cursor + npc name lookup; for the first
-   `newly_collided` id (if any), build the investment snapshot dict, call
+   `newly_collided` id (if any), build the investment snapshot dict via
+   `build_investment_snapshot(dilemma, self.player)` (Task 2.1), call
    `_ensure_dilemma_resolution_view(dilemma, snapshot)`, and `push_state`. Register a new
    lazy factory `_ensure_dilemma_resolution_view` following the ground-briefing factory
    shape. Migrate all eight existing `_trigger_crew_reaction(x)` call sites (lines 4206,
-   4330, 4340, 4634, 4637, 5811, 6040, 6054) to `_after_player_action(x)`. Add a pop-and-write handler triggered when the view's
-   `dismissed` flag is observed in the engine's frame update: writes `resolved`,
-   `dilogue_flags`, and pops the state. Gotcha: the view's `on_resolve` callback captures
-   the resolution write but the state-pop belongs to the engine's frame loop (matches the
-   `EventNotificationView` `is_dismissed()` polling pattern) - do NOT pop from inside the
-   callback because pygame_gui teardown mid-event-handler destabilizes. Files:
-   `spacegame/engine/game.py`, `spacegame/config.py`.
+   4330, 4340, 4634, 4637, 5811, 6040, 6054) to `_after_player_action(x)`. Add a
+   pop-and-write handler triggered when the view's `dismissed` flag is observed in the
+   engine's frame update: writes `resolved`, `dialogue_flags`, and pops the state.
+   Gotcha: the view's `on_resolve` callback captures the resolution write but the
+   state-pop belongs to the engine's frame loop (matches the `EventNotificationView`
+   `is_dismissed()` polling pattern) — do NOT pop from inside the callback because
+   pygame_gui teardown mid-event-handler destabilizes. Files: `spacegame/engine/game.py`,
+   `spacegame/config.py`.
+   **NEW sub-task 7.1 — Mock-Game state_manager (AC11).** Before commit, run:
+   `pytest tests/test_engine/test_ground_loot_bonus.py tests/test_engine/test_mission_notifications.py -q`.
+   If either module fails with `AttributeError: 'Game' object has no attribute
+   'state_manager'` (or similar downstream errors from a missing state_manager), fix by
+   adding `game.state_manager = MagicMock()` (or a real `StateManager()` if the test
+   asserts on it) to the fixture that constructs the mocked Game — `_make_game_with_loot_bonus`
+   in test_ground_loot_bonus.py is the known offender; test_mission_notifications.py has
+   three mocked constructions at lines 48/239/305 that must be audited even if they
+   currently pass. The fix belongs to the test fixture, NOT to `_after_player_action`
+   — do NOT weaken production code with a `getattr` guard. This was 6 of the 11 failures
+   in the previous revert. Grep `patch.object\(Game, "__init__"` across the whole
+   `tests/` tree to be sure no other fixture was added since the last revert; there were
+   only 2 known instances but the check is cheap and the failure mode is loud.
 8. **Scenario coverage.** New `tests/test_scenarios/test_scenario_dilemma_thresholds.py`:
    full engine-level scenarios covering AC4, AC5, AC6, AC8. Uses `_helpers.fresh_player`
    and constructs a minimal `Game` with hand-built dilemmas injected into
@@ -13200,6 +13273,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 00:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 05:44 — harness: plan phase starting
 - 2026-08-31 06:56 — session: reset to todo after reverting the implementation. The implement phase committed 1055 lines and the harness died two minutes into review, so the work reached master having passed neither review nor the gate. It was red: 11 failures, including three of A2-8 own scenario tests, a GameState ripple into the crawler state-count test, and six ground-loot tests hitting AttributeError 'Game' object has no attribute 'state_manager' at game.py:4448. Reverted rather than repaired because an implementation that fails its own tests is unfinished. The original commits survive the revert -- cherry-pick a8d7d47 f321b82 9dc85ef 9e8d8d3 to build on them instead of starting over.
+- 2026-08-31 07:42 — harness: plan phase starting
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13226,27 +13300,51 @@ crew-banter reactivity - not this one.
   baseline is 11147 (A2-4A/B, A2-5, A2-6, A2-7 landed since original planning) — updated.
   No scope change, no new decisions to lock, no new sprints proposed. Plan otherwise
   remains sound as authored; ready for implementation. PHASE_OK
+- 2026-08-31 (post-revert re-plan) — harness: plan phase re-entered after revert b65f1db
+  discarded the reviewer-less implementation. Verified the revert's partial nature: 4 of
+  6 A2-8 commits were reverted (a8d7d47, f321b82, 9dc85ef, 9e8d8d3) but the first two
+  (892b2fc model+coordinator+predicates, af5707e loader+flags) survived on master, along
+  with `data/narrative/dilemmas/.gitkeep` and 39 passing tests in
+  `tests/test_models/test_dilemma.py`. Added a "Current state (post-revert)" note at the
+  top of the sprint. Marked Tasks 1-4 as "DONE" with verify-only guidance; expanded Tasks
+  5-8 with two new sub-tasks that name the specific failure modes from the revert
+  autopsy: Task 2.1 (add `build_investment_snapshot` helper — needed by view + engine,
+  never landed on master), Task 6.1 (state-count ripple: update `test_all_41_states_...`
+  to 42 or better `len(GameState)`; CLAUDE.md names this ripple explicitly), Task 7.1
+  (mock-Game state_manager: fix `_make_game_with_loot_bonus` in
+  `tests/test_engine/test_ground_loot_bonus.py`, audit `test_mission_notifications.py`
+  — the wrapper must NOT be softened with a `getattr` guard). Added AC10, AC11, AC12
+  formalizing these three requirements. Extended Touch zones to name
+  `tests/test_crawler/test_coverage.py`, `tests/test_engine/test_ground_loot_bonus.py`,
+  `tests/test_engine/test_mission_notifications.py`, and `tests/test_ui_layout/test_dilemma_resolution_view.py`.
+  Bumped AC12 baseline from 11147 to 11186 per pre-phase item L (baseline advanced after
+  the revert). No new decisions to lock (8 previously locked, all still valid). No new
+  sprints proposed. Plan is ready for implementation — implementer should cherry-pick
+  a8d7d47, f321b82, 9dc85ef, 9e8d8d3 as a starting point but must then add the three
+  sub-task fixes before the full suite goes green. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 05:44
-- Completed: 2026-08-31 (re-verification pass)
+- Started: 2026-08-31 07:42
+- Completed: 2026-08-31 (post-revert re-plan)
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: ae2c98f
+- Commits: (this phase's commit hash — see below)
 - New_sprints_proposed: none
-- Polish_items_folded_in: none (prior planning already folded in round-robin-telegraph-redelivery
-  and compliance-guard-green-assertion; this pass added nothing further)
+- Polish_items_folded_in: none new this pass (prior planning already folded in
+  round-robin telegraph re-delivery and compliance-guard-green assertion)
 - Decisions_locked: 0 (8 previously locked; none re-opened)
-- Notes: Sprint had a complete Plan section from prior planning but was reset to todo by
-  stuck-sprint recovery. Confirmed no implementation exists (checked model, view, data dir,
-  and test files — all absent). Re-verified all 15 context docs (11 declared + 4 supplementary)
-  still exist. Corrected two factual drifts: (a) `_trigger_crew_reaction` call-site count from
-  "seven" to "eight" with explicit line numbers (4206, 4330, 4340, 4634, 4637, 5811, 6040,
-  6054); (b) AC10 pass-count baseline from 11063 to 11147. Plan otherwise remains sound as
-  authored; the 8-task breakdown, the model-layer coordinator to satisfy compliance test
-  `test_lens_investment_never_rendered.py`, and the cross-sprint reaction handoff to A2-9/A2-10/
-  A2-11/A2-12-19 are all still correct.
+- Notes: The prior plan was substantively correct — the revert happened because the
+  implementer skipped two ripples the plan didn't spell out. This re-plan bakes those
+  ripples into the plan: (1) new Task 2.1 adds the missing `build_investment_snapshot`
+  helper that must land in `models/dilemma.py` (was in reverted commit 9dc85ef, never
+  reached master); (2) new Task 6.1 + AC10 forces the `test_all_41_states_...` update
+  in the same commit that adds `GameState.DILEMMA_RESOLUTION`, and prefers
+  `len(GameState)` over a hardcoded literal to prevent future rediscovery; (3) new Task
+  7.1 + AC11 forces a test-fixture audit for any mocked `Game` whose code path reaches
+  a migrated `_after_player_action` call site, with an explicit prohibition on softening
+  the wrapper. Also recognized the surviving A2-8 code (tasks 1-4) as DONE, saving the
+  implementer from re-doing 39 already-green tests. All 15 context docs still exist.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
