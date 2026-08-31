@@ -11488,7 +11488,7 @@ globs the directory. This does not change any dependency edge given in the decom
 
 #### A2-5 — Lens definitions 1-8
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -11767,17 +11767,26 @@ sprints.
 - 2026-08-30 21:28 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-08-30 21:33 — harness: plan phase starting
 - 2026-08-30 21:35 — planner: sprint is already fully implemented (commit 8f63460 in git log) AND reviewed (2026-08-29 14:30 PHASE_OK from the prior review, all 9 acceptance criteria verified). Downstream sprint A2-6 (commit 58da3d9) has already landed sixteen-lens content on top of A2-5, further confirming completion. Verified live: `get_data_loader().lenses` returns all 16 lens ids; running `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_models/test_lens.py -q` yields 79 passed / 1 skipped (the always-skipping empty-registry guard noted in the prior review's single_tighten). No re-planning work exists; the plan section is already filled, decisions locked, activity log rich. The reset-to-todo at 21:28 was a false-positive stuck-sprint recovery — the review phase completed 2026-08-29 14:30 but the dispatcher's state must have never advanced past 'in-progress (reviewing)' and its 24h+ stale-state timer fired on 2026-08-30 21:28. Re-implementing would revert or duplicate committed work; re-planning has nothing to add. PHASE_BLOCKED: sprint already completed at 8f63460 and reviewed PHASE_OK — dispatcher should mark A2-5 done, not re-run the phase pipeline. A2-6 building on top is proof the work landed cleanly.
+- 2026-08-30 21:37 — harness: implement phase starting (rework cycle 0)
+- 2026-08-30 21:55 — implementation agent: another false-positive stuck-sprint recovery. Sprint A2-5 was fully implemented at commit 8f63460 and reviewed PHASE_OK 2026-08-29 14:30. Verified live: 16 lenses loaded, targeted compliance suite 56 passed / 1 expected skip (test_lens_content_uniqueness, test_lens_registry, test_lens_authoring_guide, test_prose_anti_patterns), lint clean, format clean. Full parallel suite shows 11062/100 with 1 flaky xdist failure (test_no_new_consumer_only_flags passes in isolation — pre-existing session-0 contention documented in project memory, not caused by A2-5). No code changes made. PHASE_OK
+
 **Last phase report.**
-- Phase: plan
-- Outcome: PHASE_BLOCKED
-- Started: 2026-08-30 21:33
-- Completed: 2026-08-30 21:35
-- Files_changed: requirements/roadmap/ROADMAP.md (activity-log entry + this phase report only)
-- Commits: 1ad04d6
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint is already implemented and reviewed; no scope to expand)
-- Decisions_locked: 0 (all 6 were locked in the 2026-08-29 00:52 plan phase; no new decisions surfaced)
-- Notes: False-positive stuck-sprint recovery. Sprint A2-5 shipped 2026-08-29 at commit 8f63460, review PHASE_OK 2026-08-29 14:30, and downstream A2-6 (commit 58da3d9) has already built on it. Live verification: 16 lenses loaded, 79/1 pass/skip on the A2-5 acceptance test surface. Blocking further phase work — dispatcher should mark this sprint done rather than re-planning or re-implementing already-committed work. Root cause of the reset appears to be the dispatcher's own state never advancing past 'in-progress (reviewing)' after the 2026-08-29 14:30 review PHASE_OK sentinel.
+- Phase: implement
+- Outcome: PHASE_OK
+- Started: 2026-08-30 21:37
+- Completed: 2026-08-30 21:55
+- Files_changed: none (implementation already complete at commit 8f63460)
+- Commits: none (verification only)
+- Tests_added: 0
+- Tests_baseline: 11063
+- Tests_passing: 11062 (parallel) / 11063 (serial; 1 xdist-flaky test confirmed passing in isolation)
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no new flags introduced)
+- Writing_bible_clean: yes (test_prose_anti_patterns.py 13/13 pass)
+- Touch_zones_respected: yes
+- Notes: Third recovery of a false-positive stuck-sprint. Sprint shipped 2026-08-29 at 8f63460, reviewed PHASE_OK same day. All 9 acceptance criteria satisfied per prior review. The single suite failure (test_no_new_consumer_only_flags) is the pre-existing xdist session-0 contention documented in project memory — it passes when run in isolation and is not caused by A2-5 which touches no dialogue flags.
 ---
 
 #### A2-6 — Lens definitions 9-16
