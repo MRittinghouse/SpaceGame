@@ -13999,7 +13999,7 @@ those sprints consume.
 - Started: 2026-08-31 18:08
 - Completed: 2026-08-31 18:40
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: baebc81
 - New_sprints_proposed: none
 - Polish_items_folded_in: idempotency warning log, legacy-save default for new field, closed-lens investment guard as silent no-op (all folded via expanded ACs and locked decisions rather than new deliverables — no scope creep)
 - Decisions_locked: 5
