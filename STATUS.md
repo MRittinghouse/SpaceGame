@@ -1,23 +1,23 @@
 # Ralph Status
 
-_Updated: 2026-08-31 03:23:54_
+_Updated: 2026-08-31 03:24:10_
 
-## Harness Did Not Run
+## CRASH-LOOP
 
-Baseline capture FAILED: pytest exited 1; tail: armProjects\SpaceGame\spacegame\engine\game.py:269: Warning: no fast renderer available
-    self.screen = pygame.display.set_mode(
+Supervisor stopped after repeated failures.
+Reason: stopping: 3 consecutive failures
+Nothing will resume until a human intervenes.
 
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ===========================
-FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManifest::test_every_wired_tag_has_a_grep_hit_in_production_code
-1 failed, 11132 passed, 100 skipped, 42 warnings in 322.42s (0:05:22). Aborting run to avoid running agents with no baseline.
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **9 seconds ago**
-- Beat PID: 45604 -- alive
+- Last beat: **25 seconds ago**
+- Beat PID: 45604 -- **NOT RUNNING**
 
 ## Queue
 
@@ -29,8 +29,8 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 
 ## Push
 
-- last push: **OK** (15 minutes ago)
-- last successful push: 15 minutes ago
+- last push: **OK** (14 seconds ago)
+- last successful push: 14 seconds ago
 
 ## Blocks drift
 
@@ -41,3 +41,9 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- harness exit rc=3
+- harness exit rc=4
+- harness exit rc=3
