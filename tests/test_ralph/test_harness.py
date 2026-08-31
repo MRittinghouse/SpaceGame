@@ -3564,20 +3564,30 @@ class TestBaselineCaptureRetriesOnHang:
             with pytest.raises(harness.BaselineCaptureError):
                 harness._capture_test_baseline()
 
-    def test_a_red_suite_is_not_retried(self) -> None:
-        """A suite that ran and failed is evidence about the code, not the machine."""
+    def test_a_red_suite_does_not_repeat_the_whole_run(self) -> None:
+        """A red suite is evidence about the code, so the full run is not repeated.
+
+        Its failures ARE re-checked serially -- see
+        `TestBaselineRechecksFailuresSerially` -- but that runs only what failed.
+        Repeating the whole 5-minute suite would burn the time to reach the same
+        answer, which is what the hang retry above is deliberately reserved for.
+        """
         calls: list[int] = []
 
         def red(*_a: object, **_k: object) -> "subprocess.CompletedProcess[str]":
             calls.append(1)
             return subprocess.CompletedProcess(
-                args=["pytest"], returncode=1, stdout="1 failed, 11037 passed\n", stderr=""
+                args=["pytest"], returncode=1, stdout="1 failed, 11037 passed", stderr=""
             )
 
+        still_red = subprocess.CompletedProcess(
+            args=["pytest"], returncode=1, stdout="1 failed", stderr=""
+        )
         with patch.object(harness, "_run_pytest_with_serial_fallback", side_effect=red):
-            with pytest.raises(harness.BaselineCaptureError):
-                harness._capture_test_baseline()
-        assert len(calls) == 1, "a red suite must not be re-run by baseline capture"
+            with patch.object(harness, "run_with_hard_timeout", return_value=still_red):
+                with pytest.raises(harness.BaselineCaptureError):
+                    harness._capture_test_baseline()
+        assert len(calls) == 1, "the whole suite must not be re-run by baseline capture"
 
 
 # ---------------------------------------------------------------------------
@@ -3646,3 +3656,52 @@ class TestDirtyTreeFromDeadHarnessIsRecovered:
         with patch.object(harness, "_run_git", return_value=(0, "", "")) as git:
             assert harness._recover_dirty_tree_from_dead_harness(" M foo.py\n") is True
         git.assert_called_once()
+
+
+class TestBaselineRechecksFailuresSerially:
+    """A load-induced flake must not abort the whole run at startup.
+
+    Baseline capture treats any red suite as terminal (rc 3), on the reasoning
+    that a red tree is evidence about the code and agents must not build on it.
+    That reasoning holds only while a red result means the code is broken.
+
+    Measured 2026-08-31: the suite has at least four load-sensitive flakes, and
+    a full parallel run fails on one roughly 40% of the time -- a different test
+    each run, which is the signature of a load artifact rather than a
+    regression. At that rate the run cannot reliably start at all: baseline
+    aborted on `test_lens_investment_gap_manifest`, a test that passes
+    standalone and passed a full parallel suite minutes earlier.
+
+    So the same serial re-check the gate uses now guards the baseline. This does
+    not weaken the guarantee, it sharpens it: genuinely broken code still fails
+    serially, and only load artifacts are absorbed. A confirmed-flaky run's
+    baseline is `passed + failed`, because every test that ran either passed or
+    passed on the serial re-check.
+    """
+
+    def _result(self, returncode: int, stdout: str) -> "subprocess.CompletedProcess[str]":
+        return subprocess.CompletedProcess(
+            args=["pytest"], returncode=returncode, stdout=stdout, stderr=""
+        )
+
+    def test_a_flaky_red_baseline_is_accepted_after_a_clean_serial_recheck(self) -> None:
+        red = self._result(1, "1 failed, 11130 passed, 100 skipped")
+        with patch.object(harness, "_run_pytest_with_serial_fallback", return_value=red):
+            with patch.object(
+                harness, "run_with_hard_timeout", return_value=self._result(0, "1 passed")
+            ) as recheck:
+                assert harness._capture_test_baseline() == (11131, 100), (
+                    "baseline should be passed + failed once the failures are confirmed flaky"
+                )
+        argv = recheck.call_args[0][0]
+        assert "--last-failed" in argv, argv
+        assert argv[argv.index("-n") + 1] == "0", f"the re-check must be serial: {argv}"
+
+    def test_a_genuinely_red_baseline_still_aborts(self) -> None:
+        red = self._result(1, "3 failed, 11128 passed, 100 skipped")
+        with patch.object(harness, "_run_pytest_with_serial_fallback", return_value=red):
+            with patch.object(
+                harness, "run_with_hard_timeout", return_value=self._result(1, "3 failed")
+            ):
+                with pytest.raises(harness.BaselineCaptureError):
+                    harness._capture_test_baseline()

@@ -883,6 +883,9 @@ def _capture_test_baseline_once() -> tuple[int, int]:
         raise BaselineCaptureError(f"FileNotFoundError: {exc}") from exc
 
     if result.returncode != 0:
+        rechecked = _recheck_baseline_failures_serially(result)
+        if rechecked is not None:
+            return rechecked
         tail = (result.stderr or result.stdout)[-500:].strip()
         raise BaselineCaptureError(
             f"pytest exited {result.returncode}; tail: {tail or '(no output)'}"
@@ -892,6 +895,59 @@ def _capture_test_baseline_once() -> tuple[int, int]:
     if counts is None:
         raise BaselineCaptureError("unparseable output — no 'N passed' line in pytest output")
     return counts
+
+
+def _recheck_baseline_failures_serially(
+    result: "subprocess.CompletedProcess[str]",
+) -> Optional[tuple[int, int]]:
+    """Re-run a red baseline's failures serially. Counts if they were flakes, else None.
+
+    Baseline capture treats red as terminal (rc 3) because agents must not build
+    on a broken tree. That is right only while red means broken. Measured
+    2026-08-31: this suite has at least four load-sensitive flakes and a full
+    parallel run trips one roughly 40% of the time -- a *different* test each
+    run, which is the signature of a load artifact, not a regression. At that
+    rate the run cannot reliably start: baseline aborted on
+    `test_lens_investment_gap_manifest`, which passes standalone and had passed
+    a full parallel suite minutes earlier.
+
+    Re-running serially does not weaken the guarantee, it sharpens it. Genuinely
+    broken code fails serially too; only load artifacts are absorbed. Same
+    technique the gate uses, and the same one the review agent had already been
+    applying by hand ("confirmed pre-existing by serial rerun").
+
+    The baseline becomes `passed + failed`: every test that ran either passed in
+    the parallel run or passed on the serial re-check, so all of them are green.
+
+    Returns:
+        `(passing, skipped)` if every failure passed serially, else None.
+    """
+    combined = result.stdout + result.stderr
+    counts = _parse_pytest_counts(combined)
+    failed_match = re.search(r"(\d+) failed", combined)
+    if counts is None or failed_match is None:
+        return None
+
+    try:
+        recheck = run_with_hard_timeout(
+            _pytest_gate_cmd("--last-failed", workers="0"),
+            timeout_seconds=TEST_GATE_TIMEOUT_SECONDS,
+            cwd=str(PROJECT_ROOT),
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as exc:
+        log(f"Baseline flake re-check could not run ({exc}); treating the suite as red.")
+        return None
+
+    if recheck.returncode != 0:
+        return None
+
+    passed, skipped = counts
+    total_green = passed + int(failed_match.group(1))
+    log(
+        f"Baseline: {failed_match.group(1)} failure(s) did not reproduce serially; "
+        f"treating them as load flakes and taking the baseline as {total_green} passing."
+    )
+    return total_green, skipped
 
 
 _HARNESS_MANAGED_RUNTIME_BASE: tuple[str, ...] = (
