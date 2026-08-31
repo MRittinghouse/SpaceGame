@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | done | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
@@ -11533,7 +11533,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11734,6 +11734,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 04:13 — harness: plan phase starting
 - 2026-08-31 04:17 — harness: implement phase starting (rework cycle 0)
 - 2026-08-31 06:45 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
+- 2026-08-31 07:01 — harness: plan phase starting
 tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
   C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
     surf = pygame.display.set_mode((1280, 720), flags=flags)
@@ -11753,24 +11754,20 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 1 failed, 11129 passed, 100 skipped, 42 warnings in 325.93s (0:05:25)
 - 2026-08-31 04:20 — re-planning: sprint already implemented and green. Verified: (a) implementation commit `afdf67e` shipped all 9 production wires + 3 new test files (35 tests total, per commit message and `git show --stat`); (b) commit `8737388` fixed the environment-dependent grep-shellout in the gap-manifest test that caused the prior blocked gate (grep.exe is on Git Bash PATH but not the machine PATH the Scheduled Task inherits); (c) `Player.record_lens_action` facade exists at `spacegame/models/player.py:445`; (d) test files exist at all three declared paths; (e) targeted local run `pytest tests/test_models/test_lens_investment_hooks.py tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py tests/test_compliance/test_lens_investment_gap_manifest.py -q` returns 35 passed in 1.38s; (f) pre-phase baseline for this launch is 11133 pass / 100 skip, which exactly matches the "Suite green at 11133 passed / 100 skipped" recorded in commit `8737388`'s message. No re-plan needed — the plan on record produced the shipped work. Emitting PHASE_OK so the dispatcher advances the sprint through implement (which will verify rather than duplicate) and on to review. PHASE_OK
 - 2026-08-31 — implement (re-verify): confirmed all 6 deliverable files on disk; 35 sprint-scoped tests pass (1.39s); full suite 11132 passed, 100 skipped (pre-existing xdist flake test_no_new_consumer_only_flags confirmed passes in isolation at 83s — unchanged pre-existing behaviour); mypy baseline exit 0 (0 new errors); lint clean; format clean on all touched files. PHASE_OK
+- 2026-08-31 07:01 — harness: plan phase starting (post-stuck-recovery re-plan)
+- 2026-08-31 — re-plan: sprint already fully implemented. Verified: (a) implementation commit `afdf67e` (2026-08-31 02:19) ships the `Player.record_lens_action` facade at `spacegame/models/player.py:445` and all 12 production wires — `sold_cargo`/`trade_profit_large`/`reach_system_first_visit` in `models/player.py`, `crew_loyalty_gained` in `models/crew.py:432`, `combat_victory_named_target` in `views/combat_view.py:2157`, `mission_completed:bounty|smuggling` at `engine/game.py:5905,5907`, `politics_vote_won` at `engine/game.py:3211`, `auction_won` at `engine/game.py:2744`, `wreckers_guild_contract_completed` at `views/wreckers_guild_view.py:775`, `deep_shafts_pilgrimage_visited` at `views/deep_shafts_view.py:169`, `okafor_research_project_funded`[+`:high_risk`] at `views/okafor_view.py:798,800`, `black_market_sale` at `views/trading_view.py:1139` (all matched via grep); (b) three new test files exist at declared paths; (c) targeted run `pytest tests/test_models/test_lens_investment_hooks.py tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py tests/test_compliance/test_lens_investment_gap_manifest.py tests/test_compliance/test_lens_investment_never_rendered.py -q` returns 38 passed in 1.39s (the +3 vs the 35 tests reported in commit message is the pre-existing `test_lens_investment_never_rendered.py` compliance test that A2-4B did not add but must continue to pass — AC6); (d) no touch-zone files have been modified after `afdf67e` (git log confirms). Sprint stalled after the prior review's blocked gate (flaky grep-shellout in gap manifest, later fixed by `8737388`) and stuck-sprint recovery reset it to `todo`; the actual work is intact. Emitting PHASE_OK so the dispatcher advances to implement (re-verify pass, no code change) and review. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 04:17
-- Completed: 2026-08-31 (re-verify pass)
-- Files_changed: none (implementation already committed in afdf67e + 8737388)
-- Commits: afdf67e, 8737388
-- Tests_added: 35
-- Tests_baseline: 11133
-- Tests_passing: 11132 (xdist run; pre-existing flake test_no_new_consumer_only_flags passes in isolation at 83s)
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a (no new flags added)
-- Writing_bible_clean: n/a (no player-facing content authored)
-- Touch_zones_respected: yes
-- Notes: Sprint was already fully implemented. Re-verify pass confirmed all 9 production wires (Player.record_lens_action facade + 12 tag emitters across player.py, crew.py, game.py, combat_view.py, wreckers_guild_view.py, deep_shafts_view.py, okafor_view.py, trading_view.py, bidding.py) and 3 new test files (35 tests) are in place and green. All 8 acceptance criteria satisfied.
+- Started: 2026-08-31 07:01
+- Completed: 2026-08-31 07:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending (this planning update)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented — no re-plan needed)
+- Decisions_locked: 0 (all decisions were already locked in prior planning cycles)
+- Notes: Sprint already fully implemented at commit `afdf67e` with follow-up `8737388` fixing an environment-dependent grep-shellout in the gap manifest test. Verified 12 production wires exist at declared line numbers, three new test files exist, and the 38 sprint-scoped tests (35 A2-4B + 3 pre-existing invariant) pass in 1.39s. No touch-zone drift since `afdf67e`. Per the "already implemented → PHASE_OK" rule, emitting PHASE_OK so the sprint proceeds to implement (verify) and review rather than being re-planned or blocked.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
