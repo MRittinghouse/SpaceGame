@@ -241,6 +241,30 @@ def check_telegraph(dilemma: Dilemma, investment: Any) -> bool:
     )
 
 
+def build_investment_snapshot(dilemma: Dilemma, player: Any) -> dict[str, int]:
+    """Return a plain ``{pole_id: current_investment}`` snapshot.
+
+    The engine calls this and hands the returned dict to
+    :class:`spacegame.views.dilemma_resolution_view.DilemmaResolutionView`
+    so the view file never touches ``player.lens_investment``. The
+    ``tests/test_compliance/test_lens_investment_never_rendered.py``
+    guard forbids the ``LensInvestment`` / ``lens_investment`` tokens
+    under ``spacegame/views/``.
+
+    A pole the player has never touched reads as 0 rather than raising
+    ``KeyError``.
+
+    Args:
+        dilemma: The dilemma whose poles should be sampled.
+        player: Any object exposing ``lens_investment.get_investment``.
+
+    Returns:
+        A dict keyed by pole id (in ``dilemma.poles`` order) with the
+        integer investment for each pole.
+    """
+    return {pole: player.lens_investment.get_investment(pole) for pole in dilemma.poles}
+
+
 def check_dilemmas(player: Any, dilemmas: dict[str, Dilemma]) -> DilemmaCheckResult:
     """Classify every loaded dilemma against a player's current state.
 

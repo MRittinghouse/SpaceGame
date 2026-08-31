@@ -22,6 +22,7 @@ from spacegame.models.dilemma import (
     DilemmaCheckResult,
     DilemmaOutcome,
     DilemmaRuntimeState,
+    build_investment_snapshot,
     check_collision,
     check_dilemmas,
     check_telegraph,
@@ -288,6 +289,39 @@ class TestCheckDilemmasClassification:
         result = check_dilemmas(stub, {dilemma.id: dilemma})
         assert result.newly_telegraphed == [dilemma.id]
         assert result.newly_collided == [dilemma.id]
+
+
+class TestBuildInvestmentSnapshot:
+    """Task 2.1 helper — engine snapshot handed to the resolution view.
+
+    The view file may not touch ``player.lens_investment`` (compliance
+    guard forbids the token under ``spacegame/views/``); the model layer
+    builds the snapshot and passes a plain ``dict[str, int]`` in.
+    """
+
+    def test_two_pole_snapshot_reads_current_investment(self) -> None:
+        dilemma = _pair_dilemma()
+        stub = _player_stub({"wealth": 60, "community": 40})
+        snapshot = build_investment_snapshot(dilemma, stub)
+        assert snapshot == {"wealth": 60, "community": 40}
+
+    def test_unknown_pole_defaults_to_zero(self) -> None:
+        dilemma = _pair_dilemma()
+        stub = _player_stub({"wealth": 60})
+        snapshot = build_investment_snapshot(dilemma, stub)
+        assert snapshot == {"wealth": 60, "community": 0}
+
+    def test_three_pole_snapshot_returns_three_keys(self) -> None:
+        dilemma = _triangle_dilemma()
+        stub = _player_stub({"order": 90, "freedom": 90, "faith": 0})
+        snapshot = build_investment_snapshot(dilemma, stub)
+        assert snapshot == {"order": 90, "freedom": 90, "faith": 0}
+
+    def test_empty_investment_returns_all_zeros(self) -> None:
+        dilemma = _pair_dilemma()
+        stub = _player_stub({})
+        snapshot = build_investment_snapshot(dilemma, stub)
+        assert snapshot == {"wealth": 0, "community": 0}
 
 
 class TestLoadDilemmas:
