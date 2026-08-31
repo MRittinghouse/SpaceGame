@@ -14256,7 +14256,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - Started: 2026-08-31 19:20
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 43d6ec4
 - New_sprints_proposed: none
 - Polish_items_folded_in: compliance-invariant-test, voice-check-anchor-criterion
 - Decisions_locked: 4
