@@ -81,14 +81,31 @@ It turned three days of guessing into a named line of code in one command.
 
 ## Open questions
 
-1. **Something killed a supervisor+harness pair outright** on 2026-08-29 at
-   13:15:01, mid-gate, with no exit logged by either. Not the stray sweep (it
-   logs its kills), not heartbeat staleness (the beat is timer-based precisely
-   so a long phase stays alive), not the 15-minute trigger (that harness
-   survived five boundaries first). Task Scheduler's operational log was
-   **disabled**, so the evidence was gone. It is **now enabled**, so the next
-   occurrence is diagnosable. If instances die roughly every 80 minutes, no
-   sprint whose gate falls back to the serial run can finish.
+1. **The supervisor dies every 1-2 hours and nobody knows why.** Observed
+   2026-08-31 at 00:28:49 and 01:30:04, plus 2026-08-29 at 13:15. With the
+   Task Scheduler operational log now enabled, we know more than before:
+
+   - Event **201** reports the action *completed* with return code
+     **2147942401** (`0x80070001`, ERROR_INVALID_FUNCTION). That is not a
+     Python exit code.
+   - There is **no** termination event (Id 111), no application crash record,
+     and nothing in the supervisor's own log -- it dies mid-sentence.
+   - It is **not** Task Scheduler stopping instances. The Id 322 events every
+     15 minutes are `IgnoreNew` correctly suppressing duplicate triggers while
+     an instance runs, which is the opposite of a kill.
+   - The interval is irregular (61 min, 113 min), so it is not a fixed timeout.
+
+   **It costs time, not work**, which is why the run still progresses: agents
+   commit as they go, so a death loses only the phase in flight. A2-4A died
+   during review with all three of its implementation commits already safe.
+   Recovery is automatic -- the 15-minute trigger restarts the supervisor, the
+   dirty-tree stash clears the tree, stuck-sprint recovery re-queues the sprint,
+   and the planner short-circuits on the already-implemented work.
+
+   Next step if you want it fixed: `RunOnlyIfIdle` is absent from the task XML
+   (so `StopOnIdleEnd: true` should be inert), but the `IdleSettings`
+   `WaitTimeout` is `PT1H`, which is suspiciously close to one observed
+   interval. Worth testing by clearing IdleSettings outright.
 2. **An unidentified flaky test.** A2-5's gate failed once, then passed on
    re-run and was correctly treated as a flake. The gate logs only a summary,
    not the failing test names, so it is unnamed. If flakes start costing gates,
