@@ -102,10 +102,33 @@ It turned three days of guessing into a named line of code in one command.
    dirty-tree stash clears the tree, stuck-sprint recovery re-queues the sprint,
    and the planner short-circuits on the already-implemented work.
 
-   Next step if you want it fixed: `RunOnlyIfIdle` is absent from the task XML
-   (so `StopOnIdleEnd: true` should be inert), but the `IdleSettings`
-   `WaitTimeout` is `PT1H`, which is suspiciously close to one observed
-   interval. Worth testing by clearing IdleSettings outright.
+   **Answered as far as Python can answer it: the process is KILLED FROM
+   OUTSIDE.** `d223856` added an `atexit` line and a `faulthandler` file to the
+   supervisor. An instrumented supervisor then died (between 06:54 and 08:30 on
+   2026-08-31) and produced *none* of them:
+
+   - no `atexit` line -> the interpreter never shut down under its own control
+   - no `faulthandler` output -> not a C-level crash
+   - no `DIED on ...` line -> not a Python exception (that handler predates me)
+
+   So nothing Python-level runs on the way out, and `supervisor.py` is the wrong
+   place to keep looking. Also ruled out, with evidence: Task Scheduler triggers
+   (deaths land at 04:31:27 and 06:42:35, nowhere near the :00/:15/:30/:45
+   boundaries, and the Id 322 events show the instance alive a minute before),
+   heartbeat-staleness kills (the beat is timer-based), and
+   `_sweep_stray_pytest` (it keeps its own supervisor via `os.getppid()`).
+
+   **Next step:** find the killer, not the victim. Windows records nothing today,
+   so install Sysmon and watch Event ID 5 (process terminated), or enable
+   process auditing, and correlate with the next death. Weak lead worth a glance:
+   `\SoftLanding\...\SoftLandingDeferralTask` completed at 00:27:01, ~100
+   seconds before the 00:28:49 death. Antivirus and Windows maintenance are the
+   usual suspects for an unlogged tree kill.
+
+   **Raised priority:** this is no longer only a time tax. On 2026-08-31 a death
+   landed between "implement commits" and "review runs", which put 1055
+   unreviewed lines on master; the next baseline caught 11 failures and the work
+   had to be reverted (983d659). See open question 4.
 2. **An unidentified flaky test.** A2-5's gate failed once, then passed on
    re-run and was correctly treated as a flake. The gate logs only a summary,
    not the failing test names, so it is unnamed. If flakes start costing gates,
@@ -114,6 +137,16 @@ It turned three days of guessing into a named line of code in one command.
    failed once in session 0 and has passed everywhere since. `_tooltip_rect_for_button`
    compares against the `WINDOW_WIDTH` constant and nothing patches it, so there
    is no explanation yet. Possibly the same flake as (2).
+
+4. **An agent's commits reach `origin` even when its sprint never completes.**
+   The harness's exit-time push carries whatever is on the branch, so a death in
+   the gap between "implement commits" and "review runs" puts unreviewed,
+   ungated code on the mainline. That happened once (A2-8, reverted in 983d659,
+   11 failures including three of its own tests). The gate and review are the
+   only things between an agent's output and master, and that gap bypasses both.
+
+   Worth a design decision rather than a patch: branch-per-sprint merged on a
+   green gate, or gate-before-push. Not attempted here.
 
 ## Operating notes
 
