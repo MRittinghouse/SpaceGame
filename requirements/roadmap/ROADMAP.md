@@ -11533,7 +11533,7 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11732,6 +11732,7 @@ For journal entries, news ticker, achievement unlocks, tutorial integration, or 
 - 2026-08-31 02:42 — harness: review phase outcome=blocked, marking blocked. test-suite gate FAILED: ======================= warnings summary ===============================
 - 2026-08-31 02:47 — session: reset blocked -> todo. The gate failed on test_lens_investment_gap_manifest.py and the parallel re-check reproduced it, so the sprint was blocked and the run stopped. That re-check was the bug: it re-ran the failures at -n 8, under the same load that produced the flake. Verified afterwards on the same commit: the test passes standalone, and a full suite over that tree is green at 11129 passing (the only failure was a different flake, test_heartbeat thread timing). A2-4B work is sound and committed. The re-check now runs serially so load is not a variable.
 - 2026-08-31 04:13 — harness: plan phase starting
+- 2026-08-31 04:17 — harness: implement phase starting (rework cycle 0)
 tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
   C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
     surf = pygame.display.set_mode((1280, 720), flags=flags)
@@ -11750,18 +11751,25 @@ tests/test_crawler/test_reachability.py: 9 warnings
 FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManifest::test_every_wired_tag_has_a_grep_hit_in_production_code
 1 failed, 11129 passed, 100 skipped, 42 warnings in 325.93s (0:05:25)
 - 2026-08-31 04:20 — re-planning: sprint already implemented and green. Verified: (a) implementation commit `afdf67e` shipped all 9 production wires + 3 new test files (35 tests total, per commit message and `git show --stat`); (b) commit `8737388` fixed the environment-dependent grep-shellout in the gap-manifest test that caused the prior blocked gate (grep.exe is on Git Bash PATH but not the machine PATH the Scheduled Task inherits); (c) `Player.record_lens_action` facade exists at `spacegame/models/player.py:445`; (d) test files exist at all three declared paths; (e) targeted local run `pytest tests/test_models/test_lens_investment_hooks.py tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py tests/test_compliance/test_lens_investment_gap_manifest.py -q` returns 35 passed in 1.38s; (f) pre-phase baseline for this launch is 11133 pass / 100 skip, which exactly matches the "Suite green at 11133 passed / 100 skipped" recorded in commit `8737388`'s message. No re-plan needed — the plan on record produced the shipped work. Emitting PHASE_OK so the dispatcher advances the sprint through implement (which will verify rather than duplicate) and on to review. PHASE_OK
+- 2026-08-31 — implement (re-verify): confirmed all 6 deliverable files on disk; 35 sprint-scoped tests pass (1.39s); full suite 11132 passed, 100 skipped (pre-existing xdist flake test_no_new_consumer_only_flags confirmed passes in isolation at 83s — unchanged pre-existing behaviour); mypy baseline exit 0 (0 new errors); lint clean; format clean on all touched files. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 04:13
-- Completed: 2026-08-31 04:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 48ec64f
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented and verified)
-- Decisions_locked: 0 (all six decisions locked in prior plan phases still hold: facade indirection, gap-manifest partition, amount tier calibration 1/3/5/10, exact-match colon-qualifier semantics, no observer hook, no upper cap)
-- Notes: Sprint was already implemented per commit `afdf67e` and its follow-up fix `8737388`. Verified 35 A2-4B tests pass locally (1.38s) and the pre-phase baseline of 11133/100 matches the state committed by `8737388`. Per plan.md's "if the sprint is ALREADY IMPLEMENTED, your sentinel is PHASE_OK" rule, emitting PHASE_OK rather than PHASE_BLOCKED — the dispatcher's implementer will re-verify, and reviewer + gate will run against the shipped tree. Sprint status field remains `in-progress (planning)` in the header; the dispatcher will advance it. No roadmap content beyond the activity log and phase report was modified.
+- Started: 2026-08-31 04:17
+- Completed: 2026-08-31 (re-verify pass)
+- Files_changed: none (implementation already committed in afdf67e + 8737388)
+- Commits: afdf67e, 8737388
+- Tests_added: 35
+- Tests_baseline: 11133
+- Tests_passing: 11132 (xdist run; pre-existing flake test_no_new_consumer_only_flags passes in isolation at 83s)
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no new flags added)
+- Writing_bible_clean: n/a (no player-facing content authored)
+- Touch_zones_respected: yes
+- Notes: Sprint was already fully implemented. Re-verify pass confirmed all 9 production wires (Player.record_lens_action facade + 12 tag emitters across player.py, crew.py, game.py, combat_view.py, wreckers_guild_view.py, deep_shafts_view.py, okafor_view.py, trading_view.py, bidding.py) and 3 new test files (35 tests) are in place and green. All 8 acceptance criteria satisfied.
 
 **Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
