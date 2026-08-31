@@ -1,4 +1,4 @@
-# Ralph run handoff — 2026-08-29
+# Ralph run handoff — 2026-08-30
 
 Written for whoever picks this up next, including a fresh Claude Code session
 with no memory of the conversation that produced it.
@@ -8,96 +8,123 @@ with no memory of the conversation that produced it.
 `ralph` is an autonomous sprint harness working through
 `requirements/roadmap/ROADMAP.md`. It is armed as a Windows Scheduled Task
 (`RalphSupervisor`, LogonType **S4U**, ExecutionTimeLimit **PT0S**, at-startup
-plus a 15-minute repetition trigger) and is meant to run unattended for seven
-days while the operator is away. It commits and pushes to `master` over SSH.
+plus a 15-minute repetition trigger) and is meant to run unattended for days
+while the operator is away. It commits and pushes to `master` over SSH.
 
 ## Current state
 
-- **Done:** A2-1 (lens registry), A2-2 (authoring guide), A2-3 (capstone
-  format), A2-4 (investment tracking).
+- **The run is LIVE.** A2-5 completed end to end at 2026-08-30 22:08 — the first
+  sprint to pass plan → implement → review → gate → done since the arc stalled.
+  A2-6 picked up at 22:14.
+- **Done:** A2-1, A2-2, A2-3, A2-4, A2-5.
 - **Blocked:** none in the A2 arc. `SA-F2` and `UI-BOUNDS-1` are blocked from
   April and are deliberately left that way.
-- **Queue:** 33 todo. Not starved.
-- **The run is STOPPED.** The supervisor recorded a deliberate stop at
-  `2026-08-29 03:09:57` after three consecutive failures and has been correctly
-  refusing to relaunch every 15 minutes since. `ralph/supervisor_stop.json`
-  holds that marker; deleting it is what says "the cause is fixed, go again".
+- Suite green at **11063 passing / 100 skipped**, ~60s at `-n 8`.
 
-## What went wrong, and why it mattered
+## The one thing to understand first
 
-The post-review test gate's parallel `pytest` run hung on every sprint that
-reached it. Each hang leaked its xdist worker tree. By morning there were **66
-python processes** alive from a six-minute window overnight, holding 2.1 GB.
+The previous handoff blamed leaked pytest workers and suspected the S4U token.
+Both were wrong, or at least secondary. **One fault caused most of it:**
 
-The leak is **self-amplifying**, which is what made it fatal rather than
-untidy: every leaked worker competes with the next run, so the next run is
-likelier to hang, which leaks more workers. Direct measurement: the
-`tests/test_ralph/` suite alone runs in ~9s clean and took **117s** with the
-strays present. The machine read 8% CPU throughout, because the leaked
-processes were stalled rather than busy, which makes "load looks fine"
-misleading here.
+`pygame.mixer.music.unpause()` deadlocks intermittently and never returns.
+py-spy caught it on three separate wedged processes, always the same stack:
 
-Two sprints (A2-1, A2-4) were marked **blocked** by this despite their work
-being complete, correct, and committed. A2-1 blocked strands 18 downstream
-sprints. Both have been reset to `done` with the reasoning in their activity
-logs.
+    resume_music (spacegame/engine/audio_manager.py)
+    _close_pause_menu (spacegame/engine/game.py)
+    _handle_pause_menu (spacegame/engine/game.py)
+    step (spacegame/engine/game.py)
+    step_once (tools/crawler/crawler.py)
+    test_crawler_determinism_across_two_runs (tests/test_crawler/test_integration.py)
 
-## Fixes already in (all pushed)
+It wore two masks. Under `-n 8` it wedges a worker and the controller waits
+forever, which read as "xdist cannot start workers". Under `-n 0` it wedges the
+main process, which read as "serial hangs too". It is **not** session-specific;
+it took down an interactive full-suite run after 927 CPU-seconds.
+
+**pytest-timeout cannot catch it.** `timeout = 120` is set in `pyproject.toml`,
+and the timer thread was armed for that exact test — but the block is inside a C
+call holding the GIL, so the timer never runs. Only an out-of-process kill
+bounds this class of hang. Do not trust the per-test timeout to protect the
+suite from a C-level block.
+
+Fixed in `51ebcf3` by having the crawler disable audio on its own `Game`
+instance (`AudioManager.disable()`). Per-instance, deliberately **not** via the
+`get_audio_manager()` singleton — that is process-global, and under `-n 0` the
+crawler shares a process with tests asserting real mixer behaviour. The
+underlying SDL_mixer deadlock is untouched; only the path into it is removed.
+
+## Everything else that was fixed
 
 | Commit | What |
 |---|---|
-| `2492f26` | A hung parallel pytest retries **serially** instead of failing. Also pins pytest's temp root outside the repo. |
-| `97f7497` | Gate budgets sized against observed speed: 2700s parallel, 7200s serial. The old 2400s serial budget could not finish ~11k tests even in principle. |
-| `d61a23e` | A gate **timeout** now returns `INFRA_ERROR`, not `BLOCKED`. A suite that ran and was red is evidence about the code; one that never finished is evidence about the machine. |
-| `fa49b6f` | `harness._sweep_stray_pytest` kills leftover pytest trees at pre-flight. |
-| `76e8154` | `scripts/resume_run.ps1` — one elevated command to clear the backlog and resume. |
+| `12c25b6` | The suite was **rewriting the real `ROADMAP.md`**. `_sync_roadmap_index` resolved the file through a second binding no fixture could redirect, so the harness's own gate dirtied the tree the next launch then refused. |
+| `8fdeba8` | `update_status` wrote a sprint's section but left its index row stale. Stuck-sprint recovery runs **before** baseline capture, so the harness committed drift and then failed a suite on drift it had created one second earlier. Index now syncs inside the write. |
+| `5f95cda` | Baseline capture retries once **on a hang only**. A suite that ran and was red is evidence about the code and must stop the run; one that never finished is evidence about the machine. |
+| `dfffb98`, `2af03d7` | Gate parallel probe 2700s → 1500s, sized from session-0 data. |
+| `aaefc18` | A dirty tree left by a **dead** harness is stashed and the run continues, instead of bricking every future launch. |
 
-## What to do next
+## Read this before trusting a measurement
 
-1. **From an ELEVATED PowerShell** (the leaked processes belong to the task's
-   S4U token; a normal shell gets Access Denied from both `Stop-Process` and
-   `taskkill`, and cannot even read their `CommandLine`):
+**An interactive timing is not evidence about what the harness does.** The same
+`pytest -n 8` command takes 60–77s in an interactive session (session 1) and
+322s under the Scheduled Task (session 0). Check `Win32_Process.SessionId` — the
+harness runs in **session 0**, your shell in session 1. A 5x gap on identical
+work sent several of this project's earlier conclusions the wrong way, including
+two of mine.
 
-       powershell -ExecutionPolicy Bypass -File C:\Users\matth\PyCharmProjects\SpaceGame\scripts\resume_run.ps1
+`py-spy` is installed (`pip install py-spy`). For any future hang, this is the
+first move, not the last:
 
-   It kills stale python trees, clears the stop marker, restarts the task, and
-   prints the log.
+    C:\Python314\Scripts\py-spy.exe dump --pid <pid>
 
-2. **Watch one full sprint through its gate.** That is the open question: does
-   the new sweep break the amplification loop, or does the S4U token itself
-   cause the hang? The suite runs in ~116s interactively and hung repeatedly
-   under the task, so S4U is implicated but not proven.
+It turned three days of guessing into a named line of code in one command.
 
-3. **If the gate still hangs with a clean process table**, S4U is the cause.
-   Options, in order of preference:
-   - Switch the task to `InteractiveToken` (processes become killable and
-     inspectable, and the hang likely disappears). Cost: only runs while
-     logged on, so a reboot needs autologon.
-   - Drop the gate to `-n 4`.
-   - Disable the gate and rely on the startup baseline. This is the weakest
-     option: the gate is what stops agents pushing a red tree for days.
+## Open questions
+
+1. **Something killed a supervisor+harness pair outright** on 2026-08-29 at
+   13:15:01, mid-gate, with no exit logged by either. Not the stray sweep (it
+   logs its kills), not heartbeat staleness (the beat is timer-based precisely
+   so a long phase stays alive), not the 15-minute trigger (that harness
+   survived five boundaries first). Task Scheduler's operational log was
+   **disabled**, so the evidence was gone. It is **now enabled**, so the next
+   occurrence is diagnosable. If instances die roughly every 80 minutes, no
+   sprint whose gate falls back to the serial run can finish.
+2. **An unidentified flaky test.** A2-5's gate failed once, then passed on
+   re-run and was correctly treated as a flake. The gate logs only a summary,
+   not the failing test names, so it is unnamed. If flakes start costing gates,
+   make the gate record the failing test IDs before its re-run.
+3. `test_dialogue_response_tooltip.py::TestTooltipGeometry::test_right_side_clipping_flips_to_left`
+   failed once in session 0 and has passed everywhere since. `_tooltip_rect_for_button`
+   compares against the `WINDOW_WIDTH` constant and nothing patches it, so there
+   is no explanation yet. Possibly the same flake as (2).
 
 ## Operating notes
 
-- **Never run `pytest -n auto`** — it hangs 6 runs in 10 on this host. Use `-n 8`.
-- **Do not push to `master` from anywhere else** while the run is live. Every
-  remote channel ends in one `git push origin HEAD` and nothing rebases, so a
-  diverged remote freezes `STATUS.md` while the harness keeps working. Auto
-  rebase was considered and deliberately rejected: a conflicted rebase leaves a
-  detached HEAD that fails pre-flight repeatedly, and `ROADMAP.md` is the
-  hottest file, so conflict would be the default outcome rather than the tail.
+- **Never run `pytest -n auto`** — it hangs on this host. Use `-n 8`.
+- **Do not push to `master` from another clone** while the run is live. Every
+  remote channel ends in one `git push origin HEAD` and nothing rebases. Working
+  in *this* clone is fine — the harness picks up local commits.
+- **A dirty tree still blocks a launch** unless a stale lock proves a harness
+  died. If you leave edits uncommitted while no harness holds the lock, the run
+  stops. Commit before you walk away.
 - **`STATUS.md` on GitHub is the operator's window.** Banners: `STARVED`,
   `CRASHED`, `STALE HEARTBEAT`, `NO LIVE HARNESS`, `TEST SUITE FAILING`,
   `INFRASTRUCTURE FAILING`, `PUSH FAILING`, `STRANDED`.
-- **To pause without unregistering**, from any shell:
+- **To pause without unregistering:**
   `python -c "from ralph import supervisor; supervisor.record_terminal_stop('paused')"`
-  and resume with `supervisor.clear_terminal_stop()`.
+  and resume with `supervisor.clear_terminal_stop()`. Note the marker is checked
+  at supervisor **startup**, so an already-running supervisor finishes its
+  current cycle.
 - **To stop entirely**, elevated:
   `Unregister-ScheduledTask -TaskName 'RalphSupervisor' -Confirm:$false`
-- S4U processes and files are **opaque to a non-elevated session**: command
-  lines read empty and the harness's pytest temp root is Access Denied. A
-  running harness can therefore look like nothing at all. Check with an
-  elevated shell before concluding it is dead.
+- `harness._sweep_stray_pytest()` clears leaked pytest trees and works from an
+  elevated interactive shell too — it tree-kills the xdist controllers, which
+  takes every worker with them.
+- **A missing `PHASE_OK` sentinel is not missing work.** Both A2-5 and A2-6 had
+  complete, committed implementations that the harness treated as unfinished
+  because the agent died before writing its sentinel. The planner now detects
+  this and reports `PHASE_BLOCKED: already implemented`. Check `git log` before
+  assuming a recovered sprint needs redoing.
 
 ## Design decisions worth not re-litigating
 
