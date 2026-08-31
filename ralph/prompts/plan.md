@@ -31,6 +31,14 @@ its sentinel. A missing sentinel is not missing work.
 So before planning, check: does `git log` already contain commits for this
 sprint, and do its acceptance criteria already pass?
 
+Make that check FIRST and keep it cheap -- read the sprint section and
+`git log`, not the whole Context-to-read set. If the work is already there you
+do not need the context that would have informed planning it, because you are
+not planning it. Measured 2026-08-31: this check took 16 minutes on A2-8, and
+combined with the implementer's re-verification it left no time for the review
+phase before the harness died. The sprint was picked up six times and never
+finished.
+
 If so, **write `PHASE_OK`** with a note saying the sprint was already
 implemented, naming the commit, and recording what you ran to verify it. Do NOT
 re-plan work that exists, and do NOT try to route yourself to a later phase —

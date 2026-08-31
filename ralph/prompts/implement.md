@@ -100,6 +100,31 @@ Edit `{ROADMAP_PATH}` and modify ONLY the Activity log of sprint `{SPRINT_ID}`. 
 Do NOT change the sprint's Status field — the harness manages that.
 Do NOT modify any other sprint's section.
 
+## If the sprint is ALREADY IMPLEMENTED, verify proportionately and stop
+
+You will sometimes be handed a sprint whose work already exists, because the
+planner found it already implemented and passed you through. Stuck-sprint
+recovery resets a sprint to `todo` when it goes stale, and a common cause is an
+agent that committed its work and then died before writing its sentinel. A
+missing sentinel is not missing work.
+
+When `git log` already shows this sprint's commits:
+
+1. Read those commits, not the whole context set.
+2. Run the sprint's own test surfaces plus the quality gates.
+3. If they pass, write `PHASE_OK` naming the commit and what you ran, and STOP.
+
+Do not re-derive the sprint, re-read every context doc, or re-implement anything.
+The work is already on disk and under test; your job is to confirm that, not to
+rebuild the reasoning that produced it.
+
+**Speed is correctness here, not laziness.** Measured 2026-08-31: A2-8 was
+picked up six times and never once completed, because plan (16 min) plus
+implement (19 min) re-verification consumed 35 minutes before review could even
+start, and the harness does not reliably survive that long. A verification pass
+that takes twenty minutes to confirm a commit that is already green is what
+stops the sprint finishing at all.
+
 ## Output requirements — sentinel + structured report
 
 Append a final entry to the sprint's Activity log. The entry MUST contain ONE of these exact sentinels:
