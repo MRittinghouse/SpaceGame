@@ -78,7 +78,6 @@ if TYPE_CHECKING:
     from spacegame.models.combat import CombatEncounter
     from spacegame.models.combat_engine import CombatEngine
     from spacegame.models.crew import CrewRoster
-    from spacegame.models.dilemma import Dilemma
     from spacegame.models.encounter import EncounterDefinition, EncounterRef
     from spacegame.models.event import MarketEvent
     from spacegame.models.ground_mapgen import MapGenResult
@@ -93,7 +92,6 @@ if TYPE_CHECKING:
     from spacegame.views.crew_roster_view import CrewRosterView
     from spacegame.views.deep_shafts_view import DeepShaftsView
     from spacegame.views.dialogue_view import DialogueView
-    from spacegame.views.dilemma_resolution_view import DilemmaResolutionView
     from spacegame.views.dispute_view import DisputeView
     from spacegame.views.encounter_view import EncounterView
     from spacegame.views.event_notification_view import EventNotificationView
@@ -322,11 +320,6 @@ class Game:
         self.event_banner: str = ""
         self.event_banner_timer: float = 0.0
         self._event_notification_view: Optional["EventNotificationView"] = None
-        # A2-8: currently active dilemma resolution modal (None when the
-        # DILEMMA_RESOLUTION state is not on the state stack). The engine
-        # polls its dismissed flag every frame in _handle_dilemma_resolution
-        # to know when to pop the modal and write the outcome.
-        self._dilemma_resolution_view: Optional["DilemmaResolutionView"] = None
 
         # Banner/label fonts (created lazily to avoid pygame init order issues)
         self._banner_font: Optional[pygame.font.Font] = None
@@ -4210,7 +4203,7 @@ class Game:
                 self.player.add_criminal_heat(reward.amount)
                 self.player.times_caught_smuggling += 1
                 logger.info(f"Encounter: +{reward.amount} criminal heat")
-                self._after_player_action("smuggling_caught")
+                self._trigger_crew_reaction("smuggling_caught")
             elif reward.reward_type == "modify_reputation":
                 if reward.target_id:
                     if self.politics_manager:
@@ -4334,7 +4327,7 @@ class Game:
                 logger.info(f"Combat loot: +{total_credits} credits")
 
             logger.info(f"Combat victory: +{total_xp} XP")
-            self._after_player_action("combat_victory")
+            self._trigger_crew_reaction("combat_victory")
 
         elif result == CombatResult.DEFEAT:
             safe_system = self.player.current_system_id
@@ -4344,7 +4337,7 @@ class Game:
         elif result == CombatResult.FLED:
             self.player.combats_fled += 1
             logger.info("Combat: player fled")
-            self._after_player_action("combat_retreat")
+            self._trigger_crew_reaction("combat_retreat")
 
         elif result == CombatResult.NEGOTIATED:
             self.player.combats_won += 1
@@ -4424,154 +4417,6 @@ class Game:
             template = self.crew_roster.get_template(crew_id)
             name = template.name if template else crew_id
             self._mission_notifications.append(f'{name}: "{text}"')
-
-    def _after_player_action(self, action_type: str) -> None:
-        """Fire crew banter + dilemma engine after a player action.
-
-        Wraps :func:`_trigger_crew_reaction` so the two hooks stay in
-        lockstep (any future action_type registered via one path is
-        automatically seen by the other). Suppresses itself while the
-        dilemma resolution modal is active so a queued follow-up action
-        cannot stack a second modal (locked decision in A2-8 planning).
-
-        Dilemma dispatch order matters when a single action jumps
-        investment past both thresholds at once: the telegraph line is
-        appended to ``_mission_notifications`` FIRST, then the modal
-        push, so the notification is already in the queue when the
-        modal opens (the player sees "she isn't wrong, captain" and
-        then the choice, not the choice by itself).
-
-        Args:
-            action_type: The player action (e.g. ``"combat_victory"``,
-                ``"mission_completed"``).
-        """
-        if self.state_manager.current_state == GameState.DILEMMA_RESOLUTION:
-            # Suppress crew banter AND dilemma dispatch while the modal
-            # is on top -- both are player-action reactions and either
-            # firing mid-resolution would create ordering surprises.
-            return
-
-        self._trigger_crew_reaction(action_type)
-
-        dl = get_data_loader()
-        if not dl.dilemmas:
-            return
-
-        from spacegame.constants import flags
-        from spacegame.models.dilemma import (
-            build_investment_snapshot,
-            check_dilemmas,
-        )
-
-        result = check_dilemmas(self.player, dl.dilemmas)
-
-        # Telegraphs (both newly and re-telegraphed) come first so the
-        # notification is visible in the queue before any modal push.
-        for dilemma_id in result.newly_telegraphed:
-            self._deliver_dilemma_telegraph(dilemma_id, is_new=True)
-            self.player.dialogue_flags[flags.dilemma_telegraphed(dilemma_id)] = True
-        for dilemma_id in result.re_telegraphed:
-            self._deliver_dilemma_telegraph(dilemma_id, is_new=False)
-
-        # Then the collision push. Only the first newly-collided dilemma
-        # is presented; any others wait for the resolution to clear.
-        for dilemma_id in result.newly_collided:
-            dilemma = dl.dilemmas.get(dilemma_id)
-            if dilemma is None:
-                continue
-            snapshot = build_investment_snapshot(dilemma, self.player)
-            self._ensure_dilemma_resolution_view(dilemma, snapshot)
-            self.state_manager.push_state(GameState.DILEMMA_RESOLUTION)
-            break
-
-    def _deliver_dilemma_telegraph(self, dilemma_id: str, *, is_new: bool) -> None:
-        """Append the next telegraph line for ``dilemma_id`` and advance the cursor.
-
-        Round-robin through :attr:`Dilemma.telegraph_lines` via the
-        per-dilemma cursor so re-deliveries cycle rather than repeat a
-        single line (A2-8 AC8). Cursor wrap uses modulo len so authors
-        who only wrote one line still get a graceful loop.
-
-        Args:
-            dilemma_id: Which dilemma is being telegraphed.
-            is_new: True on the first delivery (adds the dilemma to
-                ``player.dilemma_state.telegraphed``); False on repeat
-                delivery.
-        """
-        dl = get_data_loader()
-        dilemma = dl.dilemmas.get(dilemma_id)
-        if dilemma is None or not dilemma.telegraph_lines:
-            return
-
-        runtime = self.player.dilemma_state
-        cursor = runtime.telegraph_cursor.get(dilemma_id, 0)
-        line = dilemma.telegraph_lines[cursor % len(dilemma.telegraph_lines)]
-        runtime.telegraph_cursor[dilemma_id] = (cursor + 1) % max(len(dilemma.telegraph_lines), 1)
-        if is_new:
-            runtime.telegraphed.add(dilemma_id)
-
-        npc_id = dilemma.telegraph_npc_id
-        npc = dl.npcs.get(npc_id)
-        npc_name = npc.name if npc is not None else npc_id
-        self._mission_notifications.append(f'{npc_name}: "{line}"')
-
-    def _ensure_dilemma_resolution_view(
-        self, dilemma: "Dilemma", current_investment: dict[str, int]
-    ) -> None:
-        """Create and register the dilemma resolution view.
-
-        Follows the :func:`_ensure_ground_briefing_view` factory shape:
-        lazy import, instantiate, register with the state manager. The
-        view is registered fresh per collision because its constructor
-        arguments (dilemma + snapshot) change per collision.
-        """
-        from spacegame.views.dilemma_resolution_view import DilemmaResolutionView
-
-        view = DilemmaResolutionView(
-            ui_manager=self.ui_manager,
-            dilemma=dilemma,
-            on_resolve=lambda lens_id: self._resolve_dilemma(dilemma.id, lens_id),
-            current_investment=current_investment,
-        )
-        self._dilemma_resolution_view = view
-        self.state_manager.register_state(GameState.DILEMMA_RESOLUTION, view)
-
-    def _resolve_dilemma(self, dilemma_id: str, winning_lens_id: str) -> None:
-        """Record the dilemma outcome on the player.
-
-        Called from :class:`DilemmaResolutionView`'s button handler. The
-        view sets its ``dismissed`` flag after this returns; the engine's
-        frame handler observes the flag and pops the modal (so pygame_gui
-        teardown does not race with the event dispatch).
-
-        A2-10 will extend this to also apply the winning outcome's
-        ``closes``, ``tier_unlocks``, and ``outcome_flag``. A2-8 records
-        only the resolved-map entry and the resolved flag.
-        """
-        from spacegame.constants import flags
-
-        self.player.dilemma_state.resolved[dilemma_id] = winning_lens_id
-        self.player.dialogue_flags[flags.dilemma_resolved(dilemma_id)] = True
-        logger.info(f"Dilemma resolved: id='{dilemma_id}' winning_lens='{winning_lens_id}'")
-
-    def _handle_dilemma_resolution(self) -> None:
-        """Pop the dilemma modal once the view reports dismissed.
-
-        Called every frame from the main loop while the modal is active.
-        Mirrors the :class:`EventNotificationView` polling pattern so
-        pygame_gui teardown happens outside the event handler.
-        """
-        view = self._dilemma_resolution_view
-        if view is None:
-            return
-        if not view.is_dismissed():
-            return
-        # Only pop if we are actually in the resolution state; a rare
-        # race where the state was already popped elsewhere should not
-        # underflow the stack.
-        if self.state_manager.current_state == GameState.DILEMMA_RESOLUTION:
-            self.state_manager.pop_state()
-        self._dilemma_resolution_view = None
 
     # === Ground Mission Methods ===
 
@@ -4786,10 +4631,10 @@ class Game:
                 if getattr(self, "dialogue_manager", None):
                     self.dialogue_manager.set_flag(result.config.complete_flag)
                 logger.info("Ground mission flag set: %s", result.config.complete_flag)
-            self._after_player_action("ground_mission_success")
+            self._trigger_crew_reaction("ground_mission_success")
         elif outcome.is_failure:
             self.player.ground_missions_failed += 1
-            self._after_player_action("ground_mission_fail")
+            self._trigger_crew_reaction("ground_mission_fail")
 
     def _build_ground_map(self, config: "GroundMissionConfig") -> "MapGenResult":
         """Build a ground map, using campaign map if available.
@@ -5963,7 +5808,7 @@ class Game:
                 self._mission_notifications.append(msg)
             # Crew reaction to trading (alternate sold/bought based on parity)
             action = "sold_cargo" if current_trades % 2 == 0 else "bought_cargo"
-            self._after_player_action(action)
+            self._trigger_crew_reaction(action)
 
         # Check for new jumps
         current_jumps = self.player.jumps_traveled
@@ -6192,7 +6037,7 @@ class Game:
 
         # Crew reaction to mission completion
         if completed_ids:
-            self._after_player_action("mission_completed")
+            self._trigger_crew_reaction("mission_completed")
 
         # Check for journal auto-entries triggered by mission rewards
         if completed_ids:
@@ -6206,7 +6051,7 @@ class Game:
                 if exp_mission:
                     logger.info(f"Side mission expired: {exp_mission.name}")
             if expired:
-                self._after_player_action("mission_expired")
+                self._trigger_crew_reaction("mission_expired")
 
         # Update availability (missions may unlock from completed prereqs or new flags)
         newly_available = self.mission_manager.update_availability(
@@ -6786,11 +6631,6 @@ class Game:
 
         # Handle event notifications
         self._handle_event_notifications(dt)
-
-        # A2-8: pop the dilemma resolution modal once the view reports
-        # dismissed. Runs whether or not the game is paused because the
-        # modal itself is a game-state overlay (not the pause menu).
-        self._handle_dilemma_resolution()
 
         # Update game state (only if not paused)
         if not self.paused:
