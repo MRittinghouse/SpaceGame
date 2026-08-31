@@ -127,7 +127,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | blocked | A2-4, A2-5, A2-6 |
-| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
+| [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
@@ -11395,7 +11395,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-8 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11411,35 +11411,190 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - `spacegame/models/combat_engine.py` — if a `combat_victory` hook already exists, wire there; otherwise add the tag emit at the caller site.
 
 **Touch zones.**
-- `spacegame/models/player.py` (add `record_action` proxy calls at existing action sites: `sell_commodity`, `travel_to_system`, `record_captain_encounter`, etc., following each `investment_from` tag's semantics)
-- Any mission-completion / combat-victory / market-transaction site where an existing hook is called — the audit against the union of all `investment_from` tags in `lenses.json` produces the exact list; documented in the plan phase.
-- `tests/test_models/test_lens_investment_hooks.py` (NEW) — one test per `investment_from` tag, asserting the hook fires and increments the correct lens.
-- `tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py` (NEW) — end-to-end: run a synthetic sell-cargo action through the real player method and assert `wealth` investment went up.
+- `spacegame/models/player.py` (add `record_lens_action(action_tag, amount)` facade method, and wire in-model callers at `sell_commodity`, `travel_to_system`, `record_captain_encounter`)
+- `spacegame/models/bidding.py` (wire `auction_won` where `auction_lots_won_total` increments at line ~1411)
+- `spacegame/models/crew.py` (wire `crew_loyalty_gained` inside `adjust_loyalty` when amount > 0)
+- `spacegame/engine/game.py` (wire `mission_completed:bounty|smuggling` in the completion loop at line ~5911, and `politics_vote_won` in `_on_dispute_outcome` at line ~3207 when `category == "win"`)
+- `spacegame/views/wreckers_guild_view.py` (wire `wreckers_guild_contract_completed` at line ~767 after `completed_contract_count += 1`)
+- `spacegame/views/deep_shafts_view.py` (wire `deep_shafts_pilgrimage_visited` at line ~164 after `apply_visit`)
+- `spacegame/views/okafor_view.py` (wire `okafor_research_project_funded` and `okafor_research_project_funded:high_risk` at line ~796 after `fund_project`)
+- `spacegame/views/trading_view.py` (wire `black_market_sale` at line ~1119 on the sell path when `_black_market_mode` is True)
+- `spacegame/views/combat_view.py` (wire `combat_victory_named_target` at line ~2152 after `record_captain_encounter` when outcome ∈ `{killed, defeated}`)
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (extend `_FORBIDDEN_TOKENS`/scanner rules to permit `player.record_lens_action(...)` calls in `views/` and `engine/` while continuing to forbid `lens_investment.get_investment` / `lens_investment.is_at_or_above` reads — the facade name does not contain the forbidden `lens_investment` substring, so no code change is required; the compliance test file is touched only to add a new guard test proving the facade is the only accepted write path)
+- `tests/test_models/test_lens_investment_hooks.py` (NEW) — one test per wired `investment_from` tag, asserting the hook fires and increments the correct lens
+- `tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py` (NEW) — end-to-end scenario: sell cargo → wealth up; travel to new system → exploration up; defeat named captain → vengeance up; assert accruals compound correctly
+- `tests/test_compliance/test_lens_investment_gap_manifest.py` (NEW) — enforces AC1 in its revised form: every tag in the union of `investment_from` is either wired somewhere in production OR listed in the gap manifest with a rationale line
 
 **Deliverables.**
-- An audit table in the sprint's plan phase: rows are the union of every `investment_from` tag across the sixteen lenses; columns are (a) which player method / manager already fires on that event, (b) whether a `record_action` call needs adding or a helper needs to be extracted, (c) which test file owns the coverage.
-- A wire at every audit-table row so every tag has at least one production code path that emits it.
-- One test per tag proving the tag is emitted when the corresponding gameplay event happens.
-- One scenario test that runs a small vertical slice ("sell cargo -> wealth investment up; win a bounty -> vengeance investment up; visit a new system -> exploration investment up") and asserts the accruals compound correctly.
+- Audit table (present in this Plan section): rows are the union of every `investment_from` tag across the sixteen lenses; columns are (a) which method / manager already fires on that event, (b) whether a `record_lens_action` call is being added in this sprint or the tag is flagged as a gap, (c) the calibrated amount, (d) the test that owns the coverage.
+- A single facade method `Player.record_lens_action(action_tag: str, amount: int) -> list[str]` that internally resolves the lens registry via a local `from spacegame.data_loader import get_data_loader` import and delegates to `self.lens_investment.record_action(action_tag, amount, get_data_loader().lenses)`. All call sites (model, view, engine) call this facade so `views/` and `engine/` never touch the `lens_investment` attribute directly.
+- Wires for the **twelve tags with existing production emitters** (see audit table): `sold_cargo`, `trade_profit_large`, `combat_victory_named_target`, `mission_completed:bounty`, `mission_completed:smuggling`, `black_market_sale`, `auction_won`, `politics_vote_won`, `reach_system_first_visit`, `wreckers_guild_contract_completed`, `deep_shafts_pilgrimage_visited`, `okafor_research_project_funded` (+ its `:high_risk` variant, which fires alongside the base), `crew_loyalty_gained`.
+- Gap manifest at `tests/test_compliance/test_lens_investment_gap_manifest.py` documenting the **twenty-two tags without emitters** (see audit table, "GAP" rows), each with a one-line rationale and a pointer to the sprint or feature that owns adding the emitter.
+- One test per wired tag proving the tag is emitted when the corresponding gameplay event happens (12 tests minimum).
+- Scenario test that runs a small vertical slice ("sell cargo → wealth investment up; visit a new system → exploration investment up; defeat named captain → vengeance investment up") and asserts the accruals compound correctly.
 
 **Acceptance criteria.**
-1. For every tag `t` in the union of `investment_from` across `DataLoader.lenses.values()`, at least one production code path fires `player.lens_investment.record_action(t, ...)`; a test asserts this by monkey-patching `record_action` on a fresh Player and triggering each action.
-2. No tag is emitted twice for the same underlying event (double-count guard).
-3. Tag names are exact matches against `investment_from` — a typo like `combat_victory_targeted` when the lens says `combat_victory_named_target` fails the coverage test.
-4. Scenario test proves a small vertical slice of real gameplay actions accrues investment on the expected lenses; a full-suite integration test remains stable (no regression on trade / combat / travel loops).
-5. Amount-per-event is proportional to significance (small trade = small accrual; named-target kill = larger accrual). The exact scale is locked in planning.
-6. 20+ new tests.
-7. Full suite green; no regression from baseline.
+1. For every tag `t` in the union of `investment_from` across `DataLoader.lenses.values()`, EITHER (a) at least one production code path fires `player.record_lens_action(t, ...)` AND a hook test asserts this by monkey-patching `record_lens_action` on a fresh Player and triggering the underlying gameplay method, OR (b) `t` is listed in the gap manifest at `tests/test_compliance/test_lens_investment_gap_manifest.py::GAP_TAGS` with a rationale string and a follow-up pointer. The gap manifest test asserts the partition is total (`wired ∪ gap == union of investment_from`) and disjoint (`wired ∩ gap == ∅`) — a tag cannot be both wired and gap-flagged.
+2. No tag is emitted twice for the same underlying event (double-count guard). Verified per-tag via a spy that counts `record_lens_action` calls with `tag == t` during a single scripted invocation of the underlying method. Explicitly excluded from this AC: tags that ARE meant to co-fire on a single event (`sold_cargo` + `trade_profit_large` on a high-profit sale, `okafor_research_project_funded` + `okafor_research_project_funded:high_risk` on a high-risk fund); those are different tags for different lens signals and are documented in the audit table.
+3. Tag names are exact matches against `investment_from`. A typo (e.g. `combat_victory_targeted` when the lens says `combat_victory_named_target`) fails the hook-coverage test because the observed `record_lens_action` call carries a tag string not in `DataLoader.lenses[<lens>].investment_from`.
+4. Scenario test proves a small vertical slice of real gameplay actions accrues investment on the expected lenses via the real `Player.record_lens_action` code path (not a stub); a full-suite integration test remains stable (no regression on trade / combat / travel loops).
+5. Amount-per-event is calibrated per the audit table's Amount column. Locked in planning: `1` for routine per-transaction events (`sold_cargo`, `crew_loyalty_gained`), `3` for medium events (`trade_profit_large`, `black_market_sale`, `deep_shafts_pilgrimage_visited`), `5` for larger recurring events (`reach_system_first_visit`, `wreckers_guild_contract_completed`), `10` for milestones (`combat_victory_named_target`, `mission_completed:bounty|smuggling`, `auction_won`, `politics_vote_won`, `okafor_research_project_funded`[+ `:high_risk`]).
+6. Structural invariant from A2-4 AC4 preserved: no file under `spacegame/views/` or `spacegame/engine/` references the string `LensInvestment` or the attribute `lens_investment`. The facade `player.record_lens_action(...)` is the only permitted write path from those layers. The existing compliance test (`test_lens_investment_never_rendered.py`) continues to pass unchanged (verified as a side effect of the full suite green).
+7. 20+ new tests across the three new test files.
+8. Full suite green; no regression from baseline (pre-phase: 11063 pass / 100 skip).
+
+**Plan.**
+
+Task-by-task breakdown for the implement phase. Each task lists files touched, the failing test to write first, and any gotchas. The audit table below is load-bearing — every wire task keys off a row.
+
+### Audit table (all 34 unique `investment_from` tags across `data/narrative/lenses.json`)
+
+| # | Tag | Lens(es) | Emitter site (or gap) | Amount | Status |
+|---|-----|----------|----------------------|--------|--------|
+| 1 | `combat_victory_named_target` | vengeance | `views/combat_view.py:2152` after `record_captain_encounter`, outcome ∈ `{killed, defeated}` | 10 | wire |
+| 2 | `mission_completed:bounty` | vengeance | `engine/game.py:5911` mission completion loop, mission id prefix `proc_bounty_` | 10 | wire |
+| 3 | `sold_cargo` | wealth | `models/player.py:445` `sell_commodity` on success | 1 | wire |
+| 4 | `trade_profit_large` | wealth | `models/player.py:445` `sell_commodity` on success when `profit >= 5000` CR | 3 | wire |
+| 5 | `auction_won` | wealth | `models/bidding.py:1411` after `auction_lots_won_total += 1` | 10 | wire |
+| 6 | `investment_tier_purchased` | wealth | GAP — no player-facing "investment tier" purchase system exists; belongs to a future Financial-Systems / SA-F sprint | — | gap |
+| 7 | `politics_favor_granted` | political_power | GAP — no favor-granting mechanic; potential future SA-P sprint | — | gap |
+| 8 | `politics_vote_won` | political_power | `engine/game.py:3207` `_on_dispute_outcome` when `category == "win"` (approximates "vote won" via dispute win) | 10 | wire |
+| 9 | `council_seat_won` | political_power | GAP — no council seat mechanic; future SA-P scope | — | gap |
+| 10 | `reach_system_first_visit` | exploration | `models/player.py:477` `travel_to_system` when `system_id not in self.systems_visited` (checked pre-add) | 5 | wire |
+| 11 | `deep_scan_completed` | exploration | GAP — `deep_scan` is a skill bonus_type, not a completable event; future exploration-mini-game sprint | — | gap |
+| 12 | `encounter_anomaly_resolved` | discovery | GAP — anomaly encounters exist as a type in `views/galaxy_map_view.py` but have no discrete "resolved" event that would emit the tag; future encounter-authoring sprint | — | gap |
+| 13 | `journal_entry:discovery` | discovery | GAP — `JournalEntry.tag` valid values are `{people, places, suspicions, goals}`; no `discovery` category exists; future journal-taxonomy sprint | — | gap |
+| 14 | `mission_completed:bounty_lawful` | justice | GAP — missions have no lawful/unlawful discriminator; future mission-metadata sprint | — | gap |
+| 15 | `politics_dispute_resolved_lawful` | justice | GAP — dispute categories are `{win, partial_win_coalition_thin, partial_win_off_record, ...}`, not `{lawful, uprising, annex}`; future dispute-taxonomy sprint | — | gap |
+| 16 | `mission_completed:smuggling` | crime | `engine/game.py:5911` mission completion loop, mission id prefix `proc_smuggling_` | 10 | wire |
+| 17 | `black_market_sale` | crime | `views/trading_view.py:1119` sell path when `self._black_market_mode` is True; fires alongside `sold_cargo` (different tags, same underlying event, per AC2 note) | 3 | wire |
+| 18 | `politics_dispute_resolved_uprising` | revolution | GAP — see #15 | — | gap |
+| 19 | `faction_reputation_up:frontier_alliance_labor` | revolution | GAP — no `frontier_alliance_labor` sub-faction exists (grep confirms); future faction-decomposition sprint | — | gap |
+| 20 | `territory_investment_purchased` | empire | GAP — no territory purchasing mechanic; future Empire arc sprint | — | gap |
+| 21 | `politics_dispute_resolved_annex` | empire | GAP — see #15 | — | gap |
+| 22 | `investment_tier_purchased:community` | community | GAP — see #6 | — | gap |
+| 23 | `wreckers_guild_contract_completed` | community, preservation | `views/wreckers_guild_view.py:767` after `completed_contract_count += 1` | 5 | wire (accrues on TWO lenses per record_action semantics) |
+| 24 | `crew_loyalty_gained` | community, connection | `models/crew.py:393` `adjust_loyalty` when `amount > 0` | 1 | wire (accrues on TWO lenses) |
+| 25 | `okafor_research_project_funded` | legacy | `views/okafor_view.py:796` after `fund_project` (any `risk_tier`) | 10 | wire |
+| 26 | `institution_founded` | legacy | GAP — no institution-founding mechanic; future Legacy arc sprint | — | gap |
+| 27 | `deep_shafts_pilgrimage_visited` | faith, preservation | `views/deep_shafts_view.py:164` after `apply_visit` | 3 | wire (accrues on TWO lenses) |
+| 28 | `dialogue_completed:faith` | faith | GAP — dialogue system has no per-completion tag-emit; future dialogue-taxonomy sprint | — | gap |
+| 29 | `okafor_research_project_funded:high_risk` | transcendence | `views/okafor_view.py:796` after `fund_project` when `template.risk_tier == "high"`; fires ALONGSIDE tag #25 (both are legitimate lens signals for the same event, per AC2 note) | 10 | wire |
+| 30 | `ship_upgrade_installed:experimental` | transcendence | GAP — no "experimental" upgrade class in `models/upgrades.py`; future Transcendence arc sprint | — | gap |
+| 31 | `dialogue_completed:crew_personal` | connection | GAP — see #28 | — | gap |
+| 32 | `investigation_flag_set` | truth | GAP — no unified investigation-flag concept; individual flags are set ad hoc in dialogues; future Truth arc sprint | — | gap |
+| 33 | `dialogue_completed:evidence` | truth | GAP — see #28 | — | gap |
+| 34 | `wreckers_guild_contract_completed:preservation` | preservation | GAP — Wreckers contract templates lack a `preservation` flag; future contract-metadata sprint | — | gap |
+
+**Totals**: 12 wired tags (with `okafor_research_project_funded:high_risk` co-firing with its base tag) × 20 lens-tag pairs; 22 gap tags. All twelve wired tags are covered by production emitters that already exist in code today — this sprint adds `record_lens_action(...)` calls at those exact sites, no gameplay is invented.
+
+### Tasks
+
+1. **Add facade `Player.record_lens_action(action_tag, amount)`.**
+   - Files: `spacegame/models/player.py`.
+   - Failing test: `tests/test_models/test_lens_investment_hooks.py::TestFacade::test_record_lens_action_delegates_to_lens_investment` — construct a Player, monkey-patch `player.lens_investment.record_action` with a spy, call `player.record_lens_action("sold_cargo", 1)`, assert the spy was called once with `("sold_cargo", 1, <registry dict>)`.
+   - Gotchas: use a **local import** (`from spacegame.data_loader import get_data_loader` inside the method body) to avoid the circular import between `models/player.py` and `data_loader.py`. Method signature is `(self, action_tag: str, amount: int) -> list[str]` — return the list of lens_ids incremented so callers that want to fire notifications can. Do NOT accept a lens registry parameter — the facade's whole point is to hide that lookup from callers so views/engine never touch `lens_investment` at all.
+   - Extension test: `test_facade_returns_incremented_lens_ids` — assert the return value threads through from `LensInvestment.record_action`.
+
+2. **Wire the four in-model tags (`sold_cargo`, `trade_profit_large`, `combat_victory_named_target` context, `reach_system_first_visit`).**
+   - Files: `spacegame/models/player.py`.
+   - Failing tests (in `test_lens_investment_hooks.py::TestPlayerModelWires`):
+     - `test_sell_commodity_emits_sold_cargo` — spy on `record_lens_action`, call `player.sell_commodity(...)`, assert `("sold_cargo", 1)` was emitted exactly once.
+     - `test_sell_commodity_emits_trade_profit_large_when_profit_at_or_above_5000` — set up so profit >= 5000, assert both `("sold_cargo", 1)` AND `("trade_profit_large", 3)` fire (AC2 note: this is expected co-fire, not double-count).
+     - `test_sell_commodity_does_not_emit_trade_profit_large_when_profit_below_5000` — assert only `sold_cargo` fires.
+     - `test_travel_to_system_emits_reach_system_first_visit_only_on_first_visit` — travel once, assert `("reach_system_first_visit", 5)` fires; travel to the same system again, assert it does NOT fire.
+   - Gotchas: for `reach_system_first_visit`, check `system_id not in self.systems_visited` BEFORE `self.systems_visited.add(system_id)` — otherwise the check always fails. For `trade_profit_large`, use `>= 5000` (inclusive at boundary) to keep the boundary test deterministic. Do NOT wire `combat_victory_named_target` here — that requires captain-encounter context, wired in Task 4 at the view layer.
+
+3. **Wire `crew_loyalty_gained` in `models/crew.py`.**
+   - Files: `spacegame/models/crew.py`.
+   - Failing test: `test_lens_investment_hooks.py::TestCrewLoyaltyWire::test_adjust_loyalty_positive_amount_emits_crew_loyalty_gained` — attach a spy, call `roster.adjust_loyalty(template_id, +5, player=player)`, assert the spy fired once with `("crew_loyalty_gained", 1)`.
+   - Gotchas: `adjust_loyalty` currently does NOT take a `player` parameter. Add `player: Optional[Player] = None` (Optional to preserve existing test call sites that construct rosters without a player). Fire the tag ONLY when `amount > 0` (loyalty losses should not accrue investment). The amount emitted is fixed at `1` regardless of the loyalty delta — this is the "small routine event" tier per AC5. `adjust_loyalty_all` and `adjust_loyalty_for_faction` route through `adjust_loyalty`, so the wire fires there too automatically; add tests for both to prove the routing works.
+
+4. **Wire `combat_victory_named_target` in `views/combat_view.py`.**
+   - Files: `spacegame/views/combat_view.py`.
+   - Failing test: `test_lens_investment_hooks.py::TestCombatWires::test_captain_defeat_emits_combat_victory_named_target` — construct a combat view with a captain-tagged encounter, drive to `COMBAT_OVER` with player-victory result, spy on `player.record_lens_action`, assert `("combat_victory_named_target", 10)` fires exactly once.
+   - Gotchas: hook AFTER the existing `self.player.record_captain_encounter(captain_id, outcome)` call at line ~2152, and only when `outcome in {"killed", "defeated"}` (fled / bribed / negotiated encounters are not "named-target victories"). Do NOT introduce a second call site — the `_captain_encounter_recorded` idempotency guard already ensures once-per-fight.
+
+5. **Wire `mission_completed:bounty|smuggling` and `politics_vote_won` in `engine/game.py`.**
+   - Files: `spacegame/engine/game.py`.
+   - Failing tests:
+     - `test_lens_investment_hooks.py::TestMissionCompletionWires::test_completed_procedural_bounty_emits_mission_completed_bounty` — mock a completed mission with `id.startswith("proc_bounty_")`, assert `("mission_completed:bounty", 10)` fires.
+     - `...::test_completed_procedural_smuggling_emits_mission_completed_smuggling` — same shape for smuggling.
+     - `...::test_completed_non_procedural_mission_does_not_emit_either_tag` — a campaign mission id (no `proc_` prefix) fires nothing.
+     - `test_lens_investment_hooks.py::TestPoliticsWires::test_dispute_outcome_win_emits_politics_vote_won` — invoke `_on_dispute_outcome` with `category="win"`, assert `("politics_vote_won", 10)` fires; other categories do NOT emit.
+   - Gotchas: mission-type detection uses the id prefix (`proc_bounty_` / `proc_smuggling_`) from `procedural_missions.py::_next_id` — mission.mission_type is `"side"` for all procedural missions, so it can't be used. Fire from the completion loop at line ~5911, after `apply_rewards` returns. For politics, fire from `_on_dispute_outcome` at line ~3207 in the existing `if category == "win":` branch, before the pre-commit check.
+
+6. **Wire the four view-layer tags (`wreckers_guild_contract_completed`, `deep_shafts_pilgrimage_visited`, `okafor_research_project_funded`[+`:high_risk`], `black_market_sale`).**
+   - Files: `spacegame/views/wreckers_guild_view.py`, `spacegame/views/deep_shafts_view.py`, `spacegame/views/okafor_view.py`, `spacegame/views/trading_view.py`.
+   - Failing tests (one class per view in `test_lens_investment_hooks.py`):
+     - `TestWreckersGuildWire::test_contract_completion_emits_tag` — after the existing completion flow, spy sees `("wreckers_guild_contract_completed", 5)`.
+     - `TestDeepShaftsWire::test_pilgrimage_visit_emits_tag` — after `on_enter`, spy sees `("deep_shafts_pilgrimage_visited", 3)`.
+     - `TestOkaforWire::test_low_risk_fund_emits_only_base_tag` — fund a low-risk project, assert `("okafor_research_project_funded", 10)` fires exactly once and `:high_risk` variant does NOT fire.
+     - `TestOkaforWire::test_high_risk_fund_emits_both_tags` — fund a high-risk project, assert BOTH `("okafor_research_project_funded", 10)` AND `("okafor_research_project_funded:high_risk", 10)` fire (co-fire per AC2 note).
+     - `TestTradingBlackMarketWire::test_black_market_sell_emits_black_market_sale_and_sold_cargo` — sell in black-market mode, assert both `("sold_cargo", 1)` (from Player.sell_commodity) AND `("black_market_sale", 3)` (from trading_view) fire; a regular sell fires only `sold_cargo`.
+   - Gotchas: for okafor, check `template.risk_tier == "high"` for the qualifier. For trading_view, fire `black_market_sale` AFTER the `sell_commodity` call succeeds — otherwise a failed sell (insufficient cargo) would emit the tag. For wreckers, fire after `state.completed_contract_count += 1` at line ~767 to guarantee the completion is real (there's a `return False, "Nothing to turn in yet."` branch above that must not emit).
+
+7. **Wire `auction_won` in `models/bidding.py`.**
+   - Files: `spacegame/models/bidding.py`.
+   - Failing test: `test_lens_investment_hooks.py::TestAuctionWire::test_lot_won_by_player_emits_auction_won` — drive a lot to resolution with `winner == "player"` and `sold=True`, spy sees `("auction_won", 10)` fires once. A lot won by an NPC or a withdrawn lot does NOT emit.
+   - Gotchas: `AuctionState` lives inside `Player.auction_state`; to fire `record_lens_action` from `AuctionState` requires a `player` reference. Options: (a) add `player: Optional[Player] = None` parameter to `resolve_current_lot`, or (b) fire from the caller site in `views/auction_view.py` after `resolve_current_lot` returns. Prefer option (b) — the caller has the Player reference already and it keeps `AuctionState` model-pure. Verify with grep for the `resolve_current_lot` call site; test the caller path.
+
+8. **Add gap manifest compliance test.**
+   - Files: `tests/test_compliance/test_lens_investment_gap_manifest.py` (NEW).
+   - Failing tests:
+     - `TestGapManifest::test_wired_and_gap_partition_covers_every_tag` — load `DataLoader.lenses`, collect the union of `investment_from`, assert `wired ∪ gap == union` and `wired ∩ gap == ∅`.
+     - `TestGapManifest::test_every_wired_tag_has_a_grep_hit_in_production_code` — for each tag in `WIRED_TAGS`, `grep` under `spacegame/` for a string containing the tag; assert at least one hit outside `spacegame/models/lens_investment.py` (the model itself doesn't emit, only stores).
+     - `TestGapManifest::test_every_gap_tag_has_a_rationale_and_pointer` — assert each entry in `GAP_TAGS` is a dict with non-empty `rationale` and non-empty `future_sprint` strings.
+     - `TestGapManifest::test_no_wired_tag_is_also_in_gap_manifest` — disjointness (redundant with the partition check, but caught earlier for easier diagnosis).
+   - Gotchas: hard-code `WIRED_TAGS` and `GAP_TAGS` as module-level constants at the top of the test file so future planners can see the shape at a glance. The grep-hit test is deliberately blunt — it catches "tag was accidentally removed from an emitter site" drift. Keep the test dependency-free (no `pytest.mark.slow`) so it runs in every CI cycle.
+
+9. **Add end-to-end scenario test.**
+   - Files: `tests/test_scenarios/test_scenario_investment_accrues_from_gameplay.py` (NEW).
+   - Failing test: `TestInvestmentAccruesFromGameplay::test_vertical_slice_of_three_actions_compounds_correctly` — construct a real Player (with a real ship, real starting cargo), drive three separate gameplay actions through the real Player methods (sell cargo for profit; travel to an unvisited system; call `record_captain_encounter` with a "killed" outcome and then manually fire the combat_view emit path to simulate the captain-defeat wire), assert `player.lens_investment.get_investment("wealth") == 1 (or 4 if profit large)`, `.get_investment("exploration") == 5`, `.get_investment("vengeance") == 10`. Also assert `.get_investment("community") == 0` (no wreckers contract in this slice, so no accrual — proves accrual is scoped to what fires).
+   - Gotchas: use a `tmp_path`-based DataLoader fixture that loads the real `data/narrative/lenses.json` so the test asserts against the shipped tag vocabulary, not a hand-built fixture. Do NOT use a stub `record_lens_action` — the whole point of the scenario is to exercise the real code path. This test is the counterpart to A2-4's mechanism-proof stub scenario: A2-4 proved the API works with a stub consumer; A2-4B proves the API works with real producers.
+
+10. **Sweep: run `ruff format` + `ruff check` on touched files; mypy against baseline; full test suite.**
+    - Files: none (verification).
+    - Commands: `ruff format` on the 9 production files + 3 new test files; `ruff check` on the same set; `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` (must exit 0); `python -m pytest -n auto -q` (pass count >= 11063, new test count 20+).
+    - Gotchas: do NOT regenerate `mypy-baseline.txt` (per CLAUDE.md). If new mypy errors surface on `player.record_lens_action`, add correct type hints inline. The Optional `player` parameter added in Task 3 (`crew.py::adjust_loyalty`) requires threading through `adjust_loyalty_all` and `adjust_loyalty_for_faction`; verify all internal call sites are updated.
+
+**Cross-sprint reactions to author.**
+
+A2-4B is foundational plumbing — it wires existing gameplay events to an already-shipped accrual API. It authors no player-facing content of its own (no new NPC lines, no new missions, no new dialogue, no journal entries, no news). All player-facing surface changes triggered *by* accrual (NPC-address variants, offered-work variants, ambient banter reacting to lens dominance) are the responsibility of A2-4A (the reactor) and later dilemma sprints (A2-8 through A2-19).
+
+Cross-sprint reactions to flag anyway (author elsewhere; do NOT bloat this sprint):
+
+- (`spacegame/models/lens_reactor.py` — A2-4A) — once A2-4A ships, the reactor's `choose_variant` will finally receive non-zero investment values for real players. A2-4B is the sprint that *enables* the reactor to do its job; the authored variants themselves live in A2-4A's `data/narrative/lens_reactions.json`.
+- (`data/crew/ambient_dialogue.json` — future crew-reaction sprint) — crew banter that acknowledges lens dominance ("You've been running black-market runs for weeks — the crew has noticed") is authorable only once the reactor is live AND the lens dominance readout is exposed to the ambient dialogue system. Not this sprint. Not A2-4A either — that only covers greeting variants. Belongs to a follow-up SA-X sprint or a dedicated crew-banter sprint aligned to A2-4A's readout API.
+- (mission board — future contract-offer sprint) — offered contracts filtered by dominant lens ("your Crime-lens has crossed threshold — smuggling contracts appear more frequently at the board") is the "offered work" half of Spec F criterion 3. Not this sprint. Belongs to a future contract-generation sprint that reads from the reactor.
+
+For journal entries, news ticker, achievement unlocks, tutorial integration, or authored NPC dialogue: **none in this sprint**. A2-4B produces zero observable player-facing content; the twelve `record_lens_action` calls it adds are silent from the player's perspective until A2-4A's reactor consumes the accumulated state.
 
 **Risks / open questions.**
-- Amount-per-tag calibration: how much does one sold-cargo transaction accrue toward `wealth`? Recommend integers in the 1-5 range for common events, 10-20 for milestone events (mission completed, captain defeated). Locked in planning.
-- If `A2-5/A2-6` invented tags that no existing production system emits (e.g. `deep_shafts_pilgrimage_visited` when there is no pilgrimage-completion event), this sprint either (a) adds the missing emitter for a small tag, or (b) marks the tag "author-facing only, awaiting emitter sprint X" in the plan and moves on. Do NOT invent gameplay just to have a place to emit — flag it as a gap.
-- Tags qualified by a colon (`mission_completed:bounty`, `crew_loyalty_gained`) are handled by the caller emitting the qualified form; A2-4's `record_action` does exact-match, not prefix-match. Confirmed in A2-4 planning.
+- ~~Amount-per-tag calibration~~ **Locked in planning**: `1` for routine per-transaction events (`sold_cargo`, `crew_loyalty_gained`), `3` for medium events (`trade_profit_large` at ≥5000 CR profit boundary, `black_market_sale`, `deep_shafts_pilgrimage_visited`), `5` for larger recurring events (`reach_system_first_visit`, `wreckers_guild_contract_completed`), `10` for milestones (`combat_victory_named_target`, `mission_completed:bounty|smuggling`, `auction_won`, `politics_vote_won`, `okafor_research_project_funded`[+`:high_risk`]). Amounts are integers, monotonic-adding, unbounded per A2-4's decision. Rationale for boundaries: milestones are once-per-encounter-or-arc; medium events are recurring but bounded (e.g. a pilgrimage cooldown limits how often it fires); routine events are per-transaction and would trivially overwhelm any reactor threshold if scaled larger. If profiling shows Wealth accrues too fast under high-volume trading, adjust `sold_cargo` down to 0 (fire only `trade_profit_large`) rather than adding a cap — capping is A2-4's explicitly-rejected option.
+- ~~If A2-5/A2-6 invented tags with no existing production emitter, add or gap-flag~~ **Locked in planning**: 22 of 34 tags are gap-flagged, 12 are wired. The gap manifest test (`test_lens_investment_gap_manifest.py`) enforces the partition. No gameplay is invented in this sprint. Future feature sprints that add the missing systems (mission_lawfulness, council seats, territory purchases, etc.) will wire their own emitters as part of their own scope. AC1 revised accordingly so the sprint is completable.
+- ~~Tags qualified by a colon (`mission_completed:bounty`) are handled by caller emitting the qualified form~~ **Confirmed in A2-4 planning; carried forward unchanged**: `record_action`'s exact-match semantics mean the caller emits the full qualified tag string. Task 5 emits `mission_completed:bounty` verbatim from `game.py`, not `mission_completed` + a bounty flag.
+- ~~Structural invariant conflict: A2-4 forbids `views/` and `engine/` from touching `lens_investment`, but this sprint's wires are mostly in views/engine~~ **Locked in planning**: introduce a `Player.record_lens_action(action_tag, amount)` facade. The facade name does not contain the forbidden `lens_investment` substring, so the existing compliance test (`test_lens_investment_never_rendered.py`) continues to pass unchanged with no allowlist entries. This preserves A2-4 AC4 structurally rather than eroding it. The lower-level `LensInvestment.record_action(tag, amount, lenses)` remains the model-layer entry point; the facade layers on top and hides the registry lookup so views/engine never touch either the class or the attribute directly. Documented in the module docstring at the facade site so future planners see why the indirection exists.
+- Test-suite runtime: A2-4's post-review test gate hit a 900s timeout under stray-pytest contention (see A2-4 activity log 2026-08-28 21:58). The harness fix landed (fa49b6f, 97f7497, d61a23e) — planner has verified pre-phase baseline of 11063 passing / 100 skipped, so contention is no longer a blocker. If it recurs, the harness will retry via INFRA_ERROR rather than stranding this sprint.
 
 **Activity log.**
 - 2026-08-28 — todo (created by A2-4 planner; addresses the "accrual API is unreachable in production" scope gap surfaced during A2-4 planning)
+- 2026-08-30 23:46 — harness: plan phase starting
+- 2026-08-31 00:15 — planning complete; verified all 7 declared context docs exist; built the 34-row audit table by grepping production code for every tag in the union of `investment_from` across the shipped `data/narrative/lenses.json` (12 tags map to existing emitters, 22 tags are gap-flagged — the acceptance of gaps is explicit per the sprint author's "Do NOT invent gameplay just to have a place to emit" note); locked 4 open decisions (amount calibration to a 1/3/5/10 tier scheme; gap-flag rather than invent for the 22 unmapped tags; carry forward A2-4's exact-match colon-qualifier semantics; introduce `Player.record_lens_action` facade to preserve A2-4's `test_lens_investment_never_rendered.py` structural invariant without allowlist entries); revised AC1 to make the wired/gap partition explicit and mechanically verifiable via `test_lens_investment_gap_manifest.py`; expanded Touch zones from 4 lines to 12 lines matching every audit-table wire target and adding the gap manifest test; expanded Acceptance criteria from 7 to 8 (added AC6 to explicitly preserve A2-4 AC4's structural invariant); drafted 10-task plan with per-task failing tests and gotchas; new sprints proposed: NONE (per planning guidance "Conservative on scope expansion" — the 22 gap tags belong to future feature sprints that will add both the gameplay AND the emitter as one cohesive unit, not to a stub sprint that only adds emitters); cross-sprint reactions: none from this sprint itself (foundational wiring, no player-facing content authored), with pointers to A2-4A for the reactor and follow-up crew-banter / contract-offer sprints for the observable surface. PHASE_OK
 
-**Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). If A2-5/A2-6 haven't populated `lenses.json` when this sprint is picked up, block — the audit-table can only be built against the real tag list.
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-30 23:46
+- Completed: 2026-08-31 00:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (recorded post-commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: gap-manifest compliance test (structural guard against tag drift); facade-method indirection to preserve A2-4 AC4 without allowlist entries; explicit calibration table for amount-per-tag
+- Decisions_locked: 4
+- Notes: Audit against the shipped `data/narrative/lenses.json` shows 12 of 34 unique `investment_from` tags have real production emitters today; 22 are aspirational and belong to future feature sprints. Sprint scope revised to wire the 12 honestly and gap-flag the 22 with rationales, per the sprint author's explicit "do not invent gameplay" guidance in Risks. `Player.record_lens_action` facade is the mechanism that lets views/engine wire in without breaking A2-4's `test_lens_investment_never_rendered.py` compliance test — the string `lens_investment` never appears in `views/` or `engine/`.
+
+**Notes.** Depends on A2-4 (API), A2-5, and A2-6 (the tag vocabulary). All three are `done` as of 2026-08-30. The 22 gap-tag long tail is not a defect of this sprint — the design commits to 16 lenses and 34 tags, and the emitters for two-thirds of them require gameplay systems that are not yet built. Wiring the 12 that ARE buildable today closes the gap between "the API exists" and "the API is called in real playthroughs" for one third of the tag vocabulary, which is what unblocks A2-4A's reactor from being tested against realistic investment values.
 
 # Act II Ambition - sprint sections A2-5 through A2-21
 
