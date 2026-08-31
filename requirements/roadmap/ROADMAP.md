@@ -126,7 +126,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
-| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | in-progress | A2-4, A2-5, A2-6 |
+| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | done | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
@@ -11340,7 +11340,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4A — First oblique investment consumer
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11510,24 +11510,24 @@ For journal entries, news ticker, achievement unlocks, or authored NPC dialogue 
 - 2026-08-31 03:40 — planning re-entered on a sprint that is already fully implemented. Confirmed on disk: `spacegame/models/lens_reaction.py`, `spacegame/models/lens_reactor.py`, `data/narrative/lens_reactions.json`, `tests/test_models/test_lens_reactor.py`, `tests/test_data/test_lens_reactions_cross_references.py`, `tests/test_scenarios/test_scenario_oblique_readout.py` all present; git log shows commits `ce0aaec` (LensReaction + LensReactor), `3633355` (lens_reactions.json + DataLoader + view wire-in), `bf9ff84` (activity-log update) landed on 2026-08-31 between 01:45 and 02:35. Re-ran `python -m pytest tests/test_models/test_lens_reactor.py tests/test_data/test_lens_reactions_cross_references.py tests/test_scenarios/test_scenario_oblique_readout.py -q`: 32 passed in 1.80s. Stuck-sprint recovery reset the sprint to `todo` at 02:44 because the previous run left the status field stale at `in-progress (planning)` after implementation finished, not because the work was missing. Nothing to re-plan; the sprint is done. Emitting PHASE_OK per plan.md's "if the sprint is ALREADY IMPLEMENTED" rule so the dispatcher can advance it toward review rather than re-doing work. PHASE_OK
 - 2026-08-31 03:38 — harness: implement phase starting (rework cycle 0)
 - 2026-08-31 04:00 — re-verification: all six deliverable files confirmed on disk; 32 sprint-scoped tests pass in 1.86s; full suite 11132 passed, 100 skipped (1 pre-existing xdist flake in test_dialogue_integrity passes in isolation at 83s); lint clean; format clean; mypy baseline clean. Sprint already fully implemented in commits ce0aaec + 3633355 + bf9ff84. PHASE_OK
-
+- 2026-08-31 03:49 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 04:15 — review complete; all 8 acceptance criteria verified; 32 sprint-scoped tests pass; Writing Bible scanner (13/13), compliance invariant (3/3), lint, format, and mypy baseline all clean. Two xdist flakes in full-suite run (test_heartbeat, test_no_new_consumer_only_flags) both confirmed pre-existing — pass in isolation. Plan audit: sound; locked decisions on wire-in seam, single-file pool, reactor-owns-resolution, and no allowlist entry all defensible. Single tighten noted. PHASE_OK
+- 2026-08-31 04:07 — harness: review passed, marking done
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 03:38
-- Completed: 2026-08-31 04:00
-- Files_changed: spacegame/models/lens_reaction.py, spacegame/models/lens_reactor.py, data/narrative/lens_reactions.json, spacegame/data_loader.py, spacegame/views/wreckers_guild_view.py, tests/test_models/test_lens_reactor.py, tests/test_data/test_lens_reactions_cross_references.py, tests/test_scenarios/test_scenario_oblique_readout.py
-- Commits: ce0aaec, 3633355, bf9ff84
-- Tests_added: 32
-- Tests_baseline: 11133
-- Tests_passing: 11132 (xdist run; 11133 in isolation — pre-existing flake in test_dialogue_integrity::test_no_new_consumer_only_flags, documented in prior phase report)
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint was already implemented in a prior session (commits ce0aaec + 3633355 + bf9ff84). Re-verification confirms all 8 acceptance criteria satisfied: LensReactor + LensReaction models, authored lens_reactions.json (18 lines across 3 lenses × 2 tiers × 3 variants), DataLoader integration, _greeting_lines wire-in to WreckersGuildView, and full cross-reference + scenario test coverage.
+- Started: 2026-08-31 03:49
+- Completed: 2026-08-31 04:15
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11131 (xdist run; pre-existing flakes test_heartbeat + test_no_new_consumer_only_flags both pass in isolation; sprint-scoped 32/32 pass)
+- Acceptance_criteria_verified: 8/8
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: No test exercises a cross-lens different-threshold scenario (e.g., Wealth-80 fires vs Community-40 fires; Wealth should win). The reactor logic handles it correctly — the test gap is minor and not a correctness risk, but a `test_choose_variant_higher_threshold_beats_lower_threshold_on_different_lens` would close it.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all four locked decisions defensible (seam = _render_enrollment_pitch, single-file pool, resolution logic in reactor, no compliance-test allowlist entry needed). Authored Malia lines are in-voice — short, direct, work-first, correctly oblique per lens. Writing Bible scanner confirmed covering data/narrative/ via rglob. A2-4B facade (player.record_lens_action) not yet merged; scenario tests use the legal fallback (record_action direct) documented in the test file.
 
 **Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). All three are `done` as of 2026-08-30. A2-4B is in-progress and provides the `player.record_lens_action` production emitters that the scenario test in Task 7 exercises; Task 7's gotchas record a fallback for the case where A2-4B is not yet done at A2-4A's implement time.
 
