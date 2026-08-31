@@ -13371,7 +13371,7 @@ crew-banter reactivity - not this one.
 - Started: 2026-08-31 (second re-plan; post stuck-sprint reset d71b900)
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: faea658
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint is already implemented; nothing to fold)
 - Decisions_locked: 0 (all 8 prior decisions still hold; no new opens surfaced)
