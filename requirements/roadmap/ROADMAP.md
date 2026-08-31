@@ -129,7 +129,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
-| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | todo | A2-1 |
+| [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | in-progress | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | todo | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | in-progress | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
@@ -11791,7 +11791,7 @@ sprints.
 
 #### A2-6 — Lens definitions 9-16
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12187,17 +12187,20 @@ cohesion sprints.
 - 2026-08-30 22:15 — planner re-entered after stuck-sprint recovery; A2-6 was already implemented at commit 58da3d9 ("A2-6: lens definitions 9-16") on 2026-08-30 21:21, which shipped `data/narrative/lenses.json` at 16 entries plus the extended test surfaces in `test_lens_content_uniqueness.py` and `test_lens.py`. Verified: `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py` = 79 passed / 1 skipped; `pytest tests/test_compliance/test_prose_anti_patterns.py` = 13 passed. Re-planning would produce a plan for work that no longer exists; the harness should route this sprint straight to review. PHASE_BLOCKED: already implemented at 58da3d9 (see also A2-5's identical 8f63460 recovery precedent).
 - 2026-08-30 22:16 — harness: plan phase outcome=blocked, marking blocked. already implemented at 58da3d9 (see also A2-5's identical 8f63460 recovery precedent).
 - 2026-08-30 22:45 — session: reset blocked -> todo (second attempt). The plan phase wrote PHASE_BLOCKED 'already implemented at 58da3d9', which the dispatcher treats as terminal, stranding A2-4A and A2-4B. Work is verified complete at 58da3d9: lenses.json at 16 entries plus extended test surfaces, and the full suite is green at 11063 passing, a baseline that already includes A2-6 own tests. ralph/prompts/plan.md now tells planners to write PHASE_OK in this situation (91c263a), so the re-run should route implement -> review -> gate normally. Reset to todo rather than done so it still earns its review.
+- 2026-08-30 22:51 — harness: plan phase starting
+- 2026-08-30 22:55 — planner re-entered after 8221ec6 reset blocked -> todo. Work is already on disk at commit 58da3d9 ("A2-6: lens definitions 9-16") and its tests are green. Verified: `data/narrative/lenses.json` has 16 lens dicts in the expected insertion order (vengeance, wealth, political_power, exploration, discovery, justice, crime, revolution, empire, community, legacy, faith, transcendence, connection, truth, preservation); `pytest tests/test_compliance/test_lens_content_uniqueness.py tests/test_models/test_lens.py tests/test_compliance/test_lens_registry.py tests/test_compliance/test_lens_authoring_guide.py tests/test_compliance/test_prose_anti_patterns.py -q` = 92 passed / 1 skipped in 0.87s. The three new test classes named in the sprint's Deliverables are present in `test_lens_content_uniqueness.py` (`TestEmpireTrioDistinctness`, `TestCommunityWealthSameWound`, `TestTruthVengeanceCompatibility`). Writing PHASE_OK per the updated planner prompt (91c263a, "tell planners what to do when the sprint is already implemented") so the dispatcher routes implement -> review -> gate; the implementer will verify rather than duplicate, and the reviewer will re-verify against the 11063/100 pre-phase baseline. PHASE_OK
+
 **Last phase report.**
 - Phase: plan
-- Outcome: PHASE_BLOCKED
-- Started: 2026-08-30 22:14
-- Completed: 2026-08-30 22:15
+- Outcome: PHASE_OK
+- Started: 2026-08-30 22:51
+- Completed: 2026-08-30 22:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 98456d9 (planner note); 58da3d9 (prior implementation, committed under stuck-sprint recovery)
+- Commits: 58da3d9 (prior implementation, already on master); this plan-phase note pending
 - New_sprints_proposed: none
-- Polish_items_folded_in: none (implementation already committed at 58da3d9)
-- Decisions_locked: 0 (prior plan at 3a605a6 already locked all 6 open questions)
-- Notes: Stuck-sprint recovery reset this sprint to `todo`, but the implementation is already on disk from commit 58da3d9 (2026-08-30 21:21). The prior implementation agent was killed after writing the files but before committing; the recovery commit landed its work verbatim. All sprint deliverables are present: `data/narrative/lenses.json` has 16 entries with the correct ids in insertion order (vengeance, wealth, political_power, exploration, discovery, justice, crime, revolution, empire, community, legacy, faith, transcendence, connection, truth, preservation), `test_lens_content_uniqueness.py` carries the three new test classes (`TestEmpireTrioDistinctness`, `TestCommunityWealthSameWound`, `TestTruthVengeanceCompatibility`), and `test_lens.py` reflects the count-bump to 16. Lens surfaces pass 79/1-skipped and the prose anti-patterns scanner passes 13/0. Blocking rather than emitting PHASE_OK because re-planning would author a plan for work already done; per the A2-5 precedent (1ad04d6, "PHASE_BLOCKED (already implemented at 8f63460 and reviewed PHASE_OK)"), the correct routing is straight to review. Reviewer should re-verify the 79/1-skipped lens-surface delta and the 11063/100 full-suite baseline, then finalize.
+- Polish_items_folded_in: none (implementation already committed at 58da3d9; prior plan at 3a605a6 already locked all 6 open questions)
+- Decisions_locked: 0 (all six locked at 3a605a6)
+- Notes: Sprint is already implemented at 58da3d9 (2026-08-30 21:21). Verified: lens JSON at 16 entries in the expected insertion order; the three new test classes present in `test_lens_content_uniqueness.py`; lens-surface suite green at 92 passed / 1 skipped. Writing PHASE_OK per the updated planner prompt (91c263a) so the sprint routes normally through implement (which will verify rather than duplicate) and review. This is the exact fix the prompt update was made for -- the prior planner emitted PHASE_BLOCKED here on 2026-08-30 22:15, which stranded A2-4A and A2-4B and needed a human unstick (8221ec6).
 ---
 
 #### A2-7 — Per-lens readings on locations
