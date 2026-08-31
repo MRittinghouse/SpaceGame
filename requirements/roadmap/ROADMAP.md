@@ -14003,7 +14003,7 @@ those sprints consume.
 - Started: 2026-08-31 (recovery re-plan)
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none (planning re-run; roadmap update only)
+- Commits: 923c7bb (roadmap-only; sprint work itself is in prior commit 084dcec)
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (work already implemented)
 - Decisions_locked: 0 (all 5 locked in prior plan run 18:08–18:40; nothing new to lock)
