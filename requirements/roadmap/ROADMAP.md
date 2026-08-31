@@ -134,7 +134,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
-| [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
+| [A2-11](#a2-11--scars) | Scars | Act II | M | in-progress | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14044,50 +14044,229 @@ paths converge on the same `lens_closed(lens_id)` flag from A2-10).
 - `spacegame/constants/flags.py` - `lens_closed(lens_id)` (from A2-8/A2-10).
 
 **Touch zones.**
-- `spacegame/models/station_chatter.py` (`ChatterLine.category` gains `"scar"` as a
-  recognised value; no dataclass field changes needed, `required_flags` already exists)
-- `data/dialogue/` (wherever `ChatterLine` content is loaded from - confirm the exact file by
-  reading `DataLoader._parse_*` for station chatter before editing; add one demonstration
-  scar line using a synthetic flag, not a real dilemma's flag, since no real dilemma content
-  is guaranteed to exist yet)
-- `tests/test_models/test_station_chatter.py` (extend)
-- `tests/test_scenarios/test_scenario_dilemma_scars.py` (NEW)
+- `spacegame/models/station_chatter.py` (`ChatterLine.category` docstring gains `"scar"` as a
+  recognised value; no dataclass field changes needed, `required_flags` / `one_shot` already
+  exist and no filter-loop change is required — `get_chatter()` already excludes when a
+  `required_flags` entry is missing and includes when present, and its per-visit `_shown`
+  tracking (reset via `reset_shown(system_id)` on next dock) is exactly the "occasionally
+  seen" cadence the design calls for)
+- `data/crew/station_chatter.json` (canonical chatter file, loaded by
+  `DataLoader.load_station_chatter` at `spacegame/data_loader.py:1112` — add one
+  demonstration scar line using a test-only flag name so it never gates on a real dilemma's
+  closure)
+- `tests/test_models/test_station_chatter.py` (extend with scar-eligibility tests AC1/AC2
+  and the scar/one_shot invariant AC5)
+- `tests/test_scenarios/test_scenario_dilemma_scars.py` (NEW — AC3 end-to-end)
 
 **Deliverables.**
-- `StationChatterManager` (or its filtering logic, wherever it lives) treats `category ==
-  "scar"` lines as eligible for repeated display (never `one_shot=True` - a scar is
-  "occasionally seen", not once) gated by `required_flags` containing a
-  `flags.lens_closed(lens_id)` string.
-- A documented convention (a docstring addition on `ChatterLine` or a short note in this
-  sprint's commit, not a new markdown doc) stating: every dilemma sprint that closes a lens
-  must add at least one `category: "scar"` chatter line gated on that lens's closure flag,
-  spoken from the perspective of the NPC or role the player refused, doing the work the
-  player chose not to do.
-- A demonstration: one synthetic scar `ChatterLine` (not tied to any of the eight real
-  dilemmas) proving the mechanism end-to-end, using a test-only flag name so it never
-  appears in a real playthrough - this is infrastructure proof, not shippable content.
-- `tests/test_scenarios/test_scenario_dilemma_scars.py`: sets a synthetic `lens_closed`
+- **No production-code filter change.** `StationChatterManager.get_chatter` at
+  `spacegame/models/station_chatter.py:51` already delivers the required semantics for a
+  scar line: `required_flags` gates inclusion on `flags.lens_closed(lens_id)`, and
+  `one_shot=False` combined with per-visit `_shown` tracking (cleared by `reset_shown` on
+  dock re-entry) produces the "occasionally seen" cadence. This sprint proves the mechanism
+  works via tests rather than adding code — see **Risks / open questions** for the locked
+  rationale.
+- **Documented convention** on `ChatterLine`'s `category` docstring at
+  `spacegame/models/station_chatter.py:27`: `"scar"` is a fifth recognised category value;
+  every dilemma sprint that closes a lens must author at least one `category: "scar"`
+  `ChatterLine` gated on `flags.lens_closed(<losing_lens_id>)`, `one_shot=False`, spoken
+  from the perspective of the NPC or role the player refused, doing the work the player
+  chose not to do. This lives in code (a docstring the SI-3 scanner sees), not a new
+  markdown file.
+- **One synthetic demonstration scar line** in `data/crew/station_chatter.json` using a
+  test-only flag name (`lens_closed_test_lens`) that no real dilemma writes. It is
+  infrastructure proof, not shippable content; because the flag is never set in a real
+  playthrough the player never sees the line, but the scanner and test suite see it and
+  the mechanism is exercised end-to-end.
+- **Compliance-style invariant test** in `tests/test_models/test_station_chatter.py`:
+  loads all real `ChatterLine`s via the data loader and asserts `category == "scar"` implies
+  `one_shot == False`. This machine-enforces the convention so a future dilemma author
+  cannot silently ship a scar line marked one-shot.
+- **`tests/test_scenarios/test_scenario_dilemma_scars.py`**: sets a synthetic `lens_closed`
   flag directly on a `Player` fixture (bypassing the full dilemma-resolution flow, since this
-  sprint must not depend on A2-8's view layer being exercised), confirms a scar-category
+  sprint must not depend on A2-8's view layer being exercised), confirms the scar-category
   `ChatterLine` gated on that flag becomes eligible for display, and confirms it remains
-  eligible across multiple calls (not retired after one showing, unlike a `one_shot` line).
+  eligible across independent visits (not retired after one showing, unlike a `one_shot`
+  line).
 
 **Acceptance criteria.**
-1. A `ChatterLine` with `category="scar"`, `one_shot=False`, `required_flags=["lens_closed_
-   test_lens"]` is excluded from `StationChatterManager` output when the flag is absent, and
-   included once it is present - verified in `tests/test_models/test_station_chatter.py`.
-2. The same line is eligible for selection on a second, independent call after having been
-   shown once (proving it is not accidentally treated as one-shot) - verified explicitly,
-   not inferred from the `one_shot=False` setting alone.
-3. `tests/test_scenarios/test_scenario_dilemma_scars.py` passes without depending on any of
-   A2-8's `DilemmaResolutionView`, `check_collision()`, or real dilemma data - it manipulates
-   `player.dialogue_flags` directly, proving this sprint's mechanism does not require the
-   full engine to be exercised to be tested.
-4. Full suite green; no regression from baseline.
+1. A `ChatterLine` with `category="scar"`, `one_shot=False`,
+   `required_flags=["lens_closed_test_lens"]` is excluded from `StationChatterManager`
+   output when the flag is absent, and included once it is present — verified in
+   `tests/test_models/test_station_chatter.py`.
+2. The same line is eligible for selection on a second, independent call (after
+   `reset_shown(system_id)` simulates a new dock) after having been shown once — verified
+   explicitly, not inferred from the `one_shot=False` setting alone.
+3. `tests/test_scenarios/test_scenario_dilemma_scars.py` passes without importing
+   `DilemmaResolutionView`, `check_collision()`, or any real dilemma data — it manipulates
+   `player.dialogue_flags[flags.lens_closed("test_lens")]` directly, proving this sprint's
+   mechanism does not require the full engine to be exercised to be tested. Explicitly
+   asserted with a `grep`-style substring check in the test-file docstring (e.g. a comment
+   naming the two symbols that must remain unimported) so a future author cannot backslide.
+4. A compliance-style test in `tests/test_models/test_station_chatter.py` iterates every
+   `ChatterLine` returned by `get_data_loader().load_station_chatter()` and asserts
+   `line.category != "scar" or line.one_shot is False`, failing with the offending line id
+   if the invariant is violated. Passes today with the one demonstration line and continues
+   to pass as A2-12+ author their own scar content.
+5. The demonstration scar line's `text` passes
+   `tests/test_compliance/test_prose_anti_patterns.py` unchanged — the scanner already
+   walks every JSON file under `data/`, so no new plumbing is required; this criterion is
+   satisfied by writing the text within the Bible (no em-dash, no "no X, no Y", no "a
+   testament to" / "couldn't help but", no banned NPC names). Confirmed by running the
+   suite locally.
+6. Full suite green; pass count ≥ 11259 (pre-phase baseline).
+
+**Risks / open questions.**
+- ~~Does the sprint need to add a special code path in `StationChatterManager.get_chatter`
+  for `category == "scar"` (e.g. weighting, dedicated slot in the returned list,
+  extra-visit tracking)?~~ **Locked: no code-path change.** Rationale: the existing filter
+  loop at `spacegame/models/station_chatter.py:74-93` already excludes on missing
+  `required_flags` and includes on presence; the per-visit `_shown` tracking combined with
+  `reset_shown(system_id)` on next dock produces the "occasionally seen" cadence the
+  design spec calls for. Adding a scar-specific branch would be dead code with no
+  observable behaviour delta and would fragment the filter loop that the rest of the
+  chatter system relies on. Category is metadata + convention, not a control-flow switch.
+- ~~Where does the "scar must not be `one_shot=True`" invariant live: data-load-time
+  `assert` in `DataLoader.load_station_chatter` (loud, crashes the game on violation) vs
+  a compliance-style test (visible in CI, does not crash a running game)?~~ **Locked:
+  compliance test in `tests/test_models/test_station_chatter.py`.** Rationale: A2-11 ships
+  no real scar content — the demonstration line is under our control and passes trivially.
+  The invariant needs to fire when A2-12+ authors accidentally paste `one_shot=True` from
+  the default chatter template; a test failure is the right signal there. A data-load
+  raise would also punish a stale save-load or a partial working-copy checkout with a hard
+  crash, which is a worse UX than a CI red X.
+- ~~Should this sprint touch `NPC.dialogue_states` at all (the second mechanism the Context
+  points at, for NPCs whose entire tree flips after a lens closes)?~~ **Locked: no.** The
+  `NPC.dialogue_states` mechanism already works today — `get_active_dialogue_id` at
+  `spacegame/models/dialogue.py:60` already resolves against `required_flags`, so a
+  post-collision dialogue state gated on `flags.lens_closed(lens_id)` needs no engine
+  change to be usable. Per the design spec, that is the complementary path (the whole
+  NPC's tree flips) versus this sprint's mechanism (a chatter line surfaces ambient in
+  the station). Each downstream dilemma sprint picks whichever fits its narrative shape;
+  A2-11 is the ambient-station-chatter half.
+- ~~Should the demonstration scar line be authored under a real system id
+  (e.g. `nexus_prime`) or a synthetic one?~~ **Locked: real system id, test-only flag.**
+  Rationale: authoring under a real system id ensures the load path, the filter loop, and
+  the shown-line tracking are all exercised against production data. The safety comes from
+  the flag name (`lens_closed_test_lens`), which no real dilemma writes, so the line is
+  invisible in a real playthrough while still integration-tested. `nexus_prime` is a good
+  fit — the Commerce Guild chatter set is the largest in the file, so one more entry
+  causes no visible imbalance.
+
+**Plan.**
+
+Task order for the implementer. Each task lists file(s), test surface, and gotchas.
+
+1. **Extend `ChatterLine.category` docstring to declare `"scar"` and its invariants.**
+   - Files: `spacegame/models/station_chatter.py` (the inline comment at line 27, plus a
+     short expansion on the class docstring naming the convention: scar-category lines are
+     always `one_shot=False`, always carry a `flags.lens_closed(...)` string in
+     `required_flags`, and are authored from the refused perspective).
+   - Test surface: none — docstring change.
+   - Gotcha: keep the comment short. The load path does not read this; it is documentation
+     for the next author. Do not add a runtime `assert` here — the compliance test in
+     task 4 is where enforcement lives.
+
+2. **Add the demonstration scar line to `data/crew/station_chatter.json`.**
+   - Files: `data/crew/station_chatter.json`.
+   - Test surface: existing `test_prose_anti_patterns.py` will scan the text on next run.
+   - Gotcha: the flag string must be `"lens_closed_test_lens"` (the string
+     `flags.lens_closed("test_lens")` returns), and the text must clear the Writing Bible
+     (no em-dash, no "no X, no Y", no banned phrases, no banned NPC names). Suggested
+     shape: an overheard fragment where the NPC who would have carried the closed-lens
+     work names the concrete thing they are doing without the player — the *form* the next
+     eight dilemma sprints will follow. System id: `nexus_prime`. Category: `"scar"`.
+     `one_shot: false`. `weight`: 6-8 so it does not dominate the ambient rotation.
+
+3. **Write AC1 and AC2 in `tests/test_models/test_station_chatter.py`.**
+   - Files: `tests/test_models/test_station_chatter.py` (extend the existing test file;
+     the `_make_line` helper at line 15 already accepts the fields we need).
+   - Test surface:
+     - AC1: construct a scar line with `required_flags=["lens_closed_test_lens"]`,
+       instantiate `StationChatterManager` around just that line, call `get_chatter(...)`
+       with `player_flags={}` and assert empty; call again with
+       `player_flags={"lens_closed_test_lens": True}` and assert the line's text appears.
+     - AC2: same line, same flag-present setup, call `get_chatter` twice with
+       `reset_shown(system_id)` between the calls, assert the line appears both times.
+       This is the explicit not-retired-after-one-showing check.
+   - Gotcha: `_make_line`'s current signature does not accept `required_flags` or
+     `one_shot`. Extend the helper (or bypass it and construct `ChatterLine(...)` directly
+     for these two tests) — do not change the helper's default surface, which many other
+     tests depend on.
+
+4. **Write AC4 compliance test in `tests/test_models/test_station_chatter.py`.**
+   - Files: same file.
+   - Test surface: import `get_data_loader`, call `load_station_chatter()`, iterate the
+     returned list, assert `not (line.category == "scar" and line.one_shot)` for each. If
+     violated, fail with the offending `line.id`.
+   - Gotcha: the loader is module-level singleton — a prior test's mutation cannot leak
+     into this one because chatter lines are constructed fresh from JSON each load. The
+     test does not need pytest fixtures; a plain function is fine.
+
+5. **Write `tests/test_scenarios/test_scenario_dilemma_scars.py` (AC3).**
+   - Files: `tests/test_scenarios/test_scenario_dilemma_scars.py` (NEW).
+   - Test surface: use `tests/test_scenarios/_helpers.fresh_player`, set
+     `player.dialogue_flags[flags.lens_closed("test_lens")] = True` directly (do not go
+     through `resolve()` — the whole point is that the scar mechanism is testable without
+     the dilemma engine), construct a `StationChatterManager` around a fixture list
+     containing one scar line, and assert the line is eligible on the first call and
+     eligible again after `reset_shown(system_id)`. Add a top-of-file docstring naming
+     the two symbols this test does not import (`DilemmaResolutionView`,
+     `check_collision`) so a future refactor cannot silently make this test depend on
+     them.
+   - Gotcha: use `flags.lens_closed("test_lens")` (the helper) rather than the raw
+     `"lens_closed_test_lens"` string — the whole point of the SI-3 registry is to route
+     these strings through one module. Import from `spacegame.constants.flags`.
+
+6. **Run the full suite; confirm ≥ 11259 pass; confirm no new prose-scanner failures.**
+   - Files: none.
+   - Test surface: `pytest -n auto`.
+   - Gotcha: if the scanner does trip, the fix is in the demo line's `text`, not in the
+     scanner. Do not weaken any existing prose check to accommodate the demo line.
+
+**Cross-sprint reactions to author.**
+- None (foundational mechanism, no player-facing narrative content ships here — the demo
+  scar line is gated on a test-only flag no real dilemma writes). The reaction surface
+  belongs downstream:
+  - A2-12 through A2-19 (per-dilemma content sprints) each author their own scar lines
+    using this mechanism, gated on their own losing-lens closure flags. Each of those
+    sprints owns its cross-sprint reactions (Marcus's banter about Thuy Kallio doing the
+    Cradlepoint housing work he chose not to fund, Priya declining Ledger intelligence,
+    etc.).
+  - A2-20 (Capstones) will read `flags.lens_closed(lens_id)` to gate capstone eligibility
+    but does not consume scar chatter directly.
+
+Do NOT invent narrative reactions in this sprint's scope; the mechanism plus the
+convention documented on `ChatterLine` is the API those sprints consume.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-31 19:20 — harness: plan phase starting
+- 2026-08-31 — planning complete; confirmed all 4 context docs exist; folded the
+  invariant compliance test (AC4) and the voice-check anchor (AC5) into the sprint;
+  locked 4 open decisions (no code-path change to `get_chatter`, compliance-test
+  enforcement of the scar/one_shot invariant, no `NPC.dialogue_states` work in this
+  sprint, real-system-id + test-only-flag demo line placement); filled in 6-task Plan
+  section; cross-sprint reactions section confirms none belong to this sprint.
+  PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-31 19:20
+- Completed: 2026-08-31
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending>
+- New_sprints_proposed: none
+- Polish_items_folded_in: compliance-invariant-test, voice-check-anchor-criterion
+- Decisions_locked: 4
+- Notes: All 4 Context-to-read docs verified present. Sprint is intentionally small — no
+  production filter change; the existing `StationChatterManager` already delivers the
+  required semantics for a `required_flags=[lens_closed_*]`, `one_shot=False` line, so
+  the value-add is a docstring convention + one JSON demo + tests that prove the mechanism
+  end-to-end without invoking A2-8's view layer. Downstream sprints A2-12 through A2-19
+  each author their own scar content and their own cross-sprint reactions; A2-11 is the
+  mechanism proof, not narrative content.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
