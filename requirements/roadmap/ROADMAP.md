@@ -12546,7 +12546,7 @@ cohesion sprints.
 
 #### A2-7 — Per-lens readings on locations
 
-**Status**: in-progress (planning)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-1 | **Blocks**: none
 
@@ -12823,24 +12823,24 @@ data, prove the shape, guard the invariants. Nothing more.
 - 2026-08-31 05:15 — Task 1+2+5: Location.lens_readings field + reading_for() helper + round-trip serialization + extensibility test. 10 new tests green. Committed a420a83.
 - 2026-08-31 05:25 — Task 3+4: TestLensReadingReferences cross-ref guard (2 tests) + lens_readings JSON content for breakstone_deep_mines, nova_restricted_labs, crimson_salvaging (5 readings each). All content tests green. Committed 241e982.
 - 2026-08-31 05:35 — Task 6 sweep complete. Full suite: 11146 passing / 100 skipped vs baseline 11133 / 100 (+13). One pre-existing xdist worker-crash (test_no_new_consumer_only_flags, 83s runtime; passes in serial). Lint/format/mypy clean. Writing Bible scanner 35/35. Touch zones respected. AC1=test_round_trip_preserves_lens_readings, AC2=test_from_dict_defaults_lens_readings_when_missing, AC3=test_every_lens_reading_key_is_a_real_lens_id + test_injected_bad_lens_id_fails_the_check, AC4=test_authored_locations_have_lens_readings + Jaccard test, AC5=test_novel_lens_reading_loads_without_code_change, AC6=suite green. PHASE_OK
+- 2026-08-31 05:22 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 05:38 — review complete; all six acceptance criteria confirmed; plan audit sound; no critical findings; one minor tighten noted (reading_for() docstring is verbose for a 1-line impl); no fixes required. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 04:57
-- Completed: 2026-08-31 05:35
-- Files_changed: spacegame/models/location.py, tests/test_models/test_location.py, tests/test_data/test_cross_references.py, data/galaxy/locations.json
-- Commits: a420a83, 241e982
-- Tests_added: 13
-- Tests_baseline: 11133
+- Started: 2026-08-31 05:22
+- Completed: 2026-08-31 05:43
+- Files_changed: none
+- Commits: none
 - Tests_passing: 11146
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Location.lens_readings dict[str,str] with reading_for() str helper; backward-compatible round-trip; cross-ref guard in test_cross_references.py; 15 authored readings across breakstone_deep_mines (community/revolution/preservation/legacy/faith), nova_restricted_labs (truth/discovery/transcendence/crime/justice), crimson_salvaging (wealth/preservation/discovery/community/vengeance) covering 12 of 16 registry lens ids. One pre-existing xdist flake (83s test times out worker; passes in serial, unrelated to this sprint).
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: reading_for() carries a 4-section Google docstring for a 1-line body; the method name + signature + field docstring already convey the contract — a single summary line would do.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all six locked decisions defensible. Implementation hits every AC. 15 authored readings (5 per location) across 12 of 16 lens ids; clean voice, no em-dashes, no banned names/phrases, no Marcus/Malia insertion. 11146 >= 11133 baseline; one pre-existing xdist flake unrelated to this sprint.
 ---
 
 #### A2-8 — Dilemma model + threshold collision
