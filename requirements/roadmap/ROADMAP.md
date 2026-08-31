@@ -11757,7 +11757,7 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 - Started: 2026-08-31 04:13
 - Completed: 2026-08-31 04:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (this planning commit)
+- Commits: 48ec64f
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented and verified)
 - Decisions_locked: 0 (all six decisions locked in prior plan phases still hold: facade indirection, gap-manifest partition, amount tier calibration 1/3/5/10, exact-match colon-qualifier semantics, no observer hook, no upper cap)
