@@ -444,6 +444,11 @@ class SaveManager:
             # ``LensInvestment()`` is the empty state); legacy saves without
             # the key restore an empty state via the deserialize path.
             "lens_investment": player.lens_investment.to_dict(),
+            # A2-8: dilemma engine runtime state. Empty state (fresh
+            # player) still serializes so the load path can distinguish
+            # "no dilemma_state key" (legacy save → default empty) from
+            # "explicit empty state" (indistinguishable, both safe).
+            "dilemma_state": player.dilemma_state.to_dict(),
             "wreckers_guild_state": (
                 player.wreckers_guild_state.to_dict()
                 if player.wreckers_guild_state is not None
@@ -627,6 +632,14 @@ class SaveManager:
             player.lens_investment = LensInvestment.from_dict(lens_investment_data)
         else:
             player.lens_investment = LensInvestment()
+
+        # A2-8: dilemma engine runtime state. Legacy saves predating
+        # A2-8 have no ``dilemma_state`` key and load with the default
+        # empty runtime state. Non-dict payloads also load as empty via
+        # ``DilemmaRuntimeState.from_dict`` — see CLAUDE.md Save Migration.
+        from spacegame.models.dilemma import DilemmaRuntimeState
+
+        player.dilemma_state = DilemmaRuntimeState.from_dict(data.get("dilemma_state"))
 
         # SA-1: Wreckers' Guild Hall runtime state (None for legacy saves
         # and for players who never docked at the Hall).

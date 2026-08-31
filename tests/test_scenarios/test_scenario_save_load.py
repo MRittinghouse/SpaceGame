@@ -118,6 +118,64 @@ class TestSaveLoadSubsystemRelatedState:
         assert restored.dialogue_flags.get("first_cockpit_shot") is True
 
 
+class TestSaveLoadDilemmaState:
+    """A2-8 AC7: DilemmaRuntimeState round-trips through save/load.
+
+    Covers:
+    - Fresh player: an empty DilemmaRuntimeState survives.
+    - In-progress telegraphed dilemma: telegraphed set + telegraph_cursor
+      + resolved map + closed_lenses set all preserved byte-identically.
+    - Legacy save: a save file with no ``dilemma_state`` key loads with
+      an empty runtime state and no crash (CLAUDE.md save-migration rule).
+    """
+
+    def test_default_state_survives_round_trip(self) -> None:
+        player = fresh_player()
+        restored = round_trip_save(player)
+        assert restored.dilemma_state.telegraphed == set()
+        assert restored.dilemma_state.telegraph_cursor == {}
+        assert restored.dilemma_state.resolved == {}
+        assert restored.dilemma_state.closed_lenses == set()
+
+    def test_in_progress_telegraphed_dilemma_survives(self) -> None:
+        player = fresh_player()
+        player.dilemma_state.telegraphed.add("d_wealth_community")
+        player.dilemma_state.telegraph_cursor["d_wealth_community"] = 2
+        restored = round_trip_save(player)
+        assert restored.dilemma_state.telegraphed == {"d_wealth_community"}
+        assert restored.dilemma_state.telegraph_cursor == {"d_wealth_community": 2}
+        assert restored.dilemma_state.resolved == {}
+
+    def test_resolved_dilemma_survives(self) -> None:
+        player = fresh_player()
+        player.dilemma_state.telegraphed.add("d_wealth_community")
+        player.dilemma_state.telegraph_cursor["d_wealth_community"] = 5
+        player.dilemma_state.resolved["d_wealth_community"] = "wealth"
+        player.dilemma_state.closed_lenses.add("community")
+        restored = round_trip_save(player)
+        assert restored.dilemma_state.telegraphed == {"d_wealth_community"}
+        assert restored.dilemma_state.telegraph_cursor == {"d_wealth_community": 5}
+        assert restored.dilemma_state.resolved == {"d_wealth_community": "wealth"}
+        assert restored.dilemma_state.closed_lenses == {"community"}
+
+    def test_legacy_save_without_key_loads_empty(self) -> None:
+        """CLAUDE.md save-migration rule: missing keys default to safe values."""
+        import json
+
+        from spacegame.save_manager import SaveManager
+
+        player = fresh_player()
+        mgr = SaveManager()
+        data = mgr._serialize_player(player)
+        data.pop("dilemma_state", None)
+        json_str = json.dumps(data)
+        restored = mgr._deserialize_player(json.loads(json_str))
+        assert restored.dilemma_state.telegraphed == set()
+        assert restored.dilemma_state.telegraph_cursor == {}
+        assert restored.dilemma_state.resolved == {}
+        assert restored.dilemma_state.closed_lenses == set()
+
+
 class TestSaveLoadFullIntegration:
     """The kitchen-sink scenario: every new field wired, round-trip matches."""
 
