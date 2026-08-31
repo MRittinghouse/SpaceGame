@@ -126,7 +126,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-2](#a2-2--lens-authoring-guide) | Lens authoring guide | Act II | S | done | none |
 | [A2-3](#a2-3--capstone-format-and-hook-contract) | Capstone format and hook contract | Act II | S | done | none |
 | [A2-4](#a2-4--per-lens-investment-tracking) | Per-lens investment tracking | Act II | L | done | A2-1 |
-| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | blocked | A2-4, A2-5, A2-6 |
+| [A2-4A](#a2-4a--first-oblique-investment-consumer) | First oblique investment consumer | Act II | M | todo | A2-4, A2-5, A2-6 |
 | [A2-4B](#a2-4b--wire-investment_from-actions-into-gameplay-hooks) | Wire `investment_from` actions into gameplay hooks | Act II | M | in-progress | A2-4, A2-5, A2-6 |
 | [A2-5](#a2-5--lens-definitions-1-8) | Lens definitions 1-8 | Act II | M | done | A2-1 |
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
@@ -11340,7 +11340,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 
 #### A2-4A — First oblique investment consumer
 
-**Status**: blocked
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 5-7 days
 **Depends on**: A2-4, A2-5, A2-6 | **Blocks**: none
 
@@ -11391,6 +11391,7 @@ For crew banter, ambient dialogue, news, or authored missions: **none** in this 
 - 2026-08-28 — todo (created by A2-4 planner; addresses the AC5 scope gap surfaced during A2-4 planning)
 - 2026-08-30 23:34 — harness: plan phase starting
 - 2026-08-30 23:46 — harness: plan phase outcome=blocked, marking blocked. roadmap validation failed: sprints modified outside claim: ['A2-4B']. Claimed sprint was A2-4A. (not retrying -- a commit referencing A2-4A already landed this attempt; re-running risks duplicating partial work)
+- 2026-08-31 00:32 — session: reset blocked -> todo. The plan phase failed validation because the planner edited A2-4B while planning A2-4A: "sprints modified outside claim: ['A2-4B']". The rule was already stated in plan.md, so this was an agent violating an explicit instruction rather than an undefined case -- but the two sprints were split from one and their boundary is genuinely arguable, and the prompt offered no legal way to record "the neighbour needs to change". It now does. A2-4A's roadmap changes were rolled back by the validator, so a re-plan duplicates nothing.
 **Notes.** A2-4A depends on A2-5 and A2-6 (the lens registry must be populated) *and* on A2-4 (the query API). Sequenced late in Tier 1, but a natural pickup once the three prerequisites are done. If A2-5 / A2-6 are still `todo` when A2-4 finishes, this sprint stays blocked — that is expected, not a defect.
 
 #### A2-4B — Wire `investment_from` actions into gameplay hooks

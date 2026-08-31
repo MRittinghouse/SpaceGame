@@ -95,7 +95,22 @@ outcomes, decided only by which sentinel the agent chose.
 
 Edit `{ROADMAP_PATH}` directly. Modify ONLY the section for sprint `{SPRINT_ID}` and (if you propose new sprints) add new `<h3>` sections + matching index-table rows for them.
 
-Do NOT modify any other sprint's section.
+Do NOT modify any other sprint's section. **This includes a sibling sprint whose
+scope overlaps yours.** The harness snapshots the roadmap at phase start and
+rejects the whole phase if any section outside your claim changed, so touching a
+neighbour does not just get reverted -- it fails your sprint and discards your
+planning work with it.
+
+This is a real temptation, not a hypothetical: A2-4A and A2-4B were split from
+one sprint and their boundary is genuinely arguable. On 2026-08-30 A2-4A's
+planner edited A2-4B while planning, and lost its whole phase to
+`sprints modified outside claim: ['A2-4B']`.
+
+If you conclude a NEIGHBOURING sprint's scope must change, say so in your phase
+report instead of editing it. Put the sprint ID and the proposed change under
+`Notes`, and plan your own sprint against the boundary as it stands today. A
+later run, or a human, will action the proposal. Recording it is useful; acting
+on it yourself costs the sprint.
 Do NOT modify code, data files, or tests in this phase.
 Do NOT push to remote.
 
