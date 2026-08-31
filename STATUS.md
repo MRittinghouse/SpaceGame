@@ -1,51 +1,36 @@
 # Ralph Status
 
-_Updated: 2026-08-31 02:42:55_
+_Updated: 2026-08-31 03:06:15_
 
-## TEST SUITE FAILING
+## Harness Did Not Run
 
-The harness stopped: the test-suite gate found a red tree, so no further sprint will be authored on top of it. Nothing is broken about the harness itself -- this is it refusing to build on a break.
-
-```
-A2-4B: test-suite gate FAILED: ======================= warnings summary ===============================
-tests/test_engine/test_display_flags.py::TestDisplayFlagsContract::test_flags_accepted_by_set_mode
-  C:\Users\matth\PyCharmProjects\SpaceGame\tests\test_engine\test_display_flags.py:67: Warning: no fast renderer available
-    surf = pygame.display.set_mode((1280, 720), flags=flags)
-
-tests/test_engine/test_game.py: 5 warnings
-tests/test_engine/test_game_player_accessor.py: 3 warnings
-tests/test_engine/test_ground_integration.py: 21 warnings
-tests/test_crawler/test_bootstrap.py: 1 warning
-tests/test_crawler/test_integration.py: 2 warnings
-tests/test_crawler/test_reachability.py: 9 warnings
-  C:\Users\matth\PycharmProjects\SpaceGame\spacegame\engine\game.py:269: Warning: no fast renderer available
+Baseline capture FAILED: pytest exited 1; tail: armProjects\SpaceGame\spacegame\engine\game.py:269: Warning: no fast renderer available
     self.screen = pygame.display.set_mode(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
 FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManifest::test_every_wired_tag_has_a_grep_hit_in_production_code
-1 failed, 11129 passed, 100 skipped, 42 warnings in 325.93s (0:05:25)
-```
+1 failed, 11130 passed, 100 skipped, 42 warnings in 323.96s (0:05:23). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
-- Sprint: **A2-4B**
-- Phase: **review**
-- Last beat: **24 seconds ago**
-- Beat PID: 31012 -- alive
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **29 seconds ago**
+- Beat PID: 31384 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 30
-- eligible: 2
-- in flight: A2-4A (in-progress (planning))
-- blocked: A2-4B, SA-F2, UI-BOUNDS-1
+- todo: 32
+- eligible: 4
+- in flight: none
+- blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (just now)
-- last successful push: just now
+- last push: **OK** (23 minutes ago)
+- last successful push: 23 minutes ago
 
 ## Blocks drift
 
@@ -56,8 +41,3 @@ FAILED tests/test_compliance/test_lens_investment_gap_manifest.py::TestGapManife
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- A2-4B blocked
-- A2-4B TEST-GATE FAILED
