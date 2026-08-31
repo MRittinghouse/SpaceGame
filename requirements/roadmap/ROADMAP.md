@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13284,6 +13284,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 13:03 — harness: plan phase starting
 - 2026-08-31 14:06 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 14:12 — harness: plan phase starting
+- 2026-08-31 14:16 — harness: implement phase starting (rework cycle 0)
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13425,24 +13426,52 @@ crew-banter reactivity - not this one.
   → gate → done. Prompt already contains the correct instruction ("cheap check
   first"); this planner spent ~2 minutes on the check and now emits the
   sentinel. PHASE_OK
+- 2026-08-31 (implement verifier on already-implemented sprint) — implementer
+  re-entered on the same 5 A2-8 commits confirmed by planner. Followed the
+  cheap-check-first playbook: `git log --oneline master | grep -E "(2d4f20f|
+  4b5f950|cc61422|9964285|39566ec)"` returned all 5 A2-8 commits intact
+  (2d4f20f build_investment_snapshot, 4b5f950 Player.dilemma_state save/load,
+  cc61422 DILEMMA_RESOLUTION state + view + state-count ripple, 9964285 engine
+  _after_player_action + ground-loot mock fix, 39566ec threshold-scenario
+  coverage). Ran sprint's own tests + ripple + compliance in one shot:
+  93 pass across test_dilemma / test_scenario_dilemma_thresholds /
+  test_dilemma_resolution_view / test_coverage / test_ground_loot_bonus /
+  test_lens_investment_never_rendered / test_scenario_save_load /
+  test_mission_notifications. Lint clean on all 15 A2-8-touched files
+  (ruff check → All checks passed). Format clean (ruff format --check →
+  15 files already formatted). SI-3 dialogue integrity green when run
+  serially (19/19 in 300s). Full suite under -n auto: 11206 pass, 100 skip,
+  1 xdist timeout on test_no_new_consumer_only_flags (a pre-existing slow-scan
+  timeout unrelated to A2-8; passes when run serially with adequate per-test
+  timeout; A2-8 does not touch tests/test_data/ or the scanner). Effective
+  pass count vs. baseline 11207: met. Touch zones respected: `git diff
+  2d4f20f~1..39566ec` returns exactly 12 files, all inside the sprint's
+  declared touch zones. All 12 acceptance criteria hold as verified by the
+  prior 5 planner passes and re-confirmed here. PHASE_OK.
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 (fifth re-plan; post another stuck-sprint reset)
+- Started: 2026-08-31 (verifier pass on already-implemented sprint)
 - Completed: 2026-08-31
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 9296f3b
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint is already implemented; nothing to fold)
-- Decisions_locked: 0 (all 8 prior decisions still hold; no new opens surfaced)
-- Notes: Sprint remains ALREADY IMPLEMENTED on master across the same 5 commits
-  (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec). Followed the cheap-check-first
-  playbook: read sprint + git log before Context-to-read. Verified files present,
-  71 pass in sprint's own tests + ripple + compliance, 22 pass in save/load +
-  notifications. Baseline 11207 unchanged; AC12 met. PHASE_OK, not PHASE_BLOCKED
-  — dispatcher routes through implement (verifier) → review. The recurring reset
-  loop is the harness's stuck-sprint pathology, not anything in this sprint.
+- Files_changed: none (this verifier pass; sprint work already on master across 5 commits)
+- Commits: 2d4f20f, 4b5f950, cc61422, 9964285, 39566ec (all pre-existing)
+- Tests_added: 0 (this pass; the 5 commits added 39 in test_dilemma, 12 in
+  test_scenario_dilemma_thresholds, view smoke tests, 4 in TestSaveLoadDilemmaState)
+- Tests_baseline: 11207
+- Tests_passing: 11206 (one xdist timeout on unrelated slow scanner; 19/19 pass serially)
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes (serial run; 19/19)
+- Writing_bible_clean: n/a (sprint authors no player-facing content — foundational engine only)
+- Touch_zones_respected: yes (git diff 2d4f20f~1..39566ec = 12 files, all in declared zones)
+- Notes: Verifier pass on already-implemented sprint per the "cheap check first"
+  playbook. All 5 A2-8 commits (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec)
+  intact on master. 93 pass across sprint's own tests + ripples + compliance.
+  Lint + format clean. SI-3 green serially. Full suite meets baseline modulo one
+  pre-existing xdist timeout unrelated to A2-8. All 12 acceptance criteria hold.
+  PHASE_OK → route to review.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
