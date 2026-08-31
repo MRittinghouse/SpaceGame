@@ -132,7 +132,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-6](#a2-6--lens-definitions-9-16) | Lens definitions 9-16 | Act II | M | done | A2-1 |
 | [A2-7](#a2-7--per-lens-readings-on-locations) | Per-lens readings on locations | Act II | M | done | A2-1 |
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
-| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | in-progress | A2-8 |
+| [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | todo | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | todo | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
@@ -13544,7 +13544,7 @@ crew-banter reactivity - not this one.
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: S | **Effort**: 2-3 days
 **Depends on**: A2-8 | **Blocks**: A2-12, A2-13, A2-14, A2-15, A2-16, A2-17, A2-18, A2-19
 
@@ -13714,6 +13714,7 @@ crew banter, or UI copy that any other sprint would react to).
 - 2026-08-27 - todo (created)
 - 2026-08-31 16:42 — harness: plan phase starting
 - 2026-08-31 17:15 — planning complete; verified all 4 context docs exist; folded 2
+- 2026-08-31 17:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   additional invariants (telegraph_lines non-empty, collision_requires in range) into
   the deliverables + meta-tests; locked 3 decisions (empty-registry handling, injection
   mechanism, scope expansion); Plan section filled with 5 tasks; cross-sprint reactions
