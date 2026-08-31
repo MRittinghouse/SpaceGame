@@ -12852,7 +12852,7 @@ data, prove the shape, guard the invariants. Nothing more.
 
 #### A2-8 — Dilemma model + threshold collision
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 2 weeks
 **Depends on**: A2-4 | **Blocks**: A2-9, A2-10
 
@@ -13289,6 +13289,7 @@ crew-banter reactivity - not this one.
 - 2026-08-31 15:44 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-08-31 16:06 — harness: plan phase starting
 - 2026-08-31 16:10 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 16:14 — harness: review phase starting (rework cycle 0)
   supplementary reads (lens_investment.py compliance-test docstring, capstone.py
   should_fire() as predicate template, save_manager.py splice window); extended touch
   zones from 9 to 11 files (added save_manager.py splice, added test_scenario_save_load.py
@@ -13503,23 +13504,41 @@ crew-banter reactivity - not this one.
   hold per the six prior verifications. PHASE_OK — routing forward to
   review → gate → done.
 
+- 2026-08-31 (review — second independent review pass) — Plan audit: sound; all 8
+  locked decisions defensible; task breakdown correctly captured the three
+  revert-autopsy failure modes (Tasks 2.1/6.1/7.1). Independently ran all 93
+  sprint-surface tests (1.43s, all pass). Read dilemma.py, dilemma_resolution_view.py,
+  game.py (_after_player_action / _tick_dilemma_engine / _deliver_telegraph /
+  _push_dilemma_modal / _ensure_dilemma_resolution_view / _handle_dilemma_resolution),
+  player.py field, save_manager.py splice, test_coverage.py, test_ground_loot_bonus.py.
+  Ruff lint clean on all 12 touched files. Compliance grep confirmed zero
+  lens_investment/LensInvestment tokens in engine/game.py and views/dilemma_resolution_view.py.
+  State-count ripple verified: test_coverage.py uses len(GameState) not hard-coded 41.
+  Mock-Game state_manager guard verified: _make_game_with_loot_bonus sets
+  game.state_manager = MagicMock(current_state=None) and all 7 ground-loot tests pass.
+  Full suite (two independent runs): 11207 pass, 1 pre-existing xdist timeout on
+  test_no_new_consumer_only_flags (documented in all prior reviews; passes serially;
+  A2-8 does not touch test_data/ or the scanner), 100 skip, exit code 0.
+  All 12 acceptance criteria independently verified. Single tighten: three pygame.Surface
+  allocations per render frame in DilemmaResolutionView.render() (overlay, panel, pulse border)
+  — could be pre-allocated in on_enter(); not a correctness issue or blocker for this sprint.
+  No critical findings. PHASE_OK
+
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
-- Files_changed: requirements/roadmap/ROADMAP.md (activity log only; no code changes needed — all 5 A2-8 implementation commits already on master)
-- Commits: none this pass (2d4f20f, 4b5f950, cc61422, 9964285, 39566ec landed in prior passes)
-- Tests_added: 0 this pass (28 previously added and still passing)
-- Tests_baseline: 11208
-- Tests_passing: 93 across sprint touch surface (full suite not re-run — prior verifier + reviewer passes both measured 11206-11207 under -n auto with one known pre-existing xdist timeout on test_no_new_consumer_only_flags unrelated to A2-8)
-- Tests_skipped: n/a this pass
-- Lint_clean: yes (verified in prior implement pass on all 15 touched files)
-- Format_clean: yes (verified in prior implement pass on all 15 touched files)
-- SI3_scanner_clean: n/a (no new flags this pass)
-- Writing_bible_clean: n/a (no player-facing content this pass)
-- Touch_zones_respected: yes
-- Notes: Seventh implement-verify pass on the already-implemented, already-reviewed A2-8. Kept the pass cheap per playbook (< 3 min of tool time) so review has runway. All A2-8 files present, sprint tests green (93/93), 12 acceptance criteria hold. Emitting PHASE_OK so the dispatcher can finally route the sprint through review → gate → done.
+- Files_changed: requirements/roadmap/ROADMAP.md (activity log + phase report only; no code changes)
+- Commits: none
+- Tests_passing: 11207 (full suite, two independent runs; 1 pre-existing xdist timeout on test_no_new_consumer_only_flags, exit code 0; 93/93 on sprint-surface directly)
+- Acceptance_criteria_verified: 12/12
+- Polish_items_verified: n/a (no planner-folded polish items; this is an engine sprint with no authored player-facing content)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: DilemmaResolutionView.render() allocates three pygame.Surface objects per frame (overlay, panel, pulse border at lines 157/167/172); pre-allocating in on_enter() would eliminate per-frame GC pressure during the modal.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all 8 locked decisions defensible. Implementation hits all 12 AC including the three revert-autopsy additions (build_investment_snapshot, len(GameState) state-count ripple, mock-Game state_manager fix). Compliance guard clean; no lens_investment tokens in engine/ or views/. The one suite failure is the same pre-existing xdist timeout documented across all prior review passes.
 ---
 
 #### A2-9 — `tier_unlocks` and telegraph-threshold integrity guard
