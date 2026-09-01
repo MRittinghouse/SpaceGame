@@ -1,0 +1,98 @@
+{
+  "empire": [
+    {
+      "id_prefix": "border_dispute",
+      "name_template": "Border Dispute: {system_name} Filing",
+      "description_template": "Halvorsen's registry flagged a boundary contest at {system_name}. A neighbor is filing over the same parcel you now hold on record. Ride out to {system_name} and put your name on the ground before the other filing goes to arbitration.",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Show the flag at {system_name}"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    },
+    {
+      "id_prefix": "governor_overreach",
+      "name_template": "Overreach at {system_name}",
+      "description_template": "A governor holding one of your border parcels at {system_name} has started drawing lines that were not on the original filing. Colony operators are asking who signs their overtime now. Ride out and remind the governor whose name is on the registry.",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Arrive at {system_name} and settle the question of authority"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    },
+    {
+      "id_prefix": "colony_resistance",
+      "name_template": "Holdout at {system_name}",
+      "description_template": "A colony on one of your parcels at {system_name} has stopped filing yield reports. Halvorsen's people say it is not a data problem. Ride out and hear what the holdout wants before the arbitration window closes.",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Meet the holdout at {system_name} on their ground"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    }
+  ],
+  "community": [
+    {
+      "id_prefix": "scarcity_relief",
+      "name_template": "Cradlepoint Scarcity Run",
+      "description_template": "Kallio's list at Cradlepoint has run short again. The settlement needs food carried in this cycle, and the queue does not clear without it. Pick up the tonnage and bring it to the dock where the list is being worked.",
+      "commodity": "food",
+      "quantity": 6,
+      "objectives": [
+        {"type": "collect_cargo", "target": "commodity", "quantity_field": "quantity", "description_template": "Acquire {quantity} units of {commodity_name} for the settlement"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} standing still holds at Cradlepoint"}
+      ]
+    },
+    {
+      "id_prefix": "newcomer_medical",
+      "name_template": "Newcomer Clinic Supply",
+      "description_template": "A new arrival at Cradlepoint is running short on medical stock and Kallio's clinic list has moved them to the top. The settlement you built the standing at is asking. Carry the crate in.",
+      "commodity": "medical",
+      "quantity": 4,
+      "objectives": [
+        {"type": "collect_cargo", "target": "commodity", "quantity_field": "quantity", "description_template": "Acquire {quantity} units of {commodity_name} for the newcomer clinic"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} standing still holds at Cradlepoint"}
+      ]
+    },
+    {
+      "id_prefix": "outside_interest",
+      "name_template": "Outside Interest at Cradlepoint",
+      "description_template": "Someone from outside the settlement has started asking after Kallio's supply route. Kallio wants the food stock in the warehouse before they arrive with an offer to buy it out. Carry the tonnage and put it on the shelf where the list can see it.",
+      "commodity": "food",
+      "quantity": 8,
+      "objectives": [
+        {"type": "collect_cargo", "target": "commodity", "quantity_field": "quantity", "description_template": "Stock {quantity} units of {commodity_name} at the settlement warehouse"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} standing still holds at Cradlepoint"}
+      ]
+    }
+  ],
+  "vengeance": [
+    {
+      "id_prefix": "foss_track",
+      "name_template": "Track: Rendik Foss Sighting",
+      "description_template": "A broker on the off-books side of the ledger has a fresh line on Rendik Foss. It is the kind of tip that only comes to someone with your file on record. Ride out to the sighting and see whether it holds up. Callan Vert is not on this one, but Vert will hear about it fast if you close the file.",
+      "gate_dilemma": "d1_vengeance_justice",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Meet the broker at {system_name}"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    },
+    {
+      "id_prefix": "vert_leverage",
+      "name_template": "Leverage: Callan Vert's Line",
+      "description_template": "Callan Vert has surfaced running paper for a small crew that did not check who they were fronting for. An informant would rather hand the lead to someone the warrant circuit would refuse. Ride out and hear what the informant will say in person.",
+      "gate_dilemma": "d1_vengeance_justice",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Meet the informant at {system_name}"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    },
+    {
+      "id_prefix": "ledger_after_senn",
+      "name_template": "Ledger Remnant: After Senn",
+      "description_template": "Someone who used to route work for the Ledger under Aldric Senn is offering an introduction. The countersignature line closed the day you did, and this contact only takes referrals from operators who did not need the process. Ride out and hear the pitch on their ground.",
+      "gate_dilemma": "d4_truth_vengeance",
+      "objectives": [
+        {"type": "reach_system", "target": "target_system", "description_template": "Meet the former Ledger operator at {system_name}"},
+        {"type": "has_flag", "target": "outcome_flag", "description_template": "Confirm the {outcome_label} record still stands"}
+      ]
+    }
+  ]
+}

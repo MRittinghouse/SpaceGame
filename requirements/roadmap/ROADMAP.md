@@ -18493,7 +18493,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-20 | **Blocks**: none
 
@@ -18809,6 +18809,7 @@ focused on the generator + wiring, not content sprawl.
 - 2026-08-27 - todo (created)
 - 2026-09-01 19:35 — harness: plan phase starting
 - 2026-09-01 20:15 — planning complete; 5 decisions locked (seed strategy, territory
+- 2026-09-01 19:43 — harness: implement phase starting (rework cycle 0)
   surface, firing cadence, galaxy-event scope, empty-lens behavior); 6 cross-sprint
   reactions flagged as follow-up (not folded in — would push L→XL); 7-step Plan authored;
   ACs tightened to reference concrete outcome_flags and mission id prefixes. PHASE_OK

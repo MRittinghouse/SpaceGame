@@ -165,6 +165,10 @@ class DataLoader:
         # sentinel in this sprint. A2-9 adds the tier_unlocks/telegraph
         # integrity guard; A2-12..A2-19 author real dilemma content.
         self.dilemmas: Dict[str, "Dilemma"] = {}
+        # A2-21: post-capstone content templates keyed by lens_id. Empty
+        # when the file is absent. Consumed by
+        # :class:`spacegame.models.post_capstone_content.PostCapstoneContentGenerator`.
+        self.post_capstone_templates: Dict[str, List[Dict]] = {}
 
     def _safe_load(self, loader_name: str, loader_fn) -> None:
         """Call a loader function with error handling and context.
@@ -244,6 +248,7 @@ class DataLoader:
         self._safe_load("capstones", self.load_capstones)
         self._safe_load("lens_reactions", self.load_lens_reactions)
         self._safe_load("dilemmas", self.load_dilemmas)
+        self._safe_load("post_capstone_templates", self.load_post_capstone_templates)
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -813,6 +818,39 @@ class DataLoader:
 
         logger.info(f"Loaded {len(self.dilemmas)} dilemmas")
         return self.dilemmas
+
+    def load_post_capstone_templates(self) -> Dict[str, List[Dict]]:
+        """Load post-capstone content templates from ``data/narrative/post_capstone_templates.json``.
+
+        The file maps ``lens_id`` -> list of template dicts. Missing file is
+        not an error (returns ``{}``) so builds without the file keep working.
+
+        Returns:
+            Dict mapping lens_id to a list of raw template dicts. The
+            :class:`~spacegame.models.post_capstone_content.PostCapstoneContentGenerator`
+            interprets the fields per-lens.
+        """
+        file_path = self.data_dir / "narrative" / "post_capstone_templates.json"
+        if not file_path.exists():
+            logger.debug(f"Post-capstone templates not found: {file_path}")
+            return self.post_capstone_templates
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.post_capstone_templates.clear()
+        for lens_id, templates in data.items():
+            if not isinstance(templates, list):
+                raise ValueError(
+                    f"Post-capstone templates for lens '{lens_id}' must be a list, "
+                    f"got {type(templates).__name__!r}."
+                )
+            self.post_capstone_templates[lens_id] = list(templates)
+
+        logger.info(
+            f"Loaded post-capstone templates for {len(self.post_capstone_templates)} lenses"
+        )
+        return self.post_capstone_templates
 
     def load_capstones(self) -> Dict[str, "Capstone"]:
         """Load capstone registry from data/narrative/capstones.json.
