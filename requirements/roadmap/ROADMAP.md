@@ -143,7 +143,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
-| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | in-progress | A2-10, A2-3 |
+| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: in-progress (reviewing)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18374,6 +18374,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 17:35 — first-pass planning complete; expanded touch zones (added save_manager.py,
 - 2026-09-01 17:56 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 18:21 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 18:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
