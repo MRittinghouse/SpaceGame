@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15719,7 +15719,7 @@ without them):
 - 2026-08-27 - todo (created)
 - 2026-09-01 05:37 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 7 to 11 to cover triangle-specific collision permutations, NPC routing per outcome, scar-chatter reachability, ambient reactive registration, journal entries, and the NPC id-collision guard. Locked 8 decisions (home_system_ids, outcome flag ids, scar topology, ambient reactive scope, journal fold-in, winning/losing state gating pattern, Halvorsen scaffolding for A2-17, Deng inline voice note). Flagged 7 cross-sprint reactions for follow-up. PHASE_OK
-
+- 2026-09-01 06:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
