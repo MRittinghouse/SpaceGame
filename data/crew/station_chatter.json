@@ -1288,6 +1288,28 @@
       "weight": 7,
       "required_flags": ["lens_closed_revolution"],
       "one_shot": false
+    },
+    {
+      "id": "al_scar_d5_solheim_01",
+      "system_id": "axiom_labs",
+      "text": "The Farrow Institute dedicated the new research wing this morning. Harlan Tevek. Name went up on the wall at the opening. The ceremony filed on schedule. Standing committee signed off last week.",
+      "category": "scar",
+      "weight": 7,
+      "required_flags": [
+        "lens_closed_legacy"
+      ],
+      "one_shot": false
+    },
+    {
+      "id": "al_scar_d5_elena_01",
+      "system_id": "nexus_prime",
+      "text": "The navigator from that ship was in the back booth again. The one by the cargo corridor. Running drills on her own. Somebody said she used to bring crew in here. Now she just brings the charts.",
+      "category": "scar",
+      "weight": 7,
+      "required_flags": [
+        "lens_closed_connection"
+      ],
+      "one_shot": false
     }
   ]
 }

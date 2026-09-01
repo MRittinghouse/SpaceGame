@@ -16,7 +16,19 @@
       "auto_trigger_prerequisites": [
         "iron_ore_delivered"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_connection_won",
+          "dialogue_id": "elena_connection_deepened",
+          "required_flags": ["d5_connection_won"]
+        },
+        {
+          "state_id": "post_connection_lost",
+          "dialogue_id": "elena_connection_declined",
+          "required_flags": ["lens_closed_connection"]
+        }
+      ]
     },
     {
       "id": "marcus_jin",
@@ -1170,6 +1182,32 @@
           "state_id": "post_revolution_closed",
           "dialogue_id": "deng_declined",
           "required_flags": ["lens_closed_revolution"]
+        }
+      ]
+    },
+    {
+      "id": "amrit_solheim",
+      "name": "Director Amrit Solheim",
+      "title": "Director, Farrow Institute",
+      "portrait_color": [
+        190,
+        170,
+        130
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "solheim_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_legacy_won",
+          "dialogue_id": "solheim_victorious",
+          "required_flags": ["d5_legacy_won"]
+        },
+        {
+          "state_id": "post_legacy_lost",
+          "dialogue_id": "solheim_declined",
+          "required_flags": ["lens_closed_legacy"]
         }
       ]
     }

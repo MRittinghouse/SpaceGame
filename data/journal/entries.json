@@ -517,6 +517,20 @@
       "trigger_flag": "d3_empire_won",
       "system_id": "crimson_reach",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d5_legacy_won",
+      "text": "Chose the Institute. Solheim filed the wing dedication and the standing authority on the same day. My name is on the Farrow Institute's thirty-year endowment record. The crew kept doing what crews do when the captain is somewhere else. That was the trade.",
+      "trigger_flag": "d5_legacy_won",
+      "system_id": "axiom_labs",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d5_connection_won",
+      "text": "Chose the crew. The Institute filed the wing without my name on it. I was at the table for the shift transition. Marcus asked Elena about her sister. Priya finished her readings at the console instead of her bunk. The roster is different now. I was there when it changed.",
+      "trigger_flag": "d5_connection_won",
+      "system_id": "nexus_prime",
+      "mission_id": ""
     }
   ]
 }

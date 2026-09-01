@@ -1878,6 +1878,22 @@
       "text": "Signed for a parcel today. Sovereign paperwork, Captain, with your name on the drift record. Way I see it, that is a bigger door than either of us has walked through before. Owusu and Deng are outside it now. That is the margin.",
       "context": "flag_triggered",
       "required_flags": ["d3_empire_won"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "The Farrow Institute wing is named. The authority instrument is filed. The manifest has had more empty seats at the meal shift than it used to. Both things are on the record.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d5_legacy_won"
+      ]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Elena asked me about my shift roster yesterday. No reason given. I told her the numbers. She listened. Said nothing and went back to the console.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d5_connection_won"
+      ]
     }
   ]
 }

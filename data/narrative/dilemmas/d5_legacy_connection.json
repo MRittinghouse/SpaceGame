@@ -1,0 +1,38 @@
+{
+  "dilemmas": [
+    {
+      "id": "d5_legacy_connection",
+      "poles": ["legacy", "connection"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "marcus_jin",
+      "telegraph_lines": [
+        "You have been sending money to the Farrow Institute for three cycles. The manifest shows the transfers. The bridge shows the empty chair. We notice when a captain is present and we notice when the captain is somewhere else even when the ship says otherwise.",
+        "Not saying the Institute work is wrong. Saying the crew counts who shows up. That number has been moving in one direction and I am the one standing here telling you about it.",
+        "You can fix this or you cannot. That is the whole of it."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "legacy",
+          "closes": ["connection"],
+          "tier_unlocks": [
+            "Director Solheim names a wing of the Farrow Institute after the player while they are still alive to see it, with standing authority over its research direction granted in writing",
+            "the Institute's endowment filing lists the player as a founding-generation patron on the thirty-year record"
+          ],
+          "outcome_flag": "d5_legacy_won",
+          "narration_summary": "You chose the Institute. Solheim filed the wing dedication and the standing-authority instrument on the same day. Your name is on the thirty-year record. The crew that was watching the empty chair kept watching it."
+        },
+        {
+          "winning_lens_id": "connection",
+          "closes": ["legacy"],
+          "tier_unlocks": [
+            "crew loyalty ceilings across the whole roster rise permanently, and previously unavailable personal dialogue and relationship content opens for every recruited member, not just Elena"
+          ],
+          "outcome_flag": "d5_connection_won",
+          "narration_summary": "You chose the crew. The Institute filed the wing without your name on it. The relationships that had been moving toward distance reversed. Personal conversations that had been closed opened. The roster is different now, and it started with a chair that was filled."
+        }
+      ]
+    }
+  ]
+}

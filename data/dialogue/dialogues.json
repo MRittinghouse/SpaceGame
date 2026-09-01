@@ -10536,6 +10536,256 @@
           "expression": "resigned"
         }
       ]
+    },
+    {
+      "id": "solheim_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "amrit_solheim",
+          "text": "Captain. I have a standing committee in twenty minutes and a filing window that closes at the end of the week. You have been funding this Institute long enough that I will make time. What I cannot do is make time twice.",
+          "responses": [
+            {
+              "text": "I want to continue funding the Institute.",
+              "next_node_id": "continue_funding"
+            },
+            {
+              "text": "Tell me about the wing dedication.",
+              "next_node_id": "wing_dedication"
+            },
+            {
+              "text": "Who decides the succession plan?",
+              "next_node_id": "succession"
+            },
+            {
+              "text": "[I understand. Another time.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "continue_funding",
+          "speaker_id": "amrit_solheim",
+          "text": "The endowment accepts patron contributions on a thirty-year horizon. Your deposits go into the general research fund until they reach the naming threshold. The person who wrote the charter set the threshold high on purpose. The founding generation did not want the Institute sold to the loudest patron in the room. I did not change that policy.",
+          "responses": [
+            {
+              "text": "[Good to know.]",
+              "next_node_id": "wrap"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "wing_dedication",
+          "speaker_id": "amrit_solheim",
+          "text": "The wing dedication is a formal instrument. It requires the patron to reach the naming threshold and the standing committee to vote it in. At your current contribution rate, the committee would see your name on the next quarterly review. That review is in eleven days. I cannot tell you the outcome before the vote.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": "wrap"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "succession",
+          "speaker_id": "amrit_solheim",
+          "text": "The chair goes to whoever the standing committee selects. The criteria are on file. Long-horizon investment in the Institute's mission, demonstrated judgment, and a record the founding generation would recognize. I inherited this chair from someone I have never met. I do not make the succession rules. I apply them.",
+          "responses": [
+            {
+              "text": "[I see.]",
+              "next_node_id": "wrap"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "wrap",
+          "speaker_id": "amrit_solheim",
+          "text": "The committee window closes Friday. If there is nothing else, I have a filing to review before I walk into that meeting.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "solheim_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "amrit_solheim",
+          "text": "The committee voted the wing dedication on the second reading. The instrument is filed. Your name is on the thirty-year endowment record as a founding-generation patron, and the standing authority over the wing's research direction is attached to the same filing. This is on the record now. The person who wrote the charter would have called it a clean accounting.",
+          "responses": [
+            {
+              "text": "What does the standing authority mean in practice?",
+              "next_node_id": "authority_detail"
+            },
+            {
+              "text": "I appreciate the committee's decision.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "authority_detail",
+          "speaker_id": "amrit_solheim",
+          "text": "It means your name appears on the quarterly research-direction memo and the committee is required to note your input before it votes. You are not the chair. You are on the record as a voice the chair has to answer to. That is not a small thing in an institution that has been running for forty years without one.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "amrit_solheim",
+          "text": "The committee does not make decisions based on appreciation. It makes decisions based on the filing record. Yours was in order. That is the whole of it.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "solheim_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "amrit_solheim",
+          "text": "Captain. The wing dedication filed on schedule. The standing committee gave it to Harlan Tevek. His contribution record over the last four years matched what the founding-generation criteria required and the vote was not close. You are welcome as a visitor to the Institute. The filing window for the next naming cycle opens in eighteen months.",
+          "responses": [
+            {
+              "text": "What did Tevek's record have that mine did not?",
+              "next_node_id": "tevek_detail"
+            },
+            {
+              "text": "[I understand.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "tevek_detail",
+          "speaker_id": "amrit_solheim",
+          "text": "Consistency over a longer horizon. The committee weighs sustained presence in the Institute's work. Yours was significant and then it was not. I do not make that judgment. The filing criteria do. If the next cycle interests you, the criteria are on the public record.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "elena_connection_deepened",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "You were at the table for the whole shift transition yesterday. Not just the handoff. The whole thing. Marcus noticed. He asked me about my sister afterward, just asked, like it was a thing he had been holding onto. I do not know what to do with that.",
+          "responses": [
+            {
+              "text": "How long has he been carrying that?",
+              "next_node_id": "marcus_note"
+            },
+            {
+              "text": "Is that good?",
+              "next_node_id": "is_good"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "marcus_note",
+          "speaker_id": "elena_reeves",
+          "text": "I have no idea. He asked once and then went back to his console. Priya sat through the whole transition too. She does not usually. She had readings to finish and she finished them there instead of in her bunk. I think that is what it looks like when the ship is different. I am not used to seeing it.",
+          "responses": [
+            {
+              "text": "[That is something.]",
+              "next_node_id": "wrap"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "is_good",
+          "speaker_id": "elena_reeves",
+          "text": "Cap... yes. I think it is. I am still calibrating the evidence, but yes.",
+          "responses": [
+            {
+              "text": "[Good to hear.]",
+              "next_node_id": "wrap"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "wrap",
+          "speaker_id": "elena_reeves",
+          "text": "I should get back to the heading. We have a routing window in forty minutes. I just wanted to log it. For the record.",
+          "responses": [
+            {
+              "text": "[Go ahead.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "elena_connection_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "With respect, Captain, my navigational input on the current heading is that we are on course. The manifest for the next port is filed and the routing window holds for another six hours.",
+          "responses": [
+            {
+              "text": "Is there anything else?",
+              "next_node_id": "nothing_else"
+            },
+            {
+              "text": "[Understood. Thank you.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "nothing_else",
+          "speaker_id": "elena_reeves",
+          "text": "The course is set. The filing is current. I will flag anything that requires your attention before we dock.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }
