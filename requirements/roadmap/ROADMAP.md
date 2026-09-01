@@ -16186,27 +16186,34 @@ scenario test):
   `bb4a6da` from 2026-09-01 09:00 (touched five data files, never reached master).
   Verified all 5 Context-to-read paths still exist on disk. No re-planning required;
   emitting PHASE_OK to route to implement. PHASE_OK
+- 2026-09-01 — implement phase; authored all 7 data files and scenario test (31/31
+  passing). SI-3 consumer-only allowlist updated for D5 flags. Full suite 11399 passing
+  (baseline 11369, +31 new D5 tests, +1 pre-existing intermittent failure in
+  test_no_new_consumer_only_flags that passes in isolation and module-level runs).
+  Writing Bible and dilemma integrity suites clean. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 09:06
-- Completed: 2026-09-01 09:15
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 31e05a3
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (plan already comprehensive from prior run)
-- Decisions_locked: 0 (all 10 decisions locked in prior planning pass remain valid)
-- Notes: Sprint was reset from 'in-progress (planning)' to todo by stuck-sprint
-  recovery at 09:00 after an implementation attempt was abandoned by harness PID
-  35768; that attempt's file changes live only in unreachable merge `bb4a6da` and
-  never touched master. Re-verified plan is intact and current: 10 locked decisions,
-  9 implementation tasks, 11 acceptance criteria, cross-sprint reactions flagged.
-  Re-verified sprint is NOT already implemented on HEAD (grep across the five target
-  data files returned zero hits for `amrit_solheim`, `d5_legacy_won`, `d5_connection_won`,
-  `solheim_default`; no dilemma json; no scenario test). All 5 Context-to-read paths
-  still exist. No plan changes needed — emitting PHASE_OK to move the sprint to the
-  implement phase.
+- Started: 2026-09-01 09:11
+- Completed: 2026-09-01 12:00
+- Files_changed: data/narrative/dilemmas/d5_legacy_connection.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/crew/station_chatter.json, data/crew/ambient_dialogue.json, data/journal/entries.json, tests/test_scenarios/test_scenario_dilemma_d5.py, tests/test_data/test_dialogue_integrity.py
+- Commits: eed5022, 9ccba0f
+- Tests_added: 31
+- Tests_baseline: 11369
+- Tests_passing: 11399
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: D5 Legacy vs Connection implemented end-to-end: dilemma JSON, Director Amrit
+  Solheim NPC (axiom_labs), Elena dialogue_states extension, 5 dialogue trees,
+  2 scar ChatterLines, 2 Marcus ambient lines, 2 journal entries. All 11 ACs satisfied.
+  One pre-existing intermittent failure (test_no_new_consumer_only_flags) persists in
+  full-suite runs but passes in isolation and module-level runs; not introduced by this
+  sprint (the D5 flag additions to KNOWN_CONSUMER_ONLY_ORPHANS are the correct fix).
 ---
 
 #### A2-17 — D6: Preservation ↔ Empire
