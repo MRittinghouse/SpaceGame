@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18376,6 +18376,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 18:21 — harness: review phase starting (rework cycle 0)
 - 2026-09-01 18:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-09-01 18:51 — harness: plan phase starting
+- 2026-09-01 18:56 — harness: implement phase starting (rework cycle 0)
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
@@ -18456,27 +18457,31 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   66 sprint-specific tests (test_capstone_registry + test_capstone models + test_capstone_view
   + test_scenario_capstone_session_continues) all pass in 1.32s. Nothing to re-plan;
   routing onward via PHASE_OK so implement + review re-verify and no-op. PHASE_OK
+- 2026-09-01 — implement phase re-entry (rework cycle 2, already-implemented verification).
+  Sprint work already on disk (1b5b336). Verified: 66 sprint-specific tests pass (1.43s);
+  three architectural guards green (test_lens_investment_never_rendered, test_module_level_dim_capture,
+  test_ground_loot_bonus — all 13 tests pass in 0.48s); full suite -n auto: 11552 passed /
+  99 skipped (matches pre-phase baseline exactly). No new files or code changes made. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 18:51
-- Completed: 2026-09-01 18:53
+- Started: 2026-09-01 19:00
+- Completed: 2026-09-01 19:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 2589caf
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint is already implemented and reviewed)
-- Decisions_locked: 0 (all 14 decisions locked in prior plan passes)
-- Notes: Already-implemented recovery. Recent git log made the state unambiguous:
-  1b5b336 = full A2-20 implementation, cacb8c7 = review PHASE_OK with all 16 ACs
-  verified, 0d682dd = harness recovery reset to todo (stuck-sprint sweep after
-  last_touched_at aged). Followed the plan-phase "if the sprint is ALREADY
-  IMPLEMENTED, your sentinel is PHASE_OK" rule verbatim. Verified with a cheap
-  file-existence + sprint-scoped pytest run (66 tests pass in 1.32s) rather than
-  re-reading the full context set. Not using PHASE_BLOCKED — that would strand
-  A2-21 which depends on this sprint. PHASE_OK routes onward so the implementer
-  and reviewer re-verify (they will no-op on the existing commits) and the sprint
-  earns its gate.
+- Commits: 368e421 (roadmap update only)
+- Tests_added: 0 (66 sprint tests already present from 1b5b336)
+- Tests_baseline: 11552
+- Tests_passing: 11552
+- Tests_skipped: 99
+- Lint_clean: n/a (no source files changed)
+- Format_clean: n/a (no source files changed)
+- SI3_scanner_clean: n/a (no flags added)
+- Writing_bible_clean: n/a (no player-facing content added)
+- Touch_zones_respected: yes
+- Notes: Already-implemented re-verification pass. All 66 sprint-specific tests and 13
+  architectural guard tests pass. Full suite matches pre-phase baseline 11552/99. No code
+  changes required — work was fully present from 1b5b336 (implemented) + cacb8c7 (reviewed).
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
