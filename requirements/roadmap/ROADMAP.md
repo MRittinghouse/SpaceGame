@@ -14292,7 +14292,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - Started: 2026-08-31
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (to be filled after commit)
+- Commits: ab58220
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented and reviewed)
 - Decisions_locked: 0 (all 4 open questions locked in prior planning cycle)
