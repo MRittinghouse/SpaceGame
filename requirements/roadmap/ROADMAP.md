@@ -135,7 +135,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
-| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
+| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
@@ -14322,7 +14322,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 
 #### A2-12 — D4: Truth ↔ Vengeance
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14430,9 +14430,231 @@ this dilemma needs, since no other sprint owns it.
    changes; state which is true in the sprint's commit).
 7. Full suite green; no regression from baseline.
 
+**Risks / open questions.**
+- ~~Where does the "Mission 17 seeding" flag actually live? `requirements/act_one_reference.md`
+  lists a mission called "New Horizons" as M17, but `data/missions/missions.json` uses the
+  progression `iron_depths_investigation → the_ledger → point_of_no_return → the_collapse`;
+  there is no mission with id `m17`, `new_horizons`, or `mission_17`.~~ **Locked: seed on
+  `the_ledger` mission (missions.json line 826).** Rationale: `the_ledger` is the reveal
+  mission where the player is actually told what The Ledger is; its existing rewards include
+  `discovered_ledger_connection` and `ledger_complete`, so adding a "named-primary-suspect"
+  flag beside them is the natural home. `the_collapse` is the escape sequence — narratively
+  the wrong moment to introduce the suspect. The reference doc's M16/M17 numbering is legacy
+  vs the current mission ids.
+- ~~What is the actual flag string? The sprint's Touch-zones sketch reads
+  `dialogue_flags["vengeance_primary_suspect_id"] = "aldric_senn"`, but `dialogue_flags` is
+  boolean-only per `requirements/act_one_reference.md` line 138 ("Boolean only: flags are True
+  or absent, never integers or strings").~~ **Locked: use a boolean flag
+  `told_senn_orchestrated_operation`, registered via `spacegame/constants/flags.py` per the
+  SI-3 cookbook (`requirements/si3_flag_registry_cookbook.md`).** The NPC id `aldric_senn`
+  lives in the NPC record and in the dilemma outcome's `narration_summary`, not in the flag
+  value. Rationale: the boolean convention is load-bearing across every consumer of
+  `dialogue_flags`; a string value would break the flag-set reward path and every existing
+  `.get(..., False)` reader.
+- ~~Should Vengeance-wins Priya-declines-intel be a scar `ChatterLine` (A2-11 convention) or
+  a `NPC.dialogue_states` gate on Priya's own tree?~~ **Locked: scar `ChatterLine` only.**
+  A2-11 has landed and codified the scar convention specifically for this cross-sprint case;
+  the belt-and-suspenders dialogue-state path adds one more surface the reviewer has to
+  audit and no player-observable behaviour beyond what the scar line already delivers.
+  Category `"scar"`, `one_shot=False`, `required_flags=["lens_closed_truth"]`, weight 7.
+  System: `axiom_labs` (Priya's home per `npcs.json`).
+- ~~Where does Aldric Senn live in `home_system_id`? He canonically escaped to "uncharted
+  space beyond the Expanse's borders".~~ **Locked: `the_fulcrum`.** Rationale: `the_fulcrum`
+  is the warp gate the player used to escape Act I; it is the last known location the
+  Ledger leadership was seen. The Truth-wins confrontation dialogue is reachable from
+  there. If a later Act II sprint adds a purpose-built uncharted-space system for Senn,
+  migration is one NPC-record edit and needs no save migration (NPCs are pure data).
+- ~~Does `tests/test_writing_bible_compliance.py` already scan `data/narrative/dilemmas/`?~~
+  **Locked: no; extension required.** Sprint 5's scanner walks `data/dialogue/`,
+  `data/missions/`, `data/journal/`, and `spacegame/views/` — dilemma content is a new
+  surface. Extending the scan to `data/narrative/dilemmas/**/*.json` is a small change and
+  belongs in this sprint so all eight dilemma sprints inherit the guarantee.
+- Cross-sprint reaction surface (crew banter, Guild reputation delta, news ticker) is
+  deferred to follow-up sprints, not folded in. See Plan's Cross-sprint reactions subsection.
+
+**Plan.**
+
+Task order for the implementer. Each task lists file(s), test surface, and gotchas.
+
+1. **Register the seeding flag in the constants module.**
+   - Files: `spacegame/constants/flags.py`.
+   - Test surface: none directly (constant registration is trivial); the flag is exercised
+     by task 8's scenario test as a precondition.
+   - Gotcha: follow the SI-3 cookbook shape — expose either a bare `TOLD_SENN_ORCHESTRATED_OPERATION`
+     constant or the helper convention used elsewhere in that file. Reuse the existing
+     `dilemma_resolved()`, `dilemma_telegraphed()`, `lens_closed()` helper style if you add
+     helpers; this flag is a bare string so `TOLD_SENN_ORCHESTRATED_OPERATION` alone is enough.
+
+2. **Seed the flag on `the_ledger` mission.**
+   - Files: `data/missions/missions.json` (mission id `the_ledger`, starts line 826).
+   - Test surface: `tests/test_scenarios/test_scenario_dilemma_d4.py` asserts the flag is
+     present after simulated M-The-Ledger completion, as a precondition the dilemma outcome
+     narration reads. Also add a small unit test under `tests/test_data/` (or the closest
+     existing folder) that reads the mission JSON and asserts a `set_flag` reward with
+     `target_id = "told_senn_orchestrated_operation"` exists.
+   - Gotcha: place the reward in the existing `rewards` list, next to `discovered_ledger_connection`
+     and `ledger_complete`. Use the same `{"reward_type": "set_flag", "amount": 0, "target_id": "..."}`
+     shape as the neighbours.
+
+3. **Add Aldric Senn as an NPC in `data/characters/npcs.json`.**
+   - Files: `data/characters/npcs.json`.
+   - Test surface: existing NPC integrity tests will pick him up automatically. Task 8's
+     scenario test asserts `get_active_dialogue_id({"lens_closed_vengeance": True})` returns
+     the post-collision state's dialogue id.
+   - Gotcha: schema follows the existing entries (see `petra_vance`, `neve_*` for
+     `dialogue_states` shape). Required fields: `id: "aldric_senn"`, `name: "Aldric Senn"`,
+     `title: "Ledger Operative"` (or similar; keep short), `portrait_color: [r,g,b]`,
+     `home_system_id: "the_fulcrum"`, `dialogue_id: "senn_default"` (an unreachable-by-default
+     tree — the player cannot find him until the Truth-wins collision opens the state).
+     Two `dialogue_states`:
+       - `state_id: "post_truth_collision"`, `dialogue_id: "senn_truth_confrontation"`,
+         `required_flags: ["lens_closed_vengeance"]` — active when Truth wins.
+       - `state_id: "post_vengeance_collision"`, `dialogue_id: "senn_dead"`,
+         `required_flags: ["lens_closed_truth"]` — an unreachable stub so the loader has a
+         consistent post-collision state on both branches; player never talks to him because
+         they killed / ruined him for the wrong crime.
+     Do NOT set `auto_trigger_gate_flag` — Senn is player-initiated, not ambush.
+
+4. **Author the Aldric Senn post-collision dialogue tree(s) in `data/dialogue/dialogues.json`.**
+   - Files: `data/dialogue/dialogues.json`.
+   - Test surface: `test_writing_bible_compliance.py` (which already scans dialogue) will
+     catch em-dashes, banned phrases, banned NPC names. Add one integration assertion in
+     the scenario test that the tree loads via `DataLoader._parse_dialogue_tree` and
+     `get_start_node()` is non-None.
+   - Gotcha: `senn_truth_confrontation` is the load-bearing tree — the player confronts a
+     living Senn who was a scapegoat, aware that they chose to believe the evidence rather
+     than the story. Keep it short (5-8 nodes). Player response choices should reveal
+     character (pragmatic / empathetic / suspicious / reckless per the guide). Senn's voice
+     is not authored in `character_voices.md`; write him as a mid-level operative who has
+     had time to think about being left behind — dry, un-self-pitying, precise. Do NOT
+     match Priya's, Marcus's, Elena's, or Tomas's voice patterns. The `senn_dead` stub can
+     be a single terminal node with no responses.
+
+5. **Author the D4 dilemma record: `data/narrative/dilemmas/d4_truth_vengeance.json`.**
+   - Files: NEW `data/narrative/dilemmas/d4_truth_vengeance.json`, shape
+     `{"dilemmas": [ {...} ]}` per the `.gitkeep` convention.
+   - Test surface: `tests/test_compliance/test_dilemma_integrity.py` runs against this
+     automatically once it lands. Task 8's scenario test drives the coordinator against
+     it.
+   - Gotcha: fields per the sprint's Deliverables — `id: "d4_truth_vengeance"`,
+     `poles: ["truth", "vengeance"]`, `collision_requires: 2`, `telegraph_threshold: 55`,
+     `collision_threshold: 80`, `telegraph_npc_id: "priya_osei"`, `telegraph_lines` with
+     2-3 lines in Priya's voice (peer-reviewed precision; qualifies with data; no
+     contractions; no em-dashes; no "remarkable" / "wonderful" per the banned-phrase list),
+     and two `DilemmaOutcome` entries. Suggested telegraph line 1 (voice-check before
+     shipping): "The pattern I have been tracking in the recovered Ledger records is
+     beginning to fit differently. The operations attributed to Aldric Senn cluster around
+     a mid-level authorization signature, not an architect's." Use `outcome_flag` values
+     that name the specific outcome (e.g. `d4_truth_won`, `d4_vengeance_won`) — these
+     become dialogue-flag keys and downstream sprints will read them. Tier-unlock strings
+     are prose; make them concrete enough for a future implementer to grep on (see A2-11
+     scar authorship for the same discipline). The `closes` list must be the singular
+     losing pole per `test_poles_and_outcomes_agree`.
+
+6. **Add the Vengeance-wins scar chatter line to `data/crew/station_chatter.json`.**
+   - Files: `data/crew/station_chatter.json`.
+   - Test surface: existing `tests/test_models/test_station_chatter.py` compliance test
+     enforces `one_shot=False` for `category="scar"`; `test_prose_anti_patterns.py` scans
+     the text.
+   - Gotcha: `id` unique across the file; `system_id: "axiom_labs"` (Priya's home per
+     `npcs.json`); `category: "scar"`; `required_flags: ["lens_closed_truth"]`;
+     `one_shot: false`; `weight: 7`. Text is authored from the refused perspective per
+     A2-11: overheard fragment or notice framing Priya declining Ledger-intelligence
+     contact with the player. The line must be explicit that this outcome permanently
+     forecloses ever learning from Senn why the home galaxy was targeted, since he and
+     the fled leadership were the only witnesses — that specificity is the "visible cost"
+     the sprint's Deliverables call for. Voice-check against the Bible.
+
+7. **Author the D4 resolution journal auto-entry (both branches).**
+   - Files: `data/journal/entries.json`.
+   - Test surface: existing journal-integrity tests pick up the entry; task 8's scenario
+     test asserts the entry appears in `journal.get_entries()` after resolution.
+   - Gotcha: two entries, one per branch, gated on the outcome flag (or on the
+     `dilemma_resolved("d4_truth_vengeance")` + `lens_closed(losing_pole)` pair). Neutral
+     ship's-log voice per the Act I convention — factual, no player-mouth-putting.
+     Truth-branch entry names the choice to verify before act; Vengeance-branch entry
+     names the choice made and its cost, without judgement.
+
+8. **Write the scenario test: `tests/test_scenarios/test_scenario_dilemma_d4.py`.**
+   - Files: NEW `tests/test_scenarios/test_scenario_dilemma_d4.py`.
+   - Test surface: this IS the test surface for ACs 3, 4, 5, and (in part) 1, 2.
+   - Gotcha: covers ACs 1-5 with distinct tests. Structure per Acceptance criteria:
+     - `test_dilemma_loads` — `DataLoader.dilemmas["d4_truth_vengeance"]` present, both
+       outcomes populated (AC 1).
+     - `test_integrity_guard_passes` — call `_outcomes_with_empty_tier_unlocks` and
+       `_dilemmas_with_bad_thresholds` against `{"d4_truth_vengeance": dilemma}` and
+       assert both return `[]` (AC 2 focused).
+     - `test_single_pole_at_90_does_not_collide` — drive `truth` to 90 with `vengeance` at
+       0, then vice versa; assert `check_collision` False (AC 3).
+     - `test_both_poles_at_85_collides` — drive both to 85; assert `check_collision` True
+       and the resolution view is pushed (AC 3).
+     - `test_truth_win_closes_vengeance` — call `resolve(dilemma, "truth", player)`,
+       assert `dialogue_flags["lens_closed_vengeance"]` True and Senn's active dialogue id
+       is `"senn_truth_confrontation"` (AC 4).
+     - `test_vengeance_win_closes_truth` — call `resolve(dilemma, "vengeance", player)`,
+       assert `dialogue_flags["lens_closed_truth"]` True and the Priya scar chatter line
+       filters to visible via `StationChatterManager.get_chatter(system_id="axiom_labs",
+       player_flags=player.dialogue_flags)` (AC 5).
+     - `test_m17_seeding_flag_precondition` — assert
+       `told_senn_orchestrated_operation` can be set (registered constant exists) and
+       reads through `player.dialogue_flags`.
+   - Do NOT mock `DataLoader` — use `get_data_loader()` per the singleton convention.
+     Use `LensInvestment.add_investment` (or the closest-to-real API) rather than
+     writing directly into the store to keep the compliance guard happy.
+
+9. **Extend `test_writing_bible_compliance.py` to scan `data/narrative/dilemmas/`.**
+   - Files: `tests/test_writing_bible_compliance.py`.
+   - Test surface: this is the extension; a new failing-then-passing test.
+   - Gotcha: mirror the existing dialogue-scan strata — em-dash, "no X, no Y" parallel
+     negation, and the `_BANNED_PHRASES` list, with dialogue-register xfail semantics
+     matched to what dialogue trees use today. Register the new folder so every future
+     dilemma (A2-13 through A2-19) inherits the scan without repeating this work.
+
+10. **Green-suite pass and commit.**
+    - Run: `ruff format spacegame/ tests/`; `ruff check spacegame/`;
+      `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter`;
+      `pytest -n auto`.
+    - Baseline check: pass count ≥ 11269, skipped ≤ 101 + new (only if new skips are
+      justified). No new failures vs baseline.
+
+**Cross-sprint reactions to author.** (Follow-up sprints; not folded in.)
+- `data/crew/ambient_dialogue.json` — Marcus Jin banter on D4 resolution (both branches).
+  He identified Guild hardware on pirate ships in M12, so The Ledger is his personal
+  business too; on Truth-wins he acknowledges the "wrong man" outcome economically, on
+  Vengeance-wins he says the thing he would say to a friend closing a case they may not
+  actually have. Fires when `marcus_recruited` AND
+  `dialogue_flags[dilemma_resolved("d4_truth_vengeance")]` set.
+- `data/crew/ambient_dialogue.json` — Tomas Drifter banter on the Vengeance-wins branch.
+  The "targets do not need to be guilty of the specific thing, only guilty of something"
+  tier unlock lands hard on someone running from a name. Fires when `tomas_recruited` AND
+  `dialogue_flags["lens_closed_truth"]` set.
+- `data/crew/ambient_dialogue.json` — Elena Reeves banter on the Truth-wins branch. She
+  quit the Guild over the route-pilot underpayment discovery; the "real chain of command"
+  tier unlock is her wheelhouse. Fires when `elena_recruited` AND
+  `dialogue_flags["lens_closed_vengeance"]` set.
+- Commerce Guild reputation delta on Senn confrontation — small negative delta for
+  Truth-wins (public confrontation reflects on the Guild's laundered periphery),
+  neutral-to-small-positive for Vengeance-wins (removes a Guild embarrassment quietly).
+  Owned by whichever politics sprint next touches faction reactions to Act II events.
+- News ticker entries: two ambient headlines, one per outcome. Belongs to the news-authoring
+  follow-up (not currently on the roadmap; propose when the news system next gets a sprint).
+
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-08-31 22:04 — harness: plan phase starting
+- 2026-08-31 22:35 — planning complete; 5 decisions locked (Mission-17 seeding home, boolean flag naming, scar-only visible-cost, Senn home_system_id, writing-bible scanner extension), 10-task Plan filled in, journal-entry polish folded in, cross-sprint reactions catalogued as follow-up. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-08-31 22:04
+- Completed: 2026-08-31 22:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <will-be-recorded-after-commit>
+- New_sprints_proposed: none
+- Polish_items_folded_in: journal-entry-for-D4-resolution, writing-bible-scanner-extension-to-data/narrative/dilemmas
+- Decisions_locked: 5
+- Notes: Verified all 6 Context-to-read docs exist. The reference-doc "Mission 17" does not exist as a discrete mission id in the current data — the game uses `iron_depths_investigation → the_ledger → point_of_no_return → the_collapse`. Locked seeding onto `the_ledger` (the reveal mission) with a boolean flag `told_senn_orchestrated_operation` since `dialogue_flags` is boolean-only. Aldric Senn does not exist as an NPC; task 3 creates him with two `dialogue_states` (Truth-wins reachable, Vengeance-wins dead-stub). A2-11's scar convention is the sole visible-cost surface for the Vengeance-wins Priya-declines-intel outcome (no belt-and-suspenders NPC.dialogue_states gate on Priya). Cross-sprint crew-banter, Guild rep, and news reactions are catalogued for downstream sprints rather than bloating this L-size sprint further.
 ---
 
 #### A2-13 — D2: Wealth ↔ Community
