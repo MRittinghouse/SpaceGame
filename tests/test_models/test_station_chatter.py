@@ -4,8 +4,11 @@ Covers ChatterLine dataclass and StationChatterManager filtering,
 shown-line tracking, reset, and serialization round-trips.
 """
 
-from spacegame.models.station_chatter import ChatterLine, StationChatterManager
-
+from spacegame.data_loader import get_data_loader
+from spacegame.models.station_chatter import (
+    ChatterLine,
+    StationChatterManager,
+)
 
 # ============================================================================
 # Helpers
@@ -416,3 +419,91 @@ class TestSerialization:
         manager = StationChatterManager.from_dict(data, lines)
         results = manager.get_chatter("nexus_prime", player_rep=0, active_event_types=[], count=3)
         assert len(results) == 3, "Empty dict should produce a manager with no shown state"
+
+
+# ============================================================================
+# Scar Category Tests (A2-11)
+# ============================================================================
+
+_SCAR_FLAG = "lens_closed_test_lens"
+
+
+def _make_scar_line() -> ChatterLine:
+    """Create a scar ChatterLine with the test-only lens flag."""
+    return ChatterLine(
+        id="np_scar_test_01",
+        system_id="nexus_prime",
+        text="The contract broker picked up another freight run.",
+        category="scar",
+        weight=7,
+        required_flags=[_SCAR_FLAG],
+        one_shot=False,
+    )
+
+
+class TestScarCategory:
+    """Scar-category ChatterLines gate on lens_closed flags and recur across visits.
+
+    AC1: excluded without flag, included when flag present.
+    AC2: eligible again after reset_shown (not retired after one showing).
+    """
+
+    def test_ac1_excluded_when_flag_absent(self) -> None:
+        """Scar line is excluded when the lens_closed flag is not set."""
+        manager = StationChatterManager([_make_scar_line()])
+        results = manager.get_chatter(
+            "nexus_prime", player_rep=0, active_event_types=[], count=3, player_flags={}
+        )
+        assert results == [], "Scar line must be excluded when required flag is absent"
+
+    def test_ac1_included_when_flag_present(self) -> None:
+        """Scar line is included when the lens_closed flag is True."""
+        manager = StationChatterManager([_make_scar_line()])
+        results = manager.get_chatter(
+            "nexus_prime",
+            player_rep=0,
+            active_event_types=[],
+            count=3,
+            player_flags={_SCAR_FLAG: True},
+        )
+        assert len(results) == 1, "Scar line must be included when required flag is set"
+        assert "freight run" in results[0], "Expected scar line text"
+
+    def test_ac2_eligible_after_reset_shown(self) -> None:
+        """Scar line is eligible again after reset_shown (not permanently retired)."""
+        manager = StationChatterManager([_make_scar_line()])
+        flags = {_SCAR_FLAG: True}
+
+        first = manager.get_chatter(
+            "nexus_prime", player_rep=0, active_event_types=[], count=1, player_flags=flags
+        )
+        assert len(first) == 1, "Should return scar line on first call with flag set"
+
+        # Simulate new dock visit
+        manager.reset_shown("nexus_prime")
+
+        second = manager.get_chatter(
+            "nexus_prime", player_rep=0, active_event_types=[], count=1, player_flags=flags
+        )
+        assert len(second) == 1, "Scar line must be eligible after reset_shown (one_shot=False)"
+        assert second[0] == first[0], "Same scar line text should appear again"
+
+
+# ============================================================================
+# Scar Invariant Compliance Test (A2-11 AC4)
+# ============================================================================
+
+
+def test_scar_lines_are_never_one_shot() -> None:
+    """All scar-category ChatterLines in the data must have one_shot=False.
+
+    This is a compliance-style test: it loads real data and enforces the
+    convention that scar lines recur across dock visits. If a future author
+    accidentally marks a scar line as one_shot=True, this test names the
+    offending line id.
+    """
+    dl = get_data_loader()
+    dl.load_all()
+    lines = dl.load_station_chatter()
+    violations = [line.id for line in lines if line.category == "scar" and line.one_shot]
+    assert not violations, f"Scar-category lines must have one_shot=False. Violations: {violations}"
