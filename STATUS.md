@@ -1,21 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-08-31 21:49:37_
+_Updated: 2026-09-01 00:06:49_
 
 ## Harness Did Not Run
 
-harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
-
-## NO LIVE HARNESS
-
-The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
+Baseline capture FAILED: pytest exited 1; tail: y::TestGroundLootBonusApplication::test_bonus_applies_to_failure_partial_loot
+FAILED tests/test_engine/test_ground_loot_bonus.py::TestGroundLootBonusApplication::test_zero_loot_unaffected
+FAILED tests/test_engine/test_ground_loot_bonus.py::TestGroundLootBonusApplication::test_crew_bonus_stacks_with_skill
+FAILED tests/test_views/test_dialogue_response_tooltip.py::TestTooltipGeometry::test_right_side_clipping_flips_to_left
+7 failed, 11283 passed, 100 skipped, 42 warnings in 341.96s (0:05:41). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **3 minutes ago**
-- Beat PID: 21844 -- **NOT RUNNING**
+- Last beat: **just now**
+- Beat PID: 34304 -- alive
 
 ## Queue
 
@@ -27,8 +27,8 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 
 ## Push
 
-- last push: **OK** (3 minutes ago)
-- last successful push: 3 minutes ago
+- last push: **OK** (2 hours ago)
+- last successful push: 2 hours ago
 
 ## Blocks drift
 
@@ -39,7 +39,3 @@ The heartbeat names a process that is not running (or is no longer the ralph har
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- harness exit rc=1
