@@ -1763,6 +1763,18 @@
       "required_flags": ["marcus_father_connection_seen"]
     },
     {
+      "crew_id": "marcus_jin",
+      "text": "You made the call the other way. The money you routed to Coinmark is Coinmark's problem now. My report on the recyclers is still on the shelf where they filed it. Nothing about that changed today. Say the numbers back to yourself the next time you sign for the leverage.",
+      "context": "flag_triggered",
+      "required_flags": ["d2_wealth_won"]
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Cradlepoint queue is shorter by seventeen tonight. Not by everyone. Not for good. Shorter. That is the whole of it. You did not put my father back on the roster. You did move someone else's family off the racks. Both things are true.",
+      "context": "flag_triggered",
+      "required_flags": ["d2_community_won"]
+    },
+    {
       "crew_id": "elena_reeves",
       "text": "Hull stress report from that engagement: four panel seams need re-welding, and the port thruster ran 11 percent over rated load for 40 seconds. I have logged it.",
       "context": "combat_after"

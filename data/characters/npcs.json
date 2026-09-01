@@ -1016,6 +1016,58 @@
           "required_flags": ["lens_closed_truth"]
         }
       ]
+    },
+    {
+      "id": "thuy_kallio",
+      "name": "Thuy Kallio",
+      "title": "Dockmaster, Cradlepoint Charter",
+      "portrait_color": [
+        150,
+        120,
+        95
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "kallio_default",
+      "faction_id": "frontier_alliance",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_wealth_closed",
+          "dialogue_id": "kallio_open_channels",
+          "required_flags": ["lens_closed_wealth"]
+        },
+        {
+          "state_id": "post_community_closed",
+          "dialogue_id": "kallio_declined",
+          "required_flags": ["lens_closed_community"]
+        }
+      ]
+    },
+    {
+      "id": "noor_castellano",
+      "name": "Noor Castellano",
+      "title": "Broker, Coinmark Exchange",
+      "portrait_color": [
+        70,
+        85,
+        115
+      ],
+      "home_system_id": "nexus_prime",
+      "dialogue_id": "noor_default",
+      "faction_id": "commerce_guild",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_community_closed",
+          "dialogue_id": "noor_buyers_open",
+          "required_flags": ["lens_closed_community"]
+        },
+        {
+          "state_id": "post_wealth_closed",
+          "dialogue_id": "noor_declined_credit",
+          "required_flags": ["lens_closed_wealth"]
+        }
+      ]
     }
   ]
 }

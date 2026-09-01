@@ -773,6 +773,31 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     #   lens_closed_vengeance: Aldric Senn's post-truth dialogue_state.
     "lens_closed_truth",
     "lens_closed_vengeance",
+    # === A2-13 (D2: Wealth vs Community) — DETECTOR MISS ===
+    # Same shape as A2-12 above: ``lens_closed_community`` and
+    # ``lens_closed_wealth`` are SET by :func:`spacegame.models.dilemma.resolve`
+    # via the variable-arg ``lens_closed(lens_id)`` helper when D2
+    # resolves. Real consumers:
+    #   lens_closed_community: Kallio scar chatter ``al_scar_d2_kallio_01``,
+    #     Thuy Kallio's ``post_community_closed`` dialogue_state
+    #     (kallio_declined), Noor Castellano's ``post_community_closed``
+    #     dialogue_state (noor_buyers_open).
+    #   lens_closed_wealth: Noor scar chatter ``al_scar_d2_noor_01``,
+    #     Thuy Kallio's ``post_wealth_closed`` dialogue_state
+    #     (kallio_open_channels), Noor Castellano's ``post_wealth_closed``
+    #     dialogue_state (noor_declined_credit).
+    "lens_closed_community",
+    "lens_closed_wealth",
+    # ``d2_wealth_won`` and ``d2_community_won`` are the outcome flags
+    # SET by :func:`spacegame.models.dilemma.resolve` through the
+    # variable ``player.dialogue_flags[outcome.outcome_flag] = True`` —
+    # the flag name lives inside the loaded dilemma record, not as a
+    # source-side string literal. Consumers here are Marcus's
+    # ``flag_triggered`` ambient reactions (crew_id: marcus_jin, one per
+    # branch) plus the two ``auto_d2_*_won`` journal entries which the
+    # scanner does not crawl.
+    "d2_wealth_won",
+    "d2_community_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

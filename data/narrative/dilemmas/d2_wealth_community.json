@@ -1,0 +1,39 @@
+{
+  "dilemmas": [
+    {
+      "id": "d2_wealth_community",
+      "poles": ["wealth", "community"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "marcus_jin",
+      "telegraph_lines": [
+        "I filed a report about the recyclers twenty years ago. It got buried. Now you are funding one operation with the money the other one needs. Pick.",
+        "Cradlepoint's housing queue. Coinmark's leverage window. Same clock, same ledger. I already told you what a buried report costs. Do not make me watch you reprove it.",
+        "You cannot keep both accounts open. One of them is somebody's air recyclers. Decide with the numbers in front of you, not the ones you wish were there."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "wealth",
+          "closes": ["community"],
+          "tier_unlocks": [
+            "Broker Noor Castellano introduces the player to buyers who do not ask where capital originated, raising the ceiling on trade-route profit margins",
+            "access to leveraged financing previously withheld because the player's reputation read as unreliable"
+          ],
+          "outcome_flag": "d2_wealth_won",
+          "narration_summary": "You closed the file on the community side. Kallio's list keeps its rotation without your name on the manifest. Castellano runs your paper now. The ledger reads black. What used to be triage work at Cradlepoint is somebody else's overtime, and the money you did not put into it is earning."
+        },
+        {
+          "winning_lens_id": "community",
+          "closes": ["wealth"],
+          "tier_unlocks": [
+            "Thuy Kallio opens Cradlepoint dock channels that were closed to a trader who had not proven they would reinvest rather than extract",
+            "housing and logistics contracts with guaranteed demand, at lower margin than open trade but immune to market swings"
+          ],
+          "outcome_flag": "d2_community_won",
+          "narration_summary": "You closed the file on the wealth side. Coinmark's line stops at cash-in-hand from today. Kallio has the docks open for you and a list of families that needs to be shorter by the end of the cycle. The leverage window is gone. What you can pick up in Haven's Rest, you carry."
+        }
+      ]
+    }
+  ]
+}

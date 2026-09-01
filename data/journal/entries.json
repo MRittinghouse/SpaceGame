@@ -468,6 +468,20 @@
       "trigger_flag": "d4_vengeance_won",
       "system_id": "the_fulcrum",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d2_wealth_won",
+      "text": "Chose the ledger. Cradlepoint charter is off the roster. Castellano opened the leverage line and the discreet-buyer list. Kallio's people will run the concourse racks without my ships. The money that used to flow that way is earning against Coinmark now.",
+      "trigger_flag": "d2_wealth_won",
+      "system_id": "nexus_prime",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d2_community_won",
+      "text": "Chose the concourse. Coinmark line stopped at cash in hand from today. Kallio opened the Cradlepoint dock channels and put me on the guaranteed-demand contracts. The leverage window is gone. What I can pick up at Haven's Rest, I carry.",
+      "trigger_flag": "d2_community_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
     }
   ]
 }

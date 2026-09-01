@@ -9794,6 +9794,228 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "kallio_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "thuy_kallio",
+          "text": "Kallio. Cradlepoint charter. If you have cargo we can move, tell me. If you have time we can put to work, tell me twice.",
+          "responses": [
+            {
+              "text": "[Nod and step off.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "kallio_open_channels",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "thuy_kallio",
+          "text": "You showed up on the manifest side and the housing side both. That does not happen often. I have three things open. Tell me which one you are picking up.",
+          "subtext": "She has a clipboard in one hand and a docking wrench in the other. The office window looks out on a queue of cots and a queue of pallets sharing the same warehouse.",
+          "responses": [
+            {
+              "text": "The practical one. What moves the fastest.",
+              "next_node_id": "practical"
+            },
+            {
+              "text": "The curious one. What have you been sitting on.",
+              "next_node_id": "curious"
+            },
+            {
+              "text": "The careful one. Where does the risk sit.",
+              "next_node_id": "careful"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "practical",
+          "speaker_id": "thuy_kallio",
+          "text": "Housing permit at Concourse 6, twenty-four beds. It clears families off the racks by end of shift. Cradlepoint charter signs off on any hauler who takes the run without extra freight fees. That is a standing offer now, not a favor. You are on the list.",
+          "responses": [
+            {
+              "text": "I will take the run.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "curious",
+          "speaker_id": "thuy_kallio",
+          "text": "The grain contract out to Vega Belt. Guaranteed demand, seven cycles running. Margin thinner than open trade, immune to price swings. The roster did not want to lock the tonnage in for that long. Now I have somebody who might.",
+          "responses": [
+            {
+              "text": "Lock me in.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "careful",
+          "speaker_id": "thuy_kallio",
+          "text": "The med-supply loop to the outer holdings. Small ships only, four stops per rotation. Risk is that one of the holdings is on a Guild watch list for cross-charter aid. I trust the captain running it. I would like a second run in the rotation. Yours if you want it.",
+          "responses": [
+            {
+              "text": "Put me in the rotation.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        }
+      ]
+    },
+    {
+      "id": "kallio_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "thuy_kallio",
+          "text": "Seventeen families to the concourse racks last cycle. We managed. We will manage next cycle. If that is what you came to hear, you have it.",
+          "responses": [
+            {
+              "text": "You do not need me on the list.",
+              "next_node_id": "closed"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "closed",
+          "speaker_id": "thuy_kallio",
+          "text": "The list is not what I need. It is what the concourse needs. Different question. Different answer. You made your call on the funding side. I made mine on the roster side. That is the whole conversation.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
+    },
+    {
+      "id": "noor_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "noor_castellano",
+          "text": "Castellano. Coinmark. Say a number or say a route; I will tell you which side of the ledger it lands on.",
+          "responses": [
+            {
+              "text": "[Not today.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "business"
+        }
+      ]
+    },
+    {
+      "id": "noor_buyers_open",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "noor_castellano",
+          "text": "Your volume is proven. Your paper is clean enough. I have three lines I am willing to route your way. Pick the one that matches how you like to earn.",
+          "subtext": "The office is glass on three sides. The ticker on the fourth wall runs quotes she is not looking at. She has already priced this conversation.",
+          "responses": [
+            {
+              "text": "Leveraged. I want the ceiling raised.",
+              "next_node_id": "leveraged"
+            },
+            {
+              "text": "Discreet. I do not need a paper trail on every buyer.",
+              "next_node_id": "discreet"
+            },
+            {
+              "text": "Patient. I take the long window over the fast turn.",
+              "next_node_id": "patient"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "leveraged",
+          "speaker_id": "noor_castellano",
+          "text": "Two-to-one against your last four cycles of cargo receipts. Coinmark holds the position, you clear the trade. Ceiling on the routes you already run doubles. Coinmark takes eighteen basis points against the upside. Line opens the moment you sign.",
+          "responses": [
+            {
+              "text": "Open the line.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "discreet",
+          "speaker_id": "noor_castellano",
+          "text": "Three buyers on the list. They do not ask where the capital came from. They pay in Coinmark scrip settled against a warehouse in Meridian. Margin runs eleven to fourteen points over the exchange rate. Introductions are on me. Reference is on you.",
+          "responses": [
+            {
+              "text": "Make the introductions.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "business"
+        },
+        {
+          "id": "patient",
+          "speaker_id": "noor_castellano",
+          "text": "Six-cycle forward on refined alloys against the outer holdings. Locked price, locked delivery window. The margin is small per unit and the volume is large. You want the boring number that grows. This is the boring number.",
+          "responses": [
+            {
+              "text": "Give me the paperwork.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        }
+      ]
+    },
+    {
+      "id": "noor_declined_credit",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "noor_castellano",
+          "text": "Your Coinmark line stops at cash-in-hand from today. I extend credit against reputation. Yours reads as reinvested elsewhere.",
+          "responses": [
+            {
+              "text": "You are refusing my paper.",
+              "next_node_id": "close"
+            }
+          ],
+          "expression": "business"
+        },
+        {
+          "id": "close",
+          "speaker_id": "noor_castellano",
+          "text": "I am pricing your paper. The price is: settle in advance, run the trade, walk out. You are not on the leverage sheet. You are not on the discreet-buyer roster. The counterparties I referred to you before are on other rosters now. Business.",
+          "responses": [
+            {
+              "text": "[Take the terms and go.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }
