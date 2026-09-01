@@ -142,7 +142,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
-| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
+| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17025,62 +17025,531 @@ given player determines which way that relationship goes.
   (Cradlepoint's dockmaster) is reused for Community, same record as A2-13.
 - A2-13's sprint section (this file) for exactly how Kallio's `DialogueState`s are structured,
   so this sprint extends rather than conflicts with them.
+- `data/characters/npcs.json` lines 1115-1143 (verified 2026-09-01: Kallio record shipped with
+  `home_system_id: "havens_rest"`, `dialogue_id: "kallio_default"`, and two `dialogue_states`
+  gated on `lens_closed_wealth` → `kallio_open_channels` and `lens_closed_community` →
+  `kallio_declined`).
+- `data/dialogue/dialogues.json` around lines 9817 and 9880 (verified 2026-09-01:
+  `kallio_open_channels` and `kallio_declined` dialogue trees shipped; both are reused by D8
+  without new authoring).
+- `data/narrative/lenses.json` around line 121 (crime lens voice sheet: "Oblique,
+  transactional, unhurried; never explains more than necessary; silences are information" -
+  Wulan Doyle's dialogue must sit inside this register).
+- `requirements/character_voices.md` lines 23-68 (Elena Reeves voice sheet - "with respect"
+  register, addresses player as Captain, Guild formality unlearning itself; she is a canonical
+  crew NPC and her telegraph voice comes from this sheet).
+- `data/narrative/dilemmas/d7_faith_transcendence.json` and
+  `tests/test_scenarios/test_scenario_dilemma_d7.py` - the sibling dilemma that landed
+  immediately before; its shape (record layout, outcomes, tier_unlocks, narration_summary,
+  journal + scar + ambient coverage, test class layout) is the pattern this sprint mirrors.
+- `data/characters/npcs.json` around lines 1235-1276 (Halvorsen record: A2-17 extended an
+  A2-15-authored NPC with two new D6-specific `dialogue_states` without touching the two
+  existing D3 states. This sprint follows the same pattern for Kallio: preserve A2-13's two
+  states, append one new D8 state.).
+- `tests/test_data/test_dialogue_integrity.py` around line 892 (`KNOWN_CONSUMER_ONLY_ORPHANS`
+  extension block for A2-18; A2-19 appends a matching D8 block after it).
 
 **Touch zones.**
 - `data/narrative/dilemmas/d8_crime_community.json` (NEW)
-- `data/dialogue/` - Elena Reeves's telegraph lines, Wulan Doyle's post-collision dialogue
-  state, Thuy Kallio's post-collision dialogue state (a second gated state on the same NPC
-  record A2-13 touches - if A2-13 has already landed, confirm the flag-gating key does not
-  collide with A2-13's `dialogue_flags["lens_closed_community"]` state; this dilemma's
-  Community-losing state is gated on a distinct flag since it is a different dilemma
-  resolving against the same lens for the same underlying reason. Use
-  `dialogue_flags["lens_closed_community"]` for both - the lens itself is what closes, not
-  the dilemma, so both D2 and D8 closing Community should converge on the same flag and the
-  same Kallio dialogue state rather than authoring two redundant ones. If A2-13 has already
-  authored that state, reuse it; do not duplicate.)
+- `data/characters/npcs.json` (add one new NPC record: `wulan_doyle` at `stellaris_port`;
+  append one new `dialogue_states` entry to the existing `thuy_kallio` record for D8
+  Community-winning, gated on `d8_community_won`, reusing dialogue_id `kallio_open_channels`
+  - do NOT touch Kallio's existing two states or her `home_system_id`)
+- `data/dialogue/dialogues.json` (three new dialogue trees: `wulan_default`,
+  `wulan_victorious`, `wulan_declined`; no Kallio dialogue authoring - both reused trees
+  already exist)
+- `data/journal/entries.json` (two new auto-entries: `auto_d8_crime_won` at `stellaris_port`,
+  `auto_d8_community_won` at `havens_rest`)
+- `data/crew/station_chatter.json` (one new scar: `al_scar_d8_wulan_01` at `stellaris_port`
+  gated on `lens_closed_crime`; NO new Kallio scar - `al_scar_d2_kallio_01` from A2-13 already
+  covers the Community-losing ambient echo at `havens_rest` via `lens_closed_community`)
+- `data/crew/ambient_dialogue.json` (two `elena_reeves` `flag_triggered` ambient reaction
+  lines, one per outcome flag)
+- `tests/test_data/test_dialogue_integrity.py` (extend `KNOWN_CONSUMER_ONLY_ORPHANS` with
+  `lens_closed_crime`, `d8_crime_won`, `d8_community_won`; do NOT re-add
+  `lens_closed_community` - it is already in the allowlist from A2-13)
 - `tests/test_scenarios/test_scenario_dilemma_d8.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d8_crime_community"`, `poles: ["crime", "community"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
   `telegraph_npc_id: "elena_reeves"`.
-- Telegraph: Elena, precise and disapproving in her characteristic "with respect" register,
-  notes that the black-market routes the player runs through the Understair touch the same
-  supply lines Thuy Kallio's people depend on, and that "helping" a community while also
-  running product through its docks is not a position that holds indefinitely.
-- Two `DilemmaOutcome` entries:
+- Telegraph: three Elena lines in her "with respect" register, addressing the player as
+  "Captain", noting that the black-market routes the player runs through the Understair touch
+  the same supply lines Thuy Kallio's people depend on, and that funding a community while
+  also running product through its docks is not a position that holds indefinitely. Register
+  per Elena's voice sheet (`requirements/character_voices.md:23-68`): precise sentences,
+  qualifier-openers ("If I'm reading this right", "With respect"), navigation-metaphor leaks,
+  no slang, no profanity, no emotional declarations.
+- Two `DilemmaOutcome` entries with `outcome_flag` values `d8_crime_won` and
+  `d8_community_won`, both with populated `tier_unlocks` (integrity guard fails empty lists)
+  and `narration_summary`:
   - `winning_lens_id: "crime"`: `closes: ["community"]`. `tier_unlocks`: e.g. `["Wulan Doyle
-    grants standing access to the Understair's floor operations without per-run negotiation,
-    previously earned only run by run"]`.
-  - `winning_lens_id: "community"`: `closes: ["crime"]`. `tier_unlocks`: reuse/align with
-    A2-13's `community`-winning `tier_unlocks` where the underlying unlock is the same
-    (Thuy Kallio's channels) - do not author a second, contradictory description of what
-    resolving `community` grants; if A2-13 has already landed, read its `tier_unlocks` text
-    and match it exactly or extend it, do not diverge.
-- Visible cost: reuses A2-13's Kallio scar/dialogue-state content if it exists (see Touch
-  zones note above); Crime-winning's Community-side visible cost is Kallio's people doing
-  without the player, same convention as A2-13. Community-winning closes Crime - Wulan
-  Doyle's post-collision state has her treating the player as someone no longer welcome on the
-  floor, gated on `dialogue_flags["lens_closed_crime"]`.
-- `tests/test_scenarios/test_scenario_dilemma_d8.py` mirroring the established shape, plus a
-  test confirming that if both this dilemma and A2-13's D2 resolve `community` as the winner
-  for the same player (in either order), `dialogue_flags["lens_closed_community"]` is set
-  exactly once with no conflicting duplicate flag, and Kallio's dialogue state is the same one
-  both dilemmas reference.
+    grants standing access to the Understair's floor operations at Stellaris Port without
+    per-run negotiation, previously earned only run by run", "Kettlebridge's off-manifest
+    freight brokers treat the captain as inside the ledger rather than a visitor, opening
+    routes previously arranged only through introduction"]`.
+  - `winning_lens_id: "community"`: `closes: ["crime"]`. `tier_unlocks`: reuse and align
+    verbatim (or as close-verbatim as prose permits) with A2-13's D2 community-winning
+    `tier_unlocks` where the underlying unlock is the same (Thuy Kallio's Cradlepoint dock
+    channels + guaranteed-demand housing/logistics contracts at Haven's Rest). Do NOT author
+    a second, contradictory description of what resolving `community` grants: the state the
+    player reaches is the same state D2 community-winning reaches, and both dilemmas must
+    read as opening the same door.
+- Visible cost, Crime-winning (closes Community): Kallio's `kallio_declined` state is REUSED
+  via `lens_closed_community` (already gated in A2-13's Kallio record); the D2 scar
+  `al_scar_d2_kallio_01` at `havens_rest` also fires (already gated on
+  `lens_closed_community`). No new Kallio authoring on this side.
+- Visible cost, Community-winning (closes Crime): Wulan Doyle's `wulan_declined` tree treats
+  the captain as someone no longer welcome on the floor, gated on `lens_closed_crime`; scar
+  chatter `al_scar_d8_wulan_01` at `stellaris_port` echoes it ambiently.
+- Wulan Doyle NPC record at `data/characters/npcs.json`: `id: "wulan_doyle"`,
+  `home_system_id: "stellaris_port"`, `dialogue_id: "wulan_default"`,
+  `title: "Broker, Kettlebridge Understair"`, `faction_id: ""` (following the Rook Salvai /
+  Aldric Senn precedent for morally ambiguous outsider figures - Wulan inherited the ledger
+  and its debts, she is not aligned with any registered faction). Two `dialogue_states`:
+  `post_d8_crime_won` → `wulan_victorious` gated on `d8_crime_won`; `post_d8_crime_closed` →
+  `wulan_declined` gated on `lens_closed_crime`. Voice authored fresh in this sprint (not from
+  `character_voices.md`): oblique, transactional, unhurried, silences carry information -
+  matches the Crime lens voice-sheet register in `data/narrative/lenses.json`.
+- Kallio NPC record at `data/characters/npcs.json`: APPEND one new `dialogue_states` entry
+  BEFORE the existing two (list order matters for first-match routing, but the new state
+  gates on `d8_community_won` which is disjoint from A2-13's two states' gating flags, so
+  no priority hazard exists): `post_d8_community_won` → `kallio_open_channels` (REUSES the
+  existing A2-13 dialogue tree, does not author a second) gated on `d8_community_won`. Do
+  NOT modify Kallio's `home_system_id`, `dialogue_id`, `faction_id`, `title`, or her
+  existing two `dialogue_states` entries. This follows the A2-17 Halvorsen precedent where a
+  later dilemma appends new states to an earlier sprint's NPC record without touching the
+  earlier states.
+- Two auto-journal entries in `data/journal/entries.json`: `auto_d8_crime_won` (trigger_flag
+  `d8_crime_won`, `system_id: "stellaris_port"`) and `auto_d8_community_won` (trigger_flag
+  `d8_community_won`, `system_id: "havens_rest"`). Player-voice, retrospective, past-tense,
+  same shape as `auto_d7_*` entries.
+- One scar `ChatterLine` record in `data/crew/station_chatter.json`:
+  `id: "al_scar_d8_wulan_01"`, `system_id: "stellaris_port"`, `category: "scar"`,
+  `required_flags: ["lens_closed_crime"]`, `weight: 7`, `one_shot: false` per A2-11 scar
+  convention. Third-person overheard voice naming the Understair operations continuing
+  without the captain. No `al_scar_d8_kallio_01` is authored: A2-13's
+  `al_scar_d2_kallio_01` already fires on `lens_closed_community` and covers the
+  Community-losing ambient echo at Haven's Rest for both D2 and D8 (the same flag, the same
+  scar - the convergence is by design).
+- Two `elena_reeves` `flag_triggered` ambient reaction lines in
+  `data/crew/ambient_dialogue.json`, one per outcome flag, in Elena's "with respect"
+  register - short cabin-aside beats, no lecture, no absolution. Post-crime-win: Elena
+  acknowledges the call got made without softening it. Post-community-win: Elena acknowledges
+  the queue got shorter without congratulating.
+- `KNOWN_CONSUMER_ONLY_ORPHANS` extension in `tests/test_data/test_dialogue_integrity.py`
+  with three D8 flags (`lens_closed_crime`, `d8_crime_won`, `d8_community_won`) following
+  the DETECTOR MISS comment convention established by A2-12 through A2-18.
+  `lens_closed_community` is NOT re-added: it already lives in the A2-13 block from line
+  ~791, and A2-13's comment there lists its A2-13 consumers; A2-19's block adds a
+  cross-reference comment noting Wulan Doyle is NOT a new consumer of that flag (only Kallio
+  reuses it, and Kallio is already listed) but that A2-19's `al_scar_d2_kallio_01` reachability
+  is now exercised via D8 crime-wins as well as D2 wealth-wins.
+- `tests/test_scenarios/test_scenario_dilemma_d8.py` mirroring the established D7 shape,
+  plus a class covering the D2/D8 community-lens flag-key convergence (AC4) with two fresh
+  players.
+
+**Locked decisions (from planning).**
+1. `telegraph_npc_id` is `"elena_reeves"`. Rationale: verified canonical id at
+   `data/characters/npcs.json` line 4; Elena's "with respect" register is the exact tone the
+   sprint text names ("precise and disapproving"); she is a canonical crew NPC and her voice
+   sheet is authored (`requirements/character_voices.md:23-68`).
+2. Wulan Doyle's `home_system_id` is `"stellaris_port"`, not a new system named
+   `"kettlebridge"`. Rationale: no `kettlebridge` system exists in `data/galaxy/systems.json`
+   (verified 2026-09-01 - the 27 system ids are enumerated in the file); the sprint follows
+   A2-13's established precedent (Kallio at havens_rest despite Cradlepoint framing, Castellano
+   at nexus_prime despite Kettlebridge framing) of placing an out-of-Expanse NPC at an existing
+   system with the venue name preserved in their title. Stellaris Port has the required
+   over/under geography (Grand Bazaar + Warehouse) so an "Understair" beneath the main trade
+   floor reads naturally; a covert operation in a legal commerce hub is stronger narratively
+   than another surface criminal at `crimson_reach`; and Wulan's freight lines running through
+   Stellaris Port plausibly touch the same supply infrastructure Kallio's Cradlepoint charter
+   draws from at `havens_rest`, giving Elena's telegraph a concrete collision surface.
+3. Wulan Doyle's `faction_id` is `""` (empty). Rationale: matches the Rook Salvai / Aldric
+   Senn precedent for morally ambiguous outsider figures with no clean faction alignment;
+   Wulan inherited the ledger and its debts (per the sprint's own character description) and
+   has never found a way to walk away from either, so faction-neutral is the honest fit.
+4. Kallio's NPC record is EXTENDED with one new `dialogue_states` entry
+   (`post_d8_community_won` → `kallio_open_channels` on `d8_community_won`); her existing
+   two states (`post_wealth_closed`, `post_community_closed`), her `home_system_id`,
+   `dialogue_id`, `faction_id`, `title`, and `portrait_color` are UNTOUCHED. Rationale:
+   preserves A2-13's completed work; follows the A2-17 Halvorsen precedent (A2-17 added new
+   D6 states to an A2-15-authored NPC without touching the D3 states); ensures Kallio has a
+   positive dialogue state when a player fires only D8 and wins Community (otherwise the
+   player would see `kallio_default` when semantically Kallio's channels have opened, a
+   "seen opening" gap). Reusing the existing `kallio_open_channels` tree keeps A2-13's
+   dialogue authoring canonical; two dilemmas that resolve Community in Kallio's favor
+   converge on the same authored reaction.
+5. `al_scar_d8_kallio_01` is NOT authored. Rationale: `al_scar_d2_kallio_01` (A2-13) is
+   already gated on `lens_closed_community` at `havens_rest`. D8 Crime-winning sets that
+   flag through the same variable-arg `flag_registry.lens_closed(lens_id)` helper, so the
+   D2 scar becomes reachable via the D8 path automatically. Authoring a second Haven's Rest
+   scar keyed on the same flag would be redundant. Only Wulan's side (`al_scar_d8_wulan_01`
+   at `stellaris_port` on `lens_closed_crime`) is new to D8.
+6. Elena Reeves reactive ambient lines are folded IN to this sprint's scope (not deferred).
+   Rationale: Elena is the telegraph NPC and a canonical crew member with an authored voice
+   sheet; a generic crew reaction to a dilemma she herself surfaced would be a cohesion gap
+   of the exact kind the roadmap's Cross-sprint-reactions discipline is trying to prevent.
+   Same discipline A2-13 applied to Marcus Jin for D2.
+7. Add three D8 flags to `KNOWN_CONSUMER_ONLY_ORPHANS` in
+   `tests/test_data/test_dialogue_integrity.py`: `lens_closed_crime`, `d8_crime_won`,
+   `d8_community_won`. Do NOT re-add `lens_closed_community` (already in the A2-13 block).
+   Rationale: same DETECTOR MISS pattern established by A2-12 through A2-18 -
+   `spacegame.models.dilemma.resolve` writes these via variable-arg helpers or
+   variable-mediated assignment the source scanner cannot see. `lens_closed_community` is
+   already covered - adding it again would fail the "no duplicate members" implicit test that
+   the set literal enforces at parse time. A comment block in the D8 addition cross-references
+   that D8 adds no new consumers of `lens_closed_community` (only reuses A2-13's Kallio state
+   and A2-13's scar).
+8. Elena telegraph anchor words: telegraph lines must contain at least one of `"captain"`,
+   `"with respect"`, `"if i'm reading"`, `"optimal"`, `"heading"`, `"dead heading"`, or
+   `"drifting off course"` (case-insensitive substring match) - all lifted directly from
+   Elena's voice sheet verbal habits (`requirements/character_voices.md:36-41`). Voice-smoke
+   AC enforces.
+9. Wulan Doyle voice anchor: at least one authored Wulan line across her three trees must
+   contain at least one of `"ledger"`, `"debt"`, `"floor"`, `"understair"`, `"routes"`,
+   `"paperwork"`, or `"inheritance"` (case-insensitive substring match). Confirms the
+   inherited-ledger grounding the sprint text specifies; keeps her out of the generic-crime-boss
+   register (no "the boss"/"the family"/"the syndicate"/"the crew" gangster tropes; no
+   mustache-twirling threat language).
 
 **Acceptance criteria.**
-1. `DataLoader.dilemmas["d8_crime_community"]` loads with both outcomes populated.
-2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
-3. Collision behavior matches the established pattern.
-4. Resolving `crime` here and (in a separate test setup) resolving `wealth` in A2-13 against
-   the same player both leave `community` closed via the same flag key, with no second,
-   contradictory flag name introduced by this sprint.
-5. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
-6. Full suite green; no regression from baseline.
+1. `DataLoader.dilemmas["d8_crime_community"]` loads with both outcomes populated
+   (`winning_lens_id` `crime` and `community`, both with non-empty `tier_unlocks`, both with
+   `outcome_flag`, both with `narration_summary`).
+2. `tests/test_compliance/test_dilemma_integrity.py` passes against the new record
+   (`_outcomes_with_empty_tier_unlocks` returns `[]`, `_dilemmas_with_bad_thresholds`
+   returns `[]`).
+3. Collision behavior matches the established pattern: single-pole investment at 90 does not
+   collide; both poles at 85 does collide (`check_collision` returns True).
+4. **D2/D8 flag-key convergence.** Two independent test setups:
+   (a) A fresh player resolves D2 with `wealth` winning and D8 with `crime` winning: after
+   both resolves, `dialogue_flags["lens_closed_community"]` is exactly `True` (set exactly
+   once semantically - the flag is a boolean, so idempotent writes are fine, but no
+   contradictory `d8_lens_closed_community` or `community_closed_d8` variant appears in
+   `dialogue_flags`). Kallio's `get_active_dialogue_id(dialogue_flags)` returns
+   `"kallio_declined"` in both orderings (D2-first-then-D8 and D8-first-then-D2).
+   (b) A second fresh player resolves D2 with `community` winning (which does NOT close
+   community). D8 then fires with `crime` winning (which DOES close community). Assert
+   Kallio's active dialogue transitions from `"kallio_open_channels"` to `"kallio_declined"`
+   after the D8 resolve (because A2-13's `post_community_closed` state matches).
+5. Wulan Doyle NPC record loads exactly once (`dl.npcs["wulan_doyle"]`), with
+   `home_system_id == "stellaris_port"`, `dialogue_id == "wulan_default"`,
+   `faction_id == ""`, `title == "Broker, Kettlebridge Understair"`, and `dialogue_states`
+   covering both D8 outcomes. Pre-collision default returns `"wulan_default"` when no flag
+   set.
+6. Kallio's NPC record now has THREE `dialogue_states` entries (up from two). The new entry
+   is `post_d8_community_won` → `kallio_open_channels` gated on `d8_community_won`. A2-13's
+   two existing entries (`post_wealth_closed`, `post_community_closed`) are byte-identical
+   to their prior state (asserted by explicit key-and-value comparison in the test, not by
+   full-record diff which would be brittle).
+7. Crime-wins-D8 (`resolve(dilemma, "crime", player)`) sets
+   `dialogue_flags["d8_crime_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("community")] == True`; routes Wulan to
+   `"wulan_victorious"` and Kallio to `"kallio_declined"` (via A2-13's already-authored
+   state gated on `lens_closed_community`); records a non-empty
+   `player.dilemma_state.tier_unlocks_granted["crime"]`; makes `al_scar_d2_kallio_01`
+   (already existing from A2-13) reachable at `havens_rest` via
+   `StationChatterManager.get_chatter`.
+8. Community-wins-D8 (`resolve(dilemma, "community", player)`) sets
+   `dialogue_flags["d8_community_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("crime")] == True`; routes Wulan to
+   `"wulan_declined"` and Kallio to `"kallio_open_channels"` (via the NEW
+   `post_d8_community_won` state added by this sprint); records a non-empty
+   `player.dilemma_state.tier_unlocks_granted["community"]`; makes `al_scar_d8_wulan_01`
+   reachable at `stellaris_port`.
+9. Closed-pole guard suppresses D8: a stub player with `dilemma_state.closed_lenses ==
+   {"crime"}` at 100/100 investment produces no telegraph and no collision from
+   `check_dilemmas`. Same for `{"community"}`.
+10. Two auto-journal entries load through DataLoader with the expected `entry_id` and
+    `trigger_flag` values (`auto_d8_crime_won` / `d8_crime_won` at `stellaris_port`,
+    `auto_d8_community_won` / `d8_community_won` at `havens_rest`).
+11. Two `elena_reeves` `flag_triggered` ambient lines load with the correct `required_flags`
+    (`d8_crime_won` and `d8_community_won` respectively) and `crew_id == "elena_reeves"`.
+12. Voice smoke on telegraph lines: no em-dash (`—` / `–` / `―`), no banned phrases (`"a
+    testament to"`, `"couldn't help but"`), no "no X, no Y" parallel-negation constructions,
+    and at least one Elena voice anchor (`"captain"`, `"with respect"`, `"if i'm reading"`,
+    `"optimal"`, `"heading"`, `"dead heading"`, `"drifting off course"` - see Locked
+    decision 8).
+13. Voice smoke on Wulan's authored dialogue: at least one Wulan line across her three trees
+    (`wulan_default`, `wulan_victorious`, `wulan_declined`) contains at least one of
+    `"ledger"`, `"debt"`, `"floor"`, `"understair"`, `"routes"`, `"paperwork"`,
+    `"inheritance"` (case-insensitive substring match; see Locked decision 9). Also: no
+    generic-gangster tropes - explicit substring rejection for `"the boss"`, `"the family"`,
+    `"the syndicate"`, `"the crew"`, `"loyal"`, `"traitor"`, `"snitch"`.
+14. No banned NPC names in any authored content (Wulan Doyle is not on the banned list; the
+    guide bans Yara/Elara/Kael/Mara/Lydia/Clive/Magnus/Ambrose).
+15. `wulan_doyle` appears exactly once in `dl.npcs` after `load_all()` (uniqueness guard).
+16. `KNOWN_CONSUMER_ONLY_ORPHANS` in `tests/test_data/test_dialogue_integrity.py` contains
+    `lens_closed_crime`, `d8_crime_won`, `d8_community_won`; `lens_closed_community` remains
+    present from the A2-13 block (assert both are in the set, but do not assert the D8 block
+    added `lens_closed_community` - it did not); the dialogue-integrity suite passes without
+    new orphan errors introduced by this sprint.
+17. Full suite green; no regression from baseline (11482 passing, 100 skipped as of
+    pre-phase baseline).
+
+**Plan.**
+
+Task 1 — Add Wulan Doyle NPC record in `data/characters/npcs.json` and append one new
+`dialogue_states` entry to the existing Kallio record.
+- Files: `data/characters/npcs.json`.
+- New record: `wulan_doyle`, `home_system_id: "stellaris_port"`,
+  `dialogue_id: "wulan_default"`, `title: "Broker, Kettlebridge Understair"`,
+  `faction_id: ""`, `dialogue_music: "dialogue_intimate"`, two `dialogue_states`:
+  `post_d8_crime_won` → `wulan_victorious` (`d8_crime_won`),
+  `post_d8_crime_closed` → `wulan_declined` (`lens_closed_crime`). Pick a
+  `portrait_color` distinct from Cassian Velo's `[180, 160, 130]` (also at `stellaris_port`);
+  cooler/darker fits the covert-operator role (e.g., `[80, 75, 95]`).
+- Kallio extension: locate the existing `thuy_kallio` record (line 1115) and APPEND one
+  entry to its `dialogue_states` list (order: append at end - the new state gates on a
+  flag disjoint from the two existing gates, so first-match ordering is not a hazard):
+  `state_id: "post_d8_community_won"`, `dialogue_id: "kallio_open_channels"`,
+  `required_flags: ["d8_community_won"]`.
+- Test surface: AC5 (`TestD8WulanNPCLoads`), AC6 (`TestD8KallioExtensionPreserved`),
+  AC15 (`TestD8NPCUniqueness`).
+- Gotcha: do NOT touch Kallio's `home_system_id`, `dialogue_id`, `faction_id`, `title`,
+  `portrait_color`, `dialogue_music`, or her existing two `dialogue_states` entries. AC6
+  asserts the two prior entries are byte-identical. If Kallio's existing states drift, D2's
+  scenario test (`test_scenario_dilemma_d2.py`) will fail alongside D8's - so the safest
+  edit is to open the JSON, navigate to Kallio's `dialogue_states` array, and add exactly
+  one entry at the end without reformatting the surrounding object.
+
+Task 2 — Author three Wulan Doyle dialogue trees in `data/dialogue/dialogues.json`.
+- Files: `data/dialogue/dialogues.json`.
+- Three new dialogues:
+  - `wulan_default` (Wulan meeting a passing captain who's been running product through
+    the Understair without a standing arrangement; oblique, transactional, unhurried; she
+    names one specific handoff or route the captain would qualify for on standing access).
+  - `wulan_victorious` (Wulan grants standing access; specific concrete handoff - a
+    port-override key, a broker introduction, a manifest that runs clean because the ledger
+    on her side now covers the captain by default rather than by negotiation).
+  - `wulan_declined` (captain who chose community; Wulan is not warm and not hostile - she
+    reads the closure as a business fact and closes the account without editorializing;
+    her floor operations continue past the captain).
+- Speaker id: `wulan_doyle` for all Wulan lines.
+- Test surface: exercised implicitly by state-routing tests in AC7 and AC8; voice-smoke in
+  AC13.
+- Gotcha: Wulan's voice sits inside the Crime lens voice sheet (`data/narrative/lenses.json`
+  line ~133: "Oblique, transactional, unhurried; never explains more than necessary;
+  silences are information"). Do NOT lean on generic-gangster tropes (Locked decision 9
+  spells the rejected substrings; AC13 enforces). Anchor words per Locked decision 9 must
+  appear at least once across the three trees. No em-dashes, no `no X, no Y`
+  constructions, no `a testament to`/`couldn't help but`, no banned NPC names.
+
+Task 3 — Create `data/narrative/dilemmas/d8_crime_community.json`.
+- Files: `data/narrative/dilemmas/d8_crime_community.json` (NEW).
+- Full `Dilemma` record per Deliverables. `telegraph_npc_id: "elena_reeves"`; three Elena
+  telegraph lines in her "with respect" register (Locked decision 8 anchors); two `outcomes`
+  with non-empty `tier_unlocks` and `narration_summary`, `outcome_flag` values `d8_crime_won`
+  and `d8_community_won`, `closes` arrays pointing at the opposite pole.
+- Test surface: `TestD8Loads`, `TestD8IntegrityGuardPasses`, `TestD8CollisionMath`,
+  `TestD8ClosedPoleGuard` (AC1, AC2, AC3, AC9); voice-smoke in AC12.
+- Gotcha: `outcome_flag` values MUST be exactly `d8_crime_won` / `d8_community_won` (the
+  tests reference those literal strings). `closes` MUST reference the opposite pole
+  (integrity guard enforces). Community-winning `tier_unlocks` must NOT diverge from
+  A2-13's D2 community-winning `tier_unlocks` text; read D2's outcome
+  (`data/narrative/dilemmas/d2_wealth_community.json`) first and match/extend, not diverge.
+  Match Elena's voice-anchor list from Locked decision 8 - at least one anchor per
+  voice-smoke AC.
+
+Task 4 — Add auto-journal entries in `data/journal/entries.json`.
+- Files: `data/journal/entries.json`.
+- Two entries: `auto_d8_crime_won` (`system_id: "stellaris_port"`, `trigger_flag:
+  "d8_crime_won"`) and `auto_d8_community_won` (`system_id: "havens_rest"`, `trigger_flag:
+  "d8_community_won"`), each with `mission_id: ""`. Player-voice, past-tense
+  retrospective, mirrors `auto_d7_*` shape.
+- Test surface: `TestD8JournalEntriesRegistered` (AC10).
+- Gotcha: player-voice first-person retrospective. Crime-won journal names Wulan and
+  Kettlebridge's Understair (at Stellaris Port); community-won journal names Kallio and
+  Cradlepoint (at Haven's Rest). Do not reuse or duplicate A2-13's `auto_d2_community_won`
+  text; the D2 entry is about the D2 collision (wealth vs community), the D8 entry is
+  about the D8 collision (crime vs community) - different collision narratives even when
+  the resolved lens is the same.
+
+Task 5 — Add scar chatter in `data/crew/station_chatter.json`.
+- Files: `data/crew/station_chatter.json`.
+- `al_scar_d8_wulan_01` at `stellaris_port`, gated on `lens_closed_crime`, `category:
+  "scar"`, `weight: 7`, `one_shot: false`. Third-person overheard text (station gossip)
+  naming Understair operations continuing without the captain.
+- Test surface: AC8 (`TestD8CommunityWinsClosesCrime` includes reachability at
+  `stellaris_port`).
+- Gotcha: third-person ambient text (station gossip), not first-person player reflection -
+  the reflection belongs in the journal entries from Task 4. Do NOT author a
+  `al_scar_d8_kallio_01` at `havens_rest`; A2-13's `al_scar_d2_kallio_01` is already
+  gated on `lens_closed_community` and covers the D8 Crime-winning ambient echo via flag
+  convergence (Locked decision 5).
+
+Task 6 — Add Elena Reeves ambient reactions in `data/crew/ambient_dialogue.json`.
+- Files: `data/crew/ambient_dialogue.json`.
+- Two entries with `crew_id: "elena_reeves"`, `context: "flag_triggered"`, and
+  `required_flags: ["d8_crime_won"]` / `["d8_community_won"]` respectively. Voice in
+  Elena's "with respect" register - short cabin-aside beats, addresses player as
+  "Captain", no lecture, no absolution.
+- Test surface: `TestD8ElenaReactionsRegistered` (AC11).
+- Gotcha: `crew_id` must be exactly `elena_reeves` (not `elena` or `reeves`). Register per
+  Elena's voice sheet - post-crime-win Elena acknowledges the call got made without
+  softening it (her "That's an interesting choice" register means "That's a bad choice
+  and I'm trying not to say so"); post-community-win Elena acknowledges the queue got
+  shorter without warm congratulation (she never makes emotional declarations - see
+  `requirements/character_voices.md:57-58`).
+
+Task 7 — Extend `KNOWN_CONSUMER_ONLY_ORPHANS` in
+`tests/test_data/test_dialogue_integrity.py`.
+- Files: `tests/test_data/test_dialogue_integrity.py`.
+- Append after A2-18's D7 block (around line 914), following the DETECTOR MISS comment
+  convention: add a `# === A2-19 (D8: Crime vs Community) — DETECTOR MISS ===` block
+  documenting the three flags, their producer (variable-arg
+  `flag_registry.lens_closed(lens_id)` / `player.dialogue_flags[outcome.outcome_flag] =
+  True` in `spacegame.models.dilemma.resolve`), and their real consumers (scar chatter,
+  NPC dialogue_states, Elena ambient, auto-journal). Cross-reference note:
+  `lens_closed_community` is NOT re-added because it already lives in the A2-13 block
+  (line ~791); A2-19 adds no NEW consumer of that flag - it only reuses A2-13's Kallio
+  state and A2-13's scar (both already listed under A2-13). Then add the three literal
+  strings to the set: `"lens_closed_crime"`, `"d8_crime_won"`, `"d8_community_won"`.
+- Test surface: the dialogue-integrity suite must still pass after data lands (no new
+  orphan errors surface). AC16 verifies presence of the three flags AND continued presence
+  of `lens_closed_community` from A2-13.
+- Gotcha: only the three D8 flags belong here. Do NOT clean up or reorganize the
+  A2-13/14/15/16/17/18 blocks; leave them alone. Do NOT re-add `lens_closed_community` -
+  Python `set` literals silently accept duplicate members but the reviewer will call it
+  out as noise. The set is a growing append log by convention.
+
+Task 8 — Create `tests/test_scenarios/test_scenario_dilemma_d8.py`.
+- Files: `tests/test_scenarios/test_scenario_dilemma_d8.py` (NEW).
+- Class layout mirrors `test_scenario_dilemma_d7.py`: `TestD8Loads`,
+  `TestD8IntegrityGuardPasses`, `TestD8CollisionMath`, `TestD8ClosedPoleGuard`,
+  `TestD8CrimeWinsClosesCommunity`, `TestD8CommunityWinsClosesCrime`,
+  `TestD8ElenaReactionsRegistered`, `TestD8JournalEntriesRegistered`,
+  `TestD8NPCUniqueness` (both `wulan_doyle` unique AND `thuy_kallio` still unique - the
+  Kallio extension MUST NOT accidentally duplicate the record),
+  `TestD8WulanNPCLoads`, `TestD8KallioExtensionPreserved` (asserts three states total,
+  the new one, and that the two existing A2-13 entries are byte-identical to A2-13's
+  authored values), `TestD8VoiceSmoke` (extends the D7 pattern with the Elena
+  telegraph anchor check and the Wulan authored-anchor + no-gangster-tropes check),
+  `TestD8ConsumerAllowlist` (asserts the three D8 flags AND `lens_closed_community` are
+  in `KNOWN_CONSUMER_ONLY_ORPHANS`), `TestD8CrossDilemmaConvergence` (AC4: the two
+  D2+D8 community-lens convergence subcases, one asserting flag-key convergence in both
+  orderings when both dilemmas close community, and one asserting Kallio's active
+  dialogue transitions from `kallio_open_channels` to `kallio_declined` when D2 community
+  wins then D8 crime wins).
+- Test surface: all ACs 1-17.
+- Gotcha: use `fresh_player` from `tests/test_scenarios/_helpers.py`; import
+  `flag_registry.lens_closed` from `spacegame.constants.flags`; import guard helpers from
+  `tests.test_compliance.test_dilemma_integrity` (matches D7's pattern).
+  `TestD8VoiceSmoke` should walk all Wulan dialogue nodes for the anchor + no-gangster
+  check and all three telegraph lines for the Elena anchor. For the
+  `TestD8CrossDilemmaConvergence` D2-first-then-D8 ordering, the D2 dilemma record must
+  be loaded from `data/narrative/dilemmas/d2_wealth_community.json` in the same
+  DataLoader singleton; do not mock D2 - use the real record to catch real drift if D2's
+  outcome_flag or closes array ever changes.
+
+Task 9 — Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and the mypy-baseline
+gate.
+- Files: none (verification only).
+- Test surface: full suite, plus targeted `pytest
+  tests/test_scenarios/test_scenario_dilemma_d8.py -v` and
+  `pytest tests/test_scenarios/test_scenario_dilemma_d2.py tests/test_data/test_dialogue_integrity.py -v`
+  (D2 tests included because Kallio's record is extended - if the extension breaks the
+  D2 state-routing assertions, D2's suite is the fastest signal).
+- Gotcha: mypy-baseline must not be regenerated - this sprint's diff is data + tests, no
+  new type surface. If mypy reports new errors from the new test file, fix the test's
+  annotations; do not touch `mypy-baseline.txt`. Watch the `TestDialogueFlagAudit`
+  timing under xdist - A2-17 and A2-18 both had to run at increased timeout for the
+  audit tests as authoring volume grew; this sprint adds a smaller data footprint (three
+  dialogue trees, one scar, two ambient, two journal, three flags added to allowlist -
+  no six-tree Solano/Marchetti pair like A2-18), so the audit timing should stay
+  comfortably inside the current bounds.
+
+**Cross-sprint reactions to author.**
+
+Folded into this sprint (author here):
+- `data/crew/ambient_dialogue.json` - Elena Reeves post-D8-crime line (fires on
+  `d8_crime_won`) and Elena Reeves post-D8-community line (fires on `d8_community_won`).
+  Reason: Elena is the D8 telegraph NPC and a canonical crew member; a generic crew
+  reaction here would be a cohesion gap. Task 6 covers.
+
+Flagged as follow-up (do NOT author in A2-19):
+- (candidate) `data/crew/ambient_dialogue.json` - Tomas Drifter observation post-D8 on
+  either outcome. Tomas's grounded-trader register would naturally comment on either the
+  ledger-side gains (crime won) or the queue-side gains (community won); his D7 telegraph
+  register is already ledger-metaphor. Deferred to a follow-up crew-banter sprint.
+- (candidate) `data/crew/ambient_dialogue.json` - Marcus Jin post-D8-community reaction
+  at `havens_rest`. Marcus's authored voice sheet plus his D2/D5-established relationship
+  with Cradlepoint work would land a specific line here (the queue his father would have
+  been on got shorter). Deferred: adding it would require a fresh Marcus voice-check
+  pass and grows the sprint's authoring surface past Size M.
+- (candidate) `data/journal/travel_log_templates.json` - post-D8 travel-log flavor when
+  the player next docks at Stellaris Port (Crime-lost / Crime-won) or Haven's Rest
+  (Community-lost / Community-won). Ambient depth; not required to prove the mechanism.
+- (candidate) A future news/rumour-echo sprint - "Understair broker under new standing
+  arrangement" as background station gossip at Stellaris Port on `d8_crime_won`, and a
+  Cradlepoint housing-queue update at Haven's Rest on `d8_community_won`. Deferred to a
+  news-echo sprint; the scar chatter + journal entries already cover the primary "see
+  the closure/opening" beat.
+- (candidate) Cassian Velo (Stellaris Port auctioneer, already at `stellaris_port`) could
+  carry a single dialogue_state line acknowledging that a captain who now has standing
+  access to the Understair is a captain the Auctioneer notices. Deferred: requires
+  reading Cassian's voice register and adding a conditional dialogue branch, which is
+  scope creep for a Size M sprint.
+- (candidate) Reva (a Guild colleague of Elena's mentioned in `character_voices.md:535`)
+  could carry a post-D8-crime reaction if she becomes a talkable NPC in a later content
+  sprint. Deferred: Reva does not yet have a canonical NPC record; this is a candidate
+  for whichever sprint first surfaces her.
+- (candidate) A "closure of the eight" ambient sweep now that A2-19 completes the eight
+  dilemmas: a single beat at the ship-log level noting that the captain has walked
+  through every fork on the map. Belongs to whichever sprint first authors a broader
+  post-arc reflection; not in scope here.
+
+**Notes.**
+- No new sprints are proposed. All follow-up candidates above are noted in Cross-sprint
+  reactions to author and can be bundled into a future content-authoring sweep alongside
+  similar candidates deferred from D1-D7.
+- Pre-phase test baseline: 11482 passing, 100 skipped (as of 2026-09-01, matches A2-18
+  post-close state). The sprint's own tests are the final gate for closing out the eight
+  dilemmas.
+- A2-13 is the sibling sprint whose Kallio record this sprint extends. The A2-17
+  Halvorsen extension precedent is followed exactly - append one new `dialogue_states`
+  entry gated on a disjoint flag, leave the earlier states byte-identical. AC6 makes the
+  preservation an explicit test-time invariant.
+- A2-18's review noted a single-tighten observation on `rasheeda_marchetti` having
+  `faction_id: ""` while other axiom_labs NPCs use `science_collective`. A2-19 makes an
+  analogous choice for Wulan Doyle (`faction_id: ""` vs `commerce_guild` for the other
+  Stellaris Port NPC Cassian Velo). This is intentional and locked (Locked decision 3):
+  Wulan is a covert operator inside a legal commerce hub, not aligned with the guild
+  faction that runs the surface floor. If a future sprint runs a "faction coverage"
+  audit and flags Wulan, the intentional-empty choice can be surfaced by comment or by
+  a `# intentionally unaligned` inline marker; not in scope for this sprint.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 14:34 — harness: plan phase starting
+- 2026-09-01 15:15 — planning complete; expanded ACs from 6 to 17, locked 9 decisions,
+  folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 14:34
+- Completed: 2026-09-01 15:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: elena-reactive-ambient (matches A2-13 Marcus + A2-18 Tomas
+  precedent for telegraph-NPC reactive lines); explicit-kallio-extension-preservation-test
+  (AC6 makes the A2-13 preservation an invariant); explicit D2/D8 flag-key convergence
+  scenario test with both firing orders (AC4)
+- Decisions_locked: 9
+- Notes: Verified all context docs exist. Verified 2026-09-01: Kallio's NPC record and
+  the `kallio_declined` + `kallio_open_channels` dialogue trees ship from A2-13; the
+  crime lens ships from A2-1/A2-5; Elena Reeves exists as a canonical NPC with an authored
+  voice sheet; no `kettlebridge` system exists so Wulan Doyle placed at `stellaris_port`
+  per the A2-13 precedent; the A2-17 Halvorsen precedent is followed exactly for the
+  Kallio extension (append one disjoint-gated state, preserve existing states). Plan
+  mirrors the A2-18 D7 shape (9 tasks, three-tree NPC, one new NPC + one existing NPC
+  extension, three new allowlist flags). Sprint is Size M and stays inside it - authoring
+  surface is one dilemma record + three Wulan trees + one Kallio state append + one scar
+  + two journals + two Elena ambients + one allowlist block + one scenario test.
 ---
 
 #### A2-20 — Capstones fire without ending the session
