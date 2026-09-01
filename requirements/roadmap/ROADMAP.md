@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: in-progress (planning)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15722,17 +15722,26 @@ without them):
 - 2026-09-01 06:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 06:45 — harness: plan phase starting
 - 2026-09-01 06:55 — sprint already implemented in commit 93c6db6 (all files from the original plan present: `data/narrative/dilemmas/d3_power_revolution_empire.json`, three NPCs in `data/characters/npcs.json`, nine dialogue trees in `data/dialogue/dialogues.json`, three scar `ChatterLine`s in `data/crew/station_chatter.json`, three Tomas ambient lines in `data/crew/ambient_dialogue.json`, three auto-journal entries in `data/journal/entries.json`, `tests/test_scenarios/test_scenario_dilemma_d3.py`). Verified: `pytest tests/test_scenarios/test_scenario_dilemma_d3.py` → 31 passed; `pytest tests/test_compliance/test_dilemma_integrity.py` → 20 passed; `pytest tests/test_data/test_cross_references.py` → 39 passed; combined dilemma-integrity + cross-refs + dialogue-integrity → 78 passed. Original plan is unchanged (no re-plan needed). PHASE_OK to route the sprint to the implement phase for verification, then review, per handoff guidance.
+- 2026-09-01 06:54 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 07:03 — implement re-verification: sprint already delivered in commit 93c6db6. Ran targeted surfaces `pytest tests/test_scenarios/test_scenario_dilemma_d3.py tests/test_compliance/test_dilemma_integrity.py tests/test_data/test_dialogue_integrity.py tests/test_writing_bible_compliance.py` → 109 passed in 308s (exit 0). Ruff check + ruff format --check on the two touched Python test files (`tests/test_scenarios/test_scenario_dilemma_d3.py`, `tests/test_data/test_dialogue_integrity.py`) both clean. All 11 acceptance criteria satisfied by files on disk from 93c6db6. Skipped full-suite re-run per the "already implemented" branch of the implement-agent guidance — sprint surfaces + writing-bible + dialogue-integrity + dilemma-integrity green is the proportionate check. PHASE_OK
+- 2026-09-01 07:03 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 — review complete; all 11 ACs verified; plan audit sound; full suite 11368 passing serially; one parallel xdist flake in test_no_new_consumer_only_flags is pre-existing contention (passes in isolation: 1/1); three new NPC voices strong and differentiated; no Writing Bible violations; scar faction_id follows D1/D2/D4 convention; commit 62b0893 is a genuine improvement to the flag-reachability scanner (dilemma outcome_flags now recognized as flag sources, beneficial to all future dilemma sprints). PHASE_OK
+
 **Last phase report.**
-- Phase: plan
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 06:45
-- Completed: 2026-09-01 06:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 8755b0c
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented; original plan folded in scar-chatter, Tomas ambient reactions, auto-journal entries, winning-state dialogue trees, NPC id-collision guard test)
-- Decisions_locked: 0 (all 8 originally locked decisions preserved from the earlier plan; work is complete)
-- Notes: A2-15 was fully implemented in commit 93c6db6 ("A2-15: D3 Political Power vs Revolution vs Empire content + scenario") before stuck-sprint recovery reset it. All 11 acceptance criteria are satisfied by files on disk; targeted test runs green. Per the harness AGENT_GUIDE, using PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes the sprint through implement → review → gate normally, letting the implementer re-verify and the reviewer sign off. No re-planning done; the original locked decisions and task list still stand.
+- Started: 2026-09-01 07:03
+- Completed: 2026-09-01 07:25
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11368 (serial run confirmed by commit 62b0893; targeted surfaces 90/90 clean; one parallel xdist flake pre-existing)
+- Acceptance_criteria_verified: 11/11
+- Polish_items_verified: n/a (planner correctly deferred cross-NPC reactions to follow-up sprints; none folded into this sprint's scope)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: TestD3ClosedPoleGuard tests only political_power as the pre-closed pole — plan explains this intentionally (mirror cases add no new coverage over A2-14), but the test class docstring doesn't say so; a future reader may mistake it for an oversight. Not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; locked decisions on home_system_ids (verge_landing/kettlebridge are flavor names only; havens_rest/crimson_reach are real), outcome flag naming, scar topology, winning/losing state gating, Halvorsen scaffolding for A2-17 — all defensible. Owusu (quorum/vote register), Halvorsen (surveyor's vocabulary), Deng (imperative, direct, impatient) are each distinctly voiced; Tomas telegraph and reactive lines are on-voice. Commit 62b0893 (teaching the flag-reachability scanner that dilemma outcome_flags are a flag source) is a net positive fix to the test infrastructure, not a workaround.
 ---
 
 #### A2-16 — D5: Legacy ↔ Connection
