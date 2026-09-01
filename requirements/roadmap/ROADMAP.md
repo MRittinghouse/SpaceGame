@@ -15324,7 +15324,7 @@ folded into this sprint's scope):
 - Started: 2026-09-01 04:04
 - Completed: 2026-09-01
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 114fe61
 - New_sprints_proposed: none
 - Polish_items_folded_in: journal-entries (both outcomes), scar-chatter reachability tests, ambient-line registration tests, voice smoke on Elena's telegraph, mirror-case for the closed-pole guard
 - Decisions_locked: 6
