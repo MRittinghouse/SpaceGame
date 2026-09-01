@@ -9,6 +9,8 @@ import json
 from collections import defaultdict, deque
 from pathlib import Path
 
+import pytest
+
 from spacegame.data_loader import DataLoader
 
 # ---------------------------------------------------------------------------
@@ -1136,6 +1138,7 @@ class TestDialogueFlagAudit:
     NET-NEW orphans only — driving a Pass 5 review of each known orphan.
     """
 
+    @pytest.mark.timeout(300)
     def test_no_new_consumer_only_flags(self) -> None:
         producers, consumers = _collect_all_flag_uses()
         new_orphans = []
@@ -1149,6 +1152,7 @@ class TestDialogueFlagAudit:
             f"REAL BUG / DETECTOR MISS classification:\n" + "\n".join(sorted(new_orphans))
         )
 
+    @pytest.mark.timeout(300)
     def test_no_new_producer_only_flags(self) -> None:
         producers, consumers = _collect_all_flag_uses()
         new_orphans = []
