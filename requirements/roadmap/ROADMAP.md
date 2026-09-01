@@ -16209,7 +16209,7 @@ scenario test):
 - Started: 2026-09-01 10:21
 - Completed: 2026-09-01 10:24
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 98e4bb3
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented)
 - Decisions_locked: 0 (all 10 prior decisions still stand)
