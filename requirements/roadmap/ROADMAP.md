@@ -143,7 +143,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
-| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
+| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | in-progress | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -17591,72 +17591,557 @@ mechanism, not sixteen hand-written cutscenes.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "Endings are capstones,
-  and the game does not stop" section, and Success Criterion 8.
-- `spacegame/models/capstone.py`, `data/narrative/capstones.json` (from A2-3) - read the
-  actual hook-contract shape A2-3 shipped; if it differs from the assumption in this file's
-  "Conventions" section above, adapt this sprint's implementation to match what A2-3 actually
-  built rather than what was assumed.
-- `spacegame/models/dilemma.py`, `spacegame/models/player.py` (`dilemma_state.closed_lenses`,
-  from A2-8/A2-10) - a capstone must not be reachable for a closed lens.
-- `spacegame/views/tutorial_narration_modal.py`, `spacegame/engine/state_manager.py` - same
-  push/pop overlay pattern A2-8 used for `DilemmaResolutionView`.
-- `spacegame/config.py` - `GameState` enum.
+  and the game does not stop" section (lines 237-249), and Success Criterion 8 (line 336).
+- `spacegame/models/capstone.py` (verified 2026-09-01: A2-3 shipped `Capstone` @dataclass
+  with fields `capstone_id`, `lens_id`, `capstone_threshold`, `cutscene_ref: Optional[str]`,
+  plus module-level `should_fire(capstone, current_investment, closed_lenses,
+  capstones_reached) -> bool` predicate. No extension needed - the model layer is complete.
+  The predicate takes `capstones_reached: set[str]` as a primitive parameter by design so
+  A2-20 owns where that state lives; A2-3 explicitly deferred the field to this sprint per
+  A2-3's Locked decision).
+- `data/narrative/capstones.json` (verified 2026-09-01: shipped as `{"capstones": []}` empty
+  stub by A2-3; A2-20 populates the sixteen real entries here).
+- `data/narrative/lenses.json` (verified 2026-09-01: sixteen lens_ids present -
+  `vengeance`, `wealth`, `political_power`, `exploration`, `discovery`, `justice`, `crime`,
+  `revolution`, `empire`, `community`, `legacy`, `faith`, `transcendence`, `connection`,
+  `truth`, `preservation`. Each `Lens` record carries `name` and `core_fantasy` fields
+  used by the placeholder narration template).
+- `spacegame/models/dilemma.py` (`DilemmaRuntimeState.closed_lenses: set[str]` at line 156;
+  serialized to a sorted list per line 171 - the round-trip pattern to mirror for
+  `capstones_reached`), `spacegame/models/player.py` (`player.dilemma_state.closed_lenses`
+  is the read path; `player.lens_investment.get_investment(lens_id) -> int` is the
+  investment read path).
+- `spacegame/engine/game.py` lines 4427-4595: the entire dilemma engine wiring
+  (`_after_player_action`, `_tick_dilemma_engine`, `_push_dilemma_modal`,
+  `_ensure_dilemma_resolution_view`, `_on_dilemma_resolve`, `_handle_dilemma_resolution`).
+  A2-20 mirrors this pattern - a `_tick_capstone_engine()` invoked from
+  `_after_player_action`, an `_ensure_capstone_view()` / `_push_capstone_modal()` /
+  `_handle_capstone_acknowledge()` chain - not a separate integration.
+- `spacegame/views/dilemma_resolution_view.py` - the modal-overlay reference (constructor
+  shape, `on_enter`/`on_exit` UI lifecycle, `dismissed` flag polled by the engine, panel
+  render pass, `get_next_state() -> None` because modals do not drive state transitions).
+- `spacegame/engine/state_manager.py` lines 66-95: `push_state()` / `pop_state()` semantics.
+  Note that `on_enter()` runs again on the popped-to state, which does NOT reset player
+  state - it re-creates that state's UI. A2-10 relies on this and the same holds here.
+- `spacegame/config.py` lines 284-347: `GameState` enum - append `CAPSTONE = "capstone"`
+  in a matching Act II block after `DILEMMA_RESOLUTION`.
+- `spacegame/save_manager.py` lines 440-520 (serialize block) and 620-700 (deserialize
+  block). Mirror the `dilemma_state` treatment (sorted list on the way out; tolerant
+  `set(...)` on the way in with a `[]` default for legacy saves).
+- `tests/test_scenarios/_helpers.py` - `fresh_player()` and `round_trip_save()` are the
+  entry points the scenario tests use.
+- `tests/test_scenarios/test_scenario_save_load.py` - the file the AC5 round-trip block is
+  appended to.
+- `tests/test_models/test_capstone.py` (verified 2026-09-01: A2-3's `should_fire()` unit
+  tests already cover the predicate; A2-20 does NOT add tests here, all A2-20 logic is at
+  the engine-integration layer).
+- `requirements/onboarding_design.md` principle 1 ("prefer character over UI overlays, but
+  player experience wins"). Capstones are unavoidably a UI moment - a narrative beat with
+  no authored voice yet - so a modal is the right form; a diegetic frame would falsely
+  imply authored content exists. The placeholder-narration comment in `capstone_view.py`
+  must state this explicitly so a future authored-content sprint knows this modal is a
+  frame, not the final surface.
 
 **Touch zones.**
-- `spacegame/models/capstone.py` (extend with firing-condition helper if A2-3 did not
-  already include one; see Deliverables)
-- `spacegame/models/player.py` (`capstones_reached: set[str] = field(default_factory=set)`)
-- `spacegame/engine/game.py` (capstone threshold check wired alongside the dilemma checks
-  from A2-8)
-- `spacegame/config.py` (`GameState.CAPSTONE`)
-- `spacegame/views/capstone_view.py` (NEW)
-- `data/narrative/capstones.json` - sixteen entries, one per lens, each with a
-  `capstone_threshold` (suggest 95, above any dilemma's `collision_threshold` of 80, so a
-  capstone typically follows a resolved dilemma rather than preceding it) and a
-  `narration_key` pointing at generated, not hand-authored, text (see Deliverables).
-- `tests/test_scenarios/test_scenario_capstone_session_continues.py` (NEW)
+- `spacegame/models/player.py` (append one field `capstones_reached: set[str] =
+  field(default_factory=set)` after the `dilemma_state` field around line 90)
+- `spacegame/save_manager.py` (append `capstones_reached` to the serialize dict block
+  near line 451 and the deserialize block near line 642, mirroring the `dilemma_state`
+  legacy-save treatment)
+- `spacegame/engine/game.py` (add `_tick_capstone_engine`, `_push_capstone_modal`,
+  `_ensure_capstone_view`, `_on_capstone_acknowledge`, `_handle_capstone_acknowledge`;
+  extend `_after_player_action` to call `_tick_capstone_engine()` after
+  `_tick_dilemma_engine()`; extend `_update_gameplay_state` (or the equivalent
+  per-frame polling site that already calls `_handle_dilemma_resolution`) to poll
+  `_handle_capstone_acknowledge`; declare `self.capstone_view: Optional["CapstoneView"]
+  = None` and `self._pending_capstone: Optional["Capstone"] = None` on the Game
+  instance near the analogous dilemma attributes around line 417)
+- `spacegame/config.py` (append `CAPSTONE = "capstone"` to `GameState` enum after
+  `DILEMMA_RESOLUTION` at line 347, with a comment mirroring the DILEMMA_RESOLUTION
+  block explaining it is a push/pop overlay, not a `change_state` target)
+- `spacegame/views/capstone_view.py` (NEW - single-button acknowledge modal mirroring
+  `DilemmaResolutionView`'s panel geometry and lifecycle, sized for a narration paragraph
+  with a single "Continue" button)
+- `data/narrative/capstones.json` (populate with sixteen entries - the file was shipped
+  as an empty stub by A2-3, so this is a full overwrite with the sixteen records rather
+  than an append)
+- `tests/test_scenarios/test_scenario_capstone_session_continues.py` (NEW - scenario test
+  for AC1-AC4 and AC7-AC8, using `fresh_player` + a partial Game instance following the
+  pattern in `test_scenario_dilemma_*`)
+- `tests/test_scenarios/test_scenario_save_load.py` (append one class
+  `TestSaveLoadCapstonesReached` for AC5)
+- `tests/test_compliance/test_capstone_registry.py` (NEW - data-integrity test asserting
+  the sixteen capstones map 1-to-1 onto the sixteen lens_ids, thresholds are the agreed
+  value, cutscene_ref is null for all entries, and every capstone_id / lens_id is
+  snake_case; see AC6)
 
 **Deliverables.**
-- Sixteen `Capstone` records in `data/narrative/capstones.json`, one per lens id, each with
-  `capstone_threshold: 95`. `narration_key` references a template string, not bespoke prose -
-  e.g. `"{lens_name} capstone reached: your reputation as someone who chose {core_fantasy}
-  is now fixed."` rendered by substituting the loaded `Lens.name`/`Lens.core_fantasy` at
-  display time. This is explicitly placeholder, not final content; a code comment in
-  `capstone_view.py` states this clearly for whichever future sprint replaces it.
-- Firing condition: `lens_investment.get(lens_id) >= capstone.capstone_threshold AND lens_id
-  not in player.dilemma_state.closed_lenses AND lens_id not in player.capstones_reached`.
-  Checked alongside A2-8's per-action dilemma checks, same `action_type` hook points in
-  `game.py`.
-- On firing: `push_state(GameState.CAPSTONE)`, `CapstoneView` renders the rendered
-  `narration_key` text with a single acknowledge control (no branching choice, unlike
-  `DilemmaResolutionView` - a capstone is not a decision), adds `lens_id` to
-  `player.capstones_reached`, then on acknowledge calls `pop_state()` back to the prior
-  `GameState`.
-- A closed lens can never reach its capstone - the guard above is permanent, not just a
-  point-in-time check, since `closed_lenses` only grows.
+- Sixteen `Capstone` records in `data/narrative/capstones.json`, one per lens_id, with
+  `capstone_id: "{lens_id}_capstone"`, `lens_id: "{lens_id}"`, `capstone_threshold: 95`
+  (uniform), `cutscene_ref: null` (uniform - the whole point of this sprint is that the
+  format works before any cutscenes exist). File is a full overwrite; the shipped empty
+  stub is replaced. No extension of the `Capstone` model.
+- Placeholder narration: `CapstoneView` renders a fixed template string with the loaded
+  `Lens.name` and `Lens.core_fantasy` substituted at display time. Template (single
+  authoritative copy, no per-lens variation):
+  `"You have reached the {lens_name} capstone. This is who you have chosen to be: {core_fantasy_lowercased_no_trailing_period}. Play continues."`.
+  A comment above the template in `capstone_view.py` states clearly that this text is
+  a placeholder shipped for the plumbing test, not final content, and names the file to
+  replace when a future authored-content sprint arrives. No em-dashes, no banned phrases,
+  no `no X, no Y` construction - the text is voice-checked because AC12 asserts it.
+- Firing condition: uses A2-3's `spacegame.models.capstone.should_fire(capstone,
+  current_investment, closed_lenses, capstones_reached)` predicate verbatim - the engine
+  is a caller, not a re-implementer. The values it passes are
+  `player.lens_investment.get_investment(capstone.lens_id)`,
+  `player.dilemma_state.closed_lenses`, and `player.capstones_reached` respectively.
+- Engine hook points: `_after_player_action(action_type)` invokes `_tick_capstone_engine()`
+  after `_tick_dilemma_engine()`. Capstones tick AFTER dilemmas so a resolve that closes
+  a lens in the same action cannot then fire that lens's capstone (defence-in-depth for
+  AC3). Both ticks are suppressed while a modal is already active - the existing
+  `if self.state_manager.current_state == GameState.DILEMMA_RESOLUTION: return` guard is
+  extended to also short-circuit on `GameState.CAPSTONE`, so a capstone modal cannot stack
+  a dilemma modal beneath it and vice versa. This mirrors A2-8's own guard.
+- Multiple-eligible tie-break: `_tick_capstone_engine` iterates capstones in the load
+  order from `DataLoader.capstones` (an insertion-ordered dict; capstones.json ordering
+  is stable and the load path preserves it), fires the first eligible capstone found,
+  and returns. Any other simultaneously-eligible capstone re-checks on the next
+  `_after_player_action` tick (the same "collision reappears until presented" property
+  A2-8 documents at `_push_dilemma_modal`). No batching, no queueing.
+- On firing: `push_state(GameState.CAPSTONE)`. `CapstoneView` renders the panel with a
+  single `Continue` button. On acknowledge, view sets `dismissed = True`; the engine's
+  per-frame polling `_handle_capstone_acknowledge` observes the flag, adds `capstone_id`
+  to `player.capstones_reached`, sets `player.dialogue_flags[f"{lens_id}_capstone_reached"]
+  = True` (a stable flag for A2-21 to key off), then calls `pop_state()` to return to the
+  prior `GameState`. Add-to-set happens on acknowledge, NOT on fire, so a player who
+  somehow crashes mid-modal re-sees the capstone rather than losing it silently. The dialogue
+  flag write also happens on acknowledge for the same reason.
+- Save/load: `player.capstones_reached` serializes as a sorted list under
+  `"capstones_reached"` (sorted for deterministic diffs, matching the
+  `DilemmaRuntimeState.closed_lenses` precedent at `spacegame/models/dilemma.py:171`).
+  Deserialize tolerates a missing key (empty set) and a non-list payload (empty set),
+  matching the `DilemmaRuntimeState.from_dict` tolerance pattern.
+- A closed lens can never reach its capstone. The guard is permanent because
+  `closed_lenses` only grows - `should_fire()` re-checks it on every tick, and no code
+  path removes an id from `closed_lenses`.
+- Compliance test at `tests/test_compliance/test_capstone_registry.py`: asserts
+  `set(dl.capstones[cid].lens_id for cid in dl.capstones) == set(dl.lenses.keys())` (1-1
+  mapping), `all(c.capstone_threshold == 95 for c in dl.capstones.values())` (uniform
+  threshold - see Locked decision 3), `all(c.cutscene_ref is None for c in
+  dl.capstones.values())` (no bespoke cutscenes yet), and `len(dl.capstones) == 16`
+  (guard against a lens being added later without a matching capstone).
+
+**Locked decisions (from planning).**
+1. **`capstones_reached` lives on `Player` directly, not inside a `CapstoneRuntimeState`
+   sub-model.** Rationale: the only per-run state a capstone accumulates is membership in
+   a set of ids. There is no cursor, no per-capstone bookkeeping, no telegraph, no cooldown.
+   Wrapping a single field in a sub-model for symmetry with `DilemmaRuntimeState` would be
+   ceremony without payoff - `DilemmaRuntimeState` exists because dilemmas have four
+   distinct runtime axes (telegraphed set, per-dilemma cursor, resolved map, closed-lens
+   set). Capstones have one. A `set[str]` field on `Player` is honest.
+2. **A2-3's `should_fire()` is the ONLY predicate; A2-20 does not add helpers to
+   `spacegame/models/capstone.py`.** Rationale: A2-3's model layer is complete and the
+   sprint's own docstring hands this sprint the wiring, not the predicate. Extending the
+   Capstone model here would breach A2-3's touch-zone precedent (model layer is done)
+   and create a hidden coupling. Every eligibility read goes through A2-3's function.
+   The A2-20 sprint text at line 17606-17607 says "extend with firing-condition helper
+   if A2-3 did not already include one" - it did, so we don't.
+3. **Uniform threshold of 95 for all sixteen capstones.** Rationale: the sprint text
+   already suggests 95 as the number that puts a capstone above any dilemma's
+   `collision_threshold` of 80, so a capstone almost always follows a resolved dilemma
+   rather than preceding one. Per-lens variation would need per-lens justification the
+   design spec does not provide, and would be authored content masquerading as data. A
+   uniform value is honest and testable.
+4. **`cutscene_ref: null` uniformly across all sixteen entries.** Rationale: A2-3's model
+   documents that a `None` `cutscene_ref` means the engine renders a generated template
+   narration. This sprint's whole reason to exist is to prove the format works before any
+   cutscenes exist (spec Success Criterion 8). Shipping a non-null `cutscene_ref` on any
+   entry would falsely imply a cutscene asset ships with this sprint.
+5. **Placeholder narration is a single template, not sixteen per-lens strings.**
+   Rationale: bespoke per-lens strings would be authored content, which the design spec
+   at line 314-320 keeps out of scope for the whole arc. A single template substituting
+   `Lens.name` and `Lens.core_fantasy` at display time is verifiably generated, not
+   authored, and forces the narration format to be one that a future authored-content
+   sprint can uniformly replace.
+6. **Capstone tick runs AFTER dilemma tick in `_after_player_action`.** Rationale:
+   defence-in-depth for AC3. If a single action's `resolve()` closes a lens (writing to
+   `closed_lenses`), the subsequent capstone tick sees the closure and suppresses. The
+   opposite ordering would leave a race between "capstone eligible on read" and "close
+   on later read" that AC3 explicitly forbids.
+7. **A capstone modal cannot stack a dilemma modal beneath it, and vice versa.**
+   Rationale: the same guard A2-8 wrote into `_after_player_action` (line 4444) - a
+   modal state suppresses further modal spawns - is extended to check both
+   `DILEMMA_RESOLUTION` and `CAPSTONE`. Only one narrative interrupt at a time. If both
+   would have fired on the same action, the dilemma fires first (per Locked decision 6)
+   and the capstone re-checks on the next `_after_player_action` tick, at which point
+   the dilemma resolve may have closed the lens and suppressed the capstone - which is
+   the correct outcome for a player who chose the other pole.
+8. **On acknowledge, set `player.dialogue_flags[f"{lens_id}_capstone_reached"] = True`
+   as a stable flag for A2-21 to key off.** Rationale: A2-21 ("post-capstone generation
+   keyed to resolved identity") needs a durable read-path to determine which capstones
+   the player has reached. `player.capstones_reached` is the canonical source, but flag
+   registry conventions (SI-3) let dialogue and mission gating read booleans without
+   importing model state. This is the mission gate for post-capstone content and costs
+   one write per acknowledge.
+9. **`capstones_reached` add and dialogue-flag write both happen on acknowledge, not on
+   fire.** Rationale: if the player force-quits or the process crashes between fire and
+   acknowledge, we want the capstone to re-fire on the next session (they never saw it).
+   Writing on acknowledge is idempotent (set add is a no-op the second time), matches
+   the dilemma resolution precedent (A2-10 writes on resolve, not on modal push), and
+   makes the acknowledged-capstone set correspond exactly to capstones the player
+   actually saw.
+10. **Ordering within `_after_player_action`: crew reaction → dilemma tick → capstone
+    tick.** Rationale: crew reactions are ambient chatter and never interfere with modal
+    state. Dilemma tick comes second per Locked decision 6. Capstone tick comes last so
+    a same-action resolve-and-close sequence has already updated `closed_lenses` before
+    the capstone eligibility read.
+11. **No compliance test on `_push_capstone_modal` at the UI-manager level.** Rationale:
+    A2-8's `_push_dilemma_modal` at line 4529 no-ops when `self.ui_manager is None` -
+    partial Game instances built by unit tests deliberately skip `__init__`. A2-20's
+    `_push_capstone_modal` follows the same guard verbatim so gameplay unit tests that
+    construct partial Game instances (as `_apply_ground_result` did in the incident that
+    triggered A2-8's guard) do not crash when a capstone is eligible. The scenario test
+    uses a real Game instance where the guard is a no-op.
 
 **Acceptance criteria.**
-1. Driving a lens's investment to `capstone_threshold` fires `GameState.CAPSTONE`; driving it
-   one point short does not - verified in
-   `tests/test_scenarios/test_scenario_capstone_session_continues.py`.
-2. After acknowledging the capstone, `GameState` returns to whatever state was active before
-   the interrupt (mirrors A2-10's criterion 5 for `DilemmaResolutionView`), and the
-   underlying game loop continues - verified by asserting the player can immediately perform
-   another action (e.g. a trade) in the same test without any additional setup, proving the
-   session did not end. This satisfies design-spec Success Criterion 8 directly.
-3. A lens already in `player.dilemma_state.closed_lenses` never fires its capstone even when
-   a test directly sets its investment above `capstone_threshold` (simulating investment
-   raised before closure, then closure happening) - verified explicitly.
-4. Firing a capstone twice for the same lens (simulating investment staying above threshold
-   after the first fire) does not push a second `GameState.CAPSTONE` - guarded by
-   `capstones_reached` membership.
-5. `capstones_reached` round-trips through save/load, extending
-   `tests/test_scenarios/test_scenario_save_load.py`.
-6. Full suite green; no regression from baseline.
+1. **Threshold fires; one point short does not.** In
+   `test_scenario_capstone_session_continues.py`, a fresh player has their
+   `wealth`-lens investment set to `94`; `_after_player_action("test")` does not push
+   `GameState.CAPSTONE`. Investment then set to `95`; a second `_after_player_action` call
+   pushes `GameState.CAPSTONE` and instantiates `Game.capstone_view`.
+2. **Session continues after acknowledge (spec Success Criterion 8).** Same test:
+   after invoking the acknowledge path on the pushed modal, `pop_state()` restores the
+   pre-capstone `GameState`, and a subsequent `_after_player_action("trade_profit_large")`
+   call completes without error (proving the loop is still alive). The player's
+   `capstones_reached` contains exactly `{"wealth_capstone"}` and their
+   `dialogue_flags["wealth_capstone_reached"] is True`.
+3. **Closed lens never fires its capstone.** A fresh player has
+   `player.dilemma_state.closed_lenses.add("wealth")` explicitly set, then wealth
+   investment set to `100`. `_after_player_action` does not push `GameState.CAPSTONE`,
+   and `player.capstones_reached` stays empty.
+4. **Same capstone does not fire twice.** Continuing AC2's setup: the player's
+   `wealth` investment stays at `95` (or is raised higher). A second
+   `_after_player_action` tick does not push `GameState.CAPSTONE` a second time - the
+   `capstones_reached` membership guard blocks it.
+5. **`capstones_reached` round-trips through save/load.** In
+   `test_scenario_save_load.py::TestSaveLoadCapstonesReached`: a fresh player is given
+   `capstones_reached = {"wealth_capstone", "empire_capstone"}`; after
+   `round_trip_save(player)`, the restored player's `capstones_reached ==
+   {"wealth_capstone", "empire_capstone"}`. A legacy save (`{}`-dict deserialize path)
+   yields `capstones_reached == set()`. A malformed payload (non-list, non-set) also
+   yields `set()` per the dilemma-state tolerance precedent.
+6. **Data integrity.** `test_compliance/test_capstone_registry.py`:
+   `len(dl.capstones) == 16`; `set(c.lens_id for c in dl.capstones.values()) ==
+   set(dl.lenses.keys())` (bijective lens-to-capstone mapping); every
+   `c.capstone_threshold == 95`; every `c.cutscene_ref is None`; every `capstone_id` and
+   `lens_id` matches `^[a-z][a-z0-9_]*$` (already enforced by
+   `Capstone.from_dict`, but re-asserted here so a future capstone added without a matching
+   lens fails loudly at the registry level).
+7. **A capstone modal cannot stack a dilemma modal beneath it.** Set a player up so a
+   capstone is eligible AND a dilemma is eligible on the same action tick. Assert exactly
+   one modal is pushed (the dilemma per Locked decisions 6 and 7). On resolving the
+   dilemma such that the winning pole is the capstone's lens (capstone still eligible),
+   the next `_after_player_action` tick pushes the capstone. On resolving such that the
+   winning pole is NOT the capstone's lens (capstone's lens gets closed), the capstone
+   never fires - `capstones_reached` stays empty.
+8. **Multiple simultaneously-eligible capstones fire one at a time.** A test where two
+   lenses' investment is at threshold simultaneously and neither is closed: the first
+   `_after_player_action` tick pushes one capstone (the first in the
+   `DataLoader.capstones` insertion order). After acknowledge, the second
+   `_after_player_action` tick pushes the second. Both end up in `capstones_reached`.
+9. **`CapstoneView` renders and dismisses cleanly.** A view-level test that the modal
+   creates its `Continue` button in `on_enter`, sets `dismissed = True` when the button
+   is pressed, tears its UI down in `on_exit`, and returns `None` from `get_next_state()`
+   (following the DilemmaResolutionView invariant that modals do not drive state
+   transitions).
+10. **Firing writes are deferred to acknowledge.** Between `push_state(CAPSTONE)` and
+    the acknowledge callback, `player.capstones_reached` is still empty and
+    `player.dialogue_flags.get(f"{lens_id}_capstone_reached", False) is False` (Locked
+    decision 9).
+11. **`GameState.CAPSTONE` is a push-target, never a `change_state` target.** Grep
+    guard in the compliance test file: no occurrence of `change_state(GameState.CAPSTONE)`
+    or `change_state(GameState("capstone"))` in `spacegame/`. Same-shape guard as the
+    one A2-8 added for `DILEMMA_RESOLUTION` if one exists; otherwise a new grep-style
+    assertion in `test_compliance/test_capstone_registry.py`.
+12. **Voice smoke on placeholder narration template.** The template string in
+    `capstone_view.py` contains no em-dashes (`—` / `–` / `―`), no banned phrases (`"a
+    testament to"`, `"couldn't help but"`), no `no X, no Y` parallel-negation
+    construction, and no banned NPC names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus,
+    Ambrose). Verified in a dedicated tiny voice-check test in the view test file, since
+    even placeholder player-facing text passes through the Writing Bible.
+13. **Full suite green; no regression from pre-phase baseline.** 11529 passing, 100
+    skipped. New tests added by this sprint move the pass count up; no existing test
+    regresses.
+
+**Plan.**
+
+Task 1 — Extend `Player` with `capstones_reached: set[str]`.
+- Files: `spacegame/models/player.py`.
+- Add the field after `dilemma_state` around line 90 with a short comment referencing
+  A2-20 and the A2-3 hook-contract (mirroring the `# A2-8: per-save runtime bookkeeping...`
+  comment above `dilemma_state`).
+- Test surface: the field is exercised at the scenario level (AC2, AC4, AC7) and by the
+  save/load round-trip (AC5); no new unit test in `test_models/test_player.py` (the
+  field is trivial and Player's model tests do not currently enumerate every field).
+- Gotcha: initialise via `field(default_factory=set)`, not `= set()` (dataclass mutable-
+  default pitfall). Do NOT touch any other Player field, method, or ordering - the file
+  is dense and any drift here spreads through save/load.
+
+Task 2 — Wire `capstones_reached` through `save_manager.py`.
+- Files: `spacegame/save_manager.py`.
+- Serialize block (near line 451): add `"capstones_reached": sorted(player.capstones_reached),`
+  next to the `dilemma_state` line. Sorted for deterministic diffs, mirroring the
+  `DilemmaRuntimeState.to_dict` treatment of `closed_lenses`.
+- Deserialize block (near line 642): add
+  `raw = data.get("capstones_reached", []); player.capstones_reached = set(raw) if
+  isinstance(raw, list) else set()` after the `dilemma_state` restore. Tolerate the
+  missing-key (legacy save) and malformed-payload cases without crashing, mirroring the
+  `DilemmaRuntimeState.from_dict` precedent.
+- Test surface: AC5 (`TestSaveLoadCapstonesReached` in
+  `tests/test_scenarios/test_scenario_save_load.py`).
+- Gotcha: no `SAVE_VERSION` bump - this is a purely additive field with a legacy-safe
+  default, per CLAUDE.md Save Migration guidance. Do NOT introduce a migration map or
+  version guard; the default handles legacy saves cleanly.
+
+Task 3 — Add `GameState.CAPSTONE` to the enum.
+- Files: `spacegame/config.py`.
+- Insert `CAPSTONE = "capstone"` after `DILEMMA_RESOLUTION` at line 347, with a comment
+  mirroring the DILEMMA_RESOLUTION block explaining it is a push/pop overlay: `# A2-20:
+  Capstone punctuation moment. Push-only overlay - never a change_state target. Pop
+  returns to the pre-capstone state and play continues.`
+- Test surface: AC11 (grep guard in `test_compliance/test_capstone_registry.py`).
+- Gotcha: keep the enum value string in snake_case (matches the DILEMMA_RESOLUTION
+  precedent). The enum value is used in save files and log lines - do NOT rename after
+  ship, or the save-load path breaks for anyone with an in-flight capstone.
+
+Task 4 — Populate `data/narrative/capstones.json` with sixteen entries.
+- Files: `data/narrative/capstones.json`.
+- Full overwrite of the empty stub. Sixteen records, one per lens_id from
+  `data/narrative/lenses.json` (see Context to read for the enumerated list). Each record:
+  `{"capstone_id": "{lens_id}_capstone", "lens_id": "{lens_id}",
+  "capstone_threshold": 95, "cutscene_ref": null}`.
+- Test surface: AC6 (`test_compliance/test_capstone_registry.py`).
+- Gotcha: capstone_id is `{lens_id}_capstone`, not `{lens_id}` (a snake_case id that
+  disambiguates the capstone record from the lens record it references). The two ids
+  are distinct namespaces per A2-3's model. Emit `null` (not `"null"` or omitted) for
+  `cutscene_ref` - A2-3's `from_dict` treats missing and null identically, but explicit
+  `null` documents intent and matches the roundtrip guarantee in A2-3's `to_dict`.
+
+Task 5 — Create `spacegame/views/capstone_view.py`.
+- Files: `spacegame/views/capstone_view.py` (NEW).
+- Mirror `DilemmaResolutionView`'s shape: constructor takes
+  `(ui_manager, capstone, lens, on_acknowledge)` where `lens` is the loaded
+  `Lens` record for `capstone.lens_id` (the engine passes it in so the view does not
+  import DataLoader). Panel geometry mirrors the dilemma modal; render title, the
+  substituted template string, and one centered `Continue` button.
+- Constants: single `_TEMPLATE` module-level string per Deliverables. Comment above
+  the template stating clearly that this text is placeholder shipped for the plumbing
+  test and names A2-21 or a future authored-content sprint as the replacer.
+- `handle_event`: on `pygame_gui.UI_BUTTON_PRESSED` matching the Continue button, set
+  `self.dismissed = True` and call `on_acknowledge()` (no argument - the engine looks
+  up the capstone from `self._pending_capstone`).
+- `get_next_state()` returns `None` (modal - engine drives transitions).
+- `on_enter` / `on_exit`: super calls first / last respectively, `_create_ui` /
+  `_destroy_ui` per views/CLAUDE.md.
+- Test surface: AC9 and AC12 in the new view test file
+  `tests/test_views/test_capstone_view.py` (also NEW, sibling to the view file - lift
+  the pattern from `tests/test_views/test_dilemma_resolution_view.py` if present, else
+  from another existing view test).
+- Gotcha: do NOT read `player.lens_investment` or DataLoader from the view. The view
+  is a rendering surface; the engine hands it the pre-loaded `Lens` and the
+  `Capstone`. This mirrors the compliance guard that forbids `player.lens_investment`
+  reads in view files (see `tests/test_compliance/test_lens_investment_never_rendered.py`)
+  - the guard is not on this file yet but the same discipline applies.
+
+Task 6 — Extend `Game` with the capstone tick, push, and acknowledge chain.
+- Files: `spacegame/engine/game.py`.
+- Attributes: near line 417 declare `self.capstone_view: Optional["CapstoneView"] = None`
+  and `self._pending_capstone: Optional["Capstone"] = None` (mirror the
+  `dilemma_resolution_view` / `_pending_dilemma` declaration).
+- Extend `_after_player_action` (line 4427): the existing early-return guard `if
+  self.state_manager.current_state == GameState.DILEMMA_RESOLUTION: return` becomes
+  `if self.state_manager.current_state in (GameState.DILEMMA_RESOLUTION,
+  GameState.CAPSTONE): return`. After the existing `self._tick_dilemma_engine()` call,
+  add `self._tick_capstone_engine()`.
+- Add `_tick_capstone_engine(self) -> None`: no-op if `self._player is None`. Load
+  `dl = get_data_loader()`; if `not dl.capstones` return. Iterate
+  `for capstone in dl.capstones.values()` in insertion order; call `should_fire(...)`
+  with the four values per Deliverables; on the first True, call
+  `_push_capstone_modal(capstone)` and return.
+- Add `_push_capstone_modal(self, capstone: "Capstone") -> None`: mirror
+  `_push_dilemma_modal` at line 4509 verbatim including the `if getattr(self,
+  "ui_manager", None) is None: return` guard. Look up the lens via
+  `get_data_loader().lenses[capstone.lens_id]`, call
+  `_ensure_capstone_view(capstone, lens)`, then
+  `self.state_manager.push_state(GameState.CAPSTONE)`.
+- Add `_ensure_capstone_view(self, capstone, lens) -> None`: mirror
+  `_ensure_dilemma_resolution_view` at line 4537 verbatim, wiring
+  `on_acknowledge=self._on_capstone_acknowledge`.
+- Add `_on_capstone_acknowledge(self) -> None`: the acknowledge-write side of the
+  contract. `capstone = self._pending_capstone; if capstone is None: return`. Add
+  `capstone.capstone_id` to `player.capstones_reached`; set
+  `player.dialogue_flags[f"{capstone.lens_id}_capstone_reached"] = True`. Pop is
+  deferred to the per-frame poll for the same pygame_gui-teardown reason A2-8
+  documented at `_on_dilemma_resolve` (line 4562-4569).
+- Add `_handle_capstone_acknowledge(self) -> None`: mirror
+  `_handle_dilemma_resolution` at line 4578 - poll `self.capstone_view.is_dismissed()`,
+  if True call `pop_state()`, then `self.capstone_view = None; self._pending_capstone
+  = None`. Call this from the same per-frame site that already calls
+  `_handle_dilemma_resolution` (search for the caller of
+  `_handle_dilemma_resolution` to locate it - as of A2-8 the pattern is a poll inside
+  the main update loop, and A2-20's poll goes right beside it).
+- Test surface: AC1-AC4 (`test_scenario_capstone_session_continues.py`), AC7-AC8
+  (same file, dedicated test classes), AC10 (the "defer writes to acknowledge" invariant
+  - assert `capstones_reached` is empty immediately after push, populated after the
+  acknowledge poll).
+- Gotcha: import `CapstoneView` and `Capstone` lazily inside the methods that need
+  them (as `_ensure_dilemma_resolution_view` does at line 4549) to avoid circular imports
+  at module load. The `Optional["CapstoneView"]` on the attribute uses a string forward
+  reference so no top-level import is needed.
+
+Task 7 — Register the capstone view with the state manager the first time it fires.
+- Files: same as Task 6 (`spacegame/engine/game.py`).
+- `_ensure_capstone_view` calls `self.state_manager.register_state(GameState.CAPSTONE,
+  self.capstone_view)`, following the `_ensure_dilemma_resolution_view` precedent at
+  line 4558. Each fire creates a new view instance because the capstone/lens context
+  differs; the state manager's `register_state` is idempotent with respect to overwrite
+  (it replaces the previous registration).
+- Test surface: implicitly exercised by AC1 and AC8 - a second fire (different lens)
+  succeeds because a fresh view is registered per fire.
+- Gotcha: do NOT try to pool CapstoneView instances or lazy-create one at Game.__init__.
+  The dilemma pattern re-creates the view per collision (see
+  `_ensure_dilemma_resolution_view`) and that is deliberate - each modal carries
+  per-instance context. Mirror it.
+
+Task 8 — Author the scenario test.
+- Files: `tests/test_scenarios/test_scenario_capstone_session_continues.py` (NEW).
+- Mirror the shape of `test_scenario_dilemma_*.py`. Import `fresh_player` from
+  `_helpers`; import the DataLoader singleton; construct a partial `Game` instance the
+  same way an existing scenario test does (grep an existing dilemma scenario to find
+  the "construct Game with `__init__` patched out" recipe if one is already used;
+  otherwise the DilemmaResolutionView tests may have a simpler harness that suits).
+- Classes:
+  - `TestCapstoneThresholdFires` — AC1 (below/at threshold).
+  - `TestCapstoneSessionContinues` — AC2 (pop returns, subsequent action succeeds).
+  - `TestClosedLensSuppressesCapstone` — AC3.
+  - `TestCapstoneDoesNotDoubleFire` — AC4 (`capstones_reached` blocks second push).
+  - `TestCapstoneAndDilemmaModalStacking` — AC7 (dilemma-first, capstone re-check on
+    next tick with both outcomes).
+  - `TestMultipleEligibleCapstonesFireOneAtATime` — AC8 (insertion-order first fires).
+  - `TestFiringDefersWritesToAcknowledge` — AC10.
+- Test surface: AC1, AC2, AC3, AC4, AC7, AC8, AC10.
+- Gotcha: the `Game` scenario harness should use `ui_manager = None` if it can (so
+  `_push_capstone_modal`'s guard is exercised) OR must construct a real
+  `pygame_gui.UIManager` if it needs the modal to actually push - the tests for
+  push behavior need the UI manager present, since the guard no-ops otherwise. Check
+  the dilemma scenario tests for the precedent - they hit real push behavior, so the
+  harness they use is the one to lift here. Do NOT patch `_push_capstone_modal` -
+  the scenario test's job is to exercise the real push path.
+
+Task 9 — Extend the save/load scenario test.
+- Files: `tests/test_scenarios/test_scenario_save_load.py`.
+- Append one class `TestSaveLoadCapstonesReached` with three tests: populated set
+  round-trips; legacy save (missing key) yields empty set; malformed payload (non-list)
+  yields empty set.
+- Test surface: AC5.
+- Gotcha: `capstones_reached` is a `set[str]` and JSON has no set primitive - the
+  serializer must emit a sorted list and the deserializer must reconstruct a set. Test
+  both the value AND the type (`assert isinstance(restored.capstones_reached, set)`)
+  to catch a regression where somebody serializes+restores as list-of-strings without
+  the set-cast.
+
+Task 10 — Author the compliance test.
+- Files: `tests/test_compliance/test_capstone_registry.py` (NEW).
+- Load `dl = get_data_loader(); dl.load_all()`. Assert per AC6 and AC11.
+- Test surface: AC6, AC11.
+- Gotcha: the AC11 grep-guard scans `spacegame/` source files for
+  `change_state(GameState.CAPSTONE)` and `change_state(GameState("capstone"))`. Use
+  `pathlib.Path.rglob("*.py")` and a simple substring scan; the compliance-test
+  pattern in this project is a pytest test that opens files and asserts. Do NOT
+  scan test files or `data/` (only `spacegame/` source).
+
+Task 11 — Author the view test.
+- Files: `tests/test_views/test_capstone_view.py` (NEW).
+- One `TestCapstoneViewLifecycle` class covering AC9 (on_enter creates the Continue
+  button; on_exit tears it down; handle_event on button press sets `dismissed = True`
+  and calls the acknowledge callback; get_next_state returns None).
+- One `TestCapstoneNarrationVoice` class covering AC12 - assert the module-level
+  `_TEMPLATE` constant contains no em-dashes (`—`, `–`, `―`), no `"a testament to"`,
+  no `"couldn't help but"`, no `no X, no Y` construction, and no banned NPC names.
+- Test surface: AC9, AC12.
+- Gotcha: view tests in this project typically construct a real `pygame_gui.UIManager`
+  after `pygame.init()`. The `conftest.py` at `tests/` sets `SDL_AUDIODRIVER=dummy`
+  which prevents audio issues. `tests/test_ui_layout/conftest.py` sets
+  `SDL_VIDEODRIVER=dummy` but that only applies to that directory - check if a similar
+  fixture is needed in `test_views/` or if the existing tests there work without one.
+
+**Cross-sprint reactions to author: none (foundational plumbing sprint, placeholder-only
+narration).** The design spec explicitly places "Authored galaxy content" out of scope
+for this whole arc (spec line 319). Any capstone-firing crew banter, journal entry, NPC
+reaction, or ambient reflection would be authored content and belongs in follow-up
+sprints - specifically A2-21 (post-capstone identity-keyed generation) which is where
+the resolved identity becomes a content generator, and any future authored-cutscenes
+sprint. What A2-20 DOES leave hanging for those sprints:
+- `player.dialogue_flags[f"{lens_id}_capstone_reached"]` is set on acknowledge for every
+  one of the sixteen lenses. A2-21 and any successor content sprint can gate dialogue,
+  missions, journal entries, ambient chatter, and NPC reactions on those flags without
+  A2-20 needing to author any of that content itself. The flag set is the surface area
+  A2-20 hands downstream.
+- The placeholder narration comment in `capstone_view.py` names A2-21 (or its own
+  successor) as the intended replacer for the template. When that sprint arrives, the
+  entry point is unambiguous.
+
+**Risks / open questions.**
+- ~~Should A2-20 extend `Capstone` with a firing-condition helper?~~ **Locked: no**
+  (Locked decision 2). A2-3 shipped `should_fire()`; A2-20 is a caller.
+- ~~Should `capstones_reached` live on `Player` or in a sub-model?~~ **Locked: on
+  Player directly** (Locked decision 1). One set field, no ceremony.
+- ~~Uniform threshold or per-lens?~~ **Locked: uniform 95** (Locked decision 3).
+- ~~cutscene_ref: null uniformly, or ship at least one non-null pointer?~~ **Locked:
+  null uniformly** (Locked decision 4).
+- ~~Bespoke per-lens placeholder narration or a single template?~~ **Locked: single
+  template with `Lens.name` + `Lens.core_fantasy` substitution** (Locked decision 5).
+- ~~Tick capstones before or after dilemmas?~~ **Locked: after** (Locked decision 6).
+- ~~Can a capstone modal stack over a dilemma modal (or vice versa)?~~ **Locked: no,
+  same-guard extension** (Locked decision 7).
+- ~~Also set a stable dialogue flag for A2-21 to key off?~~ **Locked: yes,
+  `{lens_id}_capstone_reached`** (Locked decision 8).
+- ~~Write `capstones_reached` on fire or on acknowledge?~~ **Locked: on acknowledge**
+  (Locked decision 9).
+- ~~Ordering within `_after_player_action`?~~ **Locked: crew → dilemma → capstone**
+  (Locked decision 10).
+- ~~Compliance test on partial-Game guard?~~ **Locked: no separate test, mirror A2-8's
+  guard** (Locked decision 11).
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 16:56 — harness: plan phase starting
+- 2026-09-01 17:35 — planning complete; expanded touch zones (added save_manager.py,
+  compliance test, view test, save/load scenario extension); locked 11 decisions;
+  authored 11-task Plan section; folded in data-integrity compliance test and voice-
+  smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
+  A2-21 per design-spec's out-of-scope rule. Sentinel: PHASE_OK.
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 16:56
+- Completed: 2026-09-01 17:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <to-be-filled>
+- New_sprints_proposed: none
+- Polish_items_folded_in: data-integrity compliance test (1:1 lens-capstone mapping,
+  uniform threshold, null cutscene_ref), voice-smoke on placeholder narration template,
+  view-level lifecycle test, stable `{lens_id}_capstone_reached` flag for A2-21 hookup,
+  multi-eligible-capstone ordering test, modal-stacking-guard test, defer-writes-to-
+  acknowledge test.
+- Decisions_locked: 11
+- Notes: All eight Context-to-read paths verified 2026-09-01 (both files and specific
+  line ranges cited). A2-3's shipped model layer (Capstone dataclass + should_fire
+  predicate + empty capstones.json stub + DataLoader wiring) is complete; A2-20 is a
+  pure caller and does not extend spacegame/models/capstone.py. Cross-sprint reactions
+  explicitly out of scope per the design spec's "authored galaxy content out of scope
+  for this whole arc" rule (line 319); the stable dialogue-flag surface is the hook A2-21
+  and any authored-content follow-up will use.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
