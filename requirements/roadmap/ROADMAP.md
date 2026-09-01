@@ -14322,7 +14322,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 
 #### A2-12 — D4: Truth ↔ Vengeance
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14653,24 +14653,24 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 - 2026-09-01 00:20 — planning already complete AND implementation already landed (commits aed6090, 4633fed, cb1b731). Verified: `data/narrative/dilemmas/d4_truth_vengeance.json` and `tests/test_scenarios/test_scenario_dilemma_d4.py` exist; ran `pytest tests/test_scenarios/test_scenario_dilemma_d4.py tests/test_writing_bible_compliance.py tests/test_compliance/test_dilemma_integrity.py -q` → 75 passed in ~1.6s. Prior recovery reset stuck sprint after implement's PHASE_OK sentinel was already written; work does not need to be re-planned or re-implemented. Passing sprint to implementer for re-verification per the "already implemented" protocol. PHASE_OK
 - 2026-09-01 00:17 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 00:35 — implementation already landed in commits aed6090 + 4633fed + cb1b731; re-verified per "already implemented" protocol. Ran sprint test surfaces: `tests/test_scenarios/test_scenario_dilemma_d4.py` + `tests/test_compliance/test_dilemma_integrity.py` → 36 passed (0.42s); `tests/test_writing_bible_compliance.py` + `tests/test_data/test_dialogue_integrity.py` + `tests/test_data/test_cross_references.py` → 230 passed across two batches (133 + 97). Lint clean + format clean on touched Python files (5 files). Uncommitted working-tree edits to `spacegame/engine/game.py` and `tests/test_engine/test_ground_loot_bonus.py` are NOT part of A2-12's touch zones and were left untouched. PHASE_OK
+- 2026-09-01 00:30 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 (review) — review complete; all 7 ACs verified, plan audit sound, narrative voice clean, no critical findings. Pre-existing xdist contention flake in `test_no_new_consumer_only_flags` passes in isolation (88s); not a regression. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 00:17
-- Completed: 2026-09-01 00:35
-- Files_changed: none (work already committed in aed6090, 4633fed, cb1b731)
-- Commits: aed6090, 4633fed, cb1b731
-- Tests_added: 0 (already added in prior implement phase; 20 D4-scenario tests + 4 dilemma writing-bible tests)
-- Tests_baseline: 11290
-- Tests_passing: sprint subset 266 passing (36 + 133 + 97 across three re-verification runs); full suite not re-run this phase since work is unchanged from prior PHASE_OK
-- Tests_skipped: 100 (baseline)
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes (test_dialogue_integrity.py passes; new flags registered in KNOWN_*_ORPHANS with documented reasons)
-- Writing_bible_clean: yes (TestDilemmaContentWritingBible extension passes)
-- Touch_zones_respected: yes (no new file changes this phase; committed files match declared touch zones)
-- Notes: Re-verification pass per "already implemented" protocol. Sprint A2-12 shipped end-to-end in commits aed6090 (content + tests) + 4633fed (lens_closed_* prefix whitelist in cross-references test) + cb1b731 (prior phase report). D4 content complete: dilemma record with truth/vengeance poles + telegraph_threshold 55 + collision_threshold 80, Priya's 3-line telegraph, Aldric Senn NPC at `the_fulcrum` with both post-collision dialogue states, Senn's Truth-confrontation tree (5 nodes) + Vengeance-dead stub, Priya scar chatter at axiom_labs gated on `lens_closed_truth`, two auto-journal entries per branch, `told_senn_orchestrated_operation` flag registered and seeded on `the_ledger` mission. All 7 ACs verified by the D4 scenario + writing-bible extension + dilemma-integrity guard.
+- Started: 2026-09-01 00:30
+- Completed: 2026-09-01 (review complete)
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11290 (full parallel suite; 1 pre-existing xdist contention flake passes in isolation)
+- Acceptance_criteria_verified: 7/7
+- Polish_items_verified: 2/2 (journal entries + writing-bible scanner extension both folded in by planner and delivered)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `senn_dead` stub uses `speaker_id: "aldric_senn"` but narrates in third person ("The office is empty... Whatever the man knew went with him"), rendering Senn's portrait for his own absence — undefined-behavior convention for post-death NPC stubs; harmless since the state is unreachable by design, but A2-13+ should decide the convention for similar closed-NPC stubs.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 5 locked decisions defensible. D4 narrative voice is strong — Priya's telegraph lines data-qualified and precise, Senn's confrontation tree dry and distinctly voiced. The one full-suite failure (test_no_new_consumer_only_flags) is the known DataLoader singleton xdist contention flake: passes cleanly in serial isolation at 88s, which confirms it is not a code regression.
 ---
 
 #### A2-13 — D2: Wealth ↔ Community
