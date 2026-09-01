@@ -139,7 +139,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
-| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
+| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
@@ -15753,7 +15753,7 @@ without them):
 
 #### A2-16 — D5: Legacy ↔ Connection
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16166,6 +16166,7 @@ scenario test):
 - 2026-09-01 08:30 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 6 to 11 to cover NPC routing per
 - 2026-09-01 09:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 09:06 — harness: plan phase starting
   outcome, scar reachability per outcome, ambient reactive registration, journal
   entries, the AC4 alt-path (crew.py has no loyalty-ceiling concept), the closed-pole
   guard mirror, and the NPC id-collision guard. Locked 10 decisions (Solheim home
@@ -16176,33 +16177,36 @@ scenario test):
   Tomas ambient, Marcus SA-2 deepening, Kweon rival-institution reference, and a
   proposed A2-16A loyalty-ceiling mechanical hook sprint plus a deferred
   code-generalization refactor for `okafor_research.py`). PHASE_OK
+- 2026-09-01 09:10 — planning re-entered after stuck-sprint recovery. Prior plan is
+  intact (10 locked decisions, 9 tasks, 11 ACs, cross-sprint reactions flagged).
+  Verified no D5 content has landed on HEAD (no `d5_legacy_connection.json`, no
+  `amrit_solheim` id in `data/characters/npcs.json`, no `d5_legacy_won` / `d5_connection_won`
+  in dialogue, journal, ambient, or scar files, no `test_scenario_dilemma_d5.py`).
+  Prior implementation attempt exists only in the unreachable abandoned-work merge
+  `bb4a6da` from 2026-09-01 09:00 (touched five data files, never reached master).
+  Verified all 5 Context-to-read paths still exist on disk. No re-planning required;
+  emitting PHASE_OK to route to implement. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 08:30
+- Started: 2026-09-01 09:06
 - Completed: 2026-09-01 09:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: d3e8d15
-- New_sprints_proposed: none (A2-16A loyalty-ceiling hook flagged in Cross-sprint
-  reactions for later planner/human formalization, not authored as a full roadmap row
-  in this pass per the planner guidance's "conservative on scope expansion" rule)
-- Polish_items_folded_in: NPC-routing tests per outcome, scar reachability tests per
-  outcome, ambient reactive registration tests, journal entries, NPC id-collision
-  guard, Elena record extension safety
-- Decisions_locked: 10
-- Notes: Verified all 5 Context-to-read paths exist on disk. Verified sprint is NOT
-  already implemented — no `d5_legacy_connection.json`, no `amrit_solheim` NPC, no
-  `test_scenario_dilemma_d5.py`; latest content commit is A2-15's D3 work. AC4's
-  primary path (loyalty-ceiling mechanism) is intentionally routed to its documented
-  alt-path because `crew.py` has no existing ceiling concept to hook into and adding
-  one is a design decision that wants its own sprint; the alt-path preserves the
-  requirement (the unlock IS recorded on `tier_unlocks_granted["connection"]`) and
-  flags a follow-up sprint candidate. Farrow Institute framing kept at the
-  dialogue/JSON layer only per Locked decision 2 — no refactor of
-  `spacegame/models/okafor_research.py` in this M sprint; the fiction seam is closed
-  by Solheim's dialogue never surfacing Kweon or Okafor by name, and the underlying
-  `okafor_research_project_funded` signal continues to feed `legacy` lens investment.
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (plan already comprehensive from prior run)
+- Decisions_locked: 0 (all 10 decisions locked in prior planning pass remain valid)
+- Notes: Sprint was reset from 'in-progress (planning)' to todo by stuck-sprint
+  recovery at 09:00 after an implementation attempt was abandoned by harness PID
+  35768; that attempt's file changes live only in unreachable merge `bb4a6da` and
+  never touched master. Re-verified plan is intact and current: 10 locked decisions,
+  9 implementation tasks, 11 acceptance criteria, cross-sprint reactions flagged.
+  Re-verified sprint is NOT already implemented on HEAD (grep across the five target
+  data files returned zero hits for `amrit_solheim`, `d5_legacy_won`, `d5_connection_won`,
+  `solheim_default`; no dilemma json; no scenario test). All 5 Context-to-read paths
+  still exist. No plan changes needed — emitting PHASE_OK to move the sprint to the
+  implement phase.
 ---
 
 #### A2-17 — D6: Preservation ↔ Empire
