@@ -137,7 +137,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
-| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
+| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
@@ -15065,7 +15065,7 @@ Flagged as follow-up (do NOT author in A2-13):
 
 #### A2-14 — D1: Vengeance ↔ Justice
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15318,17 +15318,19 @@ folded into this sprint's scope):
 - 2026-09-01 04:04 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 7 to 9 to cover scar-chatter reachability, ambient-reaction registration, journal entries, and the mirror-case guard proof. Locked 6 decisions. Flagged 5 cross-sprint reactions for follow-up. PHASE_OK
 - 2026-09-01 04:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 04:51 — harness: plan phase starting
+- 2026-09-01 — re-verified: sprint is already fully implemented by commits 5a7aeec (closed-pole guard) and afaecca (D1 content, NPC, dialogues, tests). All Plan touch zones present on disk; `pytest tests/test_scenarios/test_scenario_dilemma_d1.py tests/test_models/test_dilemma.py -q` runs 89 tests, 0 failures. Emitting PHASE_OK so the dispatcher advances the sprint to implement (which will verify rather than duplicate). PHASE_OK
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 04:04
+- Started: 2026-09-01 04:51
 - Completed: 2026-09-01
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 114fe61
+- Commits: none
 - New_sprints_proposed: none
-- Polish_items_folded_in: journal-entries (both outcomes), scar-chatter reachability tests, ambient-line registration tests, voice smoke on Elena's telegraph, mirror-case for the closed-pole guard
-- Decisions_locked: 6
-- Notes: Verified all 4 context docs exist and read the D1 section of the design spec, Elena's voice sheet, dilemma.py, and D2/D4 as pattern references. Confirmed the "already-closed pole" guard does NOT exist today in check_dilemmas (dilemma.py:336-378 only skips resolved dilemmas), so this sprint adds it as a general rule. Locked Odusanya to home_system_id=havens_rest, scar sites to havens_rest (justice-closed) and crimson_reach (vengeance-closed), and kept Marcus/Priya/Tomas reactions out of scope as cross-sprint follow-ups. Task count 8, size still M.
+- Polish_items_folded_in: none (already implemented)
+- Decisions_locked: 0 (already locked in prior plan pass — see 114fe61)
+- Notes: Stuck-sprint recovery reset A2-14 to `todo` after the first planner had already committed a full Plan (114fe61) AND the implementer had already committed 5a7aeec (closed-pole guard in `spacegame/models/dilemma.py` + 30-line test extension in `tests/test_models/test_dilemma.py`) and afaecca (D1 dilemma JSON, Magistrate Odusanya NPC + three dialogue trees, two scar chatter lines at havens_rest and crimson_reach, two Elena flag_triggered ambient lines, two auto-journal entries, 365-line test module). Verified all Plan touch zones exist on disk and ran the targeted test surface (`pytest tests/test_scenarios/test_scenario_dilemma_d1.py tests/test_models/test_dilemma.py -q`): 89 passed, 0.73s. Per planner instructions ("If the sprint is ALREADY IMPLEMENTED, your sentinel is PHASE_OK"), not re-planning and not blocking; PHASE_OK moves the sprint through implement → review → gate so it still earns its review.
 ---
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
