@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14246,6 +14246,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - 2026-08-31 21:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 21:06 — harness: plan phase starting
 - 2026-08-31 21:10 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 21:23 — harness: review phase starting (rework cycle 0)
   folded invariant compliance test (AC4) and voice-check anchor (AC5); locked 4 open
   decisions (no code-path change to `get_chatter`, compliance-test enforcement of the
   scar/one_shot invariant, no `NPC.dialogue_states` work in this sprint, real-system-id
@@ -14291,24 +14292,31 @@ convention documented on `ChatterLine` is the API those sprints consume.
   36 passed. Full suite: 11266 passed, 101 skipped, 1 xdist-flaky failure
   (test_no_new_consumer_only_flags passes in isolation — known xdist issue in session 0).
   Lint clean. Format clean. All 6 ACs satisfied. No new code required. PHASE_OK
+- 2026-08-31 — harness: review phase starting (re-dispatch after recovery reset)
+- 2026-08-31 — re-verification review: all prior implementation and fix commits confirmed
+  intact (890cab2, c3c94ad, ca19615, 244ba16, eae7ce2). 36 sprint tests pass.
+  Full suite: 11266 passing, 101 skipped, 1 xdist-flaky (test_no_new_consumer_only_flags
+  passes in isolation in 88s — confirmed). Lint clean, format clean, prose scanner clean.
+  All 6 ACs verified. Plan audit: sound; all 4 locked decisions defensible.
+  Single tighten: _make_scar_line() in test_station_chatter.py:434 uses id="np_scar_test_01"
+  (same as JSON demo line); scenario test correctly uses "np_scar_fixture_01". No correctness
+  impact but minor confusion risk for future authors. Not a blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3c5d6f2
-- Tests_added: 0 (36 already added in prior implement cycle)
-- Tests_baseline: 11267
-- Tests_passing: 11267 (11266 + 1 xdist-flaky that passes in isolation)
-- Tests_skipped: 101
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint already fully implemented (commits 890cab2, c3c94ad, ca19615, 244ba16) and reviewed (eae7ce2, bf686b0). This pass confirmed all artifacts exist, 36 sprint tests pass, full suite at baseline (xdist flaky failure passes in isolation, known issue).
+- Commits: none
+- Tests_passing: 11267 (11266 xdist parallel + 1 xdist-flaky confirmed passing in isolation)
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: _make_scar_line() fixture in test_station_chatter.py:434 uses same id as JSON demo line (np_scar_test_01); scenario test correctly uses np_scar_fixture_01 — minor confusion risk for future authors, not a blocker
+- Followup_sprints_added: none
+- Notes: Re-verification review of already-implemented sprint. Plan audit sound; all locked decisions defensible. No regressions. eae7ce2 orphan fix confirmed in place and correct.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
