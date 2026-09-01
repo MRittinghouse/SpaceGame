@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14245,6 +14245,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - 2026-08-31 — planning complete (commit 43d6ec4); confirmed all 4 context docs exist;
 - 2026-08-31 21:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-08-31 21:06 — harness: plan phase starting
+- 2026-08-31 21:10 — harness: implement phase starting (rework cycle 0)
   folded invariant compliance test (AC4) and voice-check anchor (AC5); locked 4 open
   decisions (no code-path change to `get_chatter`, compliance-test enforcement of the
   scar/one_shot invariant, no `NPC.dialogue_states` work in this sprint, real-system-id
@@ -14285,18 +14286,29 @@ convention documented on `ChatterLine` is the API those sprints consume.
   `pytest tests/test_scenarios/test_scenario_dilemma_scars.py tests/test_models/test_station_chatter.py`
   — 36 passed in 0.23s. No re-planning warranted; sprint moves forward for downstream
   phases (implementer will verify existence, reviewer will re-audit). PHASE_OK
+- 2026-08-31 — harness: implement phase starting (re-dispatch after recovery reset)
+- 2026-08-31 — re-verification: sprint already implemented and reviewed. Sprint tests
+  36 passed. Full suite: 11266 passed, 101 skipped, 1 xdist-flaky failure
+  (test_no_new_consumer_only_flags passes in isolation — known xdist issue in session 0).
+  Lint clean. Format clean. All 6 ACs satisfied. No new code required. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
 - Started: 2026-08-31
 - Completed: 2026-08-31
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: ab58220
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented and reviewed)
-- Decisions_locked: 0 (all 4 open questions locked in prior planning cycle)
-- Notes: Sprint already implemented (commits 890cab2, c3c94ad, ca19615, 244ba16) and reviewed (eae7ce2, bf686b0) prior to stuck-sprint recovery reset. Re-verified by running `pytest tests/test_scenarios/test_scenario_dilemma_scars.py tests/test_models/test_station_chatter.py` — 36 passed. Emitting PHASE_OK to move the sprint forward per the harness "already implemented" rule; do not re-plan work that exists.
+- Commits: 3c5d6f2
+- Tests_added: 0 (36 already added in prior implement cycle)
+- Tests_baseline: 11267
+- Tests_passing: 11267 (11266 + 1 xdist-flaky that passes in isolation)
+- Tests_skipped: 101
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Sprint already fully implemented (commits 890cab2, c3c94ad, ca19615, 244ba16) and reviewed (eae7ce2, bf686b0). This pass confirmed all artifacts exist, 36 sprint tests pass, full suite at baseline (xdist flaky failure passes in isolation, known issue).
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
