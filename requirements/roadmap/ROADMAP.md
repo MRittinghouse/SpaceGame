@@ -139,7 +139,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
-| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
@@ -15753,7 +15753,7 @@ without them):
 
 #### A2-16 — D5: Legacy ↔ Connection
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16171,6 +16171,7 @@ scenario test):
 - 2026-09-01 10:21 — harness: plan phase starting
 - 2026-09-01 10:25 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 10:45 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 11:05 — harness: review passed, marking done
   outcome, scar reachability per outcome, ambient reactive registration, journal
   entries, the AC4 alt-path (crew.py has no loyalty-ceiling concept), the closed-pole
   guard mirror, and the NPC id-collision guard. Locked 10 decisions (Solheim home
