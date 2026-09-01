@@ -1,13 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-09-01 14:28:13_
+_Updated: 2026-09-01 15:21:50_
+
+## Harness Did Not Run
+
+Baseline capture FAILED: pytest exited 1; tail: ure::test_enemy_type_match_template_resolves
+ERROR tests/test_data/test_crew_interjection_content.py::TestInterjectionStructure::test_combat_outcome_uses_valid_outcome
+ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::test_each_companion_covers_all_round_triggers
+ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::test_each_companion_covers_both_outcomes
+1630 failed, 9583 passed, 100 skipped, 42 warnings, 316 errors in 260.15s (0:04:20). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
-- Sprint: **A2-18**
-- Phase: **review**
-- Last beat: **22 seconds ago**
-- Beat PID: 25704 -- alive
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **just now**
+- Beat PID: 25220 -- alive
 
 ## Queue
 
@@ -19,8 +27,8 @@ _Updated: 2026-09-01 14:28:13_
 
 ## Push
 
-- last push: **OK** (2 hours ago)
-- last successful push: 2 hours ago
+- last push: **OK** (48 minutes ago)
+- last successful push: 48 minutes ago
 
 ## Blocks drift
 
@@ -31,7 +39,3 @@ _Updated: 2026-09-01 14:28:13_
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- A2-18 ok
