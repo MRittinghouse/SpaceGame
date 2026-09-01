@@ -144,7 +144,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | done | A2-10, A2-3 |
-| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
+| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | in-progress | A2-20 |
 
 ## SA Arc — Station Anchors
 
@@ -18493,7 +18493,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-20 | **Blocks**: none
 
@@ -18515,18 +18515,29 @@ gives, plus the general framework, keyed off `player.capstones_reached` and
   the "world moves without the player" texture (explicitly the simulation half of this is
   deferred to a sibling spec per the design doc's Scope section, but generating a mission or
   event keyed to resolved identity is squarely in scope here).
-- `spacegame/engine/game.py` lines ~682 and ~5042 - the two existing
+- `spacegame/engine/game.py` lines ~682 and ~5327 - the two existing
   `ProceduralMissionGenerator(...)` construction sites this sprint's generator integrates
-  alongside.
+  alongside; and `_refresh_procedural_missions` at line ~6105 which is the per-game-day
+  refresh hook the post-capstone generator merges into.
+- `spacegame/models/capstone.py` - `check_capstones` and the A2-20 acknowledge callback in
+  `game.py:4549` that sets `player.dialogue_flags[f"{lens_id}_capstone_reached"] = True` as
+  the stable flag this sprint keys off.
+- `spacegame/models/dilemma.py` - `DilemmaRuntimeState.resolved: dict[str, str]` mapping
+  dilemma_id → winning lens_id; this is the surface for "which lens closed which dilemma".
+- `data/narrative/dilemmas/d1_vengeance_justice.json`, `d3_power_revolution_empire.json`,
+  `d4_truth_vengeance.json`, `d6_preservation_empire.json` - the four dilemmas whose
+  outcome_flags the three worked examples cite.
 
 **Touch zones.**
 - `spacegame/models/post_capstone_content.py` (NEW)
-- `spacegame/models/procedural_missions.py` (extend, do not fork - add identity-keyed mission
-  types alongside the existing five)
-- `spacegame/models/galaxy_event.py` (extend `GalaxyEventGenerator` with identity-keyed event
-  weighting)
 - `spacegame/engine/game.py` (wire `post_capstone_content` generator alongside the existing
-  procedural mission/event generation call sites)
+  procedural mission generation call sites in `_new_game`, `_load_game`, and
+  `_refresh_procedural_missions`)
+- `spacegame/models/galaxy_event.py` (extend `GalaxyEventGenerator.try_generate_event` with
+  an optional identity-lens hint that up-weights lens-relevant templates; no schema change to
+  the template JSON — the hint is a pure runtime input)
+- `data/narrative/post_capstone_templates.json` (NEW — content templates for the three
+  worked-example lenses, kept in data not code so writers can iterate without touching Python)
 - `tests/test_models/test_post_capstone_content.py` (NEW)
 - `tests/test_scenarios/test_scenario_post_capstone_generation.py` (NEW)
 
@@ -18534,59 +18545,291 @@ gives, plus the general framework, keyed off `player.capstones_reached` and
 - `spacegame/models/post_capstone_content.py`:
   - `PostCapstoneContentGenerator` class, constructed with the same
     `(systems, commodities, enemy_templates, seed)` shape as `ProceduralMissionGenerator`
-    for consistency, plus `player.capstones_reached` and `player.dilemma_state.resolved` as
-    generation inputs.
-  - `generate_for_lens(lens_id: str, game_day: int) -> list[Mission] | list[GalaxyEvent]`
-    dispatches to a per-lens content template. This sprint implements three concretely, per
-    the design spec's own worked examples, and stubs the rest with a documented
-    not-yet-implemented path that does not crash (returns an empty list, logs at `debug`
-    level) rather than raising, so a lens without a template does not break the game:
-    - `empire`: generates succession/border-dispute missions - a `MissionObjective` set using
-      `ObjectiveType.REACH_SYSTEM` plus `ObjectiveType.HAS_FLAG` against the player's held
-      territory (from A2-15/A2-17's Empire outcomes), narratively a governor overreaching or
-      a colony resisting.
-    - `community`: generates scarcity/newcomer missions - `ObjectiveType.COLLECT_CARGO`
-      objectives representing resource strain on what the player built, or an outside faction
-      probing the settlement's value.
-    - `vengeance`: generates encounters or dialogue-gated content where an NPC references
-      what the player did to resolve Vengeance (reusing the `dialogue_flags` set by A2-12's
-      or A2-14's resolution), not a generic bounty - the content must be textually specific
-      to the fact that the player is known for this, not interchangeable with any other
-      lens's content.
-  - Determinism: seeded `random.Random(f"{lens_id}_{game_day}_{seed}")`, matching the
-    project's existing "no save scumming" / deterministic-outcome convention from CLAUDE.md.
-- Wiring in `game.py`: after a capstone fires (A2-20) and on subsequent game-day advances
-  while a lens remains in `capstones_reached`, `PostCapstoneContentGenerator.generate_for_lens`
-  is called and its output merged into the existing procedural mission board / galaxy event
-  pool, not presented through a separate, disconnected UI surface.
+    for consistency, plus a `templates: dict[str, list[dict]]` payload loaded from the new
+    JSON keyed by `lens_id`. The generator reads `player.capstones_reached` (via
+    `dialogue_flags[f"{lens_id}_capstone_reached"]`) and `player.dilemma_state.resolved`
+    per call — construction does not close over player state.
+  - `generate_for_lens(lens_id: str, game_day: int, player) -> list[Mission]` dispatches
+    to a per-lens content template. This sprint implements three concretely, per the design
+    spec's own worked examples, and returns `[]` (with a `logger.debug` line) for any lens
+    without an implemented template, so a lens without a template does not break the game:
+    - `empire`: generates a succession/border-dispute mission targeting a system id derived
+      from the player's Empire outcome (D3 or D6 resolved to `empire`). Uses
+      `ObjectiveType.REACH_SYSTEM` for the disputed system plus `ObjectiveType.HAS_FLAG`
+      against the specific `d3_empire_won` or `d6_empire_won` `outcome_flag` so the mission
+      is textually tied to the resolution. Narrative shape: a governor overreaching or a
+      colony resisting the claim.
+    - `community`: generates a scarcity/newcomer mission — `ObjectiveType.COLLECT_CARGO`
+      for a food/medical commodity the player must bring to defend the settlement, plus a
+      `HAS_FLAG` gate on `d2_community_won` or `d8_community_won`. Mission id prefix
+      `post_capstone_community_` distinguishes it from `proc_delivery_*`.
+    - `vengeance`: generates an encounter mission whose description references the specific
+      resolution (via the `d1_vengeance_won` or `d4_vengeance_won` `outcome_flag`) and gates
+      with a `HAS_FLAG` objective on that same flag. Content is textually specific to being
+      known for Vengeance — the description names Rendik Foss / Callan Vert (D1) or the
+      Aldric Senn / Ledger leadership resolution (D4) drawn from the dilemma's own
+      `narration_summary`, not generic bounty content.
+  - Determinism: seeded via `hashlib.md5(f"{lens_id}_{game_day}_{seed}".encode()).hexdigest()[:8]`
+    then `random.Random(int(...))`, matching the `galaxy_event.py` pattern rather than
+    `hash(str)` — Python's `hash()` on strings is salted per process (PYTHONHASHSEED) and
+    would break the "no save scumming" determinism guarantee CLAUDE.md requires.
+  - Mission id prefix: `post_capstone_{lens_id}_{system_id}_{game_day}_{counter}` so the
+    engine's per-day refresh can strip stale ones the same way it strips `proc_*` (mirrors
+    `_refresh_procedural_missions` at `game.py:6125-6129`).
+- Galaxy event weighting hook (`galaxy_event.py`):
+  - `GalaxyEventGenerator.try_generate_event` gains an optional
+    `identity_lens_weights: dict[str, float] | None = None` argument that up-weights
+    templates carrying a matching `identity_lens` field. When None (the default, and the
+    behavior every current caller keeps), template selection is unchanged. No template
+    schema changes are required — templates without `identity_lens` are unaffected.
+  - Extension is deliberately minimal: this sprint does NOT ship new event templates or a
+    "world moves without the player" simulation loop (the design doc explicitly defers that
+    to a sibling spec). It only makes the generator capable of hosting future identity-keyed
+    events without another API change.
+- Wiring in `game.py`:
+  - Construct `PostCapstoneContentGenerator` in `_new_game` (~line 700) and `_load_game`
+    (~line 5333) alongside `ProceduralMissionGenerator`, using the same `seed=hash(name)`.
+  - In `_refresh_procedural_missions` (~line 6105), after the existing `proc_*` cleanup,
+    iterate every `lens_id` for which `player.dialogue_flags` has `f"{lens_id}_capstone_reached"
+    == True`, call `generate_for_lens(lens_id, current_day, player)`, and `add_mission` each
+    result to the same `mission_manager`. Prefix cleanup: strip `post_capstone_*` alongside
+    `proc_*` at the top of the refresh so stale ones do not accumulate.
+  - Pass the same lens set into `try_generate_event` as `identity_lens_weights` (weight
+    2.0 for each capstone-reached lens) so future identity-keyed galaxy events, once
+    authored, will fire; today's call is a no-op because no template carries `identity_lens`.
 
 **Acceptance criteria.**
-1. `generate_for_lens("empire", game_day=N)` for a player with an Empire capstone reached and
-   at least one held territory (from a resolved D3 or D6 outcome) returns at least one
-   `Mission` whose objectives reference that territory's system id, verified with a fixture
-   player.
-2. `generate_for_lens("community", game_day=N)` for a player with a Community capstone
-   reached returns content distinguishable from generic procedural missions - verified by
-   asserting the generated mission's `id` or `description` contains a marker distinguishing
-   it from `ProceduralMissionGenerator`'s five existing types (e.g. an id prefix like
-   `post_capstone_community_`).
-3. `generate_for_lens("vengeance", game_day=N)` for a player who resolved D4 or D1 in
-   Vengeance's favor returns content referencing the specific resolution (via the
-   `outcome_flag` set at resolution time), not generic bounty content - verified by asserting
-   the generated content's flag-gating references that specific `outcome_flag`.
-3a. Calling `generate_for_lens()` for any lens without an implemented template (e.g.
-   `"faith"`) returns `[]` and does not raise - verified explicitly.
-4. Two calls to `generate_for_lens("empire", game_day=10)` with the same seed and same player
-   state produce identical output (same mission ids/parameters) - determinism, matching the
-   project convention, verified by an equality assertion across two independent calls.
-5. `tests/test_scenarios/test_scenario_post_capstone_generation.py`: drives a player to an
-   Empire capstone (via A2-20's mechanism), advances the game day, and confirms the
-   procedural mission board (as read by whatever existing accessor the station-hub view uses)
-   contains at least one post-capstone-generated mission alongside the normal procedural set,
-   proving the merge into existing systems rather than a disconnected surface.
-6. Full suite green; no regression from baseline. This is the last sprint in the Act II
-   dependency chain (`A2-21` blocks nothing further in this decomposition) - its own tests
-   are the final gate for design-spec Success Criterion 9.
+1. `generate_for_lens("empire", game_day=N, player)` for a fixture player with
+   `dialogue_flags["empire_capstone_reached"] == True` and
+   `dilemma_state.resolved = {"d6_preservation_empire": "empire"}` returns at least one
+   `Mission` whose objectives include an `ObjectiveType.HAS_FLAG` referencing
+   `"d6_empire_won"` AND a `REACH_SYSTEM` objective targeting a valid system id. (The
+   "held territory" in AC intent is encoded via the outcome flag, since A2-15/A2-17 did
+   not add a `Player.territories` field — see Locked decision 2 below.)
+2. `generate_for_lens("community", game_day=N, player)` for a fixture player with
+   `dialogue_flags["community_capstone_reached"] == True` returns at least one `Mission`
+   whose `id` begins with `"post_capstone_community_"` and whose `description` contains a
+   community-specific marker (e.g. references settlement/scarcity language), distinguishing
+   it from `ProceduralMissionGenerator`'s five existing types.
+3. `generate_for_lens("vengeance", game_day=N, player)` for a fixture player whose
+   `dilemma_state.resolved` contains either `{"d1_vengeance_justice": "vengeance"}` or
+   `{"d4_truth_vengeance": "vengeance"}` returns at least one `Mission` with a
+   `HAS_FLAG` objective referencing the corresponding `d1_vengeance_won` or
+   `d4_vengeance_won` outcome_flag, and whose `description` names at least one specific
+   narrative element from the resolution (Rendik Foss / Callan Vert / Aldric Senn / the
+   Ledger), NOT generic bounty text.
+4. `generate_for_lens("faith", game_day=N, player)` for a player with
+   `dialogue_flags["faith_capstone_reached"] == True` (a lens with no template implemented
+   this sprint) returns `[]` and does not raise — verified explicitly. Same assertion for
+   any lens where `{lens_id}_capstone_reached` is absent from `dialogue_flags` — returns
+   `[]` regardless.
+5. Two calls to `generate_for_lens("empire", game_day=10, player)` with the same seed and
+   same player state produce identical output (same mission ids, same objective flag
+   references, same descriptions) — determinism, verified by equality assertion across two
+   independent calls, matching the project convention. A third call with a different
+   `game_day` produces different output (proving the seed actually drives variation, not
+   just a constant).
+6. `tests/test_scenarios/test_scenario_post_capstone_generation.py`: drives a player to an
+   Empire capstone (`lens_investment.add_investment("empire", 95)` then trigger the
+   coordinator via `check_capstones`, acknowledge via
+   `Game._on_capstone_acknowledge`), advances `game_day` and re-docks (or calls
+   `_refresh_procedural_missions` directly), then asserts `mission_manager` contains at
+   least one mission with `id` prefix `"post_capstone_empire_"` alongside the normal
+   `proc_*` set — proving the merge into existing systems rather than a disconnected
+   surface. Also asserts a stale `post_capstone_*` from a prior game day is removed by the
+   next refresh (mirrors the `proc_*` cleanup contract).
+7. Save/load round-trip: a save taken with a `post_capstone_empire_*` mission on the board
+   loads with that mission still on the board (missions serialize through the existing
+   `mission_manager` path — no new save-schema changes required, but verify).
+8. Compliance: `spacegame/engine/` does NOT read `player.lens_investment` directly (A2-4
+   AC4 forbids it) — the engine's post-capstone hook reads only
+   `player.dialogue_flags`, `player.dilemma_state.resolved`, and `player.capstones_reached`,
+   all of which are already permitted engine reads.
+9. Full suite green; no regression from baseline (≥11552 pass). This is the last sprint in
+   the Act II dependency chain (`A2-21` blocks nothing further in this decomposition) — its
+   own tests are the final gate for design-spec Success Criterion 9.
+
+**Plan.**
+
+1. **Author templates data file** (`data/narrative/post_capstone_templates.json`, NEW).
+   Three keys: `empire`, `community`, `vengeance`. Each value is a list of template dicts
+   with `id_prefix`, `name_template`, `description_template`, `objectives` (structured with
+   objective type + placeholder targets the generator fills in), `gates` (a list of
+   outcome_flags — the template is only picked if at least one gate flag matches the
+   player's resolved dilemmas). Keep to 2-3 templates per lens for first cut. Voice-check
+   descriptions against `requirements/dialogue_writing_guide.md` (no em-dashes, no banned
+   phrases, no parallel-negation rhetoric).
+   *Risks:* the "gates" concept is a small new surface; keep it dead-simple (an OR-list
+   of flag names). Do NOT invent a mini-DSL — a plain list is enough for these three lenses.
+
+2. **Extend DataLoader** (`spacegame/data_loader.py`). Add a `post_capstone_templates`
+   attribute and a `_parse_post_capstone_templates` method. Load in `load_all()`. Add to
+   tests/test_data_loader if a data-loader test file exists; otherwise the model test
+   covers it.
+   *Files:* `spacegame/data_loader.py`, `tests/test_data_loader.py` (if it exists —
+   grep first).
+   *Risks:* singleton reload order. Confirm the load call comes after commodities/systems
+   are populated (templates may reference commodity ids for the community lens's
+   COLLECT_CARGO objective).
+
+3. **Write `PostCapstoneContentGenerator`** (`spacegame/models/post_capstone_content.py`,
+   NEW). Constructor: `(systems, commodities, enemy_templates, templates, seed)`. Public
+   surface: `generate_for_lens(lens_id, game_day, player) -> list[Mission]`. Private
+   helpers: `_make_rng(lens_id, game_day, salt)` using hashlib.md5 → int, `_next_id`,
+   `_pick_gate_template(lens_id, player)` (filters templates by gate flags), and three
+   builder methods `_build_empire_mission`, `_build_community_mission`,
+   `_build_vengeance_mission` that consume the picked template and return a `Mission`.
+   Return `[]` (with `logger.debug`) for any lens without a builder or without a matching
+   template.
+   *Files:* `spacegame/models/post_capstone_content.py`.
+   *Test surface:* `tests/test_models/test_post_capstone_content.py` — one test per AC
+   1-5. Fixtures build a minimal `Player`, `DilemmaRuntimeState`, `LensInvestment`
+   inline; do NOT construct a full `Game`.
+   *Risks:* seeded determinism only holds if all consumed randomness comes from the seeded
+   `random.Random`. Do NOT call `random.choice(dict)` on a raw dict — dict iteration order
+   is stable in Py3.7+ but `random.sample` on a `dict.values()` view is not safe; sort
+   candidate lists by id before sampling. This is the class of bug that broke Wreckers'
+   Guild determinism in QF-1's baseline.
+
+4. **Extend `GalaxyEventGenerator.try_generate_event`** with the optional
+   `identity_lens_weights: dict[str, float] | None = None` argument. When provided, iterate
+   templates and multiply the per-template weight by `identity_lens_weights.get(template
+   .get("identity_lens", ""), 1.0)`. No template schema change — templates without
+   `identity_lens` see multiplier `1.0` and behave identically to today.
+   *Files:* `spacegame/models/galaxy_event.py`.
+   *Test surface:* `tests/test_models/test_galaxy_event.py` (existing file — check with a
+   grep) — one new test that passes `identity_lens_weights={"empire": 5.0}` against a
+   fixture template list where one template has `"identity_lens": "empire"` and shows
+   selection biases toward it. Confirm the default `None` path is unchanged (regression
+   test).
+   *Risks:* the sprint does NOT ship a new template with `identity_lens` — the extension
+   is API-only for now. If a reviewer wants a visible smoke test they'll need to add a
+   template in the same PR; hold that as scope discipline unless the reviewer specifically
+   asks.
+
+5. **Wire the generator in `game.py`**. Three edit sites:
+   - `_new_game` (~line 700): construct
+     `self.post_capstone_content_gen = PostCapstoneContentGenerator(systems, commodities,
+     enemy_templates, dl.post_capstone_templates, seed=hash(player.name) & 0xFFFFFFFF)`.
+   - `_load_game` (~line 5333): same construction; save file carries no state for this
+     generator (it is stateless w.r.t. save data — all inputs are already-serialized
+     Player fields).
+   - `_refresh_procedural_missions` (~line 6105): before generating fresh `proc_*`
+     missions, also strip stale `post_capstone_*` from `mission_manager._missions`; after
+     `add_mission` for procedurals, iterate `player.dialogue_flags` for
+     `f"{lens_id}_capstone_reached" == True` and call `generate_for_lens(lens_id,
+     current_day, player)`, adding each returned Mission to `mission_manager`.
+   *Files:* `spacegame/engine/game.py`.
+   *Test surface:* `tests/test_scenarios/test_scenario_post_capstone_generation.py` covers
+   the integration (AC 6).
+   *Risks:* Watch the A2-4 AC4 compliance guard — do NOT read `player.lens_investment` in
+   the engine hook, only `dialogue_flags`. The compliance scanner will fail the build
+   otherwise. The capstone acknowledge callback at `game.py:4562` already writes
+   `dialogue_flags[f"{lens_id}_capstone_reached"] = True` — reuse that surface.
+
+6. **Save/load round-trip test**. The `mission_manager` already handles Mission
+   serialization; verify a `post_capstone_*` Mission survives a save/load cycle unchanged.
+   Add to the scenario test rather than a separate file.
+   *Files:* `tests/test_scenarios/test_scenario_post_capstone_generation.py`.
+
+7. **Full-suite verify + ratchet check**. `pytest -n auto` for pass count, and
+   `python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter` for
+   the type ratchet. Do NOT regenerate `mypy-baseline.txt` (project rule from
+   `CLAUDE.md`).
+
+**Cross-sprint reactions to author.**
+
+The sprint creates a new content surface (post-capstone missions on the station board)
+that touches several existing systems. These reactions are OUT OF SCOPE for this sprint
+(would push it from L to XL). Flagged here for a follow-up sprint (proposed identifier
+**A2-22 — Reactive layer for post-capstone worlds** — not created yet; reviewer may
+elect to propose):
+
+- `data/crew/ambient_dialogue.json` — Elena Reeves line reacting to a `post_capstone_justice_*`
+  mission accept (Elena's warrant-track affinity from A2-8/A2-14) — fires when Elena is on
+  crew AND the mission id starts `post_capstone_justice_`.
+- `data/crew/ambient_dialogue.json` — Dr. Priya Osei line reacting to `post_capstone_truth_*`
+  or `post_capstone_preservation_*` — fires when Priya is on crew AND matching prefix
+  (Priya telegraphs D4 and D6).
+- `data/crew/ambient_dialogue.json` — Tomas Drifter line on `post_capstone_political_power_*`
+  or `post_capstone_revolution_*` (Tomas telegraphs D3) — fires when Tomas is on crew.
+- `spacegame/models/station_chatter.py` / its data — background NPC line acknowledging the
+  capstone lens ("heard someone finally took a council seat" for empire; "people are saying
+  the settlement is worth taking now" for community) — fires when player is on a station
+  AND `{lens_id}_capstone_reached` flag is set.
+- `spacegame/models/news_ticker.py` (if it exists — grep first) — ticker headline on the
+  first game day after any capstone_reached flag flips true, referencing the lens by
+  narrative shape not by lens id.
+- `spacegame/models/journal.py` — auto-journal entry when a `post_capstone_*` mission is
+  first ACCEPTED (not just generated — accept is the player commit) — one per lens,
+  one-time, so the journal shows "the consequences began" as a durable narrative marker.
+
+Do NOT author these in A2-21. They belong in follow-up content sprints so this sprint stays
+focused on the generator + wiring, not content sprawl.
+
+**Risks / open questions.**
+
+- ~~Determinism seed strategy: `random.Random(f"...")` vs. hashlib int seed?~~
+  **Locked (decision 1): use `int(hashlib.md5(f"{lens_id}_{game_day}_{seed}".encode())
+  .hexdigest()[:8], 16)` as the seed.** Rationale: Python's `hash()` on strings is salted
+  per process via `PYTHONHASHSEED`, so `random.Random(hash(str))` gives different output
+  across process starts — this would silently break the "no save scumming" determinism
+  contract CLAUDE.md requires. The existing `galaxy_event.py` at line 252-254 uses
+  hashlib-md5 for exactly this reason; match that pattern.
+- ~~"Held territory" surface for Empire AC1: does A2-15/A2-17 expose a `Player.territories`
+  list?~~ **Locked (decision 2): no such field exists.** Rationale: A2-15 (D3) and A2-17
+  (D6) closed with the outcome_flag pattern (`d3_empire_won`, `d6_empire_won`) plus a
+  narrative `narration_summary` — no structured territory list was added to `Player`. The
+  Empire mission therefore gates on the outcome_flag via `HAS_FLAG` and picks a REACH_SYSTEM
+  target from a stable-seeded pick of the systems list; AC1 was rewritten above to reflect
+  this rather than requiring a data structure that doesn't exist. If a future sprint adds
+  a territories list, the generator can be extended without an API break (add an optional
+  lookup and prefer it when present).
+- ~~Firing cadence: per-day, per-dock, per-jump?~~ **Locked (decision 3): per-day, inside
+  `_refresh_procedural_missions`.** Rationale: matches the existing procedural mission
+  contract exactly — one refresh per game day per system, stale ones stripped on the next
+  refresh, no separate UI surface. The design spec's "content generator" framing is
+  satisfied by merging into the same mission board the player already reads, not a new
+  "post-capstone board" view. Also avoids any new save-schema field (no
+  `_post_capstone_day` counter needed — the same `_proc_missions_day` guard reuses).
+- ~~Galaxy-event weighting: extend now or defer?~~ **Locked (decision 4): extend the API
+  now, ship zero new templates.** Rationale: the sprint's touch zones already name
+  `galaxy_event.py`; a pure API extension (optional weights argument, default None) is a
+  small commit that unblocks future identity-keyed galaxy events without another spec pass.
+  Shipping templates would push scope; the design doc explicitly defers "world moves
+  without the player" simulation to a sibling spec.
+- ~~Content on capstone lenses where no dilemma resolution supports it (e.g., a player
+  reaches the `wealth` capstone without resolving D2 either way)?~~ **Locked (decision 5):
+  return `[]` gracefully.** Rationale: the three worked-example lenses are the only ones
+  templated this sprint. Any lens with an unmatched gate returns `[]` per AC4. A future
+  sprint (per the A2-22 flag above) can add templates + gates for the remaining thirteen
+  lenses without touching the generator itself.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 19:35 — harness: plan phase starting
+- 2026-09-01 20:15 — planning complete; 5 decisions locked (seed strategy, territory
+  surface, firing cadence, galaxy-event scope, empty-lens behavior); 6 cross-sprint
+  reactions flagged as follow-up (not folded in — would push L→XL); 7-step Plan authored;
+  ACs tightened to reference concrete outcome_flags and mission id prefixes. PHASE_OK
+
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 19:35
+- Completed: 2026-09-01 20:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (pending)
+- New_sprints_proposed: none (A2-22 flagged as a candidate follow-up in the plan section
+  but not added — reviewer may elect to create if the reactive layer is judged in scope)
+- Polish_items_folded_in: save/load round-trip (AC7), engine-compliance guard for A2-4 AC4
+  (AC8), stale-mission cleanup contract mirrored from procedural refresh
+- Decisions_locked: 5
+- Notes: Verified all 4 context-to-read docs exist and read the key sections. Confirmed
+  sprint is NOT already implemented (no `post_capstone_content.py`, no matching tests).
+  Adjusted AC1's "held territory" phrasing after confirming A2-15/A2-17 shipped outcome
+  flags not a `Player.territories` field. Kept galaxy-event extension in scope as API-only
+  (no new templates) to honor sprint's stated touch zones without scope creep. Cross-sprint
+  reaction surface (crew banter, station chatter, news ticker, journal) deliberately
+  flagged for follow-up rather than folded in — it would push this L to XL and dilutes the
+  generator focus.
