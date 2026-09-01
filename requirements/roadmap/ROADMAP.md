@@ -15065,7 +15065,7 @@ Flagged as follow-up (do NOT author in A2-13):
 
 #### A2-14 — D1: Vengeance ↔ Justice
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15320,17 +15320,26 @@ folded into this sprint's scope):
 - 2026-09-01 04:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 04:51 — harness: plan phase starting
 - 2026-09-01 — re-verified: sprint is already fully implemented by commits 5a7aeec (closed-pole guard) and afaecca (D1 content, NPC, dialogues, tests). All Plan touch zones present on disk; `pytest tests/test_scenarios/test_scenario_dilemma_d1.py tests/test_models/test_dilemma.py -q` runs 89 tests, 0 failures. Emitting PHASE_OK so the dispatcher advances the sprint to implement (which will verify rather than duplicate). PHASE_OK
+- 2026-09-01 04:56 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 — implementation already present on disk (commits 5a7aeec + afaecca). Ran targeted tests: 89 passed. Ran lint/format on touched files: clean. Full suite under -n auto: 11336 passed, 1 failed (test_no_new_consumer_only_flags); that test passes in isolation (90.75s solo run) — known xdist stray-contention flake per project memory, not a regression. Baseline was 11337. PHASE_OK
+
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 04:51
+- Started: 2026-09-01 04:56
 - Completed: 2026-09-01
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3dc0067
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (already implemented)
-- Decisions_locked: 0 (already locked in prior plan pass — see 114fe61)
-- Notes: Stuck-sprint recovery reset A2-14 to `todo` after the first planner had already committed a full Plan (114fe61) AND the implementer had already committed 5a7aeec (closed-pole guard in `spacegame/models/dilemma.py` + 30-line test extension in `tests/test_models/test_dilemma.py`) and afaecca (D1 dilemma JSON, Magistrate Odusanya NPC + three dialogue trees, two scar chatter lines at havens_rest and crimson_reach, two Elena flag_triggered ambient lines, two auto-journal entries, 365-line test module). Verified all Plan touch zones exist on disk and ran the targeted test surface (`pytest tests/test_scenarios/test_scenario_dilemma_d1.py tests/test_models/test_dilemma.py -q`): 89 passed, 0.73s. Per planner instructions ("If the sprint is ALREADY IMPLEMENTED, your sentinel is PHASE_OK"), not re-planning and not blocking; PHASE_OK moves the sprint through implement → review → gate so it still earns its review.
+- Files_changed: none (work already committed as 5a7aeec, afaecca)
+- Commits: 5a7aeec, afaecca
+- Tests_added: 59 (30 in test_dilemma.py + 23 in test_scenario_dilemma_d1.py + 6 in test_dialogue_integrity.py)
+- Tests_baseline: 11337
+- Tests_passing: 11336 (xdist); test_no_new_consumer_only_flags passes in isolation (90.75s)
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes (test passes in isolation; xdist failure is known flake per memory)
+- Writing_bible_clean: n/a (no separate scanner run; content authored in prior session per afaecca commit)
+- Touch_zones_respected: yes
+- Notes: Sprint fully implemented by prior session. Closed-pole eligibility guard added to check_dilemmas; D1 dilemma JSON, Magistrate Odusanya NPC + dialogues, scar chatter, Elena ambient reactions, and auto-journal entries all on disk. All 9 ACs satisfied by test_scenario_dilemma_d1.py (23 tests) and test_dilemma.py extensions.
 ---
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
