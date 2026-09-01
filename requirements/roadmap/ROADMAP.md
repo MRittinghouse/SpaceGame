@@ -15326,7 +15326,7 @@ folded into this sprint's scope):
 - Started: 2026-09-01 04:51
 - Completed: 2026-09-01
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none
+- Commits: 3dc0067
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (already implemented)
 - Decisions_locked: 0 (already locked in prior plan pass — see 114fe61)
