@@ -143,7 +143,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
-| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
+| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | in-progress | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: todo
+**Status**: in-progress (planning, second pass after 667e37b revert)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -17589,16 +17589,46 @@ play continues. No real capstone prose is authored here; "Authored galaxy conten
 of scope for this whole arc, so this sprint uses generated placeholder narration to prove the
 mechanism, not sixteen hand-written cutscenes.
 
+The wiring goes through a model-layer coordinator, not a raw engine read. A2-4 AC4 forbids
+`spacegame/engine/*` from importing `LensInvestment` or touching `player.lens_investment` in
+any form, and the existing dilemma path (`spacegame/models/dilemma.py::check_dilemmas`)
+demonstrates the shape: a `check_capstones(player, capstones) -> CapstoneCheckResult`
+classifier lives in `spacegame/models/capstone.py`, reads investment/dilemma runtime/reached
+state inside the model layer, and returns a typed result the engine dispatches on. The first
+pass of this sprint (152f7e6 / 99bd64b, reverted in 667e37b) shipped an engine tick that read
+investment directly and turned master red on three separate guards. This re-plan makes the
+coordinator design explicit so the same guardrail-crash does not repeat.
+
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "Endings are capstones,
   and the game does not stop" section (lines 237-249), and Success Criterion 8 (line 336).
 - `spacegame/models/capstone.py` (verified 2026-09-01: A2-3 shipped `Capstone` @dataclass
   with fields `capstone_id`, `lens_id`, `capstone_threshold`, `cutscene_ref: Optional[str]`,
   plus module-level `should_fire(capstone, current_investment, closed_lenses,
-  capstones_reached) -> bool` predicate. No extension needed - the model layer is complete.
-  The predicate takes `capstones_reached: set[str]` as a primitive parameter by design so
-  A2-20 owns where that state lives; A2-3 explicitly deferred the field to this sprint per
-  A2-3's Locked decision).
+  capstones_reached) -> bool` predicate. A2-20 EXTENDS this module with a
+  `check_capstones(player, capstones) -> CapstoneCheckResult` coordinator so the engine
+  never reads investment directly - see Locked decision 2 for the revised contract).
+- `spacegame/models/dilemma.py` lines 1-30 (module docstring calling out the
+  investment-lives-in-the-model-layer discipline) and lines 336-382 (`check_dilemmas` -
+  the reference coordinator this sprint mirrors: pure classifier, reads
+  `player.lens_investment` and `player.dilemma_state` inside the model, returns a typed
+  `DilemmaCheckResult` the engine dispatches on).
+- `tests/test_compliance/test_lens_investment_never_rendered.py` (the structural guard
+  A2-4 AC4 installed; forbids `LensInvestment`, `lens_investment`, and
+  `from spacegame.models.lens_investment` under `spacegame/engine/` and
+  `spacegame/views/`. This is why the coordinator lives in the model layer).
+- `tests/test_ui_layout/test_module_level_dim_capture.py` (baseline count is 27;
+  `capstone_view.py` MUST NOT push the count to 28. Use `import spacegame.config as
+  config` + `config.WINDOW_WIDTH` at call time, per the pattern block in the test
+  docstring, rather than `from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT`).
+- Commit 018ef70 (message body) - the partial-Game / no-UI-manager guard pattern the
+  dilemma dispatch adopted after A2-12; A2-20's `_push_capstone_modal` must ship the
+  same guard verbatim, and `_tick_capstone_engine` must be robust to the ground-loot
+  test fixture (MagicMock player without `capstones_reached`/etc.).
+- Commit 667e37b (revert message body) - the three architectural guards this sprint
+  failed on the first time: engine investment read (A2-4 AC4), partial-Game UI absence,
+  and module-level dim capture. Reading the revert message is the fastest way to
+  understand what changed vs. the first plan.
 - `data/narrative/capstones.json` (verified 2026-09-01: shipped as `{"capstones": []}` empty
   stub by A2-3; A2-20 populates the sixteen real entries here).
 - `data/narrative/lenses.json` (verified 2026-09-01: sixteen lens_ids present -
@@ -17643,6 +17673,13 @@ mechanism, not sixteen hand-written cutscenes.
   frame, not the final surface.
 
 **Touch zones.**
+- `spacegame/models/capstone.py` (EXTEND: add `CapstoneCheckResult` dataclass and
+  `check_capstones(player, capstones) -> CapstoneCheckResult` module-level coordinator
+  mirroring `dilemma.check_dilemmas`. The predicate `should_fire` stays as-is; the
+  coordinator is a thin classifier that iterates the registry, reads
+  `player.lens_investment.get_investment(...)`, `player.dilemma_state.closed_lenses`,
+  and `player.capstones_reached`, and files each capstone_id into `result.eligible` in
+  registry order. This is the ONLY module allowed to read investment for capstones.)
 - `spacegame/models/player.py` (append one field `capstones_reached: set[str] =
   field(default_factory=set)` after the `dilemma_state` field around line 90)
 - `spacegame/save_manager.py` (append `capstones_reached` to the serialize dict block
@@ -17655,25 +17692,36 @@ mechanism, not sixteen hand-written cutscenes.
   per-frame polling site that already calls `_handle_dilemma_resolution`) to poll
   `_handle_capstone_acknowledge`; declare `self.capstone_view: Optional["CapstoneView"]
   = None` and `self._pending_capstone: Optional["Capstone"] = None` on the Game
-  instance near the analogous dilemma attributes around line 417)
+  instance near the analogous dilemma attributes around line 417. The tick MUST call
+  `check_capstones()` from the model layer - no direct `player.lens_investment` reads.)
 - `spacegame/config.py` (append `CAPSTONE = "capstone"` to `GameState` enum after
   `DILEMMA_RESOLUTION` at line 347, with a comment mirroring the DILEMMA_RESOLUTION
   block explaining it is a push/pop overlay, not a `change_state` target)
 - `spacegame/views/capstone_view.py` (NEW - single-button acknowledge modal mirroring
   `DilemmaResolutionView`'s panel geometry and lifecycle, sized for a narration paragraph
-  with a single "Continue" button)
+  with a single "Continue" button. MUST use `import spacegame.config as config` and
+  reference `config.WINDOW_WIDTH` / `config.WINDOW_HEIGHT` at call time, NOT
+  `from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT` - the module-level dim
+  capture guard baseline is 27 and adding this view via a from-import pushes it to 28.
+  See Locked decision 12.)
 - `data/narrative/capstones.json` (populate with sixteen entries - the file was shipped
   as an empty stub by A2-3, so this is a full overwrite with the sixteen records rather
   than an append)
+- `tests/test_models/test_capstone.py` (EXTEND: unit tests for `check_capstones`
+  coordinator - empty registry, one eligible, multiple eligible in registry order,
+  closed-lens suppresses, already-reached suppresses. Mirrors the shape of
+  `test_models/test_dilemma.py`'s `check_dilemmas` tests.)
 - `tests/test_scenarios/test_scenario_capstone_session_continues.py` (NEW - scenario test
   for AC1-AC4 and AC7-AC8, using `fresh_player` + a partial Game instance following the
-  pattern in `test_scenario_dilemma_*`)
+  pattern in `test_scenario_dilemma_thresholds.py`)
 - `tests/test_scenarios/test_scenario_save_load.py` (append one class
   `TestSaveLoadCapstonesReached` for AC5)
 - `tests/test_compliance/test_capstone_registry.py` (NEW - data-integrity test asserting
   the sixteen capstones map 1-to-1 onto the sixteen lens_ids, thresholds are the agreed
   value, cutscene_ref is null for all entries, and every capstone_id / lens_id is
-  snake_case; see AC6)
+  snake_case; see AC6. Also carries the AC11 grep-guard.)
+- `tests/test_views/test_capstone_view.py` (NEW - view lifecycle test for AC9 and
+  narration voice-check for AC12)
 
 **Deliverables.**
 - Sixteen `Capstone` records in `data/narrative/capstones.json`, one per lens_id, with
@@ -17689,11 +17737,16 @@ mechanism, not sixteen hand-written cutscenes.
   a placeholder shipped for the plumbing test, not final content, and names the file to
   replace when a future authored-content sprint arrives. No em-dashes, no banned phrases,
   no `no X, no Y` construction - the text is voice-checked because AC12 asserts it.
-- Firing condition: uses A2-3's `spacegame.models.capstone.should_fire(capstone,
-  current_investment, closed_lenses, capstones_reached)` predicate verbatim - the engine
-  is a caller, not a re-implementer. The values it passes are
-  `player.lens_investment.get_investment(capstone.lens_id)`,
-  `player.dilemma_state.closed_lenses`, and `player.capstones_reached` respectively.
+- Firing condition: routed through the new model-layer coordinator
+  `spacegame.models.capstone.check_capstones(player, capstones) -> CapstoneCheckResult`.
+  The coordinator internally calls A2-3's `should_fire()` predicate for each capstone
+  and files eligible capstone_ids into `result.eligible` in registry (insertion) order.
+  All investment / closed-lens / capstones-reached reads happen inside the model layer.
+  The engine imports `check_capstones` (never `LensInvestment` or `lens_investment`),
+  calls it once per tick, and dispatches on the returned result. This is the same shape
+  as `_tick_dilemma_engine -> check_dilemmas` and it is what A2-4 AC4 structurally
+  requires - the compliance test `test_lens_investment_never_rendered.py` scans
+  `spacegame/engine/` for the forbidden tokens and fails the build on any hit.
 - Engine hook points: `_after_player_action(action_type)` invokes `_tick_capstone_engine()`
   after `_tick_dilemma_engine()`. Capstones tick AFTER dilemmas so a resolve that closes
   a lens in the same action cannot then fire that lens's capstone (defence-in-depth for
@@ -17701,12 +17754,13 @@ mechanism, not sixteen hand-written cutscenes.
   `if self.state_manager.current_state == GameState.DILEMMA_RESOLUTION: return` guard is
   extended to also short-circuit on `GameState.CAPSTONE`, so a capstone modal cannot stack
   a dilemma modal beneath it and vice versa. This mirrors A2-8's own guard.
-- Multiple-eligible tie-break: `_tick_capstone_engine` iterates capstones in the load
-  order from `DataLoader.capstones` (an insertion-ordered dict; capstones.json ordering
-  is stable and the load path preserves it), fires the first eligible capstone found,
-  and returns. Any other simultaneously-eligible capstone re-checks on the next
-  `_after_player_action` tick (the same "collision reappears until presented" property
-  A2-8 documents at `_push_dilemma_modal`). No batching, no queueing.
+- Multiple-eligible tie-break: `check_capstones` returns every eligible capstone_id
+  in registry (insertion) order; `_tick_capstone_engine` reads only the first entry
+  and pushes its modal. Any other simultaneously-eligible capstone re-checks on the
+  next `_after_player_action` tick (the same "collision reappears until presented"
+  property A2-8 documents at `_push_dilemma_modal`). No batching, no queueing.
+  Returning the full list rather than just the head keeps the coordinator's contract
+  symmetric with `check_dilemmas` and lets tests observe the pending queue directly.
 - On firing: `push_state(GameState.CAPSTONE)`. `CapstoneView` renders the panel with a
   single `Continue` button. On acknowledge, view sets `dismissed = True`; the engine's
   per-frame polling `_handle_capstone_acknowledge` observes the flag, adds `capstone_id`
@@ -17738,13 +17792,20 @@ mechanism, not sixteen hand-written cutscenes.
    ceremony without payoff - `DilemmaRuntimeState` exists because dilemmas have four
    distinct runtime axes (telegraphed set, per-dilemma cursor, resolved map, closed-lens
    set). Capstones have one. A `set[str]` field on `Player` is honest.
-2. **A2-3's `should_fire()` is the ONLY predicate; A2-20 does not add helpers to
-   `spacegame/models/capstone.py`.** Rationale: A2-3's model layer is complete and the
-   sprint's own docstring hands this sprint the wiring, not the predicate. Extending the
-   Capstone model here would breach A2-3's touch-zone precedent (model layer is done)
-   and create a hidden coupling. Every eligibility read goes through A2-3's function.
-   The A2-20 sprint text at line 17606-17607 says "extend with firing-condition helper
-   if A2-3 did not already include one" - it did, so we don't.
+2. **REVISED after 667e37b revert: A2-20 adds a model-layer coordinator
+   `check_capstones(player, capstones) -> CapstoneCheckResult` to
+   `spacegame/models/capstone.py`.** Rationale: A2-4 AC4 forbids
+   `spacegame/engine/*` from reading `player.lens_investment` in any form
+   (structurally enforced by `test_lens_investment_never_rendered.py`). The first pass
+   of this sprint (152f7e6, reverted in 667e37b) called `should_fire()` directly from
+   the engine tick, which required a raw `self.player.lens_investment.get_investment(...)`
+   read - the exact pattern the compliance guard forbids. The dilemma engine already
+   solved this: `check_dilemmas` is a model-layer classifier that reads investment
+   inside the model boundary and returns a typed result the engine dispatches on.
+   Capstones mirror the shape. `should_fire()` stays untouched as the per-capstone
+   predicate; `check_capstones()` is a thin registry iterator around it. The previous
+   version of this decision ("do not extend the module") was based on a mis-read of the
+   compliance surface and the revert forced its retraction.
 3. **Uniform threshold of 95 for all sixteen capstones.** Rationale: the sprint text
    already suggests 95 as the number that puts a capstone above any dilemma's
    `collision_threshold` of 80, so a capstone almost always follows a resolved dilemma
@@ -17801,6 +17862,47 @@ mechanism, not sixteen hand-written cutscenes.
     construct partial Game instances (as `_apply_ground_result` did in the incident that
     triggered A2-8's guard) do not crash when a capstone is eligible. The scenario test
     uses a real Game instance where the guard is a no-op.
+
+12. **`CapstoneView` imports config as a module and reads dimensions at call time; it
+    does NOT `from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT`.** Rationale:
+    `tests/test_ui_layout/test_module_level_dim_capture.py` fails the build if the
+    count of views that capture WINDOW_WIDTH/HEIGHT via a from-import exceeds the
+    27-baseline. The first pass (152f7e6) used the from-import shape and tripped the
+    baseline test. The intended pattern (documented in the test docstring) is
+    `import spacegame.config as config` at module top + `config.WINDOW_WIDTH` at call
+    site - reads are live, not frozen at import time, and the count stays at 27.
+    `Colors`, `scale_x`, `scale_y` may still be from-imported because the guard's
+    regex targets only WINDOW_WIDTH/HEIGHT tokens. The baseline is not a soft target -
+    it is a red-master gate.
+
+13. **`_tick_capstone_engine` uses `getattr(self._player, "capstones_reached", None)`
+    (or equivalent partial-Game guard) before calling the coordinator.** Rationale:
+    the ground-loot test fixture at `tests/test_engine/test_ground_loot_bonus.py`
+    constructs a partial Game with `game._player = MagicMock()` and does NOT stub
+    `player.capstones_reached`. `_after_player_action` calls `_tick_dilemma_engine`
+    (survives because MagicMock is tolerant of attribute access) then must call
+    `_tick_capstone_engine`. Six ground-loot tests failed in the first pass -
+    the revert commit attributes this to the same partial-Game fragility A2-8 hit and
+    fixed in 018ef70 by guarding `_push_dilemma_modal` on missing `ui_manager`. The
+    equivalent guard here is either (a) early-return in `_tick_capstone_engine` when
+    `player.capstones_reached` is not a real set, OR (b) update the ground-loot
+    fixture to stub `capstones_reached = set()`. Prefer (a) - the engine already
+    tolerates partial Games for dilemmas via the UI guard; mirroring the pattern
+    keeps the fixture untouched. Implementation choice: `if not isinstance(
+    getattr(self._player, "capstones_reached", None), set): return`.
+
+14. **The salvaged first-pass commits (152f7e6, 99bd64b) are optional starting
+    material, not mandatory.** Rationale: the revert commit message
+    (667e37b) explicitly points at `git cherry-pick 152f7e6 99bd64b` as a recovery
+    path. Most of the shipped code is directly reusable: the Player field,
+    save/load, GameState enum, sixteen JSON records, the scenario/save/compliance
+    test scaffolding, and the CapstoneView shape are all correct. What MUST change
+    from that snapshot: (a) the engine tick reads investment - replace with
+    `check_capstones` call; (b) CapstoneView uses from-import for WINDOW_WIDTH/HEIGHT -
+    switch to config-attribute reads; (c) the partial-Game guard needs to cover
+    `capstones_reached` as well as `ui_manager`. Implementer chooses whether to
+    cherry-pick and edit, or to author from scratch. Fresh authorship is fine; the
+    tests here are exhaustive enough that a rewrite is not risky.
 
 **Acceptance criteria.**
 1. **Threshold fires; one point short does not.** In
@@ -17868,11 +17970,46 @@ mechanism, not sixteen hand-written cutscenes.
     construction, and no banned NPC names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus,
     Ambrose). Verified in a dedicated tiny voice-check test in the view test file, since
     even placeholder player-facing text passes through the Writing Bible.
-13. **Full suite green; no regression from pre-phase baseline.** 11529 passing, 100
-    skipped. New tests added by this sprint move the pass count up; no existing test
-    regresses.
+13. **Full suite green; no regression from pre-phase baseline.** 11543 passing, 99
+    skipped (baseline captured 2026-09-01 for the re-plan). New tests added by this
+    sprint move the pass count up; no existing test regresses. Specifically: the
+    six ground-loot tests at `tests/test_engine/test_ground_loot_bonus.py` (the ones
+    the first pass broke) all stay green.
+
+14. **The engine never reads investment.** The compliance test
+    `tests/test_compliance/test_lens_investment_never_rendered.py` reports zero
+    hits under `spacegame/engine/` after this sprint (specifically:
+    `test_no_engine_module_imports_lens_investment` remains green). Grep guard: no
+    line under `spacegame/engine/` matches `player.lens_investment` or `LensInvestment`
+    or `from spacegame.models.lens_investment`. This is the invariant the whole arc
+    rests on, and the invariant the first pass violated. Enforced by an existing
+    guard - no new test file needed, but this AC names it explicitly so a reviewer
+    can verify it did not silently regress.
+
+15. **The module-level dim capture baseline stays at 27.** The catalog test
+    `tests/test_ui_layout/test_module_level_dim_capture.py::test_catalog_of_window_dim_captures`
+    remains green after `capstone_view.py` is added. `capstone_view.py` MUST NOT
+    appear in the offenders list; if it does, the count goes to 28 and the test
+    fails. Enforced by an existing guard - AC names it so the reviewer verifies
+    that Locked decision 12's import pattern was actually followed.
+
+16. **Coordinator unit tests cover empty registry, singleton eligible, multiple
+    eligible in registry order, closed-lens suppression, and already-reached
+    suppression.** `tests/test_models/test_capstone.py::TestCheckCapstones` (new
+    class) mirrors `tests/test_models/test_dilemma.py::TestCheckDilemmas`'s coverage
+    axes. The coordinator is a pure classifier - it must be testable without any
+    engine or view scaffolding.
 
 **Plan.**
+
+**Salvage note.** The first-pass commits (152f7e6 core, 99bd64b tests) reached master
+and were reverted by 667e37b for three architectural violations. The revert message
+suggests `git cherry-pick 152f7e6 99bd64b` as a recovery path. The implementer may
+either cherry-pick and edit the three broken surfaces (engine tick, view import,
+partial-Game guard), or start clean and re-author. The Player field, save/load,
+GameState enum, sixteen JSON records, scenario test scaffolding, and CapstoneView
+shape are directly reusable. Task order below is written for a from-scratch author;
+a cherry-pick author reads the task list as a diff-target audit.
 
 Task 1 — Extend `Player` with `capstones_reached: set[str]`.
 - Files: `spacegame/models/player.py`.
@@ -17926,6 +18063,47 @@ Task 4 — Populate `data/narrative/capstones.json` with sixteen entries.
   `cutscene_ref` - A2-3's `from_dict` treats missing and null identically, but explicit
   `null` documents intent and matches the roundtrip guarantee in A2-3's `to_dict`.
 
+Task 4a — Add the model-layer coordinator `check_capstones` to `spacegame/models/capstone.py`.
+- Files: `spacegame/models/capstone.py` (EXTEND).
+- Add `@dataclass class CapstoneCheckResult` with one field:
+  `eligible: list[str] = field(default_factory=list)`. Mirror the shape of
+  `DilemmaCheckResult` in `dilemma.py` - a small dataclass, not a bare list, so future
+  extension (e.g., a `newly_reached` distinction) does not break callers.
+- Add `check_capstones(player: Any, capstones: dict[str, Capstone]) -> CapstoneCheckResult`.
+  Signature and docstring modelled on `check_dilemmas` at `dilemma.py:336`. Body:
+  ```
+  result = CapstoneCheckResult()
+  investment = player.lens_investment
+  closed = player.dilemma_state.closed_lenses
+  reached = player.capstones_reached
+  for capstone_id, capstone in capstones.items():
+      current = investment.get_investment(capstone.lens_id)
+      if should_fire(capstone, current, closed, reached):
+          result.eligible.append(capstone_id)
+  return result
+  ```
+  Iteration order matches `capstones` insertion order (guaranteed by dict since 3.7);
+  the engine takes the first `result.eligible[0]` and pushes its modal.
+- Add module docstring block naming the coordinator; extend the docstring hook-contract
+  block at the top of the file to say A2-20 extended the module with the coordinator
+  per Locked decision 2.
+- Test surface: AC16 - `tests/test_models/test_capstone.py::TestCheckCapstones` (new
+  class, extends the existing test file). Coverage axes:
+  - `test_empty_registry_returns_empty_result` — pass `{}`, assert `result.eligible == []`.
+  - `test_single_eligible_capstone_fires` — one capstone, investment at threshold,
+    lens open, not reached → `result.eligible == ["<id>"]`.
+  - `test_below_threshold_not_eligible` — investment below threshold → empty.
+  - `test_closed_lens_suppresses` — closed_lenses contains lens_id → empty.
+  - `test_already_reached_suppresses` — capstones_reached contains capstone_id → empty.
+  - `test_multiple_eligible_in_registry_order` — three capstones, all eligible;
+    `result.eligible` matches the dict insertion order exactly.
+- Gotcha: the coordinator takes `player: Any` (matching `check_dilemmas` signature),
+  not `player: Player`, to keep the model layer decoupled from the concrete
+  `spacegame.models.player.Player` class. Tests can pass a small object with just the
+  three needed attributes. Do NOT import DataLoader inside the coordinator - the caller
+  passes the registry, matching `check_dilemmas`. Do NOT `from spacegame.engine import
+  ...` anywhere in this file; the coordinator lives strictly in the model layer.
+
 Task 5 — Create `spacegame/views/capstone_view.py`.
 - Files: `spacegame/views/capstone_view.py` (NEW).
 - Mirror `DilemmaResolutionView`'s shape: constructor takes
@@ -17933,6 +18111,14 @@ Task 5 — Create `spacegame/views/capstone_view.py`.
   `Lens` record for `capstone.lens_id` (the engine passes it in so the view does not
   import DataLoader). Panel geometry mirrors the dilemma modal; render title, the
   substituted template string, and one centered `Continue` button.
+- **Config imports** (Locked decision 12, AC15): at module top use
+  `import spacegame.config as config` and read `config.WINDOW_WIDTH` /
+  `config.WINDOW_HEIGHT` at call time inside `_create_ui`, `render`, etc.
+  `Colors`, `scale_x`, `scale_y` may be from-imported normally (the regex only
+  targets WINDOW_WIDTH/HEIGHT tokens). Do NOT write
+  `from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT`
+  anywhere in this file - the module-level dim-capture guard's baseline is 27 and
+  this addition MUST NOT push it to 28.
 - Constants: single `_TEMPLATE` module-level string per Deliverables. Comment above
   the template stating clearly that this text is placeholder shipped for the plumbing
   test and names A2-21 or a future authored-content sprint as the replacer.
@@ -17949,11 +18135,20 @@ Task 5 — Create `spacegame/views/capstone_view.py`.
 - Gotcha: do NOT read `player.lens_investment` or DataLoader from the view. The view
   is a rendering surface; the engine hands it the pre-loaded `Lens` and the
   `Capstone`. This mirrors the compliance guard that forbids `player.lens_investment`
-  reads in view files (see `tests/test_compliance/test_lens_investment_never_rendered.py`)
-  - the guard is not on this file yet but the same discipline applies.
+  reads in view files (see `tests/test_compliance/test_lens_investment_never_rendered.py`).
+  The guard already applies to `spacegame/views/*` so a `lens_investment` reference
+  in this new file would fail immediately.
 
 Task 6 — Extend `Game` with the capstone tick, push, and acknowledge chain.
 - Files: `spacegame/engine/game.py`.
+- **Investment discipline** (AC14, Locked decision 2): this method chain MUST NOT
+  reference `player.lens_investment`, `LensInvestment`, or
+  `from spacegame.models.lens_investment` at any point. All investment reads live
+  behind `check_capstones` in the model layer. The compliance guard
+  `tests/test_compliance/test_lens_investment_never_rendered.py` scans
+  `spacegame/engine/` for those tokens and fails the build on any hit; the first pass
+  (152f7e6) violated this by calling `self.player.lens_investment.get_investment(...)`
+  in `_tick_capstone_engine`.
 - Attributes: near line 417 declare `self.capstone_view: Optional["CapstoneView"] = None`
   and `self._pending_capstone: Optional["Capstone"] = None` (mirror the
   `dilemma_resolution_view` / `_pending_dilemma` declaration).
@@ -17962,11 +18157,21 @@ Task 6 — Extend `Game` with the capstone tick, push, and acknowledge chain.
   `if self.state_manager.current_state in (GameState.DILEMMA_RESOLUTION,
   GameState.CAPSTONE): return`. After the existing `self._tick_dilemma_engine()` call,
   add `self._tick_capstone_engine()`.
-- Add `_tick_capstone_engine(self) -> None`: no-op if `self._player is None`. Load
-  `dl = get_data_loader()`; if `not dl.capstones` return. Iterate
-  `for capstone in dl.capstones.values()` in insertion order; call `should_fire(...)`
-  with the four values per Deliverables; on the first True, call
-  `_push_capstone_modal(capstone)` and return.
+- Add `_tick_capstone_engine(self) -> None`:
+  1. Early-return if `self._player is None`.
+  2. **Partial-Game guard** (Locked decision 13, AC13): early-return if
+     `not isinstance(getattr(self._player, "capstones_reached", None), set)`. The
+     ground-loot test fixture uses `game._player = MagicMock()` without setting
+     `capstones_reached`; iterating the coordinator on a MagicMock would either
+     AttributeError or misbehave with comparison operators. This guard mirrors the
+     spirit of A2-8's `ui_manager is None` guard (018ef70) - the engine stays
+     tolerant of partial Games because gameplay unit tests deliberately construct
+     them. A real Game always passes.
+  3. `dl = get_data_loader()`; if `not dl.capstones` return.
+  4. Import inside the method: `from spacegame.models.capstone import check_capstones`.
+  5. `result = check_capstones(self.player, dl.capstones)`.
+  6. If `result.eligible`: call `_push_capstone_modal(dl.capstones[result.eligible[0]])`.
+     Return.
 - Add `_push_capstone_modal(self, capstone: "Capstone") -> None`: mirror
   `_push_dilemma_modal` at line 4509 verbatim including the `if getattr(self,
   "ui_manager", None) is None: return` guard. Look up the lens via
@@ -17992,11 +18197,13 @@ Task 6 — Extend `Game` with the capstone tick, push, and acknowledge chain.
 - Test surface: AC1-AC4 (`test_scenario_capstone_session_continues.py`), AC7-AC8
   (same file, dedicated test classes), AC10 (the "defer writes to acknowledge" invariant
   - assert `capstones_reached` is empty immediately after push, populated after the
-  acknowledge poll).
+  acknowledge poll), AC13 (six ground-loot tests remain green), AC14 (the compliance
+  scan reports zero engine hits).
 - Gotcha: import `CapstoneView` and `Capstone` lazily inside the methods that need
   them (as `_ensure_dilemma_resolution_view` does at line 4549) to avoid circular imports
   at module load. The `Optional["CapstoneView"]` on the attribute uses a string forward
-  reference so no top-level import is needed.
+  reference so no top-level import is needed. `check_capstones` also gets a lazy
+  import inside `_tick_capstone_engine` to keep engine module-level imports lean.
 
 Task 7 — Register the capstone view with the state manager the first time it fires.
 - Files: same as Task 6 (`spacegame/engine/game.py`).
@@ -18059,6 +18266,40 @@ Task 10 — Author the compliance test.
   pattern in this project is a pytest test that opens files and asserts. Do NOT
   scan test files or `data/` (only `spacegame/` source).
 
+Task 12 — Author coordinator unit tests in `tests/test_models/test_capstone.py`.
+- Files: `tests/test_models/test_capstone.py` (EXTEND).
+- Add `TestCheckCapstones` class covering the six axes named in Task 4a's test
+  surface (empty registry / single eligible / below threshold / closed lens / already
+  reached / multiple in registry order). Use tiny hand-built `Capstone` fixtures and
+  a lightweight test-local player object (a `SimpleNamespace` with `lens_investment`,
+  `dilemma_state`, `capstones_reached` attributes) rather than a full
+  `spacegame.models.player.Player` — the coordinator takes `player: Any`.
+- The `lens_investment` stub can be a `SimpleNamespace(get_investment=lambda lens_id:
+  values_by_lens.get(lens_id, 0))` — no need to instantiate `LensInvestment` for
+  these unit tests.
+- Test surface: AC16.
+- Gotcha: registry-order test needs a `dict` where insertion order is meaningful.
+  Build the fixture as `{"a_capstone": ..., "b_capstone": ..., "c_capstone": ...}`
+  and assert `result.eligible == ["a_capstone", "b_capstone", "c_capstone"]` when all
+  three are eligible. If a future contributor swaps to `set` iteration, this test
+  fails - which is what we want.
+
+Task 13 — Verify existing compliance / dim-capture guards after the addition.
+- Files: none (verification only).
+- Commands:
+  1. `pytest tests/test_compliance/test_lens_investment_never_rendered.py -q` — AC14.
+     Expect zero hits under `spacegame/engine/` (Task 6 must not have added any).
+  2. `pytest tests/test_ui_layout/test_module_level_dim_capture.py -q` — AC15.
+     Expect the offender count to stay at 27; `capstone_view.py` must not appear.
+  3. `pytest tests/test_engine/test_ground_loot_bonus.py -q` — AC13. Expect all
+     tests green; if any fail, Locked decision 13's partial-Game guard was not
+     applied correctly in Task 6.
+- Test surface: AC13, AC14, AC15.
+- Gotcha: these are the three architectural guards that failed the first pass. If
+  any of them regress here, do NOT paper over by editing the compliance test - fix
+  the source-side violation. The whole point of the re-plan is that the coordinator
+  and import discipline pass these guards on the first implementation.
+
 Task 11 — Author the view test.
 - Files: `tests/test_views/test_capstone_view.py` (NEW).
 - One `TestCapstoneViewLifecycle` class covering AC9 (on_enter creates the Continue
@@ -18091,8 +18332,11 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   entry point is unambiguous.
 
 **Risks / open questions.**
-- ~~Should A2-20 extend `Capstone` with a firing-condition helper?~~ **Locked: no**
-  (Locked decision 2). A2-3 shipped `should_fire()`; A2-20 is a caller.
+- ~~Should A2-20 extend `Capstone` with a firing-condition helper?~~ **REVISED after
+  667e37b revert. Locked: YES, add `check_capstones` coordinator to
+  `spacegame/models/capstone.py`** (Locked decision 2). A2-4 AC4's compliance guard
+  forbids the engine from reading investment; the first pass violated it. The
+  coordinator is the fix, mirroring `check_dilemmas`.
 - ~~Should `capstones_reached` live on `Player` or in a sub-model?~~ **Locked: on
   Player directly** (Locked decision 1). One set field, no ceremony.
 - ~~Uniform threshold or per-lens?~~ **Locked: uniform 95** (Locked decision 3).
@@ -18111,39 +18355,79 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   (Locked decision 10).
 - ~~Compliance test on partial-Game guard?~~ **Locked: no separate test, mirror A2-8's
   guard** (Locked decision 11).
+- ~~How does `CapstoneView` import window dimensions without breaking the
+  module-level dim capture baseline?~~ **Locked: `import spacegame.config as config`
+  + read `config.WINDOW_WIDTH` at call time** (Locked decision 12). From-import of
+  WINDOW_WIDTH/HEIGHT trips the baseline test at 28.
+- ~~How does `_tick_capstone_engine` survive the partial-Game fixture in
+  test_ground_loot_bonus.py?~~ **Locked: `isinstance(getattr(...), set)` early-return
+  in the tick, mirroring A2-8's `ui_manager is None` guard from 018ef70** (Locked
+  decision 13). Six tests failed on the first pass; this guard is the fix.
+- ~~Cherry-pick the reverted commits or start fresh?~~ **Locked: implementer's
+  choice; both are supported** (Locked decision 14). Most of the code is directly
+  reusable; the three architectural surfaces (engine tick, view import, partial-Game
+  guard) MUST change.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
-- 2026-09-01 16:56 — harness: plan phase starting
-- 2026-09-01 17:35 — planning complete; expanded touch zones (added save_manager.py,
-- 2026-09-01 17:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
-- 2026-09-01 17:43 — session: implementation reverted (667e37b), status reset to todo. The implement phase committed and the harness died during review, so the work reached master ungated and baseline capture caught 9 failures across three guards. The one that matters: engine/game.py read self.player.lens_investment.get_investment(...) directly, which A2-4 AC4 forbids -- investment is fully oblique, and the engine must go through a model-layer coordinator the way _tick_dilemma_engine uses check_dilemmas. Capstones need an equivalent coordinator; that is design work for this sprint, not a repair. Also: the capstone tick repeated the partial-Game fragility fixed for dilemmas in 018ef70 (guard the push when there is no ui_manager), and CapstoneView captured window dimensions at module scope. The original commits survive the revert -- cherry-pick 152f7e6 99bd64b to build on them rather than starting over.
+- 2026-09-01 16:56 — harness: plan phase starting (first pass)
+- 2026-09-01 17:35 — first-pass planning complete; expanded touch zones (added save_manager.py,
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
-  A2-21 per design-spec's out-of-scope rule. Sentinel: PHASE_OK.
+  A2-21 per design-spec's out-of-scope rule. Sentinel: PHASE_OK. [Superseded by
+  the re-plan below after the revert.]
+- 2026-09-01 17:43 — session: implementation reverted (667e37b), status reset to todo.
+  The implement phase committed and the harness died during review, so the work
+  reached master ungated and baseline capture caught 9 failures across three guards.
+  The one that matters: engine/game.py read self.player.lens_investment.get_investment(...)
+  directly, which A2-4 AC4 forbids -- investment is fully oblique, and the engine
+  must go through a model-layer coordinator the way _tick_dilemma_engine uses
+  check_dilemmas. Capstones need an equivalent coordinator; that is design work for
+  this sprint, not a repair. Also: the capstone tick repeated the partial-Game
+  fragility fixed for dilemmas in 018ef70 (guard the push when there is no
+  ui_manager), and CapstoneView captured window dimensions at module scope. The
+  original commits survive the revert -- cherry-pick 152f7e6 99bd64b to build on
+  them rather than starting over.
+- 2026-09-01 17:44 — harness: plan phase starting (second pass, post-revert)
+- 2026-09-01 18:20 — re-planning complete. Reverse of Locked decision 2: A2-20 now
+  extends spacegame/models/capstone.py with a check_capstones coordinator so the
+  engine never reads investment (matches check_dilemmas shape). Added Locked
+  decisions 12 (config-attribute imports in CapstoneView), 13 (partial-Game guard
+  in tick), 14 (cherry-pick optional). Added Tasks 4a (coordinator), 12
+  (coordinator unit tests), 13 (verification sweep on the three guards). Added
+  ACs 14 (engine investment scan zero-hits), 15 (dim-capture baseline stays 27),
+  16 (coordinator unit coverage). Bumped AC13 baseline from 11529/100 to 11543/99
+  per the pre-phase snapshot. Sentinel: PHASE_OK.
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 16:56
-- Completed: 2026-09-01 17:35
+- Started: 2026-09-01 17:44
+- Completed: 2026-09-01 18:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 09d4cb8
+- Commits: (see next commit hash)
 - New_sprints_proposed: none
-- Polish_items_folded_in: data-integrity compliance test (1:1 lens-capstone mapping,
-  uniform threshold, null cutscene_ref), voice-smoke on placeholder narration template,
-  view-level lifecycle test, stable `{lens_id}_capstone_reached` flag for A2-21 hookup,
-  multi-eligible-capstone ordering test, modal-stacking-guard test, defer-writes-to-
-  acknowledge test.
-- Decisions_locked: 11
-- Notes: All eight Context-to-read paths verified 2026-09-01 (both files and specific
-  line ranges cited). A2-3's shipped model layer (Capstone dataclass + should_fire
-  predicate + empty capstones.json stub + DataLoader wiring) is complete; A2-20 is a
-  pure caller and does not extend spacegame/models/capstone.py. Cross-sprint reactions
-  explicitly out of scope per the design spec's "authored galaxy content out of scope
-  for this whole arc" rule (line 319); the stable dialogue-flag surface is the hook A2-21
-  and any authored-content follow-up will use.
+- Polish_items_folded_in: model-layer coordinator check_capstones (fixes the
+  A2-4-AC4 architectural violation that caused the revert), CapstoneView config-
+  attribute import pattern (fixes the module-level dim capture guard trip),
+  partial-Game isinstance guard in _tick_capstone_engine (fixes the six
+  ground-loot test failures), explicit AC coverage for all three previously-broken
+  guards, coordinator unit tests mirroring check_dilemmas's test surface.
+- Decisions_locked: 14 (3 new: 12 dim-import, 13 partial-Game guard, 14 cherry-pick
+  policy; 1 revised: decision 2 now requires the coordinator)
+- Notes: Re-plan drives from the 667e37b revert message. The original planning was
+  sound on all player-facing decisions (thresholds, template, save/load, dialogue
+  flag, modal stacking) - those all carried forward unchanged. The three failure
+  surfaces (engine investment read, view WINDOW_WIDTH capture, partial-Game
+  fragility) are now explicitly designed against in Tasks 4a/5/6 and enforced by
+  ACs 14/15/13 respectively. The revert message names the salvage path
+  (git cherry-pick 152f7e6 99bd64b); Locked decision 14 makes it optional. The
+  scenario/save/compliance test scaffolding from 99bd64b was correct and can be
+  cherry-picked as-is once Task 6's engine surface changes are in. Cross-sprint
+  reactions remain "none" - the design spec's "authored galaxy content out of scope"
+  rule (spec line 319) has not changed; the stable dialogue-flag surface is what
+  A2-21 keys off.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
