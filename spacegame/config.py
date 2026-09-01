@@ -346,11 +346,6 @@ class GameState(Enum):
     # back to that state after the player picks a pole.
     DILEMMA_RESOLUTION = "dilemma_resolution"
 
-    # A2-20: Capstone punctuation moment. Push-only overlay - never a
-    # change_state target. Pop returns to the pre-capstone state and play
-    # continues.
-    CAPSTONE = "capstone"
-
 
 # ============================================================================
 # PATHS

@@ -449,9 +449,6 @@ class SaveManager:
             # "no dilemma_state key" (legacy save → default empty) from
             # "explicit empty state" (indistinguishable, both safe).
             "dilemma_state": player.dilemma_state.to_dict(),
-            # A2-20: capstone membership set. Sorted list for deterministic
-            # diffs (mirrors DilemmaRuntimeState.closed_lenses precedent).
-            "capstones_reached": sorted(player.capstones_reached),
             "wreckers_guild_state": (
                 player.wreckers_guild_state.to_dict()
                 if player.wreckers_guild_state is not None
@@ -643,12 +640,6 @@ class SaveManager:
         from spacegame.models.dilemma import DilemmaRuntimeState
 
         player.dilemma_state = DilemmaRuntimeState.from_dict(data.get("dilemma_state"))
-
-        # A2-20: capstone membership set. Legacy saves (missing key) and
-        # malformed payloads (non-list) both deserialize to empty set per
-        # the DilemmaRuntimeState.from_dict tolerance pattern.
-        _cr_raw = data.get("capstones_reached", [])
-        player.capstones_reached = set(_cr_raw) if isinstance(_cr_raw, list) else set()
 
         # SA-1: Wreckers' Guild Hall runtime state (None for legacy saves
         # and for players who never docked at the Hall).
