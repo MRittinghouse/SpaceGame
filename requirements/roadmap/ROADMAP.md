@@ -140,7 +140,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
-| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
+| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
@@ -16228,7 +16228,7 @@ scenario test):
 
 #### A2-17 — D6: Preservation ↔ Empire
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16236,71 +16236,306 @@ scenario test):
 figure (Claims Administrator Idris Halvorsen) introduced in A2-15's D3, so a player who has
 already resolved D3 toward Empire meets the natural continuation of that choice here: having
 become a territorial power, they now face what that power does to the things Preservation
-would have protected.
+would have protected. A2-15 has already landed; Halvorsen exists at `data/characters/npcs.json`
+line 1137 with a two-entry `dialogue_states` list (post_empire_won → `halvorsen_victorious`,
+post_empire_closed → `halvorsen_declined`). This sprint extends that list with two D6-specific
+states ordered ahead of the D3 states, so D6 outcomes route to distinct trees.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D6.
 - This dilemma needs a new NPC for Preservation, voiced fresh in this sprint's own dialogue
   content (not `character_voices.md`, which is Act I's document): **Junho Virtanen**,
-  caretaker of the Long Yard, a derelict-ship graveyard in this region. He was hired to strip
-  it for scrap years ago, found a logbook that told him who had died there and why, and never
-  finished the job. He has never been to the Aurelia Expanse and treats the player's history
-  the way he treats most passing traders' stories: politely, and without much curiosity.
-- Claims Administrator Idris Halvorsen for Empire, same NPC as A2-15 - do not create a second
-  Halvorsen record, extend the existing one's `dialogue_states` if A2-15 has already landed, or
-  author it fresh (matching A2-15's voice) if this sprint runs first, since both are siblings
-  with no ordering guarantee.
+  caretaker of the Long Yard, a derelict-ship graveyard drifting in Heron's Mark space
+  (`data/galaxy/systems.json` already defines `herons_mark`, a `derelict`-type system whose
+  description reads "The dock lights flicker because someone is keeping them on for a reason"
+  -- Virtanen is naturally that someone, no new system needed). He was hired to strip the
+  hulks for scrap years ago, found a logbook that told him who had died there and why, and
+  never finished the job. He has never been to the Aurelia Expanse and treats the player's
+  history the way he treats most passing traders' stories: politely, and without much
+  curiosity.
+- Claims Administrator Idris Halvorsen for Empire, same NPC as A2-15 (`data/characters/npcs.json`
+  line 1137). Extend the existing record's `dialogue_states`; do not duplicate the id.
 - `spacegame/models/deep_shafts.py` - the existing pilgrimage/memorial-state mechanic (visit
-  tracking, cooldown-gated rep grants, threshold-gated journal unlocks). Its current
-  implementation is hardcoded to Breakstone, Miners Union faction rep, and Sora Takahashi's
-  journal entries - that Act I content is untouched and out of scope. This dilemma's
-  Preservation pole authors a second, parallel instance of the same pattern for the Long Yard
-  and Virtanen (a new state/journal chain, not a repurposing of the Act I one), so both sites
-  persist independently.
+  tracking, cooldown-gated rep grants, threshold-gated journal unlocks). Read for the
+  narrative-pattern analogy only; **this sprint does NOT author a parallel `LongYardState`
+  code mechanic** (see Locked decisions below). The Long Yard's persistence lives in
+  Virtanen's `dialogue_states` plus his auto-journal chain in `data/journal/entries.json`.
+- `data/narrative/dilemmas/d5_legacy_connection.json` and
+  `tests/test_scenarios/test_scenario_dilemma_d5.py` - the sibling dilemma that lands
+  immediately before this one; its shape (record layout, outcomes, tier_unlocks,
+  narration_summary, journal + scar + ambient coverage, test class layout) is the pattern
+  this sprint mirrors.
+- `data/characters/npcs.json` line 52 confirms Priya's canonical id is `dr_priya_osei` (not
+  `priya_osei` -- see locked decision below).
+- `requirements/character_voices.md` - Priya Osei's voice register (peer-reviewed precision,
+  "the data suggests", full credentials on introduction, no contractions). Her telegraph is
+  authored in that register.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d6_preservation_empire.json` (NEW)
-- `data/dialogue/` - Priya Osei's telegraph lines (archivist-minded, fits Preservation
-  proximity without being one of its two poles), Virtanen's and Halvorsen's post-collision
-  dialogue states.
+- `data/characters/npcs.json` (extend Halvorsen's `dialogue_states`; add new Junho Virtanen
+  NPC record)
+- `data/dialogue/dialogues.json` (new dialogue trees: `virtanen_default`,
+  `virtanen_victorious`, `virtanen_declined`, `halvorsen_d6_victorious`,
+  `halvorsen_d6_administering`)
+- `data/journal/entries.json` (extend: `auto_d6_preservation_won`, `auto_d6_empire_won`)
+- `data/crew/station_chatter.json` (extend: `al_scar_d6_virtanen_01` at `herons_mark`,
+  `al_scar_d6_halvorsen_01` at `crimson_reach`)
+- `data/crew/ambient_dialogue.json` (extend: two `dr_priya_osei` `flag_triggered` lines, one
+  per outcome flag)
 - `tests/test_scenarios/test_scenario_dilemma_d6.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d6_preservation_empire"`, `poles: ["preservation", "empire"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
-  `telegraph_npc_id: "priya_osei"`.
-- Telegraph: Priya notes that the sites the player has been cataloguing and protecting sit
-  inside the borders the player is also claiming, and that a claimed border eventually gets
-  developed, mined, or garrisoned whether or not the claimant intends it personally.
-- Two `DilemmaOutcome` entries:
+  `telegraph_npc_id: "dr_priya_osei"`.
+- Telegraph: three Priya lines noting that the sites the player has been cataloguing and
+  protecting sit inside the borders the player is also claiming, and that a claimed border
+  eventually gets developed, mined, or garrisoned whether or not the claimant intends it
+  personally. Voice register per `requirements/character_voices.md`'s Priya sheet
+  (peer-reviewed precision, "the data suggests", no contractions).
+- Two `DilemmaOutcome` entries with `outcome_flag` values `d6_preservation_won` and
+  `d6_empire_won`, both with populated `tier_unlocks` (integrity guard fails empty lists)
+  and `narration_summary`:
   - `winning_lens_id: "preservation"`: `closes: ["empire"]`. `tier_unlocks`: e.g. `["Junho
     Virtanen grants standing archival authority over Long-Yard-class sites across the region,
     previously granted only after individual case-by-case review"]`.
   - `winning_lens_id: "empire"`: `closes: ["preservation"]`. `tier_unlocks`: e.g. `["the
     territory the player holds generates resource yield other empire-track content can draw
     on, at the cost of the sites within it"]`.
-- Visible cost: Preservation-winning closes Empire - Halvorsen's scar content has him
-  administering the territory the player declined to claim, developing exactly the sites the
-  player protected elsewhere. Empire-winning closes Preservation - Virtanen's post-collision
-  state has him relocating what he can save away from the player's claimed territory,
-  permanently reduced in scope, gated on `dialogue_flags["lens_closed_preservation"]`.
-- `tests/test_scenarios/test_scenario_dilemma_d6.py` mirroring the established shape.
+- Visible cost: Preservation-winning closes Empire -- Halvorsen's D6-scar dialogue tree
+  (`halvorsen_d6_administering`) has him administering the territory the player declined to
+  claim, developing exactly the sites the player protected elsewhere; scar chatter line
+  `al_scar_d6_halvorsen_01` at `crimson_reach` echoes it ambiently. Gated on
+  `d6_preservation_won` (specific), which implies `lens_closed_empire`. Empire-winning closes
+  Preservation -- Virtanen's `virtanen_declined` tree has him relocating what he can save
+  away from the player's claimed territory, permanently reduced in scope; scar chatter
+  `al_scar_d6_virtanen_01` at `herons_mark` echoes it. Gated on `lens_closed_preservation`.
+- Junho Virtanen NPC record at `data/characters/npcs.json`: `id: "junho_virtanen"`,
+  `home_system_id: "herons_mark"`, `dialogue_id: "virtanen_default"`, three
+  `dialogue_states` (default plus post-D6 victorious plus post-D6 declined). Voice authored
+  fresh in this sprint (not from `character_voices.md`).
+- Halvorsen extension at `data/characters/npcs.json`: two NEW `dialogue_states` prepended
+  ahead of the existing D3 states (priority order matters -- the more specific D6 flag must
+  win over the generic `lens_closed_empire` flag): `post_d6_empire_won` (gated on
+  `d6_empire_won`) → `halvorsen_d6_victorious`; `post_d6_preservation_won` (gated on
+  `d6_preservation_won`) → `halvorsen_d6_administering`. `dialogue_states` grows from 2 to 4.
+- Two auto-journal entries in `data/journal/entries.json`: `auto_d6_preservation_won`
+  (trigger_flag `d6_preservation_won`, system_id `herons_mark`) and `auto_d6_empire_won`
+  (trigger_flag `d6_empire_won`, system_id `crimson_reach`). Player-voice, retrospective.
+- Two scar `ChatterLine` records in `data/crew/station_chatter.json` with
+  `category: "scar"`, `one_shot: false`, `weight: 7` (matches A2-11 scar convention +
+  A2-16 D5 shape). Third-person ambient text (no first-person player reflection -- that
+  belongs in journals).
+- Two `dr_priya_osei` `flag_triggered` ambient reaction lines in
+  `data/crew/ambient_dialogue.json`, one per outcome flag, in Priya's register.
+- `tests/test_scenarios/test_scenario_dilemma_d6.py` mirroring the established D5 shape.
+
+**Locked decisions (from planning).**
+1. `telegraph_npc_id` is `"dr_priya_osei"` (not `"priya_osei"`). Rationale: the canonical NPC
+   id in `data/characters/npcs.json` line 52 is `dr_priya_osei`; the shorter form does not
+   resolve. All five prior dilemmas' `telegraph_npc_id` values resolve to real ids.
+2. Junho Virtanen's `home_system_id` is `"herons_mark"`. Rationale: the system is already
+   `type: "derelict"`, `danger_level: "dangerous"`, and its authored description already
+   frames Virtanen's presence ("The dock lights flicker because someone is keeping them on
+   for a reason"). No new system required.
+3. Halvorsen's two new D6 `dialogue_states` are prepended (list-order priority) ahead of the
+   existing D3 states. Rationale: `get_active_dialogue_id` returns the first match; the D6
+   flag is more specific than the generic `lens_closed_empire` gate on
+   `halvorsen_declined`, so the D6 scar content must be selected when both flags are set.
+4. The Long Yard's persistence is expressed through Virtanen NPC + `dialogue_states` +
+   auto-journal chain, NOT through a new `LongYardState` code mechanic parallel to
+   `DeepShaftsState`. Rationale: the sprint is size M with a mostly-data touch surface; a
+   full parallel pilgrimage mechanic (state dataclass, save/load fields, view integration,
+   repeat-visit rep grants) is a separate sprint's worth of scope. If repeat-visit
+   pilgrimage semantics are later desired, propose a follow-up (`A2-17F` or similar); do not
+   bundle here.
+5. Scar chatter station placements: `al_scar_d6_virtanen_01` at `herons_mark`;
+   `al_scar_d6_halvorsen_01` at `crimson_reach` (Halvorsen's `home_system_id`). Rationale:
+   scars fire where the NPC lives so the "still exists, still refusing you" convention
+   reads naturally.
 
 **Acceptance criteria.**
-1. `DataLoader.dilemmas["d6_preservation_empire"]` loads with both outcomes populated.
-2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
-3. Collision behavior matches the established pattern.
-4. If `data/dialogue/`'s Halvorsen NPC record already exists (A2-15 landed first), this
-   sprint extends it rather than duplicating the id - verified by a test asserting exactly
-   one NPC record with id `idris_halvorsen` exists after `load_all()` regardless of which of
-   A2-15/A2-17 ran first.
-5. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
-6. Full suite green; no regression from baseline.
+1. `DataLoader.dilemmas["d6_preservation_empire"]` loads with both outcomes populated
+   (`winning_lens_id` `preservation` and `empire`, both with non-empty `tier_unlocks`,
+   both with `outcome_flag`, both with `narration_summary`).
+2. `tests/test_compliance/test_dilemma_integrity.py` passes against the new record
+   (`_outcomes_with_empty_tier_unlocks` returns `[]`, `_dilemmas_with_bad_thresholds`
+   returns `[]`).
+3. Collision behavior matches the established pattern: single-pole investment at 90 does not
+   collide; both poles at 85 does collide (`check_collision` returns True).
+4. Halvorsen NPC uniqueness after extension: exactly one `idris_halvorsen` record in
+   `dl.npcs` after `load_all()`; the extended `dialogue_states` list has length 4; the two
+   D6 states are ordered ahead of the two D3 states; and with no post-collision flag set,
+   `halvorsen.get_active_dialogue_id({})` still returns `"halvorsen_default"` (A2-15
+   pre-collision default preserved).
+5. Junho Virtanen NPC record loads exactly once (`dl.npcs["junho_virtanen"]`), with
+   `home_system_id == "herons_mark"`, `dialogue_id == "virtanen_default"`, and
+   `dialogue_states` covering both D6 outcomes. Pre-collision default returns
+   `"virtanen_default"` when no flag set.
+6. Preservation-wins-D6 (`resolve(dilemma, "preservation", player)`) sets
+   `dialogue_flags["d6_preservation_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("empire")] == True`; routes Halvorsen to
+   `"halvorsen_d6_administering"` and Virtanen to `"virtanen_victorious"`; records a
+   non-empty `player.dilemma_state.tier_unlocks_granted["preservation"]`; makes
+   `al_scar_d6_halvorsen_01` reachable at `crimson_reach` via
+   `StationChatterManager.get_chatter`.
+7. Empire-wins-D6 (`resolve(dilemma, "empire", player)`) sets
+   `dialogue_flags["d6_empire_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("preservation")] == True`; routes Halvorsen to
+   `"halvorsen_d6_victorious"` and Virtanen to `"virtanen_declined"`; records a non-empty
+   `player.dilemma_state.tier_unlocks_granted["empire"]`; makes `al_scar_d6_virtanen_01`
+   reachable at `herons_mark`.
+8. Closed-pole guard suppresses D6: a stub player with `dilemma_state.closed_lenses ==
+   {"empire"}` (simulating D3 having closed empire first) at 100/100 investment produces no
+   telegraph and no collision from `check_dilemmas`. Same for `{"preservation"}`.
+9. Two auto-journal entries load through DataLoader with the expected `entry_id` and
+   `trigger_flag` values (`auto_d6_preservation_won` / `d6_preservation_won`,
+   `auto_d6_empire_won` / `d6_empire_won`).
+10. Two `dr_priya_osei` `flag_triggered` ambient lines load with the correct
+    `required_flags` (`d6_preservation_won` and `d6_empire_won` respectively).
+11. Voice smoke: telegraph lines contain no em-dash (`—` / `–` / `―`), no banned phrases
+    ("a testament to", "couldn't help but"), no "no X, no Y" parallel-negation
+    constructions, and at least one Priya voice anchor (e.g. `"data"`, `"suggest"`,
+    `"analysis"`, `"the record"`, `"institute"`, `"catalogue"` -- pick concrete anchors
+    that reflect her register).
+12. No banned NPC names in any authored content (Junho Virtanen is not on the banned
+    list).
+13. Full suite green; no regression from baseline (11400 passing, 100 skipped as of
+    pre-phase baseline).
+
+**Plan.**
+
+Task 1 -- Extend Halvorsen and add Virtanen in `data/characters/npcs.json`.
+- Files: `data/characters/npcs.json`.
+- Prepend two entries to `idris_halvorsen`'s `dialogue_states`:
+  `{"state_id": "post_d6_empire_won", "dialogue_id": "halvorsen_d6_victorious",
+    "required_flags": ["d6_empire_won"]}` and
+  `{"state_id": "post_d6_preservation_won", "dialogue_id": "halvorsen_d6_administering",
+    "required_flags": ["d6_preservation_won"]}`.
+- Append a new `junho_virtanen` NPC record with `home_system_id: "herons_mark"`, default
+  `virtanen_default`, and dialogue_states covering `post_d6_preservation_won` →
+  `virtanen_victorious` and `post_d6_empire_closed` → `virtanen_declined` (gated on
+  `lens_closed_preservation` since empire-wins-D6 closes preservation).
+- Test surface: `TestD6HalvorsenExtension`, `TestD6VirtanenNPCLoads` (AC4, AC5).
+- Gotcha: priority ordering -- the D6 states must precede the D3 states; the
+  `lens_closed_empire` state must be the last matcher so specific D6 content wins first.
+
+Task 2 -- Author dialogue trees in `data/dialogue/dialogues.json`.
+- Files: `data/dialogue/dialogues.json`.
+- New dialogues: `virtanen_default` (Long Yard caretaker meeting a passing trader),
+  `virtanen_victorious` (standing archival authority granted, gated by `d6_preservation_won`
+  route), `virtanen_declined` (relocating what he can save, gated by
+  `lens_closed_preservation` route), `halvorsen_d6_victorious` (developing sites the
+  player declined to protect), `halvorsen_d6_administering` (administering territory the
+  player declined to claim). Speaker ids: `junho_virtanen` and `idris_halvorsen`.
+- Test surface: dialogue loading exercised implicitly by NPC state-routing tests in Tasks
+  1 and 8.
+- Gotcha: Virtanen's voice must be authored fresh (not sourced from `character_voices.md`,
+  which is Act I only); he is politely incurious about the player's past, terse but not
+  cold. Halvorsen's voice must match A2-15's existing register -- read `halvorsen_default`,
+  `halvorsen_victorious`, `halvorsen_declined` in `data/dialogue/dialogues.json` before
+  authoring the D6 extensions so the register lines up.
+
+Task 3 -- Create `data/narrative/dilemmas/d6_preservation_empire.json`.
+- Files: `data/narrative/dilemmas/d6_preservation_empire.json` (NEW).
+- Full Dilemma record with the fields specified in Deliverables. Two outcomes with
+  non-empty `tier_unlocks` and `narration_summary`.
+- Test surface: `TestD6Loads`, `TestD6IntegrityGuardPasses`, `TestD6CollisionMath`,
+  `TestD6ClosedPoleGuard` (AC1, AC2, AC3, AC8).
+- Gotcha: `telegraph_npc_id` MUST be `"dr_priya_osei"`. `outcome_flag` values MUST be
+  `"d6_preservation_won"` and `"d6_empire_won"`. `closes` arrays MUST reference the other
+  pole (integrity guard enforces).
+
+Task 4 -- Add auto-journal entries in `data/journal/entries.json`.
+- Files: `data/journal/entries.json`.
+- Two entries: `auto_d6_preservation_won` (system_id `herons_mark`) and
+  `auto_d6_empire_won` (system_id `crimson_reach`), each with `trigger_flag` matching the
+  outcome flag and `mission_id: ""`.
+- Test surface: `TestD6JournalEntriesRegistered` (AC9).
+- Gotcha: player-voice retrospective, past-tense, mirrors the shape of `auto_d5_*` entries.
+
+Task 5 -- Add scar chatter in `data/crew/station_chatter.json`.
+- Files: `data/crew/station_chatter.json`.
+- `al_scar_d6_virtanen_01` at `herons_mark`, gated on `lens_closed_preservation`.
+- `al_scar_d6_halvorsen_01` at `crimson_reach`, gated on `lens_closed_empire`.
+- Both: `category: "scar"`, `weight: 7`, `one_shot: false` (per A2-11 scar convention
+  reaffirmed by A2-16 D5 tests).
+- Test surface: `TestD6PreservationWinsClosesEmpire` and `TestD6EmpireWinsClosesPreservation`
+  each verify their scar is reachable at the right station and the other's is not (AC6, AC7).
+- Gotcha: text is third-person ambient (station gossip), not first-person player reflection.
+
+Task 6 -- Add Priya ambient reactions in `data/crew/ambient_dialogue.json`.
+- Files: `data/crew/ambient_dialogue.json`.
+- Two entries with `crew_id: "dr_priya_osei"`, `context: "flag_triggered"`, and
+  `required_flags: ["d6_preservation_won"]` / `["d6_empire_won"]` respectively.
+- Test surface: `TestD6PriyaReactionsRegistered` (AC10).
+- Gotcha: `crew_id` must be `dr_priya_osei` (not `priya_osei`) to match the NPC record;
+  Priya voice per `requirements/character_voices.md` -- precise, evidence-based, "the data
+  suggests," no contractions.
+
+Task 7 -- Create `tests/test_scenarios/test_scenario_dilemma_d6.py`.
+- Files: `tests/test_scenarios/test_scenario_dilemma_d6.py` (NEW).
+- Class layout mirrors `test_scenario_dilemma_d5.py`: `TestD6Loads`,
+  `TestD6IntegrityGuardPasses`, `TestD6CollisionMath`, `TestD6ClosedPoleGuard`,
+  `TestD6PreservationWinsClosesEmpire`, `TestD6EmpireWinsClosesPreservation`,
+  `TestD6PriyaReactionsRegistered`, `TestD6JournalEntriesRegistered`,
+  `TestD6NPCCollisionGuard` (assert both `junho_virtanen` and `idris_halvorsen` each
+  appear exactly once), `TestD6HalvorsenExtensionSafe` (assert `dialogue_states` length ==
+  4, D6 states come first, default returns `halvorsen_default` when no post-collision flag
+  set), `TestD6VoiceSmoke`.
+- Test surface: all ACs 1-12.
+- Gotcha: use `fresh_player` from `tests/test_scenarios/_helpers.py`; use
+  `flag_registry.lens_closed(...)` from `spacegame.constants.flags` for close flags; import
+  guard helpers from `tests.test_compliance.test_dilemma_integrity` per D5's pattern.
+
+Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-baseline gate.
+- Files: none (verification only).
+- Test surface: full suite, plus targeted `pytest
+  tests/test_scenarios/test_scenario_dilemma_d6.py -v`.
+- Gotcha: mypy-baseline must not be regenerated -- this sprint's diff is data + tests,
+  no new type surface, so the baseline should be unchanged. If mypy reports new errors
+  from the new test file, fix the test annotations; do not touch `mypy-baseline.txt`.
+
+**Cross-sprint reactions to author.**
+- (candidate, NOT folded in) `data/crew/ambient_dialogue.json` -- Marcus-specific line at
+  `herons_mark` on `d6_preservation_won` -- fires when Marcus is on crew AND player has
+  visited the Long Yard OR resolved D6 toward preservation. Reason: Marcus has established
+  memorial-site backstory via Sora Takahashi / Deep Shafts, so recognising the Long Yard
+  as a second memorial he understands would add cohesion. Deferred to a follow-up crew
+  banter sprint rather than bundled here (would require reading Marcus's voice sheet in
+  depth and staying inside his register, and would grow the sprint's authoring surface).
+- (candidate, NOT folded in) Ambient news/rumour echo at a claimed-territory system on
+  `d6_empire_won` -- Halvorsen developing sites elsewhere becomes background rumour in
+  station-hub chatter. Deferred to a follow-up ambient/news content sprint; the
+  scar-chatter line at `crimson_reach` already covers the primary "see the closure" beat.
+- (candidate, NOT folded in) Priya's D6 telegraph reference lines in her own dialogue
+  tree if the player later docks with her post-collision -- currently a `flag_triggered`
+  ambient line covers this in Task 6, which is the pattern D5 established for Marcus.
+  A deeper Priya scene keyed to the D6 outcome would belong to a follow-up.
+
+**Notes.**
+- No new sprints are proposed. The two follow-up candidates (Marcus banter + news echo)
+  are noted in Cross-sprint reactions to author; a content-authoring sweep sprint can
+  bundle them alongside similar candidates from D1-D5 when one is scheduled.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 11:11 — harness: plan phase starting
+- 2026-09-01 12:35 — planning complete; verified all context docs exist, verified sprint work not already implemented (no `d6_preservation_empire.json` yet, no Virtanen NPC), locked 5 decisions, folded in 5 polish items (auto-journal entries, scar chatter, Priya ambient reactions, voice-smoke test, NPC uniqueness + Halvorsen extension safety assertions), expanded touch zones to reflect the real edit surface, expanded acceptance criteria from 6 → 13, laid out 8 concrete tasks, flagged 3 cross-sprint reaction candidates as deferred followups. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 11:11
+- Completed: 2026-09-01 12:35
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: <pending commit>
+- New_sprints_proposed: none
+- Polish_items_folded_in: auto-journal-entries; scar-chatter; priya-ambient-reactions; voice-smoke-test; npc-uniqueness-and-halvorsen-extension-safety
+- Decisions_locked: 5
+- Notes: A2-15 landed first, so Halvorsen exists and this sprint extends his dialogue_states (D6 states prepended for priority). Virtanen is a new NPC at `herons_mark` (existing derelict system that already flavors his presence). LongYardState code mechanic explicitly deferred; the Long Yard persists via Virtanen NPC + dialogue_states + auto-journal chain to keep the sprint in size M. Fixed telegraph_npc_id `priya_osei` → `dr_priya_osei` to match canonical NPC id.
 ---
 
 #### A2-18 — D7: Faith ↔ Transcendence
