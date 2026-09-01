@@ -586,6 +586,12 @@ class TestDialogueStateFlagReachability:
                         continue
                     if flag.startswith("crew_loyalty_"):
                         continue
+                    # A2-8/A2-10: dilemma resolution writes `lens_closed_<pole>`
+                    # via ``spacegame.models.dilemma.resolve``, walking the
+                    # winning outcome's ``closes`` list. Not detectable by
+                    # this JSON-scanning test.
+                    if flag.startswith("lens_closed_"):
+                        continue
                     errors.append(
                         f"NPC '{npc.id}' dialogue_state '{state.state_id}' "
                         f"requires flag '{flag}' but nothing sets it"
