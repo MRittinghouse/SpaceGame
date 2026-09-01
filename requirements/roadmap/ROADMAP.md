@@ -15753,7 +15753,7 @@ without them):
 
 #### A2-16 — D5: Legacy ↔ Connection
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16170,6 +16170,7 @@ scenario test):
 - 2026-09-01 10:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 10:21 — harness: plan phase starting
 - 2026-09-01 10:25 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 10:45 — harness: review phase starting (rework cycle 0)
   outcome, scar reachability per outcome, ambient reactive registration, journal
   entries, the AC4 alt-path (crew.py has no loyalty-ceiling concept), the closed-pole
   guard mirror, and the NPC id-collision guard. Locked 10 decisions (Solheim home
@@ -16205,24 +16206,23 @@ scenario test):
   required; routing back to implement so the harness can advance to review. PHASE_OK
 
 - 2026-09-01 — implement re-verify pass; sprint already complete on master (commits eed5022, 9ccba0f, 912c901). A2-16 scenario tests 50/50 passing; dialogue integrity 19/19 serially (test_no_new_consumer_only_flags intermittent under xdist — passes in isolation; pre-existing contention documented in prior activity log entry). Lint clean, format clean on touched files. PHASE_OK
+- 2026-09-01 11:00 — review complete; all 11 ACs verified. Plan audit: sound; 10 locked decisions defensible, cross-sprint reactions correctly deferred. Full suite 11399 passing (1 intermittent xdist failure in test_no_new_consumer_only_flags confirmed pre-existing — passes in isolation in 90s). Dilemma integrity (20/20), compliance (140/140), data integrity (383/383), writing bible (39/39), D5 scenario (31/31) all clean. Content quality high: Marcus telegraph voice authentic (short declaratives, foreman directness), Solheim institutional register consistent throughout, Elena voice-sheet rules honored in both states (formal-as-distance in declined, overcorrection-tell in deepened). SI-3 allowlist update well-documented. Single tighten: solheim_victorious references "Your name" (possessive) rather than calling the player by actual name — plan note 9 said "She uses the player's name once, precisely"; may be intentional if the game doesn't interpolate player names into dialogue; not a blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 10:25
-- Completed: 2026-09-01 10:55
-- Files_changed: data/narrative/dilemmas/d5_legacy_connection.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/crew/station_chatter.json, data/crew/ambient_dialogue.json, data/journal/entries.json, tests/test_scenarios/test_scenario_dilemma_d5.py, tests/test_data/test_dialogue_integrity.py
-- Commits: eed5022, 9ccba0f, 912c901
-- Tests_added: 31
-- Tests_baseline: 11369
+- Started: 2026-09-01 10:45
+- Completed: 2026-09-01 11:00
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: none
 - Tests_passing: 11399
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: D5 Legacy vs Connection dilemma complete. All 11 acceptance criteria satisfied. One intermittent xdist failure in test_no_new_consumer_only_flags passes in isolation and serially — pre-existing contention issue, not introduced by this sprint.
+- Acceptance_criteria_verified: 11/11
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: solheim_victorious uses "Your name is on the thirty-year endowment record" rather than calling the player by name; plan note 9 said "She uses the player's name once, precisely" — trivial miss or intentional (no player-name interpolation pattern evident in codebase); not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 10 locked decisions defensible; pre-existing intermittent xdist failure in test_no_new_consumer_only_flags confirmed passes in isolation; all content voice-clean.
 ---
 
 #### A2-17 — D6: Preservation ↔ Empire
