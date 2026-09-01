@@ -140,7 +140,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
-| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
@@ -16228,7 +16228,7 @@ scenario test):
 
 #### A2-17 — D6: Preservation ↔ Empire
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16524,7 +16524,7 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 - 2026-08-27 - todo (created)
 - 2026-09-01 11:11 — harness: plan phase starting
 - 2026-09-01 12:35 — planning complete; verified all context docs exist, verified sprint work not already implemented (no `d6_preservation_empire.json` yet, no Virtanen NPC), locked 5 decisions, folded in 5 polish items (auto-journal entries, scar chatter, Priya ambient reactions, voice-smoke test, NPC uniqueness + Halvorsen extension safety assertions), expanded touch zones to reflect the real edit surface, expanded acceptance criteria from 6 → 13, laid out 8 concrete tasks, flagged 3 cross-sprint reaction candidates as deferred followups. PHASE_OK
-
+- 2026-09-01 11:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
