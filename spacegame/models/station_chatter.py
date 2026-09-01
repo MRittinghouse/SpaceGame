@@ -24,7 +24,16 @@ class ChatterLine:
     id: str
     system_id: str
     text: str
-    category: str  # "overheard", "notice", "announcement", "atmosphere"
+    category: str  # "overheard", "notice", "announcement", "atmosphere", "scar"
+    # Category "scar" convention (A2-11):
+    #   - Always one_shot=False (line recurs on each dock visit; not retired after showing)
+    #   - required_flags must include flags.lens_closed(<losing_lens_id>)
+    #   - Text is authored from the refused perspective: the NPC or role the player
+    #     passed on, doing the work the player chose not to do. Weight 6-8 so scar
+    #     lines surface occasionally but do not dominate ambient rotation.
+    #   - Each dilemma sprint (A2-12 through A2-19) that closes a lens must author
+    #     at least one scar ChatterLine using this pattern. The compliance test in
+    #     tests/test_models/test_station_chatter.py enforces one_shot=False invariant.
     faction_id: str = ""
     min_reputation: int = -100
     max_reputation: int = 100
