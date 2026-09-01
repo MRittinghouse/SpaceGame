@@ -1,0 +1,39 @@
+{
+  "dilemmas": [
+    {
+      "id": "d7_faith_transcendence",
+      "poles": ["faith", "transcendence"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "tomas_drifter",
+      "telegraph_lines": [
+        "Way I see it, Captain, you are running two ledgers that do not settle against each other. One goes to a chaplain at Cradlepoint who thinks the universe already has something in it worth looking for. The other goes to a research operation at Axiom Labs that is paying people to stop being what they were born as. Those are not accounts you hold open at the same time.",
+        "Smart money says you figure out which one you are actually funding before the margin on this one closes. A chaplain who keeps shift rotations and a research lead who files ethics authorizations are both watching the same account. They will both notice when it tips.",
+        "That is the deal as I read it. Both sides are running costs that do not share a column. You keep putting weight on both pages, the ledger will close the call for you. That is the trade I would not want to be on the short side of."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "faith",
+          "closes": ["transcendence"],
+          "tier_unlocks": [
+            "Chaplain Imre Solano grants the captain standing invitation into the Cradlepoint chapel's closed dawn-shift rotation, previously open only to residents on the housing roster",
+            "Solano's dockside network of shift chaplains across Haven's Rest treats the captain as vouched for, opening informal channels that only pass through personal introduction rather than charter paperwork"
+          ],
+          "outcome_flag": "d7_faith_won",
+          "narration_summary": "Chose the chapel. Solano filed the dawn-rotation invitation the same week. The Cradlepoint network vouches for the captain now, the kind of access that does not come through paperwork. Marchetti authorized the procedure tier on another volunteer instead. The ethics board filed her authorization as expected. The captain was not in that record."
+        },
+        {
+          "winning_lens_id": "transcendence",
+          "closes": ["faith"],
+          "tier_unlocks": [
+            "Dr. Rasheeda Marchetti authorizes an experimental Farrow Institute procedure tier previously held pending the Institute's ethics review, on the strength of the captain having demonstrated they will accept irreversible personal cost",
+            "the Farrow Institute's applied-research staff open access to procedure-adjacent research materials the ethics committee had kept back from private applicants"
+          ],
+          "outcome_flag": "d7_transcendence_won",
+          "narration_summary": "Chose the procedure. Marchetti filed the authorization within a cycle. The ethics-committee materials are open now, the access contingent on the captain having demonstrated they would take the cost. Solano kept his shift rotation without them. The chapel continues its schedule. The captain was not on that roster."
+        }
+      ]
+    }
+  ]
+}

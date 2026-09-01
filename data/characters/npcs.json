@@ -1364,6 +1364,66 @@
           ]
         }
       ]
+    },
+    {
+      "id": "imre_solano",
+      "name": "Imre Solano",
+      "title": "Chaplain, Cradlepoint Charter Chapel",
+      "portrait_color": [
+        140,
+        130,
+        110
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "solano_default",
+      "faction_id": "frontier_alliance",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_d7_faith_won",
+          "dialogue_id": "solano_victorious",
+          "required_flags": [
+            "d7_faith_won"
+          ]
+        },
+        {
+          "state_id": "post_d7_faith_closed",
+          "dialogue_id": "solano_declined",
+          "required_flags": [
+            "lens_closed_faith"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rasheeda_marchetti",
+      "name": "Dr. Rasheeda Marchetti",
+      "title": "Applied Research Lead, Farrow Institute",
+      "portrait_color": [
+        100,
+        140,
+        160
+      ],
+      "home_system_id": "axiom_labs",
+      "dialogue_id": "marchetti_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_d7_transcendence_won",
+          "dialogue_id": "marchetti_victorious",
+          "required_flags": [
+            "d7_transcendence_won"
+          ]
+        },
+        {
+          "state_id": "post_d7_transcendence_closed",
+          "dialogue_id": "marchetti_declined",
+          "required_flags": [
+            "lens_closed_transcendence"
+          ]
+        }
+      ]
     }
   ]
 }

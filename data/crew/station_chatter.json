@@ -1734,6 +1734,28 @@
         "lens_closed_empire"
       ],
       "one_shot": false
+    },
+    {
+      "id": "al_scar_d7_solano_01",
+      "system_id": "havens_rest",
+      "text": "The chaplain at Cradlepoint is still running his dawn-rotation schedule. Three mornings a week, same as always. The roster is full. He does not expand it past what the dock can actually hold.",
+      "category": "scar",
+      "weight": 7,
+      "required_flags": [
+        "lens_closed_faith"
+      ],
+      "one_shot": false
+    },
+    {
+      "id": "al_scar_d7_marchetti_01",
+      "system_id": "axiom_labs",
+      "text": "The Farrow Institute procedure authorization went through last week. Applied-research staff have been reviewing the ethics-committee materials the committee had held back. The applicant who qualified came out of a freight contract that went bad. Something about a cargo door.",
+      "category": "scar",
+      "weight": 7,
+      "required_flags": [
+        "lens_closed_transcendence"
+      ],
+      "one_shot": false
     }
   ]
 }

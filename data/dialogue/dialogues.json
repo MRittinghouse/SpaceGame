@@ -11012,6 +11012,314 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "solano_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "imre_solano",
+          "text": "Morning shift ends in forty minutes. I do the walk-around before the dock crews come on. You are welcome to walk with me or not. Either way is fine.",
+          "responses": [
+            {
+              "text": "What is the walk-around?",
+              "next_node_id": "walkaround"
+            },
+            {
+              "text": "What do you do here?",
+              "next_node_id": "role"
+            },
+            {
+              "text": "[Maybe another time.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "walkaround",
+          "speaker_id": "imre_solano",
+          "text": "I check that the overnight workers made it through the shift without anything going wrong that they did not tell anyone about. Most of them do not talk about it until someone asks. So I ask.",
+          "responses": [
+            {
+              "text": "What kinds of things go wrong?",
+              "next_node_id": "wrong"
+            },
+            {
+              "text": "[I see.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "wrong",
+          "speaker_id": "imre_solano",
+          "text": "Cargo shifts. Equipment failures at two in the morning when there is nobody to call. People who are tired enough that their judgment goes before they notice it is gone. It is mostly small things. The small things are the ones that matter if you catch them early.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "role",
+          "speaker_id": "imre_solano",
+          "text": "I keep the chapel on the charter side of the dock open three mornings a week. The rest of the time I am on the dock doing whatever needs doing. The two jobs are the same job, mostly.",
+          "responses": [
+            {
+              "text": "How are they the same job?",
+              "next_node_id": "same"
+            },
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "same",
+          "speaker_id": "imre_solano",
+          "text": "Both of them are about paying attention. That is all. If you are paying attention, you notice when something is wrong. The rest follows from that.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "solano_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "imre_solano",
+          "text": "The dawn-rotation list is filed. Your name is on it. Shift starts at oh-four-hundred, ends at first cargo call. Show up or do not. The rotation does not wait for any particular person.",
+          "responses": [
+            {
+              "text": "What happens during the rotation?",
+              "next_node_id": "rotation"
+            },
+            {
+              "text": "I will be there.",
+              "next_node_id": "accepted"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "rotation",
+          "speaker_id": "imre_solano",
+          "text": "The shift workers come in before dawn. Some of them need someone to stand with them for a few minutes before they can go home. That is the whole of it. You stand there and you pay attention. That is what the rotation is.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "accepted",
+          "speaker_id": "imre_solano",
+          "text": "The network across the dock knows you are vouched for now. That is how it works. Nobody files paperwork for it. You just show up, and the other people who show up will know.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "solano_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "imre_solano",
+          "text": "The rotation filled without you. That is fine. The work continues. The dock does not stop because of who is or is not on the roster.",
+          "responses": [
+            {
+              "text": "Is there anything I can do?",
+              "next_node_id": "anything"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "anything",
+          "speaker_id": "imre_solano",
+          "text": "The chapel is still open three mornings a week. Anyone can come in. You chose to stop looking in this direction. That is your business. The door is not locked.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "marchetti_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The Institute's ethics review for the procedure tier closed last month. Authorization is now pending on individual applicant profiles. You are close to qualifying. I am authorized to tell you that.",
+          "responses": [
+            {
+              "text": "What does the procedure involve?",
+              "next_node_id": "procedure"
+            },
+            {
+              "text": "What does qualifying require?",
+              "next_node_id": "qualifying"
+            },
+            {
+              "text": "[Not interested right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "procedure",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The institute does not release procedural details at the consultation stage. What I can tell you is that the authorization requires the applicant to have demonstrated willingness to accept irreversible personal cost as a condition of capability improvement. The ethics committee was specific about that criterion.",
+          "responses": [
+            {
+              "text": "You took it yourself?",
+              "next_node_id": "personal"
+            },
+            {
+              "text": "[I understand.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "personal",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "I had a contract that required full hand mobility. A cargo bay door took that mobility from me three years ago. The procedure restored clinical function. Not the same function. Different function. I filed the authorization for myself and then I filed it as a research record because both things were true at the same time.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "qualifying",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "Demonstrated cost-acceptance in the applicant's operational history. The ethics committee reviews the record. If the record shows the pattern, authorization follows. Your record is close to showing the pattern.",
+          "responses": [
+            {
+              "text": "[I see.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "marchetti_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The ethics authorization is filed. Procedure-tier access is open. The committee reviewed your record and found it consistent with the cost-acceptance criterion. That is a clinical determination, not a personal one.",
+          "responses": [
+            {
+              "text": "What does the access include?",
+              "next_node_id": "access"
+            },
+            {
+              "text": "Thank you.",
+              "next_node_id": "thanks"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "access",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The research materials the committee had held back from private applicants are now accessible through the institute's standard review process. The authorization opens that channel. Use it or do not. The access does not expire.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "thanks",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The institute authorized it on the basis of your record. I filed the paperwork. That is all either of us did here.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "marchetti_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "The authorization went through on another applicant. The procedure tier is moving forward on their record. The ethics committee does not hold slots open once authorization is granted elsewhere.",
+          "responses": [
+            {
+              "text": "Who was the other applicant?",
+              "next_node_id": "other"
+            },
+            {
+              "text": "[I understand.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "other",
+          "speaker_id": "rasheeda_marchetti",
+          "text": "Applicant records are confidential. What I can tell you is that they demonstrated cost-acceptance at the level the ethics committee required. The institute proceeded on that basis. There was someone who chose to stay whole. The authorization went to someone who did not make that choice.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

@@ -889,6 +889,28 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "lens_closed_preservation",
     "d6_preservation_won",
     "d6_empire_won",
+    # === A2-18 (D7: Faith vs Transcendence) — DETECTOR MISS ===
+    # ``lens_closed_faith`` and ``lens_closed_transcendence`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` via the variable-arg
+    # ``flag_registry.lens_closed(lens_id)`` helper when D7 closes.
+    # ``d7_faith_won`` and ``d7_transcendence_won`` are written via
+    # ``player.dialogue_flags[outcome.outcome_flag] = True``. Real consumers:
+    #   lens_closed_faith: scar chatter ``al_scar_d7_solano_01``
+    #     (havens_rest), Solano's ``post_d7_faith_closed`` dialogue_state
+    #     (solano_declined).
+    #   lens_closed_transcendence: scar chatter ``al_scar_d7_marchetti_01``
+    #     (axiom_labs), Marchetti's ``post_d7_transcendence_closed``
+    #     dialogue_state (marchetti_declined).
+    #   d7_faith_won: Tomas ``flag_triggered`` ambient line,
+    #     Solano's ``post_d7_faith_won`` dialogue_state (solano_victorious),
+    #     ``auto_d7_faith_won`` journal entry.
+    #   d7_transcendence_won: Tomas ``flag_triggered`` ambient line,
+    #     Marchetti's ``post_d7_transcendence_won`` dialogue_state
+    #     (marchetti_victorious), ``auto_d7_transcendence_won`` journal entry.
+    "lens_closed_faith",
+    "lens_closed_transcendence",
+    "d7_faith_won",
+    "d7_transcendence_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

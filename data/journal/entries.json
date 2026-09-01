@@ -545,6 +545,20 @@
       "trigger_flag": "d6_empire_won",
       "system_id": "crimson_reach",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d7_faith_won",
+      "text": "Chose the chapel. Solano filed the dawn-rotation invitation the same week and the Cradlepoint network acknowledged it without ceremony. The access is informal, which is how it works there. Marchetti filed the procedure authorization on another applicant. I was not in that record. Both things are true and both things are settled.",
+      "trigger_flag": "d7_faith_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d7_transcendence_won",
+      "text": "Chose the procedure. Marchetti filed the authorization within a cycle on the basis of the ethics committee's review. The research materials are accessible now. Solano's rotation continued without me on the roster. The chapel is still open three mornings a week. I am not on the list. Both things are on the record.",
+      "trigger_flag": "d7_transcendence_won",
+      "system_id": "axiom_labs",
+      "mission_id": ""
     }
   ]
 }
