@@ -136,7 +136,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
-| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
+| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
@@ -14675,7 +14675,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 
 #### A2-13 — D2: Wealth ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15013,22 +15013,32 @@ Flagged as follow-up (do NOT author in A2-13):
 - 2026-09-01 01:03 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 7 to 9 (added AC7 for Marcus
 - 2026-09-01 02:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 02:06 — harness: plan phase starting
   reactive ambient lines, split original AC4 into AC4/AC5 for symmetry per branch, added
   AC6 anchor-word substring check as a distinct AC); locked 9 open decisions including
   the Kallio/Castellano placement question; folded Marcus reactive ambient lines into
   scope. PHASE_OK
+- 2026-09-01 02:10 — re-invoked as planner after stuck-sprint recovery; sprint was
+  already fully planned (commits f10c6b2, 2ea6126) AND fully implemented (commit
+  7c1c602 shipped all 8 files listed in the plan: NPC records, six dialogue trees,
+  dilemma JSON, two scar chatter lines, two journal entries, two Marcus reactive
+  ambients, and the D2 scenario test). Ran `pytest tests/test_scenarios/test_scenario_dilemma_d2.py`
+  (20 passed) and `pytest tests/test_data/test_dialogue_integrity.py
+  tests/test_data/test_cross_references.py tests/test_compliance/test_prose_anti_patterns.py`
+  (71 passed). No re-planning needed; emit PHASE_OK to route to implement (which
+  will verify) then review. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 01:03
-- Completed: 2026-09-01
+- Started: 2026-09-01 02:06
+- Completed: 2026-09-01 02:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: f10c6b2
+- Commits: (this planner: pending; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602)
 - New_sprints_proposed: none
-- Polish_items_folded_in: marcus-reactive-ambient-lines, dual-scar-chatter (both branches), journal-auto-entries (both branches)
-- Decisions_locked: 9
-- Notes: Verified all 5 context docs exist. Verified no prior A2-13 commits (this is genuinely new work, not already-implemented). Locked the Cradlepoint/Kettlebridge placement question by reassigning Kallio to `havens_rest` and Castellano to `nexus_prime` following A2-12's precedent (Senn at `the_fulcrum`); the "outside the Expanse" flavor is preserved by writing them as recent arrivals, since out-of-Expanse travel infrastructure does not exist. Expanded the Plan section into 8 concrete implementer tasks each naming files, test surfaces, and gotchas. Cross-sprint reactions surface: folded Marcus's own reaction (character wound is the dilemma's root); flagged Elena/Tomas reactions as follow-up. A2-19 reuses this sprint's Kallio record unchanged.
+- Polish_items_folded_in: n/a (sprint already implemented; polish decisions locked in the earlier planning pass — see the 2026-09-01 planning-complete log entry)
+- Decisions_locked: 0 (all 9 were locked in the earlier planning pass)
+- Notes: Sprint was already fully planned and fully implemented before this planner ran. Stuck-sprint recovery reset it to todo after an earlier phase-owner died before writing its sentinel — a missing sentinel, not missing work. Verified by (a) `git log` showing plan + implementation commits carrying the A2-13 tag, (b) `git show --stat 7c1c602` matching the plan's 8-file touch zone exactly, (c) the D2 scenario test file existing at `tests/test_scenarios/test_scenario_dilemma_d2.py` and passing 20/20, (d) all cross-cutting integrity guards (`test_dialogue_integrity.py`, `test_cross_references.py`, `test_prose_anti_patterns.py`) passing 71/71. Following the A2-5/A2-12 precedent, emit PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes to implement (which will re-verify) then review — earning the sprint its normal review + gate rather than stranding it and its dependents.
 ---
 
 #### A2-14 — D1: Vengeance ↔ Justice
