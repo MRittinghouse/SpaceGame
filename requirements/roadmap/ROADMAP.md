@@ -142,7 +142,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
-| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: in-progress (implementing)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17526,6 +17526,7 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-09-01 14:34 — harness: plan phase starting
 - 2026-09-01 15:15 — planning complete; expanded ACs from 6 to 17, locked 9 decisions,
 - 2026-09-01 15:46 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 16:15 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
   folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
 - 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 15:39 — harness: plan phase starting
