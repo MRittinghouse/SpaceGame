@@ -134,7 +134,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
-| [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
+| [A2-11](#a2-11--scars) | Scars | Act II | M | in-progress | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14244,6 +14244,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - 2026-08-31 19:20 — harness: plan phase starting
 - 2026-08-31 — planning complete (commit 43d6ec4); confirmed all 4 context docs exist;
 - 2026-08-31 21:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 21:06 — harness: plan phase starting
   folded invariant compliance test (AC4) and voice-check anchor (AC5); locked 4 open
   decisions (no code-path change to `get_chatter`, compliance-test enforcement of the
   scar/one_shot invariant, no `NPC.dialogue_states` work in this sprint, real-system-id
@@ -14273,22 +14274,29 @@ convention documented on `ChatterLine` is the API those sprints consume.
   test_known_orphan_lists_stay_meaningful). Moved to KNOWN_CONSUMER_ONLY_ORPHANS.
   All 6 ACs verified. Plan audit: sound; locked decisions on all 4 open questions
   defensible. Suite passes at ≥ 11267 (11259 baseline + 8 new tests). PHASE_OK
+- 2026-08-31 (later) — harness: stuck-sprint recovery — reset to todo (commit 8628d14)
+- 2026-08-31 — harness: plan phase starting (re-dispatch after recovery reset)
+- 2026-08-31 — re-verification: sprint already implemented and reviewed. Commits
+  890cab2 (docstring + demo line), c3c94ad (scenario test), ca19615 (unit+compliance
+  tests), 244ba16 (SI-3 orphan), eae7ce2 (review fix), bf686b0 (review PHASE_OK).
+  Artifacts present: tests/test_scenarios/test_scenario_dilemma_scars.py exists,
+  data/crew/station_chatter.json contains lens_closed_test_lens, station_chatter.py
+  docstring mentions "scar". Verified by running the sprint's tests:
+  `pytest tests/test_scenarios/test_scenario_dilemma_scars.py tests/test_models/test_station_chatter.py`
+  — 36 passed in 0.23s. No re-planning warranted; sprint moves forward for downstream
+  phases (implementer will verify existence, reviewer will re-audit). PHASE_OK
 
 **Last phase report.**
-- Phase: review
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 20:24
-- Completed: 2026-08-31 20:38
-- Files_changed: tests/test_data/test_dialogue_integrity.py
-- Commits: eae7ce2
-- Tests_passing: 11267
-- Acceptance_criteria_verified: 6/6
-- Polish_items_verified: n/a
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 1
-- Single_tighten: commit 244ba16 claimed SI-3 scanner clean but placed the flag in the wrong orphan set — implementer's "full suite" run may have been a partial or -n auto masked the 2 failures via exit-code 0. Test runner reporting reliability is the underlying gap.
-- Followup_sprints_added: none
-- Notes: Plan audit sound; all locked decisions defensible. Demo line voice clean; scenario test decoupled from engine as required. Fixed orphan classification directly — lens_closed_test_lens is consumer-only (read by chatter required_flags, never produced), not producer-only.
+- Started: 2026-08-31
+- Completed: 2026-08-31
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (to be filled after commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented and reviewed)
+- Decisions_locked: 0 (all 4 open questions locked in prior planning cycle)
+- Notes: Sprint already implemented (commits 890cab2, c3c94ad, ca19615, 244ba16) and reviewed (eae7ce2, bf686b0) prior to stuck-sprint recovery reset. Re-verified by running `pytest tests/test_scenarios/test_scenario_dilemma_scars.py tests/test_models/test_station_chatter.py` — 36 passed. Emitting PHASE_OK to move the sprint forward per the harness "already implemented" rule; do not re-plan work that exists.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
