@@ -141,7 +141,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
-| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
+| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
@@ -16550,81 +16550,450 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 
 #### A2-18 — D7: Faith ↔ Transcendence
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
 **Goal.** Author "find meaning, or manufacture it?" Faith searches for something in the
 universe that already means something; Transcendence pushes past ordinary humanity to make
 meaning irrelevant to the question. This is the one dilemma with no existing Act I grounding
-to build on, so it introduces one new location-appropriate NPC.
+to build on, so it introduces two new location-appropriate NPCs (Chaplain Imre Solano of the
+Cradlepoint charter chapel; Dr. Rasheeda Marchetti of the Farrow Institute). Sprint scope is
+data + tests only; mirrors the D5/D6 shape.
 
 **Context to read.**
 - `docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` - "The eight dilemmas" table
   row D7.
 - This dilemma needs two new NPCs, neither of whom has ever been to the Aurelia Expanse, voiced
   fresh in this sprint's own dialogue content (not `character_voices.md`, which is Act I's
-  document): **Chaplain Imre Solano**, based at Cradlepoint (introduced here; see below), for
-  Faith, and **Dr. Rasheeda Marchetti**, the Farrow Institute's applied research lead, for
-  Transcendence.
+  document): **Chaplain Imre Solano**, who works on the Cradlepoint charter docks at Haven's
+  Rest half the week and keeps a small chapel there the other half (Cradlepoint is Thuy
+  Kallio's dock/housing operation at `havens_rest`, verified against
+  `data/characters/npcs.json` line 1117; it is not a separate system), for Faith, and **Dr.
+  Rasheeda Marchetti**, the Farrow Institute's applied research lead based at `axiom_labs`
+  (the Farrow Institute's canonical home per A2-16's D5 mapping), for Transcendence.
 - `spacegame/models/okafor_research.py` - the existing risk-tiered project system
   (`FAILURE_ODDS`, high-risk tier). Per A2-16's note, this sprint's Transcendence pole reuses
   the mechanic through the Farrow Institute framing established there, not the Okafor
-  Institute's Act I names, for "irreversible upgrades with real costs."
+  Institute's Act I names, for "irreversible upgrades with real costs." **This sprint does
+  NOT refactor `okafor_research.py`**; per locked decision 5, the Farrow "irreversible
+  procedure" is authored at JSON/dialogue level only, as tier_unlocks prose. Any real
+  mechanic (procedure lifecycle, save state, view integration) is out of scope and belongs to
+  a follow-up sprint if the game ever wires it.
+- `data/narrative/dilemmas/d6_preservation_empire.json` and
+  `tests/test_scenarios/test_scenario_dilemma_d6.py` - the sibling dilemma that landed
+  immediately before; its shape (record layout, outcomes, tier_unlocks, narration_summary,
+  journal + scar + ambient coverage, test class layout) is the pattern this sprint mirrors.
+- `data/narrative/dilemmas/d3_power_revolution_empire.json` - reads Tomas Drifter's telegraph
+  register. Tomas is reused as the D7 telegraph NPC (canonical id `tomas_drifter`,
+  `data/characters/npcs.json` line 74). His D3 register is grounded ledger-metaphor
+  streetwise ("Way I see it, Captain", "Smart money says", "the margin on this one"). Match
+  it — his voice is authored, not from `character_voices.md`.
+- `requirements/dialogue_writing_guide.md` - anti-GenAI-trope rules. Solano's faith voice must
+  avoid vague cosmic pronouncements ("the universe has a plan", "everything happens for a
+  reason", "have faith", "grand design", "meant to be"). Marchetti's transcendence voice must
+  avoid pure-abstraction pitch phrasing; her practical grounding (crushed hand, contract that
+  required full mobility, took the procedure herself) is the anchor.
+- `tests/test_data/test_dialogue_integrity.py` - `KNOWN_CONSUMER_ONLY_ORPHANS` block at line
+  696 onwards. A2-12/13/14/15/16/17 all extend this set with their dilemma's outcome +
+  lens_closed flags because the scanner cannot see variable-arg `lens_closed(lens_id)` calls
+  or `player.dialogue_flags[outcome.outcome_flag] = True` writes. A2-18 must do the same.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d7_faith_transcendence.json` (NEW)
-- `data/dialogue/` - Tomas Drifter's telegraph lines (grounded skeptic-trader voice, distinct
-  from both poles), a new NPC record for **Chaplain Imre Solano** of Cradlepoint (Faith pole),
-  and a new NPC record plus post-collision dialogue state for Dr. Rasheeda Marchetti
-  (Transcendence pole).
+- `data/characters/npcs.json` (add two new NPC records: `imre_solano` at `havens_rest` and
+  `rasheeda_marchetti` at `axiom_labs`)
+- `data/dialogue/dialogues.json` (new dialogue trees: `solano_default`, `solano_victorious`,
+  `solano_declined`, `marchetti_default`, `marchetti_victorious`, `marchetti_declined`)
+- `data/journal/entries.json` (extend: `auto_d7_faith_won` at `havens_rest`,
+  `auto_d7_transcendence_won` at `axiom_labs`)
+- `data/crew/station_chatter.json` (extend: `al_scar_d7_solano_01` at `havens_rest` gated on
+  `lens_closed_faith`, `al_scar_d7_marchetti_01` at `axiom_labs` gated on
+  `lens_closed_transcendence`)
+- `data/crew/ambient_dialogue.json` (extend: two `tomas_drifter` `flag_triggered` ambient
+  lines, one per outcome flag)
+- `tests/test_data/test_dialogue_integrity.py` (extend `KNOWN_CONSUMER_ONLY_ORPHANS` with
+  `lens_closed_faith`, `lens_closed_transcendence`, `d7_faith_won`, `d7_transcendence_won`)
 - `tests/test_scenarios/test_scenario_dilemma_d7.py` (NEW)
 
 **Deliverables.**
 - `Dilemma` record `id: "d7_faith_transcendence"`, `poles: ["faith", "transcendence"]`,
   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
   `telegraph_npc_id: "tomas_drifter"`.
-- Chaplain Imre Solano: a short voice note authored in this sprint establishing a grounded,
-  non-mystical register consistent with the writing guide's anti-GenAI-trope rules - he does
-  not speak in vague cosmic pronouncements. He works Cradlepoint's docks half the week and
-  keeps a small chapel the other half, and per `requirements/dialogue_writing_guide.md`'s
-  register rules his faith voice should sound like a person who works with his hands and
-  thinks the universe rewards attention, not a priest reciting doctrine.
-- Dr. Rasheeda Marchetti: a short voice note authored in this sprint. She took the Farrow
-  Institute's signature irreversible procedure herself years ago, for an unglamorous practical
-  reason (a crushed hand, a contract that required full mobility within a month), not out of
-  conviction - she is professionally obligated to make the philosophical case for
-  transcendence and privately unconvinced by her own pitch more often than she would ever say
-  out loud in a consult.
-- Two `DilemmaOutcome` entries:
-  - `winning_lens_id: "faith"`: `closes: ["transcendence"]`. `tier_unlocks`: e.g. `["Solano
-    grants the player standing invitation into Cradlepoint's closed pilgrimage sites,
-    previously open only to residents"]`.
+- Telegraph: three Tomas lines in his grounded-trader register, noting that the player has
+  been sending money to a chaplain who thinks meaning is already in the universe and to a
+  research institute that pays for taking meaning out of the equation entirely, and that
+  those two accounts do not settle against each other indefinitely. Register per D3's Tomas
+  telegraph — ledger metaphors, addresses player as "Captain", "smart money says", "the
+  margin on this one".
+- Two `DilemmaOutcome` entries with `outcome_flag` values `d7_faith_won` and
+  `d7_transcendence_won`, both with populated `tier_unlocks` (integrity guard fails empty
+  lists) and `narration_summary`:
+  - `winning_lens_id: "faith"`: `closes: ["transcendence"]`. `tier_unlocks`: e.g. `["Chaplain
+    Imre Solano grants the captain standing invitation into the Cradlepoint chapel's closed
+    dawn-shift rotation, previously open only to residents on the housing roster", "Solano's
+    dockside network of shift chaplains across Haven's Rest treats the captain as vouched
+    for, opening informal channels that only pass through personal introduction rather than
+    charter paperwork"]`.
   - `winning_lens_id: "transcendence"`: `closes: ["faith"]`. `tier_unlocks`: e.g. `["Dr.
-    Marchetti authorizes an experimental procedure tier previously withheld pending the
-    Institute's ethics review, on the strength of the player having already proven willing to
-    accept irreversible personal cost"]`.
-- Visible cost: Faith-winning closes Transcendence - Marchetti's scar content has her
-  proceeding with the procedure on another volunteer instead, referenced in passing. Faith
-  losing to Transcendence - Solano's post-collision state has him treating the player as
-  someone who chose to stop looking, gated on `dialogue_flags["lens_closed_faith"]`.
-- `tests/test_scenarios/test_scenario_dilemma_d7.py` mirroring the established shape.
+    Rasheeda Marchetti authorizes an experimental Farrow Institute procedure tier previously
+    held pending the Institute's ethics review, on the strength of the captain having
+    demonstrated they will accept irreversible personal cost", "the Farrow Institute's
+    applied-research staff open access to procedure-adjacent research materials the ethics
+    committee had kept back from private applicants"]`.
+- Visible cost: Faith-winning closes Transcendence — Marchetti's `marchetti_declined` tree
+  has her proceeding with the procedure authorization on another volunteer instead, referring
+  to the captain in passing as someone who chose to stay whole; scar chatter
+  `al_scar_d7_marchetti_01` at `axiom_labs` echoes it ambiently. Gated on
+  `lens_closed_transcendence`. Transcendence-winning closes Faith — Solano's
+  `solano_declined` tree has him treating the captain as someone who chose to stop looking
+  and continues his chapel work without them; scar chatter `al_scar_d7_solano_01` at
+  `havens_rest` echoes it. Gated on `lens_closed_faith`.
+- Chaplain Imre Solano NPC record at `data/characters/npcs.json`: `id: "imre_solano"`,
+  `home_system_id: "havens_rest"`, `dialogue_id: "solano_default"`, three `dialogue_states`
+  (default plus post-D7 victorious plus post-D7 declined). Title: e.g. `"Chaplain, Cradlepoint
+  Charter Chapel"`. Voice authored fresh in this sprint (not from `character_voices.md`):
+  grounded, non-mystical, works with his hands, thinks attention is a form of prayer, does
+  not recite doctrine. No em-dashes, no banned phrases.
+- Dr. Rasheeda Marchetti NPC record at `data/characters/npcs.json`: `id: "rasheeda_marchetti"`,
+  `home_system_id: "axiom_labs"`, `dialogue_id: "marchetti_default"`, three `dialogue_states`.
+  Title: e.g. `"Applied Research Lead, Farrow Institute"`. Voice authored fresh: precise
+  clinical vocabulary, professional obligation to pitch transcendence, private practical
+  register when she references her own procedure history (crushed hand + contract, not
+  conviction). No em-dashes, no banned phrases.
+- Two auto-journal entries in `data/journal/entries.json`: `auto_d7_faith_won` (trigger_flag
+  `d7_faith_won`, `system_id: "havens_rest"`) and `auto_d7_transcendence_won` (trigger_flag
+  `d7_transcendence_won`, `system_id: "axiom_labs"`). Player-voice, retrospective, past-tense,
+  same shape as `auto_d6_*` entries.
+- Two scar `ChatterLine` records in `data/crew/station_chatter.json`, `category: "scar"`,
+  `weight: 7`, `one_shot: false` per A2-11 scar convention (reaffirmed by A2-16 and A2-17).
+  Third-person ambient text (station gossip), not first-person player reflection.
+- Two `tomas_drifter` `flag_triggered` ambient reaction lines in
+  `data/crew/ambient_dialogue.json`, one per outcome flag, in Tomas's register (streetwise
+  ledger-metaphor).
+- `KNOWN_CONSUMER_ONLY_ORPHANS` extension in `tests/test_data/test_dialogue_integrity.py`
+  with the four D7 flags, following the DETECTOR MISS comment convention established by
+  A2-12/13/14/15/16/17.
+- `tests/test_scenarios/test_scenario_dilemma_d7.py` mirroring the established D6 shape
+  (~13 test classes covering all acceptance criteria below).
+
+**Locked decisions (from planning).**
+1. `telegraph_npc_id` is `"tomas_drifter"`. Rationale: verified canonical id at
+   `data/characters/npcs.json` line 74; matches the sprint's authoring intent (grounded
+   skeptic-trader voice, distinct from both poles). His D3 telegraph register is the
+   template.
+2. Chaplain Imre Solano's `home_system_id` is `"havens_rest"`, not a new system named
+   `"cradlepoint"`. Rationale: Cradlepoint is Thuy Kallio's dock/housing charter operation at
+   Haven's Rest (`data/characters/npcs.json` line 1117 confirms `title: "Dockmaster,
+   Cradlepoint Charter"` with `home_system_id: "havens_rest"`; the ambient/scar/journal
+   corpus consistently treats "Cradlepoint" as a venue-name at Haven's Rest, not a distinct
+   system). Solano works those same docks half the week and runs a small chapel on-station
+   the other half, so his `home_system_id` matches Kallio's.
+3. Dr. Rasheeda Marchetti's `home_system_id` is `"axiom_labs"`. Rationale: A2-16 (D5) locked
+   the Farrow Institute's home to `axiom_labs`; Marchetti as an Applied Research Lead at the
+   same Institute lives there, and her scar/journal placements line up on that station.
+4. Scar chatter station placements: `al_scar_d7_solano_01` at `havens_rest` (Solano's home);
+   `al_scar_d7_marchetti_01` at `axiom_labs` (Marchetti's home). Rationale: scars fire where
+   the NPC lives so the "still exists, still refusing you" convention reads naturally, same
+   as A2-17's decision 5.
+5. The Farrow Institute "irreversible procedure" is authored at JSON/dialogue level ONLY.
+   NOT a code refactor of `okafor_research.py`, NOT a new `FarrowProcedureState` model,
+   NOT a new view. Rationale: (a) A2-16 (D5) set the precedent that Farrow Institute framing
+   lives in dialogue and narration rather than a parallel research mechanic; (b) the sprint
+   is size M with a data-only touch surface (mirrors D5/D6); (c) a real mechanic (procedure
+   lifecycle, save/load fields, view integration) is a separate sprint's worth of scope. If
+   later desired, propose a follow-up (`A2-18F` or similar); do not bundle here. Marchetti's
+   dialogue positions her as authorized to grant procedure-tier access — the mechanical
+   delivery stays prose-only in `tier_unlocks`.
+6. Tomas Drifter is voiced from his authored D3 register (canonical crew NPC; no fresh
+   character voice sheet required). His telegraph lines match the D3 register
+   (`data/narrative/dilemmas/d3_power_revolution_empire.json`) — ledger metaphors, addresses
+   player as "Captain", opens with "Way I see it" or "Smart money says" or an equivalent
+   register anchor. Voice-smoke assertion requires at least one Tomas anchor
+   (`captain`, `ledger`, `margin`, `smart money`, `way i see it`, `deal`, `run`, `trade`).
+7. Add four D7 flags to `KNOWN_CONSUMER_ONLY_ORPHANS` in
+   `tests/test_data/test_dialogue_integrity.py`: `lens_closed_faith`,
+   `lens_closed_transcendence`, `d7_faith_won`, `d7_transcendence_won`. Rationale: same
+   DETECTOR MISS pattern established by A2-12 through A2-17 — `spacegame.models.dilemma.resolve`
+   writes these via variable-arg helpers (`flag_registry.lens_closed(lens_id)`) or
+   variable-mediated assignment (`player.dialogue_flags[outcome.outcome_flag] = True`) that
+   the source scanner cannot see. Consumers are real (scar chatter + NPC `dialogue_states` +
+   Tomas ambient + auto-journal), but the producer side reads as "orphan" to the scanner.
 
 **Acceptance criteria.**
-1. `DataLoader.dilemmas["d7_faith_transcendence"]` loads with both outcomes populated.
-2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
-3. Collision behavior matches the established pattern.
-4. Imre Solano's authored lines contain no doctrinal-recitation or vague-mysticism phrasing -
-   verified by a targeted substring/regex check (or, at minimum, a documented manual review
-   note in the commit) rejecting stock phrases like "the universe has a plan" or "everything
-   happens for a reason."
-5. No em-dashes, no "no X, no Y" constructions, no "a testament to"/"couldn't help but", no
-   banned NPC names (Imre Solano is not on the banned list).
-6. Full suite green; no regression from baseline.
+1. `DataLoader.dilemmas["d7_faith_transcendence"]` loads with both outcomes populated
+   (`winning_lens_id` `faith` and `transcendence`, both with non-empty `tier_unlocks`, both
+   with `outcome_flag`, both with `narration_summary`).
+2. `tests/test_compliance/test_dilemma_integrity.py` passes against the new record
+   (`_outcomes_with_empty_tier_unlocks` returns `[]`, `_dilemmas_with_bad_thresholds`
+   returns `[]`).
+3. Collision behavior matches the established pattern: single-pole investment at 90 does not
+   collide; both poles at 85 does collide (`check_collision` returns True).
+4. Chaplain Imre Solano NPC record loads exactly once (`dl.npcs["imre_solano"]`), with
+   `home_system_id == "havens_rest"`, `dialogue_id == "solano_default"`, and
+   `dialogue_states` covering both D7 outcomes. Pre-collision default returns
+   `"solano_default"` when no flag set.
+5. Dr. Rasheeda Marchetti NPC record loads exactly once (`dl.npcs["rasheeda_marchetti"]`),
+   with `home_system_id == "axiom_labs"`, `dialogue_id == "marchetti_default"`, and
+   `dialogue_states` covering both D7 outcomes. Pre-collision default returns
+   `"marchetti_default"` when no flag set.
+6. Faith-wins-D7 (`resolve(dilemma, "faith", player)`) sets
+   `dialogue_flags["d7_faith_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("transcendence")] == True`; routes Solano to
+   `"solano_victorious"` and Marchetti to `"marchetti_declined"`; records a non-empty
+   `player.dilemma_state.tier_unlocks_granted["faith"]`; makes `al_scar_d7_marchetti_01`
+   reachable at `axiom_labs` via `StationChatterManager.get_chatter`.
+7. Transcendence-wins-D7 (`resolve(dilemma, "transcendence", player)`) sets
+   `dialogue_flags["d7_transcendence_won"] == True` and
+   `dialogue_flags[flag_registry.lens_closed("faith")] == True`; routes Solano to
+   `"solano_declined"` and Marchetti to `"marchetti_victorious"`; records a non-empty
+   `player.dilemma_state.tier_unlocks_granted["transcendence"]`; makes
+   `al_scar_d7_solano_01` reachable at `havens_rest`.
+8. Closed-pole guard suppresses D7: a stub player with `dilemma_state.closed_lenses ==
+   {"faith"}` at 100/100 investment produces no telegraph and no collision from
+   `check_dilemmas`. Same for `{"transcendence"}`.
+9. Two auto-journal entries load through DataLoader with the expected `entry_id` and
+   `trigger_flag` values (`auto_d7_faith_won` / `d7_faith_won`, `auto_d7_transcendence_won`
+   / `d7_transcendence_won`).
+10. Two `tomas_drifter` `flag_triggered` ambient lines load with the correct
+    `required_flags` (`d7_faith_won` and `d7_transcendence_won` respectively).
+11. Voice smoke on telegraph lines: no em-dash (`—` / `–` / `―`), no banned phrases
+    ("a testament to", "couldn't help but"), no "no X, no Y" parallel-negation
+    constructions, and at least one Tomas voice anchor (`"captain"`, `"ledger"`,
+    `"margin"`, `"smart money"`, `"way i see it"`, `"deal"`, `"run"`, `"trade"`).
+12. Voice smoke on Solano's authored dialogue: no doctrinal-recitation or vague-mysticism
+    phrasing. Targeted substring check (case-insensitive) rejects: `"the universe has a
+    plan"`, `"everything happens for a reason"`, `"have faith"`, `"grand design"`, `"meant
+    to be"`, `"god's plan"`, `"divine will"`. Walks all Solano dialogue nodes
+    (`solano_default`, `solano_victorious`, `solano_declined`) plus the scar line
+    `al_scar_d7_solano_01`.
+13. Voice smoke on Marchetti's authored dialogue: at least one authored Marchetti line
+    across her three dialogue trees references her practical/professional-obligation
+    grounding — spot-check for at least one of `"procedure"`, `"institute"`, `"mobility"`,
+    `"contract"`, `"clinical"`, `"authorization"`, `"ethics"` present in the concatenated
+    Marchetti corpus, confirming she is not written as a pure-abstraction transcendence
+    pitch.
+14. No banned NPC names in any authored content (Imre Solano and Rasheeda Marchetti are not
+    on the banned list; the guide bans Yara/Elara/Kael/Mara/Lydia/Clive/Magnus/Ambrose).
+15. Both NPC ids appear exactly once in `dl.npcs` after `load_all()`
+    (`imre_solano` and `rasheeda_marchetti` are unique).
+16. `KNOWN_CONSUMER_ONLY_ORPHANS` in `tests/test_data/test_dialogue_integrity.py` contains
+    `lens_closed_faith`, `lens_closed_transcendence`, `d7_faith_won`, `d7_transcendence_won`;
+    the dialogue-integrity suite passes without new orphan errors introduced by this sprint.
+17. Full suite green; no regression from baseline (11438 passing, 100 skipped as of
+    pre-phase baseline).
+
+**Plan.**
+
+Task 1 — Add Chaplain Imre Solano and Dr. Rasheeda Marchetti NPC records in
+`data/characters/npcs.json`.
+- Files: `data/characters/npcs.json`.
+- Append two new NPC records. `imre_solano`: `home_system_id: "havens_rest"`,
+  `dialogue_id: "solano_default"`, `title: "Chaplain, Cradlepoint Charter Chapel"`,
+  `faction_id` matching Cradlepoint's (Kallio's record uses `"frontier_alliance"` — reuse),
+  three `dialogue_states` covering `post_d7_faith_won` → `solano_victorious` (gated on
+  `d7_faith_won`) and `post_d7_faith_closed` → `solano_declined` (gated on
+  `lens_closed_faith`). `rasheeda_marchetti`: `home_system_id: "axiom_labs"`,
+  `dialogue_id: "marchetti_default"`, `title: "Applied Research Lead, Farrow Institute"`,
+  same faction as Solheim's record from A2-16, three `dialogue_states` covering
+  `post_d7_transcendence_won` → `marchetti_victorious` (gated on `d7_transcendence_won`)
+  and `post_d7_transcendence_closed` → `marchetti_declined` (gated on
+  `lens_closed_transcendence`).
+- Test surface: AC4 (`TestD7SolanoNPCLoads`), AC5 (`TestD7MarchettiNPCLoads`), AC15
+  (`TestD7NPCCollisionGuard`).
+- Gotcha: the more-specific outcome flag (`d7_faith_won` / `d7_transcendence_won`) matches
+  ahead of the lens_closed flag in `dialogue_states` order; because the winning-side state
+  and the losing-side state gate on different flags entirely, no priority-ordering
+  hazard exists here (unlike A2-17's Halvorsen extension where two D-eras shared
+  `lens_closed_empire`). Just make sure each state's `required_flags` names the flag
+  exactly.
+
+Task 2 — Author dialogue trees in `data/dialogue/dialogues.json`.
+- Files: `data/dialogue/dialogues.json`.
+- Six new dialogues: `solano_default` (chaplain-dockworker meeting a passing captain, no
+  doctrinal register), `solano_victorious` (dawn-shift rotation opened, chapel network
+  vouched), `solano_declined` (captain who chose to stop looking, chapel work continues
+  without them), `marchetti_default` (Applied Research Lead consulting on the ethics
+  authorization the captain is close to qualifying for), `marchetti_victorious`
+  (procedure tier authorized, ethics-committee materials opened), `marchetti_declined`
+  (another volunteer stepped forward, captain referenced as someone who chose to stay
+  whole). Speaker ids: `imre_solano`, `rasheeda_marchetti`.
+- Test surface: exercised implicitly by state-routing tests in AC6 and AC7; voice-smoke in
+  AC12 and AC13.
+- Gotcha: Solano's voice must avoid `the universe has a plan`, `everything happens for a
+  reason`, `have faith`, `grand design`, `meant to be`, `god's plan`, `divine will` — the
+  voice-smoke test will fail if any appear. He should sound like someone who works with his
+  hands and thinks the universe rewards attention, not a priest reciting doctrine. Marchetti
+  should reference `procedure`, `institute`, or `mobility`/`contract` at least once across
+  her three trees so the practical-grounding voice-smoke check passes. Both NPCs: no
+  em-dashes, no `no X, no Y` constructions, no `a testament to`/`couldn't help but`.
+
+Task 3 — Create `data/narrative/dilemmas/d7_faith_transcendence.json`.
+- Files: `data/narrative/dilemmas/d7_faith_transcendence.json` (NEW).
+- Full `Dilemma` record per Deliverables. `telegraph_npc_id: "tomas_drifter"`; three Tomas
+  telegraph lines in his grounded ledger-metaphor register; two `outcomes` with non-empty
+  `tier_unlocks` and `narration_summary`, `outcome_flag` values `d7_faith_won` and
+  `d7_transcendence_won`, `closes` arrays pointing at the other pole.
+- Test surface: `TestD7Loads`, `TestD7IntegrityGuardPasses`, `TestD7CollisionMath`,
+  `TestD7ClosedPoleGuard` (AC1, AC2, AC3, AC8); voice-smoke in AC11.
+- Gotcha: `outcome_flag` values MUST be exactly `d7_faith_won` / `d7_transcendence_won`
+  (the tests reference those literal strings). `closes` MUST reference the opposite pole
+  (integrity guard enforces). Match Tomas's D3 register anchors — at least one of
+  `captain`, `ledger`, `margin`, `smart money`, `way i see it`, `deal`, `run`, `trade`.
+
+Task 4 — Add auto-journal entries in `data/journal/entries.json`.
+- Files: `data/journal/entries.json`.
+- Two entries: `auto_d7_faith_won` (`system_id: "havens_rest"`, `trigger_flag:
+  "d7_faith_won"`) and `auto_d7_transcendence_won` (`system_id: "axiom_labs"`,
+  `trigger_flag: "d7_transcendence_won"`), each with `mission_id: ""`. Player-voice,
+  past-tense retrospective, mirrors `auto_d6_*` shape.
+- Test surface: `TestD7JournalEntriesRegistered` (AC9).
+- Gotcha: player-voice first-person retrospective. Faith-won journal names Solano and
+  Cradlepoint's chapel; transcendence-won names Marchetti and the Farrow Institute. Do not
+  reuse text from A2-16's `auto_d5_legacy_won` (also at `axiom_labs`) — they are different
+  dilemma resolutions with different content, and the D5 entry names Solheim + wing
+  dedication, not Marchetti + procedure.
+
+Task 5 — Add scar chatter in `data/crew/station_chatter.json`.
+- Files: `data/crew/station_chatter.json`.
+- `al_scar_d7_solano_01` at `havens_rest`, gated on `lens_closed_faith`, `category: "scar"`,
+  `weight: 7`, `one_shot: false`.
+- `al_scar_d7_marchetti_01` at `axiom_labs`, gated on `lens_closed_transcendence`,
+  `category: "scar"`, `weight: 7`, `one_shot: false`.
+- Test surface: AC6 (Faith-wins reaches Marchetti's scar, does not reach Solano's) and AC7
+  (Transcendence-wins reaches Solano's scar, does not reach Marchetti's).
+- Gotcha: third-person ambient text (station gossip), not first-person player reflection —
+  the reflection belongs in the journal entries from Task 4. Solano's scar text at
+  `havens_rest` must not accidentally overlap with A2-14's `al_scar_d1_odusanya_01` (also
+  at `havens_rest` per the allowlist comment); different flag, different content, no
+  authoring conflict.
+
+Task 6 — Add Tomas ambient reactions in `data/crew/ambient_dialogue.json`.
+- Files: `data/crew/ambient_dialogue.json`.
+- Two entries with `crew_id: "tomas_drifter"`, `context: "flag_triggered"`, and
+  `required_flags: ["d7_faith_won"]` / `["d7_transcendence_won"]` respectively. Voice in
+  Tomas's grounded ledger-metaphor register (short one-liners, addressed as a
+  crew-cabin aside to the captain).
+- Test surface: `TestD7TomasReactionsRegistered` (AC10).
+- Gotcha: `crew_id` must be exactly `tomas_drifter` (not `tomas` or `drifter`).
+
+Task 7 — Extend `KNOWN_CONSUMER_ONLY_ORPHANS` in
+`tests/test_data/test_dialogue_integrity.py`.
+- Files: `tests/test_data/test_dialogue_integrity.py`.
+- Append after A2-17's D6 block (around line 892), following the DETECTOR MISS comment
+  convention: add a `# === A2-18 (D7: Faith vs Transcendence) — DETECTOR MISS ===` block
+  documenting the four flags, their producer (variable-arg
+  `flag_registry.lens_closed(lens_id)` / `player.dialogue_flags[outcome.outcome_flag] =
+  True` in `spacegame.models.dilemma.resolve`), and their real consumers (scar chatter,
+  NPC dialogue_states, Tomas ambient, auto-journal). Then add the four literal strings to
+  the set: `"lens_closed_faith"`, `"lens_closed_transcendence"`, `"d7_faith_won"`,
+  `"d7_transcendence_won"`.
+- Test surface: the dialogue-integrity suite must still pass after data lands (no new
+  orphan errors surface). AC16 verifies presence of the four flags in the set.
+- Gotcha: only the four D7 flags belong here. Do NOT clean up or reorganize the A2-13/14/
+  15/16/17 blocks; leave them alone. The set is a growing append log by convention.
+
+Task 8 — Create `tests/test_scenarios/test_scenario_dilemma_d7.py`.
+- Files: `tests/test_scenarios/test_scenario_dilemma_d7.py` (NEW).
+- Class layout mirrors `test_scenario_dilemma_d6.py`: `TestD7Loads`,
+  `TestD7IntegrityGuardPasses`, `TestD7CollisionMath`, `TestD7ClosedPoleGuard`,
+  `TestD7FaithWinsClosesTranscendence`, `TestD7TranscendenceWinsClosesFaith`,
+  `TestD7TomasReactionsRegistered`, `TestD7JournalEntriesRegistered`,
+  `TestD7NPCCollisionGuard` (both `imre_solano` and `rasheeda_marchetti` unique),
+  `TestD7SolanoNPCLoads`, `TestD7MarchettiNPCLoads`, `TestD7VoiceSmoke` (extends the D6
+  pattern with two extra methods: Solano-no-doctrine and Marchetti-practical-grounding
+  spot checks), `TestD7ConsumerAllowlist` (asserts the four D7 flags are in
+  `KNOWN_CONSUMER_ONLY_ORPHANS`).
+- Test surface: all ACs 1-17.
+- Gotcha: use `fresh_player` from `tests/test_scenarios/_helpers.py`; import
+  `flag_registry.lens_closed` from `spacegame.constants.flags`; import guard helpers from
+  `tests.test_compliance.test_dilemma_integrity` (matches D6's pattern).
+  `TestD7VoiceSmoke` should walk all Solano dialogue nodes (default + victorious +
+  declined) plus the Solano scar line for the no-doctrine check; the Marchetti practical
+  spot-check walks her three trees for at least one grounding anchor.
+
+Task 9 — Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and the mypy-baseline
+gate.
+- Files: none (verification only).
+- Test surface: full suite, plus targeted `pytest
+  tests/test_scenarios/test_scenario_dilemma_d7.py -v` and
+  `pytest tests/test_data/test_dialogue_integrity.py -v`.
+- Gotcha: mypy-baseline must not be regenerated — this sprint's diff is data + tests, no
+  new type surface. If mypy reports new errors from the new test file, fix the test's
+  annotations; do not touch `mypy-baseline.txt`. Watch the `TestDialogueFlagAudit` timing
+  under xdist — A2-17 folded in ~700 lines of station_chatter + ambient_dialogue and had to
+  bump the audit tests to `@pytest.mark.timeout(300)`; this sprint adds a similar
+  authoring volume (six new dialogue trees + two scar lines + two ambient lines + two
+  journal entries), so if the audit tests fail on timeout again, that is the same
+  regression pattern and can be resolved the same way.
+
+**Cross-sprint reactions to author.**
+- (candidate, NOT folded in) `data/crew/ambient_dialogue.json` — Priya-specific ambient line
+  at `axiom_labs` on `d7_transcendence_won` — fires when Priya is on crew AND player
+  resolved D7 toward transcendence. Reason: Priya's precision-register ethics scepticism
+  would land naturally against a Farrow Institute procedure-tier authorization she was not
+  consulted on. Deferred to a follow-up crew-banter sprint (would require reading Priya's
+  voice sheet, staying inside her register, and growing the sprint's authoring surface).
+- (candidate, NOT folded in) Elena-specific ambient at `havens_rest` on `lens_closed_faith`
+  — Elena's "with respect" register would notice a chaplain who used to greet the captain
+  now looking past them. Same deferral: follow-up crew-banter sprint.
+- (candidate, NOT folded in) Ambient news/rumour echo at `axiom_labs` on
+  `d7_transcendence_won` — Farrow Institute "ethics-tier authorizations expanded" as
+  background station gossip. Deferred to a follow-up ambient/news sprint; the scar-chatter
+  line at `axiom_labs` already covers the primary "see the closure" beat.
+- (candidate, NOT folded in) A Solano dialogue reference to Marcus's memorial backstory
+  (Sora Takahashi / Deep Shafts) if Marcus is on the crew when the captain first speaks to
+  Solano — a chaplain who works dockside memorials would naturally recognize the pattern.
+  Deferred: requires reading Marcus's voice sheet and adding a conditional dialogue branch,
+  which is scope creep for a Size M sprint.
+
+**Notes.**
+- No new sprints are proposed. The four follow-up candidates (two crew banter, one news
+  echo, one Marcus reference) are noted in Cross-sprint reactions to author and can be
+  bundled into a future content-authoring sweep alongside similar candidates deferred from
+  D1-D6.
+- The A2-17 "single_tighten" review note (TestD6VoiceSmoke only checks telegraph lines, not
+  authored NPC/scar content) is proactively addressed here: `TestD7VoiceSmoke` explicitly
+  walks Solano's dialogue nodes and scar line for the no-doctrine check, and walks
+  Marchetti's dialogue nodes for the practical-grounding spot check. AC12 and AC13 make
+  those checks part of the acceptance bar rather than leaving them to the global scanner.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 12:47 — harness: plan phase starting
+- 2026-09-01 12:55 — planning complete; verified all context docs exist
+  (`docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` row D7 present;
+  `spacegame/models/okafor_research.py` present; `data/characters/npcs.json` has
+  canonical `tomas_drifter` at line 74; `havens_rest` and `axiom_labs` systems present).
+  Verified sprint work not already implemented (no `d7_faith_transcendence.json`, no
+  `imre_solano` or `rasheeda_marchetti` NPC records). Locked 7 decisions (including the
+  "Cradlepoint is a venue at `havens_rest`, not a system" correction to the original
+  Goal wording, and the "Farrow procedure stays JSON-only per A2-16 precedent" scope
+  fence). Folded in 6 polish items (auto-journal entries, scar chatter, Tomas ambient
+  reactions, Solano no-doctrine voice smoke, Marchetti practical-grounding voice smoke,
+  `KNOWN_CONSUMER_ONLY_ORPHANS` extension). Expanded touch zones from 3 → 8 to reflect the
+  real edit surface. Expanded acceptance criteria from 6 → 17 to match the D6 template
+  plus the two extra NPC voice-smoke checks. Laid out 9 concrete tasks. Flagged 4
+  cross-sprint reaction candidates as deferred followups. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 12:47
+- Completed: 2026-09-01 12:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: auto-journal entries, scar chatter, Tomas ambient reactions,
+  Solano no-doctrine voice smoke, Marchetti practical-grounding voice smoke, consumer-only
+  allowlist extension
+- Decisions_locked: 7
+- Notes: Verified all context docs exist and D7 work not yet implemented. Corrected
+  original Goal wording that treated Cradlepoint as a system — it is Kallio's charter venue
+  at havens_rest. Fenced Farrow "irreversible procedure" scope to JSON/dialogue-only per
+  A2-16 precedent; a real procedure mechanic would be a separate sprint. Acceptance bar
+  raised from 6 → 17 criteria to match the D6 template and to proactively address A2-17's
+  review-phase "voice smoke could extend beyond telegraph" note.
 ---
 
 #### A2-19 — D8: Crime ↔ Community
