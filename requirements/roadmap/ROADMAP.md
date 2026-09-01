@@ -16531,7 +16531,7 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 - Started: 2026-09-01 11:11
 - Completed: 2026-09-01 12:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending commit>
+- Commits: d0a1004
 - New_sprints_proposed: none
 - Polish_items_folded_in: auto-journal-entries; scar-chatter; priya-ambient-reactions; voice-smoke-test; npc-uniqueness-and-halvorsen-extension-safety
 - Decisions_locked: 5
