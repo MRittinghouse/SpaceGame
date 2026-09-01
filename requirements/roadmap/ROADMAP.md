@@ -142,7 +142,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
-| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
+| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17525,32 +17525,35 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-08-27 - todo (created)
 - 2026-09-01 14:34 — harness: plan phase starting
 - 2026-09-01 15:15 — planning complete; expanded ACs from 6 to 17, locked 9 decisions,
-- 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
+- 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 15:39 — harness: plan phase starting
+- 2026-09-01 15:47 — plan re-entered on an already-implemented sprint. Work shipped
+  in commit 115f1ae (D8 data + 47-test scenario file) and commit 5640682 (trailing-comma
+  fix). Verified: `pytest tests/test_scenarios/test_scenario_dilemma_d8.py -q` → 47
+  passed; `pytest tests/test_scenarios/test_scenario_dilemma_d2.py -q` → 20 passed
+  (Kallio extension did not regress D2). Suite baseline 11529 already reflects D8. Not
+  re-planning; letting the dispatcher route to implement/review per the guide. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 14:34
-- Completed: 2026-09-01 15:15
+- Started: 2026-09-01 15:39
+- Completed: 2026-09-01 15:47
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3a13d62
+- Commits: (pending — activity log update only)
 - New_sprints_proposed: none
-- Polish_items_folded_in: elena-reactive-ambient (matches A2-13 Marcus + A2-18 Tomas
-  precedent for telegraph-NPC reactive lines); explicit-kallio-extension-preservation-test
-  (AC6 makes the A2-13 preservation an invariant); explicit D2/D8 flag-key convergence
-  scenario test with both firing orders (AC4)
-- Decisions_locked: 9
-- Notes: Verified all context docs exist. Verified 2026-09-01: Kallio's NPC record and
-  the `kallio_declined` + `kallio_open_channels` dialogue trees ship from A2-13; the
-  crime lens ships from A2-1/A2-5; Elena Reeves exists as a canonical NPC with an authored
-  voice sheet; no `kettlebridge` system exists so Wulan Doyle placed at `stellaris_port`
-  per the A2-13 precedent; the A2-17 Halvorsen precedent is followed exactly for the
-  Kallio extension (append one disjoint-gated state, preserve existing states). Plan
-  mirrors the A2-18 D7 shape (9 tasks, three-tree NPC, one new NPC + one existing NPC
-  extension, three new allowlist flags). Sprint is Size M and stays inside it - authoring
-  surface is one dilemma record + three Wulan trees + one Kallio state append + one scar
-  + two journals + two Elena ambients + one allowlist block + one scenario test.
+- Polish_items_folded_in: none (sprint already implemented; no new planning done)
+- Decisions_locked: 0 (all 9 already locked in the 15:15 plan cycle)
+- Notes: Sprint was already implemented before this planning invocation. The 15:15
+  planning cycle completed; the implementer commit 115f1ae landed at 14:56 with the
+  full data set and 47-test scenario file; commit 5640682 (15:25) fixed a data-load
+  bug from six trailing JSON commas. The stuck-sprint recovery at 15:00 reset the
+  status to todo because the review phase never wrote its sentinel (fourth
+  unreviewed-on-master occurrence per commit 5640682's own note). Verified the
+  implementation is green: D8 47/47 and D2 20/20. Writing PHASE_OK per the guide so
+  the dispatcher moves the sprint to implement (where the implementer will verify
+  rather than duplicate) and then to review, which is what still needs to happen.
 ---
 
 #### A2-20 — Capstones fire without ending the session
