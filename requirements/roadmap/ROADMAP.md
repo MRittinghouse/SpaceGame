@@ -137,7 +137,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
-| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
@@ -15065,7 +15065,7 @@ Flagged as follow-up (do NOT author in A2-13):
 
 #### A2-14 — D1: Vengeance ↔ Justice
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15317,7 +15317,7 @@ folded into this sprint's scope):
 - 2026-08-27 - todo (created)
 - 2026-09-01 04:04 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 7 to 9 to cover scar-chatter reachability, ambient-reaction registration, journal entries, and the mirror-case guard proof. Locked 6 decisions. Flagged 5 cross-sprint reactions for follow-up. PHASE_OK
-
+- 2026-09-01 04:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
