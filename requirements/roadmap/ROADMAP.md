@@ -137,7 +137,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
-| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
@@ -15065,7 +15065,7 @@ Flagged as follow-up (do NOT author in A2-13):
 
 #### A2-14 — D1: Vengeance ↔ Justice
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15322,24 +15322,24 @@ folded into this sprint's scope):
 - 2026-09-01 — re-verified: sprint is already fully implemented by commits 5a7aeec (closed-pole guard) and afaecca (D1 content, NPC, dialogues, tests). All Plan touch zones present on disk; `pytest tests/test_scenarios/test_scenario_dilemma_d1.py tests/test_models/test_dilemma.py -q` runs 89 tests, 0 failures. Emitting PHASE_OK so the dispatcher advances the sprint to implement (which will verify rather than duplicate). PHASE_OK
 - 2026-09-01 04:56 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 — implementation already present on disk (commits 5a7aeec + afaecca). Ran targeted tests: 89 passed. Ran lint/format on touched files: clean. Full suite under -n auto: 11336 passed, 1 failed (test_no_new_consumer_only_flags); that test passes in isolation (90.75s solo run) — known xdist stray-contention flake per project memory, not a regression. Baseline was 11337. PHASE_OK
-
+- 2026-09-01 05:08 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 — review complete; all 9 ACs verified, code clean, voice quality high, no findings. PHASE_OK
+- 2026-09-01 05:31 — harness: review passed, marking done
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 04:56
-- Completed: 2026-09-01
-- Files_changed: none (work already committed as 5a7aeec, afaecca)
-- Commits: 5a7aeec, afaecca
-- Tests_added: 59 (30 in test_dilemma.py + 23 in test_scenario_dilemma_d1.py + 6 in test_dialogue_integrity.py)
-- Tests_baseline: 11337
-- Tests_passing: 11336 (xdist); test_no_new_consumer_only_flags passes in isolation (90.75s)
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes (test passes in isolation; xdist failure is known flake per memory)
-- Writing_bible_clean: n/a (no separate scanner run; content authored in prior session per afaecca commit)
-- Touch_zones_respected: yes
-- Notes: Sprint fully implemented by prior session. Closed-pole eligibility guard added to check_dilemmas; D1 dilemma JSON, Magistrate Odusanya NPC + dialogues, scar chatter, Elena ambient reactions, and auto-journal entries all on disk. All 9 ACs satisfied by test_scenario_dilemma_d1.py (23 tests) and test_dilemma.py extensions.
+- Started: 2026-09-01 05:08
+- Completed: 2026-09-01 05:25
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11336 (xdist; test_no_new_consumer_only_flags passes in isolation at 92s — known pre-existing flake per project memory)
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: 3/3 (journal entries, odusanya_warrant_sponsor state, Elena ambient reactions — all folded-in items shipped)
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: narration_summary for vengeance outcome — "The process that might have sanctioned this was the cost, and you paid it" — "sanctioned this" reads slightly ambiguous (approved the methods vs endorsed the action); would replace with "The process that might have authorized it was the cost" on a second pass. Not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit sound — all 6 locked decisions defensible; guard ordering correct (closed-pole check at dilemma.py:367 runs before resolved-skip at :369). Odusanya voice well-grounded: allegation/charge/finding distinction voiced, pardon oblique reference placed correctly, no em-dashes, no "no X, no Y", no banned names. Elena telegraphs in character: "With respect", navigation metaphors, measured-officer register. 89 targeted tests green; dilemma_integrity compliance suite green (20 tests); writing_bible_compliance suite green (179 tests); data integrity suite green (383 tests).
 ---
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
