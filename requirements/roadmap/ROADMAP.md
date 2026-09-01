@@ -18127,7 +18127,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - Started: 2026-09-01 16:56
 - Completed: 2026-09-01 17:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <to-be-filled>
+- Commits: 09d4cb8
 - New_sprints_proposed: none
 - Polish_items_folded_in: data-integrity compliance test (1:1 lens-capstone mapping,
   uniform threshold, null cutscene_ref), voice-smoke on placeholder narration template,
