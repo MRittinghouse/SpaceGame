@@ -195,9 +195,30 @@ def _set_context(sprint: Optional[str], phase: Optional[str]) -> None:
 
 
 def log(msg: str) -> None:
-    """Emit a timestamped line to stdout."""
+    """Emit a timestamped line to stdout, whatever the stream can encode.
+
+    The supervisor redirects the harness's stdout into `ralph/logs/harness.log`,
+    and a redirected stdout on Windows gets the locale codec (cp1252), not
+    UTF-8. Anything outside that codec raises `UnicodeEncodeError` from `print`.
+
+    That is not hypothetical and it is not cosmetic. On 2026-08-31 the harness
+    finished A2-11, picked up A2-12 -- "D4: Truth <-> Vengeance", spelled with
+    U+2194 -- and died on the line announcing it, mid-run. The roadmap is UTF-8
+    and three sprint titles carry that character, so the whole remaining arc was
+    unreachable.
+
+    Content should not have to be ASCII to be announceable, so the logger
+    absorbs it: unencodable characters are replaced rather than allowed to kill
+    the run. A mangled character in a log line is a trivial loss; a dead harness
+    is not.
+    """
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{ts}] {msg}", flush=True)
+    line = f"[{ts}] {msg}"
+    try:
+        print(line, flush=True)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(line.encode(encoding, errors="replace").decode(encoding), flush=True)
 
 
 # ---------------------------------------------------------------------------

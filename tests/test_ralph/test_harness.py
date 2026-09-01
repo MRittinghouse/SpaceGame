@@ -3746,3 +3746,49 @@ class TestBaselineRechecksFailuresSerially:
             ):
                 with pytest.raises(harness.BaselineCaptureError):
                     harness._capture_test_baseline()
+
+
+class TestLoggingSurvivesNonCp1252Characters:
+    """A sprint title must never be able to crash the harness.
+
+    Measured 2026-08-31, and it stopped the run dead: the harness finished
+    A2-11, picked up A2-12 -- "D4: Truth ↔ Vengeance" -- and died on the
+    line announcing it::
+
+        UnicodeEncodeError: 'charmap' codec can't encode character '\u2194'
+        in position 57: character maps to <undefined>
+
+    `log()` prints to stdout, and the supervisor redirects the harness's stdout
+    into `ralph/logs/harness.log`. A redirected stdout on Windows gets the
+    locale codec (cp1252), not UTF-8, so any character outside it raises. The
+    roadmap is UTF-8 and uses ↔ in three sprint titles (A2-12, A2-13,
+    A2-14) plus em dashes throughout, so this blocked the whole remaining arc,
+    not one sprint.
+
+    The fix is in the logger rather than the titles: content should not have to
+    be ASCII to be announceable, and the next non-Latin-1 character someone
+    writes must not take the run down.
+    """
+
+    def test_log_does_not_raise_on_a_cp1252_hostile_character(self) -> None:
+        import io
+
+        # A cp1252-backed stream, exactly what a redirected stdout gives us.
+        raw = io.BytesIO()
+        stream = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        with patch.object(harness.sys, "stdout", stream):
+            harness.log("D4: Truth ↔ Vengeance")  # must not raise
+        stream.flush()
+        written = raw.getvalue().decode("cp1252")
+        assert "D4: Truth" in written, written
+        assert "Vengeance" in written, written
+
+    def test_log_still_emits_plain_ascii_unchanged(self) -> None:
+        import io
+
+        raw = io.BytesIO()
+        stream = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        with patch.object(harness.sys, "stdout", stream):
+            harness.log("Picking up sprint A2-1: Lens data model")
+        stream.flush()
+        assert "Picking up sprint A2-1: Lens data model" in raw.getvalue().decode("cp1252")

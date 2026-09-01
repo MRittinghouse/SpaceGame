@@ -110,7 +110,17 @@ def _log(message: str) -> None:
     one context where stdout is actually read.
     """
     line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}"
-    print(line, flush=True)
+    # The file half below is explicitly UTF-8 and safe. `print` is not: stdout
+    # under a Scheduled Task gets the locale codec (cp1252 here), so a character
+    # outside it raises UnicodeEncodeError and kills the supervisor. That is
+    # exactly how the harness died on 2026-08-31, announcing a sprint titled
+    # "D4: Truth <-> Vengeance" (U+2194). See `harness.log` for the full
+    # reasoning; the supervisor gets the same treatment so it cannot repeat it.
+    try:
+        print(line, flush=True)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(line.encode(encoding, errors="replace").decode(encoding), flush=True)
     try:
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
         _rotate_if_large(SUPERVISOR_LOG_PATH)
