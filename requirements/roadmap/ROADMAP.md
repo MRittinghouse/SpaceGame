@@ -18819,7 +18819,7 @@ focused on the generator + wiring, not content sprawl.
 - Started: 2026-09-01 19:35
 - Completed: 2026-09-01 20:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending)
+- Commits: 99f5419
 - New_sprints_proposed: none (A2-22 flagged as a candidate follow-up in the plan section
   but not added — reviewer may elect to create if the reactive layer is judged in scope)
 - Polish_items_folded_in: save/load round-trip (AC7), engine-compliance guard for A2-4 AC4
