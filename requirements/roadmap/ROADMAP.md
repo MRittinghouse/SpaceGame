@@ -14263,24 +14263,31 @@ convention documented on `ChatterLine` is the API those sprints consume.
   Full suite: 11266 passing (+7 vs 11259 baseline), 101 skipped, 0 new failures.
   SI-3 scanner clean after adding lens_closed_test_lens to KNOWN_CONSUMER_ONLY_ORPHANS.
   Writing Bible clean. All 6 ACs satisfied. PHASE_OK
+- 2026-08-31 20:24 — harness: review phase starting (rework cycle 0)
+- 2026-08-31 20:38 — review complete. 1 minor finding fixed directly (commit eae7ce2):
+  lens_closed_test_lens was placed in KNOWN_PRODUCER_ONLY_ORPHANS by the implementer
+  (despite the commit message saying KNOWN_CONSUMER_ONLY_ORPHANS); the scanner detects
+  chatter required_flags as consumers, so the misplacement caused 2 real test failures
+  in test_dialogue_integrity.py (test_no_new_consumer_only_flags and
+  test_known_orphan_lists_stay_meaningful). Moved to KNOWN_CONSUMER_ONLY_ORPHANS.
+  All 6 ACs verified. Plan audit: sound; locked decisions on all 4 open questions
+  defensible. Suite passes at ≥ 11267 (11259 baseline + 8 new tests). PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-08-31 19:55
-- Completed: 2026-08-31 20:15
-- Files_changed: spacegame/models/station_chatter.py, data/crew/station_chatter.json, tests/test_models/test_station_chatter.py, tests/test_scenarios/test_scenario_dilemma_scars.py, tests/test_data/test_dialogue_integrity.py
-- Commits: 890cab2, c3c94ad, ca19615, 244ba16
-- Tests_added: 8
-- Tests_baseline: 11259
-- Tests_passing: 11266
-- Tests_skipped: 101
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes (tests/test_data/test_dialogue_integrity.py is a small out-of-zone change — 7 lines to add lens_closed_test_lens to KNOWN_CONSUMER_ONLY_ORPHANS; noted in commit message)
-- Notes: Scar mechanism proved via tests with no code-path change to get_chatter. Demo line gated on test-only lens_closed_test_lens flag (invisible in real play). AC1+AC2 unit tests, AC3 scenario test (no DilemmaResolutionView/check_collision imports), AC4 compliance invariant, AC5 prose scanner clean, AC6 suite green.
+- Started: 2026-08-31 20:24
+- Completed: 2026-08-31 20:38
+- Files_changed: tests/test_data/test_dialogue_integrity.py
+- Commits: eae7ce2
+- Tests_passing: 11267
+- Acceptance_criteria_verified: 6/6
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: commit 244ba16 claimed SI-3 scanner clean but placed the flag in the wrong orphan set — implementer's "full suite" run may have been a partial or -n auto masked the 2 failures via exit-code 0. Test runner reporting reliability is the underlying gap.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all locked decisions defensible. Demo line voice clean; scenario test decoupled from engine as required. Fixed orphan classification directly — lens_closed_test_lens is consumer-only (read by chatter required_flags, never produced), not producer-only.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
