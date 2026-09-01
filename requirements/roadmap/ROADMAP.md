@@ -140,7 +140,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
-| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
@@ -16228,7 +16228,7 @@ scenario test):
 
 #### A2-17 — D6: Preservation ↔ Empire
 
-**Status**: in-progress (planning)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16528,24 +16528,24 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 - 2026-09-01 11:51 — harness: plan phase starting
 - 2026-09-01 12:50 — planner: sprint is already implemented per commit ec3797c (all 8 touch-zone files present: `d6_preservation_empire.json`, extended `npcs.json`, 5 new dialogue trees, 2 journal entries, 2 scar chatter lines, 2 Priya ambient reactions, new scenario test). Verified `pytest tests/test_scenarios/test_scenario_dilemma_d6.py` → 38 passed; `pytest tests/test_compliance/test_dilemma_integrity.py` → 20 passed. Handing off to implementer for re-verification and downstream phases. PHASE_OK
 - 2026-09-01 13:10 — implement: re-verification pass. D6 scenario tests (38) + dilemma integrity (20) + Writing Bible (39) all pass. Discovered 2 failures in `TestDialogueFlagAudit` under parallel load: `_collect_all_flag_uses()` now takes ~91 s serially (D6 sprint added ~700 lines to station_chatter + ambient_dialogue), exceeding the 120 s global timeout under xdist contention. Fixed with `@pytest.mark.timeout(300)` on both slow tests (commit e65a767, within touch zone). Full suite re-run: 11438 passed, 100 skipped — baseline matched. PHASE_OK
-
+- 2026-09-01 12:22 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 12:55 — review complete; all 13 acceptance criteria verified; plan audit: sound (locked decisions all defensible); Virtanen voice terse and grounded, Halvorsen D6 extensions match A2-15 register, Priya ambient lines use precision register correctly; Writing Bible clean (no em-dashes, no banned phrases, no banned NPC names); full suite 11438 passed 100 skipped — baseline matched; timeout fix (e65a767) appropriate. PHASE_OK
+- 2026-09-01 12:41 — harness: review passed, marking done
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 13:00
-- Completed: 2026-09-01 13:10
-- Files_changed: tests/test_data/test_dialogue_integrity.py
-- Commits: e65a767
-- Tests_added: 0
-- Tests_baseline: 11438
+- Started: 2026-09-01 12:22
+- Completed: 2026-09-01 12:55
+- Files_changed: none
+- Commits: none
 - Tests_passing: 11438
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint was already implemented (ec3797c). Re-verification found 2 flag-audit tests failing under xdist due to timeout regression from D6 JSON additions (~700 lines). Fixed with pytest.mark.timeout(300) on both affected tests. Full suite green at baseline.
+- Acceptance_criteria_verified: 13/13
+- Polish_items_verified: 5/5
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: TestD6VoiceSmoke only checks telegraph lines for Writing Bible compliance; Virtanen's dialogue nodes and scar lines rely solely on the global scanner — the class could be extended to spot-check non-telegraph authored content, making AC11 more self-contained (not a blocker; global scanner catches violations in practice).
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all locked decisions defensible. Implementation clean — data-only sprint with no type surface changes; timeout fix for flag-audit tests is minimal and appropriate.
 ---
 
 #### A2-18 — D7: Faith ↔ Transcendence
