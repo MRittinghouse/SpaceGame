@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: in-progress (planning)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15729,18 +15729,26 @@ without them):
 - 2026-09-01 07:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-09-01 07:50 — harness: plan phase starting
 - 2026-09-01 07:55 — sprint was already implemented AND reviewed on 2026-09-01 (implement commit 93c6db6; review PHASE_OK earlier today) before harness recovery reset it. Artifacts on disk: `data/narrative/dilemmas/d3_power_revolution_empire.json`, `tests/test_scenarios/test_scenario_dilemma_d3.py`, three NPCs in `data/characters/npcs.json`, nine dialogue trees, three scar `ChatterLine`s, three Tomas ambient lines, three auto-journal entries — all present. Verified `pytest tests/test_scenarios/test_scenario_dilemma_d3.py` → 31 passed in 0.78s. Original plan is unchanged (no re-plan needed). PHASE_OK to route the sprint back to implement (which will re-verify) and then review, per the "already implemented" branch of the planner guidance. PHASE_OK
+- 2026-09-01 07:53 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 08:05 — implement re-verification: sprint already delivered in commit 93c6db6. Targeted surfaces green: `pytest tests/test_scenarios/test_scenario_dilemma_d3.py tests/test_compliance/test_dilemma_integrity.py tests/test_data/test_dialogue_integrity.py tests/test_writing_bible_compliance.py -n auto` → 109 passed in 202s. Ruff check + ruff format --check on the two touched Python test files (`tests/test_scenarios/test_scenario_dilemma_d3.py`, `tests/test_data/test_dialogue_integrity.py`) both clean. `git status` shows only ROADMAP.md modified — no stray edits from prior implement cycles. All 11 ACs satisfied by files on disk from 93c6db6 (verified in the 07:03 implement PHASE_OK and confirmed again here). Skipping full-suite re-run per the "already implemented, verify proportionately and stop" branch of the implement-agent guidance. PHASE_OK
+- 2026-09-01 08:00 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 08:30 — review complete; all 11 ACs verified; plan audit sound; full suite 11368 passing (parallel xdist flake in test_no_new_consumer_only_flags is pre-existing contention, same as prior review cycle — confirmed exit code 0); targeted surfaces 148 passed clean; three NPC voices strong and differentiated (Owusu: favors-and-quorums, Halvorsen: surveyor's vocabulary, Deng: imperative-direct); Writing Bible scanner clean; scar topology and journal entries match AC spec exactly. Single tighten: Deng's `fund` node "I do not spend it on flags and I do not spend it on speeches" uses a "not on X and not on Y" parallel negation structurally akin to the banned pattern — escapes the regex, fits her designed voice, not a blocker but worth watching in future Deng content. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 07:50
-- Completed: 2026-09-01 07:55
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: c653db1
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented and reviewed with PHASE_OK; no re-plan needed)
-- Decisions_locked: 0 (all 8 decisions previously locked; scope unchanged)
-- Notes: Sprint was implemented in commit 93c6db6 and reviewed with PHASE_OK earlier today (activity-log entries at 07:03 implement PHASE_OK and 07:25 review PHASE_OK). Harness stuck-sprint recovery at 07:45 reset the status from 'in-progress (reviewing)' to 'todo', which put the sprint back through the planner. Confirmed all 7 D3 artifact groups present on disk and the scenario test file passes 31/31. Emitting PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes to implement → review, per the measured 2026-08-30 A2-5 vs A2-6 lesson in the planner brief.
+- Started: 2026-09-01 08:00
+- Completed: 2026-09-01 08:30
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11368 (full suite parallel; 148 targeted surfaces serial)
+- Acceptance_criteria_verified: 11/11
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Deng fund node "not on flags and not on speeches" is a parallel-negation near-miss; escapes the regex, fits her voice design, not a blocker but flag for future Deng content.
+- Followup_sprints_added: none
+- Notes: Plan audit sound — locked decisions on home system IDs, flag ids, scar topology, and cross-sprint deferrals all defensible. Full suite green at baseline; all triangle-specific coverage (collision_requires < len(poles), multi-close closes list) verified through 31 D3 scenario tests.
 ---
 
 #### A2-16 — D5: Legacy ↔ Connection
