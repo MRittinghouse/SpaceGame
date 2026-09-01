@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: in-progress (reviewing)
+**Status**: todo
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15726,7 +15726,7 @@ without them):
 - 2026-09-01 07:03 — implement re-verification: sprint already delivered in commit 93c6db6. Ran targeted surfaces `pytest tests/test_scenarios/test_scenario_dilemma_d3.py tests/test_compliance/test_dilemma_integrity.py tests/test_data/test_dialogue_integrity.py tests/test_writing_bible_compliance.py` → 109 passed in 308s (exit 0). Ruff check + ruff format --check on the two touched Python test files (`tests/test_scenarios/test_scenario_dilemma_d3.py`, `tests/test_data/test_dialogue_integrity.py`) both clean. All 11 acceptance criteria satisfied by files on disk from 93c6db6. Skipped full-suite re-run per the "already implemented" branch of the implement-agent guidance — sprint surfaces + writing-bible + dialogue-integrity + dilemma-integrity green is the proportionate check. PHASE_OK
 - 2026-09-01 07:03 — harness: review phase starting (rework cycle 0)
 - 2026-09-01 — review complete; all 11 ACs verified; plan audit sound; full suite 11368 passing serially; one parallel xdist flake in test_no_new_consumer_only_flags is pre-existing contention (passes in isolation: 1/1); three new NPC voices strong and differentiated; no Writing Bible violations; scar faction_id follows D1/D2/D4 convention; commit 62b0893 is a genuine improvement to the flag-reachability scanner (dilemma outcome_flags now recognized as flag sources, beneficial to all future dilemma sprints). PHASE_OK
-
+- 2026-09-01 07:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
