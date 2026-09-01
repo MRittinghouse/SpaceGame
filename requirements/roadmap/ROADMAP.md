@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15720,17 +15720,19 @@ without them):
 - 2026-09-01 05:37 — harness: plan phase starting
 - 2026-09-01 — planning complete; expanded ACs from 7 to 11 to cover triangle-specific collision permutations, NPC routing per outcome, scar-chatter reachability, ambient reactive registration, journal entries, and the NPC id-collision guard. Locked 8 decisions (home_system_ids, outcome flag ids, scar topology, ambient reactive scope, journal fold-in, winning/losing state gating pattern, Halvorsen scaffolding for A2-17, Deng inline voice note). Flagged 7 cross-sprint reactions for follow-up. PHASE_OK
 - 2026-09-01 06:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 06:45 — harness: plan phase starting
+- 2026-09-01 06:55 — sprint already implemented in commit 93c6db6 (all files from the original plan present: `data/narrative/dilemmas/d3_power_revolution_empire.json`, three NPCs in `data/characters/npcs.json`, nine dialogue trees in `data/dialogue/dialogues.json`, three scar `ChatterLine`s in `data/crew/station_chatter.json`, three Tomas ambient lines in `data/crew/ambient_dialogue.json`, three auto-journal entries in `data/journal/entries.json`, `tests/test_scenarios/test_scenario_dilemma_d3.py`). Verified: `pytest tests/test_scenarios/test_scenario_dilemma_d3.py` → 31 passed; `pytest tests/test_compliance/test_dilemma_integrity.py` → 20 passed; `pytest tests/test_data/test_cross_references.py` → 39 passed; combined dilemma-integrity + cross-refs + dialogue-integrity → 78 passed. Original plan is unchanged (no re-plan needed). PHASE_OK to route the sprint to the implement phase for verification, then review, per handoff guidance.
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 05:37
-- Completed: 2026-09-01 06:05
+- Started: 2026-09-01 06:45
+- Completed: 2026-09-01 06:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 9c559e0
+- Commits: <pending>
 - New_sprints_proposed: none
-- Polish_items_folded_in: scar-chatter (3 lines), Tomas ambient reactions (3 lines), auto-journal entries (3 entries), winning-state dialogue trees for all three NPCs, NPC id-collision guard test
-- Decisions_locked: 8
-- Notes: Verified all three context docs on disk. Verified A2-9 and A2-10 dependencies done. Verified `verge_landing` and `kettlebridge` are flavor names only (no galaxy system by those ids); picked havens_rest / crimson_reach / havens_rest as the three NPCs' concrete home systems. Confirmed no Owusu / Halvorsen / Deng NPC records exist yet (fresh authoring; A2-17 will extend Halvorsen per its own plan). Triangle-specific coverage in Task 7 exercises A2-8's `collision_requires < len(poles)` support and A2-10's multi-lens `closes` support — the two model features no pair dilemma tests exercise.
+- Polish_items_folded_in: none (sprint already implemented; original plan folded in scar-chatter, Tomas ambient reactions, auto-journal entries, winning-state dialogue trees, NPC id-collision guard test)
+- Decisions_locked: 0 (all 8 originally locked decisions preserved from the earlier plan; work is complete)
+- Notes: A2-15 was fully implemented in commit 93c6db6 ("A2-15: D3 Political Power vs Revolution vs Empire content + scenario") before stuck-sprint recovery reset it. All 11 acceptance criteria are satisfied by files on disk; targeted test runs green. Per the harness AGENT_GUIDE, using PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes the sprint through implement → review → gate normally, letting the implementer re-verify and the reviewer sign off. No re-planning done; the original locked decisions and task list still stand.
 ---
 
 #### A2-16 — D5: Legacy ↔ Connection
