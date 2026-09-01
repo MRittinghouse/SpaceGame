@@ -135,7 +135,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
-| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
+| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
@@ -14322,7 +14322,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 
 #### A2-12 — D4: Truth ↔ Vengeance
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14644,17 +14644,19 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 - 2026-08-31 22:04 — harness: plan phase starting
 - 2026-08-31 22:35 — planning complete; 5 decisions locked (Mission-17 seeding home, boolean flag naming, scar-only visible-cost, Senn home_system_id, writing-bible scanner extension), 10-task Plan filled in, journal-entry polish folded in, cross-sprint reactions catalogued as follow-up. PHASE_OK
 - 2026-08-31 22:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-08-31 22:51 — harness: plan phase starting
+- 2026-08-31 22:53 — planning already complete from prior phase (commit 49b5a60); Plan/Decisions/Cross-sprint sections intact, no implementation exists yet. Verified: `data/narrative/dilemmas/` empty of d4, no repo hits for `d4_truth_vengeance`/`aldric_senn`/`told_senn_orchestrated_operation` outside ROADMAP/spec. Nothing to re-plan. PHASE_OK
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-08-31 22:04
-- Completed: 2026-08-31 22:35
+- Started: 2026-08-31 22:51
+- Completed: 2026-08-31 22:53
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 49b5a60
+- Commits: <pending>
 - New_sprints_proposed: none
-- Polish_items_folded_in: journal-entry-for-D4-resolution, writing-bible-scanner-extension-to-data/narrative/dilemmas
-- Decisions_locked: 5
-- Notes: Verified all 6 Context-to-read docs exist. The reference-doc "Mission 17" does not exist as a discrete mission id in the current data — the game uses `iron_depths_investigation → the_ledger → point_of_no_return → the_collapse`. Locked seeding onto `the_ledger` (the reveal mission) with a boolean flag `told_senn_orchestrated_operation` since `dialogue_flags` is boolean-only. Aldric Senn does not exist as an NPC; task 3 creates him with two `dialogue_states` (Truth-wins reachable, Vengeance-wins dead-stub). A2-11's scar convention is the sole visible-cost surface for the Vengeance-wins Priya-declines-intel outcome (no belt-and-suspenders NPC.dialogue_states gate on Priya). Cross-sprint crew-banter, Guild rep, and news reactions are catalogued for downstream sprints rather than bloating this L-size sprint further.
+- Polish_items_folded_in: none (already folded in by prior phase — journal-entry-for-D4-resolution, writing-bible-scanner-extension-to-data/narrative/dilemmas)
+- Decisions_locked: 0 (all 5 already locked by prior phase 49b5a60)
+- Notes: Prior planning phase (commit 49b5a60) completed the full plan artifact before being reset to todo by stuck-sprint recovery. Confirmed via `git log` and repo grep that only the plan exists — no implementation files (d4 dilemma JSON, Senn NPC record, flag constant) are present. Re-planning would only re-derive identical content, so emitting PHASE_OK to route the sprint to implement. Handoff note for implementer: prior plan is the source of truth; follow Tasks 1–10 as written.
 ---
 
 #### A2-13 — D2: Wealth ↔ Community
