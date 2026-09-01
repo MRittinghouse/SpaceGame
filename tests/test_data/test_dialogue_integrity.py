@@ -842,6 +842,27 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "d3_political_power_won",
     "d3_revolution_won",
     "d3_empire_won",
+    # === A2-16 (D5: Legacy vs Connection) — DETECTOR MISS ===
+    # Same shape as A2-12/A2-13/A2-14/A2-15 above. ``lens_closed_legacy``
+    # and ``lens_closed_connection`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` via the variable-arg
+    # ``lens_closed(lens_id)`` helper when D5 closes. ``d5_legacy_won`` and
+    # ``d5_connection_won`` are written the same variable-arg way via
+    # ``player.dialogue_flags[outcome.outcome_flag] = True``. Real consumers:
+    #   lens_closed_legacy: scar chatter ``al_scar_d5_solheim_01`` (axiom_labs),
+    #     Amrit Solheim's ``post_legacy_lost`` dialogue_state (solheim_declined).
+    #   lens_closed_connection: scar chatter ``al_scar_d5_elena_01`` (nexus_prime),
+    #     Elena Reeves's ``post_connection_lost`` dialogue_state (elena_connection_declined).
+    #   d5_legacy_won: Marcus ``flag_triggered`` ambient line,
+    #     Solheim's ``post_legacy_won`` dialogue_state (solheim_victorious),
+    #     ``auto_d5_legacy_won`` journal entry.
+    #   d5_connection_won: Marcus ``flag_triggered`` ambient line,
+    #     Elena's ``post_connection_won`` dialogue_state (elena_connection_deepened),
+    #     ``auto_d5_connection_won`` journal entry.
+    "lens_closed_legacy",
+    "lens_closed_connection",
+    "d5_legacy_won",
+    "d5_connection_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
