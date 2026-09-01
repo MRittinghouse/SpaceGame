@@ -911,6 +911,31 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "lens_closed_transcendence",
     "d7_faith_won",
     "d7_transcendence_won",
+    # === A2-19 (D8: Crime vs Community) — DETECTOR MISS ===
+    # ``lens_closed_crime`` and ``lens_closed_community`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` via the variable-arg
+    # ``flag_registry.lens_closed(lens_id)`` helper when D8 closes.
+    # ``d8_crime_won`` and ``d8_community_won`` are written via
+    # ``player.dialogue_flags[outcome.outcome_flag] = True``. Real consumers:
+    #   lens_closed_crime: scar chatter ``al_scar_d8_wulan_01``
+    #     (stellaris_port), Wulan Doyle's ``post_d8_crime_closed``
+    #     dialogue_state (wulan_declined).
+    #   d8_crime_won: Elena Reeves ``flag_triggered`` ambient line,
+    #     Wulan Doyle's ``post_d8_crime_won`` dialogue_state
+    #     (wulan_victorious), ``auto_d8_crime_won`` journal entry.
+    #   d8_community_won: Elena Reeves ``flag_triggered`` ambient line,
+    #     Kallio's ``post_d8_community_won`` dialogue_state
+    #     (kallio_open_channels), ``auto_d8_community_won`` journal entry.
+    # Note: ``lens_closed_community`` is NOT re-added here; it already lives
+    # in the A2-13 block above. A2-19 adds no new consumer of that flag —
+    # it only reuses A2-13's Kallio ``post_community_closed`` state and
+    # A2-13's ``al_scar_d2_kallio_01`` scar, both already listed under A2-13.
+    # D8 Crime-winning sets ``lens_closed_community`` via the same variable-arg
+    # helper, making ``al_scar_d2_kallio_01`` at ``havens_rest`` reachable via
+    # the D8 path — this is intentional flag-key convergence (Locked decision 5).
+    "lens_closed_crime",
+    "d8_crime_won",
+    "d8_community_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

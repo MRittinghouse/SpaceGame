@@ -1,0 +1,39 @@
+{
+    "dilemmas": [
+        {
+            "id": "d8_crime_community",
+            "poles": ["crime", "community"],
+            "collision_requires": 2,
+            "telegraph_threshold": 55,
+            "collision_threshold": 80,
+            "telegraph_npc_id": "elena_reeves",
+            "telegraph_lines": [
+                "With respect, Captain, the routes you are running through the Understair at Stellaris Port share a supply line with Cradlepoint's docking schedule at Haven's Rest. Thuy Kallio's people pull from the same freight corridor Wulan Doyle's floor operations run product through. If I'm reading this right, those two accounts do not hold open at the same time.",
+                "The heading on this does not resolve cleanly. A captain who funds a community's supply chain and also runs off-manifest freight through that same chain is not a stable position. I am noting it because the ledger will call the question before you do.",
+                "Captain, both sides of this are drawing from the same infrastructure. The Understair operates below the dock floor that Kallio's charter moves through. Drifting off course here means one of those accounts closes on its own terms rather than yours. I would rather you make the call.",
+            ],
+            "outcomes": [
+                {
+                    "winning_lens_id": "crime",
+                    "closes": ["community"],
+                    "tier_unlocks": [
+                        "Wulan Doyle grants standing access to the Understair's floor operations at Stellaris Port without per-run negotiation, previously earned only run by run",
+                        "Kettlebridge's off-manifest freight brokers treat the captain as inside the ledger rather than a visitor, opening routes previously arranged only through introduction",
+                    ],
+                    "outcome_flag": "d8_crime_won",
+                    "narration_summary": "Chose the Understair. Wulan Doyle filed the standing access the same week, no negotiation required. The freight brokers at Kettlebridge have the captain inside the ledger now. Kallio's dock channels at Cradlepoint are closed. The list at Haven's Rest keeps its rotation without a captain's name on the manifest. Both things are on the record.",
+                },
+                {
+                    "winning_lens_id": "community",
+                    "closes": ["crime"],
+                    "tier_unlocks": [
+                        "Thuy Kallio opens Cradlepoint dock channels that were closed to a trader who had not proven they would reinvest rather than extract",
+                        "housing and logistics contracts with guaranteed demand, at lower margin than open trade but immune to market swings",
+                    ],
+                    "outcome_flag": "d8_community_won",
+                    "narration_summary": "Chose the community side. Kallio has the docks open and a list of families that needs to be shorter by the end of the cycle. The Understair account is closed. Wulan Doyle's floor operations continue without the captain on the access list. The ledger on her side does not include this ship anymore. What can be picked up at Haven's Rest, gets carried.",
+                },
+            ],
+        }
+    ]
+}

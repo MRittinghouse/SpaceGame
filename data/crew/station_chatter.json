@@ -1756,6 +1756,17 @@
         "lens_closed_transcendence"
       ],
       "one_shot": false
+    },
+    {
+      "id": "al_scar_d8_wulan_01",
+      "system_id": "stellaris_port",
+      "text": "The Understair floor at Kettlebridge is running the same routes it always ran. The broker who holds the ledger on that level does not expand the standing-access list. One ship that used to be on the manifest is not on it anymore. The routes continue.",
+      "category": "scar",
+      "weight": 7,
+      "required_flags": [
+        "lens_closed_crime"
+      ],
+      "one_shot": false
     }
   ]
 }

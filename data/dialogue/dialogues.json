@@ -11320,6 +11320,126 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "wulan_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "wulan_doyle",
+          "text": "You have been running product through the floor. I have seen the route numbers. The arrangement you are on now is visitor access, renegotiated each run. That works until the port authority pulls the manifest window, which it does on a schedule you cannot read from the outside.",
+          "subtext": "She does not look up from the ledger on her desk. The office is below the main trade floor, accessed through a freight hatch.",
+          "responses": [
+            {
+              "text": "What is the alternative?",
+              "next_node_id": "standing"
+            },
+            {
+              "text": "[Step off.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "standing",
+          "speaker_id": "wulan_doyle",
+          "text": "Standing access. Your cargo runs on the Understair ledger by default. The port authority reads it as freight in transit under a bonded broker account, which is what it is. You stop renegotiating each run. The window stays open because the ledger covers it.",
+          "responses": [
+            {
+              "text": "What does standing access cost?",
+              "next_node_id": "cost"
+            },
+            {
+              "text": "[Noted. I will think on it.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "cost",
+          "speaker_id": "wulan_doyle",
+          "text": "You stop running routes that read against the ledger. That is the inheritance that comes with the account. The debts in here were not mine when I took them on. The routes that kept them settled are still the routes that keep them settled.",
+          "responses": [
+            {
+              "text": "[Understood. I will be back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "wulan_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "wulan_doyle",
+          "text": "The standing account is open. Your routes are on the Understair ledger now. The floor manifest covers them by default. You do not negotiate the window every run.",
+          "subtext": "She sets a port-override key on the desk without ceremony.",
+          "responses": [
+            {
+              "text": "What does this key do?",
+              "next_node_id": "key"
+            },
+            {
+              "text": "[Pick up the key and go.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "key",
+          "speaker_id": "wulan_doyle",
+          "text": "Override for the freight dock manifests. The paperwork routes through the bonded broker account on the Understair ledger instead of the surface floor. Authority reads it as standard transit. The brokers at Kettlebridge will know you are inside the ledger now. You do not need introduction paperwork anymore.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "wulan_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "wulan_doyle",
+          "text": "The standing account is closed. The Understair floor does not carry routes that read against the ledger on the community side. That is the debt that came with this inheritance and it is the one I do not renegotiate.",
+          "responses": [
+            {
+              "text": "Can the account reopen?",
+              "next_node_id": "reopen"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "reopen",
+          "speaker_id": "wulan_doyle",
+          "text": "The floor operations continue. The routes run with or without this ship on the manifest. If the account reads differently in a later cycle, I will file accordingly. Until then, the ledger is what it is.",
+          "responses": [
+            {
+              "text": "[Step off.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

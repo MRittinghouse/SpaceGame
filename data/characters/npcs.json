@@ -1126,6 +1126,13 @@
       "dialogue_music": "dialogue_intimate",
       "dialogue_states": [
         {
+          "state_id": "post_community_closed",
+          "dialogue_id": "kallio_declined",
+          "required_flags": [
+            "lens_closed_community"
+          ]
+        },
+        {
           "state_id": "post_wealth_closed",
           "dialogue_id": "kallio_open_channels",
           "required_flags": [
@@ -1133,10 +1140,10 @@
           ]
         },
         {
-          "state_id": "post_community_closed",
-          "dialogue_id": "kallio_declined",
+          "state_id": "post_d8_community_won",
+          "dialogue_id": "kallio_open_channels",
           "required_flags": [
-            "lens_closed_community"
+            "d8_community_won"
           ]
         }
       ]
@@ -1421,6 +1428,36 @@
           "dialogue_id": "marchetti_declined",
           "required_flags": [
             "lens_closed_transcendence"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wulan_doyle",
+      "name": "Wulan Doyle",
+      "title": "Broker, Kettlebridge Understair",
+      "portrait_color": [
+        80,
+        75,
+        95
+      ],
+      "home_system_id": "stellaris_port",
+      "dialogue_id": "wulan_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_d8_crime_won",
+          "dialogue_id": "wulan_victorious",
+          "required_flags": [
+            "d8_crime_won"
+          ]
+        },
+        {
+          "state_id": "post_d8_crime_closed",
+          "dialogue_id": "wulan_declined",
+          "required_flags": [
+            "lens_closed_crime"
           ]
         }
       ]

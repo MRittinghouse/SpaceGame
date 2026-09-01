@@ -1970,6 +1970,22 @@
       "required_flags": [
         "d7_transcendence_won"
       ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The Understair account is on the record now, Captain. Standing access to off-manifest freight through a bonded broker arrangement. I have noted it in the heading log. That is an interesting position to be carrying on this ship. I have noted that as well.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d8_crime_won"
+      ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The list at Haven's Rest is shorter, Captain. Kallio has the dock channels open. That is the optimal outcome on the community heading, if I am reading the chart correctly. The queue will read differently by end of cycle. I have logged it.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d8_community_won"
+      ]
     }
   ]
 }

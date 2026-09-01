@@ -559,6 +559,20 @@
       "trigger_flag": "d7_transcendence_won",
       "system_id": "axiom_labs",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d8_crime_won",
+      "text": "Chose the Understair. Wulan Doyle filed the standing access the same week, no per-run negotiation required. The Kettlebridge brokers have the ship inside the ledger now. Kallio's dock channels at Cradlepoint are closed. The list at Haven's Rest keeps its rotation without this name on the manifest. The ledger reads what it reads.",
+      "trigger_flag": "d8_crime_won",
+      "system_id": "stellaris_port",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d8_community_won",
+      "text": "Chose the community side. Kallio has the docks open and a list of families that needs to be shorter. The Understair account is closed. Wulan Doyle's floor operations continue at Stellaris Port without this ship on the access list. The ledger on her side does not include this route anymore. What can be picked up at Haven's Rest, gets carried.",
+      "trigger_flag": "d8_community_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
     }
   ]
 }
