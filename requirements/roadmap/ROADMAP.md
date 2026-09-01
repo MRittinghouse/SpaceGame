@@ -15728,7 +15728,7 @@ without them):
 - Started: 2026-09-01 06:45
 - Completed: 2026-09-01 06:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 8755b0c
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented; original plan folded in scar-chatter, Tomas ambient reactions, auto-journal entries, winning-state dialogue trees, NPC id-collision guard test)
 - Decisions_locked: 0 (all 8 originally locked decisions preserved from the earlier plan; work is complete)
