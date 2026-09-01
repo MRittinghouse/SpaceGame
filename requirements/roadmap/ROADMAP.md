@@ -18463,7 +18463,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - Started: 2026-09-01 18:51
 - Completed: 2026-09-01 18:53
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (to be recorded after commit)
+- Commits: 2589caf
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint is already implemented and reviewed)
 - Decisions_locked: 0 (all 14 decisions locked in prior plan passes)
