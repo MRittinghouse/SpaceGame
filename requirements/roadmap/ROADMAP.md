@@ -15736,7 +15736,7 @@ without them):
 - Started: 2026-09-01 07:50
 - Completed: 2026-09-01 07:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (this commit)
+- Commits: c653db1
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented and reviewed with PHASE_OK; no re-plan needed)
 - Decisions_locked: 0 (all 8 decisions previously locked; scope unchanged)
