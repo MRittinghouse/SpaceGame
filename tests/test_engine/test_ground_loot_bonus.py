@@ -127,3 +127,40 @@ class TestGroundLootBonusApplication:
         # skill: 0.15 + crew: 0.10 = 0.25 total
         # loot: 100 * 1.25 = 125, total = 1000 + 200 + 125 = 1325
         assert game.player.credits == 1325
+
+
+class TestDilemmaModalIsSkippedWithoutAUi:
+    """A collision that cannot be shown is deferred, never consumed.
+
+    `_after_player_action` ticks the dilemma engine, and a collision is
+    presented by pushing a modal that needs `ui_manager`. A partially
+    constructed Game has none.
+
+    Skipping the push is safe precisely because `check_dilemmas` is a pure
+    classifier -- it reads `lens_investment` and `dilemma_state` and mutates
+    neither -- and a dilemma is only marked resolved when the player resolves
+    it. So the collision is recomputed on the next tick and presented once a UI
+    exists. (An earlier version of this fix bailed out of the whole tick, which
+    also suppressed telegraphs and broke three scenario tests; telegraphs need
+    no UI.)
+
+    Latent since A2-8 wired the dispatch, invisible until A2-12 shipped the
+    first real dilemma, then it broke six ground-loot tests with
+    `AttributeError: 'Game' object has no attribute 'ui_manager'` and took the
+    run down, since a red master aborts baseline capture.
+    """
+
+    def test_push_is_a_no_op_without_a_ui(self) -> None:
+        from unittest.mock import MagicMock, patch
+
+        from spacegame.engine.game import Game
+
+        with patch.object(Game, "__init__", lambda self: None):
+            game = Game()
+        game._player = MagicMock()
+        game.state_manager = MagicMock(current_state=None)
+        # Deliberately no `ui_manager`, as a partial Game has none.
+
+        game._push_dilemma_modal(MagicMock())  # must not raise
+
+        game.state_manager.push_state.assert_not_called()

@@ -4507,7 +4507,27 @@ class Game:
         return npc_id.replace("_", " ").title()
 
     def _push_dilemma_modal(self, dilemma: "Dilemma") -> None:
-        """Push the resolution modal for ``dilemma`` on top of the current state."""
+        """Push the resolution modal for ``dilemma`` on top of the current state.
+
+        Does nothing on a Game with no UI. That is reachable rather than
+        theoretical: gameplay unit tests construct a partial Game (patching out
+        ``__init__``) to exercise math like ground loot, and
+        ``_apply_ground_result`` calls ``_after_player_action``, which ticks the
+        dilemma engine. The fragility was latent from A2-8's wiring and stayed
+        invisible until A2-12 shipped the first real dilemma -- with none
+        loaded, ``_tick_dilemma_engine`` returned before ever reaching here. It
+        then broke six ground-loot tests at once and took the run down with it,
+        since a red master aborts baseline capture.
+
+        Skipping is safe because nothing is consumed by it. ``check_dilemmas``
+        is a pure classifier: it reads the player's investment and dilemma
+        runtime state through the model layer and mutates neither, and a
+        dilemma is only marked resolved when the player actually resolves it.
+        So a collision that cannot be shown is simply recomputed on the next
+        tick, and presented as soon as there is a UI to present it on.
+        """
+        if getattr(self, "ui_manager", None) is None:
+            return
         from spacegame.models.dilemma import build_investment_snapshot
 
         snapshot = build_investment_snapshot(dilemma, self.player)
