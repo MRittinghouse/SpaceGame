@@ -136,7 +136,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
-| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | in-progress | A2-9, A2-10 |
+| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
@@ -14675,7 +14675,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 
 #### A2-13 — D2: Wealth ↔ Community
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15018,6 +15018,7 @@ Flagged as follow-up (do NOT author in A2-13):
 - 2026-09-01 03:21 — harness: plan phase starting
 - 2026-09-01 03:25 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 03:31 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 03:58 — harness: review passed, marking done
   reactive ambient lines, split original AC4 into AC4/AC5 for symmetry per branch, added
   AC6 anchor-word substring check as a distinct AC); locked 9 open decisions including
   the Kallio/Castellano placement question; folded Marcus reactive ambient lines into
