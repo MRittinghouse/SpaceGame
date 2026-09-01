@@ -18117,6 +18117,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 16:56 — harness: plan phase starting
 - 2026-09-01 17:35 — planning complete; expanded touch zones (added save_manager.py,
 - 2026-09-01 17:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 17:43 — session: implementation reverted (667e37b), status reset to todo. The implement phase committed and the harness died during review, so the work reached master ungated and baseline capture caught 9 failures across three guards. The one that matters: engine/game.py read self.player.lens_investment.get_investment(...) directly, which A2-4 AC4 forbids -- investment is fully oblique, and the engine must go through a model-layer coordinator the way _tick_dilemma_engine uses check_dilemmas. Capstones need an equivalent coordinator; that is design work for this sprint, not a repair. Also: the capstone tick repeated the partial-Game fragility fixed for dilemmas in 018ef70 (guard the push when there is no ui_manager), and CapstoneView captured window dimensions at module scope. The original commits survive the revert -- cherry-pick 152f7e6 99bd64b to build on them rather than starting over.
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
