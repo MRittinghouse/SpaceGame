@@ -141,7 +141,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
-| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
+| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
@@ -16550,7 +16550,7 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 
 #### A2-18 — D7: Faith ↔ Transcendence
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16963,38 +16963,38 @@ gate.
 - 2026-09-01 12:47 — harness: plan phase starting
 - 2026-09-01 12:55 — planning complete; verified all context docs exist
 - 2026-09-01 13:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
-  (`docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` row D7 present;
-  `spacegame/models/okafor_research.py` present; `data/characters/npcs.json` has
-  canonical `tomas_drifter` at line 74; `havens_rest` and `axiom_labs` systems present).
-  Verified sprint work not already implemented (no `d7_faith_transcendence.json`, no
-  `imre_solano` or `rasheeda_marchetti` NPC records). Locked 7 decisions (including the
-  "Cradlepoint is a venue at `havens_rest`, not a system" correction to the original
-  Goal wording, and the "Farrow procedure stays JSON-only per A2-16 precedent" scope
-  fence). Folded in 6 polish items (auto-journal entries, scar chatter, Tomas ambient
-  reactions, Solano no-doctrine voice smoke, Marchetti practical-grounding voice smoke,
-  `KNOWN_CONSUMER_ONLY_ORPHANS` extension). Expanded touch zones from 3 → 8 to reflect the
-  real edit surface. Expanded acceptance criteria from 6 → 17 to match the D6 template
-  plus the two extra NPC voice-smoke checks. Laid out 9 concrete tasks. Flagged 4
-  cross-sprint reaction candidates as deferred followups. PHASE_OK
+- 2026-09-01 13:36 — harness: plan phase starting
+- 2026-09-01 13:36 — planning previously completed at 12:55 (7 decisions locked, 6
+  polish items folded in, 9 tasks laid out); implementation subsequently landed on
+  commit 418eb98 ("A2-18: D7 Faith vs Transcendence -- data + tests"): all 8 touch-zone
+  files edited (d7_faith_transcendence.json created, imre_solano + rasheeda_marchetti
+  NPC records added, six dialogue trees authored, two auto-journals, two scar lines,
+  two Tomas ambient reactions, 4 D7 flags added to KNOWN_CONSUMER_ONLY_ORPHANS,
+  44 tests in test_scenario_dilemma_d7.py). Stuck-sprint recovery at 13:30 reset
+  status to todo despite the work being complete — likely because the review/gate
+  phase never ran to update last_touched_at. Re-verified this phase: all 44 D7
+  tests pass (1.10s); test_dilemma_integrity + test_dialogue_integrity green
+  (39 passed, 4m57s). No replanning needed; routing straight through to implement
+  so the implementer re-verifies and reviewer runs on existing work. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 12:47
-- Completed: 2026-09-01 12:55
+- Started: 2026-09-01 13:36
+- Completed: 2026-09-01 13:44
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 8f4d059
+- Commits: (pending — plan-phase commit for this activity log update)
 - New_sprints_proposed: none
-- Polish_items_folded_in: auto-journal entries, scar chatter, Tomas ambient reactions,
-  Solano no-doctrine voice smoke, Marchetti practical-grounding voice smoke, consumer-only
-  allowlist extension
-- Decisions_locked: 7
-- Notes: Verified all context docs exist and D7 work not yet implemented. Corrected
-  original Goal wording that treated Cradlepoint as a system — it is Kallio's charter venue
-  at havens_rest. Fenced Farrow "irreversible procedure" scope to JSON/dialogue-only per
-  A2-16 precedent; a real procedure mechanic would be a separate sprint. Acceptance bar
-  raised from 6 → 17 criteria to match the D6 template and to proactively address A2-17's
-  review-phase "voice smoke could extend beyond telegraph" note.
+- Polish_items_folded_in: none (all six from 12:55 planning already shipped in 418eb98)
+- Decisions_locked: 0 (all seven decisions locked in 12:55 planning; unchanged)
+- Notes: Sprint already implemented. Recovery at 13:30 falsely reset status to todo;
+  commit 418eb98 (Matt Rittinghouse, 13:13) had already landed the full D7 payload —
+  data file, both NPCs, six dialogue trees, two journals, two scars, two Tomas ambients,
+  KNOWN_CONSUMER_ONLY_ORPHANS extension, 44 tests. Verification: `pytest
+  tests/test_scenarios/test_scenario_dilemma_d7.py` = 44 passed (1.10s); `pytest
+  tests/test_compliance/test_dilemma_integrity.py tests/test_data/test_dialogue_integrity.py`
+  = 39 passed (4m57s). Handing off to implementer (per PHASE_OK protocol for
+  already-implemented sprints) so the sprint still earns its review + gate.
 ---
 
 #### A2-19 — D8: Crime ↔ Community
