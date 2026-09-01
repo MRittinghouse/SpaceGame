@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17525,6 +17525,7 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-08-27 - todo (created)
 - 2026-09-01 14:34 — harness: plan phase starting
 - 2026-09-01 15:15 — planning complete; expanded ACs from 6 to 17, locked 9 decisions,
+- 2026-09-01 15:46 — harness: implement phase starting (rework cycle 0)
   folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
 - 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 15:39 — harness: plan phase starting
@@ -17534,26 +17535,27 @@ Flagged as follow-up (do NOT author in A2-19):
   passed; `pytest tests/test_scenarios/test_scenario_dilemma_d2.py -q` → 20 passed
   (Kallio extension did not regress D2). Suite baseline 11529 already reflects D8. Not
   re-planning; letting the dispatcher route to implement/review per the guide. PHASE_OK
+- 2026-09-01 16:10 — implement re-verification: 47 D8 tests pass (1.25s); dialogue integrity
+  39 tests pass (5m01s); full suite 11529 passed, 100 skipped (matches baseline exactly);
+  lint clean on Python touched files; format clean; touch zones respected. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 15:39
-- Completed: 2026-09-01 15:47
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: a642722
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented; no new planning done)
-- Decisions_locked: 0 (all 9 already locked in the 15:15 plan cycle)
-- Notes: Sprint was already implemented before this planning invocation. The 15:15
-  planning cycle completed; the implementer commit 115f1ae landed at 14:56 with the
-  full data set and 47-test scenario file; commit 5640682 (15:25) fixed a data-load
-  bug from six trailing JSON commas. The stuck-sprint recovery at 15:00 reset the
-  status to todo because the review phase never wrote its sentinel (fourth
-  unreviewed-on-master occurrence per commit 5640682's own note). Verified the
-  implementation is green: D8 47/47 and D2 20/20. Writing PHASE_OK per the guide so
-  the dispatcher moves the sprint to implement (where the implementer will verify
-  rather than duplicate) and then to review, which is what still needs to happen.
+- Started: 2026-09-01 16:05
+- Completed: 2026-09-01 16:10
+- Files_changed: data/narrative/dilemmas/d8_crime_community.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/journal/entries.json, data/crew/station_chatter.json, data/crew/ambient_dialogue.json, tests/test_data/test_dialogue_integrity.py, tests/test_scenarios/test_scenario_dilemma_d8.py
+- Commits: 115f1ae, 5640682
+- Tests_added: 47
+- Tests_baseline: 11529
+- Tests_passing: 11529
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Sprint already implemented in commit 115f1ae before this agent invocation. Re-verified all gates: 47 D8 tests pass, full suite holds at baseline (11529/100), dialogue integrity clean, lint/format clean on Python touched files. All 17 ACs satisfied by the existing implementation.
 ---
 
 #### A2-20 — Capstones fire without ending the session
