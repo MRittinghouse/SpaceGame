@@ -1,21 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-09-01 15:21:50_
+_Updated: 2026-09-01 15:24:35_
 
 ## Harness Did Not Run
 
-Baseline capture FAILED: pytest exited 1; tail: ure::test_enemy_type_match_template_resolves
-ERROR tests/test_data/test_crew_interjection_content.py::TestInterjectionStructure::test_combat_outcome_uses_valid_outcome
-ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::test_each_companion_covers_all_round_triggers
-ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::test_each_companion_covers_both_outcomes
-1630 failed, 9583 passed, 100 skipped, 42 warnings, 316 errors in 260.15s (0:04:20). Aborting run to avoid running agents with no baseline.
+harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
+
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **just now**
-- Beat PID: 25220 -- alive
+- Last beat: **3 minutes ago**
+- Beat PID: 25220 -- **NOT RUNNING**
 
 ## Queue
 
@@ -27,8 +27,8 @@ ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::te
 
 ## Push
 
-- last push: **OK** (48 minutes ago)
-- last successful push: 48 minutes ago
+- last push: **OK** (3 minutes ago)
+- last successful push: 3 minutes ago
 
 ## Blocks drift
 
@@ -39,3 +39,7 @@ ERROR tests/test_data/test_crew_interjection_content.py::TestTriggerCoverage::te
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- harness exit rc=3
