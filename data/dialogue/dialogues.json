@@ -9661,6 +9661,139 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "senn_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "aldric_senn",
+          "text": "You have the wrong door. Whoever you were sent to see is not here.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "senn_truth_confrontation",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "aldric_senn",
+          "text": "So you followed it. Sit if you want. The chair is bolted to the floor and I am not going anywhere. You are looking at the man they told you did it. Take your look. I am not what you were told.",
+          "subtext": "He is thinner than the operational photos. The office is small, the lock on the door is on the outside, and he does not glance at it. He has been waiting for this conversation for a while.",
+          "responses": [
+            {
+              "text": "Then who authorized Project Convergence.",
+              "next_node_id": "authorization"
+            },
+            {
+              "text": "You were left behind on purpose.",
+              "next_node_id": "left_behind"
+            },
+            {
+              "text": "Prove you were not the architect.",
+              "next_node_id": "prove_it"
+            },
+            {
+              "text": "You do not walk out of this. Not really.",
+              "next_node_id": "walk_out"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "authorization",
+          "speaker_id": "aldric_senn",
+          "text": "I signed operational orders. I moved cargo. I did not draw the map. Whoever drew the map did not put a name on the corner. The people who could have named them left with the rest of the leadership six hours before the sky came down. You did not follow them here. You followed me. I understand why.",
+          "responses": [
+            {
+              "text": "That is not enough for me.",
+              "next_node_id": null
+            },
+            {
+              "text": "I want the map.",
+              "next_node_id": null,
+              "set_flag": "senn_offered_leads"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "left_behind",
+          "speaker_id": "aldric_senn",
+          "text": "They needed a face that was on the paperwork. Mine was. When the ground opened up under Iron Depths, the leadership was already six hours into a jump. My orders were to hold the outer perimeter. Then the perimeter was gone and it was quiet for a long time.",
+          "responses": [
+            {
+              "text": "You did not run.",
+              "next_node_id": null
+            },
+            {
+              "text": "You could have talked to someone.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "prove_it",
+          "speaker_id": "aldric_senn",
+          "text": "I cannot prove absence. I can show you six years of authorization signatures. Every one of mine countersigns a name I never met in person. You will decide if that is enough. It is why you took the long way around instead of doing this from an airlock.",
+          "responses": [
+            {
+              "text": "Give me the ledger.",
+              "next_node_id": null,
+              "set_flag": "senn_offered_ledger"
+            },
+            {
+              "text": "Not enough.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "walk_out",
+          "speaker_id": "aldric_senn",
+          "text": "I am aware. Whatever door I try, someone is standing outside it. That is not what I am asking you for. I am asking you to write down what actually happened before I stop being here to tell you.",
+          "responses": [
+            {
+              "text": "I will write it down.",
+              "next_node_id": null
+            },
+            {
+              "text": "Silence works too.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "senn_dead",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "aldric_senn",
+          "text": "There is nothing here. The office is empty. The desk has been cleared. Whatever the man knew went with him.",
+          "responses": [
+            {
+              "text": "[Leave.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

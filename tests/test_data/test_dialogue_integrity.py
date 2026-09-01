@@ -760,6 +760,19 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # invisible in a real playthrough. Mechanism proof comes from tests that set
     # it directly on player.dialogue_flags.
     "lens_closed_test_lens",
+    # === A2-12 (D4: Truth vs Vengeance) — DETECTOR MISS ===
+    # ``lens_closed_truth`` and ``lens_closed_vengeance`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` when the D4 dilemma
+    # closes, via the ``lens_closed(lens_id)`` helper where ``lens_id``
+    # is a variable pulled from ``outcome.closes``. The scanner's helper
+    # regex only matches string-literal arguments (see
+    # :func:`_helper_access_patterns`), so runtime variable-arg calls
+    # look like producer-less writes. Consumers here are real:
+    #   lens_closed_truth: Priya scar chatter al_scar_d4_priya_01, and
+    #     Aldric Senn's post-vengeance dialogue_state.
+    #   lens_closed_vengeance: Aldric Senn's post-truth dialogue_state.
+    "lens_closed_truth",
+    "lens_closed_vengeance",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -981,6 +994,24 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     #   wreckers_made_up_journal — DETECTOR MISS: same pattern — consumed by
     #     data/journal/entries.json trigger_flag. Scanner blind spot.
     "wreckers_made_up_journal",
+    # === A2-12 (D4: Truth vs Vengeance) — narrative-state seed + memory ===
+    # ``told_senn_orchestrated_operation`` is SET by the ``the_ledger``
+    # mission reward (Act I M-The-Ledger) so the D4 dilemma's Truth-wins
+    # narration can reference the specific person the player was told
+    # to hunt. No mechanical consumer — the dilemma fires on lens
+    # investment thresholds, and the narration is prose. Future Act II
+    # sprints (crew banter, news ticker) may consume the flag when they
+    # land.
+    "told_senn_orchestrated_operation",
+    # ``senn_offered_leads`` and ``senn_offered_ledger`` are SET on the
+    # Truth-wins confrontation responses (dialogue tree
+    # ``senn_truth_confrontation`` in data/dialogue/dialogues.json).
+    # They preserve narrative memory of the specific asks the player
+    # made of Senn. No consumer yet; future Act II sprints will gate on
+    # them when they author the follow-through content (Ledger real
+    # chain of command, informant leads).
+    "senn_offered_leads",
+    "senn_offered_ledger",
 }
 
 

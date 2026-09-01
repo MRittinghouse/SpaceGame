@@ -990,6 +990,32 @@
       "home_system_id": "crimson_reach",
       "dialogue_id": "reach_floor_manager_main",
       "faction_id": "crimson_reach"
+    },
+    {
+      "id": "aldric_senn",
+      "name": "Aldric Senn",
+      "title": "Ledger Operative",
+      "portrait_color": [
+        90,
+        95,
+        110
+      ],
+      "home_system_id": "the_fulcrum",
+      "dialogue_id": "senn_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_truth_collision",
+          "dialogue_id": "senn_truth_confrontation",
+          "required_flags": ["lens_closed_vengeance"]
+        },
+        {
+          "state_id": "post_vengeance_collision",
+          "dialogue_id": "senn_dead",
+          "required_flags": ["lens_closed_truth"]
+        }
+      ]
     }
   ]
 }

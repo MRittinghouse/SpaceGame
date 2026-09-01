@@ -1,0 +1,39 @@
+{
+  "dilemmas": [
+    {
+      "id": "d4_truth_vengeance",
+      "poles": ["truth", "vengeance"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "dr_priya_osei",
+      "telegraph_lines": [
+        "The pattern I have been tracking in the recovered Ledger records is beginning to fit differently. The operations attributed to Aldric Senn cluster around a mid-level authorization signature, not an architect's. I am not certain yet. I will say so when I am.",
+        "The countersignature analysis is holding up on a second pass. Senn signed operational orders. He did not draw the map. Someone above him did, and that someone left the system before the Fulcrum burned. I owe you the version of this that is corrected, not the one that was convenient.",
+        "You are still routing toward Senn. I will not tell you what to do with the file. I will tell you that if you close it in his name once the countersignature work is public, that is a decision, not an oversight. Decide with the data in front of you."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "truth",
+          "closes": ["vengeance"],
+          "tier_unlocks": [
+            "Priya opens Science Collective intelligence contacts who only take referrals from people who verify before they act",
+            "the Ledger's real chain of command becomes reachable as a Truth investigation thread rather than a rumor"
+          ],
+          "outcome_flag": "d4_truth_won",
+          "narration_summary": "You closed the file on the countersignature work, not on the man. Aldric Senn is alive in a small office with a lock on the outside of the door, and he knows what you chose. The map of who actually drew Project Convergence is still there to be walked."
+        },
+        {
+          "winning_lens_id": "vengeance",
+          "closes": ["truth"],
+          "tier_unlocks": [
+            "information brokers begin to route work to you as someone whose targets do not need to be guilty of the specific thing, only guilty of something",
+            "coerced-informant leads become available to the Vengeance minigame that Truth-aligned contacts would refuse to hand over"
+          ],
+          "outcome_flag": "d4_vengeance_won",
+          "narration_summary": "You closed the file on Aldric Senn. The countersignature work stops there. He and the Ledger leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question does not get answered now. It was the cost, and you paid it."
+        }
+      ]
+    }
+  ]
+}

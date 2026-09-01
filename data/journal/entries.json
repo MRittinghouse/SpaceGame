@@ -454,6 +454,20 @@
       "trigger_flag": "okafor_legacy_profit_ending_seen",
       "system_id": "axiom_labs",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d4_truth_won",
+      "text": "The countersignature work held up. Aldric Senn was on the paperwork and not on the map. The file on him closed today, not the way it started. The map above him is still there to be walked. Priya offered the referrals. I said yes.",
+      "trigger_flag": "d4_truth_won",
+      "system_id": "the_fulcrum",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d4_vengeance_won",
+      "text": "The file on Aldric Senn closed today. He and the leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question does not get answered now. It was the cost. I paid it.",
+      "trigger_flag": "d4_vengeance_won",
+      "system_id": "the_fulcrum",
+      "mission_id": ""
     }
   ]
 }

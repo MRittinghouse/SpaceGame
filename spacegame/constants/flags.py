@@ -1163,3 +1163,37 @@ def extract_lens_closed_id(flag_name: str) -> Optional[str]:
     if flag_name.startswith(_LENS_CLOSED_PREFIX):
         return flag_name[len(_LENS_CLOSED_PREFIX) :]
     return None
+
+
+# ---------------------------------------------------------------------------
+# Act II Dilemma D4: Truth vs Vengeance seeding (A2-12)
+# ---------------------------------------------------------------------------
+#
+# A2-12 (requirements/roadmap/ROADMAP.md sprint A2-12). The Act I
+# ``the_ledger`` mission reveals Aldric Senn as the primary Ledger
+# suspect the player has been hunting. Producer: ``data/missions/
+# missions.json`` (``the_ledger`` mission ``set_flag`` reward). Real
+# consumers are prose only — the D4 outcome narration references
+# Senn by name; no mechanical gate depends on this flag today, so it
+# is registered in ``KNOWN_PRODUCER_ONLY_ORPHANS`` in
+# ``tests/test_data/test_dialogue_integrity.py`` alongside the other
+# narrative-state seeds.
+
+
+def told_senn_orchestrated_operation() -> str:
+    """Flag set on completion of ``the_ledger`` mission (Act I M-The-Ledger).
+
+    Producer: ``data/missions/missions.json`` — ``the_ledger`` mission's
+    ``set_flag`` reward writes this flag alongside ``ledger_complete``
+    and ``discovered_ledger_connection`` so the D4 dilemma's Truth-wins
+    narration can reference the specific person the player was told to
+    hunt.
+
+    Consumer: none mechanically — the D4 dilemma content in
+    ``data/narrative/dilemmas/d4_truth_vengeance.json`` names Senn in
+    prose, and the scenario test in
+    ``tests/test_scenarios/test_scenario_dilemma_d4.py`` asserts the
+    flag is present as a documented precondition. Registered in
+    ``KNOWN_PRODUCER_ONLY_ORPHANS`` for that reason.
+    """
+    return "told_senn_orchestrated_operation"

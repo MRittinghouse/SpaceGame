@@ -877,6 +877,11 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "discovered_ledger_connection"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "told_senn_orchestrated_operation"
         }
       ]
     },

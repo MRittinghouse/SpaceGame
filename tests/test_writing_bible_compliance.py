@@ -347,6 +347,29 @@ def _extract_ambient_strings() -> list[tuple[str, str]]:
     return entries
 
 
+def _extract_dilemma_strings() -> list[tuple[str, str]]:
+    """Every player-facing string on every loaded dilemma record (A2-12+).
+
+    Covers ``telegraph_lines`` and each :class:`DilemmaOutcome`'s
+    ``narration_summary`` and ``tier_unlocks`` entries. Registered here so
+    every future dilemma (A2-13 through A2-19) inherits the Writing Bible
+    scan without repeating the wiring. Outcome ``outcome_flag`` values are
+    flag-name identifiers and are deliberately excluded from the scan.
+    """
+    dl = _load_dl()
+    entries: list[tuple[str, str]] = []
+    for did, dilemma in dl.dilemmas.items():
+        for i, line in enumerate(dilemma.telegraph_lines):
+            entries.append((f"dilemma:{did}:telegraph_{i}", line))
+        for outcome in dilemma.outcomes:
+            pole = outcome.winning_lens_id
+            if outcome.narration_summary:
+                entries.append((f"dilemma:{did}:{pole}:narration", outcome.narration_summary))
+            for i, unlock in enumerate(outcome.tier_unlocks):
+                entries.append((f"dilemma:{did}:{pole}:tier_{i}", unlock))
+    return entries
+
+
 def _extract_tagline_strings() -> list[tuple[str, str]]:
     """Return (loc, tagline) for every non-empty faction_tagline on a StationLayout subclass.
 
@@ -627,6 +650,57 @@ class TestCoverageSanity:
 # ---------------------------------------------------------------------------
 # Tests — station tagline content
 # ---------------------------------------------------------------------------
+
+
+class TestDilemmaContentWritingBible:
+    """A2-12+: dilemma content is core narrative and held strict.
+
+    Extended in A2-12 so every future dilemma (A2-13 through A2-19)
+    inherits the em-dash / banned-phrase / parallel-negation scan
+    without wiring anything per-sprint.
+    """
+
+    def test_dilemma_scanner_finds_content_once_authored(self) -> None:
+        """Scanner returns entries once at least one dilemma has been authored.
+
+        Skips while the registry is empty so the extension can land ahead
+        of dilemma content without failing the suite. Once A2-12+ populate
+        ``data/narrative/dilemmas/``, this converts silently to a pass.
+        """
+        entries = _extract_dilemma_strings()
+        if not entries:
+            pytest.skip("no dilemma content yet; A2-12..A2-19 will populate this")
+        assert len(entries) >= 4, (
+            f"Dilemma scanner found only {len(entries)} strings on a non-empty "
+            f"registry. Extractor may have broken."
+        )
+
+    def test_no_em_dashes_in_dilemmas(self) -> None:
+        offenders = [
+            f"{loc}: {text[:100]!r}"
+            for loc, text in _extract_dilemma_strings()
+            if any(d in text for d in _EM_DASHES)
+        ]
+        assert not offenders, "Em-dashes in dilemma content:\n  " + "\n  ".join(offenders[:20])
+
+    def test_no_banned_phrases_in_dilemmas(self) -> None:
+        offenders: list[str] = []
+        for loc, text in _extract_dilemma_strings():
+            lowered = text.lower()
+            for phrase in _BANNED_PHRASES:
+                if phrase in lowered:
+                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
+        assert not offenders, "Banned phrases in dilemma content:\n  " + "\n  ".join(offenders[:20])
+
+    def test_no_parallel_negation_in_dilemmas(self) -> None:
+        offenders: list[str] = []
+        for loc, text in _extract_dilemma_strings():
+            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
+            if pn:
+                offenders.append(f"{loc}: {text[:100]!r}")
+        assert not offenders, "Parallel-negation in dilemma content:\n  " + "\n  ".join(
+            offenders[:20]
+        )
 
 
 class TestStationTaglineWritingBible:
