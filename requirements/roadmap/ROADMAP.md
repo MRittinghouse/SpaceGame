@@ -14675,7 +14675,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 
 #### A2-13 — D2: Wealth ↔ Community
 
-**Status**: in-progress (planning)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15016,6 +15016,8 @@ Flagged as follow-up (do NOT author in A2-13):
 - 2026-09-01 02:06 — harness: plan phase starting
 - 2026-09-01 03:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 03:21 — harness: plan phase starting
+- 2026-09-01 03:25 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 03:31 — harness: review phase starting (rework cycle 0)
   reactive ambient lines, split original AC4 into AC4/AC5 for symmetry per branch, added
   AC6 anchor-word substring check as a distinct AC); locked 9 open decisions including
   the Kallio/Castellano placement question; folded Marcus reactive ambient lines into
@@ -15037,18 +15039,27 @@ Flagged as follow-up (do NOT author in A2-13):
   runs 20/20 green in 0.65s. Following the A2-5/A2-12/prior-A2-13 precedent, emit
   PHASE_OK to route to implement (verify) then review, rather than PHASE_BLOCKED
   which would strand the sprint on a decision no re-run can change. PHASE_OK
+- 2026-09-01 — review complete; all 9 ACs verified; no critical findings; plan audit
+  sound; voice quality high; 11311 tests passing (two parallel-run flakes both pass
+  in isolation — pre-existing xdist contention, not A2-13 regressions). Single tighten
+  noted (kallio_open_channels subtext places a docking wrench in Kallio's hand during
+  an office scene — incongruous staging; not a blocker). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 03:21
-- Completed: 2026-09-01 03:25
+- Started: 2026-09-01 03:31
+- Completed: 2026-09-01 03:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 3180854 (this planner's sentinel-update commit; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602; prior sentinel-updates: 99f9166, ae7d12a)
-- New_sprints_proposed: none
-- Polish_items_folded_in: n/a (sprint already implemented; polish decisions locked in the original planning pass — see the 2026-09-01 planning-complete log entry)
-- Decisions_locked: 0 (all 9 were locked in the original planning pass)
-- Notes: Third planner invocation on this sprint; second stuck-sprint recovery reset it after a phase-owner died between commits. Verified nothing regressed: implementation commit 7c1c602 still present, D2 scenario file exists, 20/20 tests pass in 0.65s. Doing the minimum-viable cheap check per the "already-implemented" playbook — not re-running the full integrity guard sweep the 02:10 planner already recorded, since no code has changed since. Emitting PHASE_OK (not BLOCKED) so the dispatcher advances the sprint to implement → review → done rather than stranding it. If the harness keeps resetting this sprint after PHASE_OK sentinels commit successfully, the diagnosis is a stuck-sprint-recovery / phase-transition race worth surfacing to the human — but the correct action from inside a planner phase remains PHASE_OK.
+- Commits: none
+- Tests_passing: 11311
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: kallio_open_channels subtext (dialogues.json) puts "a docking wrench in one hand" during an office scene with a view window — physically incongruous; a clipboard or manifest would fit the staging better.
+- Followup_sprints_added: none
+- Notes: Plan audit sound — all 9 locked decisions defensible; mission_id="" in journal entries correctly follows D4 precedent. Voice quality high: Kallio plain-spoken/concrete, Castellano optimized/additive, Marcus post-D2 lines short and non-absolving. Two xdist-parallel flakes (performance timeout + dialogue integrity 89s) both pass in isolation; pre-existing contention per memory note. All 20 D2 scenario tests green, all compliance/integrity suites green.
 ---
 
 #### A2-14 — D1: Vengeance ↔ Justice
