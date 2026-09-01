@@ -1,18 +1,21 @@
 # Ralph Status
 
-_Updated: 2026-08-31 21:46:55_
+_Updated: 2026-08-31 21:49:37_
 
-## CRASHED
+## Harness Did Not Run
 
-The harness died on an unhandled `UnicodeEncodeError`: 'charmap' codec can't encode character '\u2194' in position 57: character maps to <undefined>
-In flight: (no sprint was in flight)
+harness exited with code 4 (a pre-flight check failed before the main loop started) without writing STATUS.md. This happens on two paths, both before the harness's main loop starts: a pre-flight check failure, or a lock already held by another instance. Exit code 2 means the latter (normal, not reported); this one means a pre-flight check failed. The pre-flight message itself is in `ralph/logs/harness.log` (the harness's stdout, captured by the supervisor); the supervisor's own account of the run is in `ralph/logs/supervisor.log`. Failing that, run `python -m ralph.harness` by hand.
+
+## NO LIVE HARNESS
+
+The heartbeat names a process that is not running (or is no longer the ralph harness). Beat age alone cannot see this: a heartbeat file outlives the process that wrote it, so a machine that rebooted two minutes ago leaves a two-minute-old beat that reads as perfectly healthy.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **5 seconds ago**
-- Beat PID: 21844 -- alive
+- Last beat: **3 minutes ago**
+- Beat PID: 21844 -- **NOT RUNNING**
 
 ## Queue
 
@@ -24,8 +27,8 @@ In flight: (no sprint was in flight)
 
 ## Push
 
-- last push: **OK** (just now)
-- last successful push: just now
+- last push: **OK** (3 minutes ago)
+- last successful push: 3 minutes ago
 
 ## Blocks drift
 
@@ -39,4 +42,4 @@ In flight: (no sprint was in flight)
 
 ## Recent
 
-- A2-11 ok
+- harness exit rc=1
