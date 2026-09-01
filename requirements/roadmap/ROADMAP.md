@@ -17533,7 +17533,7 @@ Flagged as follow-up (do NOT author in A2-19):
 - Started: 2026-09-01 14:34
 - Completed: 2026-09-01 15:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 3a13d62
 - New_sprints_proposed: none
 - Polish_items_folded_in: elena-reactive-ambient (matches A2-13 Marcus + A2-18 Tomas
   precedent for telegraph-NPC reactive lines); explicit-kallio-extension-preservation-test
