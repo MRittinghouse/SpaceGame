@@ -16527,18 +16527,25 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 - 2026-09-01 11:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 11:51 — harness: plan phase starting
 - 2026-09-01 12:50 — planner: sprint is already implemented per commit ec3797c (all 8 touch-zone files present: `d6_preservation_empire.json`, extended `npcs.json`, 5 new dialogue trees, 2 journal entries, 2 scar chatter lines, 2 Priya ambient reactions, new scenario test). Verified `pytest tests/test_scenarios/test_scenario_dilemma_d6.py` → 38 passed; `pytest tests/test_compliance/test_dilemma_integrity.py` → 20 passed. Handing off to implementer for re-verification and downstream phases. PHASE_OK
+- 2026-09-01 13:10 — implement: re-verification pass. D6 scenario tests (38) + dilemma integrity (20) + Writing Bible (39) all pass. Discovered 2 failures in `TestDialogueFlagAudit` under parallel load: `_collect_all_flag_uses()` now takes ~91 s serially (D6 sprint added ~700 lines to station_chatter + ambient_dialogue), exceeding the 120 s global timeout under xdist contention. Fixed with `@pytest.mark.timeout(300)` on both slow tests (commit e65a767, within touch zone). Full suite re-run: 11438 passed, 100 skipped — baseline matched. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 11:51
-- Completed: 2026-09-01 12:50
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none (no new planning work needed; implementation commit is ec3797c from prior run)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (prior planning already folded in 5 polish items; nothing new to add)
-- Decisions_locked: 0 (prior planning locked 5; no new decisions needed)
-- Notes: Sprint was already fully implemented by commit ec3797c ("A2-17: D6 Preservation vs Empire -- data files and scenario test") from a prior harness run. Stuck-sprint recovery reset it to todo at 11:45 because the prior run apparently completed implementation without writing the follow-up sentinel. Verified the work stands: `d6_preservation_empire.json` loads, integrity guard passes, all 38 D6 scenario tests pass, all 20 dilemma-integrity tests pass. Per planner instructions for already-implemented sprints, writing PHASE_OK so the dispatcher routes to implement (which will re-verify rather than duplicate) and then review.
+- Started: 2026-09-01 13:00
+- Completed: 2026-09-01 13:10
+- Files_changed: tests/test_data/test_dialogue_integrity.py
+- Commits: e65a767
+- Tests_added: 0
+- Tests_baseline: 11438
+- Tests_passing: 11438
+- Tests_skipped: 100
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes
+- Notes: Sprint was already implemented (ec3797c). Re-verification found 2 flag-audit tests failing under xdist due to timeout regression from D6 JSON additions (~700 lines). Fixed with pytest.mark.timeout(300) on both affected tests. Full suite green at baseline.
 ---
 
 #### A2-18 — D7: Faith ↔ Transcendence
