@@ -10146,6 +10146,396 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "owusu_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "emiko_owusu",
+          "text": "Captain. I hold council on the fourth day and dockside office hours the two after. You caught me between. If it is a favor, I can weigh it. If it is a quorum matter, I put it on the fourth-day agenda and it waits with the rest. I do not have any other line to give you.",
+          "responses": [
+            {
+              "text": "What is the fourth-day agenda for?",
+              "next_node_id": "quorum"
+            },
+            {
+              "text": "How does someone like me get on it?",
+              "next_node_id": "onto_agenda"
+            },
+            {
+              "text": "[Nothing right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "quorum",
+          "speaker_id": "emiko_owusu",
+          "text": "Anything that requires the council to speak with one voice. Docking-fee schedules. Water allocation. Which parcels get patrol coverage and which do not. Small town, small quorum, and every seat counts. I do not have votes I can promise you. I have a seat I can promise to fill honestly.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "onto_agenda",
+          "speaker_id": "emiko_owusu",
+          "text": "Bring me something the council can act on. Not a grievance. Not a rumor. A proposal with a signatory list, a cost line, and one clear ask. I have been counting votes long enough to know the difference between a proposal that moves and a wish list. Bring the first kind.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "owusu_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "emiko_owusu",
+          "text": "The council voted the seat in on the third reading. Not without argument, but the count held. You are on the agenda now, not the petition list. That is a distinction the people in this room understand and the people outside it do not.",
+          "responses": [
+            {
+              "text": "What does the seat cover?",
+              "next_node_id": "covers"
+            },
+            {
+              "text": "I appreciate the sponsorship.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "covers",
+          "speaker_id": "emiko_owusu",
+          "text": "Fourth-day quorum, first-day dockside review, and a standing invitation to the fee-schedule working group. The other councils on the circuit will recognize your signature. That opens some doors the private applicants do not walk through. Use it for real proposals and the doors stay open.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "emiko_owusu",
+          "text": "Do not thank me for the seat. Thank me by filling it. I have watched people take a chair and treat it like a trophy. That is not what this is for.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "owusu_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "emiko_owusu",
+          "text": "Captain. The seat we had drafted for you is not on the agenda anymore. The council pulled it back on the second reading, and I did not fight for it. You know why. I do not seat operators who are funding a walkout on parcels their council would have to police the day after.",
+          "responses": [
+            {
+              "text": "The council process was too slow for what needed doing.",
+              "next_node_id": "too_slow"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "too_slow",
+          "speaker_id": "emiko_owusu",
+          "text": "I know it is. It was slow when I sat on the other side of the table and I know it is slow now. That is what the process is for. It is the reason the votes count when they land. You made a call. I am not relitigating it. I am telling you which door it closed.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
+    },
+    {
+      "id": "halvorsen_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "idris_halvorsen",
+          "text": "Claims Office, Crimson Reach circuit. I file parcels. I do not adjudicate them beyond the point where the survey markers agree. If you have a filing question, I can answer it. If you have a border dispute, we schedule a mediation window and you come back for it.",
+          "responses": [
+            {
+              "text": "What qualifies as a filing?",
+              "next_node_id": "filing"
+            },
+            {
+              "text": "How does mediation work here?",
+              "next_node_id": "mediation"
+            },
+            {
+              "text": "[Nothing right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "filing",
+          "speaker_id": "idris_halvorsen",
+          "text": "Signed survey. Drift analysis for the parcel over the last six cycles. A clean chain of title back to the last unambiguous holder. If any of those three are missing, I hold the file and mark the window open. I do not close windows early. That is what turns filings into disputes.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "mediation",
+          "speaker_id": "idris_halvorsen",
+          "text": "Both parties sit in the office. Both surveyors present. The drift record on the table between them. I read the record and the parties speak to what it shows. Nine times in ten, the drift settles the question before I have to. That is why I keep the drift record and not opinions.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "halvorsen_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "idris_halvorsen",
+          "text": "Filing is complete. The parcel is registered to you as administrator of record, not applicant. That distinction matters at the next mediation window. The surveyors on my registry will treat your signature as one of the reading voices in the room now, not one of the parties at the table.",
+          "responses": [
+            {
+              "text": "What does 'administrator of record' change?",
+              "next_node_id": "administrator"
+            },
+            {
+              "text": "I appreciate the transfer.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "administrator",
+          "speaker_id": "idris_halvorsen",
+          "text": "You file, you do not petition. You call windows, you do not wait for them. The surveyors send drift reports to your office as they send them to mine. It is not authority over people. It is authority over paperwork. In this line of work, that is most of the authority there is.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "idris_halvorsen",
+          "text": "The paperwork does not thank people back. I will note that you were willing to take it on when other applicants would not have. The registry will remember that longer than either of us will.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "halvorsen_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "idris_halvorsen",
+          "text": "Captain. The filing window on the parcel you were working toward closed. I did not extend it. You know why. I do not carry filings for applicants who are treating my registry as a document to be worked around rather than through.",
+          "responses": [
+            {
+              "text": "The filing window did not fit the operational timeline.",
+              "next_node_id": "timeline"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "timeline",
+          "speaker_id": "idris_halvorsen",
+          "text": "The filing window fits the drift record, not the operational timeline. That is on purpose. Drift is slow because rock is slow. If you moved faster than that, the parcel is not on the registry as yours. It is on the registry as someone else's now, or as unassigned. I do not reopen closed windows.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
+    },
+    {
+      "id": "deng_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "sorcha_deng",
+          "text": "You wanted a meeting. This is the meeting. I organize contract-crews working off passage debt across three settlements. I do not have a lot of time. If you have work for the cells, say the work. If you have money for the fund, sign the fund. If you have questions, ask short ones.",
+          "responses": [
+            {
+              "text": "What does the fund cover?",
+              "next_node_id": "fund"
+            },
+            {
+              "text": "What do the cells actually do?",
+              "next_node_id": "cells"
+            },
+            {
+              "text": "[Nothing right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "fund",
+          "speaker_id": "sorcha_deng",
+          "text": "Passage debt buyout. Emergency legal on the shift-supervisor writeups. A rotating meal fund for the ones the operators are trying to starve into signing back on. That is where the money goes. I do not spend it on flags and I do not spend it on speeches.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "cells",
+          "speaker_id": "sorcha_deng",
+          "text": "The cells organize the walkouts, run the safety comms, and get the debt-buyouts to the right hands before the operator does. That is the whole of it. It is not glamorous. It is not fast. It is what keeps people alive on parcels that would otherwise chew through them.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "deng_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "sorcha_deng",
+          "text": "The cells across three settlements are running their coordination through your ship now. Debt buyouts. Legal writs. Safety comms on the parcels the operators keep off the registry. That is real access. Do not waste it on being seen. Move the work.",
+          "responses": [
+            {
+              "text": "What does the coordination give me?",
+              "next_node_id": "access"
+            },
+            {
+              "text": "I will move the work.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "access",
+          "speaker_id": "sorcha_deng",
+          "text": "Cargo the cells vouch for gets carried. Passengers the cells vouch for get carried. Runners will find you where they will not find the operators. That is what the cell network is. It is not a favor list. It is people trusting each other's word. Break the word, lose the network.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "sorcha_deng",
+          "text": "Good. Then we do not have to talk about this again until something goes wrong. Which it will. Call me when it does.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "deng_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "sorcha_deng",
+          "text": "You picked a side. It was not this one. The cells across the three settlements are organizing without you now, and around you where the routes overlap. That is not personal. It is what happens when the money that used to move the fund goes to a council seat or a claims filing instead.",
+          "responses": [
+            {
+              "text": "It was a call I had to make.",
+              "next_node_id": "call"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "call",
+          "speaker_id": "sorcha_deng",
+          "text": "Yes. I know. I have watched captains make it before. I am not asking you to defend it. I am telling you the cells are done running debt buyouts through your ship. That was the trade you made. Own it and move on.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
     }
   ]
 }

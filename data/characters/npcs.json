@@ -1094,6 +1094,84 @@
           "required_flags": ["lens_closed_vengeance"]
         }
       ]
+    },
+    {
+      "id": "emiko_owusu",
+      "name": "Mayor Emiko Owusu",
+      "title": "Mayor of Haven's Rest",
+      "portrait_color": [
+        170,
+        130,
+        110
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "owusu_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_political_power_won",
+          "dialogue_id": "owusu_victorious",
+          "required_flags": ["d3_political_power_won"]
+        },
+        {
+          "state_id": "post_political_power_closed",
+          "dialogue_id": "owusu_declined",
+          "required_flags": ["lens_closed_political_power"]
+        }
+      ]
+    },
+    {
+      "id": "idris_halvorsen",
+      "name": "Idris Halvorsen",
+      "title": "Claims Administrator",
+      "portrait_color": [
+        120,
+        130,
+        160
+      ],
+      "home_system_id": "crimson_reach",
+      "dialogue_id": "halvorsen_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_empire_won",
+          "dialogue_id": "halvorsen_victorious",
+          "required_flags": ["d3_empire_won"]
+        },
+        {
+          "state_id": "post_empire_closed",
+          "dialogue_id": "halvorsen_declined",
+          "required_flags": ["lens_closed_empire"]
+        }
+      ]
+    },
+    {
+      "id": "sorcha_deng",
+      "name": "Sorcha Deng",
+      "title": "Contract-Crew Organizer",
+      "portrait_color": [
+        200,
+        90,
+        90
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "deng_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_revolution_won",
+          "dialogue_id": "deng_victorious",
+          "required_flags": ["d3_revolution_won"]
+        },
+        {
+          "state_id": "post_revolution_closed",
+          "dialogue_id": "deng_declined",
+          "required_flags": ["lens_closed_revolution"]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "dilemmas": [
+    {
+      "id": "d3_power_revolution_empire",
+      "poles": ["political_power", "revolution", "empire"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "tomas_drifter",
+      "telegraph_lines": [
+        "Way I see it, you are running three ledgers at once, Captain. Owusu's council favors on one page. Deng's contract-crew cells on another. Halvorsen's claims filings on a third. That is a lot of ink for a ship this size.",
+        "Smart money says two of those close each other out. You cannot sit at Emiko's table asking for a seat and be the person funding Sorcha's people to walk off Idris's parcels the same week. Somebody is going to notice which side of the room you keep your coat on.",
+        "That is a bad deal shaping up, and it is not any of my business which two you keep. I am telling you as a friend that when you pick, the third stops taking your calls. That is the margin on this one."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "political_power",
+          "closes": ["revolution", "empire"],
+          "tier_unlocks": [
+            "Mayor Emiko Owusu backs the captain for a council seat that Haven's Rest is creating specifically because the captain proved they would work inside the system rather than around or over it",
+            "settlement council contacts across the frontier open to a civilian operator who has demonstrated they will bring matters through quorum before acting on them"
+          ],
+          "outcome_flag": "d3_political_power_won",
+          "narration_summary": "You closed the file on the cell-organizing side and on the claims-filing side both. Owusu's council folded a seat into the roster that had not existed before, and it is yours because you were willing to stand for it in the room where the votes are counted. Deng and Halvorsen are outside the room now. That was the cost, and you paid it."
+        },
+        {
+          "winning_lens_id": "revolution",
+          "closes": ["political_power", "empire"],
+          "tier_unlocks": [
+            "Sorcha Deng's contract-crew cells across Haven's Rest, Crimson Reach, and the settlements between them now coordinate through the captain directly, access no negotiated council seat or claimed territory would have earned",
+            "off-book runners and organizers who route work only to operators the cells vouch for become available for cargo and passenger movement that avoids both council manifests and claims registries"
+          ],
+          "outcome_flag": "d3_revolution_won",
+          "narration_summary": "You closed the file on the council side and on the sovereign-territory side both. Deng's crews across three settlements coordinate through your ship now, which is access no seat and no border filing would have unlocked. Owusu will not seat you. Halvorsen will not file for you. That was the cost, and you paid it."
+        },
+        {
+          "winning_lens_id": "empire",
+          "closes": ["political_power", "revolution"],
+          "tier_unlocks": [
+            "Claims Administrator Idris Halvorsen cedes administrative authority over a contested border parcel to the captain, the first sovereign territory the captain holds outright",
+            "surveyors and claim-line operators on Halvorsen's registry begin routing filing work to the captain as a peer authority rather than a private applicant"
+          ],
+          "outcome_flag": "d3_empire_won",
+          "narration_summary": "You closed the file on the council side and on the organizing side both. Halvorsen signed over administrative authority on a parcel that used to be paperwork nobody wanted to touch, and it is your paperwork now. Owusu will not seat you. Deng will organize around you specifically. That was the cost, and you paid it."
+        }
+      ]
+    }
+  ]
+}

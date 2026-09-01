@@ -496,6 +496,27 @@
       "trigger_flag": "d1_justice_won",
       "system_id": "havens_rest",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d3_political_power_won",
+      "text": "Chose the council seat. Owusu drafted it, the fourth-day quorum passed it, and it is mine. Deng's cells are running debt buyouts around this ship now, and Halvorsen's registry does not read my signature. The council calendar does. That is the trade I made.",
+      "trigger_flag": "d3_political_power_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d3_revolution_won",
+      "text": "Chose the cells. Deng put the coordination across three settlements through this ship. Debt buyouts, safety comms, legal writs on the shift-supervisor writeups. Owusu will not seat me at the fourth-day quorum. Halvorsen will not file for me. The cells will move work no one else will carry. That is the trade I made.",
+      "trigger_flag": "d3_revolution_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d3_empire_won",
+      "text": "Chose the parcel. Halvorsen signed the administrator-of-record filing at Crimson Reach Claims and the border ground is on the registry as mine. Owusu will not seat me. Deng is organizing around this ship specifically. Surveyors on Halvorsen's circuit route drift reports to my office now. That is the trade I made.",
+      "trigger_flag": "d3_empire_won",
+      "system_id": "crimson_reach",
+      "mission_id": ""
     }
   ]
 }

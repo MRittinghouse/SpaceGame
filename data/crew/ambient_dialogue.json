@@ -1860,6 +1860,24 @@
       "text": "Odusanya filed the warrant-holding authorization. It is on record. We are now the kind of ship that can bring a case through due process. The bounty board does not show that. The hearing record does.",
       "context": "flag_triggered",
       "required_flags": ["d1_justice_won"]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Way I see it, Captain, you took the seat and the paperwork went with it. Smart money says the council will fill your calendar faster than any bounty run ever did. Do not forget who does not sit at that table now. That is the margin on the trade.",
+      "context": "flag_triggered",
+      "required_flags": ["d3_political_power_won"]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "The cells across three settlements route through us now. That is not a favor list, Captain, that is a network. Way I see it, we are carrying work no council would have signed and no claims office would have filed. Bad deal to break a word on that one.",
+      "context": "flag_triggered",
+      "required_flags": ["d3_revolution_won"]
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Signed for a parcel today. Sovereign paperwork, Captain, with your name on the drift record. Way I see it, that is a bigger door than either of us has walked through before. Owusu and Deng are outside it now. That is the margin.",
+      "context": "flag_triggered",
+      "required_flags": ["d3_empire_won"]
     }
   ]
 }

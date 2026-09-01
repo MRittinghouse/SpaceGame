@@ -813,6 +813,35 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # ``auto_d1_*_won`` journal entries which the scanner does not crawl.
     "d1_vengeance_won",
     "d1_justice_won",
+    # === A2-15 (D3: Political Power vs Revolution vs Empire) — DETECTOR MISS ===
+    # Same shape as A2-12/A2-13/A2-14 above. ``lens_closed_political_power``,
+    # ``lens_closed_revolution``, and ``lens_closed_empire`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` via the variable-arg
+    # ``lens_closed(lens_id)`` helper when D3 closes. The three outcome
+    # flags (``d3_political_power_won`` etc.) are written the same
+    # variable-arg way via ``player.dialogue_flags[outcome.outcome_flag]
+    # = True``. Real consumers:
+    #   lens_closed_political_power: scar chatter ``al_scar_d3_owusu_01``,
+    #     Emiko Owusu's ``post_political_power_closed`` dialogue_state.
+    #   lens_closed_revolution: scar chatter ``al_scar_d3_deng_01``,
+    #     Sorcha Deng's ``post_revolution_closed`` dialogue_state.
+    #   lens_closed_empire: scar chatter ``al_scar_d3_halvorsen_01``,
+    #     Idris Halvorsen's ``post_empire_closed`` dialogue_state.
+    #   d3_political_power_won: Tomas ``flag_triggered`` ambient line,
+    #     Owusu's ``post_political_power_won`` dialogue_state,
+    #     ``auto_d3_political_power_won`` journal entry.
+    #   d3_revolution_won: Tomas ``flag_triggered`` ambient line, Deng's
+    #     ``post_revolution_won`` dialogue_state, ``auto_d3_revolution_won``
+    #     journal entry.
+    #   d3_empire_won: Tomas ``flag_triggered`` ambient line, Halvorsen's
+    #     ``post_empire_won`` dialogue_state, ``auto_d3_empire_won``
+    #     journal entry.
+    "lens_closed_political_power",
+    "lens_closed_revolution",
+    "lens_closed_empire",
+    "d3_political_power_won",
+    "d3_revolution_won",
+    "d3_empire_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
