@@ -17541,7 +17541,7 @@ Flagged as follow-up (do NOT author in A2-19):
 - Started: 2026-09-01 15:39
 - Completed: 2026-09-01 15:47
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending — activity log update only)
+- Commits: a642722
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (sprint already implemented; no new planning done)
 - Decisions_locked: 0 (all 9 already locked in the 15:15 plan cycle)
