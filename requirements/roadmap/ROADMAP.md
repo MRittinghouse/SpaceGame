@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: in-progress (implementing)
+**Status**: in-progress (reviewing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18373,6 +18373,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 16:56 — harness: plan phase starting (first pass)
 - 2026-09-01 17:35 — first-pass planning complete; expanded touch zones (added save_manager.py,
 - 2026-09-01 17:56 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 18:21 — harness: review phase starting (rework cycle 0)
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
@@ -18440,24 +18441,26 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   reads zero investment tokens); test_module_level_dim_capture PASS (baseline stays 27);
   test_ground_loot_bonus PASS (all 6 ground-loot tests green, partial-Game guard works);
   full suite 11552 passed / 99 skipped (baseline 11543, +9 new tests). PHASE_OK
+- 2026-09-01 — review complete; all 16 ACs confirmed passing; three architectural guards
+  verified green; one pre-existing flaky heartbeat timing test (test_ralph/) unrelated to
+  A2-20 produced 11551 pass in xdist run (passes in isolation); baseline requirement met.
+  PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 18:30
-- Completed: 2026-09-01 19:15
-- Files_changed: spacegame/models/capstone.py, spacegame/models/player.py, spacegame/save_manager.py, spacegame/config.py, spacegame/views/capstone_view.py, spacegame/engine/game.py, data/narrative/capstones.json, tests/test_models/test_capstone.py, tests/test_compliance/test_capstone_registry.py, tests/test_scenarios/test_scenario_capstone_session_continues.py, tests/test_scenarios/test_scenario_save_load.py, tests/test_views/test_capstone_view.py
-- Commits: (pending — committing after phase report)
-- Tests_added: 9
-- Tests_baseline: 11543
-- Tests_passing: 11552
-- Tests_skipped: 99
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: n/a (no new flags added to constants/flags.py; dialogue flags written at runtime via f-string pattern, not as module constants)
-- Writing_bible_clean: yes (placeholder template has no em-dashes, no banned phrases, no parallel-negation, no banned NPC names)
-- Touch_zones_respected: yes (all changed files are within declared touch zones)
-- Notes: Model-layer coordinator (check_capstones) correctly gates engine from reading investment. Three architectural guards that caused the first-pass revert all pass: investment compliance (AC14), dim-capture baseline (AC15), ground-loot partial-Game guard (AC13). All 16 acceptance criteria satisfied. Session continues after acknowledge per spec Success Criterion 8.
+- Started: 2026-09-01 19:20
+- Completed: 2026-09-01 19:55
+- Files_changed: none
+- Commits: none
+- Tests_passing: 11551
+- Acceptance_criteria_verified: 16/16
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: AC7 test covers "modal already active → action suppressed" but not "both become eligible on same tick → dilemma fires first." The latter requires investment to jump from <80 to ≥95 in one action, which is impossible in normal play (dilemma fires at 80, modal blocks further actions until resolved, capstone fires later at 95 in a separate action). Not a blocker; noting for completeness.
+- Followup_sprints_added: none
+- Notes: Plan audit: sound; all 14 locked decisions defensible. Three architectural guards that caused the first-pass revert all confirmed passing: investment compliance (AC14), dim-capture baseline (AC15), ground-loot partial-Game guard (AC13). Model-layer coordinator (check_capstones) correctly gates engine from reading investment. All 16 ACs satisfied, 69 new sprint-specific tests pass, lint/format/writing-bible clean.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
