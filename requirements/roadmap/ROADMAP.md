@@ -141,7 +141,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
-| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
@@ -16550,7 +16550,7 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 
 #### A2-18 — D7: Faith ↔ Transcendence
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16966,6 +16966,8 @@ gate.
 - 2026-09-01 13:36 — harness: plan phase starting
 - 2026-09-01 13:36 — planning previously completed at 12:55 (7 decisions locked, 6
 - 2026-09-01 13:45 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 14:00 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 14:28 — harness: review passed, marking done
   polish items folded in, 9 tasks laid out); implementation subsequently landed on
   commit 418eb98 ("A2-18: D7 Faith vs Transcendence -- data + tests"): all 8 touch-zone
   files edited (d7_faith_transcendence.json created, imre_solano + rasheeda_marchetti
@@ -16980,26 +16982,25 @@ gate.
 - 2026-09-01 14:15 — implement phase verification complete: 44 D7 tests pass (1.13s);
   39 integrity/dialogue tests pass (4m56s); full suite 11482 passed, 100 skipped
   (matches baseline exactly); lint clean; format clean; touch zones respected. PHASE_OK
+- 2026-09-01 14:30 — review complete; all 17 ACs verified; plan audit sound; full suite
+  at baseline (11482/100); no findings requiring rework. Single tighten noted (see below).
+  PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 14:00
-- Completed: 2026-09-01 14:15
-- Files_changed: none (work was in 418eb98; this phase is verification-only)
-- Commits: 418eb98 (implementation), 83201b9 (plan activity log), 92e5a12 (plan commit hash)
-- Tests_added: 44
-- Tests_baseline: 11482
+- Started: 2026-09-01 14:15
+- Completed: 2026-09-01 14:30
+- Files_changed: none
+- Commits: none
 - Tests_passing: 11482
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint already implemented in 418eb98. Verification pass confirmed: all 44 D7
-  scenario tests pass, all 39 integrity/dialogue tests pass, full suite at baseline.
-  No new work needed; sentineling PHASE_OK.
+- Acceptance_criteria_verified: 17/17
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: `rasheeda_marchetti` has `faction_id: ""` while the other 8 axiom_labs NPCs all carry `science_collective`; matches Solheim's A2-16 precedent explicitly, which the plan specified, so the implementation is correct — but future "all axiom_labs science_collective" queries will silently miss Marchetti. Flagging for awareness; not a blocker.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 7 locked decisions defensible. 44 D7 tests and all 39 integrity/dialogue tests pass. Solano voice is grounded/non-mystical; Marchetti voice has the clinical/procedure anchors; Tomas register matches D3 template. Full suite holds at baseline.
 ---
 
 #### A2-19 — D8: Crime ↔ Community
