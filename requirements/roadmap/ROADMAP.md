@@ -14652,7 +14652,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 - Started: 2026-08-31 22:51
 - Completed: 2026-08-31 22:53
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: <pending>
+- Commits: 071fedd
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (already folded in by prior phase — journal-entry-for-D4-resolution, writing-bible-scanner-extension-to-data/narrative/dilemmas)
 - Decisions_locked: 0 (all 5 already locked by prior phase 49b5a60)
