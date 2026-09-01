@@ -1,0 +1,39 @@
+{
+  "dilemmas": [
+    {
+      "id": "d1_vengeance_justice",
+      "poles": ["vengeance", "justice"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "elena_reeves",
+      "telegraph_lines": [
+        "With respect, Captain, I have been watching the paperwork trail on both sides of this. Bounty contracts routed through Crimson Reach. Warrant applications filed through Odusanya's circuit. The heading you are holding points both ways at once, and that is not a route.",
+        "We are logging bounty clearances and lawful warrant work in the same cycle. I am not saying one cancels the other. I am saying someone watching the manifest would have a question about which destination you are actually navigating toward.",
+        "The two columns in the ledger do not close each other out. At some point the ship has to commit to one heading or the other. I am noting it, not deciding it. That is yours."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "vengeance",
+          "closes": ["justice"],
+          "tier_unlocks": [
+            "access to coerced-informant leads and off-books contacts that Magistrate Odusanya's circuit would refuse to authorize",
+            "information brokers who route work to operators whose methods do not require a hearing record"
+          ],
+          "outcome_flag": "d1_vengeance_won",
+          "narration_summary": "You closed the file on the warrant side. Odusanya's circuit is not a resource anymore. The names you are after are still out there: Rendik Foss, Callan Vert. The people who can help you reach them do not ask about jurisdiction. The process that might have sanctioned this was the cost, and you paid it."
+        },
+        {
+          "winning_lens_id": "justice",
+          "closes": ["vengeance"],
+          "tier_unlocks": [
+            "Magistrate Behnaz Odusanya sponsors the player for warrant-holding authority previously unavailable to a civilian operator",
+            "case-building contacts across the settlements who will testify for someone who has proven they will use due process even when it costs them a target"
+          ],
+          "outcome_flag": "d1_justice_won",
+          "narration_summary": "You closed the file on the personal pursuit. The warrant-holding line item is on record. Odusanya's contacts across the settlements are open to you because you proved you would use the process even when the target was someone you wanted. Rendik Foss and Callan Vert remain at large. You will see their names on bounty boards. You made the call anyway."
+        }
+      ]
+    }
+  ]
+}

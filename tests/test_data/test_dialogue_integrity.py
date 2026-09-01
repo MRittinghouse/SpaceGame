@@ -798,6 +798,21 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # scanner does not crawl.
     "d2_wealth_won",
     "d2_community_won",
+    # ``lens_closed_justice`` is SET by :func:`spacegame.models.dilemma.resolve`
+    # via the variable-arg ``lens_closed(lens_id)`` helper when D1 resolves to
+    # vengeance. Consumers:
+    #   lens_closed_justice: scar chatter ``al_scar_d1_odusanya_01`` (havens_rest),
+    #   and Magistrate Odusanya's NPC dialogue_state (odusanya_declined).
+    "lens_closed_justice",
+    # ``d1_vengeance_won`` and ``d1_justice_won`` are the outcome flags SET by
+    # :func:`spacegame.models.dilemma.resolve` through
+    # ``player.dialogue_flags[outcome.outcome_flag] = True`` — the flag name
+    # lives inside the loaded dilemma record, not as a source-side string
+    # literal. Consumers are Elena's ``flag_triggered`` ambient reactions
+    # (crew_id: elena_reeves, one per branch) plus the two
+    # ``auto_d1_*_won`` journal entries which the scanner does not crawl.
+    "d1_vengeance_won",
+    "d1_justice_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

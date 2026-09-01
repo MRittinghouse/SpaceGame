@@ -1848,6 +1848,18 @@
       "crew_id": "dr_priya_osei",
       "text": "I keep a running log of crew health indicators. Nothing alarming. But some of the fatigue patterns are worth monitoring on longer routes.",
       "context": "idle"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "The paperwork on this heading is going to read a particular way. Bounty clearances without warrant backing. I am not telling you that is wrong. I am telling you someone reviewing the manifest will reach their own conclusion. I have noted it.",
+      "context": "flag_triggered",
+      "required_flags": ["d1_vengeance_won"]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Odusanya filed the warrant-holding authorization. It is on record. We are now the kind of ship that can bring a case through due process. The bounty board does not show that. The hearing record does.",
+      "context": "flag_triggered",
+      "required_flags": ["d1_justice_won"]
     }
   ]
 }

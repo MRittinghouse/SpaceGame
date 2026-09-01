@@ -482,6 +482,20 @@
       "trigger_flag": "d2_community_won",
       "system_id": "havens_rest",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d1_vengeance_won",
+      "text": "Chose the pursuit. Odusanya's circuit is closed to me now. The warrant-holding line is gone. Rendik Foss and Callan Vert are still on the open board. The people who can help reach them do not ask about jurisdiction. That is the file I am running.",
+      "trigger_flag": "d1_vengeance_won",
+      "system_id": "crimson_reach",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d1_justice_won",
+      "text": "Chose the warrant. Odusanya filed the civilian warrant-holding authorization. It is on record now. Rendik Foss and Callan Vert are still at large. The bounty board has them. I made the call anyway. The case-building contacts across the settlements are open to me because I did.",
+      "trigger_flag": "d1_justice_won",
+      "system_id": "havens_rest",
+      "mission_id": ""
     }
   ]
 }

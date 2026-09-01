@@ -1238,6 +1238,26 @@
     {"id": "fu_life_01", "system_id": "the_fulcrum", "text": "The relay station's signal strength dropped again. Maintenance says it's atmospheric interference. Atmospheric interference in a vacuum.", "category": "overheard", "weight": 10},
     {"id": "fu_life_02", "system_id": "the_fulcrum", "text": "Someone brought a cat aboard last month. Station regulation says no pets. Nobody's enforcing it. The cat knows.", "category": "overheard", "weight": 10},
     {"id": "fu_life_03", "system_id": "the_fulcrum", "text": "The observation deck faces open space. On a clear cycle, you can see the Expanse's edge. It looks like nothing. That's what makes it terrifying.", "category": "atmosphere", "weight": 10},
-    {"id": "fu_life_04", "system_id": "the_fulcrum", "text": "Supply shipment's late again. Third time this quarter. The cook's getting creative with what's left. 'Creative' is not a compliment.", "category": "overheard", "weight": 10}
+    {"id": "fu_life_04", "system_id": "the_fulcrum", "text": "Supply shipment's late again. Third time this quarter. The cook's getting creative with what's left. 'Creative' is not a compliment.", "category": "overheard", "weight": 10},
+    {
+      "id": "al_scar_d1_odusanya_01",
+      "system_id": "havens_rest",
+      "text": "Word from the circuit magistrate's office: Odusanya's warrant-sponsorship list is closed to new applicants from operators running outside the hearing record. The posting says she does not review the decision. The list stays closed.",
+      "category": "scar",
+      "faction_id": "frontier_alliance",
+      "weight": 7,
+      "required_flags": ["lens_closed_justice"],
+      "one_shot": false
+    },
+    {
+      "id": "al_scar_d1_names_still_out_there_01",
+      "system_id": "crimson_reach",
+      "text": "Rendik Foss and Callan Vert are still on the open board at Crimson Reach. Same contracts, different cycle. Nobody has closed those files.",
+      "category": "scar",
+      "faction_id": "commerce_guild",
+      "weight": 7,
+      "required_flags": ["lens_closed_vengeance"],
+      "one_shot": false
+    }
   ]
 }

@@ -10016,6 +10016,136 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "odusanya_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "magistrate_odusanya",
+          "text": "I hold hearings out of this ship three days a week. The other two I spend filing with settlement councils that process paperwork at their own pace. If you have a matter that requires a lawful warrant, I can assess it. If you are looking for something faster than a warrant, I am not the resource you want.",
+          "responses": [
+            {
+              "text": "I am looking for lawful warrant assistance.",
+              "next_node_id": "warrants"
+            },
+            {
+              "text": "What qualifies for a warrant here?",
+              "next_node_id": "qualifies"
+            },
+            {
+              "text": "[Nothing right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "warrants",
+          "speaker_id": "magistrate_odusanya",
+          "text": "Warrant requires a complaint, a named respondent, and a charge that fits the settlement code. Not an allegation. Not a suspicion. A charge. The distinction matters. I was pardoned once for a killing I committed and never disputed, because the council decided the finding was not worth the paperwork. I have spent the time since making sure that courtesy is not extended only to the sympathetic. Bring me a charge.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "qualifies",
+          "speaker_id": "magistrate_odusanya",
+          "text": "Violation of settlement code. Theft of registered cargo under a manifest. Unlawful restraint. The list is longer than that but those are the ones I see most often on this circuit. What I do not issue warrants for is personal grievance dressed as a charge. I can tell the difference. Most people who try it know I can.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "odusanya_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "magistrate_odusanya",
+          "text": "I know what you chose on the other side of that decision. I am not here to relitigate it. But what you are doing now runs outside the warrant process, and I do not sponsor operators who have made that choice. The circuit does not follow you back once you have stepped off it.",
+          "responses": [
+            {
+              "text": "The warrant process was too slow.",
+              "next_node_id": "too_slow"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "too_slow",
+          "speaker_id": "magistrate_odusanya",
+          "text": "Yes. It is. I know it is. So is the pardon process. So is the appeal. Speed is not what the process is for. You made a reasonable call for the wrong reasons, or the right call for the wrong process. Either way, we are not continuing from here.",
+          "responses": [
+            {
+              "text": "[Step back.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
+    },
+    {
+      "id": "odusanya_warrant_sponsor",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "magistrate_odusanya",
+          "text": "You held to the warrant process when you had a personal reason not to. I noticed. The settlement council has a civilian warrant-holding category that does not usually go to operators who have not demonstrated that. I filed your name. It went through. You are on the list.",
+          "responses": [
+            {
+              "text": "What does that give me access to?",
+              "next_node_id": "access"
+            },
+            {
+              "text": "I appreciate that.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "access",
+          "speaker_id": "magistrate_odusanya",
+          "text": "Witnesses who will testify for someone who has proven they use due process even when it costs them a target. Contacts across the settlements who do not take referrals from operators whose methods skip the hearing record. The list is long but it starts there.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "magistrate_odusanya",
+          "text": "Do not thank me yet. The warrant-holding authority is only as useful as the cases you bring. Bring bad cases and the list closes back up. I have seen it happen.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

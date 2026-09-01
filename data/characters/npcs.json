@@ -1068,6 +1068,32 @@
           "required_flags": ["lens_closed_wealth"]
         }
       ]
+    },
+    {
+      "id": "magistrate_odusanya",
+      "name": "Magistrate Behnaz Odusanya",
+      "title": "Circuit Magistrate",
+      "portrait_color": [
+        160,
+        140,
+        90
+      ],
+      "home_system_id": "havens_rest",
+      "dialogue_id": "odusanya_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_vengeance_collision",
+          "dialogue_id": "odusanya_declined",
+          "required_flags": ["lens_closed_justice"]
+        },
+        {
+          "state_id": "post_justice_won",
+          "dialogue_id": "odusanya_warrant_sponsor",
+          "required_flags": ["lens_closed_vengeance"]
+        }
+      ]
     }
   ]
 }
