@@ -139,7 +139,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
-| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
+| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
@@ -15753,7 +15753,7 @@ without them):
 
 #### A2-16 — D5: Legacy ↔ Connection
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15784,10 +15784,22 @@ just abstract lens investment.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d5_legacy_connection.json` (NEW)
-- `data/dialogue/` - Marcus Jin's telegraph lines (chosen because Elena is one of this
-  dilemma's poles, not its telegraph voice - using her would be a conflict of interest in the
-  fiction itself), Solheim's and Elena's post-collision dialogue states, and an NPC record for
-  Solheim (new).
+- `data/characters/npcs.json` - append a new NPC record for `amrit_solheim` with
+  `home_system_id`, `dialogue_id`, and a `dialogue_states` array covering both her winning and
+  losing post-collision routes; extend the existing `elena_reeves` record with a
+  `dialogue_states` array (she does not currently have one — verified 2026-09-01 by reading
+  `data/characters/npcs.json:4-20`) covering both her winning and losing post-collision routes.
+- `data/dialogue/dialogues.json` - Marcus Jin's telegraph lines (chosen because Elena is one
+  of this dilemma's poles, not its telegraph voice - using her would be a conflict of interest
+  in the fiction itself), Solheim's default / winning-state / losing-state trees, and Elena's
+  winning-state / losing-state trees (Elena already has a Guild-recruit default tree at
+  `elena_cantina` — this sprint only adds the two post-collision states).
+- `data/crew/station_chatter.json` - one scar `ChatterLine` per losing pole (two total),
+  matching D1's shape.
+- `data/crew/ambient_dialogue.json` - two Marcus `flag_triggered` ambient reactions, one per
+  outcome flag (Marcus delivered the telegraph, so he closes the loop — same pattern D1
+  shipped with Elena and D2 with Marcus himself).
+- `data/journal/entries.json` - two auto-journal entries, one per outcome flag.
 - `tests/test_scenarios/test_scenario_dilemma_d5.py` (NEW)
 
 **Deliverables.**
@@ -15813,24 +15825,383 @@ just abstract lens investment.
   `dialogue_flags["lens_closed_legacy"]`.
 - `tests/test_scenarios/test_scenario_dilemma_d5.py` mirroring the established shape.
 
+**Plan.**
+
+Locked decisions:
+1. Director Amrit Solheim `home_system_id` = `axiom_labs`. Verified 2026-09-01 the 12
+   loadable systems in `data/galaxy/systems.json` include `axiom_labs` (research system)
+   and `nova_research` (also research). `nova_research` is Priya Osei-adjacent per her
+   Act-I context; `axiom_labs` gives Solheim a distinct room without treading on Priya's
+   territory, matches the "Farrow Institute" fiction as a research-and-relief foundation,
+   and is not reused by any other sibling dilemma NPC (Owusu/Deng at havens_rest,
+   Halvorsen at crimson_reach, Odusanya at havens_rest, so axiom_labs is fresh ground).
+2. Farrow Institute framing is authored at the JSON/dialogue level ONLY. No refactor of
+   `spacegame/models/okafor_research.py`. Rationale — sprint sizing is M (matches
+   D1/D2/D14 pattern); the "generalize bindings" note in Context to read is a
+   fiction-level constraint on this sprint's authored content, not a code refactor
+   directive; the underlying `okafor_research_project_funded` signal continues to feed
+   `legacy` lens investment per `data/narrative/lenses.json:207`, so the mechanical
+   pipeline already works. Solheim's dialogue positions the Farrow Institute as a
+   new-in-Act-II foundation adjacent to but distinct from Kweon's Okafor Institute; the
+   fiction seam is closed at the dialogue layer without renaming Act I code paths. The
+   deeper code-level generalization (module docstring, `kweon_relationship_value` field
+   name) is flagged in Cross-sprint reactions below as a candidate follow-up sprint, not
+   folded in here.
+3. AC4 satisfaction path: verified 2026-09-01 that `spacegame/models/crew.py` has NO
+   existing loyalty-ceiling concept. `adjust_loyalty` at `crew.py:393-432` clamps at 100
+   unconditionally (`new_loyalty = max(0, min(100, old_loyalty + amount))`); the only
+   related field is `loyalty_floor` from the Leadership skill, not a ceiling. Per AC4's
+   documented alt path, this sprint satisfies criterion 4 by asserting the tier-unlock is
+   recorded in `player.dilemma_state.tier_unlocks_granted["connection"]` (set by
+   `resolve()` at `dilemma.py:333` for every dilemma). Follow-up sprint proposed below
+   for the mechanical loyalty-ceiling hook.
+4. Outcome flag ids: `d5_legacy_won`, `d5_connection_won`. Consistent with the
+   D1/D2/D3/D4 pattern (`d<N>_<lens>_won`).
+5. Scar `ChatterLine` topology = one scar per losing pole (two total), matching D1's
+   two-scars-two-outcomes shape. Ids: `al_scar_d5_solheim_01` at `axiom_labs` gated on
+   `lens_closed_legacy` (Solheim's wing dedicated to someone else, chair filled by a
+   candidate without the player's history with the Institute); `al_scar_d5_elena_01` at
+   `nexus_prime` gated on `lens_closed_connection` (Nexus Prime is where the player first
+   met Elena at the cantina per her NPC record `dialogue_id: "elena_cantina"` and
+   `home_system_id: "nexus_prime"` — verified 2026-09-01 by reading `npcs.json:4-20`;
+   the scar carries the highest emotional charge when the player returns to that
+   specific place). `one_shot: false` per the A2-11 scar convention. `category: "scar"`.
+6. Crew reactive ambient lines = two Marcus `flag_triggered` lines, one per outcome flag,
+   mirroring Elena's D1 pattern. Marcus is the telegraph voice; his post-collision
+   reactions close the loop the same way D1 shipped with Elena's reactions closing hers.
+   Elena reactive ambient lines are NOT authored here — she IS a pole, and using her voice
+   to editorialize on her own dilemma resolution would collapse the character into a
+   narrator. Priya / Tomas reactions are flagged as cross-sprint follow-ups below, not
+   folded in (keeps this sprint at M size).
+7. Winning-state / losing-state gating pattern (matches D3 Decision 6): each NPC's
+   winning-state dialogue is gated on `<outcome_flag>` (e.g., `d5_legacy_won`), while each
+   NPC's losing-state dialogue is gated on `lens_closed_<their_pole>`. Rationale: when a
+   lens wins, only its outcome flag is set (the winning lens is not closed); when a lens
+   loses, its `lens_closed_*` flag is set. Non-overlapping states, mechanically clean.
+   For D5 specifically: Solheim's winning-state (`solheim_victorious`) gates on
+   `d5_legacy_won`; Solheim's losing-state (`solheim_declined`) gates on
+   `lens_closed_legacy`. Elena's winning-state (`elena_connection_deepened`) gates on
+   `d5_connection_won`; Elena's losing-state (`elena_connection_declined`) gates on
+   `lens_closed_connection`.
+8. Journal entries = two auto-entries (`auto_d5_legacy_won`, `auto_d5_connection_won`) in
+   `data/journal/entries.json`, mirroring D1/D2/D3/D4's `trigger_flag` shape. Fold in —
+   the pattern is established and adding it here is a few lines of JSON per outcome.
+   `system_id` bindings: Legacy-win → `axiom_labs` (Farrow Institute's home);
+   Connection-win → `nexus_prime` (where the player first met Elena; symmetrical to the
+   Elena scar placement).
+9. Voice notes for the two NPCs authored inline as part of the dialogue trees (not in
+   `character_voices.md`, which is Act I's document):
+   - **Director Amrit Solheim** (new): institution-builder who inherited a chair she
+     privately doubts she has earned. Speaks in donor-relations vocabulary — endowment,
+     standing committee, wing dedication, chair, filing window. Long-horizon numbers
+     ("thirty-year"). Careful with the word "legacy" itself — does not use it about
+     herself; when she uses it about the player, she says it plainly, as an accounting
+     term, not a compliment. Refers to Dr. Okafor and the founding hand obliquely when
+     the founder subject comes up ("the person who wrote the charter", "the founding
+     generation") without saying Kweon or Okafor by name — Farrow is her institution,
+     adjacent to but not the same as Okafor. Not warm; correct.
+   - **Elena Reeves** (existing voice sheet at `requirements/character_voices.md:23-68`):
+     Guild formality unlearning itself; "With respect"; navigation metaphors; the
+     overcorrection tell where she catches a title and switches to first names awkwardly.
+     Losing-state (`elena_connection_declined`): goes MORE formal, not less — per her
+     voice sheet's Angry-becomes-formal rule (line 53). Cold precision. Uses "Captain"
+     without warmth. Does not editorialize; does not accuse. Post-collision-win state
+     (`elena_connection_deepened`): quieter, more informal, the leak of first-name usage
+     her voice sheet establishes as her Comfortable / Relaxed mode. Dry humor allowed.
+10. NPC record extension safety: Elena's existing `elena_reeves` record at `npcs.json:4`
+    currently has no `dialogue_states` field. Verified 2026-09-01 that other NPCs
+    (`magistrate_odusanya` at line 1073, `emiko_owusu` at line 1099) carry
+    `dialogue_states` alongside a `dialogue_id` default without breaking loader parse.
+    The extension is additive; no field renaming or default removal. Save compat:
+    Elena's runtime state is not affected because `dialogue_states` are consulted at
+    dialogue-open time via `get_active_dialogue_id`, which walks the array first and
+    falls back to `dialogue_id` when no gated state matches — no per-save serialization
+    of NPC records.
+
+Tasks (implementation order):
+
+1. **Author `data/narrative/dilemmas/d5_legacy_connection.json`.** Fields:
+   `id: "d5_legacy_connection"`, `poles: ["legacy", "connection"]`,
+   `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
+   `telegraph_npc_id: "marcus_jin"`, `telegraph_lines`: 2-3 lines in Marcus's voice
+   (mining-foreman directness, short declarative sentences, "we lost X people that year"
+   register with warmth held under the surface, the "you done?" impatience that means
+   "stop talking and let me work" per his voice sheet at
+   `requirements/character_voices.md:71-121`). The telegraph notes the player has been
+   funding institutions at the Farrow Institute (address by name — the Institute is the
+   Legacy-pole surface) and is increasingly absent from the ship's day-to-day; says the
+   crew notices captains who are present and captains who are somewhere else even when
+   they are on the bridge. Marcus does not moralize. He states it, hands still working,
+   and moves on. Two outcomes: `legacy` `closes: ["connection"]`, `outcome_flag:
+   "d5_legacy_won"`, `tier_unlocks` naming the Solheim-dedicated wing plus standing
+   authority over research direction; `connection` `closes: ["legacy"]`, `outcome_flag:
+   "d5_connection_won"`, `tier_unlocks` naming crew-roster-wide loyalty ceiling raise
+   plus previously unavailable personal dialogue for every recruited member. Both
+   `narration_summary` lines in third-person past-tense matching D1/D2/D4's register.
+   Voice-check: no em-dashes, no "no X, no Y" constructions, no parallel-negation
+   rhetoric, no banned NPC names.
+
+2. **Add Director Amrit Solheim NPC record to `data/characters/npcs.json`.**
+   `id: "amrit_solheim"`, `name: "Director Amrit Solheim"`,
+   `title: "Director, Farrow Institute"`,
+   `portrait_color`: pick a warm-neutral palette distinct from Odusanya's tan
+   (160, 140, 90) and Priya's violet (160, 120, 210) — e.g. `[190, 170, 130]`,
+   `home_system_id: "axiom_labs"`, `dialogue_id: "solheim_default"`, `faction_id: ""`
+   (private foundation, unaligned with the four data-loader factions),
+   `dialogue_music: "dialogue_intimate"`, `dialogue_states` array:
+   - `{state_id: "post_legacy_won", dialogue_id: "solheim_victorious",
+     required_flags: ["d5_legacy_won"]}`
+   - `{state_id: "post_legacy_lost", dialogue_id: "solheim_declined",
+     required_flags: ["lens_closed_legacy"]}`
+
+3. **Extend Elena's NPC record in `data/characters/npcs.json`.** Append a
+   `dialogue_states` array (no other field on Elena's record changes):
+   - `{state_id: "post_connection_won", dialogue_id: "elena_connection_deepened",
+     required_flags: ["d5_connection_won"]}`
+   - `{state_id: "post_connection_lost", dialogue_id: "elena_connection_declined",
+     required_flags: ["lens_closed_connection"]}`
+
+   Voice-check the resulting record for JSON validity (trailing comma before
+   `dialogue_states`, closing brace intact). The `dialogue_id: "elena_cantina"` default
+   remains — the states array is an override consulted first by
+   `get_active_dialogue_id`.
+
+4. **Author five dialogue trees in `data/dialogue/dialogues.json`.**
+   - `solheim_default`: Solheim greeting the player at the Farrow Institute. Institution
+     tour framing without the tour — she has meetings; she is making time. Establishes
+     the Farrow Institute as a foundation the player has been funding, distinct from
+     Kweon's Okafor Institute (Solheim does not name Okafor; she refers to "the founding
+     generation" and "the person who wrote the charter" when the subject comes up).
+     Options: continue funding, ask about the wing dedication, ask about the succession
+     plan. Each option carries a short branch that returns to a wrap node.
+   - `solheim_victorious` (gated: `d5_legacy_won`): Solheim announces the wing
+     dedication and the standing authority over research direction. Not warm; correct.
+     The moment reads as an institution recognizing a patron on the record, not a
+     friendship. She uses the player's name once, precisely.
+   - `solheim_declined` (gated: `lens_closed_legacy`): scar state. The wing is dedicated
+     to someone else, named specifically. Solheim is polite. The chair passed to a
+     candidate whose long-horizon investment matched the Institute's needs; the player
+     is welcome as a visitor. The tone is administrative closure, not resentment.
+   - `elena_connection_deepened` (gated: `d5_connection_won`): quieter, informal for
+     Elena. Uses first name (drops "Captain" once, corrects it back — the overcorrection
+     tell in reverse). References a specific earlier conversation. The crew-roster-wide
+     opening is felt through her, not announced: she talks about how Marcus started
+     asking about her sister, how Priya sat through the whole shift transition. Dry
+     humor allowed.
+   - `elena_connection_declined` (gated: `lens_closed_connection`): scar state. Elena
+     goes MORE formal — "With respect, Captain, my navigational input on the current
+     heading is that we are on course." Cold precision. Talks about the manifest, the
+     next port. Does not mention the Institute, does not mention the choice. The
+     professional excellence reads as distance because it is calibrated to read that
+     way. Does not accuse.
+
+   Cross-check every tree against the writing bible: no em-dashes (Unicode U+2014, U+2013,
+   U+2015); no "no X, no Y" constructions; no "a testament to" or "couldn't help but";
+   no banned NPC names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose —
+   confirmed neither Amrit nor Solheim is on that list per
+   `requirements/dialogue_writing_guide.md:599` and `CLAUDE.md:228`).
+
+5. **Author two scar `ChatterLine` entries in `data/crew/station_chatter.json`.**
+   - `al_scar_d5_solheim_01` at `axiom_labs`, `required_flags:
+     ["lens_closed_legacy"]`, `one_shot: false`, `category: "scar"`, text describing the
+     dedication ceremony that filed on schedule with someone else's name on the wall.
+     The player hears it as station chatter; nobody explicitly attributes it to them.
+   - `al_scar_d5_elena_01` at `nexus_prime`, `required_flags:
+     ["lens_closed_connection"]`, `one_shot: false`, `category: "scar"`, text placing
+     Elena at the cantina — the specific booth she was first met in per her Act I
+     recruitment — running navigation drills alone. Overheard by someone else, not
+     narrated to the player directly.
+
+   Each scar authored to work whether the closure came from D5 or from some future
+   dilemma closing the same lens (the flag gate is what routes the scar, not the
+   dilemma id).
+
+6. **Author two Marcus reactive ambient lines in
+   `data/crew/ambient_dialogue.json`.**
+   - `crew_id: "marcus_jin"`, `context: "flag_triggered"`, `required_flags:
+     ["d5_legacy_won"]` — Marcus in Union-directness voice notes that the wing is
+     named, the standing authority is filed, and the ship's manifest has more empty
+     seats at the meal shift than it used to. Short declarative sentences.
+   - `crew_id: "marcus_jin"`, `context: "flag_triggered"`, `required_flags:
+     ["d5_connection_won"]` — Marcus notes that Elena asked him about his shift roster
+     yesterday and did not have a reason. Doesn't editorialize. Says it flat.
+     Tightens a bolt.
+
+7. **Author two auto-journal entries in `data/journal/entries.json`.**
+   `auto_d5_legacy_won` (`trigger_flag: "d5_legacy_won"`, `system_id: "axiom_labs"`,
+   `mission_id: ""`) and `auto_d5_connection_won` (`trigger_flag: "d5_connection_won"`,
+   `system_id: "nexus_prime"`, `mission_id: ""`). First-person past-tense, one paragraph
+   each, mirroring the D1/D2/D3/D4 shape and register (see
+   `data/journal/entries.json:487-518`).
+
+8. **Author `tests/test_scenarios/test_scenario_dilemma_d5.py`** mirroring
+   `test_scenario_dilemma_d1.py`:
+   - **Loads**: D5 loaded via DataLoader; poles / thresholds / `telegraph_npc_id` match
+     the spec; both outcomes populated with correct `closes` and `outcome_flag`.
+   - **Integrity**: `_outcomes_with_empty_tier_unlocks` and
+     `_dilemmas_with_bad_thresholds` both return empty for D5.
+   - **Collision math** (AC3): one-pole-at-90 does not collide (both poles); both at 85
+     collides.
+   - **Closed-pole guard** (piggybacks on A2-14's rule): pre-populate
+     `player.dilemma_state.closed_lenses = {"legacy"}`, drive both poles to 90, assert
+     `check_dilemmas` returns no telegraph and no collision filing for D5. Mirror case
+     for `closed_lenses = {"connection"}`.
+   - **Legacy-wins**: resolve sets `lens_closed_connection` and `d5_legacy_won`;
+     Solheim's `get_active_dialogue_id` returns `solheim_victorious`; Elena's
+     `get_active_dialogue_id` returns `elena_connection_declined`;
+     `al_scar_d5_solheim_01` is NOT reachable at `axiom_labs` (not the losing pole);
+     `al_scar_d5_elena_01` IS reachable at `nexus_prime`; assert
+     `tier_unlocks_granted["legacy"]` is non-empty.
+   - **Connection-wins**: resolve sets `lens_closed_legacy` and `d5_connection_won`;
+     Elena's `get_active_dialogue_id` returns `elena_connection_deepened`; Solheim's
+     `get_active_dialogue_id` returns `solheim_declined`; `al_scar_d5_solheim_01` IS
+     reachable at `axiom_labs`; `al_scar_d5_elena_01` is NOT reachable at `nexus_prime`;
+     assert `tier_unlocks_granted["connection"]` is non-empty (AC4 alt-path
+     satisfaction).
+   - **AC4 alt-path**: dedicated test asserting `tier_unlocks_granted["connection"]`
+     is populated after `resolve(d5, "connection", player)`, plus a code comment on the
+     test explaining that the mechanical loyalty-ceiling hook is deferred to the
+     proposed follow-up sprint (see Cross-sprint reactions below); no TODO comment
+     appears in production code.
+   - **Marcus reactive lines present**: both `flag_triggered` ambient lines load
+     through `DataLoader.load_ambient_dialogue()`, one carrying `d5_legacy_won` and one
+     carrying `d5_connection_won` in `required_flags`.
+   - **Journal entries present**: two auto-journal entries load with the correct
+     `trigger_flag`.
+   - **Voice smoke**: telegraph lines contain no em-dash character (U+2014, U+2013,
+     U+2015); contain at least one Marcus anchor ("we", "check", short declarative
+     under six words, or a direct-imperative like "Move" / "Fix").
+   - **Name safety**: `amrit_solheim` does not collide with any existing NPC id in
+     `DataLoader.npcs` (iterate and assert exactly one record with that id).
+   - **Elena record extension safety**: Elena's `dialogue_states` array parses with
+     both new entries; her default `dialogue_id: "elena_cantina"` remains intact and
+     is returned by `get_active_dialogue_id` when neither post-collision flag is set.
+
+9. **Verify full suite green**: `pytest -n auto`. Pass count must be ≥ 11369 baseline.
+   No new failures. Voice-bible compliance suite still green. Dilemma-integrity suite
+   green. Data-integrity suite green.
+
+Cross-sprint reactions to author (candidates for follow-up sprints — NOT folded into
+this sprint's scope; M is at the ceiling with two NPC records extended / added, five
+new dialogue trees, two scars, two ambient lines, two journal entries, and a new
+scenario test):
+
+- `data/crew/ambient_dialogue.json` — Priya `flag_triggered` line on `d5_legacy_won`
+  — the Farrow Institute is research-adjacent and Priya's peer-reviewed voice would
+  register a patron who chose the institution surface over the ship's day-to-day —
+  fires when Priya is on crew AND the outcome flag is set.
+- `data/crew/ambient_dialogue.json` — Tomas `flag_triggered` line on `d5_connection_won`
+  — the freedom-focused frontier scout with his own found-family suspicion would
+  register the captain choosing crew over institution — fires when Tomas is on crew AND
+  the outcome flag is set.
+- `data/dialogue/crew_quest_dialogues.json` — Marcus's SA-2 Deep Shafts personal quest
+  arc may deepen once D5 has fired, either way (the memorial-visit beat lands differently
+  for a captain who chose Legacy vs one who chose Connection). Deferred to a Marcus SA-2
+  followup content sprint.
+- `data/dialogue/dialogues.json` — Kweon's Okafor Institute dialogue could reference the
+  Farrow Institute once D5 resolves either way (rival-institution acknowledgment, a
+  chance for Kweon's voice to register that the region now has a second research
+  patronage house). Deferred to an Okafor content sprint or to A2-18 (which per its
+  Context to read also reuses the Farrow framing).
+- **Proposed follow-up sprint: A2-16A — Loyalty ceiling raised by Connection resolution.**
+  Size XS. Adds a `loyalty_ceiling: int` attribute on `CrewRoster` analogous to the
+  existing `loyalty_floor` (set by Leadership skill); raises the ceiling above 100 when
+  `player.dilemma_state.tier_unlocks_granted["connection"]` is non-empty; adjusts
+  `adjust_loyalty`'s clamp accordingly; extends `tests/test_models/test_crew.py`.
+  Delivers the mechanical effect that AC4's primary path describes and this sprint
+  satisfies via alt-path. NOT proposed as a formal roadmap row in this planning phase —
+  flagged for a later planner or human to formalize once the visible-cost surface is
+  built out enough to hook (currently crew loyalty tops out at 100 without a dilemma
+  present; raising the cap to 120 or removing it entirely is a design decision that
+  wants its own scope, not a leak into D5).
+- **Naming generalization deferred**: `spacegame/models/okafor_research.py` module
+  docstring and `kweon_relationship_value` field name are Act I identifiers surfacing in
+  a code path Act II now reaches. This sprint closes the fiction seam at the dialogue
+  layer (Solheim never says "Kweon" or "Okafor"). The code-level generalization
+  (module docstring rewrite, field rename with save-migration) is a candidate for a
+  future refactor sprint. NOT folded in here — save-migration on a live field is a
+  bigger blast radius than an M sprint should carry.
+
 **Acceptance criteria.**
 1. `DataLoader.dilemmas["d5_legacy_connection"]` loads with both outcomes populated.
-2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
-3. Collision behavior matches the established pair-dilemma pattern (one pole high does not
-   collide, both high does).
-4. Resolving `connection` raises (or unlocks the mechanism to raise) crew loyalty ceilings -
-   verified by a test asserting the loyalty ceiling constant/lookup used by `crew.py` differs
-   for a resolved-connection player versus an unresolved one. If `crew.py` has no existing
-   loyalty-ceiling concept to hook into, this criterion is satisfied instead by asserting the
-   unlock is recorded in `player.dilemma_state.tier_unlocks_granted["connection"]` and a
-   TODO-free comment explains which future sprint wires the mechanical effect - do not
-   silently drop the requirement.
-5. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
-6. Full suite green; no regression from baseline.
+2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file:
+   both outcomes carry non-empty `tier_unlocks`; `telegraph_threshold` (55) <
+   `collision_threshold` (80); `collision_requires` (2) is within `[1, len(poles)]` (2).
+3. Collision requires exactly 2 of 2 poles at threshold: driving `legacy` to 85 with
+   `connection` at 0 does not collide (mirror case: `connection` at 85, `legacy` at 0);
+   driving both to 85 collides.
+4. Resolving `connection` records the tier-unlock in
+   `player.dilemma_state.tier_unlocks_granted["connection"]` as a non-empty list. The
+   mechanical loyalty-ceiling hook is deferred to a proposed follow-up sprint documented
+   in Cross-sprint reactions above; the deferral is captured in the scenario test's
+   comment, not in production code. (This is AC4's documented alt-path — verified in
+   this sprint's plan that `crew.py` has no existing loyalty-ceiling concept to hook
+   into; `adjust_loyalty` at `crew.py:393-432` clamps at 100 unconditionally.)
+5. If `legacy` is already in `player.dilemma_state.closed_lenses` (simulating a sibling
+   dilemma having closed it first), this dilemma's collision check returns no filing
+   regardless of raw investment values. Mirror case for `connection` verified.
+6. Legacy-wins resolution: `resolve(d5, "legacy", player)` sets `lens_closed_connection`
+   and `d5_legacy_won`; Solheim's `get_active_dialogue_id` returns `solheim_victorious`;
+   Elena's returns `elena_connection_declined`; `al_scar_d5_elena_01` is reachable via
+   `StationChatterManager.get_chatter` at `nexus_prime`. Connection-wins mirror
+   verified: `lens_closed_legacy` and `d5_connection_won` set; Elena's
+   `get_active_dialogue_id` returns `elena_connection_deepened`; Solheim's returns
+   `solheim_declined`; `al_scar_d5_solheim_01` reachable at `axiom_labs`.
+7. Marcus's two `flag_triggered` ambient reaction lines load through
+   `DataLoader.load_ambient_dialogue()`, one carrying `d5_legacy_won` and one carrying
+   `d5_connection_won` in `required_flags`.
+8. Two auto-journal entries (`auto_d5_legacy_won`, `auto_d5_connection_won`) load with
+   the correct `trigger_flag`.
+9. `amrit_solheim` NPC id does not collide with any existing NPC id in
+   `DataLoader.npcs` (verified by iterating and asserting a single record with that id).
+   Elena's existing `elena_reeves` record parses with its new `dialogue_states` array
+   and her default `dialogue_id: "elena_cantina"` continues to route pre-collision.
+10. No em-dashes, no "no X, no Y" constructions, no banned NPC names anywhere in
+    authored content (dilemma JSON, one new NPC record, one extended NPC record, five
+    dialogue trees, two scar lines, two ambient reactive lines, two journal entries).
+11. Full suite green; pass count ≥ 11369 baseline; no regression.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 08:30 — harness: plan phase starting
+- 2026-09-01 — planning complete; expanded ACs from 6 to 11 to cover NPC routing per
+  outcome, scar reachability per outcome, ambient reactive registration, journal
+  entries, the AC4 alt-path (crew.py has no loyalty-ceiling concept), the closed-pole
+  guard mirror, and the NPC id-collision guard. Locked 10 decisions (Solheim home
+  system, Farrow framing at fiction level not code refactor, AC4 alt-path selected,
+  outcome flag ids, scar topology and placements, crew ambient scope limited to Marcus,
+  winning/losing state gating pattern, journal fold-in, inline voice notes, NPC record
+  extension safety). Flagged 5 cross-sprint reactions for follow-up (Priya ambient,
+  Tomas ambient, Marcus SA-2 deepening, Kweon rival-institution reference, and a
+  proposed A2-16A loyalty-ceiling mechanical hook sprint plus a deferred
+  code-generalization refactor for `okafor_research.py`). PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 08:30
+- Completed: 2026-09-01 09:15
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none (A2-16A loyalty-ceiling hook flagged in Cross-sprint
+  reactions for later planner/human formalization, not authored as a full roadmap row
+  in this pass per the planner guidance's "conservative on scope expansion" rule)
+- Polish_items_folded_in: NPC-routing tests per outcome, scar reachability tests per
+  outcome, ambient reactive registration tests, journal entries, NPC id-collision
+  guard, Elena record extension safety
+- Decisions_locked: 10
+- Notes: Verified all 5 Context-to-read paths exist on disk. Verified sprint is NOT
+  already implemented — no `d5_legacy_connection.json`, no `amrit_solheim` NPC, no
+  `test_scenario_dilemma_d5.py`; latest content commit is A2-15's D3 work. AC4's
+  primary path (loyalty-ceiling mechanism) is intentionally routed to its documented
+  alt-path because `crew.py` has no existing ceiling concept to hook into and adding
+  one is a design decision that wants its own sprint; the alt-path preserves the
+  requirement (the unlock IS recorded on `tier_unlocks_granted["connection"]`) and
+  flags a follow-up sprint candidate. Farrow Institute framing kept at the
+  dialogue/JSON layer only per Locked decision 2 — no refactor of
+  `spacegame/models/okafor_research.py` in this M sprint; the fiction seam is closed
+  by Solheim's dialogue never surfacing Kweon or Okafor by name, and the underlying
+  `okafor_research_project_funded` signal continues to feed `legacy` lens investment.
 ---
 
 #### A2-17 — D6: Preservation ↔ Empire
