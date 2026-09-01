@@ -142,7 +142,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
-| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17529,6 +17529,8 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-09-01 16:15 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
 - 2026-09-01 16:21 — harness: plan phase starting
 - 2026-09-01 16:25 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 16:28 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 16:50 — harness: review passed, marking done
   folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
 - 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 15:39 — harness: plan phase starting
@@ -17550,24 +17552,28 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-09-01 — implement re-entered on already-shipped sprint. Spot-verified: 47 D8 tests pass
   (1.24s); work in commits 115f1ae + 5640682 confirmed present. Suite baseline 11529/100
   unchanged. All 17 ACs satisfied per prior verifications. PHASE_OK
+- 2026-09-01 — review complete; all 17 ACs verified directly; full suite 11529/100; D2 tests
+  20/20 (Kallio extension no regression); Writing Bible 39/39; dialogue integrity 19/19;
+  lint clean; format clean. One minor observation: implementation reordered Kallio's two
+  existing states (post_community_closed now first, required for AC4.b priority correctness)
+  — a justified deviation from "don't touch existing states" that the plan didn't anticipate.
+  No findings require rework. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 16:25
-- Completed: 2026-09-01 16:25
+- Started: 2026-09-01 17:00
+- Completed: 2026-09-01 17:45
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 115f1ae, 5640682
-- Tests_added: 47
-- Tests_baseline: 11529
+- Commits: none
 - Tests_passing: 11529
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint fully implemented in prior cycles; implement phase re-entered on already-shipped work. D8 tests 47/47 pass (1.24s). All 17 ACs satisfied; no regressions vs baseline.
+- Acceptance_criteria_verified: 17/17
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Elena post-D8-crime ambient line says "carrying on this ship" — "carrying" sits in cargo-register, not Elena's chart/heading/manifest register; "an interesting arrangement to have on the manifest" would land squarely in her voice. Not a Writing Bible violation.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 9 locked decisions defensible. Implementation correctly reordered Kallio's existing states for AC4.b correctness (post_community_closed now has first-match priority over post_wealth_closed). D8 is the eighth and final Act II dilemma — all deliverables confirmed.
 ---
 
 #### A2-20 — Capstones fire without ending the session
