@@ -134,7 +134,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-8](#a2-8--dilemma-model--threshold-collision) | Dilemma model + threshold collision | Act II | L | done | A2-4 |
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
-| [A2-11](#a2-11--scars) | Scars | Act II | M | in-progress | A2-10 |
+| [A2-11](#a2-11--scars) | Scars | Act II | M | todo | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
@@ -14020,7 +14020,7 @@ those sprints consume.
 
 #### A2-11 — Scars
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 4-6 days
 **Depends on**: A2-10 | **Blocks**: none
 
@@ -14243,6 +14243,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 - 2026-08-27 - todo (created)
 - 2026-08-31 19:20 — harness: plan phase starting
 - 2026-08-31 — planning complete (commit 43d6ec4); confirmed all 4 context docs exist;
+- 2026-08-31 21:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   folded invariant compliance test (AC4) and voice-check anchor (AC5); locked 4 open
   decisions (no code-path change to `get_chatter`, compliance-test enforcement of the
   scar/one_shot invariant, no `NPC.dialogue_states` work in this sprint, real-system-id
