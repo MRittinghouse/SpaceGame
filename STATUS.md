@@ -1,34 +1,26 @@
 # Ralph Status
 
-_Updated: 2026-09-01 17:36:57_
-
-## Harness Did Not Run
-
-Baseline capture FAILED: pytest exited 1; tail: st_ground_loot_bonus.py::TestGroundLootBonusApplication::test_bonus_applies_to_failure_partial_loot
-FAILED tests/test_engine/test_ground_loot_bonus.py::TestGroundLootBonusApplication::test_zero_loot_unaffected
-FAILED tests/test_engine/test_ground_loot_bonus.py::TestGroundLootBonusApplication::test_crew_bonus_stacks_with_skill
-FAILED tests/test_ui_layout/test_module_level_dim_capture.py::test_catalog_of_window_dim_captures
-9 failed, 11534 passed, 99 skipped, 42 warnings in 342.94s (0:05:42). Aborting run to avoid running agents with no baseline.
+_Updated: 2026-09-01 19:30:06_
 
 ## Now
 
-- Sprint: **(between sprints)**
-- Phase: **-**
-- Last beat: **just now**
-- Beat PID: 21524 -- alive
+- Sprint: **A2-20**
+- Phase: **review**
+- Last beat: **16 seconds ago**
+- Beat PID: 31040 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 17
+- todo: 16
 - eligible: 1
 - in flight: none
 - blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (41 minutes ago)
-- last successful push: 41 minutes ago
+- last push: **OK** (2 hours ago)
+- last successful push: 2 hours ago
 
 ## Blocks drift
 
@@ -39,3 +31,7 @@ FAILED tests/test_ui_layout/test_module_level_dim_capture.py::test_catalog_of_wi
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
+
+## Recent
+
+- A2-20 ok

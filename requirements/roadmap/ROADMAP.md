@@ -143,7 +143,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
-| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | in-progress | A2-10, A2-3 |
+| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | done | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: in-progress (implementing)
+**Status**: done
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18377,6 +18377,8 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 18:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
 - 2026-09-01 18:51 — harness: plan phase starting
 - 2026-09-01 18:56 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 19:08 — harness: review phase starting (rework cycle 0)
+- 2026-09-01 19:30 — harness: review passed, marking done
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
@@ -18462,26 +18464,31 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   three architectural guards green (test_lens_investment_never_rendered, test_module_level_dim_capture,
   test_ground_loot_bonus — all 13 tests pass in 0.48s); full suite -n auto: 11552 passed /
   99 skipped (matches pre-phase baseline exactly). No new files or code changes made. PHASE_OK
+- 2026-09-01 — review re-entry (rework cycle 2, re-verification). All 16 ACs verified against
+  live code: coordinator clean (AC16), data integrity (AC6), save/load round-trips (AC5),
+  engine guards (AC14/AC15/AC13), modal stacking (AC7), deferred writes (AC10), voice
+  compliance (AC12). Full suite: 11552 passed / 99 skipped (matches pre-phase baseline exactly).
+  Ruff lint clean on all touched files. Plan audit: sound; locked decisions on coordinator
+  architecture, uniform threshold, dim-capture import pattern, and partial-Game guard are all
+  defensible. Single tighten: orphaned module-level `_player_prop` function at lines 70-72 of
+  test_scenario_capstone_session_continues.py — dead code from development, not a bug, not a
+  blocker. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 19:00
-- Completed: 2026-09-01 19:10
+- Started: 2026-09-01 19:10
+- Completed: 2026-09-01 19:30
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 368e421 (roadmap update only)
-- Tests_added: 0 (66 sprint tests already present from 1b5b336)
-- Tests_baseline: 11552
+- Commits: none
 - Tests_passing: 11552
-- Tests_skipped: 99
-- Lint_clean: n/a (no source files changed)
-- Format_clean: n/a (no source files changed)
-- SI3_scanner_clean: n/a (no flags added)
-- Writing_bible_clean: n/a (no player-facing content added)
-- Touch_zones_respected: yes
-- Notes: Already-implemented re-verification pass. All 66 sprint-specific tests and 13
-  architectural guard tests pass. Full suite matches pre-phase baseline 11552/99. No code
-  changes required — work was fully present from 1b5b336 (implemented) + cacb8c7 (reviewed).
+- Acceptance_criteria_verified: 16/16
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 0
+- Single_tighten: Orphaned `_player_prop` function at lines 70-72 of test_scenario_capstone_session_continues.py — dead code from development, delete on a second pass.
+- Followup_sprints_added: none
+- Notes: All 16 ACs pass. Three architectural guards (AC13/AC14/AC15) verified green. Plan audit sound — coordinator design correctly mirrors check_dilemmas pattern and resolves all three first-pass violations. Suite matches baseline 11552/99.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
