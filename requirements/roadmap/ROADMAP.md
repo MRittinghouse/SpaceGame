@@ -136,7 +136,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
-| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
+| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
@@ -14675,7 +14675,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 
 #### A2-13 — D2: Wealth ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14737,25 +14737,297 @@ authored with the most care" of all eight.
   A2-12's test shape.
 
 **Acceptance criteria.**
-1. `DataLoader.dilemmas["d2_wealth_community"]` loads with both outcomes populated.
+1. `DataLoader.dilemmas["d2_wealth_community"]` loads with both outcomes populated
+   (`outcome_flag` and `narration_summary` per :class:`DilemmaOutcome`).
 2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file: non-empty
    `tier_unlocks` on both outcomes, `telegraph_threshold (55) < collision_threshold (80)`.
 3. Scenario test: driving only `wealth` to 90 does not collide; driving only `community` to
-   90 does not collide; driving both to 85 collides.
-4. Resolving `wealth` closes `community` and makes Thuy Kallio's scar content (or direct
-   dialogue-state gating) reachable; resolving `community` closes `wealth` and makes Noor
-   Castellano's declined-credit state reachable. Both verified explicitly, one per test.
-5. Marcus Jin's telegraph line references the specific buried-report wound (via a shared
-   constant or direct textual echo of "buried" / "report" / "recyclers"), not generic
-   "you're choosing between two things" language - verified by a substring check in the test
-   asserting the telegraph text contains at least one of those anchor words.
-6. No em-dashes, no "no X, no Y" constructions, no "a testament to"/"couldn't help but", no
-   banned NPC names.
-7. Full suite green; no regression from baseline.
+   90 does not collide; driving both to 85 collides. Uses
+   :class:`~spacegame.models.lens_investment.LensInvestment` and
+   :func:`~spacegame.models.dilemma.check_collision`, mirroring
+   `tests/test_scenarios/test_scenario_dilemma_d4.py::TestD4CollisionMath`.
+4. Resolving `wealth` sets `dialogue_flags["lens_closed_community"]` and
+   `dialogue_flags["d2_wealth_won"]`; Thuy Kallio's `NPC.get_active_dialogue_id(player.dialogue_flags)`
+   returns `"kallio_declined"`; Noor Castellano's returns `"noor_buyers_open"`; the
+   `al_scar_d2_kallio_01` `ChatterLine` at `havens_rest` becomes reachable via
+   `StationChatterManager.get_chatter(...)`. Each surface verified explicitly, one assertion
+   per behavior (not bundled).
+5. Resolving `community` sets `dialogue_flags["lens_closed_wealth"]` and
+   `dialogue_flags["d2_community_won"]`; Thuy Kallio's active dialogue is
+   `"kallio_open_channels"`; Noor Castellano's is `"noor_declined_credit"`; the
+   `al_scar_d2_noor_01` `ChatterLine` at `nexus_prime` becomes reachable. Same one-assertion-
+   per-behavior discipline.
+6. Marcus Jin's telegraph text (any of the three `telegraph_lines`) contains at least one of
+   the substrings `"buried"`, `"report"`, or `"recyclers"` — verified by a case-insensitive
+   substring assertion in the scenario test. Ties the collision explicitly to the M05 wound
+   (`requirements/act_one_reference.md:254`).
+7. Marcus's post-D2 reactive ambient lines (added to `data/crew/ambient_dialogue.json`,
+   `context: "flag_triggered"`, one per outcome) load through
+   `DataLoader.load_ambient_dialogue()`; the scenario test asserts they exist and their
+   `required_flags` field references the correct outcome flag.
+8. No em-dashes, no "no X, no Y" constructions, no "a testament to" / "couldn't help but",
+   no banned NPC names (Yara, Elara, Kael, Mara, Lydia, Clive, Magnus, Ambrose). Enforced by
+   `TestDilemmaContentWritingBible` (built in A2-12) and the existing
+   `tests/test_compliance/test_prose_anti_patterns.py` walking every JSON file under `data/`.
+9. Full suite green; pass count ≥ 11291 (pre-phase baseline).
+
+**Risks / open questions (locked during A2-13 planning, 2026-09-01).**
+- ~~Where do Kallio and Castellano physically live? The sprint text says they are outside the
+  Aurelia Expanse, but the game only supports NPCs at existing systems and no
+  Cradlepoint/Kettlebridge system record exists in `data/galaxy/systems.json` (verified
+  2026-09-01).~~ **LOCKED**: reuse existing systems, following A2-12's precedent (Aldric
+  Senn at `the_fulcrum`). Kallio's `home_system_id = "havens_rest"` — the community-ethos
+  station where Tomas Drifter's handshake economy already lives; her title
+  `"Dockmaster, Cradlepoint Charter"` preserves "Cradlepoint" as her venue/charter name
+  within Haven's Rest. Castellano's `home_system_id = "nexus_prime"` — already home to the
+  Meridian Financial Exchange; her title `"Broker, Coinmark Exchange"` keeps "Coinmark
+  Exchange" as her trading-desk name within it. The "no personal stake in the wound" design
+  intent is preserved by writing them as recent arrivals from outside the Expanse who know
+  the supernova only as rumor; the "never set foot" flavor is dropped because it would
+  require out-of-Expanse travel infrastructure that does not exist. A2-19 later reuses
+  Kallio at Cradlepoint; the `home_system_id = "havens_rest"` set here is canonical.
+- ~~Which NPC's dialogue tree gates on which lens-closed flag?~~ **LOCKED** (see
+  Deliverables below and AC4/AC5): a positive-outcome `dialogue_states` entry on each NPC
+  gates on the OTHER pole being closed (this pole won). A losing-outcome entry gates on
+  THIS pole being closed. Mirrors A2-12: `senn.post_truth_collision` required
+  `lens_closed_vengeance`.
+- ~~Base dialogue tree reachability?~~ **LOCKED**: `kallio_default` and `noor_default` are
+  short single-node introductions used pre-collision. Once either lens closes, one of the
+  `dialogue_states` entries is guaranteed to match (both post-outcome states are covered),
+  so the base tree is only ever seen during the pre-telegraph window. This mirrors A2-12's
+  `senn_default`.
+- ~~Visible-cost mechanism: scar `ChatterLine` (A2-11 convention) vs full dialogue-state
+  gating?~~ **LOCKED**: BOTH, per A2-12. Kallio's `kallio_declined` state is the full
+  dialogue-tree cost when Community closes; `al_scar_d2_kallio_01` at `havens_rest` is the
+  ambient echo. Same on the wealth side for Castellano at `nexus_prime`.
+- ~~Marcus telegraph anchor words?~~ **LOCKED**: at least one of `"buried"`, `"report"`,
+  `"recyclers"` must appear in his telegraph text (AC6). Marcus's voice sheet already
+  canonizes "I filed a report" as his signature line for the wound.
+- ~~Outcome flag names?~~ **LOCKED**: `d2_wealth_won` / `d2_community_won`, parallel to D4's
+  `d4_truth_won` / `d4_vengeance_won`.
+- ~~Journal entries?~~ **LOCKED**: two auto-entries in `data/journal/entries.json`, one per
+  branch, gated on the outcome flag, neutral ship's-log voice per D4 convention.
+- ~~Marcus post-D2 crew reaction?~~ **LOCKED**: folded into this sprint's scope, not
+  deferred. The dilemma is literally rooted in Marcus's buried-report wound; a generic
+  crew reaction would be a cohesion gap. Added to `data/crew/ambient_dialogue.json` with
+  `context: "flag_triggered"` and `required_flags` on the outcome flag. AC7 covers it.
+- ~~Cross-dilemma `lens_closed_community` sharing with A2-19?~~ **LOCKED**: A2-13 authors
+  `kallio_declined` gated on `lens_closed_community`. The dialogue text speaks to the
+  closure of the community lens, not to D2 specifically, so A2-19's D8 resolving `community`
+  as the losing pole converges on the same state without new authoring. A2-19's `Touch
+  zones` note already commits to this convergence.
+
+**Plan (implementer's task list).**
+
+Execute in order. Each task names the file(s) it touches, the test surface it lands
+against, and any gotcha.
+
+1. **Register two consumer-only-orphan flags.** Edit
+   `tests/test_data/test_dialogue_integrity.py` to add `"lens_closed_community"` and
+   `"lens_closed_wealth"` to `KNOWN_CONSUMER_ONLY_ORPHANS`, matching the A2-12 registrations
+   for `lens_closed_truth` and `lens_closed_vengeance`. These flags are set by
+   `dilemma.resolve()` through the variable-arg helper `flag_registry.lens_closed(<id>)`,
+   which the orphan scanner's regex cannot match. Test surface: the existing
+   `test_no_dialogue_flag_orphans` test in that file — should stay green after new
+   `required_flags` land in `npcs.json` / dialogues / chatter. Gotcha: without this edit,
+   step 2 causes the scanner to fail on orphan consumers.
+
+2. **Add two NPC records to `data/characters/npcs.json`.**
+   - `thuy_kallio` — `title: "Dockmaster, Cradlepoint Charter"`,
+     `home_system_id: "havens_rest"`, `dialogue_id: "kallio_default"`,
+     `dialogue_music: "dialogue_intimate"`. Two `dialogue_states`:
+     - `state_id: "post_wealth_closed"`, `dialogue_id: "kallio_open_channels"`,
+       `required_flags: ["lens_closed_wealth"]` — Community won, Kallio welcomes.
+     - `state_id: "post_community_closed"`, `dialogue_id: "kallio_declined"`,
+       `required_flags: ["lens_closed_community"]` — Wealth won, Kallio has moved on.
+   - `noor_castellano` — `title: "Broker, Coinmark Exchange"`,
+     `home_system_id: "nexus_prime"`, `dialogue_id: "noor_default"`,
+     `dialogue_music: "dialogue_intimate"`. Two `dialogue_states`:
+     - `state_id: "post_community_closed"`, `dialogue_id: "noor_buyers_open"`,
+       `required_flags: ["lens_closed_community"]` — Wealth won, Castellano opens buyers.
+     - `state_id: "post_wealth_closed"`, `dialogue_id: "noor_declined_credit"`,
+       `required_flags: ["lens_closed_wealth"]` — Community won, Castellano closes credit.
+
+   Test surface: `tests/test_data/test_cross_references.py` (npc → system references),
+   `tests/test_data/test_dialogue_integrity.py` (npc.dialogue_id → dialogue tree exists).
+   Gotcha: `dialogue_id` on each state must point at a tree authored in task 3;
+   otherwise integrity scanner fails. Pick a `portrait_color` triple; the D4 record used
+   `[90, 95, 110]` — pick distinct values for these two (Kallio warmer, Castellano cooler
+   works thematically).
+
+3. **Author six dialogue trees in `data/dialogue/dialogues.json`.**
+   Voices per sprint text (fresh voice notes, not `character_voices.md`):
+   - Kallio: plain-spoken, converts every offer into concrete numbers (families housed,
+     weeks of food), direct, patient with newcomers, sharp when time is short. Reads as a
+     dockmaster who has run out of surprise at what people ask her to overlook.
+   - Castellano: optimized and additive, converts everything to margin and window, recalcs
+     mid-sentence, unimpressed by anecdote, respectful of proven volume.
+
+   Trees:
+   - `kallio_default` — one node, one closing response. First-meeting introduction; short
+     ("Kallio. Cradlepoint charter. If you have cargo we can move, tell me. If you have
+     time we can put to work, tell me twice.")
+   - `kallio_open_channels` — 3-5 nodes, 3 opening branches (practical / curious / careful),
+     each closing on Kallio naming a specific handoff (a housing permit granted, a
+     contract with guaranteed demand, a supply route the player is now trusted to run).
+     `tier_unlocks` text from AC1 outcome comes to life here: specific families, specific
+     weeks, specific docks.
+   - `kallio_declined` — 2 nodes. Kallio is polite and brisk. She names the specific work
+     going forward without the player ("Seventeen families to the concourse racks last
+     cycle. We managed. We will manage next cycle."). One closing response, no branch;
+     the door is closed.
+   - `noor_default` — one node, one closing response. Short professional greeting
+     ("Castellano. Coinmark. Say a number or say a route; I will tell you which side of
+     the ledger it lands on.")
+   - `noor_buyers_open` — 3-5 nodes, 3 opening branches (leveraged / discreet / patient
+     capital), each closing on Castellano naming a specific counterparty or line —
+     buyers who do not ask where capital came from, a leveraged position previously
+     withheld.
+   - `noor_declined_credit` — 2 nodes. Castellano is formal. She names the specific line
+     of credit closing ("Your Coinmark line stops at cash-in-hand from today. I extend
+     credit against reputation. Yours reads as reinvested elsewhere."). One closing
+     response.
+
+   Test surface: `test_dialogue_integrity.py` (every node reachable, every flag consumed
+   is set somewhere or in the known-orphan list), `TestDilemmaContentWritingBible` scans
+   dilemma record strings but ordinary dialogues are scanned by
+   `tests/test_compliance/test_prose_anti_patterns.py`. Gotcha: em-dash is banned. Use
+   commas or period-comma constructions. No "no X, no Y" parallel negation. No banned
+   NPC names.
+
+4. **Author `data/narrative/dilemmas/d2_wealth_community.json`.** One-file addition to
+   the dilemma registry; `DataLoader.load_dilemmas()` picks it up.
+   - `id: "d2_wealth_community"`, `poles: ["wealth", "community"]`,
+     `collision_requires: 2`, `telegraph_threshold: 55`, `collision_threshold: 80`,
+     `telegraph_npc_id: "marcus_jin"`.
+   - `telegraph_lines`: 3 lines in Marcus's voice (short declarative, no filler, dark
+     humor optional). At least one line must include one of `"buried"`, `"report"`,
+     `"recyclers"` per AC6. Reference draft (implementer may rewrite in voice, must
+     preserve anchor words):
+     - "I filed a report about the recyclers twenty years ago. It got buried. You are
+       funding one operation with the money the other one needs. Pick."
+     - "Cradlepoint's housing queue. Coinmark's leverage window. Same clock, same
+       ledger. I already told you what a buried report costs. Do not make me watch you
+       reprove it."
+     - "You cannot keep both accounts open. One of them is somebody's air recyclers.
+       Decide with the numbers in front of you, not the ones you wish were there."
+   - Two `DilemmaOutcome` entries with `winning_lens_id`, `closes`, `tier_unlocks`
+     (non-empty), `outcome_flag`, and `narration_summary` per :class:`DilemmaOutcome`.
+     `tier_unlocks` prose comes straight from the existing Deliverables text (Castellano
+     buyers / leveraged financing on the wealth side; Kallio dock channels / guaranteed-
+     demand contracts on the community side). `outcome_flag` values are `d2_wealth_won`
+     and `d2_community_won`.
+
+   Test surface: `test_dilemma_integrity.py` (tier_unlocks non-empty, thresholds
+   ordered), `TestDilemmaContentWritingBible` (telegraph + narration + tier_unlocks
+   scanned for banned prose). Gotcha: the writing-bible scanner from A2-12 catches
+   dilemma strings automatically; no wiring needed. It also catches em-dashes, so keep
+   the JSON free of them.
+
+5. **Add two scar `ChatterLine` entries to `data/crew/station_chatter.json`.**
+   Both `category: "scar"`, `one_shot: false`, `weight: 7` (matches D4's Priya scar),
+   third-person overheard voice naming the specific work / opportunity going forward
+   without the player.
+   - `id: "al_scar_d2_kallio_01"`, `system_id: "havens_rest"`,
+     `required_flags: ["lens_closed_community"]`. Names Kallio's crew doing the housing
+     / triage work without the player.
+   - `id: "al_scar_d2_noor_01"`, `system_id: "nexus_prime"`,
+     `required_flags: ["lens_closed_wealth"]`. Names the leveraged line / buyers going
+     to another operator.
+
+   Test surface: `tests/test_models/test_station_chatter.py` (A2-11 compliance invariant
+   `category == "scar" implies one_shot is False`); scenario test in task 8 will assert
+   reachability. Gotcha: `weight` and `system_id` and `required_flags` on `ChatterLine`
+   must match the dataclass fields exactly (grep `station_chatter.py` for canonical
+   spelling before writing).
+
+6. **Add two auto-journal entries to `data/journal/entries.json`.** One per outcome flag,
+   neutral ship's-log voice (D4 convention). Each entry has `entry_id`,
+   `mission_id: "act_two_dilemmas"` (or existing dilemma bucket if D4 established one —
+   grep for `d4_truth_won_entry` first), `trigger_flag`, and `text`. Text stays neutral,
+   summarizes what closed and what opened, no editorializing.
+
+7. **Add two Marcus reactive ambient lines to `data/crew/ambient_dialogue.json`.**
+   Both `crew_id: "marcus_jin"`, `context: "flag_triggered"`, `required_flags` on the
+   respective outcome flag. Voice: short, quiet, no lecture, no comfort. Post-wealth
+   reaction acknowledges that a call got made; post-community reaction acknowledges the
+   queue got shorter. Neither reaction closes off the wound — Marcus is not absolved and
+   he does not absolve. Reference for voice: character sheet at
+   `requirements/character_voices.md:71-121`.
+
+   Test surface: task 8's scenario test asserts both lines load through the ambient
+   loader and carry the correct `required_flags`. Gotcha: `context: "flag_triggered"` is
+   the existing convention; do not invent a new context string.
+
+8. **Write `tests/test_scenarios/test_scenario_dilemma_d2.py`** mirroring
+   `tests/test_scenarios/test_scenario_dilemma_d4.py`:
+   - `TestD2Loads`: dilemma present, poles/thresholds/telegraph NPC as specified.
+   - `TestD2IntegrityGuardPasses`: uses the integrity-guard helpers from A2-9.
+   - `TestD2CollisionMath`: only-wealth 90 → no collision; only-community 90 → no
+     collision; both 85 → collision.
+   - `TestD2WealthWinClosesCommunity`: after `resolve(d2, "wealth", player)`, assert
+     `lens_closed_community` and `d2_wealth_won` flags set; assert
+     `kallio.get_active_dialogue_id(flags) == "kallio_declined"`; assert
+     `noor.get_active_dialogue_id(flags) == "noor_buyers_open"`; assert
+     `al_scar_d2_kallio_01` reachable via `StationChatterManager.get_chatter` at
+     `havens_rest`.
+   - `TestD2CommunityWinClosesWealth`: symmetric assertions for the other branch.
+   - `TestD2TelegraphAnchor`: case-insensitive substring check across the three
+     telegraph lines for `"buried"`, `"report"`, or `"recyclers"`; at least one must
+     appear (AC6).
+   - `TestD2MarcusReactionsRegistered`: both ambient lines load, correct `crew_id`,
+     `context`, and `required_flags` (AC7).
+
+   Gotcha: use `fresh_player()` from `tests/test_scenarios/_helpers.py` and
+   `LensInvestment` from `spacegame.models.lens_investment` (D4's test file is the
+   template). Do not import view code.
+
+**Cross-sprint reactions to author.**
+
+Folded into this sprint (author here):
+- `data/crew/ambient_dialogue.json` — Marcus Jin post-D2-wealth line (fires when
+  Marcus on crew AND `d2_wealth_won` set) and Marcus Jin post-D2-community line (fires
+  when Marcus on crew AND `d2_community_won` set). Reason: the dilemma is literally
+  rooted in Marcus's own buried-report wound; a generic crew reaction here would be a
+  cohesion gap. Task 7 covers.
+
+Flagged as follow-up (do NOT author in A2-13):
+- `data/crew/ambient_dialogue.json` — Elena Reeves observation post-D2 (either outcome).
+  Elena's SA arc register ("with respect, that route ...") could carry a single
+  post-collision line acknowledging the closure without absolving. Belongs in a later
+  crew-polish sprint; not required for D2 to feel finished.
+- `data/journal/travel_log_templates.json` — post-D2 travel-log flavor when the player
+  next docks at Haven's Rest (Community-lost / Community-won) or Nexus Prime
+  (Wealth-lost / Wealth-won). Ambient depth; not required to prove the mechanism.
+- `data/crew/ambient_dialogue.json` — Tomas Drifter reaction if Community loses at
+  Haven's Rest specifically (Tomas's handshake-economy home). Depends on whether Tomas
+  is present when the collision fires; better handled by a crew-reactive-dialogue
+  sprint that establishes the general pattern.
+- A2-19 (D8: Crime ↔ Community) inherits Kallio's `home_system_id = "havens_rest"` and
+  reuses the `kallio_declined` dialogue state on `lens_closed_community` — no new
+  authoring on the Kallio side; D8 adds Wulan Doyle and the D8-specific scar. Noted
+  here for the A2-19 planner, not actioned in A2-13.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 01:03 — harness: plan phase starting
+- 2026-09-01 — planning complete; expanded ACs from 7 to 9 (added AC7 for Marcus
+  reactive ambient lines, split original AC4 into AC4/AC5 for symmetry per branch, added
+  AC6 anchor-word substring check as a distinct AC); locked 9 open decisions including
+  the Kallio/Castellano placement question; folded Marcus reactive ambient lines into
+  scope. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 01:03
+- Completed: 2026-09-01
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: marcus-reactive-ambient-lines, dual-scar-chatter (both branches), journal-auto-entries (both branches)
+- Decisions_locked: 9
+- Notes: Verified all 5 context docs exist. Verified no prior A2-13 commits (this is genuinely new work, not already-implemented). Locked the Cradlepoint/Kettlebridge placement question by reassigning Kallio to `havens_rest` and Castellano to `nexus_prime` following A2-12's precedent (Senn at `the_fulcrum`); the "outside the Expanse" flavor is preserved by writing them as recent arrivals, since out-of-Expanse travel infrastructure does not exist. Expanded the Plan section into 8 concrete implementer tasks each naming files, test surfaces, and gotchas. Cross-sprint reactions surface: folded Marcus's own reaction (character wound is the dilemma's root); flagged Elena/Tomas reactions as follow-up. A2-19 reuses this sprint's Kallio record unchanged.
 ---
 
 #### A2-14 — D1: Vengeance ↔ Justice
