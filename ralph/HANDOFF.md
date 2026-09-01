@@ -177,6 +177,27 @@ It turned three days of guessing into a named line of code in one command.
    because a killed phase can leave partial work, and changing it needs more
    care than an unattended session should spend.
 
+6. **A finished sprint can be un-finished by a death, for ~6 minutes.**
+   After a sprint is marked done, `main()` refreshes the test baseline -- a full
+   suite run, 5-6 minutes -- and only THEN commits the bookkeeping that records
+   the `done` status. A death in that window leaves the status uncommitted, the
+   dirty-tree recovery stashes it, and the sprint reverts to `todo`.
+
+   Measured 2026-09-01: A2-13 logged `finished with outcome=ok` at 02:59:05,
+   the harness died around 03:14, and A2-13 came back as `todo`. Its content
+   commit (`7c1c602`) was safe -- only the status was lost -- so it simply
+   re-ran and short-circuited. Cost is one cheap cycle, not the work.
+
+   At the current death rate this catches roughly one sprint in ten. The fix is
+   a reordering: commit the bookkeeping (seconds) BEFORE refreshing the baseline
+   (minutes), since the refresh only feeds the NEXT sprint's comparison and
+   nothing between the two reads it. Not done here -- it edits the main loop,
+   and the only cheap test pins source order rather than runtime order, which is
+   a weak guarantee for a loop that matters this much.
+
+   Beware when reading logs: `Sprint X finished with outcome=ok` is NOT proof
+   that X is done. Check the roadmap or `git log` for the bookkeeping commit.
+
 ## Operating notes
 
 - **Never run `pytest -n auto`** — it hangs on this host. Use `-n 8`.
