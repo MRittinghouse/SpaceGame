@@ -1,12 +1,17 @@
 # Ralph Status
 
-_Updated: 2026-08-31 21:46:49_
+_Updated: 2026-08-31 21:46:55_
+
+## CRASHED
+
+The harness died on an unhandled `UnicodeEncodeError`: 'charmap' codec can't encode character '\u2194' in position 57: character maps to <undefined>
+In flight: (no sprint was in flight)
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **29 seconds ago**
+- Last beat: **5 seconds ago**
 - Beat PID: 21844 -- alive
 
 ## Queue
@@ -19,8 +24,8 @@ _Updated: 2026-08-31 21:46:49_
 
 ## Push
 
-- last push: **OK** (2 hours ago)
-- last successful push: 2 hours ago
+- last push: **OK** (just now)
+- last successful push: just now
 
 ## Blocks drift
 
