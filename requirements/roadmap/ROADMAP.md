@@ -15726,7 +15726,7 @@ without them):
 - Started: 2026-09-01 05:37
 - Completed: 2026-09-01 06:05
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 9c559e0
 - New_sprints_proposed: none
 - Polish_items_folded_in: scar-chatter (3 lines), Tomas ambient reactions (3 lines), auto-journal entries (3 entries), winning-state dialogue trees for all three NPCs, NPC id-collision guard test
 - Decisions_locked: 8
