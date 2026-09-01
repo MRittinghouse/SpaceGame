@@ -137,7 +137,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
-| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
+| [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
@@ -15065,7 +15065,7 @@ Flagged as follow-up (do NOT author in A2-13):
 
 #### A2-14 — D1: Vengeance ↔ Justice
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15133,22 +15133,202 @@ reached, this dilemma simply never fires for that player (its collision check re
   via a synthetic resolution first, then confirm this dilemma's collision never fires even
   when both raw investment values are driven above threshold.
 
+**Plan.**
+
+Locked decisions:
+1. Magistrate Behnaz Odusanya `home_system_id` = `havens_rest`. Frontier system,
+   no Guild presence, doubles as a natural docking hub for a circuit magistrate
+   riding between the region's settlements; keeps her physically reachable
+   without inventing a new system.
+2. Vengeance-wins scar target names = two "still at large" bounty figures
+   authored fresh in this sprint's chatter content (not Aldric Senn — D1 is
+   independent of D4 per Goal and AC3, and re-using Senn couples them). Two
+   names is enough to feel like a real list without becoming a bounty board
+   masquerading as scar text. Confirm neither name is on the banned list
+   (`requirements/character_voices.md` banned-names note in CLAUDE.md).
+3. Scar `ChatterLine` id pattern: `al_scar_d1_odusanya_01` at `havens_rest`
+   gated on `lens_closed_justice`; `al_scar_d1_names_still_out_there_01` at
+   `crimson_reach` gated on `lens_closed_vengeance`. `one_shot: false` per the
+   A2-11 scar convention.
+4. Crew reactive ambient lines = two Elena `flag_triggered` lines, one per
+   outcome flag, mirroring Marcus's D2 pattern in
+   `data/crew/ambient_dialogue.json`. Elena is the telegraph voice; her
+   post-collision reactions closing the loop is the same shape D2 shipped.
+   Marcus/Priya/Tomas reactions to D1 outcomes are flagged as cross-sprint
+   follow-ups below, not folded in here (keeps this sprint at M size).
+5. The "already-closed pole is permanently ineligible" guard = added to
+   `check_dilemmas` in `spacegame/models/dilemma.py` in this sprint. Verified
+   2026-09-01 the guard is not present today (`check_dilemmas` at
+   `spacegame/models/dilemma.py:336-378` only skips when `dilemma_id in
+   runtime.resolved`, never when a pole is in `runtime.closed_lenses`). The
+   guard mirrors the existing `resolved`-skip: for each dilemma, if
+   `set(dilemma.poles) & runtime.closed_lenses` is non-empty, skip both the
+   telegraph and collision checks.
+6. Journal entries = two auto-entries (`auto_d1_vengeance_won`,
+   `auto_d1_justice_won`) in `data/journal/entries.json` mirroring D2/D4's
+   `trigger_flag` shape. Fold in — the pattern is established and adding it
+   here is a few lines of JSON.
+
+Tasks (implementation order):
+
+1. **Add closed-pole eligibility guard** in `spacegame/models/dilemma.py`.
+   Extend `check_dilemmas` to skip any dilemma whose poles intersect
+   `runtime.closed_lenses`. Keep it a general rule (do not hardcode the D1
+   pairing). Test surface: extend `tests/test_models/test_dilemma.py` with two
+   cases — (a) a pole in `closed_lenses` suppresses both telegraph and
+   collision even with investment driven to 100/100; (b) with no closed
+   poles, all existing behaviour is unchanged. Gotcha: the guard must run
+   *before* the resolved-skip too, so a dilemma whose pole was closed by a
+   sibling resolution is inert even if this dilemma has never resolved.
+
+2. **Author `data/narrative/dilemmas/d1_vengeance_justice.json`**. Fields:
+   `id: "d1_vengeance_justice"`, `poles: ["vengeance", "justice"]`,
+   `collision_requires: 2`, `telegraph_threshold: 55`,
+   `collision_threshold: 80`, `telegraph_npc_id: "elena_reeves"`,
+   `telegraph_lines`: 2-3 lines in Elena's voice — formal, uses "With
+   respect", a navigation metaphor if it lands naturally, notes she is
+   watching the paperwork trail on both bounty work and lawful warrant work.
+   Two outcomes: `vengeance` `closes: ["justice"]`, `outcome_flag:
+   "d1_vengeance_won"`, `tier_unlocks` naming coerced-informant and off-books
+   methods; `justice` `closes: ["vengeance"]`, `outcome_flag:
+   "d1_justice_won"`, `tier_unlocks` naming warrant-holding authority and
+   case-building contacts across the settlements. Both `narration_summary`
+   lines. Voice-check: no em-dashes, no "no X, no Y" constructions, no
+   parallel-negation rhetoric, no banned NPC names.
+
+3. **Add Magistrate Odusanya NPC record and dialogue trees**.
+   - `data/characters/npcs.json`: `id: "magistrate_odusanya"`, `name:
+     "Magistrate Behnaz Odusanya"`, `title: "Circuit Magistrate"`,
+     `home_system_id: "havens_rest"`, `dialogue_id: "odusanya_default"`,
+     `faction_id: ""` (independent circuit), `dialogue_music:
+     "dialogue_intimate"`, `dialogue_states` array with a
+     `post_vengeance_collision` entry routing to `odusanya_declined` gated on
+     `["lens_closed_justice"]`. Optional: a `post_justice_won` entry routing
+     to `odusanya_warrant_sponsor` gated on `["lens_closed_vengeance"]` for
+     the Justice-wins victory tree.
+   - `data/dialogue/dialogues.json`: `odusanya_default` (default state
+     — she's a resource: circuit magistrate available for lawful bounty
+     warrants; her voice per Context to read distinguishes allegation /
+     charge / finding, is uncomfortable with shortcuts, and references her
+     own long-ago pardon obliquely when the topic of mercy versus shortcuts
+     comes up), `odusanya_declined` (post-vengeance-collision refusal state,
+     gated implicitly by the NPC record's flag routing), and optionally
+     `odusanya_warrant_sponsor` if the victory-tree state is authored.
+
+4. **Author scar `ChatterLine` entries in `data/crew/station_chatter.json`**:
+   - `al_scar_d1_odusanya_01` at `havens_rest`, `required_flags:
+     ["lens_closed_justice"]`, `one_shot: false`, `category: "scar"`,
+     text referencing Odusanya's declined warrant sponsorship.
+   - `al_scar_d1_names_still_out_there_01` at `crimson_reach`,
+     `required_flags: ["lens_closed_vengeance"]`, `one_shot: false`,
+     `category: "scar"`, text naming the two still-at-large bounty targets
+     (locked-decision 2). Not `aldric_senn`.
+
+5. **Author two Elena reactive ambient lines in
+   `data/crew/ambient_dialogue.json`**:
+   - `crew_id: "elena_reeves"`, `context: "flag_triggered"`, `required_flags:
+     ["d1_vengeance_won"]` — Elena in her measured-officer voice notes what
+     the paperwork trail looks like after the choice.
+   - `crew_id: "elena_reeves"`, `context: "flag_triggered"`, `required_flags:
+     ["d1_justice_won"]` — Elena notes the warrant-holding line item and the
+     names that stopped appearing on the bounty board.
+
+6. **Author two auto-journal entries in `data/journal/entries.json`**:
+   `auto_d1_vengeance_won` and `auto_d1_justice_won`, mirroring the D2/D4
+   shape (`entry_id`, `text`, `trigger_flag`, `system_id`, `mission_id: ""`).
+
+7. **Author `tests/test_scenarios/test_scenario_dilemma_d1.py`** mirroring
+   `test_scenario_dilemma_d2.py` / `test_scenario_dilemma_d4.py`:
+   - Loads: D1 loaded via DataLoader; poles/thresholds/telegraph_npc match
+     the spec; both outcomes populated with correct `closes` and
+     `outcome_flag`.
+   - Integrity: `_outcomes_with_empty_tier_unlocks` and
+     `_dilemmas_with_bad_thresholds` both return empty for D1.
+   - Collision math: one-pole-at-90 does not collide (both poles); both at 85
+     collides.
+   - Vengeance-wins: `resolve` sets `lens_closed_justice` and
+     `d1_vengeance_won`; Odusanya's `get_active_dialogue_id` returns
+     `odusanya_declined`; `al_scar_d1_odusanya_01` reachable via
+     `StationChatterManager.get_chatter` at `havens_rest`.
+   - Justice-wins: `resolve` sets `lens_closed_vengeance` and
+     `d1_justice_won`; `al_scar_d1_names_still_out_there_01` reachable at
+     `crimson_reach`.
+   - Guard (AC3): pre-populate `player.dilemma_state.closed_lenses = {"vengeance"}`,
+     drive both poles to 90, assert `check_dilemmas(player, {D1_ID:
+     d1_dilemma})` returns no telegraph filing and no collision filing for D1.
+     Do the mirror case for `closed_lenses = {"justice"}`.
+   - Elena reactive lines present: both `flag_triggered` ambient lines load
+     with the correct `required_flags`, mirroring D2's Marcus test.
+   - Voice smoke: telegraph lines contain no em-dash character, contain at
+     least one "With respect" OR a navigation metaphor from Elena's sample
+     set (soft anchor — Elena has no single wound to anchor on the way
+     Marcus does at M05, so the anchor is stylistic, not thematic).
+
+8. **Verify full suite green**: `pytest -n auto`. Pass count must be ≥ 11311
+   baseline. No new failures.
+
+Cross-sprint reactions to author (candidates for follow-up sprints — NOT
+folded into this sprint's scope):
+- `data/crew/ambient_dialogue.json` — Marcus `flag_triggered` line on
+  `d1_justice_won` and/or `d1_vengeance_won` — Union collectivism has a view
+  on personal grievance versus procedural remedy — fires when Marcus is on
+  crew AND the outcome flag is set.
+- `data/crew/ambient_dialogue.json` — Priya `flag_triggered` line on either
+  outcome — her D4 telegraph established her as the verify-before-you-act
+  voice, so she'd register the D1 outcome — fires when Priya is on crew AND
+  the outcome flag is set.
+- `data/crew/ambient_dialogue.json` — Tomas `flag_triggered` line on
+  `d1_justice_won` — per A2-15's Tomas context, he distrusts anyone in a
+  uniform and Justice-wins puts the captain into that shape — fires when
+  Tomas is on crew AND `d1_justice_won` is set (Tomas is recruited in A2-15;
+  the line waits until both conditions hold).
+- `data/dialogue/dialogues.json` — Aldric Senn tree — a passing beat
+  referencing the D1 outcome when both `d4_vengeance_won` AND
+  `d1_vengeance_won` are set, or when `d4_truth_won` AND `d1_justice_won` are
+  set — fires inside Senn's already-authored post-D4 dialogue states.
+- `data/journal/entries.json` — capstone retrospective entries that reference
+  the D1 collision — deferred to the Vengeance-capstone and Justice-capstone
+  content sprints.
+
 **Acceptance criteria.**
 1. `DataLoader.dilemmas["d1_vengeance_justice"]` loads with both outcomes populated.
 2. `tests/test_compliance/test_dilemma_integrity.py` passes against this file.
 3. If `vengeance` is already in `player.dilemma_state.closed_lenses` (simulating D4 having
    resolved first), this dilemma's collision check returns `False` regardless of raw
-   investment values - verified explicitly, not assumed.
+   investment values - verified explicitly, not assumed. Mirror case for `justice`
+   verified in the same test module.
 4. Absent that precondition, driving both poles to 85 collides; driving only one does not.
-5. Resolving `justice` closes `vengeance` and its scar (named targets still referenced in
-   ambient content); resolving `vengeance` closes `justice` and reaches Magistrate Odusanya's
-   post-collision state.
-6. No em-dashes, no "no X, no Y" constructions, no banned NPC names.
-7. Full suite green; no regression from baseline.
+5. Resolving `justice` closes `vengeance` and its scar chatter
+   (`al_scar_d1_names_still_out_there_01` at `crimson_reach`) is reachable via
+   `StationChatterManager.get_chatter`; resolving `vengeance` closes `justice`,
+   Magistrate Odusanya's `get_active_dialogue_id` returns `odusanya_declined`, and
+   the scar chatter `al_scar_d1_odusanya_01` at `havens_rest` is reachable.
+6. Elena's two `flag_triggered` ambient reaction lines load through
+   `DataLoader.load_ambient_dialogue()`, one carrying `d1_vengeance_won` and one
+   carrying `d1_justice_won` in `required_flags`.
+7. Two auto-journal entries (`auto_d1_vengeance_won`, `auto_d1_justice_won`) load
+   with the correct `trigger_flag`.
+8. No em-dashes, no "no X, no Y" constructions, no banned NPC names anywhere in
+   authored content (dilemma JSON, Odusanya dialogue, scar chatter, ambient lines,
+   journal entries).
+9. Full suite green; pass count ≥ 11311 baseline; no regression.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 04:04 — harness: plan phase starting
+- 2026-09-01 — planning complete; expanded ACs from 7 to 9 to cover scar-chatter reachability, ambient-reaction registration, journal entries, and the mirror-case guard proof. Locked 6 decisions. Flagged 5 cross-sprint reactions for follow-up. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 04:04
+- Completed: 2026-09-01
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: journal-entries (both outcomes), scar-chatter reachability tests, ambient-line registration tests, voice smoke on Elena's telegraph, mirror-case for the closed-pole guard
+- Decisions_locked: 6
+- Notes: Verified all 4 context docs exist and read the D1 section of the design spec, Elena's voice sheet, dilemma.py, and D2/D4 as pattern references. Confirmed the "already-closed pole" guard does NOT exist today in check_dilemmas (dilemma.py:336-378 only skips resolved dilemmas), so this sprint adds it as a general rule. Locked Odusanya to home_system_id=havens_rest, scar sites to havens_rest (justice-closed) and crimson_reach (vengeance-closed), and kept Marcus/Priya/Tomas reactions out of scope as cross-sprint follow-ups. Task count 8, size still M.
 ---
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
