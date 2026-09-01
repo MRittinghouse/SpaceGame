@@ -14322,7 +14322,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 
 #### A2-12 — D4: Truth ↔ Vengeance
 
-**Status**: in-progress (planning)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14651,18 +14651,26 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 - 2026-09-01 00:00 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
 - 2026-09-01 00:13 — harness: plan phase starting
 - 2026-09-01 00:20 — planning already complete AND implementation already landed (commits aed6090, 4633fed, cb1b731). Verified: `data/narrative/dilemmas/d4_truth_vengeance.json` and `tests/test_scenarios/test_scenario_dilemma_d4.py` exist; ran `pytest tests/test_scenarios/test_scenario_dilemma_d4.py tests/test_writing_bible_compliance.py tests/test_compliance/test_dilemma_integrity.py -q` → 75 passed in ~1.6s. Prior recovery reset stuck sprint after implement's PHASE_OK sentinel was already written; work does not need to be re-planned or re-implemented. Passing sprint to implementer for re-verification per the "already implemented" protocol. PHASE_OK
+- 2026-09-01 00:17 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 00:35 — implementation already landed in commits aed6090 + 4633fed + cb1b731; re-verified per "already implemented" protocol. Ran sprint test surfaces: `tests/test_scenarios/test_scenario_dilemma_d4.py` + `tests/test_compliance/test_dilemma_integrity.py` → 36 passed (0.42s); `tests/test_writing_bible_compliance.py` + `tests/test_data/test_dialogue_integrity.py` + `tests/test_data/test_cross_references.py` → 230 passed across two batches (133 + 97). Lint clean + format clean on touched Python files (5 files). Uncommitted working-tree edits to `spacegame/engine/game.py` and `tests/test_engine/test_ground_loot_bonus.py` are NOT part of A2-12's touch zones and were left untouched. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-09-01 00:13
-- Completed: 2026-09-01 00:20
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 7f32011
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already shipped from prior implement phase)
-- Decisions_locked: 0 (all 5 already locked in commit 49b5a60's prior planning)
-- Notes: Sprint A2-12 was implemented end-to-end in commits aed6090 + 4633fed + cb1b731 before the 2026-09-01 00:00 stuck-sprint recovery reset it to todo. All D4 files present (`data/narrative/dilemmas/d4_truth_vengeance.json`, Senn NPC and dialogue trees, scar chatter, journal entries, seeding flag), and the sprint's own test surface passes (55 tests in the D4 scenario + writing-bible extension, 20 tests in the dilemma-integrity guard — 75 green). Emitting PHASE_OK per the "already implemented" playbook so the dispatcher moves the sprint to implement (re-verification) and then to review, rather than stranding it with PHASE_BLOCKED. Uncommitted working-tree edits to `spacegame/engine/game.py` and `tests/test_engine/test_ground_loot_bonus.py` are NOT part of A2-12's touch zones and were left untouched.
+- Started: 2026-09-01 00:17
+- Completed: 2026-09-01 00:35
+- Files_changed: none (work already committed in aed6090, 4633fed, cb1b731)
+- Commits: aed6090, 4633fed, cb1b731
+- Tests_added: 0 (already added in prior implement phase; 20 D4-scenario tests + 4 dilemma writing-bible tests)
+- Tests_baseline: 11290
+- Tests_passing: sprint subset 266 passing (36 + 133 + 97 across three re-verification runs); full suite not re-run this phase since work is unchanged from prior PHASE_OK
+- Tests_skipped: 100 (baseline)
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes (test_dialogue_integrity.py passes; new flags registered in KNOWN_*_ORPHANS with documented reasons)
+- Writing_bible_clean: yes (TestDilemmaContentWritingBible extension passes)
+- Touch_zones_respected: yes (no new file changes this phase; committed files match declared touch zones)
+- Notes: Re-verification pass per "already implemented" protocol. Sprint A2-12 shipped end-to-end in commits aed6090 (content + tests) + 4633fed (lens_closed_* prefix whitelist in cross-references test) + cb1b731 (prior phase report). D4 content complete: dilemma record with truth/vengeance poles + telegraph_threshold 55 + collision_threshold 80, Priya's 3-line telegraph, Aldric Senn NPC at `the_fulcrum` with both post-collision dialogue states, Senn's Truth-confrontation tree (5 nodes) + Vengeance-dead stub, Priya scar chatter at axiom_labs gated on `lens_closed_truth`, two auto-journal entries per branch, `told_senn_orchestrated_operation` flag registered and seeded on `the_ledger` mission. All 7 ACs verified by the D4 scenario + writing-bible extension + dilemma-integrity guard.
 ---
 
 #### A2-13 — D2: Wealth ↔ Community
