@@ -141,7 +141,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
-| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | in-progress | A2-9, A2-10 |
+| [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
@@ -16550,7 +16550,7 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 
 #### A2-18 — D7: Faith ↔ Transcendence
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16962,6 +16962,7 @@ gate.
 - 2026-08-27 - todo (created)
 - 2026-09-01 12:47 — harness: plan phase starting
 - 2026-09-01 12:55 — planning complete; verified all context docs exist
+- 2026-09-01 13:30 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
   (`docs/superpowers/specs/2026-08-27-act-two-ambition-design.md` row D7 present;
   `spacegame/models/okafor_research.py` present; `data/characters/npcs.json` has
   canonical `tomas_drifter` at line 74; `havens_rest` and `axiom_labs` systems present).
