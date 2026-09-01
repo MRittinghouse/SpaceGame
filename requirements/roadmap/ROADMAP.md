@@ -15034,7 +15034,7 @@ Flagged as follow-up (do NOT author in A2-13):
 - Started: 2026-09-01 02:06
 - Completed: 2026-09-01 02:10
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (this planner: pending; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602)
+- Commits: 99f9166 (this planner's sentinel-update commit; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602)
 - New_sprints_proposed: none
 - Polish_items_folded_in: n/a (sprint already implemented; polish decisions locked in the earlier planning pass — see the 2026-09-01 planning-complete log entry)
 - Decisions_locked: 0 (all 9 were locked in the earlier planning pass)
