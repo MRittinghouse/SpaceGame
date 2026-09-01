@@ -135,7 +135,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-9](#a2-9--tier_unlocks-and-telegraph-threshold-integrity-guard) | `tier_unlocks` and telegraph-threshold integrity guard | Act II | S | done | A2-8 |
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
-| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | in-progress | A2-9, A2-10 |
+| [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | todo | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
@@ -14322,7 +14322,7 @@ convention documented on `ChatterLine` is the API those sprints consume.
 
 #### A2-12 — D4: Truth ↔ Vengeance
 
-**Status**: in-progress (implementing)
+**Status**: todo
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -14648,7 +14648,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 - 2026-08-31 22:53 — planning already complete from prior phase (commit 49b5a60); Plan/Decisions/Cross-sprint sections intact, no implementation exists yet. Verified: `data/narrative/dilemmas/` empty of d4, no repo hits for `d4_truth_vengeance`/`aldric_senn`/`told_senn_orchestrated_operation` outside ROADMAP/spec. Nothing to re-plan. PHASE_OK
 - 2026-08-31 22:55 — harness: implement phase starting (rework cycle 0)
 - 2026-08-31 23:35 — implementation complete, all gates green; tests 11269→11282 (+13 net; 20 new tests, 1 skip→pass conversion on the previously-empty-registry integrity guard, minus effects of a pre-existing pytest-xdist worker crash that reproduces neither in serial mode nor without xdist). ACs 1-6 verified by `tests/test_scenarios/test_scenario_dilemma_d4.py` (16 tests) and the extended `tests/test_writing_bible_compliance.py::TestDilemmaContentWritingBible` (4 tests); AC7 verified against baseline. All 6 pre-existing failures under `tests/test_engine/test_ground_loot_bonus.py` reproduce on the parent commit (aed6090's parent) and are out of scope for this sprint. PHASE_OK
-
+- 2026-09-01 00:00 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
 **Last phase report.**
 - Phase: implement
 - Outcome: PHASE_OK
