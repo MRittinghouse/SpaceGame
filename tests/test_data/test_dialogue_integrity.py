@@ -753,6 +753,13 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # Consumer: OkaforView._kweon_dialogue_id() routing guard — now detected by the
     # SI3-FOLLOW-1 no-arg consumer regex. Producer remains a scanner blind spot.
     "okafor_legacy_clinic_callback_seen",
+    # === A2-11 (Scars) — TEST-ONLY FLAG, intentionally producerless ===
+    # ``lens_closed_test_lens`` is consumed by the demonstration scar line
+    # (np_scar_test_01 in data/crew/station_chatter.json via required_flags) but
+    # has no producer by design — no real dilemma ever writes it, so the line is
+    # invisible in a real playthrough. Mechanism proof comes from tests that set
+    # it directly on player.dialogue_flags.
+    "lens_closed_test_lens",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -974,13 +981,6 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     #   wreckers_made_up_journal — DETECTOR MISS: same pattern — consumed by
     #     data/journal/entries.json trigger_flag. Scanner blind spot.
     "wreckers_made_up_journal",
-    # === A2-11 (Scars) — TEST-ONLY FLAG, intentionally producerless ===
-    # ``lens_closed_test_lens`` is the required_flag on the demonstration scar line
-    # (np_scar_test_01 in data/crew/station_chatter.json). It is gated on a
-    # test-only flag no real dilemma ever writes, so the line is invisible in a
-    # real playthrough. The flag has no producer by design; the mechanism proof
-    # comes from tests that set it directly on player.dialogue_flags.
-    "lens_closed_test_lens",
 }
 
 
