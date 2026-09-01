@@ -1,1 +1,20 @@
-{"capstones": []}
+{
+  "capstones": [
+    {"capstone_id": "vengeance_capstone", "lens_id": "vengeance", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "wealth_capstone", "lens_id": "wealth", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "political_power_capstone", "lens_id": "political_power", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "exploration_capstone", "lens_id": "exploration", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "discovery_capstone", "lens_id": "discovery", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "justice_capstone", "lens_id": "justice", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "crime_capstone", "lens_id": "crime", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "revolution_capstone", "lens_id": "revolution", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "empire_capstone", "lens_id": "empire", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "community_capstone", "lens_id": "community", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "legacy_capstone", "lens_id": "legacy", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "faith_capstone", "lens_id": "faith", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "transcendence_capstone", "lens_id": "transcendence", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "connection_capstone", "lens_id": "connection", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "truth_capstone", "lens_id": "truth", "capstone_threshold": 95, "cutscene_ref": null},
+    {"capstone_id": "preservation_capstone", "lens_id": "preservation", "capstone_threshold": 95, "cutscene_ref": null}
+  ]
+}

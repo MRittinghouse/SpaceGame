@@ -1,150 +1,85 @@
-"""Data-integrity guard for the capstone registry.
+"""Data-integrity and architectural compliance tests for the capstone registry (A2-20).
 
-Fails the build on:
-- missing required field (any of the three required fields)
-- duplicate capstone_id
-- non-snake_case capstone_id
-- non-snake_case lens_id
-- negative capstone_threshold
-- cutscene_ref that is neither None nor a string
+AC6: sixteen records, bijective lens-to-capstone mapping, uniform threshold of
+95, all cutscene_ref null, all ids snake_case.
 
-Also asserts the scan itself is not silently passing over zero capstones when
-``capstones.json`` ships empty -- the empty-registry case is skipped-with-reason,
-not a quiet green, which is the failure this guard exists to prevent.
+AC11: grep guard — ``GameState.CAPSTONE`` must never appear as a
+``change_state`` target in ``spacegame/`` source files (push-only overlay).
 """
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
+import pathlib
+import re
 
-import pytest
+from spacegame.data_loader import get_data_loader
 
-
-def _write_capstones(tmp_path: Path, capstones: list) -> Path:
-    """Write a capstones.json to tmp_path/narrative/ and return the data dir."""
-    narrative = tmp_path / "narrative"
-    narrative.mkdir(parents=True, exist_ok=True)
-    (narrative / "capstones.json").write_text(
-        json.dumps({"capstones": capstones}), encoding="utf-8"
-    )
-    return tmp_path
+_SNAKE_CASE_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
-def _valid_capstone(capstone_id: str = "test_capstone") -> dict:
-    return {
-        "capstone_id": capstone_id,
-        "lens_id": "vengeance",
-        "capstone_threshold": 95,
-        "cutscene_ref": None,
-    }
+class TestCapstoneRegistryDataIntegrity:
+    """AC6 — data integrity assertions on the shipped capstones.json."""
+
+    def setup_method(self) -> None:
+        self.dl = get_data_loader()
+        self.dl.load_all()
+
+    def test_sixteen_capstones_loaded(self) -> None:
+        assert len(self.dl.capstones) == 16, (
+            f"Expected 16 capstones, got {len(self.dl.capstones)}: "
+            f"{sorted(self.dl.capstones.keys())}"
+        )
+
+    def test_bijective_lens_to_capstone_mapping(self) -> None:
+        capstone_lens_ids = {c.lens_id for c in self.dl.capstones.values()}
+        lens_ids = set(self.dl.lenses.keys())
+        assert capstone_lens_ids == lens_ids, (
+            f"Capstone lens_ids do not match loaded lenses.\n"
+            f"  In capstones but not lenses: {capstone_lens_ids - lens_ids}\n"
+            f"  In lenses but not capstones: {lens_ids - capstone_lens_ids}"
+        )
+
+    def test_uniform_capstone_threshold_of_95(self) -> None:
+        bad = {
+            cid: c.capstone_threshold
+            for cid, c in self.dl.capstones.items()
+            if c.capstone_threshold != 95
+        }
+        assert not bad, f"Capstones with threshold != 95: {bad}"
+
+    def test_all_cutscene_refs_are_null(self) -> None:
+        non_null = {cid for cid, c in self.dl.capstones.items() if c.cutscene_ref is not None}
+        assert not non_null, f"Capstones with non-null cutscene_ref: {non_null}"
+
+    def test_all_capstone_ids_are_snake_case(self) -> None:
+        bad = [cid for cid in self.dl.capstones if not _SNAKE_CASE_RE.match(cid)]
+        assert not bad, f"capstone_ids not snake_case: {bad}"
+
+    def test_all_capstone_lens_ids_are_snake_case(self) -> None:
+        bad = [
+            (cid, c.lens_id)
+            for cid, c in self.dl.capstones.items()
+            if not _SNAKE_CASE_RE.match(c.lens_id)
+        ]
+        assert not bad, f"lens_ids not snake_case: {bad}"
 
 
-class TestCapstoneRegistryIntegrity:
-    @pytest.mark.parametrize("missing_field", ["capstone_id", "lens_id", "capstone_threshold"])
-    def test_missing_required_field_raises(self, tmp_path: Path, missing_field: str) -> None:
-        """Each required field missing must raise ValueError."""
-        from spacegame.data_loader import DataLoader
+class TestCapstoneChangeStateGuard:
+    """AC11 — CAPSTONE must never be a change_state target in spacegame/ source."""
 
-        bad = _valid_capstone("my_capstone")
-        del bad[missing_field]
-        _write_capstones(tmp_path, [bad])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError):
-            loader.load_capstones()
-
-    @pytest.mark.parametrize(
-        "bad_id",
-        ["Vengeance", "capstone-vengeance", "1capstone", "WEALTH_CAPSTONE", "has space"],
-    )
-    def test_non_snake_case_capstone_id_raises(self, tmp_path: Path, bad_id: str) -> None:
-        """Non-snake_case capstone_id values must be rejected."""
-        from spacegame.data_loader import DataLoader
-
-        bad = _valid_capstone(bad_id)
-        _write_capstones(tmp_path, [bad])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError):
-            loader.load_capstones()
-
-    @pytest.mark.parametrize(
-        "bad_lens_id",
-        ["Vengeance", "political-power", "1lens", "HAS_UPPER"],
-    )
-    def test_non_snake_case_lens_id_raises(self, tmp_path: Path, bad_lens_id: str) -> None:
-        """Non-snake_case lens_id values must be rejected."""
-        from spacegame.data_loader import DataLoader
-
-        bad = _valid_capstone("my_capstone")
-        bad["lens_id"] = bad_lens_id
-        _write_capstones(tmp_path, [bad])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError):
-            loader.load_capstones()
-
-    @pytest.mark.parametrize("bad_threshold", [-1, -100])
-    def test_negative_threshold_raises(self, tmp_path: Path, bad_threshold: int) -> None:
-        """Negative capstone_threshold values must be rejected."""
-        from spacegame.data_loader import DataLoader
-
-        bad = _valid_capstone("my_capstone")
-        bad["capstone_threshold"] = bad_threshold
-        _write_capstones(tmp_path, [bad])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError):
-            loader.load_capstones()
-
-    @pytest.mark.parametrize("bad_ref", [0, [], {}, False])
-    def test_non_string_non_null_cutscene_ref_raises(self, tmp_path: Path, bad_ref: object) -> None:
-        """cutscene_ref that is neither None nor a string must raise ValueError."""
-        from spacegame.data_loader import DataLoader
-
-        bad = _valid_capstone("my_capstone")
-        bad["cutscene_ref"] = bad_ref
-        _write_capstones(tmp_path, [bad])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError):
-            loader.load_capstones()
-
-    def test_duplicate_capstone_id_raises(self, tmp_path: Path) -> None:
-        """Two capstones with the same capstone_id must raise ValueError naming the duplicate."""
-        from spacegame.data_loader import DataLoader
-
-        cap = _valid_capstone("dup_capstone")
-        _write_capstones(tmp_path, [cap, cap])
-
-        loader = DataLoader(data_dir=tmp_path)
-        with pytest.raises(ValueError, match="dup_capstone"):
-            loader.load_capstones()
-
-    def test_scan_guard_is_not_silent_on_empty_registry(self, tmp_path: Path) -> None:
-        """When capstones.json has zero entries the scan must skip, not silently pass.
-
-        Mirrors the test_findings_register.py pattern: a scan that passes over
-        nothing provides no assurance. When the shipped stub is empty the compliance
-        scan must be skipped (pytest.skip) rather than reporting a false green.
-        """
-        from spacegame.data_loader import DataLoader
-
-        _write_capstones(tmp_path, [])
-        loader = DataLoader(data_dir=tmp_path)
-        loader.load_capstones()
-
-        if not loader.capstones:
-            pytest.skip(
-                "capstones.json contains zero entries -- compliance scan would "
-                "check nothing. This skip is expected while the registry is "
-                "empty (A2-20 will populate it with sixteen real capstones)."
-            )
-
-        # If capstones were loaded, assert they all pass the integrity guard.
-        for capstone_id, capstone in loader.capstones.items():
-            assert capstone.capstone_id == capstone_id, (
-                f"Key mismatch: dict key {capstone_id!r} != "
-                f"Capstone.capstone_id {capstone.capstone_id!r}"
-            )
+    def test_no_change_state_capstone_in_source(self) -> None:
+        src_root = pathlib.Path(__file__).parent.parent.parent / "spacegame"
+        forbidden_patterns = [
+            "change_state(GameState.CAPSTONE)",
+            'change_state(GameState("capstone"))',
+        ]
+        offenders: list[str] = []
+        for py_file in src_root.rglob("*.py"):
+            text = py_file.read_text(encoding="utf-8")
+            for pattern in forbidden_patterns:
+                if pattern in text:
+                    offenders.append(f"{py_file}: '{pattern}'")
+        assert not offenders, (
+            "CAPSTONE must only be a push_state target, never change_state:\n"
+            + "\n".join(offenders)
+        )

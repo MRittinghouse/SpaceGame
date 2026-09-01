@@ -17,13 +17,18 @@ Hook contract (enforced by A2-20):
 - This module imports nothing from ``spacegame.engine.*`` or ``spacegame.views.*``.
   That zero coupling is the structural enforcement of the "must not end the session"
   invariant: the Capstone model cannot trigger state transitions by itself.
+
+A2-20 extended this module with ``CapstoneCheckResult`` and ``check_capstones``
+(a model-layer coordinator mirroring ``check_dilemmas`` in ``dilemma.py``) so the
+engine never reads ``player.lens_investment`` directly. All investment reads for
+capstone eligibility live behind ``check_capstones`` in the model layer.
 """
 
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
 _SNAKE_CASE_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -98,9 +103,9 @@ def _validate_capstone_dict(data: dict) -> None:
     """
     capstone_id = data.get("capstone_id", "<unknown>")
 
-    for field in _REQUIRED_FIELDS:
-        if field not in data or data[field] is None:
-            raise ValueError(f"Capstone '{capstone_id}' is missing required field '{field}'.")
+    for field_name in _REQUIRED_FIELDS:
+        if field_name not in data or data[field_name] is None:
+            raise ValueError(f"Capstone '{capstone_id}' is missing required field '{field_name}'.")
 
     if not isinstance(capstone_id, str) or not _SNAKE_CASE_RE.match(capstone_id):
         raise ValueError(
@@ -136,6 +141,51 @@ def _validate_capstone_dict(data: dict) -> None:
             f"Capstone '{capstone_id}' field 'cutscene_ref' must be a string or null, "
             f"got {type(cutscene_ref).__name__!r}."
         )
+
+
+@dataclass
+class CapstoneCheckResult:
+    """Typed result of a ``check_capstones`` pass.
+
+    Mirrors :class:`spacegame.models.dilemma.DilemmaCheckResult` in shape.
+    A small dataclass rather than a bare list so future extension (e.g. a
+    ``newly_reached`` distinction) does not break callers.
+    """
+
+    eligible: list[str] = field(default_factory=list)
+
+
+def check_capstones(player: Any, capstones: dict[str, "Capstone"]) -> CapstoneCheckResult:
+    """Classify every loaded capstone against a player's current state.
+
+    Reads ``player.lens_investment``, ``player.dilemma_state.closed_lenses``,
+    and ``player.capstones_reached`` inside the model layer so callers under
+    ``spacegame/engine/`` and ``spacegame/views/`` never touch the forbidden tokens.
+
+    Iteration order matches ``capstones`` insertion order (guaranteed by dict
+    since Python 3.7). The engine reads ``result.eligible[0]`` and pushes its
+    modal; any remaining eligible capstones re-check on the next tick.
+
+    Args:
+        player: Any object exposing ``lens_investment`` (with
+            :meth:`~spacegame.models.lens_investment.LensInvestment.get_investment`),
+            ``dilemma_state`` (with a ``closed_lenses: set[str]`` attribute),
+            and ``capstones_reached: set[str]``.
+        capstones: The registry (typically ``DataLoader.capstones``).
+
+    Returns:
+        :class:`CapstoneCheckResult` with each eligible capstone_id filed into
+        ``result.eligible`` in registry (insertion) order.
+    """
+    result = CapstoneCheckResult()
+    investment = player.lens_investment
+    closed = player.dilemma_state.closed_lenses
+    reached = player.capstones_reached
+    for capstone_id, capstone in capstones.items():
+        current = investment.get_investment(capstone.lens_id)
+        if should_fire(capstone, current, closed, reached):
+            result.eligible.append(capstone_id)
+    return result
 
 
 def should_fire(

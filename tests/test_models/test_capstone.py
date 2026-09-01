@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from spacegame.models.capstone import Capstone, should_fire
+from spacegame.models.capstone import Capstone, CapstoneCheckResult, check_capstones, should_fire
 
 
 def _valid_capstone(**overrides) -> Capstone:
@@ -250,3 +250,79 @@ class TestCapstoneDataLoader:
         loader = DataLoader(data_dir=tmp_path)
         result = loader.load_capstones()
         assert result == {}
+
+
+class TestCheckCapstones:
+    """Unit tests for the check_capstones coordinator (A2-20 Task 4a / AC16)."""
+
+    def _capstone(self, capstone_id: str, lens_id: str, threshold: int = 95) -> Capstone:
+        return Capstone(
+            capstone_id=capstone_id,
+            lens_id=lens_id,
+            capstone_threshold=threshold,
+            cutscene_ref=None,
+        )
+
+    def _player(
+        self,
+        investment_by_lens: dict | None = None,
+        closed_lenses: set | None = None,
+        capstones_reached: set | None = None,
+    ):
+        from types import SimpleNamespace
+
+        inv_map = investment_by_lens or {}
+        return SimpleNamespace(
+            lens_investment=SimpleNamespace(get_investment=lambda lid: inv_map.get(lid, 0)),
+            dilemma_state=SimpleNamespace(closed_lenses=closed_lenses or set()),
+            capstones_reached=capstones_reached or set(),
+        )
+
+    def test_empty_registry_returns_empty_result(self) -> None:
+        player = self._player()
+        result = check_capstones(player, {})
+        assert result.eligible == []
+
+    def test_result_is_capstone_check_result(self) -> None:
+        player = self._player()
+        result = check_capstones(player, {})
+        assert isinstance(result, CapstoneCheckResult)
+
+    def test_single_eligible_capstone_fires(self) -> None:
+        c = self._capstone("wealth_capstone", "wealth", threshold=95)
+        player = self._player(investment_by_lens={"wealth": 95})
+        result = check_capstones(player, {"wealth_capstone": c})
+        assert result.eligible == ["wealth_capstone"]
+
+    def test_below_threshold_not_eligible(self) -> None:
+        c = self._capstone("wealth_capstone", "wealth", threshold=95)
+        player = self._player(investment_by_lens={"wealth": 94})
+        result = check_capstones(player, {"wealth_capstone": c})
+        assert result.eligible == []
+
+    def test_closed_lens_suppresses(self) -> None:
+        c = self._capstone("wealth_capstone", "wealth", threshold=95)
+        player = self._player(
+            investment_by_lens={"wealth": 100},
+            closed_lenses={"wealth"},
+        )
+        result = check_capstones(player, {"wealth_capstone": c})
+        assert result.eligible == []
+
+    def test_already_reached_suppresses(self) -> None:
+        c = self._capstone("wealth_capstone", "wealth", threshold=95)
+        player = self._player(
+            investment_by_lens={"wealth": 100},
+            capstones_reached={"wealth_capstone"},
+        )
+        result = check_capstones(player, {"wealth_capstone": c})
+        assert result.eligible == []
+
+    def test_multiple_eligible_in_registry_order(self) -> None:
+        a = self._capstone("a_capstone", "a_lens", threshold=10)
+        b = self._capstone("b_capstone", "b_lens", threshold=10)
+        c = self._capstone("c_capstone", "c_lens", threshold=10)
+        registry = {"a_capstone": a, "b_capstone": b, "c_capstone": c}
+        player = self._player(investment_by_lens={"a_lens": 100, "b_lens": 100, "c_lens": 100})
+        result = check_capstones(player, registry)
+        assert result.eligible == ["a_capstone", "b_capstone", "c_capstone"]

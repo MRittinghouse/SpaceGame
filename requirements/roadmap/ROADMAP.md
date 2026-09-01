@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: in-progress (planning, second pass after 667e37b revert)
+**Status**: in-progress (implementing)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18372,6 +18372,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-08-27 - todo (created)
 - 2026-09-01 16:56 — harness: plan phase starting (first pass)
 - 2026-09-01 17:35 — first-pass planning complete; expanded touch zones (added save_manager.py,
+- 2026-09-01 17:56 — harness: implement phase starting (rework cycle 0)
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
@@ -18428,6 +18429,35 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   reactions remain "none" - the design spec's "authored galaxy content out of scope"
   rule (spec line 319) has not changed; the stable dialogue-flag surface is what
   A2-21 keys off.
+- 2026-09-01 — implement phase starting (rework cycle 1, post-re-plan)
+- 2026-09-01 — coordinator (check_capstones + CapstoneCheckResult) added to capstone.py;
+  Player.capstones_reached wired through save_manager; GameState.CAPSTONE added;
+  data/narrative/capstones.json populated with 16 entries; CapstoneView created (config-
+  attribute imports per dim-capture guard); engine tick chain added to game.py
+  (_tick_capstone_engine, _push_capstone_modal, _ensure_capstone_view,
+  _on_capstone_acknowledge, _handle_capstone_acknowledge); tests written for all 16 ACs
+- 2026-09-01 — compliance guard sweep: test_lens_investment_never_rendered PASS (engine
+  reads zero investment tokens); test_module_level_dim_capture PASS (baseline stays 27);
+  test_ground_loot_bonus PASS (all 6 ground-loot tests green, partial-Game guard works);
+  full suite 11552 passed / 99 skipped (baseline 11543, +9 new tests). PHASE_OK
+
+**Last phase report.**
+- Phase: implement
+- Outcome: PHASE_OK
+- Started: 2026-09-01 18:30
+- Completed: 2026-09-01 19:15
+- Files_changed: spacegame/models/capstone.py, spacegame/models/player.py, spacegame/save_manager.py, spacegame/config.py, spacegame/views/capstone_view.py, spacegame/engine/game.py, data/narrative/capstones.json, tests/test_models/test_capstone.py, tests/test_compliance/test_capstone_registry.py, tests/test_scenarios/test_scenario_capstone_session_continues.py, tests/test_scenarios/test_scenario_save_load.py, tests/test_views/test_capstone_view.py
+- Commits: (pending — committing after phase report)
+- Tests_added: 9
+- Tests_baseline: 11543
+- Tests_passing: 11552
+- Tests_skipped: 99
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: n/a (no new flags added to constants/flags.py; dialogue flags written at runtime via f-string pattern, not as module constants)
+- Writing_bible_clean: yes (placeholder template has no em-dashes, no banned phrases, no parallel-negation, no banned NPC names)
+- Touch_zones_respected: yes (all changed files are within declared touch zones)
+- Notes: Model-layer coordinator (check_capstones) correctly gates engine from reading investment. Three architectural guards that caused the first-pass revert all pass: investment compliance (AC14), dim-capture baseline (AC15), ground-loot partial-Game guard (AC13). All 16 acceptance criteria satisfied. Session continues after acknowledge per spec Success Criterion 8.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity

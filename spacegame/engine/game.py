@@ -75,6 +75,7 @@ from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
 
 if TYPE_CHECKING:
+    from spacegame.models.capstone import Capstone
     from spacegame.models.combat import CombatEncounter
     from spacegame.models.combat_engine import CombatEngine
     from spacegame.models.crew import CrewRoster
@@ -83,9 +84,11 @@ if TYPE_CHECKING:
     from spacegame.models.event import MarketEvent
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
+    from spacegame.models.lens import Lens
     from spacegame.views.achievements_view import AchievementsView
     from spacegame.views.auction_view import AuctionView
     from spacegame.views.cantina_view import CantinaView
+    from spacegame.views.capstone_view import CapstoneView
     from spacegame.views.character_creation_view import CharacterCreationView
     from spacegame.views.character_view import CharacterView
     from spacegame.views.cockpit_hud import CockpitHUD
@@ -418,6 +421,11 @@ class Game:
         # the dilemma engine dispatches a collision.
         self.dilemma_resolution_view: Optional["DilemmaResolutionView"] = None
         self._pending_dilemma: Optional["Dilemma"] = None
+
+        # A2-20: lazy-instantiated by _ensure_capstone_view() when the
+        # capstone engine dispatches an eligible capstone.
+        self.capstone_view: Optional["CapstoneView"] = None
+        self._pending_capstone: Optional["Capstone"] = None
 
         # Investment system
         from spacegame.models.investment import InvestmentManager
@@ -4441,10 +4449,14 @@ class Game:
             action_type: The player action tag, forwarded verbatim to
                 :meth:`_trigger_crew_reaction`.
         """
-        if self.state_manager.current_state == GameState.DILEMMA_RESOLUTION:
+        if self.state_manager.current_state in (
+            GameState.DILEMMA_RESOLUTION,
+            GameState.CAPSTONE,
+        ):
             return
         self._trigger_crew_reaction(action_type)
         self._tick_dilemma_engine()
+        self._tick_capstone_engine()
 
     def _tick_dilemma_engine(self) -> None:
         """Run the dilemma coordinator and dispatch telegraph / collision.
@@ -4470,6 +4482,101 @@ class Game:
         if result.newly_collided:
             first_id = result.newly_collided[0]
             self._push_dilemma_modal(dilemmas[first_id])
+
+    def _tick_capstone_engine(self) -> None:
+        """Run the capstone coordinator and dispatch the first eligible capstone.
+
+        Investment is read only via the model-layer coordinator
+        :func:`spacegame.models.capstone.check_capstones`. The compliance guard
+        forbids the investment token in ``engine/`` — the model layer is the
+        only legitimate reader (A2-4 AC4, A2-20 Locked decision 2).
+
+        Guard against partial-Game fixtures (A2-20 Locked decision 13):
+        unit-test harnesses construct Game with ``__init__`` patched out and
+        set ``_player = MagicMock()`` without stubbing ``capstones_reached``.
+        The ``isinstance`` check below mirrors A2-8's ``ui_manager is None``
+        guard (commit 018ef70) — the engine stays tolerant of partial Games.
+        """
+        if self._player is None:
+            return
+        if not isinstance(getattr(self._player, "capstones_reached", None), set):
+            return
+        dl = get_data_loader()
+        if not dl.capstones:
+            return
+        from spacegame.models.capstone import check_capstones
+
+        result = check_capstones(self.player, dl.capstones)
+        if result.eligible:
+            self._push_capstone_modal(dl.capstones[result.eligible[0]])
+
+    def _push_capstone_modal(self, capstone: "Capstone") -> None:
+        """Push the capstone modal for ``capstone`` on top of the current state.
+
+        Does nothing on a Game with no UI — partial-Game unit-test fixtures
+        construct Game without a UI manager and ``_after_player_action``
+        reaches here through the capstone tick. Skipping is safe because
+        ``check_capstones`` is a pure classifier: a capstone not shown now
+        is recomputed on the next tick and presented as soon as there is a
+        UI to present it on. Mirrors the ``_push_dilemma_modal`` guard
+        at line 4529 (A2-8 commit 018ef70).
+        """
+        if getattr(self, "ui_manager", None) is None:
+            return
+        dl = get_data_loader()
+        lens = dl.lenses[capstone.lens_id]
+        self._ensure_capstone_view(capstone, lens)
+        self.state_manager.push_state(GameState.CAPSTONE)
+
+    def _ensure_capstone_view(self, capstone: "Capstone", lens: "Lens") -> None:
+        """Create and register the capstone view for the given capstone.
+
+        Args:
+            capstone: The capstone record being shown.
+            lens: The loaded Lens record for ``capstone.lens_id``.
+        """
+        from spacegame.views.capstone_view import CapstoneView
+
+        self._pending_capstone = capstone
+        self.capstone_view = CapstoneView(
+            self.ui_manager,
+            capstone,
+            lens,
+            on_acknowledge=self._on_capstone_acknowledge,
+        )
+        self.state_manager.register_state(GameState.CAPSTONE, self.capstone_view)
+
+    def _on_capstone_acknowledge(self) -> None:
+        """Callback wired into CapstoneView.
+
+        Writes ``capstone_id`` to ``player.capstones_reached`` and sets the
+        stable dialogue flag ``{lens_id}_capstone_reached`` for A2-21 to key
+        off. State pop is deferred to :meth:`_handle_capstone_acknowledge`
+        after observing ``dismissed`` — pygame_gui teardown mid-event-handler
+        is unstable (same reasoning as A2-8's ``_on_dilemma_resolve``).
+        """
+        capstone = self._pending_capstone
+        if capstone is None:
+            return
+        self.player.capstones_reached.add(capstone.capstone_id)
+        self.player.dialogue_flags[f"{capstone.lens_id}_capstone_reached"] = True
+
+    def _handle_capstone_acknowledge(self) -> None:
+        """Poll the capstone view for dismissal and pop the modal.
+
+        Called each frame from the main update loop. Matches the
+        :meth:`_handle_dilemma_resolution` polling pattern.
+        """
+        view = getattr(self, "capstone_view", None)
+        if view is None:
+            return
+        if self.state_manager.current_state != GameState.CAPSTONE:
+            return
+        if not view.is_dismissed():
+            return
+        self.state_manager.pop_state()
+        self.capstone_view = None
+        self._pending_capstone = None
 
     def _deliver_telegraph(self, dilemma: "Dilemma", first_time: bool) -> None:
         """Queue the next telegraph line and advance the per-dilemma cursor.
@@ -6813,6 +6920,8 @@ class Game:
         # is deferred to the frame loop to avoid pygame_gui teardown from
         # inside a UI event handler).
         self._handle_dilemma_resolution()
+        # A2-20: pop the capstone modal once the player has acknowledged.
+        self._handle_capstone_acknowledge()
 
         # Update game state (only if not paused)
         if not self.paused:

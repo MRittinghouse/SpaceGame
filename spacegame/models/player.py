@@ -89,6 +89,12 @@ class Player:
     # pattern — the whole state serializes via a single ``to_dict()``.
     dilemma_state: DilemmaRuntimeState = field(default_factory=DilemmaRuntimeState)
 
+    # A2-20: set of capstone_ids the player has already acknowledged.
+    # Grows only; the capstone predicate re-checks it on every tick so an
+    # acknowledged capstone never re-fires. Serialized as a sorted list for
+    # deterministic diffs; mirroring the DilemmaRuntimeState.closed_lenses pattern.
+    capstones_reached: set[str] = field(default_factory=set)
+
     # SA-1: Wreckers' Guild Hall runtime state. None for unenrolled players;
     # the first conversation with Malia at the Hall flips it on. The
     # standing value lives separately on ``sub_reputation["wreckers_guild"]``

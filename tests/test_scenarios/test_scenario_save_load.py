@@ -238,3 +238,50 @@ class TestSaveLoadFullIntegration:
         assert restored.game_day == 80
         assert restored.combats_won == 12
         assert restored.credits_earned_lifetime == 150000
+
+
+class TestSaveLoadCapstonesReached:
+    """AC5 — capstones_reached round-trips through save/load (A2-20)."""
+
+    def test_populated_set_round_trips(self) -> None:
+        player = fresh_player()
+        player.capstones_reached = {"wealth_capstone", "empire_capstone"}
+
+        restored = round_trip_save(player)
+
+        assert restored.capstones_reached == {"wealth_capstone", "empire_capstone"}, (
+            "capstones_reached must survive the save/load round-trip"
+        )
+        assert isinstance(restored.capstones_reached, set), (
+            "capstones_reached must deserialize as a set, not a list"
+        )
+
+    def test_legacy_save_missing_key_yields_empty_set(self) -> None:
+        from spacegame.save_manager import SaveManager
+
+        player = fresh_player()
+        mgr = SaveManager()
+        data = mgr._serialize_player(player)
+        # Simulate a legacy save that predates A2-20.
+        data.pop("capstones_reached", None)
+        restored = mgr._deserialize_player(data)
+
+        assert restored.capstones_reached == set(), (
+            "Legacy saves without capstones_reached must restore as empty set"
+        )
+        assert isinstance(restored.capstones_reached, set)
+
+    def test_malformed_payload_non_list_yields_empty_set(self) -> None:
+        from spacegame.save_manager import SaveManager
+
+        player = fresh_player()
+        mgr = SaveManager()
+        data = mgr._serialize_player(player)
+        # Non-list payload (e.g. a string, integer, or dict).
+        data["capstones_reached"] = "wealth_capstone"
+        restored = mgr._deserialize_player(data)
+
+        assert restored.capstones_reached == set(), (
+            "Non-list capstones_reached payload must restore as empty set, not crash"
+        )
+        assert isinstance(restored.capstones_reached, set)
