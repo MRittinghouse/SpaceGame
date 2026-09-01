@@ -142,7 +142,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
-| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
+| [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
@@ -17005,7 +17005,7 @@ gate.
 
 #### A2-19 — D8: Crime ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -17527,6 +17527,7 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-09-01 15:15 — planning complete; expanded ACs from 6 to 17, locked 9 decisions,
 - 2026-09-01 15:46 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 16:15 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
+- 2026-09-01 16:21 — harness: plan phase starting
   folded Elena reactive ambient lines into scope, wrote 9-task implementer plan. PHASE_OK
 - 2026-09-01 15:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 15:39 — harness: plan phase starting
@@ -17539,24 +17540,24 @@ Flagged as follow-up (do NOT author in A2-19):
 - 2026-09-01 16:10 — implement re-verification: 47 D8 tests pass (1.25s); dialogue integrity
   39 tests pass (5m01s); full suite 11529 passed, 100 skipped (matches baseline exactly);
   lint clean on Python touched files; format clean; touch zones respected. PHASE_OK
+- 2026-09-01 16:25 — plan re-entered after harness stuck-sprint recovery reset. Sprint remains
+  fully implemented (commits 115f1ae + 5640682); prior 16:10 re-verification still stands
+  (baseline unchanged at 11529/100 per pre-phase). Spot-verified `pytest
+  tests/test_scenarios/test_scenario_dilemma_d8.py -q` → 47 passed in 1.31s; artifact files
+  (`data/narrative/dilemmas/d8_crime_community.json`, `tests/test_scenarios/test_scenario_dilemma_d8.py`)
+  present. Not re-planning; routing dispatcher onward. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 16:05
-- Completed: 2026-09-01 16:10
-- Files_changed: data/narrative/dilemmas/d8_crime_community.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/journal/entries.json, data/crew/station_chatter.json, data/crew/ambient_dialogue.json, tests/test_data/test_dialogue_integrity.py, tests/test_scenarios/test_scenario_dilemma_d8.py
-- Commits: 115f1ae, 5640682
-- Tests_added: 47
-- Tests_baseline: 11529
-- Tests_passing: 11529
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: Sprint already implemented in commit 115f1ae before this agent invocation. Re-verified all gates: 47 D8 tests pass, full suite holds at baseline (11529/100), dialogue integrity clean, lint/format clean on Python touched files. All 17 ACs satisfied by the existing implementation.
+- Started: 2026-09-01 16:21
+- Completed: 2026-09-01 16:25
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint was already fully planned and shipped)
+- Decisions_locked: 0 (all 9 already locked in prior plan phase)
+- Notes: Sprint fully implemented in commits 115f1ae + 5640682; prior plan-phase re-verification at 16:10 confirmed 47 D8 tests pass, dialogue integrity clean, full suite at baseline (11529/100), lint/format clean, all 17 ACs satisfied. Harness stuck-sprint recovery reset status to todo but no work is missing — pre-phase baseline (11529/100) matches the post-implement snapshot exactly, so no drift since verification. Spot-check re-ran 47 D8 tests (1.31s, all pass). Writing PHASE_OK to route the dispatcher onward per the "already-implemented → PHASE_OK, not PHASE_BLOCKED" rule.
 ---
 
 #### A2-20 — Capstones fire without ending the session
