@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15375,9 +15375,19 @@ dilemma in this arc does.
 
 **Touch zones.**
 - `data/narrative/dilemmas/d3_power_revolution_empire.json` (NEW)
-- `data/dialogue/` - Tomas's telegraph lines, Owusu's/Deng's/Halvorsen's post-collision
-  dialogue states, and NPC records for Owusu, Halvorsen, and Deng if they do not already
-  exist.
+- `data/characters/npcs.json` - append NPC records for `emiko_owusu`,
+  `idris_halvorsen`, and `sorcha_deng`, each with `home_system_id`,
+  `dialogue_id`, and `dialogue_states` covering both their winning and
+  losing post-collision routes.
+- `data/dialogue/dialogues.json` - Owusu's / Halvorsen's / Deng's default
+  dialogue trees plus one winning-state tree and one losing-state tree
+  per NPC (six new post-collision states total; three defaults).
+- `data/crew/station_chatter.json` - one scar `ChatterLine` per losing
+  NPC gated on that NPC's `lens_closed_*` flag (three lines).
+- `data/crew/ambient_dialogue.json` - three Tomas `flag_triggered`
+  ambient reactions, one per outcome flag.
+- `data/journal/entries.json` - three auto-journal entries, one per
+  outcome flag.
 - `tests/test_scenarios/test_scenario_dilemma_d3.py` (NEW)
 
 **Deliverables.**
@@ -15411,26 +15421,316 @@ dilemma in this arc does.
   `DilemmaOutcome.closes` supports more than one entry, which none of the seven pair-dilemmas
   exercise).
 
+**Plan.**
+
+Locked decisions:
+1. NPC `home_system_id` bindings pick from existing systems (verified
+   2026-09-01 that `verge_landing` / `kettlebridge` are flavor names, not
+   real system ids; only 12 systems are loaded from
+   `data/galaxy/systems.json`). Mayor Emiko Owusu → `havens_rest`
+   (frontier settlement with existing municipal/dock presence, matches
+   the "Verge Landing council" flavor register). Claims Administrator
+   Idris Halvorsen → `crimson_reach` (edge / contested border, matches
+   Empire's territorial framing and gives him a home distinct from the
+   other two). Organizer Sorcha Deng → `havens_rest` (labor organizing
+   hub for indentured contract-crews; Owusu and Deng sharing a home
+   system is a feature — they are literally in political conflict in
+   the same town). Halvorsen's crimson_reach placement also lines up
+   A2-17 D6 which extends Halvorsen without a home-system conflict.
+2. Outcome flag ids: `d3_political_power_won`, `d3_revolution_won`,
+   `d3_empire_won`. Consistent with the D1/D2/D4 pattern
+   (`d<N>_<lens>_won`).
+3. Scar `ChatterLine` topology = one scar per losing NPC gated on that
+   NPC's pole's `lens_closed_*` flag (three scars total). Mirrors D1's
+   two-scars-two-outcomes shape scaled up to the triangle. Any of the
+   three outcomes fires two of these scars (each outcome closes two
+   lenses), so all three outcomes leave a visible cost without needing
+   six outcome-specific scars. Ids: `al_scar_d3_owusu_01` at
+   `havens_rest` gated on `lens_closed_political_power`;
+   `al_scar_d3_halvorsen_01` at `crimson_reach` gated on
+   `lens_closed_empire`; `al_scar_d3_deng_01` at `havens_rest` gated on
+   `lens_closed_revolution`. `one_shot: false` per the A2-11 scar
+   convention.
+4. Crew reactive ambient lines = three Tomas `flag_triggered` lines,
+   one per outcome flag. Tomas delivered the telegraph; his
+   post-collision reactions close the loop in the same shape D1 shipped
+   with Elena and D2 shipped with Marcus. Marcus / Elena / Priya
+   reactions to D3 outcomes are flagged as cross-sprint follow-ups
+   below, not folded in here (keeps this sprint at L size without
+   sliding into XL).
+5. Journal entries = three auto-entries (`auto_d3_political_power_won`,
+   `auto_d3_revolution_won`, `auto_d3_empire_won`) in
+   `data/journal/entries.json` mirroring the D1/D2/D4 `trigger_flag`
+   shape. Fold in — the pattern is established.
+6. Winning-state / losing-state gating pattern: each NPC's winning-state
+   dialogue is gated on that outcome's flag
+   (`d3_political_power_won` etc.), while each NPC's losing-state
+   dialogue is gated on the NPC's `lens_closed_*` flag. Rationale: when
+   a lens wins, only that outcome flag is set (the winning lens is not
+   closed); when a lens loses, its `lens_closed_*` flag is set. This
+   keeps the two states cleanly non-overlapping.
+7. Halvorsen NPC record authored fresh in this sprint. A2-17 D6's plan
+   already accounts for extending an existing Halvorsen record when
+   A2-15 lands first (see A2-17 Context to read); A2-15 makes that the
+   happy path by shipping the record with clean scaffolding — a
+   `dialogue_states` array that A2-17 can append to without renaming.
+8. Voice note for Sorcha Deng authored inline in the dilemma JSON's
+   telegraph_lines and dialogue trees (not in `character_voices.md`,
+   which is Act I's document). Per sprint Context, her register is
+   direct, impatient with process, distinct from Marcus Jin's dry
+   resignation. Not "no X, no Y" cadence; no em-dashes; not a banned
+   name.
+
+Tasks (implementation order):
+
+1. **Author `data/narrative/dilemmas/d3_power_revolution_empire.json`.**
+   Fields: `id: "d3_power_revolution_empire"`,
+   `poles: ["political_power", "revolution", "empire"]`,
+   `collision_requires: 2`, `telegraph_threshold: 55`,
+   `collision_threshold: 80`, `telegraph_npc_id: "tomas_drifter"`,
+   `telegraph_lines`: 2-3 lines in Tomas's voice — trade metaphors
+   ("bad deal", "margin", "smart money", "Way I see it"), warmth
+   surface over the locked interior, noting the player is running
+   three ledgers that do not close each other out. Three outcomes:
+   - `political_power`: `closes: ["revolution", "empire"]`,
+     `outcome_flag: "d3_political_power_won"`, `tier_unlocks` naming
+     Mayor Owusu's council seat backing (created specifically because
+     the player worked inside the system).
+   - `revolution`: `closes: ["political_power", "empire"]`,
+     `outcome_flag: "d3_revolution_won"`, `tier_unlocks` naming Deng's
+     cross-system cell coordination running through the player.
+   - `empire`: `closes: ["political_power", "revolution"]`,
+     `outcome_flag: "d3_empire_won"`, `tier_unlocks` naming Halvorsen
+     ceding administrative authority over a contested border system,
+     the player's first sovereign territory.
+
+   Each outcome carries a `narration_summary` in the same third-person-
+   past-tense register D1/D2/D4 use. Voice-check: no em-dashes, no
+   "no X, no Y" constructions, no parallel-negation rhetoric, no
+   banned NPC names.
+
+2. **Add three NPC records to `data/characters/npcs.json`.** For each
+   of `emiko_owusu`, `idris_halvorsen`, `sorcha_deng`: `id`, `name`,
+   `title`, `portrait_color`, `home_system_id` (per locked decision 1),
+   `dialogue_id: "<npc>_default"`, `faction_id` (Owusu: `""`
+   — municipal, unaligned; Halvorsen: `""` — Claims Administrator is
+   a regional civil authority, not a faction org; Deng: `""` — labor
+   organizing predates any faction), `dialogue_music:
+   "dialogue_intimate"`, `dialogue_states` array. Each NPC's
+   `dialogue_states`:
+   - Winning-state entry: `dialogue_id: "<npc>_victorious"`,
+     `required_flags: ["<their_outcome_flag>"]`.
+   - Losing-state entry: `dialogue_id: "<npc>_declined"`,
+     `required_flags: ["lens_closed_<their_pole>"]`.
+
+3. **Author dialogue trees in `data/dialogue/dialogues.json`.**
+   Nine dialogue tree entries total: three defaults
+   (`owusu_default`, `halvorsen_default`, `deng_default`), three
+   winning-state trees (`owusu_victorious`, `halvorsen_victorious`,
+   `deng_victorious`), three losing-state trees (`owusu_declined`,
+   `halvorsen_declined`, `deng_declined`). Each tree is a small
+   `dialogue_states` entry with `speaker_id`, `text`, `options` /
+   `next_state`. Voice notes for the three NPCs (author inline as
+   part of the trees):
+   - **Emiko Owusu**: mayor of a settlement large enough to have a
+     council but small enough that she knows every dockmaster by
+     name. Speaks in favors-and-quorums language. Practical, not
+     idealistic — she came up counting votes, not writing manifestos.
+     Never claims a mandate she does not have.
+   - **Idris Halvorsen**: Claims Administrator. Files paperwork
+     that turns disputed rock into sovereign territory. Speaks in
+     surveyors' and cartographers' vocabulary — parcels, drift,
+     survey markers, filing windows. Precise, unhurried, treats the
+     border as a document problem rather than a moral one.
+   - **Sorcha Deng**: labor organizer for indentured contract-crews.
+     Direct, impatient with process. Speaks in the imperative
+     ("call it", "sign it", "pull the crew"). Does not soften bad
+     news. Not warm, not cruel — has run out of the emotional
+     bandwidth to perform either.
+
+   Cross-check against the writing bible: no em-dashes, no "no X, no
+   Y", no "a testament to" or "couldn't help but", no banned NPC
+   names (Owusu, Halvorsen, Deng, Emiko, Idris, Sorcha all confirmed
+   absent from banned list — verified against `CLAUDE.md`'s banned
+   list of Yara/Elara/Kael/Mara/Lydia/Clive/Magnus/Ambrose).
+
+4. **Author three scar `ChatterLine` entries in
+   `data/crew/station_chatter.json`.**
+   - `al_scar_d3_owusu_01` at `havens_rest`, `required_flags:
+     ["lens_closed_political_power"]`, `one_shot: false`,
+     `category: "scar"`, text describing Owusu's council folding the
+     seat that had been built for the player.
+   - `al_scar_d3_halvorsen_01` at `crimson_reach`, `required_flags:
+     ["lens_closed_empire"]`, `one_shot: false`, `category: "scar"`,
+     text describing the border territory Halvorsen is now
+     administering for someone else / a claim window that closed
+     with the player's paperwork never filed.
+   - `al_scar_d3_deng_01` at `havens_rest`, `required_flags:
+     ["lens_closed_revolution"]`, `one_shot: false`,
+     `category: "scar"`, text describing Deng organizing across the
+     contract-crews the player used to fund, now working around the
+     player specifically.
+
+   Each scar authored to work whether the closure came from D3 or
+   from some other future dilemma closing the same lens (the flag
+   gate is what routes the scar, not the dilemma id).
+
+5. **Author three Tomas `flag_triggered` ambient lines in
+   `data/crew/ambient_dialogue.json`.** For each outcome flag
+   (`d3_political_power_won`, `d3_revolution_won`, `d3_empire_won`),
+   one line in Tomas's voice noting what the ledger looks like now.
+   Tomas registers the shape of the choice — he was the one who
+   telegraphed it — so his reactions land as "you did the thing I
+   said you'd have to do; here is what it looks like from where I
+   sit". Trade metaphors. Warmth surface, closed interior. No
+   moralizing.
+
+6. **Author three auto-journal entries in `data/journal/entries.json`.**
+   `auto_d3_political_power_won`, `auto_d3_revolution_won`,
+   `auto_d3_empire_won`. Mirroring the D1/D2/D4 shape: `entry_id`,
+   `text`, `trigger_flag`, `system_id` (Owusu-win → havens_rest,
+   Deng-win → havens_rest, Halvorsen-win → crimson_reach),
+   `mission_id: ""`. First-person past-tense, one paragraph.
+
+7. **Author `tests/test_scenarios/test_scenario_dilemma_d3.py`**
+   mirroring `test_scenario_dilemma_d1.py` shape, with the
+   triangle-specific coverage the pair dilemmas cannot exercise:
+   - **Loads**: D3 loaded via DataLoader; poles / thresholds /
+     `telegraph_npc_id` match the spec; three outcomes populated,
+     each with `closes` containing exactly the other two pole ids.
+   - **Integrity**: `_outcomes_with_empty_tier_unlocks` and
+     `_dilemmas_with_bad_thresholds` both return empty for D3;
+     `_dilemmas_with_bad_collision_requires` returns empty (2 is in
+     [1, 3]).
+   - **Collision math** (AC3 — the concrete proof of A2-8's
+     `collision_requires < len(poles)` support):
+     - One pole at 90 (each of pp, rev, empire) with the other two
+       at 0 does NOT collide.
+     - Two poles at 85 with the third at 0 DOES collide (three
+       cases: pp+rev, pp+empire, rev+empire).
+     - All three at 85 collides.
+   - **Triangle resolution** (AC4 — the concrete proof that
+     `DilemmaOutcome.closes` supports more than one entry): one
+     test per outcome, each calling `resolve(d3, "<lens>", player)`
+     and asserting BOTH `lens_closed_<other>` flags are set after
+     the single call, PLUS the outcome flag is set, PLUS
+     `runtime.closed_lenses` contains both other pole ids, PLUS
+     `runtime.tier_unlocks_granted[chosen_lens_id]` is non-empty.
+   - **Closed-pole guard** (piggybacks on A2-14's rule): pre-populate
+     `player.dilemma_state.closed_lenses = {"political_power"}`,
+     drive all three poles to 90, assert `check_dilemmas` returns
+     no telegraph and no collision filing for D3. One test only —
+     the mirror cases add no new coverage over what A2-14 already
+     established.
+   - **NPC routing**: for each of the three outcomes, resolve → the
+     losing NPCs' `get_active_dialogue_id` returns `<npc>_declined`
+     and the winning NPC's returns `<npc>_victorious`.
+   - **Scar reachability**: for each of the three outcomes, the
+     two scar `ChatterLine`s corresponding to the two closed poles
+     are reachable via `StationChatterManager.get_chatter` at the
+     scar's `system_id` after `resolve`.
+   - **Tomas ambient reactive lines present**: three
+     `flag_triggered` ambient lines load through
+     `DataLoader.load_ambient_dialogue()`, one carrying each of the
+     three outcome flags in `required_flags`.
+   - **Journal entries present**: three auto-journal entries load
+     with the correct `trigger_flag`.
+   - **Voice smoke**: telegraph lines contain no em-dash character;
+     at least one line contains a Tomas anchor
+     ("way I see it", "margin", "bad deal", "smart money",
+     "call me", "trade").
+   - **Name safety**: `emiko_owusu`, `idris_halvorsen`, `sorcha_deng`
+     do not collide with any existing NPC id in
+     `DataLoader.npcs` (proves AC5 the mechanical way, catching a
+     future case where someone renames another NPC into a clash).
+
+8. **Verify full suite green**: `pytest -n auto`. Pass count must be
+   ≥ 11337 baseline. No new failures. Voice-bible compliance suite
+   still green. Dilemma-integrity suite green. Data-integrity suite
+   green.
+
+Cross-sprint reactions to author (candidates for follow-up sprints —
+NOT folded into this sprint's scope; L is already at the ceiling
+without them):
+- `data/crew/ambient_dialogue.json` — Marcus `flag_triggered` line on
+  `d3_revolution_won` — Union collectivism has a direct view on labor
+  organizing crossing into extralegal cell-coordination — fires when
+  Marcus is on crew AND the outcome flag is set.
+- `data/crew/ambient_dialogue.json` — Marcus `flag_triggered` line on
+  `d3_political_power_won` — Union man watching the captain take a
+  council seat has a specific view on that — fires when Marcus is on
+  crew AND the outcome flag is set.
+- `data/crew/ambient_dialogue.json` — Elena `flag_triggered` line on
+  `d3_empire_won` — procedural officer registers that the captain now
+  IS the jurisdiction — fires when Elena is on crew AND the outcome
+  flag is set.
+- `data/crew/ambient_dialogue.json` — Priya `flag_triggered` line on
+  any of the three outcomes — verify-before-you-act voice on a
+  three-way tradeoff whose losing side is not knowable in advance —
+  fires when Priya is on crew AND any outcome flag set.
+- `data/dialogue/dialogues.json` — Owusu / Deng / Halvorsen scar
+  states may deepen once A2-17 D6 lands and closes empire again from
+  a different angle (interaction with `lens_closed_preservation`).
+  Deferred to A2-17 or a followup content sprint.
+- `data/journal/entries.json` — capstone retrospective entries that
+  reference the D3 collision — deferred to the Political Power,
+  Revolution, and Empire capstone content sprints.
+- A2-17 (D6) shares Halvorsen and depends on his `dialogue_states`
+  being extension-friendly. NOT a proposed change to A2-17 — its
+  Context already documents the sibling shape. Called out here so
+  the implementer of A2-15 knows why the NPC record's
+  `dialogue_states` scaffolding matters.
+
 **Acceptance criteria.**
 1. `DataLoader.dilemmas["d3_power_revolution_empire"]` loads with three outcomes, each
    `closes` containing exactly the other two pole ids.
 2. `tests/test_compliance/test_dilemma_integrity.py` passes: all three outcomes carry
-   non-empty `tier_unlocks`; `telegraph_threshold < collision_threshold`.
+   non-empty `tier_unlocks`; `telegraph_threshold < collision_threshold`;
+   `collision_requires` (2) is within [1, len(poles)] (3).
 3. Collision requires exactly 2 of 3 poles at threshold: driving `political_power` and
    `revolution` to 85 with `empire` at 0 collides and offers all three as resolution options
    (per A2-8's rule that a pole below threshold is still offered when `len(poles) >
    collision_requires`); driving only `political_power` to 85 with the other two at 0 does
-   not collide.
+   not collide. Verified for all three single-pole and all three two-pole permutations.
 4. Resolving to any one of the three closes the other two in a single `resolve()` call,
-   verified once per outcome (three tests).
-5. Sorcha Deng is not a banned name and does not collide with an existing NPC id.
-6. No em-dashes, no "no X, no Y" constructions, no banned NPC names anywhere in authored
-   content including Deng's new voice note.
-7. Full suite green; no regression from baseline.
+   verified once per outcome (three tests). Each test asserts BOTH `lens_closed_<other>`
+   flags set, the outcome flag set, `runtime.closed_lenses` contains both closed pole ids,
+   and `runtime.tier_unlocks_granted[chosen_lens_id]` non-empty.
+5. Sorcha Deng, Emiko Owusu, Idris Halvorsen are not banned names and do not collide with
+   existing NPC ids — verified by a test iterating `DataLoader.npcs` and asserting each
+   authored id appears exactly once.
+6. Each outcome routes the two losing NPCs' `get_active_dialogue_id` to `<npc>_declined`
+   and the winning NPC's to `<npc>_victorious`. Verified for all three outcomes.
+7. For each outcome, the two scar `ChatterLine` entries corresponding to the closed poles
+   are reachable via `StationChatterManager.get_chatter` at their respective `system_id`.
+   Scar ids follow the locked pattern (`al_scar_d3_<npc>_01`) with `one_shot: false` and
+   the correct `lens_closed_*` gate.
+8. Tomas's three `flag_triggered` ambient lines load through
+   `DataLoader.load_ambient_dialogue()`, one carrying each of the three outcome flags
+   in `required_flags`.
+9. Three auto-journal entries (`auto_d3_political_power_won`, `auto_d3_revolution_won`,
+   `auto_d3_empire_won`) load with the correct `trigger_flag`.
+10. No em-dashes, no "no X, no Y" constructions, no banned NPC names anywhere in
+    authored content (dilemma JSON, three NPC records, nine dialogue trees, three scar
+    lines, three ambient reactive lines, three journal entries).
+11. Full suite green; pass count ≥ 11337 baseline; no regression.
 
 **Activity log.**
 - 2026-08-27 - todo (created)
+- 2026-09-01 05:37 — harness: plan phase starting
+- 2026-09-01 — planning complete; expanded ACs from 7 to 11 to cover triangle-specific collision permutations, NPC routing per outcome, scar-chatter reachability, ambient reactive registration, journal entries, and the NPC id-collision guard. Locked 8 decisions (home_system_ids, outcome flag ids, scar topology, ambient reactive scope, journal fold-in, winning/losing state gating pattern, Halvorsen scaffolding for A2-17, Deng inline voice note). Flagged 7 cross-sprint reactions for follow-up. PHASE_OK
 
+**Last phase report.**
+- Phase: plan
+- Outcome: PHASE_OK
+- Started: 2026-09-01 05:37
+- Completed: 2026-09-01 06:05
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: scar-chatter (3 lines), Tomas ambient reactions (3 lines), auto-journal entries (3 entries), winning-state dialogue trees for all three NPCs, NPC id-collision guard test
+- Decisions_locked: 8
+- Notes: Verified all three context docs on disk. Verified A2-9 and A2-10 dependencies done. Verified `verge_landing` and `kettlebridge` are flavor names only (no galaxy system by those ids); picked havens_rest / crimson_reach / havens_rest as the three NPCs' concrete home systems. Confirmed no Owusu / Halvorsen / Deng NPC records exist yet (fresh authoring; A2-17 will extend Halvorsen per its own plan). Triangle-specific coverage in Task 7 exercises A2-8's `collision_requires < len(poles)` support and A2-10's multi-lens `closes` support — the two model features no pair dilemma tests exercise.
 ---
 
 #### A2-16 — D5: Legacy ↔ Connection
