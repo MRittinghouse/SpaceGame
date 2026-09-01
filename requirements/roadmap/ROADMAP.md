@@ -16182,7 +16182,7 @@ scenario test):
 - Started: 2026-09-01 08:30
 - Completed: 2026-09-01 09:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: d3e8d15
 - New_sprints_proposed: none (A2-16A loyalty-ceiling hook flagged in Cross-sprint
   reactions for later planner/human formalization, not authored as a full roadmap row
   in this pass per the planner guidance's "conservative on scope expansion" rule)
