@@ -136,7 +136,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-10](#a2-10--permanent-closure--saveload) | Permanent closure + save/load | Act II | M | done | A2-8 |
 | [A2-11](#a2-11--scars) | Scars | Act II | M | done | A2-10 |
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
-| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | todo | A2-9, A2-10 |
+| [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | todo | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
@@ -14675,7 +14675,7 @@ Task order for the implementer. Each task lists file(s), test surface, and gotch
 
 #### A2-13 — D2: Wealth ↔ Community
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15015,6 +15015,7 @@ Flagged as follow-up (do NOT author in A2-13):
 - 2026-09-01 02:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 02:06 — harness: plan phase starting
 - 2026-09-01 03:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 03:21 — harness: plan phase starting
   reactive ambient lines, split original AC4 into AC4/AC5 for symmetry per branch, added
   AC6 anchor-word substring check as a distinct AC); locked 9 open decisions including
   the Kallio/Castellano placement question; folded Marcus reactive ambient lines into
@@ -15028,18 +15029,26 @@ Flagged as follow-up (do NOT author in A2-13):
   tests/test_data/test_cross_references.py tests/test_compliance/test_prose_anti_patterns.py`
   (71 passed). No re-planning needed; emit PHASE_OK to route to implement (which
   will verify) then review. PHASE_OK
+- 2026-09-01 03:25 — re-invoked again as planner after a second stuck-sprint recovery
+  (03:15). Sprint remains fully planned (f10c6b2, 2ea6126) and fully implemented
+  (7c1c602); nothing has regressed. Cheap re-verification: `git log` still shows the
+  implementation commit; `data/narrative/dilemmas/d2_wealth_community.json` and
+  `tests/test_scenarios/test_scenario_dilemma_d2.py` both exist; D2 scenario suite
+  runs 20/20 green in 0.65s. Following the A2-5/A2-12/prior-A2-13 precedent, emit
+  PHASE_OK to route to implement (verify) then review, rather than PHASE_BLOCKED
+  which would strand the sprint on a decision no re-run can change. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 02:06
-- Completed: 2026-09-01 02:10
+- Started: 2026-09-01 03:21
+- Completed: 2026-09-01 03:25
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 99f9166 (this planner's sentinel-update commit; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602)
+- Commits: pending (this planner's sentinel-update commit; original planning: f10c6b2, 2ea6126; original implementation: 7c1c602; prior sentinel-update: 99f9166, ae7d12a)
 - New_sprints_proposed: none
-- Polish_items_folded_in: n/a (sprint already implemented; polish decisions locked in the earlier planning pass — see the 2026-09-01 planning-complete log entry)
-- Decisions_locked: 0 (all 9 were locked in the earlier planning pass)
-- Notes: Sprint was already fully planned and fully implemented before this planner ran. Stuck-sprint recovery reset it to todo after an earlier phase-owner died before writing its sentinel — a missing sentinel, not missing work. Verified by (a) `git log` showing plan + implementation commits carrying the A2-13 tag, (b) `git show --stat 7c1c602` matching the plan's 8-file touch zone exactly, (c) the D2 scenario test file existing at `tests/test_scenarios/test_scenario_dilemma_d2.py` and passing 20/20, (d) all cross-cutting integrity guards (`test_dialogue_integrity.py`, `test_cross_references.py`, `test_prose_anti_patterns.py`) passing 71/71. Following the A2-5/A2-12 precedent, emit PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes to implement (which will re-verify) then review — earning the sprint its normal review + gate rather than stranding it and its dependents.
+- Polish_items_folded_in: n/a (sprint already implemented; polish decisions locked in the original planning pass — see the 2026-09-01 planning-complete log entry)
+- Decisions_locked: 0 (all 9 were locked in the original planning pass)
+- Notes: Third planner invocation on this sprint; second stuck-sprint recovery reset it after a phase-owner died between commits. Verified nothing regressed: implementation commit 7c1c602 still present, D2 scenario file exists, 20/20 tests pass in 0.65s. Doing the minimum-viable cheap check per the "already-implemented" playbook — not re-running the full integrity guard sweep the 02:10 planner already recorded, since no code has changed since. Emitting PHASE_OK (not BLOCKED) so the dispatcher advances the sprint to implement → review → done rather than stranding it. If the harness keeps resetting this sprint after PHASE_OK sentinels commit successfully, the diagnosis is a stuck-sprint-recovery / phase-transition race worth surfacing to the human — but the correct action from inside a planner phase remains PHASE_OK.
 ---
 
 #### A2-14 — D1: Vengeance ↔ Justice
