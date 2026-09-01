@@ -16983,7 +16983,7 @@ gate.
 - Started: 2026-09-01 13:36
 - Completed: 2026-09-01 13:44
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (pending — plan-phase commit for this activity log update)
+- Commits: 83201b9 (this plan-phase activity log entry; implementation is in 418eb98)
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (all six from 12:55 planning already shipped in 418eb98)
 - Decisions_locked: 0 (all seven decisions locked in 12:55 planning; unchanged)
