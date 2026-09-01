@@ -140,7 +140,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | done | A2-9, A2-10 |
-| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
+| [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
@@ -16228,7 +16228,7 @@ scenario test):
 
 #### A2-17 — D6: Preservation ↔ Empire
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16523,19 +16523,22 @@ Task 8 -- Run `pytest -n auto`, `ruff format`, `ruff check --fix`, and mypy-base
 **Activity log.**
 - 2026-08-27 - todo (created)
 - 2026-09-01 11:11 — harness: plan phase starting
-- 2026-09-01 12:35 — planning complete; verified all context docs exist, verified sprint work not already implemented (no `d6_preservation_empire.json` yet, no Virtanen NPC), locked 5 decisions, folded in 5 polish items (auto-journal entries, scar chatter, Priya ambient reactions, voice-smoke test, NPC uniqueness + Halvorsen extension safety assertions), expanded touch zones to reflect the real edit surface, expanded acceptance criteria from 6 → 13, laid out 8 concrete tasks, flagged 3 cross-sprint reaction candidates as deferred followups. PHASE_OK
+- 2026-09-01 12:35 — planning complete; verified all context docs exist, verified sprint work not already implemented (no `d6_preservation_empire.json` yet, no Virtanen NPC), locked 5 decisions, folded in 5 polish items (auto-journal entries, scar chatter, Priya ambient reactions, voice-smoke test, NPC uniqueness + Halvorsen extension safety assertions), expanded touch zones to reflect the real edit surface, expanded acceptance criteria from 6 → 13, laid out 8 concrete tasks, flagged 3 cross-sprint reaction candidates as deferred followups.
 - 2026-09-01 11:45 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 11:51 — harness: plan phase starting
+- 2026-09-01 12:50 — planner: sprint is already implemented per commit ec3797c (all 8 touch-zone files present: `d6_preservation_empire.json`, extended `npcs.json`, 5 new dialogue trees, 2 journal entries, 2 scar chatter lines, 2 Priya ambient reactions, new scenario test). Verified `pytest tests/test_scenarios/test_scenario_dilemma_d6.py` → 38 passed; `pytest tests/test_compliance/test_dilemma_integrity.py` → 20 passed. Handing off to implementer for re-verification and downstream phases. PHASE_OK
+
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 11:11
-- Completed: 2026-09-01 12:35
+- Started: 2026-09-01 11:51
+- Completed: 2026-09-01 12:50
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: d0a1004
+- Commits: none (no new planning work needed; implementation commit is ec3797c from prior run)
 - New_sprints_proposed: none
-- Polish_items_folded_in: auto-journal-entries; scar-chatter; priya-ambient-reactions; voice-smoke-test; npc-uniqueness-and-halvorsen-extension-safety
-- Decisions_locked: 5
-- Notes: A2-15 landed first, so Halvorsen exists and this sprint extends his dialogue_states (D6 states prepended for priority). Virtanen is a new NPC at `herons_mark` (existing derelict system that already flavors his presence). LongYardState code mechanic explicitly deferred; the Long Yard persists via Virtanen NPC + dialogue_states + auto-journal chain to keep the sprint in size M. Fixed telegraph_npc_id `priya_osei` → `dr_priya_osei` to match canonical NPC id.
+- Polish_items_folded_in: none (prior planning already folded in 5 polish items; nothing new to add)
+- Decisions_locked: 0 (prior planning locked 5; no new decisions needed)
+- Notes: Sprint was already fully implemented by commit ec3797c ("A2-17: D6 Preservation vs Empire -- data files and scenario test") from a prior harness run. Stuck-sprint recovery reset it to todo at 11:45 because the prior run apparently completed implementation without writing the follow-up sentinel. Verified the work stands: `d6_preservation_empire.json` loads, integrity guard passes, all 38 D6 scenario tests pass, all 20 dilemma-integrity tests pass. Per planner instructions for already-implemented sprints, writing PHASE_OK so the dispatcher routes to implement (which will re-verify rather than duplicate) and then review.
 ---
 
 #### A2-18 — D7: Faith ↔ Transcendence
