@@ -18406,7 +18406,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - Started: 2026-09-01 17:44
 - Completed: 2026-09-01 18:20
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (see next commit hash)
+- Commits: e47ecb3
 - New_sprints_proposed: none
 - Polish_items_folded_in: model-layer coordinator check_capstones (fixes the
   A2-4-AC4 architectural violation that caused the revert), CapstoneView config-
