@@ -863,6 +863,30 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "lens_closed_connection",
     "d5_legacy_won",
     "d5_connection_won",
+    # === A2-17 (D6: Preservation vs Empire) — DETECTOR MISS ===
+    # Same shape as A2-16 above. ``lens_closed_preservation`` and
+    # ``lens_closed_empire`` are SET by
+    # :func:`spacegame.models.dilemma.resolve` via the variable-arg
+    # ``lens_closed(lens_id)`` helper when D6 closes. ``d6_preservation_won``
+    # and ``d6_empire_won`` are written the same variable-arg way via
+    # ``player.dialogue_flags[outcome.outcome_flag] = True``. Real consumers:
+    #   lens_closed_preservation: scar chatter ``al_scar_d6_virtanen_01``
+    #     (herons_mark), Virtanen's ``post_d6_empire_closed`` dialogue_state
+    #     (virtanen_declined).
+    #   lens_closed_empire: already in allowlist from A2-15 D3; new D6
+    #     consumers are ``al_scar_d6_halvorsen_01`` and
+    #     Halvorsen's ``post_d6_preservation_won`` state.
+    #   d6_preservation_won: Priya ``flag_triggered`` ambient line,
+    #     Virtanen's ``post_d6_preservation_won`` dialogue_state
+    #     (virtanen_victorious), Halvorsen's ``post_d6_preservation_won``
+    #     dialogue_state (halvorsen_d6_administering),
+    #     ``auto_d6_preservation_won`` journal entry.
+    #   d6_empire_won: Priya ``flag_triggered`` ambient line,
+    #     Halvorsen's ``post_d6_empire_won`` dialogue_state
+    #     (halvorsen_d6_victorious), ``auto_d6_empire_won`` journal entry.
+    "lens_closed_preservation",
+    "d6_preservation_won",
+    "d6_empire_won",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

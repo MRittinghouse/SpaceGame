@@ -531,6 +531,20 @@
       "trigger_flag": "d5_connection_won",
       "system_id": "nexus_prime",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d6_preservation_won",
+      "text": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard is on the regional record now, the boundary documented, the catalogue recognized. The sites I did not claim went to someone else. Halvorsen filed adjacent territory. I watched the development schedule fill in from the outside of a boundary I could have drawn differently.",
+      "trigger_flag": "d6_preservation_won",
+      "system_id": "herons_mark",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_d6_empire_won",
+      "text": "Chose the claim. Halvorsen filed the producing-claim designation within a cycle. The territory generates yield. Virtanen relocated what he could save of the Long Yard to outside the boundary and kept working. The catalogue is smaller now. The sites inside the perimeter are on the development schedule. Both things are in the registry.",
+      "trigger_flag": "d6_empire_won",
+      "system_id": "crimson_reach",
+      "mission_id": ""
     }
   ]
 }

@@ -10786,6 +10786,232 @@
           "expression": "neutral"
         }
       ]
+    },
+    {
+      "id": "virtanen_default",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "junho_virtanen",
+          "text": "Long Yard operations. I manage the site. If you are here for salvage contracts, the waiting list is closed. If you are here for something else, tell me what.",
+          "responses": [
+            {
+              "text": "What is this place?",
+              "next_node_id": "about"
+            },
+            {
+              "text": "Are you the only one here?",
+              "next_node_id": "alone"
+            },
+            {
+              "text": "[Nothing right now.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "about",
+          "speaker_id": "junho_virtanen",
+          "text": "Derelict-ship graveyard. Most of it is pre-Expanse hulks that drifted in from the transit corridor. I was hired to strip them. Found a logbook in the third one that told me who died on that ship and why. Decided I was not finished with the site yet.",
+          "responses": [
+            {
+              "text": "What did the logbook say?",
+              "next_node_id": "logbook"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "logbook",
+          "speaker_id": "junho_virtanen",
+          "text": "Names. Dates. What they were carrying and where they thought they were going. That is all a logbook is. It is enough.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "alone",
+          "speaker_id": "junho_virtanen",
+          "text": "Mostly. Two surveyors come through on rotation. Otherwise it is me and the site log. The dock lights need someone to keep them on or the hulks become hazards to navigation.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "virtanen_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "junho_virtanen",
+          "text": "The standing authority came through. I did not expect the regional filing to move that fast. The Long Yard is on the record now as an archival site, not a salvage parcel. That changes what the adjacent claimants can do with the boundary.",
+          "responses": [
+            {
+              "text": "What changes specifically?",
+              "next_node_id": "changes"
+            },
+            {
+              "text": "I am glad the filing went through.",
+              "next_node_id": "glad"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "changes",
+          "speaker_id": "junho_virtanen",
+          "text": "Development inside the archival boundary requires a catalogue review before any equipment goes in. That is a long enough window to document what is there before it is gone. That is what I needed.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "glad",
+          "speaker_id": "junho_virtanen",
+          "text": "The site was here before either of us. It will probably be here after. I am just keeping the record while I can.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "virtanen_declined",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "junho_virtanen",
+          "text": "The claimed boundary moved closer than the survey predicted. I relocated the outer documentation posts to outside the filing perimeter. Some of the hulks are inside the claim now. I cannot catalogue what I cannot reach.",
+          "responses": [
+            {
+              "text": "How much of the site did you lose?",
+              "next_node_id": "loss"
+            },
+            {
+              "text": "[I understand.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        },
+        {
+          "id": "loss",
+          "speaker_id": "junho_virtanen",
+          "text": "Roughly a third of the outer ring. The inner hulks are still outside the perimeter. I kept working. The record is smaller than it was, but it is still a record.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "resigned"
+        }
+      ]
+    },
+    {
+      "id": "halvorsen_d6_victorious",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "idris_halvorsen",
+          "text": "The producing-claim designation filed on schedule. The circuit yield is on the registry now. The adjacent parcels are showing drift toward development at the expected rate. The sites inside the boundary will be on the development schedule within two cycles.",
+          "responses": [
+            {
+              "text": "What happens to the archival sites inside the claim?",
+              "next_node_id": "sites"
+            },
+            {
+              "text": "I appreciate the filing.",
+              "next_node_id": "acknowledged"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "sites",
+          "speaker_id": "idris_halvorsen",
+          "text": "They go into the development record. If there was cataloguing underway, that work is superseded by the production filing. The registry does not maintain both a production claim and an archival designation on the same parcel. It files one or the other.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "acknowledged",
+          "speaker_id": "idris_halvorsen",
+          "text": "The paperwork moves when the filing is in order. That one was in order.",
+          "responses": [
+            {
+              "text": "[Noted.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "halvorsen_d6_administering",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "idris_halvorsen",
+          "text": "The territory adjacent to the archival boundary filed last cycle. Different applicant. The sites you declined to claim are inside a producing parcel now. I administrate it the same way I administrate the others. The registry does not distinguish between outcomes.",
+          "responses": [
+            {
+              "text": "Who filed the adjacent territory?",
+              "next_node_id": "filer"
+            },
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "filer",
+          "speaker_id": "idris_halvorsen",
+          "text": "The filing is public record. You can look it up. I do not provide commentary on other applicants claims. I file parcels. The parcel is filed. That is the whole of it.",
+          "responses": [
+            {
+              "text": "[Understood.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
     }
   ]
 }

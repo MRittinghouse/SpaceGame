@@ -1474,7 +1474,9 @@
       "text": "The NAS antenna array at Stellaris runs three channels I was not supposed to know about. The pricing signals are cleaner if you factor them in.",
       "context": "home_system",
       "system_id": "stellaris_port",
-      "required_flags": ["heard_nas_intelligence"]
+      "required_flags": [
+        "heard_nas_intelligence"
+      ]
     },
     {
       "crew_id": "marcus_jin",
@@ -1487,7 +1489,9 @@
       "text": "The Silent Shaft memorial went up the year after I left. I never saw the dedication. Someone sent me a photograph. I keep it with the Section Nine incident reports.",
       "context": "home_system",
       "system_id": "breakstone",
-      "required_flags": ["attended_silent_shaft"]
+      "required_flags": [
+        "attended_silent_shaft"
+      ]
     },
     {
       "crew_id": "dr_priya_osei",
@@ -1500,7 +1504,9 @@
       "text": "The Uprising data the Collective keeps at Axiom is categorized as historical incident analysis. The recategorization happened in the same month I started asking questions.",
       "context": "home_system",
       "system_id": "axiom_labs",
-      "required_flags": ["marcus_uprising_inheritance_seen"]
+      "required_flags": [
+        "marcus_uprising_inheritance_seen"
+      ]
     },
     {
       "crew_id": "tomas_drifter",
@@ -1549,7 +1555,9 @@
       "text": "The Collective infrastructure documentation I have seen references the same construction project Marcus's father worked. The records go further back than I expected.",
       "context": "faction_territory",
       "faction_id": "science_collective",
-      "required_flags": ["marcus_father_connection_seen"]
+      "required_flags": [
+        "marcus_father_connection_seen"
+      ]
     },
     {
       "crew_id": "marcus_jin",
@@ -1562,7 +1570,9 @@
       "text": "DCMC accident reports get filed under Union compliance review. I know because I have read the real ones. The version they publish is missing paragraphs.",
       "context": "faction_territory",
       "faction_id": "industrial_union",
-      "required_flags": ["heard_dcmc_intelligence"]
+      "required_flags": [
+        "heard_dcmc_intelligence"
+      ]
     },
     {
       "crew_id": "dr_priya_osei",
@@ -1706,73 +1716,97 @@
       "crew_id": "elena_reeves",
       "text": "You looked into the Uprising inheritance records. That data touches four Guild infrastructure contracts still active today. Worth knowing what connects them.",
       "context": "flag_triggered",
-      "required_flags": ["marcus_uprising_inheritance_seen"]
+      "required_flags": [
+        "marcus_uprising_inheritance_seen"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "The inheritance records from the Uprising. I have seen that documentation before. The Section Four survivors' trust was folded into a Guild holding company within a year.",
       "context": "flag_triggered",
-      "required_flags": ["marcus_uprising_inheritance_seen"]
+      "required_flags": [
+        "marcus_uprising_inheritance_seen"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "Silent Shaft. I know what the memorial leaves out. You have been there now. Some things you cannot read on a plaque.",
       "context": "flag_triggered",
-      "required_flags": ["attended_silent_shaft"]
+      "required_flags": [
+        "attended_silent_shaft"
+      ]
     },
     {
       "crew_id": "tomas_drifter",
       "text": "The Silent Shaft ceremony was something else. Way I see it, places that remember their dead honestly are the ones that do not repeat the same mistakes.",
       "context": "flag_triggered",
-      "required_flags": ["attended_silent_shaft"]
+      "required_flags": [
+        "attended_silent_shaft"
+      ]
     },
     {
       "crew_id": "dr_priya_osei",
       "text": "The DCMC data you retrieved. I cross-referenced it against published incident reports. Twelve entries do not appear on the public record at all.",
       "context": "flag_triggered",
-      "required_flags": ["heard_dcmc_intelligence"]
+      "required_flags": [
+        "heard_dcmc_intelligence"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "Those DCMC numbers you pulled. The gap in the safety maintenance contracts covers the same period as the Section Six collapse. That is not coincidence.",
       "context": "flag_triggered",
-      "required_flags": ["heard_dcmc_intelligence"]
+      "required_flags": [
+        "heard_dcmc_intelligence"
+      ]
     },
     {
       "crew_id": "elena_reeves",
       "text": "The NAS signals you tracked. Three of the pricing nodes on this route feed from the same antenna cluster. I have adjusted our timing windows accordingly.",
       "context": "flag_triggered",
-      "required_flags": ["heard_nas_intelligence"]
+      "required_flags": [
+        "heard_nas_intelligence"
+      ]
     },
     {
       "crew_id": "dr_priya_osei",
       "text": "The NAS intelligence data is consistent with what the Collective analysis suggested, though the Collective version was significantly redacted before distribution.",
       "context": "flag_triggered",
-      "required_flags": ["heard_nas_intelligence"]
+      "required_flags": [
+        "heard_nas_intelligence"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "You know about my father's project. The full scope of it took me years to piece together. I am still not sure I have all of it.",
       "context": "flag_triggered",
-      "required_flags": ["marcus_father_connection_seen"]
+      "required_flags": [
+        "marcus_father_connection_seen"
+      ]
     },
     {
       "crew_id": "elena_reeves",
       "text": "What Marcus's father was working on. The infrastructure logs I have found connect to five of the current deep-route waypoints. The man built things meant to last.",
       "context": "flag_triggered",
-      "required_flags": ["marcus_father_connection_seen"]
+      "required_flags": [
+        "marcus_father_connection_seen"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "You made the call the other way. The money you routed to Coinmark is Coinmark's problem now. My report on the recyclers is still on the shelf where they filed it. Nothing about that changed today. Say the numbers back to yourself the next time you sign for the leverage.",
       "context": "flag_triggered",
-      "required_flags": ["d2_wealth_won"]
+      "required_flags": [
+        "d2_wealth_won"
+      ]
     },
     {
       "crew_id": "marcus_jin",
       "text": "Cradlepoint queue is shorter by seventeen tonight. Not by everyone. Not for good. Shorter. That is the whole of it. You did not put my father back on the roster. You did move someone else's family off the racks. Both things are true.",
       "context": "flag_triggered",
-      "required_flags": ["d2_community_won"]
+      "required_flags": [
+        "d2_community_won"
+      ]
     },
     {
       "crew_id": "elena_reeves",
@@ -1853,31 +1887,41 @@
       "crew_id": "elena_reeves",
       "text": "The paperwork on this heading is going to read a particular way. Bounty clearances without warrant backing. I am not telling you that is wrong. I am telling you someone reviewing the manifest will reach their own conclusion. I have noted it.",
       "context": "flag_triggered",
-      "required_flags": ["d1_vengeance_won"]
+      "required_flags": [
+        "d1_vengeance_won"
+      ]
     },
     {
       "crew_id": "elena_reeves",
       "text": "Odusanya filed the warrant-holding authorization. It is on record. We are now the kind of ship that can bring a case through due process. The bounty board does not show that. The hearing record does.",
       "context": "flag_triggered",
-      "required_flags": ["d1_justice_won"]
+      "required_flags": [
+        "d1_justice_won"
+      ]
     },
     {
       "crew_id": "tomas_drifter",
       "text": "Way I see it, Captain, you took the seat and the paperwork went with it. Smart money says the council will fill your calendar faster than any bounty run ever did. Do not forget who does not sit at that table now. That is the margin on the trade.",
       "context": "flag_triggered",
-      "required_flags": ["d3_political_power_won"]
+      "required_flags": [
+        "d3_political_power_won"
+      ]
     },
     {
       "crew_id": "tomas_drifter",
       "text": "The cells across three settlements route through us now. That is not a favor list, Captain, that is a network. Way I see it, we are carrying work no council would have signed and no claims office would have filed. Bad deal to break a word on that one.",
       "context": "flag_triggered",
-      "required_flags": ["d3_revolution_won"]
+      "required_flags": [
+        "d3_revolution_won"
+      ]
     },
     {
       "crew_id": "tomas_drifter",
       "text": "Signed for a parcel today. Sovereign paperwork, Captain, with your name on the drift record. Way I see it, that is a bigger door than either of us has walked through before. Owusu and Deng are outside it now. That is the margin.",
       "context": "flag_triggered",
-      "required_flags": ["d3_empire_won"]
+      "required_flags": [
+        "d3_empire_won"
+      ]
     },
     {
       "crew_id": "marcus_jin",
@@ -1893,6 +1937,22 @@
       "context": "flag_triggered",
       "required_flags": [
         "d5_connection_won"
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The archival designation at Heron's Mark came through. The data suggests the catalogue will be the most complete boundary record for a derelict site in this region. I flagged it for the institute's transit-corridor survey.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d6_preservation_won"
+      ]
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "The production filing at the Long Yard adjacency went through. The analysis puts three catalogued derelict hulks inside the development perimeter. The record for those sites is incomplete. That is the outcome the data suggested was likely.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "d6_empire_won"
       ]
     }
   ]

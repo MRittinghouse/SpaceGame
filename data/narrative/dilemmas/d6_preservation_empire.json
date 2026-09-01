@@ -1,0 +1,39 @@
+{
+  "dilemmas": [
+    {
+      "id": "d6_preservation_empire",
+      "poles": ["preservation", "empire"],
+      "collision_requires": 2,
+      "telegraph_threshold": 55,
+      "collision_threshold": 80,
+      "telegraph_npc_id": "dr_priya_osei",
+      "telegraph_lines": [
+        "The sites you have been cataloguing and the borders you have been filing sit inside the same survey grid. The data suggests that is not a coincidence. A claimed border eventually gets developed, mined, or garrisoned. The analysis does not require intent. The record is the record.",
+        "I want to be precise about what the projection shows. Every territorial expansion in the Expanse over the last forty years reduced site access for cataloguing teams within the first three cycles of filing. The catalogue you have been building sits inside that pattern. I am not assigning cause. I am reading the numbers.",
+        "The institute tracks both series. The sites and the filings. The correlation is not comfortable to look at. I thought you should see it before someone else shows you a version of it that has already decided what it means."
+      ],
+      "outcomes": [
+        {
+          "winning_lens_id": "preservation",
+          "closes": ["empire"],
+          "tier_unlocks": [
+            "Junho Virtanen grants standing archival authority over Long-Yard-class sites across the region, authority previously granted only after individual case-by-case review with a two-cycle waiting period",
+            "the Long Yard's catalogue becomes a matter of regional record, with Virtanen's documentation recognized as the authoritative drift-corrected survey of the site boundary"
+          ],
+          "outcome_flag": "d6_preservation_won",
+          "narration_summary": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard is on the regional record now, the boundary documented, the catalogue recognized. Halvorsen kept developing the adjacent territory the way he develops all territory. The sites inside the border the player declined to claim went into the record as developed rather than preserved."
+        },
+        {
+          "winning_lens_id": "empire",
+          "closes": ["preservation"],
+          "tier_unlocks": [
+            "the territory the player holds generates resource yield that empire-track content can draw on, with the filing recognized as a producing claim rather than a surveyed-only parcel",
+            "Halvorsen's registry lists the player as an administrator of record across the claimed circuit, with all the filing priority that classification carries"
+          ],
+          "outcome_flag": "d6_empire_won",
+          "narration_summary": "Chose the claim. Halvorsen filed the producing-claim designation within a cycle. The territory generates yield. Virtanen relocated what he could save of the Long Yard to outside the claimed boundary and kept working. The catalogue is smaller now. The sites inside the claim went into the registry as developed."
+        }
+      ]
+    }
+  ]
+}

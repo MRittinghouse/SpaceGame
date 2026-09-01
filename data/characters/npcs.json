@@ -21,12 +21,16 @@
         {
           "state_id": "post_connection_won",
           "dialogue_id": "elena_connection_deepened",
-          "required_flags": ["d5_connection_won"]
+          "required_flags": [
+            "d5_connection_won"
+          ]
         },
         {
           "state_id": "post_connection_lost",
           "dialogue_id": "elena_connection_declined",
-          "required_flags": ["lens_closed_connection"]
+          "required_flags": [
+            "lens_closed_connection"
+          ]
         }
       ]
     },
@@ -319,7 +323,9 @@
         {
           "state_id": "post_quest",
           "dialogue_id": "neve_post_quest",
-          "required_flags": ["price_of_info_complete"]
+          "required_flags": [
+            "price_of_info_complete"
+          ]
         }
       ]
     },
@@ -354,7 +360,9 @@
         {
           "state_id": "post_quest",
           "dialogue_id": "petra_post_quest",
-          "required_flags": ["whistleblower_complete"]
+          "required_flags": [
+            "whistleblower_complete"
+          ]
         }
       ]
     },
@@ -404,7 +412,9 @@
         {
           "state_id": "post_quest",
           "dialogue_id": "cassiel_post_quest",
-          "required_flags": ["forgery_resolved"]
+          "required_flags": [
+            "forgery_resolved"
+          ]
         }
       ]
     },
@@ -718,7 +728,9 @@
         {
           "state_id": "post_sienna",
           "dialogue_id": "jez_post_sienna",
-          "required_flags": ["met_sienna_vek"]
+          "required_flags": [
+            "met_sienna_vek"
+          ]
         }
       ]
     },
@@ -777,7 +789,9 @@
         {
           "state_id": "post_cassiel",
           "dialogue_id": "rudo_post_cassiel",
-          "required_flags": ["forgery_resolved"]
+          "required_flags": [
+            "forgery_resolved"
+          ]
         }
       ]
     },
@@ -823,7 +837,9 @@
         {
           "state_id": "priya_recruited",
           "dialogue_id": "chandra_priya_recruited",
-          "required_flags": ["crew_loyalty_dr_priya_osei_50"]
+          "required_flags": [
+            "crew_loyalty_dr_priya_osei_50"
+          ]
         }
       ]
     },
@@ -844,42 +860,73 @@
         {
           "state_id": "arna_retired",
           "dialogue_id": "arna_retired",
-          "required_flags": ["arna_retired"]
+          "required_flags": [
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_last_freight_out_closeout",
           "dialogue_id": "arna_last_freight_out_closeout",
-          "required_flags": ["arna_closeout_ready", "arna_branch_a_complete"],
-          "excluded_flags": ["arna_gone_from_nexus", "arna_retired"]
+          "required_flags": [
+            "arna_closeout_ready",
+            "arna_branch_a_complete"
+          ],
+          "excluded_flags": [
+            "arna_gone_from_nexus",
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_stays_closeout",
           "dialogue_id": "arna_stays_closeout",
-          "required_flags": ["arna_closeout_ready", "arna_branch_b_complete"],
-          "excluded_flags": ["arna_retired"]
+          "required_flags": [
+            "arna_closeout_ready",
+            "arna_branch_b_complete"
+          ],
+          "excluded_flags": [
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_betray_followthrough",
           "dialogue_id": "arna_betray_followthrough",
-          "required_flags": ["arna_branch_betray"],
-          "excluded_flags": ["arna_betrayal_resolved", "arna_retired", "arna_gone_from_nexus"]
+          "required_flags": [
+            "arna_branch_betray"
+          ],
+          "excluded_flags": [
+            "arna_betrayal_resolved",
+            "arna_retired",
+            "arna_gone_from_nexus"
+          ]
         },
         {
           "state_id": "arna_post_payback",
           "dialogue_id": "arna_post_payback",
-          "required_flags": ["arna_branch_a_complete"],
-          "excluded_flags": ["arna_closeout_ready", "arna_retired"]
+          "required_flags": [
+            "arna_branch_a_complete"
+          ],
+          "excluded_flags": [
+            "arna_closeout_ready",
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_post_walkaway",
           "dialogue_id": "arna_post_walkaway",
-          "required_flags": ["arna_branch_b_complete"],
-          "excluded_flags": ["arna_closeout_ready", "arna_retired"]
+          "required_flags": [
+            "arna_branch_b_complete"
+          ],
+          "excluded_flags": [
+            "arna_closeout_ready",
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_post_ambush",
           "dialogue_id": "arna_post_ambush",
-          "required_flags": ["keren_ambush_triggered"],
+          "required_flags": [
+            "keren_ambush_triggered"
+          ],
           "excluded_flags": [
             "arna_branch_payback",
             "arna_branch_walkaway",
@@ -890,32 +937,57 @@
         {
           "state_id": "arna_post_refining",
           "dialogue_id": "arna_post_refining",
-          "required_flags": ["tev_refining_complete"],
-          "excluded_flags": ["arna_arranging_buyer", "arna_retired", "keren_ambush_triggered"]
+          "required_flags": [
+            "tev_refining_complete"
+          ],
+          "excluded_flags": [
+            "arna_arranging_buyer",
+            "arna_retired",
+            "keren_ambush_triggered"
+          ]
         },
         {
           "state_id": "arna_post_ore_tip",
           "dialogue_id": "arna_post_ore_tip",
-          "required_flags": ["arna_ore_delivered"],
-          "excluded_flags": ["arna_sent_to_tev", "arna_retired"]
+          "required_flags": [
+            "arna_ore_delivered"
+          ],
+          "excluded_flags": [
+            "arna_sent_to_tev",
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_ore_tip_pending",
           "dialogue_id": "arna_ore_tip_pending",
-          "required_flags": ["arna_accepted_ore_tip"],
-          "excluded_flags": ["arna_ore_delivered", "arna_retired"]
+          "required_flags": [
+            "arna_accepted_ore_tip"
+          ],
+          "excluded_flags": [
+            "arna_ore_delivered",
+            "arna_retired"
+          ]
         },
         {
           "state_id": "arna_post_completion",
           "dialogue_id": "arna_post_completion",
-          "required_flags": ["arna_delivery_complete"],
-          "excluded_flags": ["arna_retired", "arna_accepted_ore_tip"]
+          "required_flags": [
+            "arna_delivery_complete"
+          ],
+          "excluded_flags": [
+            "arna_retired",
+            "arna_accepted_ore_tip"
+          ]
         },
         {
           "state_id": "arna_pre_completion",
           "dialogue_id": "arna_pre_completion",
-          "required_flags": ["arna_delivery_accepted"],
-          "excluded_flags": ["arna_delivery_complete"]
+          "required_flags": [
+            "arna_delivery_accepted"
+          ],
+          "excluded_flags": [
+            "arna_delivery_complete"
+          ]
         }
       ]
     },
@@ -931,7 +1003,9 @@
       "home_system_id": "herons_mark",
       "dialogue_id": "keren_meet",
       "faction_id": "",
-      "auto_trigger_prerequisites": ["arna_arranging_buyer"],
+      "auto_trigger_prerequisites": [
+        "arna_arranging_buyer"
+      ],
       "hide_after_flag": "keren_escaped"
     },
     {
@@ -946,7 +1020,9 @@
       "home_system_id": "forgeworks",
       "dialogue_id": "tev_refining_intro",
       "faction_id": "",
-      "auto_trigger_prerequisites": ["arna_sent_to_tev"],
+      "auto_trigger_prerequisites": [
+        "arna_sent_to_tev"
+      ],
       "hide_after_flag": "tev_refining_complete"
     },
     {
@@ -961,7 +1037,9 @@
       "home_system_id": "verdant",
       "dialogue_id": "rhea_receives_coolant",
       "faction_id": "",
-      "auto_trigger_prerequisites": ["arna_delivery_accepted"],
+      "auto_trigger_prerequisites": [
+        "arna_delivery_accepted"
+      ],
       "hide_after_flag": "arna_delivery_complete"
     },
     {
@@ -1020,12 +1098,16 @@
         {
           "state_id": "post_truth_collision",
           "dialogue_id": "senn_truth_confrontation",
-          "required_flags": ["lens_closed_vengeance"]
+          "required_flags": [
+            "lens_closed_vengeance"
+          ]
         },
         {
           "state_id": "post_vengeance_collision",
           "dialogue_id": "senn_dead",
-          "required_flags": ["lens_closed_truth"]
+          "required_flags": [
+            "lens_closed_truth"
+          ]
         }
       ]
     },
@@ -1046,12 +1128,16 @@
         {
           "state_id": "post_wealth_closed",
           "dialogue_id": "kallio_open_channels",
-          "required_flags": ["lens_closed_wealth"]
+          "required_flags": [
+            "lens_closed_wealth"
+          ]
         },
         {
           "state_id": "post_community_closed",
           "dialogue_id": "kallio_declined",
-          "required_flags": ["lens_closed_community"]
+          "required_flags": [
+            "lens_closed_community"
+          ]
         }
       ]
     },
@@ -1072,12 +1158,16 @@
         {
           "state_id": "post_community_closed",
           "dialogue_id": "noor_buyers_open",
-          "required_flags": ["lens_closed_community"]
+          "required_flags": [
+            "lens_closed_community"
+          ]
         },
         {
           "state_id": "post_wealth_closed",
           "dialogue_id": "noor_declined_credit",
-          "required_flags": ["lens_closed_wealth"]
+          "required_flags": [
+            "lens_closed_wealth"
+          ]
         }
       ]
     },
@@ -1098,12 +1188,16 @@
         {
           "state_id": "post_vengeance_collision",
           "dialogue_id": "odusanya_declined",
-          "required_flags": ["lens_closed_justice"]
+          "required_flags": [
+            "lens_closed_justice"
+          ]
         },
         {
           "state_id": "post_justice_won",
           "dialogue_id": "odusanya_warrant_sponsor",
-          "required_flags": ["lens_closed_vengeance"]
+          "required_flags": [
+            "lens_closed_vengeance"
+          ]
         }
       ]
     },
@@ -1124,12 +1218,16 @@
         {
           "state_id": "post_political_power_won",
           "dialogue_id": "owusu_victorious",
-          "required_flags": ["d3_political_power_won"]
+          "required_flags": [
+            "d3_political_power_won"
+          ]
         },
         {
           "state_id": "post_political_power_closed",
           "dialogue_id": "owusu_declined",
-          "required_flags": ["lens_closed_political_power"]
+          "required_flags": [
+            "lens_closed_political_power"
+          ]
         }
       ]
     },
@@ -1148,14 +1246,32 @@
       "dialogue_music": "dialogue_intimate",
       "dialogue_states": [
         {
+          "state_id": "post_d6_empire_won",
+          "dialogue_id": "halvorsen_d6_victorious",
+          "required_flags": [
+            "d6_empire_won"
+          ]
+        },
+        {
+          "state_id": "post_d6_preservation_won",
+          "dialogue_id": "halvorsen_d6_administering",
+          "required_flags": [
+            "d6_preservation_won"
+          ]
+        },
+        {
           "state_id": "post_empire_won",
           "dialogue_id": "halvorsen_victorious",
-          "required_flags": ["d3_empire_won"]
+          "required_flags": [
+            "d3_empire_won"
+          ]
         },
         {
           "state_id": "post_empire_closed",
           "dialogue_id": "halvorsen_declined",
-          "required_flags": ["lens_closed_empire"]
+          "required_flags": [
+            "lens_closed_empire"
+          ]
         }
       ]
     },
@@ -1176,12 +1292,16 @@
         {
           "state_id": "post_revolution_won",
           "dialogue_id": "deng_victorious",
-          "required_flags": ["d3_revolution_won"]
+          "required_flags": [
+            "d3_revolution_won"
+          ]
         },
         {
           "state_id": "post_revolution_closed",
           "dialogue_id": "deng_declined",
-          "required_flags": ["lens_closed_revolution"]
+          "required_flags": [
+            "lens_closed_revolution"
+          ]
         }
       ]
     },
@@ -1202,12 +1322,46 @@
         {
           "state_id": "post_legacy_won",
           "dialogue_id": "solheim_victorious",
-          "required_flags": ["d5_legacy_won"]
+          "required_flags": [
+            "d5_legacy_won"
+          ]
         },
         {
           "state_id": "post_legacy_lost",
           "dialogue_id": "solheim_declined",
-          "required_flags": ["lens_closed_legacy"]
+          "required_flags": [
+            "lens_closed_legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "junho_virtanen",
+      "name": "Junho Virtanen",
+      "title": "Caretaker, Long Yard",
+      "portrait_color": [
+        90,
+        100,
+        80
+      ],
+      "home_system_id": "herons_mark",
+      "dialogue_id": "virtanen_default",
+      "faction_id": "",
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "post_d6_preservation_won",
+          "dialogue_id": "virtanen_victorious",
+          "required_flags": [
+            "d6_preservation_won"
+          ]
+        },
+        {
+          "state_id": "post_d6_empire_closed",
+          "dialogue_id": "virtanen_declined",
+          "required_flags": [
+            "lens_closed_preservation"
+          ]
         }
       ]
     }
