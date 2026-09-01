@@ -4614,8 +4614,18 @@ class Game:
         ordering is stable). Fires at most one capstone per tick — any
         simultaneously-eligible second capstone re-checks on the next
         ``_after_player_action`` call.
+
+        Suppressed if any modal is already active — _tick_dilemma_engine
+        may have just pushed DILEMMA_RESOLUTION on this same tick, and
+        stacking a CAPSTONE modal over a DILEMMA_RESOLUTION modal (or vice
+        versa) is explicitly forbidden (AC7, Locked decision 7).
         """
         if self._player is None:
+            return
+        if self.state_manager.current_state in (
+            GameState.DILEMMA_RESOLUTION,
+            GameState.CAPSTONE,
+        ):
             return
         from spacegame.models.capstone import should_fire
 
