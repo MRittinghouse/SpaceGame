@@ -16982,7 +16982,7 @@ gate.
 - Started: 2026-09-01 12:47
 - Completed: 2026-09-01 12:55
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: 8f4d059
 - New_sprints_proposed: none
 - Polish_items_folded_in: auto-journal entries, scar chatter, Tomas ambient reactions,
   Solano no-doctrine voice smoke, Marchetti practical-grounding voice smoke, consumer-only
