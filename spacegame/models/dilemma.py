@@ -362,6 +362,10 @@ def check_dilemmas(player: Any, dilemmas: dict[str, Dilemma]) -> DilemmaCheckRes
     investment = player.lens_investment
     runtime: DilemmaRuntimeState = player.dilemma_state
     for dilemma_id, dilemma in dilemmas.items():
+        # A2-14: if any pole of this dilemma is already closed by another
+        # dilemma's resolution, this dilemma is permanently ineligible.
+        if set(dilemma.poles) & runtime.closed_lenses:
+            continue
         if dilemma_id in runtime.resolved:
             continue
 

@@ -292,6 +292,36 @@ class TestCheckDilemmasClassification:
         assert result.newly_telegraphed == [dilemma.id]
         assert result.newly_collided == [dilemma.id]
 
+    def test_closed_pole_suppresses_telegraph_and_collision(self) -> None:
+        """A2-14: dilemma whose pole is already in closed_lenses must be
+        fully inert — no telegraph, no collision — regardless of investment."""
+        dilemma = _pair_dilemma()
+        runtime = DilemmaRuntimeState(closed_lenses={"wealth"})
+        stub = _player_stub({"wealth": 100, "community": 100}, runtime=runtime)
+        result = check_dilemmas(stub, {dilemma.id: dilemma})
+        assert result == DilemmaCheckResult(
+            newly_telegraphed=[], re_telegraphed=[], newly_collided=[]
+        ), "A dilemma with a closed pole must be skipped entirely by check_dilemmas."
+
+    def test_closed_pole_mirror_other_pole_also_suppresses(self) -> None:
+        """Mirror case: closing the other pole also suppresses the dilemma."""
+        dilemma = _pair_dilemma()
+        runtime = DilemmaRuntimeState(closed_lenses={"community"})
+        stub = _player_stub({"wealth": 100, "community": 100}, runtime=runtime)
+        result = check_dilemmas(stub, {dilemma.id: dilemma})
+        assert result == DilemmaCheckResult(
+            newly_telegraphed=[], re_telegraphed=[], newly_collided=[]
+        ), "Closing community must also suppress the wealth/community dilemma."
+
+    def test_unrelated_closed_lenses_do_not_suppress(self) -> None:
+        """Closing a lens not in this dilemma's poles must not affect it."""
+        dilemma = _pair_dilemma()
+        runtime = DilemmaRuntimeState(closed_lenses={"vengeance"})
+        stub = _player_stub({"wealth": 90, "community": 90}, runtime=runtime)
+        result = check_dilemmas(stub, {dilemma.id: dilemma})
+        assert result.newly_telegraphed == [dilemma.id]
+        assert result.newly_collided == [dilemma.id]
+
 
 class TestBuildInvestmentSnapshot:
     """Task 2.1 helper — engine snapshot handed to the resolution view.
