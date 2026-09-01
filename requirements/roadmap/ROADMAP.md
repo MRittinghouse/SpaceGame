@@ -143,7 +143,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | done | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
-| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | todo | A2-10, A2-3 |
+| [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | in-progress | A2-10, A2-3 |
 | [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
@@ -17578,7 +17578,7 @@ Flagged as follow-up (do NOT author in A2-19):
 
 #### A2-20 — Capstones fire without ending the session
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-10, A2-3 | **Blocks**: A2-21
 
@@ -18375,6 +18375,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 - 2026-09-01 17:56 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 18:21 — harness: review phase starting (rework cycle 0)
 - 2026-09-01 18:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
+- 2026-09-01 18:51 — harness: plan phase starting
   compliance test, view test, save/load scenario extension); locked 11 decisions;
   authored 11-task Plan section; folded in data-integrity compliance test and voice-
   smoke on placeholder narration; deferred all crew/journal/NPC reaction content to
@@ -18446,22 +18447,36 @@ sprint. What A2-20 DOES leave hanging for those sprints:
   verified green; one pre-existing flaky heartbeat timing test (test_ralph/) unrelated to
   A2-20 produced 11551 pass in xdist run (passes in isolation); baseline requirement met.
   PHASE_OK
+- 2026-09-01 18:53 — harness recovery reset this sprint to todo (0d682dd) after
+  last_touched_at went stale post-review. Plan-phase re-entry: verified work IS present
+  (implement commit 1b5b336, review commit cacb8c7 recorded PHASE_OK with all 16 ACs
+  verified). Cheap-check per plan-phase instructions: all 6 sprint artifact files exist
+  (spacegame/models/capstone.py, spacegame/views/capstone_view.py, data/narrative/capstones.json,
+  and 3 test files); data/narrative/capstones.json contains 16 capstone_id entries; the
+  66 sprint-specific tests (test_capstone_registry + test_capstone models + test_capstone_view
+  + test_scenario_capstone_session_continues) all pass in 1.32s. Nothing to re-plan;
+  routing onward via PHASE_OK so implement + review re-verify and no-op. PHASE_OK
 
 **Last phase report.**
-- Phase: review
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 19:20
-- Completed: 2026-09-01 19:55
-- Files_changed: none
-- Commits: none
-- Tests_passing: 11551
-- Acceptance_criteria_verified: 16/16
-- Polish_items_verified: n/a
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 0
-- Single_tighten: AC7 test covers "modal already active → action suppressed" but not "both become eligible on same tick → dilemma fires first." The latter requires investment to jump from <80 to ≥95 in one action, which is impossible in normal play (dilemma fires at 80, modal blocks further actions until resolved, capstone fires later at 95 in a separate action). Not a blocker; noting for completeness.
-- Followup_sprints_added: none
-- Notes: Plan audit: sound; all 14 locked decisions defensible. Three architectural guards that caused the first-pass revert all confirmed passing: investment compliance (AC14), dim-capture baseline (AC15), ground-loot partial-Game guard (AC13). Model-layer coordinator (check_capstones) correctly gates engine from reading investment. All 16 ACs satisfied, 69 new sprint-specific tests pass, lint/format/writing-bible clean.
+- Started: 2026-09-01 18:51
+- Completed: 2026-09-01 18:53
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (to be recorded after commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint is already implemented and reviewed)
+- Decisions_locked: 0 (all 14 decisions locked in prior plan passes)
+- Notes: Already-implemented recovery. Recent git log made the state unambiguous:
+  1b5b336 = full A2-20 implementation, cacb8c7 = review PHASE_OK with all 16 ACs
+  verified, 0d682dd = harness recovery reset to todo (stuck-sprint sweep after
+  last_touched_at aged). Followed the plan-phase "if the sprint is ALREADY
+  IMPLEMENTED, your sentinel is PHASE_OK" rule verbatim. Verified with a cheap
+  file-existence + sprint-scoped pytest run (66 tests pass in 1.32s) rather than
+  re-reading the full context set. Not using PHASE_BLOCKED — that would strand
+  A2-21 which depends on this sprint. PHASE_OK routes onward so the implementer
+  and reviewer re-verify (they will no-op on the existing commits) and the sprint
+  earns its gate.
 ---
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
