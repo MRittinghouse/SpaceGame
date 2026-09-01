@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | todo | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15727,21 +15727,20 @@ without them):
 - 2026-09-01 07:03 — harness: review phase starting (rework cycle 0)
 - 2026-09-01 — review complete; all 11 ACs verified; plan audit sound; full suite 11368 passing serially; one parallel xdist flake in test_no_new_consumer_only_flags is pre-existing contention (passes in isolation: 1/1); three new NPC voices strong and differentiated; no Writing Bible violations; scar faction_id follows D1/D2/D4 convention; commit 62b0893 is a genuine improvement to the flag-reachability scanner (dilemma outcome_flags now recognized as flag sources, beneficial to all future dilemma sprints). PHASE_OK
 - 2026-09-01 07:45 — harness: stuck-sprint recovery — was 'in-progress (reviewing)', reset to todo
+- 2026-09-01 07:50 — harness: plan phase starting
+- 2026-09-01 07:55 — sprint was already implemented AND reviewed on 2026-09-01 (implement commit 93c6db6; review PHASE_OK earlier today) before harness recovery reset it. Artifacts on disk: `data/narrative/dilemmas/d3_power_revolution_empire.json`, `tests/test_scenarios/test_scenario_dilemma_d3.py`, three NPCs in `data/characters/npcs.json`, nine dialogue trees, three scar `ChatterLine`s, three Tomas ambient lines, three auto-journal entries — all present. Verified `pytest tests/test_scenarios/test_scenario_dilemma_d3.py` → 31 passed in 0.78s. Original plan is unchanged (no re-plan needed). PHASE_OK to route the sprint back to implement (which will re-verify) and then review, per the "already implemented" branch of the planner guidance. PHASE_OK
+
 **Last phase report.**
-- Phase: review
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 07:03
-- Completed: 2026-09-01 07:25
-- Files_changed: none
-- Commits: none
-- Tests_passing: 11368 (serial run confirmed by commit 62b0893; targeted surfaces 90/90 clean; one parallel xdist flake pre-existing)
-- Acceptance_criteria_verified: 11/11
-- Polish_items_verified: n/a (planner correctly deferred cross-NPC reactions to follow-up sprints; none folded into this sprint's scope)
-- Findings_critical: 0
-- Findings_minor_fixed_directly: 0
-- Single_tighten: TestD3ClosedPoleGuard tests only political_power as the pre-closed pole — plan explains this intentionally (mirror cases add no new coverage over A2-14), but the test class docstring doesn't say so; a future reader may mistake it for an oversight. Not a blocker.
-- Followup_sprints_added: none
-- Notes: Plan audit: sound; locked decisions on home_system_ids (verge_landing/kettlebridge are flavor names only; havens_rest/crimson_reach are real), outcome flag naming, scar topology, winning/losing state gating, Halvorsen scaffolding for A2-17 — all defensible. Owusu (quorum/vote register), Halvorsen (surveyor's vocabulary), Deng (imperative, direct, impatient) are each distinctly voiced; Tomas telegraph and reactive lines are on-voice. Commit 62b0893 (teaching the flag-reachability scanner that dilemma outcome_flags are a flag source) is a net positive fix to the test infrastructure, not a workaround.
+- Started: 2026-09-01 07:50
+- Completed: 2026-09-01 07:55
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: (this commit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented and reviewed with PHASE_OK; no re-plan needed)
+- Decisions_locked: 0 (all 8 decisions previously locked; scope unchanged)
+- Notes: Sprint was implemented in commit 93c6db6 and reviewed with PHASE_OK earlier today (activity-log entries at 07:03 implement PHASE_OK and 07:25 review PHASE_OK). Harness stuck-sprint recovery at 07:45 reset the status from 'in-progress (reviewing)' to 'todo', which put the sprint back through the planner. Confirmed all 7 D3 artifact groups present on disk and the scenario test file passes 31/31. Emitting PHASE_OK (not PHASE_BLOCKED) so the dispatcher routes to implement → review, per the measured 2026-08-30 A2-5 vs A2-6 lesson in the planner brief.
 ---
 
 #### A2-16 — D5: Legacy ↔ Connection
