@@ -2515,33 +2515,6 @@ def main() -> int:
                 log(infra_failure)
                 recent_outcomes.append(f"{picked.sprint_id} INFRA-STOP")
 
-            # Refresh baseline after a successful sprint (item L).
-            # Mid-run failure keeps the previous baseline rather than aborting —
-            # agents already running can still compare against the last-known-good count.
-            if (
-                outcome == Outcome.OK
-                and not args.dry_run
-                and not DRY_RUN
-                and not args.skip_baseline
-            ):
-                try:
-                    new_baseline = _capture_test_baseline()
-                    log(
-                        f"Refreshed baseline: {new_baseline[0]} passing "
-                        f"(was {test_baseline[0]}), {new_baseline[1]} skipped."
-                    )
-                    test_baseline = new_baseline
-                except BaselineCaptureError as exc:
-                    # Keep going (agents can still compare against the last
-                    # known-good count) but do not let it be swallowed: this
-                    # used to be a log line to a stdout the Scheduled Task
-                    # discards. `## Recent` in STATUS.md is pushed.
-                    log(
-                        f"Mid-run baseline refresh FAILED: {exc}. "
-                        f"Keeping previous baseline ({test_baseline[0]}p/{test_baseline[1]}s)."
-                    )
-                    recent_outcomes.append(f"{picked.sprint_id} baseline-refresh FAILED ({exc})")
-
             # Per-sprint summary (item G).
             try:
                 _write_sprint_summary(picked.sprint_id, state, outcome)
@@ -2579,6 +2552,43 @@ def main() -> int:
                 )
             except Exception as e:
                 log(f"{picked.sprint_id}: harness bookkeeping commit failed: {e}")
+
+            # Refresh the baseline AFTER the bookkeeping commit above, not
+            # before it. The refresh is a full suite run (5-6 minutes under
+            # the Scheduled Task), and the sprint's `done` status is only
+            # durable once committed. Running it first left that status
+            # uncommitted across the slowest step in the loop: measured
+            # 2026-09-01, A2-13 and A2-15 both logged `finished with
+            # outcome=ok` and came back as todo after a death in that
+            # window -- two of three consecutive completions lost. The
+            # refreshed count only feeds the NEXT sprint's comparison, and
+            # nothing between the two reads it, so committing first is free.
+            # Refresh baseline after a successful sprint (item L).
+            # Mid-run failure keeps the previous baseline rather than aborting —
+            # agents already running can still compare against the last-known-good count.
+            if (
+                outcome == Outcome.OK
+                and not args.dry_run
+                and not DRY_RUN
+                and not args.skip_baseline
+            ):
+                try:
+                    new_baseline = _capture_test_baseline()
+                    log(
+                        f"Refreshed baseline: {new_baseline[0]} passing "
+                        f"(was {test_baseline[0]}), {new_baseline[1]} skipped."
+                    )
+                    test_baseline = new_baseline
+                except BaselineCaptureError as exc:
+                    # Keep going (agents can still compare against the last
+                    # known-good count) but do not let it be swallowed: this
+                    # used to be a log line to a stdout the Scheduled Task
+                    # discards. `## Recent` in STATUS.md is pushed.
+                    log(
+                        f"Mid-run baseline refresh FAILED: {exc}. "
+                        f"Keeping previous baseline ({test_baseline[0]}p/{test_baseline[1]}s)."
+                    )
+                    recent_outcomes.append(f"{picked.sprint_id} baseline-refresh FAILED ({exc})")
 
             # Auto-push (item A) after sprint completion.
             _push_after_sprint(picked.sprint_id, outcome, push_enabled)

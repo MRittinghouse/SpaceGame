@@ -3792,3 +3792,90 @@ class TestLoggingSurvivesNonCp1252Characters:
             harness.log("Picking up sprint A2-1: Lens data model")
         stream.flush()
         assert "Picking up sprint A2-1: Lens data model" in raw.getvalue().decode("cp1252")
+
+
+class TestCompletionIsCommittedBeforeTheBaselineRefresh:
+    """A finished sprint must be durable before anything slow runs.
+
+    `main()` marked a sprint done, then refreshed the test baseline -- a full
+    suite run, 5-6 minutes under the Scheduled Task -- and only THEN committed
+    the bookkeeping recording the `done` status. A death in that window left the
+    status uncommitted, the dirty-tree recovery stashed it, and the sprint
+    reverted to todo.
+
+    Measured 2026-09-01, twice in four hours: A2-13 logged `finished with
+    outcome=ok` at 02:59:05 and came back as todo; A2-15 did the same at
+    07:28:51 and came back as `in-progress (reviewing)`. Two of the last three
+    completions were lost. In both cases the sprint's own content commits were
+    safe -- only the status was -- so each cost a full redo cycle rather than
+    the work.
+
+    The refresh only feeds the NEXT sprint's comparison, and nothing between the
+    two reads it, so committing first is free. Ordering is asserted at runtime
+    rather than by reading the source, because source order only implies
+    execution order until someone moves a branch.
+    """
+
+    def test_bookkeeping_commit_precedes_the_refresh(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (isolated_roadmap / "ROADMAP.md").write_text(_TWO_TODO_ROADMAP, encoding="utf-8")
+        monkeypatch.setattr(harness.heartbeat, "HEARTBEAT_PATH", isolated_roadmap / "hb.json")
+        monkeypatch.setattr(harness, "DRY_RUN", False)
+
+        status_file = config.PROJECT_ROOT / "ralph" / "logs" / "_test_status_order.md"
+        monkeypatch.setattr(harness.status, "STATUS_PATH", status_file)
+        monkeypatch.setattr(
+            harness,
+            "_run_git",
+            lambda args, timeout=30: (0, "true\n", "")
+            if args[:2] == ["rev-parse", "--is-inside-work-tree"]
+            else (0, "", ""),
+        )
+        monkeypatch.setattr(
+            harness,
+            "execute_sprint",
+            lambda sprint_id, state, test_baseline=(0, 0): Outcome.OK,
+        )
+
+        order: list[str] = []
+
+        def record_refresh() -> tuple[int, int]:
+            order.append("refresh")
+            return (10_774, 98)
+
+        def record_commit(sprint_id: str, summary: str) -> bool:
+            order.append("commit")
+            return True
+
+        monkeypatch.setattr(harness, "_capture_test_baseline", record_refresh)
+        monkeypatch.setattr(harness, "_commit_harness_bookkeeping", record_commit)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ralph.harness",
+                "--max-sprints",
+                "1",
+                "--no-push",
+                "--allow-dirty",
+                "--skip-recovery",
+                "--skip-agency-probe",
+            ],
+        )
+        try:
+            harness.main()
+        finally:
+            status_file.unlink(missing_ok=True)
+
+        # order[0] is the STARTUP baseline capture, which runs before any
+        # sprint and legitimately precedes everything. The ordering that
+        # matters is within the sprint loop, after it.
+        assert order and order[0] == "refresh", f"expected a startup baseline first: {order}"
+        in_loop = order[1:]
+        assert "commit" in in_loop, f"the sprint's bookkeeping was never committed: {order}"
+        assert "refresh" in in_loop, f"the mid-run baseline was never refreshed: {order}"
+        assert in_loop.index("commit") < in_loop.index("refresh"), (
+            "the baseline refresh runs for 5-6 minutes with the sprint's `done` "
+            f"status still uncommitted; a death there un-finishes it. order={order}"
+        )
