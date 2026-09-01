@@ -569,6 +569,15 @@ class TestDialogueStateFlagReachability:
                 settable.add(mission.ground_mission_complete_flag)
         for npc_id in loader.npcs:
             settable.add(f"talked_to_{npc_id}")
+        # Resolving a dilemma sets its winning outcome's flag --
+        # `spacegame.models.dilemma.resolve` writes `outcome.outcome_flag`.
+        # Read the declared flags rather than pattern-matching a prefix, so a
+        # new dilemma is covered the moment its data lands and a typo in one
+        # is still caught.
+        for dilemma in loader.dilemmas.values():
+            for outcome in dilemma.outcomes:
+                if outcome.outcome_flag:
+                    settable.add(outcome.outcome_flag)
 
         engine_flags = {
             "iron_ore_delivered",
