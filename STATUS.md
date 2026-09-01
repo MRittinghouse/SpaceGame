@@ -1,13 +1,23 @@
 # Ralph Status
 
-_Updated: 2026-09-01 05:37:44_
+_Updated: 2026-09-01 06:37:01_
+
+## Harness Did Not Run
+
+Baseline capture FAILED: pytest exited 1; tail: \matth\PycharmProjects\SpaceGame\spacegame\engine\game.py:271: Warning: no fast renderer available
+    self.screen = pygame.display.set_mode(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_data/test_cross_references.py::TestDialogueStateFlagReachability::test_dialogue_state_required_flags_settable
+1 failed, 11367 passed, 100 skipped, 42 warnings in 349.08s (0:05:49). Aborting run to avoid running agents with no baseline.
 
 ## Now
 
 - Sprint: **(between sprints)**
 - Phase: **-**
-- Last beat: **25 seconds ago**
-- Beat PID: 30132 -- alive
+- Last beat: **8 seconds ago**
+- Beat PID: 34876 -- alive
 
 ## Queue
 
@@ -19,8 +29,8 @@ _Updated: 2026-09-01 05:37:44_
 
 ## Push
 
-- last push: **OK** (2 hours ago)
-- last successful push: 2 hours ago
+- last push: **OK** (59 minutes ago)
+- last successful push: 59 minutes ago
 
 ## Blocks drift
 
@@ -31,7 +41,3 @@ _Updated: 2026-09-01 05:37:44_
 - SA-F3: Blocks claims SA-F4, but SA-F4 does not list SA-F3 in Depends on
 - SA-F3: Blocks claims SA-F7, but SA-F7 does not list SA-F3 in Depends on
 - (+14 more)
-
-## Recent
-
-- A2-14 ok
