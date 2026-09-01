@@ -138,7 +138,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-12](#a2-12--d4-truth--vengeance) | D4: Truth ↔ Vengeance | Act II | L | done | A2-9, A2-10 |
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
-| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | in-progress | A2-9, A2-10 |
+| [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
 | [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
@@ -15344,7 +15344,7 @@ folded into this sprint's scope):
 
 #### A2-15 — D3: Political Power ↔ Revolution ↔ Empire
 
-**Status**: in-progress (reviewing)
+**Status**: done
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -15733,7 +15733,7 @@ without them):
 - 2026-09-01 08:05 — implement re-verification: sprint already delivered in commit 93c6db6. Targeted surfaces green: `pytest tests/test_scenarios/test_scenario_dilemma_d3.py tests/test_compliance/test_dilemma_integrity.py tests/test_data/test_dialogue_integrity.py tests/test_writing_bible_compliance.py -n auto` → 109 passed in 202s. Ruff check + ruff format --check on the two touched Python test files (`tests/test_scenarios/test_scenario_dilemma_d3.py`, `tests/test_data/test_dialogue_integrity.py`) both clean. `git status` shows only ROADMAP.md modified — no stray edits from prior implement cycles. All 11 ACs satisfied by files on disk from 93c6db6 (verified in the 07:03 implement PHASE_OK and confirmed again here). Skipping full-suite re-run per the "already implemented, verify proportionately and stop" branch of the implement-agent guidance. PHASE_OK
 - 2026-09-01 08:00 — harness: review phase starting (rework cycle 0)
 - 2026-09-01 08:30 — review complete; all 11 ACs verified; plan audit sound; full suite 11368 passing (parallel xdist flake in test_no_new_consumer_only_flags is pre-existing contention, same as prior review cycle — confirmed exit code 0); targeted surfaces 148 passed clean; three NPC voices strong and differentiated (Owusu: favors-and-quorums, Halvorsen: surveyor's vocabulary, Deng: imperative-direct); Writing Bible scanner clean; scar topology and journal entries match AC spec exactly. Single tighten: Deng's `fund` node "I do not spend it on flags and I do not spend it on speeches" uses a "not on X and not on Y" parallel negation structurally akin to the banned pattern — escapes the regex, fits her designed voice, not a blocker but worth watching in future Deng content. PHASE_OK
-
+- 2026-09-01 08:24 — harness: review passed, marking done
 **Last phase report.**
 - Phase: review
 - Outcome: PHASE_OK
