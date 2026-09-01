@@ -139,7 +139,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-13](#a2-13--d2-wealth--community) | D2: Wealth ↔ Community | Act II | L | done | A2-9, A2-10 |
 | [A2-14](#a2-14--d1-vengeance--justice) | D1: Vengeance ↔ Justice | Act II | M | done | A2-9, A2-10 |
 | [A2-15](#a2-15--d3-political-power--revolution--empire) | D3: Political Power ↔ Revolution ↔ Empire | Act II | L | done | A2-9, A2-10 |
-| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | todo | A2-9, A2-10 |
+| [A2-16](#a2-16--d5-legacy--connection) | D5: Legacy ↔ Connection | Act II | M | in-progress | A2-9, A2-10 |
 | [A2-17](#a2-17--d6-preservation--empire) | D6: Preservation ↔ Empire | Act II | M | todo | A2-9, A2-10 |
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | todo | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | todo | A2-9, A2-10 |
@@ -15753,7 +15753,7 @@ without them):
 
 #### A2-16 — D5: Legacy ↔ Connection
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: M | **Effort**: 6-8 days
 **Depends on**: A2-9, A2-10 | **Blocks**: none
 
@@ -16168,6 +16168,7 @@ scenario test):
 - 2026-09-01 09:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 - 2026-09-01 09:06 — harness: plan phase starting
 - 2026-09-01 10:15 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-01 10:21 — harness: plan phase starting
   outcome, scar reachability per outcome, ambient reactive registration, journal
   entries, the AC4 alt-path (crew.py has no loyalty-ceiling concept), the closed-pole
   guard mirror, and the NPC id-collision guard. Locked 10 decisions (Solheim home
@@ -16192,29 +16193,33 @@ scenario test):
   (baseline 11369, +31 new D5 tests, +1 pre-existing intermittent failure in
   test_no_new_consumer_only_flags that passes in isolation and module-level runs).
   Writing Bible and dilemma integrity suites clean. PHASE_OK
+- 2026-09-01 — planning re-entered after stuck-sprint recovery reset the sprint to
+  todo. Verified work is already in place: `data/narrative/dilemmas/d5_legacy_connection.json`
+  exists; `amrit_solheim`, `d5_legacy_won`, `d5_connection_won`, `lens_closed_legacy`,
+  `lens_closed_connection`, `al_scar_d5` present across `npcs.json`, `dialogue/dialogues.json`,
+  `station_chatter.json`, `ambient_dialogue.json`, `journal/entries.json`;
+  `tests/test_scenarios/test_scenario_dilemma_d5.py` present. Ran that scenario test:
+  31/31 passing in 0.84s. Implementation commits eed5022 and 9ccba0f already on master.
+  Prior plan (10 locked decisions, 9 tasks, 11 ACs) is intact and unchanged. No re-planning
+  required; routing back to implement so the harness can advance to review. PHASE_OK
 
 **Last phase report.**
-- Phase: implement
+- Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 09:11
-- Completed: 2026-09-01 12:00
-- Files_changed: data/narrative/dilemmas/d5_legacy_connection.json, data/characters/npcs.json, data/dialogue/dialogues.json, data/crew/station_chatter.json, data/crew/ambient_dialogue.json, data/journal/entries.json, tests/test_scenarios/test_scenario_dilemma_d5.py, tests/test_data/test_dialogue_integrity.py
-- Commits: eed5022, 9ccba0f
-- Tests_added: 31
-- Tests_baseline: 11369
-- Tests_passing: 11399
-- Tests_skipped: 100
-- Lint_clean: yes
-- Format_clean: yes
-- SI3_scanner_clean: yes
-- Writing_bible_clean: yes
-- Touch_zones_respected: yes
-- Notes: D5 Legacy vs Connection implemented end-to-end: dilemma JSON, Director Amrit
-  Solheim NPC (axiom_labs), Elena dialogue_states extension, 5 dialogue trees,
-  2 scar ChatterLines, 2 Marcus ambient lines, 2 journal entries. All 11 ACs satisfied.
-  One pre-existing intermittent failure (test_no_new_consumer_only_flags) persists in
-  full-suite runs but passes in isolation and module-level runs; not introduced by this
-  sprint (the D5 flag additions to KNOWN_CONSUMER_ONLY_ORPHANS are the correct fix).
+- Started: 2026-09-01 10:21
+- Completed: 2026-09-01 10:24
+- Files_changed: requirements/roadmap/ROADMAP.md
+- Commits: pending
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented)
+- Decisions_locked: 0 (all 10 prior decisions still stand)
+- Notes: Sprint was already fully implemented on master (commits eed5022, 9ccba0f); the
+  harness reset it to todo after a phase died before writing a sentinel. Verified all
+  seven touched data files carry the D5 identifiers on disk and that
+  `pytest tests/test_scenarios/test_scenario_dilemma_d5.py` reports 31/31 passing. Not
+  re-planning work that exists; emitting PHASE_OK per the "already implemented"
+  protocol so the dispatcher routes to implement (which will re-verify) and then to
+  review, where the sprint still earns its gate.
 ---
 
 #### A2-17 — D6: Preservation ↔ Empire
