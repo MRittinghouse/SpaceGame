@@ -14256,22 +14256,31 @@ convention documented on `ChatterLine` is the API those sprints consume.
   cross-sprint reactions section correctly declares none. All 4 context-to-read paths
   re-verified present. No implementation commits exist. No re-planning warranted; the
   sprint is ready for implement. PHASE_OK
+- 2026-08-31 19:55 — harness: implement phase starting (rework cycle 0)
+- 2026-08-31 20:15 — implementation complete. Commits: 890cab2 (docstring + demo line),
+  c3c94ad (scenario test), ca19615 (unit+compliance tests), 244ba16 (SI-3 orphan).
+  36 new tests pass (32 in test_station_chatter.py, 4 in test_scenario_dilemma_scars.py).
+  Full suite: 11266 passing (+7 vs 11259 baseline), 101 skipped, 0 new failures.
+  SI-3 scanner clean after adding lens_closed_test_lens to KNOWN_CONSUMER_ONLY_ORPHANS.
+  Writing Bible clean. All 6 ACs satisfied. PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: implement
 - Outcome: PHASE_OK
-- Started: 2026-08-31 19:51
-- Completed: 2026-08-31 19:52
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: b5f6e4e
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (folded in prior planning pass — compliance-invariant-test, voice-check-anchor-criterion)
-- Decisions_locked: 0 (all 4 locked in prior planning pass)
-- Notes: Re-dispatch after stuck-sprint recovery reset. Prior planning (commits 43d6ec4,
-  c56230b) is complete and correct — Plan section fully populated, decisions locked,
-  ACs testable, cross-sprint reactions addressed. All 4 context-to-read paths
-  re-verified present. No implementation commits exist. Emitting PHASE_OK to advance
-  the sprint to implement rather than duplicate work already in the roadmap.
+- Started: 2026-08-31 19:55
+- Completed: 2026-08-31 20:15
+- Files_changed: spacegame/models/station_chatter.py, data/crew/station_chatter.json, tests/test_models/test_station_chatter.py, tests/test_scenarios/test_scenario_dilemma_scars.py, tests/test_data/test_dialogue_integrity.py
+- Commits: 890cab2, c3c94ad, ca19615, 244ba16
+- Tests_added: 8
+- Tests_baseline: 11259
+- Tests_passing: 11266
+- Tests_skipped: 101
+- Lint_clean: yes
+- Format_clean: yes
+- SI3_scanner_clean: yes
+- Writing_bible_clean: yes
+- Touch_zones_respected: yes (tests/test_data/test_dialogue_integrity.py is a small out-of-zone change — 7 lines to add lens_closed_test_lens to KNOWN_CONSUMER_ONLY_ORPHANS; noted in commit message)
+- Notes: Scar mechanism proved via tests with no code-path change to get_chatter. Demo line gated on test-only lens_closed_test_lens flag (invisible in real play). AC1+AC2 unit tests, AC3 scenario test (no DilemmaResolutionView/check_collision imports), AC4 compliance invariant, AC5 prose scanner clean, AC6 suite green.
 ---
 
 #### A2-12 — D4: Truth ↔ Vengeance
