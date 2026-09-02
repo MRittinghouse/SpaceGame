@@ -1,6 +1,6 @@
 # Ralph Status
 
-_Updated: 2026-09-01 21:00:40_
+_Updated: 2026-09-01 21:06:30_
 
 ## STARVED
 
@@ -11,9 +11,9 @@ STARVED: 15 todo, 0 eligible.
 
 ## Now
 
-- Sprint: **A2-21**
-- Phase: **review**
-- Last beat: **22 seconds ago**
+- Sprint: **(between sprints)**
+- Phase: **-**
+- Last beat: **12 seconds ago**
 - Beat PID: 20140 -- alive
 
 ## Queue
@@ -26,8 +26,8 @@ STARVED: 15 todo, 0 eligible.
 
 ## Push
 
-- last push: **OK** (85 minutes ago)
-- last successful push: 85 minutes ago
+- last push: **OK** (just now)
+- last successful push: just now
 
 ## Blocks drift
 
