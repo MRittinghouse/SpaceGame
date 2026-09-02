@@ -144,7 +144,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | done | A2-10, A2-3 |
-| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | in-progress | A2-20 |
+| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
 
 ## SA Arc — Station Anchors
 
@@ -18493,7 +18493,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
 
-**Status**: in-progress (implementing)
+**Status**: todo
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-20 | **Blocks**: none
 
@@ -18810,6 +18810,7 @@ focused on the generator + wiring, not content sprawl.
 - 2026-09-01 19:35 — harness: plan phase starting
 - 2026-09-01 20:15 — planning complete; 5 decisions locked (seed strategy, territory
 - 2026-09-01 19:43 — harness: implement phase starting (rework cycle 0)
+- 2026-09-01 20:15 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
   surface, firing cadence, galaxy-event scope, empty-lens behavior); 6 cross-sprint
   reactions flagged as follow-up (not folded in — would push L→XL); 7-step Plan authored;
   ACs tightened to reference concrete outcome_flags and mission id prefixes. PHASE_OK
