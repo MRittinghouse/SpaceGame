@@ -144,7 +144,7 @@ Source: `docs/superpowers/specs/2026-08-24-shell-architecture-design.md` (Spec B
 | [A2-18](#a2-18--d7-faith--transcendence) | D7: Faith ↔ Transcendence | Act II | M | done | A2-9, A2-10 |
 | [A2-19](#a2-19--d8-crime--community) | D8: Crime ↔ Community | Act II | M | done | A2-9, A2-10 |
 | [A2-20](#a2-20--capstones-fire-without-ending-the-session) | Capstones fire without ending the session | Act II | M | done | A2-10, A2-3 |
-| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | todo | A2-20 |
+| [A2-21](#a2-21--post-capstone-generation-keyed-to-resolved-identity) | Post-capstone generation keyed to resolved identity | Act II | L | in-progress | A2-20 |
 
 ## SA Arc — Station Anchors
 
@@ -18493,7 +18493,7 @@ sprint. What A2-20 DOES leave hanging for those sprints:
 
 #### A2-21 — Post-capstone generation keyed to resolved identity
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Act II | **Size**: L | **Effort**: 1.5-2 weeks
 **Depends on**: A2-20 | **Blocks**: none
 
@@ -18811,27 +18811,34 @@ focused on the generator + wiring, not content sprawl.
 - 2026-09-01 20:15 — planning complete; 5 decisions locked (seed strategy, territory
 - 2026-09-01 19:43 — harness: implement phase starting (rework cycle 0)
 - 2026-09-01 20:15 — harness: stuck-sprint recovery — was 'in-progress (implementing)', reset to todo
+- 2026-09-01 20:21 — harness: plan phase starting
   surface, firing cadence, galaxy-event scope, empty-lens behavior); 6 cross-sprint
   reactions flagged as follow-up (not folded in — would push L→XL); 7-step Plan authored;
   ACs tightened to reference concrete outcome_flags and mission id prefixes. PHASE_OK
+- 2026-09-01 20:25 — planner: sprint already implemented (commits 7f48e4a + fa7b540 land
+  all deliverables — post_capstone_content.py, templates JSON, DataLoader wiring, game.py
+  wiring, galaxy_event API extension, plus both test files). Ran the sprint's own tests
+  (test_post_capstone_content.py + test_scenario_post_capstone_generation.py +
+  test_galaxy_event.py): 42/42 pass in 1.90s. Not re-planning — routing to implementer
+  for re-verification per the "already implemented" playbook. PHASE_OK
 
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-01 19:35
-- Completed: 2026-09-01 20:15
+- Started: 2026-09-01 20:21
+- Completed: 2026-09-01 20:25
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: 99f5419
-- New_sprints_proposed: none (A2-22 flagged as a candidate follow-up in the plan section
-  but not added — reviewer may elect to create if the reactive layer is judged in scope)
-- Polish_items_folded_in: save/load round-trip (AC7), engine-compliance guard for A2-4 AC4
-  (AC8), stale-mission cleanup contract mirrored from procedural refresh
-- Decisions_locked: 5
-- Notes: Verified all 4 context-to-read docs exist and read the key sections. Confirmed
-  sprint is NOT already implemented (no `post_capstone_content.py`, no matching tests).
-  Adjusted AC1's "held territory" phrasing after confirming A2-15/A2-17 shipped outcome
-  flags not a `Player.territories` field. Kept galaxy-event extension in scope as API-only
-  (no new templates) to honor sprint's stated touch zones without scope creep. Cross-sprint
-  reaction surface (crew banter, station chatter, news ticker, journal) deliberately
-  flagged for follow-up rather than folded in — it would push this L to XL and dilutes the
-  generator focus.
+- Commits: none (only the sentinel + report edit)
+- New_sprints_proposed: none
+- Polish_items_folded_in: none (sprint already implemented; prior plan phase's polish
+  choices — AC7 save/load, AC8 engine-compliance guard — are already in the shipped code)
+- Decisions_locked: 0 (all 5 decisions were already locked by the previous plan phase and
+  remain valid; the shipped implementation matches those decisions)
+- Notes: Recovery-reset sprint. Checked git first (cheap): commits 7f48e4a and fa7b540
+  by user Matt Rittinghouse contain the full A2-21 deliverable set — module, templates,
+  data loader, engine wiring, galaxy_event extension, and both test files. Ran the
+  sprint-scoped test set: 42 passed, 0 failed, 1.90s. Stuck-sprint recovery reset this
+  because the implementer committed and died before writing its sentinel; missing sentinel
+  is not missing work. Writing PHASE_OK (not PHASE_BLOCKED) per A2-5/A2-6 lesson —
+  PHASE_BLOCKED is terminal and would strand the sprint. Next phase (implement) will
+  re-verify, then review, then gate — the sprint still earns its full review pass.
