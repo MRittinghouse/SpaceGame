@@ -4301,7 +4301,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-09-02 18:03
 - Completed: 2026-09-02 18:35
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: pending
+- Commits: b32cb72
 - New_sprints_proposed: none
 - Polish_items_folded_in: three-journal-templates, headliner-news-stub, four-flag-helpers, commerce-guild-rep-delta
 - Decisions_locked: 6
