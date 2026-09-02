@@ -4303,7 +4303,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Started: 2026-09-02 19:06
 - Completed: 2026-09-02 19:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: (planning-only re-entry; commit hash recorded after commit)
+- Commits: 066519e
 - New_sprints_proposed: none
 - Polish_items_folded_in: none (plan from 2026-09-02 18:35 is intact — no re-planning done)
 - Decisions_locked: 0 (all 6 locked in prior plan; no new decisions surfaced)
