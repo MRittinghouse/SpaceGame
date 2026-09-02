@@ -54,7 +54,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | done | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | done | SA-PREP-1, SA-C2, SA-V |
-| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | in-progress | SA-F1 |
+| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
 | [SA-F4](#sa-f4--shipping-contracts-sub-system) | Shipping Contracts sub-system | V | L | todo | SA-F2 |
 | [SA-F5](#sa-f5--insurance-sub-system) | Insurance sub-system | V | M | todo | SA-F2 |
@@ -4179,7 +4179,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Docs-only sprint delivered cleanly. Section 7 has 8 integration subsections (the AC says "seven" -- minor AC wording typo, the extra subsection is 7.8 News which is correctly included). All 10 locked decisions cover the required topics with rationale and citations. Section 9 player-facing strings pass manual voice review and Writing Bible scanner.
 #### SA-F2 — Futures Core
 
-**Status**: in-progress (planning)
+**Status**: todo
 **Phase**: Phase V | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-F1 | **Blocks**: SA-F3, SA-F4, SA-F5, SA-F6, SA-F7
 
@@ -4294,7 +4294,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-09-02 17:56 — session: reset blocked -> todo to unstrand the rest of the roadmap. The block dates from 2026-04-29 and its whole evidence is one transient agent bail: "agent exited with returncode 1; commits referencing SA-F2: 0; agent stdout was short (135 chars) -- likely an early bail; no sentinel". No work was attempted and no difficulty was found, so there is nothing here that a re-run cannot discover for itself. The harness triage reports SA-F2 strands all 15 remaining sprints (SA-F3..F7 and SA-X1..X10) and the queue has been STARVED, not complete, for four months. `_should_retry` was added afterwards citing this exact sprint by name, so a repeat of that bail now costs one retry instead of the roadmap. If the sprint turns out to be genuinely hard, it will block again with a real reason attached, which is strictly better evidence than what is here now.
 - 2026-09-02 18:03 — harness: plan phase starting
 - 2026-09-02 18:35 — planning complete; verified all 3 Context-to-read paths exist and SA-F1's design doc supplies full API shape, formula, worked examples, save contract, and stub inventory; expanded acceptance criteria from 5 → 17 mechanically testable items; locked 6 previously-unlocked implementation decisions (hop-distance bucket table; Nexus Prime market injection at settlement; PricingEngine bonus injection via caller; zero-price deferral by one day; contract ID scheme `futures_{accept_day}_{commodity_id}_{seq}`; no save-version bump); folded in 4 polish items whose ownership is unambiguously SA-F2 (three journal templates from Section 9.2, headliner news stub from Section 9.3, four flag helpers from Section 9.4, Commerce Guild rep delta from Section 7.6); explicitly deferred four downstream cross-sprint reactions (Ilse Vey acknowledgement — SA-F3; news content — SA-X5; crew banter — SA-X6; achievement content — SA-X7). Deferred one implementation choice to Task 5 (news event routing — `_pending_player_news` vs. new context category — either fits per existing pattern). No neighbouring-sprint edits; no new sprints proposed. Plan broken into 9 concrete tasks (~13 hr total). PHASE_OK
-
+- 2026-09-02 19:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
