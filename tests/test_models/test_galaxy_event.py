@@ -276,6 +276,83 @@ class TestGalaxyEventGenerator:
                 return
 
 
+class TestGalaxyEventIdentityLensWeighting:
+    """A2-21 -- optional identity_lens_weights bias for post-capstone content.
+
+    The extension is API-only this sprint: no template ships with an
+    ``identity_lens`` field, so the default (None) code path is unchanged.
+    """
+
+    def _make_weighted_generator(self) -> GalaxyEventGenerator:
+        # Two templates with equal weight; one carries identity_lens=empire.
+        templates = [
+            {
+                "id": "generic_embargo",
+                "event_type": "embargo",
+                "faction_id": "commerce_guild",
+                "target_systems": ["nexus_prime"],
+                "blocked_commodities": ["raw_ore"],
+                "descriptions": ["Generic embargo"],
+                "flavor_texts": ["Filler."],
+                "duration_min": 3,
+                "duration_max": 6,
+                "weight": 10,
+            },
+            {
+                "id": "empire_flavored_embargo",
+                "event_type": "embargo",
+                "faction_id": "commerce_guild",
+                "target_systems": ["stellaris_port"],
+                "blocked_commodities": ["iron_ore"],
+                "descriptions": ["Border dispute embargo"],
+                "flavor_texts": ["Empire fallout."],
+                "duration_min": 3,
+                "duration_max": 6,
+                "identity_lens": "empire",
+                "weight": 10,
+            },
+        ]
+        return GalaxyEventGenerator(templates)
+
+    def test_default_none_argument_behaves_unchanged(self) -> None:
+        """Regression: existing call sites pass no weighting; behavior unchanged."""
+        gen_a = self._make_weighted_generator()
+        gen_b = self._make_weighted_generator()
+        # Sample across many days so the deterministic distribution shows
+        events_a: list[str] = []
+        events_b: list[str] = []
+        for day in range(1, 300):
+            e_a = gen_a.try_generate_event(day, {})
+            if e_a is not None:
+                events_a.append(e_a.id)
+            e_b = gen_b.try_generate_event(day, {}, identity_lens_weights=None)
+            if e_b is not None:
+                events_b.append(e_b.id)
+        assert events_a == events_b, (
+            "identity_lens_weights=None must produce identical output to omitting the arg"
+        )
+
+    def test_lens_weight_biases_selection(self) -> None:
+        """Passing a high weight for empire should bias selection toward empire templates."""
+        gen_biased = self._make_weighted_generator()
+        gen_neutral = self._make_weighted_generator()
+        biased_hits = 0
+        neutral_hits = 0
+        for day in range(1, 400):
+            e_biased = gen_biased.try_generate_event(
+                day, {}, identity_lens_weights={"empire": 10.0}
+            )
+            if e_biased and e_biased.id.startswith("empire_flavored_embargo"):
+                biased_hits += 1
+            e_neutral = gen_neutral.try_generate_event(day, {})
+            if e_neutral and e_neutral.id.startswith("empire_flavored_embargo"):
+                neutral_hits += 1
+        assert biased_hits > neutral_hits, (
+            f"empire-weighted call should hit the empire template more often "
+            f"(biased={biased_hits}, neutral={neutral_hits})"
+        )
+
+
 # === Serialization ===
 
 

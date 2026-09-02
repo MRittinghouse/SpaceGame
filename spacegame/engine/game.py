@@ -701,6 +701,19 @@ class Game:
         )
         self._proc_missions_day: int = -1
 
+        # A2-21: post-capstone identity-keyed content generator. Merges its
+        # output into the same station board as the procedural generator;
+        # per-day refresh strips stale post_capstone_* alongside proc_*.
+        from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
+
+        self.post_capstone_content_gen = PostCapstoneContentGenerator(
+            systems=self.data_loader.systems,
+            commodities=self.data_loader.commodities,
+            enemy_templates=self.data_loader.enemy_templates,
+            templates=self.data_loader.post_capstone_templates,
+            seed=hash(self.player.name) & 0xFFFFFFFF,
+        )
+
         # Initialize crew system
         from spacegame.models.crew import CrewRoster
 
@@ -5334,6 +5347,19 @@ class Game:
         )
         self._proc_missions_day = -1
 
+        # A2-21: post-capstone identity-keyed content generator. Same as
+        # _new_game -- no save-state to restore (all inputs come from
+        # already-serialized Player fields).
+        from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
+
+        self.post_capstone_content_gen = PostCapstoneContentGenerator(
+            systems=self.data_loader.systems,
+            commodities=self.data_loader.commodities,
+            enemy_templates=self.data_loader.enemy_templates,
+            templates=self.data_loader.post_capstone_templates,
+            seed=hash(self.player.name) & 0xFFFFFFFF,
+        )
+
         # Restore crew roster
         from spacegame.models.crew import CrewRoster
 
@@ -6106,6 +6132,10 @@ class Game:
         """Generate procedural station board missions for the current system.
 
         Generates new contracts each game day, removing old unclaimed ones.
+        A2-21: also merges post-capstone identity-keyed content for any lens
+        the player has reached a capstone in. Stale ``post_capstone_*``
+        entries are stripped alongside ``proc_*`` so the same one-refresh-
+        per-day contract applies.
         """
         if (
             self._player is None
@@ -6121,17 +6151,37 @@ class Game:
 
         self._proc_missions_day = current_day
 
-        # Remove old procedural missions that were never accepted
-        old_proc = [
-            mid for mid in list(self.mission_manager._missions.keys()) if mid.startswith("proc_")
+        # Remove old procedural + post-capstone missions that were never accepted.
+        # A2-21: post_capstone_* uses the same refresh contract as proc_*
+        # (stripped in bulk each new game day, no per-slot preservation).
+        old_generated = [
+            mid
+            for mid in list(self.mission_manager._missions.keys())
+            if mid.startswith(("proc_", "post_capstone_"))
         ]
-        for mid in old_proc:
+        for mid in old_generated:
             self.mission_manager.remove_mission(mid)
 
         # Generate fresh contracts for this system
         missions = self.procedural_mission_gen.generate_for_system(system_id, current_day)
         for mission in missions:
             self.mission_manager.add_mission(mission)
+
+        # A2-21: merge post-capstone identity-keyed missions for every lens
+        # the player has reached a capstone in. Reads dialogue_flags only --
+        # the A2-4 AC4 compliance guard forbids raw investment reads here.
+        if hasattr(self, "post_capstone_content_gen"):
+            reached_lenses = [
+                key[: -len("_capstone_reached")]
+                for key, value in self.player.dialogue_flags.items()
+                if value and key.endswith("_capstone_reached")
+            ]
+            for lens_id in sorted(reached_lenses):
+                extra = self.post_capstone_content_gen.generate_for_lens(
+                    lens_id, current_day, self.player
+                )
+                for mission in extra:
+                    self.mission_manager.add_mission(mission)
 
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""

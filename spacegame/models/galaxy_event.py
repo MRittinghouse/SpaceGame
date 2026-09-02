@@ -223,6 +223,7 @@ class GalaxyEventGenerator:
         self,
         current_day: int,
         active_events: dict[str, list[GalaxyEvent]],
+        identity_lens_weights: Optional[dict[str, float]] = None,
     ) -> Optional[GalaxyEvent]:
         """Attempt to generate a galaxy event.
 
@@ -231,6 +232,14 @@ class GalaxyEventGenerator:
         Args:
             current_day: Current game day.
             active_events: Dict of system_id -> list of active galaxy events.
+            identity_lens_weights: Optional mapping of lens_id -> weight
+                multiplier used by A2-21's post-capstone generation hook.
+                When provided, a template's declared ``weight`` is multiplied
+                by ``identity_lens_weights.get(template.get("identity_lens",
+                ""), 1.0)`` before the weighted roll. Templates without an
+                ``identity_lens`` field are unaffected. Default ``None``
+                is behaviourally identical to omitting the arg -- every
+                existing call site keeps working unchanged.
 
         Returns:
             GalaxyEvent if generated, None otherwise.
@@ -256,8 +265,14 @@ class GalaxyEventGenerator:
         if rng.random() >= GALAXY_EVENT_DAILY_CHANCE:
             return None
 
-        # Weighted template selection
-        weights = [t.get("weight", 10) for t in self._templates]
+        # Weighted template selection. A2-21: an optional lens-weight map
+        # multiplies templates whose ``identity_lens`` matches; templates
+        # without the field see multiplier 1.0 and are unaffected.
+        lens_weights = identity_lens_weights or {}
+        weights = [
+            t.get("weight", 10) * lens_weights.get(t.get("identity_lens", ""), 1.0)
+            for t in self._templates
+        ]
         total_weight = sum(weights)
         roll = rng.uniform(0, total_weight)
         cumulative = 0.0
