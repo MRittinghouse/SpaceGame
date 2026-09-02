@@ -1,26 +1,33 @@
 # Ralph Status
 
-_Updated: 2026-09-01 19:30:06_
+_Updated: 2026-09-01 21:00:40_
+
+## STARVED
+
+```
+STARVED: 15 todo, 0 eligible.
+  SA-F2 (blocked) strands SA-F3, SA-F4, SA-F5, SA-F6, SA-F7, SA-X1, SA-X10, SA-X2, SA-X3, SA-X4, SA-X5, SA-X6, SA-X7, SA-X8, SA-X9
+```
 
 ## Now
 
-- Sprint: **A2-20**
+- Sprint: **A2-21**
 - Phase: **review**
-- Last beat: **16 seconds ago**
-- Beat PID: 31040 -- alive
+- Last beat: **22 seconds ago**
+- Beat PID: 20140 -- alive
 
 ## Queue
 
 - total: 88
-- todo: 16
-- eligible: 1
+- todo: 15
+- eligible: 0
 - in flight: none
 - blocked: SA-F2, UI-BOUNDS-1
 
 ## Push
 
-- last push: **OK** (2 hours ago)
-- last successful push: 2 hours ago
+- last push: **OK** (85 minutes ago)
+- last successful push: 85 minutes ago
 
 ## Blocks drift
 
@@ -34,4 +41,4 @@ _Updated: 2026-09-01 19:30:06_
 
 ## Recent
 
-- A2-20 ok
+- A2-21 ok
