@@ -5883,10 +5883,20 @@ class Game:
                 self._mission_notifications.append(f"Political: {new_event.description}")
             self.politics_manager.advance_day(current_day)
 
-        # Galaxy events — generate new, clean up expired
+        # Galaxy events — generate new, clean up expired.
+        # A2-21: pass capstone-reached lenses as identity_lens_weights so
+        # future templates with an ``identity_lens`` field get biased toward
+        # the player's resolved identity without another API change.
         if self.galaxy_event_generator:
+            reached_lens_weights = {
+                key[: -len("_capstone_reached")]: 2.0
+                for key, value in self.player.dialogue_flags.items()
+                if value and key.endswith("_capstone_reached")
+            }
             new_galaxy_event = self.galaxy_event_generator.try_generate_event(
-                current_day, self.active_galaxy_events
+                current_day,
+                self.active_galaxy_events,
+                identity_lens_weights=reached_lens_weights or None,
             )
             if new_galaxy_event:
                 sid = new_galaxy_event.system_id
