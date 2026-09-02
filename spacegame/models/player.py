@@ -16,6 +16,7 @@ from spacegame.models.drone import MiningDroneFleet
 from spacegame.models.faction import ReputationTier, get_reputation_tier
 from spacegame.models.forge_buffer import ForgeBufferManager
 from spacegame.models.forge_upgrade import ForgeUpgradeState
+from spacegame.models.futures import FuturesState
 from spacegame.models.lens_investment import LensInvestment
 from spacegame.models.okafor_research import OkaforResearchState
 from spacegame.models.ore_silo import OreSiloManager
@@ -119,6 +120,13 @@ class Player:
     # pending lot pool, and the default ``"normal"`` speed setting.
     # See :class:`spacegame.models.bidding.AuctionState`.
     auction_state: AuctionState = field(default_factory=AuctionState)
+
+    # SA-F2: Meridian Financial Exchange futures state. Default is an
+    # empty FuturesState — pre-SA-F2 saves load with an empty registry
+    # per the CLAUDE.md ``data.get(field, default)`` migration pattern
+    # wired in save_manager._deserialize_player.
+    # See :class:`spacegame.models.futures.FuturesState`.
+    futures_state: FuturesState = field(default_factory=FuturesState)
 
     # Dialogue system
     dialogue_flags: dict[str, bool] = field(default_factory=dict)

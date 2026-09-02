@@ -470,6 +470,11 @@ class SaveManager:
             # AuctionState() is the empty state). Additive — no
             # SAVE_VERSION bump per locked decision §SA-B2.3.
             "auction_state": player.auction_state.to_dict(),
+            # SA-F2: Meridian Financial Exchange futures state. Always
+            # serialized (default FuturesState() is the empty state).
+            # Additive — pre-SA-F2 saves load with an empty state via
+            # ``data.get("futures_state", None)`` in _deserialize_player.
+            "futures_state": player.futures_state.to_dict(),
             "dialogue_flags": player.dialogue_flags,
             "captain_memory": {cid: mem.to_dict() for cid, mem in player.captain_memory.items()},
             "timed_thread_state": {
@@ -692,6 +697,14 @@ class SaveManager:
             from spacegame.models.bidding import AuctionState
 
             player.auction_state = AuctionState()
+
+        # SA-F2: Meridian futures state. Pre-SA-F2 saves have no
+        # ``futures_state`` key and load with the default empty state.
+        # Malformed payloads (non-dict) also load as empty via
+        # ``FuturesState.from_dict``.
+        from spacegame.models.futures import FuturesState
+
+        player.futures_state = FuturesState.from_dict(data.get("futures_state"))
 
         # Restore dialogue flags
         player.dialogue_flags = data.get("dialogue_flags", {})

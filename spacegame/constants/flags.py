@@ -1197,3 +1197,67 @@ def told_senn_orchestrated_operation() -> str:
     ``KNOWN_PRODUCER_ONLY_ORPHANS`` for that reason.
     """
     return "told_senn_orchestrated_operation"
+
+
+# ---------------------------------------------------------------------------
+# Futures / Meridian Financial Exchange (SA-F2)
+# ---------------------------------------------------------------------------
+#
+# SA-F2 (requirements/sa_financial_design.md, section 9.4). Four dialogue-flag
+# helpers that gate journal auto-entries and downstream crew banter for the
+# futures sub-system. SA-F2 owns the strings and the producer sites for three
+# of them; the fourth (``futures_first_contract_previewed``) is registered
+# here but not called by SA-F2 — SA-F3 wires the Meridian broker terminal
+# preview surface and calls the helper there. Consumers: journal
+# ``trigger_flag`` entries (SA-F2 wires the three settle/accept auto-entries
+# inline via ``add_auto_entry`` because the templates require per-contract
+# substitution), plus SA-X6 crew banter and SA-X7 achievements authored later.
+
+
+def futures_first_contract_previewed() -> str:
+    """Flag set on first preview of a futures contract at the Meridian terminal.
+
+    Producer (SA-F3): the Meridian broker terminal view's on-preview
+    callback (fires the ``FirstTimeTipOverlay`` from Section 9.1 the very
+    first time). SA-F2 registers the helper so producer / consumer can
+    pair through the SI-3 scanner when SA-F3 lands.
+    Consumer (SA-F3): the same view's preview-tip guard; SA-X6 crew banter
+    (later sprint). SA-F2 does NOT call the setter — it belongs to the
+    terminal UI, which SA-F3 owns.
+    """
+    return "futures_first_contract_previewed"
+
+
+def futures_first_contract_accepted() -> str:
+    """Flag set the first time the player accepts a futures contract at Meridian.
+
+    Producer: :func:`spacegame.models.futures.FuturesState.accept` — set
+    on the first successful accept per save (idempotent thereafter).
+    Consumers: SA-X6 Brix Tano crew banter content (later sprint); the
+    ``add_auto_entry`` "Position Open" template also fires from the same
+    call site for the first contract only.
+    """
+    return "futures_first_contract_accepted"
+
+
+def futures_first_win() -> str:
+    """Flag set the first time a futures settlement produces a profitable payoff.
+
+    Producer: :func:`spacegame.models.futures.FuturesState.advance_day`
+    — set the first time a contract settles with ``payoff > 0`` (idempotent
+    thereafter). Consumers: SA-X6 Brix Tano and captain-crew banter; SA-X7
+    ``achievement_futures_first_win``; SA-F3 Ilse Vey acknowledgement line
+    on first profitable settlement.
+    """
+    return "futures_first_win"
+
+
+def futures_first_loss() -> str:
+    """Flag set the first time a futures settlement produces an unprofitable payoff.
+
+    Producer: :func:`spacegame.models.futures.FuturesState.advance_day`
+    — set the first time a contract settles with ``payoff < 0``
+    (idempotent thereafter). Consumers: SA-X6 Brix Tano banter (later);
+    SA-F3 Ilse Vey acknowledgement line on first losing settlement.
+    """
+    return "futures_first_loss"
