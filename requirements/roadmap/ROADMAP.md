@@ -18821,24 +18821,26 @@ focused on the generator + wiring, not content sprawl.
   (test_post_capstone_content.py + test_scenario_post_capstone_generation.py +
   test_galaxy_event.py): 42/42 pass in 1.90s. Not re-planning — routing to implementer
   for re-verification per the "already implemented" playbook. PHASE_OK
+- 2026-09-01 20:55 — review: all 9 ACs verified. Plan audit sound — five locked decisions
+  all defensible, cross-sprint reactions correctly deferred. One gap vs. stated deliverables:
+  identity_lens_weights was not passed to galaxy_event_generator.try_generate_event (API
+  extended in fa7b540 but call site in the daily advance loop left unwired). Fixed directly
+  in commit 82bfb5f; today's call is a no-op (no template carries identity_lens) but
+  plumbing now matches the plan. Suite: 42/42 sprint tests pass; 11572 passed / 99 skipped
+  (matches baseline). PHASE_OK
 
 **Last phase report.**
-- Phase: plan
+- Phase: review
 - Outcome: PHASE_OK
-- Started: 2026-09-01 20:21
-- Completed: 2026-09-01 20:25
-- Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: none (only the sentinel + report edit)
-- New_sprints_proposed: none
-- Polish_items_folded_in: none (sprint already implemented; prior plan phase's polish
-  choices — AC7 save/load, AC8 engine-compliance guard — are already in the shipped code)
-- Decisions_locked: 0 (all 5 decisions were already locked by the previous plan phase and
-  remain valid; the shipped implementation matches those decisions)
-- Notes: Recovery-reset sprint. Checked git first (cheap): commits 7f48e4a and fa7b540
-  by user Matt Rittinghouse contain the full A2-21 deliverable set — module, templates,
-  data loader, engine wiring, galaxy_event extension, and both test files. Ran the
-  sprint-scoped test set: 42 passed, 0 failed, 1.90s. Stuck-sprint recovery reset this
-  because the implementer committed and died before writing its sentinel; missing sentinel
-  is not missing work. Writing PHASE_OK (not PHASE_BLOCKED) per A2-5/A2-6 lesson —
-  PHASE_BLOCKED is terminal and would strand the sprint. Next phase (implement) will
-  re-verify, then review, then gate — the sprint still earns its full review pass.
+- Started: 2026-09-01 20:36
+- Completed: 2026-09-01 20:55
+- Files_changed: spacegame/engine/game.py, requirements/roadmap/ROADMAP.md
+- Commits: 82bfb5f
+- Tests_passing: 11572
+- Acceptance_criteria_verified: 9/9
+- Polish_items_verified: n/a
+- Findings_critical: 0
+- Findings_minor_fixed_directly: 1
+- Single_tighten: identity_lens_weights wiring omitted at game.py galaxy-event call site — API extended but call site unconnected; fixed in 82bfb5f.
+- Followup_sprints_added: none
+- Notes: Plan audit sound; all 5 locked decisions defensible. One minor gap fixed directly (identity_lens_weights wiring). Pre-existing lint drift in test_galaxy_event.py lines 3-42 (from commit 4550ebc) left as-is per scope discipline.
