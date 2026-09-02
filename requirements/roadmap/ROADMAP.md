@@ -54,7 +54,7 @@ The SA-arc table below is **auto-regenerated** by the ralph harness from the spr
 | [SA-R2](#sa-r2--dr-okafors-legacy-narrative-arc) | Dr. Okafor's Legacy Narrative Arc | IV | M | done | SA-R1 |
 | [SA-R3](#sa-r3--research-patronage-polish) | Research Patronage polish | IV | S | done | SA-R1, SA-R2 |
 | [SA-F1](#sa-f1--financial-exchange-design) | Financial Exchange Design | V | M | done | SA-PREP-1, SA-C2, SA-V |
-| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | todo | SA-F1 |
+| [SA-F2](#sa-f2--futures-core) | Futures Core | V | XL | in-progress | SA-F1 |
 | [SA-F3](#sa-f3--meridian-venue--cargo-broker-graduation) | Meridian Venue + Cargo Broker graduation | V | L | todo | SA-F2, SA-V |
 | [SA-F4](#sa-f4--shipping-contracts-sub-system) | Shipping Contracts sub-system | V | L | todo | SA-F2 |
 | [SA-F5](#sa-f5--insurance-sub-system) | Insurance sub-system | V | M | todo | SA-F2 |
@@ -4179,7 +4179,7 @@ These are the decisions to lock during planning execution. Recommendations recor
 - Notes: Docs-only sprint delivered cleanly. Section 7 has 8 integration subsections (the AC says "seven" -- minor AC wording typo, the extra subsection is 7.8 News which is correctly included). All 10 locked decisions cover the required topics with rationale and citations. Section 9 player-facing strings pass manual voice review and Writing Bible scanner.
 #### SA-F2 — Futures Core
 
-**Status**: todo
+**Status**: in-progress (planning)
 **Phase**: Phase V | **Size**: XL | **Effort**: 2 weeks
 **Depends on**: SA-F1 | **Blocks**: SA-F3, SA-F4, SA-F5, SA-F6, SA-F7
 
@@ -4295,17 +4295,19 @@ These are the decisions to lock during planning execution. Recommendations recor
 - 2026-09-02 18:03 — harness: plan phase starting
 - 2026-09-02 18:35 — planning complete; verified all 3 Context-to-read paths exist and SA-F1's design doc supplies full API shape, formula, worked examples, save contract, and stub inventory; expanded acceptance criteria from 5 → 17 mechanically testable items; locked 6 previously-unlocked implementation decisions (hop-distance bucket table; Nexus Prime market injection at settlement; PricingEngine bonus injection via caller; zero-price deferral by one day; contract ID scheme `futures_{accept_day}_{commodity_id}_{seq}`; no save-version bump); folded in 4 polish items whose ownership is unambiguously SA-F2 (three journal templates from Section 9.2, headliner news stub from Section 9.3, four flag helpers from Section 9.4, Commerce Guild rep delta from Section 7.6); explicitly deferred four downstream cross-sprint reactions (Ilse Vey acknowledgement — SA-F3; news content — SA-X5; crew banter — SA-X6; achievement content — SA-X7). Deferred one implementation choice to Task 5 (news event routing — `_pending_player_news` vs. new context category — either fits per existing pattern). No neighbouring-sprint edits; no new sprints proposed. Plan broken into 9 concrete tasks (~13 hr total). PHASE_OK
 - 2026-09-02 19:00 — harness: stuck-sprint recovery — was 'in-progress (planning)', reset to todo
+- 2026-09-02 19:06 — harness: plan phase starting
+- 2026-09-02 19:15 — plan re-entered on already-planned + partially-implemented sprint. Plan section from 2026-09-02 18:35 (commit b32cb72) is intact and correct — nothing to re-plan. Implementation commit 0d9c2e9 completed plan Tasks 2-6: `spacegame/models/futures.py` (676 lines: `FuturesContract`, `FuturesState`, `PricingEngine` with Section 3.2 formula + all three Section 3.4 worked examples pinned as regression tests), `spacegame/constants/flags.py` (four Section 9.4 helpers), `Player.futures_state` field + `save_manager` round-trip with `data.get` fallback for pre-SA-F2 saves, plus 49 tests (`tests/test_models/test_futures.py` 1034 lines + `tests/test_models/test_save_load_futures.py` 140 lines) all green (0.49s). Remaining work per the existing plan: Task 7 (engine `_check_day_advance` integration — verified absent: `grep futures_state spacegame/engine/game.py` returns nothing), Task 8 (`tests/test_scenarios/test_scenario_futures_loop.py` — verified missing), Task 9 (validation chain + sentinel). Implementer resumes at Task 7. Note the implementer's Example B choice (stored `entry_cost == 344` rather than the doc's `345`) documented in the commit message with the arithmetic reconciliation — SA-F1 doc's line commentary was off by one; the formula is faithful. The reviewer should confirm this reconciliation is acceptable per AC-2, or a follow-up patch to the design doc is warranted (flag only — not this sprint's edit to make). PHASE_OK
 **Last phase report.**
 - Phase: plan
 - Outcome: PHASE_OK
-- Started: 2026-09-02 18:03
-- Completed: 2026-09-02 18:35
+- Started: 2026-09-02 19:06
+- Completed: 2026-09-02 19:15
 - Files_changed: requirements/roadmap/ROADMAP.md
-- Commits: b32cb72
+- Commits: (planning-only re-entry; commit hash recorded after commit)
 - New_sprints_proposed: none
-- Polish_items_folded_in: three-journal-templates, headliner-news-stub, four-flag-helpers, commerce-guild-rep-delta
-- Decisions_locked: 6
-- Notes: SA-F1 provided a very complete design doc; SA-F2's planning gap was implementation ergonomics (hop-distance quantization, Nexus Prime market injection, bonus caller injection, zero-price handling, contract ID scheme, save-migration ratchet), not scope. Model-layer only per SA-F1's split — the broker terminal UI, the preview surface, and the FirstTimeTipOverlay fire belong to SA-F3. All cross-sprint reactions on the player-facing surface (Ilse Vey lines, news headlines, crew banter, achievements) are deferred to their locked SA-F3/X5/X6/X7 owners.
+- Polish_items_folded_in: none (plan from 2026-09-02 18:35 is intact — no re-planning done)
+- Decisions_locked: 0 (all 6 locked in prior plan; no new decisions surfaced)
+- Notes: Sprint was already planned (b32cb72) and 5/9 tasks already implemented (0d9c2e9). Verified model-layer tests green (49/49 in 0.49s) and engine integration absent. PHASE_OK routes to implementer to finish Tasks 7-9 (engine `_check_day_advance` hook, full-loop scenario tests, validation chain). Reviewer should verify implementer's Example B reconciliation (stored 344 vs doc's 345 — commit 0d9c2e9's message documents the arithmetic; SA-F1 doc line commentary is off by one, formula is faithful).
 #### SA-F3 — Meridian Venue + Cargo Broker graduation
 
 **Status**: todo
