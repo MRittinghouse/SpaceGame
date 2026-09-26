@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.constants.flags import encounter_seen
-from spacegame.sim_rng import SimRng
+from spacegame.sim_rng import SimRng, stable_seed
 
 if TYPE_CHECKING:
     from spacegame.models.combat import EnemyShipTemplate
@@ -218,7 +218,7 @@ def check_travel_encounter(
 
     # Deterministic seed
     rng = SimRng.from_key("encounter", game_day, system_id)
-    seed = rng.state()[0]
+    seed = stable_seed("encounter", game_day, system_id)
 
     roll = rng.uniform(0, 100)
     if roll >= chance:

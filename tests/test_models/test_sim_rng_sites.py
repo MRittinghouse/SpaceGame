@@ -9,8 +9,9 @@ import textwrap
 from pathlib import Path
 
 from spacegame.data_loader import get_data_loader
+from spacegame.models.encounter import check_travel_encounter
 from spacegame.models.market import Market
-from spacegame.sim_rng import SimRng
+from spacegame.sim_rng import SimRng, stable_seed
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -41,6 +42,39 @@ class TestMarketKey:
             -max_random, max_random
         )
         assert market._get_random_variance(commodity) == expected
+
+
+class TestEncounterSeedKey:
+    def test_travel_encounter_seed_is_stable_seed_before_any_draw(self) -> None:
+        """encounter_seed must be reconstructible by name, not by generator state.
+
+        ``check_travel_encounter`` builds ``rng`` from the same key and only
+        happens to read ``seed`` before the first draw -- a purely
+        incidental ordering. Pinning ``encounter_seed`` to
+        ``stable_seed("encounter", game_day, system_id)`` (an explicit,
+        name-based reconstruction) protects against a future edit that
+        draws from ``rng`` first, which would silently change every
+        travel encounter seed downstream (combat, crew_interjection,
+        encounter_select, loot).
+        """
+        loader = get_data_loader()
+        enemy_ids = [
+            t.id for t in loader.enemy_templates.values() if not getattr(t, "is_boss", False)
+        ]
+        system_id = "nexus_prime"
+        ref = None
+        game_day = -1
+        for game_day in range(30):
+            ref = check_travel_encounter("dangerous", enemy_ids, game_day, system_id)
+            if ref is not None:
+                break
+        assert ref is not None, (
+            f"expected at least one triggered encounter for {system_id} within 30 days"
+        )
+        assert ref.encounter_seed == stable_seed("encounter", game_day, system_id)
+        # Must also match the raw pre-draw state word: this is what would
+        # break first if a future edit drew from rng before reading seed.
+        assert ref.encounter_seed == SimRng.from_key("encounter", game_day, system_id).state()[0]
 
 
 class TestCrossProcess:
