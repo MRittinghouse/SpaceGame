@@ -79,6 +79,36 @@ class TestRandint:
             SimRng.from_key("bad").randint(lo, hi)
 
 
+class TestUniformAndChance:
+    def test_uniform_matches_formula_symmetric_range(self) -> None:
+        a = SimRng.from_key("uniform")
+        b = SimRng.from_key("uniform")
+        assert a.uniform(-0.1, 0.1) == -0.1 + (0.1 - -0.1) * b.randf()
+
+    def test_uniform_matches_formula_nonsymmetric_range(self) -> None:
+        a = SimRng.from_key("uniform2")
+        b = SimRng.from_key("uniform2")
+        assert a.uniform(2.0, 5.0) == 2.0 + (5.0 - 2.0) * b.randf()
+
+    @pytest.mark.parametrize("p", [0.1, 0.5, 0.9])
+    def test_chance_matches_formula(self, p: float) -> None:
+        a = SimRng.from_key("chance", str(p))
+        b = SimRng.from_key("chance", str(p))
+        assert a.chance(p) == (b.randf() < p)
+
+    def test_chance_zero_is_always_false(self) -> None:
+        assert SimRng.from_key("chance0").chance(0.0) is False
+
+    def test_chance_one_is_always_true(self) -> None:
+        assert SimRng.from_key("chance1").chance(1.0) is True
+
+    def test_uniform_and_chance_do_not_consume_scripted_random(self) -> None:
+        rng = ScriptedRng([0.0])
+        rng.uniform(0.0, 1.0)
+        rng.chance(0.5)
+        assert rng.random() == 0.0
+
+
 class TestSequences:
     def test_choice_empty_raises(self) -> None:
         with pytest.raises(IndexError):
