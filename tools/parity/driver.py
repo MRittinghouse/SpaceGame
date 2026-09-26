@@ -117,13 +117,43 @@ def source_commit() -> str:
     return done.stdout.strip()
 
 
+def porcelain_paths(text: str) -> list[str]:
+    """Extract every path named by ``git status --porcelain`` output.
+
+    A rename or copy line (``R`` or ``C`` in either status column) names two
+    paths, separated by ``" -> "``; both the old and the new path are
+    returned so a boundary crossing (a golden moved out of ``parity/``, or
+    unrelated code moved in) is never missed. A quoted path -- git
+    C-quotes paths containing spaces or unusual characters -- has its
+    surrounding double quotes stripped.
+
+    Args:
+        text: The raw stdout of ``git status --porcelain``.
+
+    Returns:
+        Every path named by the porcelain output, in order. Rename and
+        copy lines contribute both their old and new path.
+    """
+    paths: list[str] = []
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        status, path_part = line[:2], line[3:]
+        if "R" in status or "C" in status:
+            old, _, new = path_part.partition(" -> ")
+            paths.append(old.strip().strip('"'))
+            paths.append(new.strip().strip('"'))
+        else:
+            paths.append(path_part.strip().strip('"'))
+    return paths
+
+
 def dirty_paths_outside(prefix: str) -> list[str]:
     """Modified or untracked paths that do not start with ``prefix``."""
     done = subprocess.run(
         ["git", "status", "--porcelain"], cwd=REPO_ROOT, capture_output=True, text=True, check=True
     )
-    paths = [line[3:].strip() for line in done.stdout.splitlines() if line.strip()]
-    return [p for p in paths if not p.startswith(prefix)]
+    return [p for p in porcelain_paths(done.stdout) if not p.startswith(prefix)]
 
 
 def write_cases(cases: list[Case], golden_root: Path, commit: str) -> list[Path]:

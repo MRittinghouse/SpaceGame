@@ -82,6 +82,23 @@ class TestCaseJson:
         assert b"\r\n" not in paths[0].read_bytes()
 
 
+class TestPorcelainPaths:
+    def test_modified_line(self) -> None:
+        assert driver.porcelain_paths(" M spacegame/a.py") == ["spacegame/a.py"]
+
+    def test_untracked_line(self) -> None:
+        assert driver.porcelain_paths("?? parity/golden/x.json") == ["parity/golden/x.json"]
+
+    def test_rename_crossing_the_boundary_yields_both_paths(self) -> None:
+        assert driver.porcelain_paths("R  parity/x.json -> spacegame/x.py") == [
+            "parity/x.json",
+            "spacegame/x.py",
+        ]
+
+    def test_quoted_path_is_unquoted(self) -> None:
+        assert driver.porcelain_paths('?? "spacegame/a b.py"') == ["spacegame/a b.py"]
+
+
 class TestRegenRefusesDirtyTree:
     def test_refuses_when_files_outside_parity_are_modified(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
