@@ -44,10 +44,31 @@ def _violations(path: Path) -> list[str]:
     return hits
 
 
+# spacegame/models/ holds over 100 modules; a scan of fewer means the glob
+# missed (a moved directory, a wrong root) and the pass would be vacuous.
+MIN_FILES_SCANNED = 30
+
+
 def test_models_use_only_sim_rng() -> None:
+    paths = sorted(MODELS_ROOT.glob("*.py"))
+    assert len(paths) >= MIN_FILES_SCANNED, (
+        f"scanned only {len(paths)} files under {MODELS_ROOT}; the scanner is not looking "
+        "at the models"
+    )
     hits: list[str] = []
-    for path in sorted(MODELS_ROOT.glob("*.py")):
+    for path in paths:
         hits.extend(_violations(path))
     assert not hits, "Global randomness in models (use spacegame.sim_rng.SimRng):\n" + "\n".join(
         hits
     )
+
+
+def test_scanner_flags_a_planted_violation(tmp_path: Path) -> None:
+    canary = tmp_path / "canary.py"
+    canary.write_text(
+        "import random\n\n\ndef roll(x: object) -> int:\n    return hash(x)\n",
+        encoding="utf-8",
+    )
+    hits = _violations(canary)
+    assert "canary.py:1: import random" in hits, f"import random not flagged: {hits}"
+    assert "canary.py:5: hash(...)" in hits, f"hash(x) not flagged: {hits}"
