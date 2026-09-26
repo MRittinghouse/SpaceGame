@@ -8,10 +8,10 @@ people who know what the player did.
 
 This module ships the framework plus three worked-example lens templates
 (``empire``, ``community``, ``vengeance``). Any lens without a template
-returns ``[]`` gracefully. Determinism follows the ``galaxy_event.py``
-hashlib-md5 pattern so the same day / lens / seed / state always produces
-the same missions, satisfying the "no save scumming" contract from
-CLAUDE.md.
+returns ``[]`` gracefully. Each draw comes from a keyed
+``SimRng.from_key("post_capstone", lens_id, game_day, seed)`` stream, so the
+same day, lens, seed, and state always produce the same missions, satisfying
+the "no save scumming" contract from CLAUDE.md.
 
 The generator reads only ``player.dialogue_flags``,
 ``player.dilemma_state.resolved``, and ``player.capstones_reached`` -- never
@@ -79,8 +79,8 @@ class PostCapstoneContentGenerator:
                 reserved for a future encounter-shaped template).
             templates: Map of ``lens_id`` -> list of raw template dicts.
                 A lens without an entry (or an empty list) yields ``[]``.
-            seed: Base RNG seed used together with ``lens_id`` and
-                ``game_day`` in the hashlib-md5 seeding formula.
+            seed: Base seed, keyed with ``lens_id`` and ``game_day`` into
+                ``SimRng.from_key("post_capstone", lens_id, game_day, seed)``.
         """
         self._systems = systems
         self._commodities = commodities

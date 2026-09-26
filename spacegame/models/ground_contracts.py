@@ -315,7 +315,7 @@ class GroundContractManager:
             faction_id: Faction ID for text substitution.
             system_id: System ID for text substitution.
             templates: Loaded contract templates.
-            rng: Seeded random for deterministic selection.
+            rng: Keyed SimRng stream for deterministic selection.
 
         Returns:
             Tuple of (name, description, objectives).

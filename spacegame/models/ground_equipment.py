@@ -104,7 +104,7 @@ class GroundLootTable:
 
         Args:
             com_bonus: COM attribute bonus as a fraction (e.g., 0.5 = +50%).
-            rng: Seeded random instance for determinism.
+            rng: Keyed SimRng stream for determinism.
 
         Returns:
             Dict with 'credits' (int), optional 'equipment' (str),

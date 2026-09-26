@@ -131,7 +131,7 @@ def _select_non_hostile_type(
     """Select a non-hostile encounter type using weighted random selection.
 
     Args:
-        rng: Seeded Random instance.
+        rng: Keyed SimRng stream to draw from.
         system_danger: System danger level for weight table lookup.
         anomaly_chance_bonus: Fraction (0-1) to boost anomaly weight
             (from exploration skill "anomaly_chance").
