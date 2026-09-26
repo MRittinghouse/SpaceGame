@@ -390,7 +390,7 @@ edited in `SpaceGame` and re-synced, never edited in `aurelia`, until the cutove
 - `ParityRunner` loads a golden file and hands `setup` to a subsystem adapter, which builds the Godot
   object from synced data. It then replays each step: calls the method through the adapter, then
   compares the result and the snapshot.
-- `Comparator` rules:
+- `ParityComparator` rules:
   - exact equality by default, with integer and float values compared numerically (10 equals 10.0)
   - dictionary key sets must match exactly; list lengths and order must match
   - a failure names the path, for example `steps[12].state.stock.iron_ore: expected 40, got 39`
@@ -496,3 +496,4 @@ Each amendment supersedes the section it names. The plans record the matching ru
 | A14 | 4.4 (invariant tests pass unchanged) | A test that checks an invariant against one fixed seed may have that seed reselected when the invariant fails for a large share of seeds under both generators; the commit records the survey. Applied to three ground mapgen tests (42 to 1) and one archetype damage test (42 to 100). | A survey showed the generator swap leaves the distributions unchanged (combat damage below 40: 66 of 1,000 seeds before, 86 after; mapgen invariant failures: 289 of 500 before, 290 after). These tests were always single-seed samples. |
 | A15 | 7 (key table) | The travel encounter seed is `stable_seed("encounter", game_day, system_id)`, recorded in `parity/port_notes.md` under "Derived seeds" with the shared `"customs"` namespace. | The seed feeds combat, interjection, selection, and loot streams; the plan's table omitted it. |
 | A16 | 3.4 (vector file), 5 (hygiene gates), 4.4 (re-baseline commits) | Three records. The vectors are `parity/golden/sim_rng/key_0.json` through `key_5.json`, one case per key, rather than one `vectors.json`. The LensReactor in `wreckers_guild_view.py:164` needs no hygiene gate. Task 3 committed its conversions and re-baselines together (`f082aba`), and its commit message lists each re-baselined test with the site that changed. | One file per case is the layout every driver shares (7.1). With Act II off the `lens_reactions` registry is empty, so `LensReactor.choose_variant` returns the default line and the reactor is inert. A conversion commit without its re-baselines would fail the gate; the message keeps the one-line-per-test record 4.4 asks for. |
+| A17 | 8.7 (class names) | The comparator class is `ParityComparator` (file `test/parity/comparator.gd`). | gdUnit4 ships a global `class_name Comparator`; redeclaring it disables the whole plugin. |
