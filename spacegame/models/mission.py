@@ -346,6 +346,9 @@ class MissionManager:
         # -> ACTIVE. Used to compute soft-deadline reward multipliers at
         # completion. Missions never accepted have no entry.
         self._accepted_day: dict[str, int] = {}
+        # Missions added at runtime (procedural contracts). Their definitions
+        # are not in the data files, so get_state saves them in full.
+        self._runtime_ids: list[str] = []
 
     def add_mission(
         self,
@@ -366,6 +369,7 @@ class MissionManager:
         self._missions[mission.id] = mission
         self._status[mission.id] = initial_status
         self._progress[mission.id] = [False] * len(mission.objectives)
+        self._runtime_ids.append(mission.id)
         return (True, f"Added: {mission.name}")
 
     def remove_mission(self, mission_id: str) -> bool:
@@ -388,6 +392,8 @@ class MissionManager:
         del self._missions[mission_id]
         del self._status[mission_id]
         del self._progress[mission_id]
+        if mission_id in self._runtime_ids:
+            self._runtime_ids.remove(mission_id)
         return True
 
     def update_availability(
@@ -979,6 +985,7 @@ class MissionManager:
             "status": {mid: s.value for mid, s in self._status.items()},
             "progress": {mid: list(p) for mid, p in self._progress.items()},
             "accepted_day": dict(self._accepted_day),
+            "runtime_missions": [self._missions[mid].to_dict() for mid in self._runtime_ids],
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -987,6 +994,14 @@ class MissionManager:
         Args:
             data: Dict from get_state().
         """
+        for mission_data in data.get("runtime_missions", []):
+            mission = Mission.from_dict(mission_data)
+            if mission.id in self._missions:
+                continue
+            self._missions[mission.id] = mission
+            self._status[mission.id] = MissionStatus.UNAVAILABLE
+            self._progress[mission.id] = [False] * len(mission.objectives)
+            self._runtime_ids.append(mission.id)
         status_data = data.get("status", {})
         progress_data = data.get("progress", {})
         for mid in self._missions:
