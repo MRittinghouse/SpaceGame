@@ -5,7 +5,6 @@ survey, and salvage. Missions are generated per-system on each station visit
 and rotate with the game day.
 """
 
-import random
 from typing import Any
 
 from spacegame.models.commodity import Commodity, Legality
@@ -17,6 +16,7 @@ from spacegame.models.mission import (
     ObjectiveType,
 )
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import SimRng
 
 # Credit reward multipliers by system danger level
 _DANGER_MULTIPLIER = {"safe": 1.0, "moderate": 1.5, "dangerous": 2.0}
@@ -60,10 +60,9 @@ class ProceduralMissionGenerator:
         self._base_seed = seed
         self._counter = 0
 
-    def _make_rng(self, system_id: str, game_day: int, salt: str = "") -> random.Random:
+    def _make_rng(self, system_id: str, game_day: int, salt: str = "") -> SimRng:
         """Create a seeded RNG for deterministic generation."""
-        seed = hash(f"{self._base_seed}_{system_id}_{game_day}_{salt}") & 0xFFFFFFFF
-        return random.Random(seed)
+        return SimRng.from_key("procedural", self._base_seed, system_id, game_day, salt)
 
     def _next_id(self, prefix: str, system_id: str, game_day: int) -> str:
         """Generate a unique mission ID."""
@@ -77,12 +76,12 @@ class ProceduralMissionGenerator:
             return 1.0
         return _DANGER_MULTIPLIER.get(system.danger_level, 1.0)
 
-    def _pick_other_system(self, rng: random.Random, exclude: str) -> str:
+    def _pick_other_system(self, rng: SimRng, exclude: str) -> str:
         """Pick a random system that isn't the excluded one."""
         candidates = [sid for sid in self._systems if sid != exclude]
         return rng.choice(candidates)
 
-    def _pick_trade_commodity(self, rng: random.Random, system_id: str) -> str:
+    def _pick_trade_commodity(self, rng: SimRng, system_id: str) -> str:
         """Pick a commodity relevant to the system's economy."""
         system = self._systems.get(system_id)
         if system and system.economy:

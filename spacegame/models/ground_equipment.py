@@ -6,10 +6,11 @@ and combat stats. Loot tables define container drops by difficulty.
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from spacegame.sim_rng import SimRng
 
 
 class EquipmentSlot(Enum):
@@ -98,7 +99,7 @@ class GroundLootTable:
     equipment_pool: list[str]
     commodity_drops: list[tuple[str, int]] = field(default_factory=list)
 
-    def roll_container_loot(self, com_bonus: float, rng: random.Random) -> dict[str, Any]:
+    def roll_container_loot(self, com_bonus: float, rng: SimRng) -> dict[str, Any]:
         """Generate loot for a single container.
 
         Args:

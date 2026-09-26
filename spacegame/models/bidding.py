@@ -16,7 +16,6 @@ See ``requirements/sa_bidding_design.md`` §2 (lifecycle), §3 (lot pool),
 from __future__ import annotations
 
 import hashlib
-import random
 import struct
 from dataclasses import dataclass, field
 from enum import Enum
@@ -41,6 +40,7 @@ from spacegame.models.bidding_round import (
     min_increment_for_appraisal,
     opening_bid_for_lot,
 )
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:  # pragma: no cover - import-time type hints only.
     from spacegame.models.captain_memory import CaptainMemory
@@ -344,11 +344,9 @@ def sable_displayed_ceiling(
 # --------------------------------------------------------------------------
 
 
-def _seeded_rng(seed_token: str) -> random.Random:
-    """Return a ``random.Random`` instance keyed off ``seed_token``."""
-    digest = hashlib.sha256(seed_token.encode("utf-8")).digest()
-    seed_int = struct.unpack(">Q", digest[:8])[0]
-    return random.Random(seed_int)
+def _seeded_rng(seed_token: str) -> SimRng:
+    """Return a ``SimRng`` keyed off ``seed_token``."""
+    return SimRng.from_key("bidding", seed_token)
 
 
 def _player_rep_tier_for_venue(

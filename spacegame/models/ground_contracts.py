@@ -7,8 +7,6 @@ and game day. Difficulty scales with player level.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass
 from typing import Any
 
@@ -17,6 +15,7 @@ from spacegame.models.ground_mission import (
     GroundMissionConfig,
     GroundMissionRewards,
 )
+from spacegame.sim_rng import SimRng
 
 # ===========================================================================
 # Reward scaling by difficulty
@@ -164,9 +163,7 @@ class GroundContractManager:
         Returns:
             List of newly generated contracts.
         """
-        seed_str = f"{system_id}_{game_day}_ground_contracts"
-        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        rng = _rng.Random(seed)
+        rng = SimRng.from_key("ground_contracts", system_id, game_day)
 
         # Load templates for briefing text
         templates = self._load_templates()
@@ -309,7 +306,7 @@ class GroundContractManager:
         faction_id: str,
         system_id: str,
         templates: dict[str, dict],
-        rng: _rng.Random,
+        rng: SimRng,
     ) -> tuple[str, str, list[str]]:
         """Build briefing name, description, and objectives from templates.
 

@@ -7,12 +7,11 @@ long journeys through dangerous space are riskier.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.constants.flags import encounter_seen
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.combat import EnemyShipTemplate
@@ -127,7 +126,7 @@ def calculate_encounter_chance(base_chance: float, distance: float) -> float:
 
 
 def _select_non_hostile_type(
-    rng: _rng.Random, system_danger: str, anomaly_chance_bonus: float = 0.0
+    rng: SimRng, system_danger: str, anomaly_chance_bonus: float = 0.0
 ) -> str:
     """Select a non-hostile encounter type using weighted random selection.
 
@@ -218,9 +217,8 @@ def check_travel_encounter(
         return None
 
     # Deterministic seed
-    seed_str = f"{game_day}_{system_id}_encounter"
-    seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-    rng = _rng.Random(seed)
+    rng = SimRng.from_key("encounter", game_day, system_id)
+    seed = rng.state()[0]
 
     roll = rng.uniform(0, 100)
     if roll >= chance:
@@ -531,7 +529,7 @@ def _weighted_select(
     if not candidates:
         return None
 
-    rng = _rng.Random(seed)
+    rng = SimRng.from_key("encounter_select", seed)
     weights = [c.weight for c in candidates]
     total = sum(weights)
     roll = rng.uniform(0, total)

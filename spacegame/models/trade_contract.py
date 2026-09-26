@@ -6,9 +6,9 @@ fulfilling buy/sell orders within a time limit.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass
+
+from spacegame.sim_rng import SimRng
 
 
 @dataclass
@@ -96,9 +96,7 @@ class TradeContractManager:
         if not commodity_ids:
             return []
 
-        seed_str = f"{system_id}_{game_day}_contracts"
-        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        rng = _rng.Random(seed)
+        rng = SimRng.from_key("trade_contracts", system_id, game_day)
 
         num_contracts = rng.randint(1, 3)
         new_contracts: list[TradeContract] = []

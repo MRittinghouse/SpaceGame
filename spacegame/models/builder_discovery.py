@@ -9,9 +9,10 @@ Part of the Shipyard Overhaul — Phase D2.
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
 from typing import Optional
+
+from spacegame.sim_rng import SimRng
 
 # ============================================================================
 # Trading Milestones
@@ -226,7 +227,7 @@ def check_salvage_discovery(
     skill_bonus = salvage_skill_level * 0.02  # +2% per level
     total_chance = base_chance + skill_bonus
 
-    rng = random.Random(seed) if seed is not None else random
+    rng = SimRng.from_key("salvage_discovery", seed) if seed is not None else SimRng.from_entropy()
     if rng.random() > total_chance:
         return None
 
@@ -267,7 +268,7 @@ def check_mining_discovery(
     depth_bonus = 0.05 if depth_layer >= 5 else 0.0
     total_chance = base_chance + skill_bonus + depth_bonus
 
-    rng = random.Random(seed) if seed is not None else random
+    rng = SimRng.from_key("mining_discovery", seed) if seed is not None else SimRng.from_entropy()
     if rng.random() > total_chance:
         return None
 

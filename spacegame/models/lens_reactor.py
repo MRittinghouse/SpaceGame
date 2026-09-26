@@ -14,17 +14,17 @@ Design decisions (locked in A2-4A planning; see ROADMAP.md for rationale):
   across lenses wins overall. Ties broken alphabetically by lens_id (ascending)
   so 'community' beats 'vengeance' on equal thresholds. This is intentional and
   documented here; changing it changes authored content semantics.
-- Seeding: random.Random(hash((game_day, context, player.name))) -- a local
-  Random instance so global random state is never mutated. This mirrors the
+- Seeding: SimRng.from_key("lens_reactor", game_day, context, player.name) --
+  a keyed stream so global random state is never mutated. This mirrors the
   deterministic-market-price pattern used elsewhere in the project.
 """
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
 
 from spacegame.models.lens_reaction import LensReaction
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.player import Player
@@ -60,8 +60,8 @@ class LensReactor:
         4. Among all qualifying lenses, pick the one with the highest threshold.
            Ties broken alphabetically by lens_id (ascending -- 'community'
            beats 'vengeance'). This tie-break is intentional; see module doc.
-        5. Pick one line from that record's ``lines`` pool using a seeded
-           ``random.Random`` so the same ``(game_day, context, player.name)``
+        5. Pick one line from that record's ``lines`` pool using a keyed
+           ``SimRng`` so the same ``(game_day, context, player.name)``
            always resolves the same string.
         6. When no record qualifies, return ``options["default"][0]``.
 
@@ -101,5 +101,5 @@ class LensReactor:
             key=lambda r: (-r.threshold, r.lens_id),
         )
 
-        rng = random.Random(hash((player.game_day, context, player.name)))
+        rng = SimRng.from_key("lens_reactor", player.game_day, context, player.name)
         return rng.choice(dominant.lines)

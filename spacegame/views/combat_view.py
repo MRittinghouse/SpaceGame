@@ -81,6 +81,7 @@ from spacegame.models.combat_engine import (
     CombatEngine,
 )
 from spacegame.models.player import Player
+from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
@@ -2867,7 +2868,8 @@ class CombatView(BaseView):
                 if not enemy.is_alive and enemy.template.loot_table:
                     enemy_loot = _roll_loot(
                         enemy.template.loot_table,
-                        seed=state.encounter.encounter_seed + hash(enemy.template.id),
+                        seed=state.encounter.encounter_seed
+                        + stable_seed("enemy", enemy.template.id),
                     )
                     for cid, qty in enemy_loot.items():
                         loot[cid] = loot.get(cid, 0) + qty
@@ -2875,7 +2877,9 @@ class CombatView(BaseView):
                 if not enemy.is_alive and enemy.template.rare_loot:
                     enemy_rare = _roll_loot(
                         enemy.template.rare_loot,
-                        seed=state.encounter.encounter_seed + hash(enemy.template.id) + 7919,
+                        seed=state.encounter.encounter_seed
+                        + stable_seed("enemy", enemy.template.id)
+                        + 7919,
                     )
                     for cid, qty in enemy_rare.items():
                         rare_loot[cid] = rare_loot.get(cid, 0) + qty

@@ -72,6 +72,7 @@ from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
 from spacegame.save_manager import SaveManager
+from spacegame.sim_rng import stable_seed
 from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
 
@@ -698,7 +699,7 @@ class Game:
             systems=self.data_loader.systems,
             commodities=self.data_loader.commodities,
             enemy_templates=self.data_loader.enemy_templates,
-            seed=hash(self.player.name) & 0xFFFFFFFF,
+            seed=stable_seed("player", self.player.name),
         )
         self._proc_missions_day: int = -1
 
@@ -713,7 +714,7 @@ class Game:
                 commodities=self.data_loader.commodities,
                 enemy_templates=self.data_loader.enemy_templates,
                 templates=self.data_loader.post_capstone_templates,
-                seed=hash(self.player.name) & 0xFFFFFFFF,
+                seed=stable_seed("player", self.player.name),
             )
 
         # Initialize crew system
@@ -3825,7 +3826,7 @@ class Game:
         if not templates:
             return None
 
-        seed = hash(f"{self.player.game_day}_bounty_combat") & 0xFFFFFFFF
+        seed = stable_seed("bounty_combat", self.player.game_day)
         return CombatEncounter(
             enemy_templates=templates,
             encounter_seed=seed,
@@ -3969,7 +3970,7 @@ class Game:
             if p_skill:
                 persuasion_level = p_skill.level
 
-        seed = hash(f"{self.player.game_day}_{system_id}_bounty") & 0xFFFFFFFF
+        seed = stable_seed("bounty", self.player.game_day, system_id)
 
         encounter_def = build_bounty_hunter_encounter(
             tier=tier,
@@ -4114,7 +4115,7 @@ class Game:
 
         encounter_ref = EncounterRef(
             enemy_template_ids=[],
-            encounter_seed=hash(f"{self.player.game_day}_{system_id}_customs") & 0xFFFFFFFF,
+            encounter_seed=stable_seed("customs", self.player.game_day, system_id),
             encounter_type="customs_inspection",
         )
 
@@ -4334,7 +4335,8 @@ class Game:
                 if not enemy.is_alive and enemy.template.loot_table:
                     loot = _roll_loot(
                         enemy.template.loot_table,
-                        seed=state.encounter.encounter_seed + hash(enemy.template.id),
+                        seed=state.encounter.encounter_seed
+                        + stable_seed("enemy", enemy.template.id),
                     )
                     for commodity_id, qty in loot.items():
                         self.player.ship.add_cargo(commodity_id, qty)
@@ -4343,7 +4345,9 @@ class Game:
                 if not enemy.is_alive and enemy.template.rare_loot:
                     rare_loot = _roll_loot(
                         enemy.template.rare_loot,
-                        seed=state.encounter.encounter_seed + hash(enemy.template.id) + 7919,
+                        seed=state.encounter.encounter_seed
+                        + stable_seed("enemy", enemy.template.id)
+                        + 7919,
                     )
                     for commodity_id, qty in rare_loot.items():
                         self.player.ship.add_cargo(commodity_id, qty)
@@ -4378,7 +4382,8 @@ class Game:
                     if enemy.template.loot_table:
                         loot = _roll_loot(
                             enemy.template.loot_table,
-                            seed=state.encounter.encounter_seed + hash(enemy.template.id),
+                            seed=state.encounter.encounter_seed
+                            + stable_seed("enemy", enemy.template.id),
                         )
                         for commodity_id, qty in loot.items():
                             half_qty = max(1, qty // 2)
@@ -4964,7 +4969,7 @@ class Game:
         gen_config = MapGenConfig(
             mission_type=config.mission_type,
             difficulty=config.difficulty,
-            seed=config.seed or hash(config.id),
+            seed=config.seed or stable_seed("ground_config", config.id),
             faction_id=config.faction_id,
         )
         return GroundMapGenerator().generate(gen_config)
@@ -5346,7 +5351,7 @@ class Game:
             systems=self.data_loader.systems,
             commodities=self.data_loader.commodities,
             enemy_templates=self.data_loader.enemy_templates,
-            seed=hash(self.player.name) & 0xFFFFFFFF,
+            seed=stable_seed("player", self.player.name),
         )
         self._proc_missions_day = -1
 
@@ -5361,7 +5366,7 @@ class Game:
                 commodities=self.data_loader.commodities,
                 enemy_templates=self.data_loader.enemy_templates,
                 templates=self.data_loader.post_capstone_templates,
-                seed=hash(self.player.name) & 0xFFFFFFFF,
+                seed=stable_seed("player", self.player.name),
             )
 
         # Restore crew roster

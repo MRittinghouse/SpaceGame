@@ -21,8 +21,6 @@ respects the A2-4 AC4 compliance guard for the same reason.
 
 from __future__ import annotations
 
-import hashlib
-import random
 from typing import Any
 
 from spacegame.models.commodity import Commodity
@@ -33,6 +31,7 @@ from spacegame.models.mission import (
     ObjectiveType,
 )
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import SimRng
 from spacegame.utils.logger import logger
 
 # Per-lens dilemma -> outcome_flag mapping. Lists (not sets) so iteration
@@ -323,18 +322,17 @@ class PostCapstoneContentGenerator:
     # Helpers
     # ------------------------------------------------------------------
 
-    def _make_rng(self, lens_id: str, game_day: int) -> random.Random:
+    def _make_rng(self, lens_id: str, game_day: int) -> SimRng:
         """Seed an RNG deterministically across process starts.
 
-        Follows the ``galaxy_event.py`` md5 pattern rather than ``hash()``:
-        Python's ``hash()`` on strings is salted by PYTHONHASHSEED so
-        ``random.Random(hash(str))`` produces different sequences across
-        process invocations, which would silently break the "no save
-        scumming" determinism guarantee in CLAUDE.md.
+        Uses ``SimRng.from_key``, which hashes the key parts with md5
+        rather than Python's ``hash()``: ``hash()`` on strings is salted
+        by PYTHONHASHSEED so ``random.Random(hash(str))`` produces
+        different sequences across process invocations, which would
+        silently break the "no save scumming" determinism guarantee in
+        CLAUDE.md.
         """
-        seed_str = f"{lens_id}_{game_day}_{self._base_seed}"
-        seed_int = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        return random.Random(seed_int)
+        return SimRng.from_key("post_capstone", lens_id, game_day, self._base_seed)
 
     def _mission_id(
         self,
@@ -351,7 +349,7 @@ class PostCapstoneContentGenerator:
         """
         return f"post_capstone_{lens_id}_{system_id}_{game_day}_{counter}"
 
-    def _pick_system(self, rng: random.Random) -> str:
+    def _pick_system(self, rng: SimRng) -> str:
         """Pick a system id from the systems registry, sorted for determinism.
 
         ``rng.choice`` on the sorted list guarantees the same lens/day/seed

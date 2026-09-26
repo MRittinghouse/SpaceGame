@@ -28,9 +28,10 @@ once-per-(crew_id, trigger) firing within a single fight.
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional
+
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.combat import CombatState
@@ -132,7 +133,7 @@ class CrewInterjectionResolver:
         self._interjections = list(interjections)
         self._crew_aboard = dict(crew_aboard)
         self._fired: set[tuple[str, str]] = set()
-        self._rng = random.Random(seed)
+        self._rng = SimRng.from_key("crew_interjection", seed)
 
     @property
     def fired(self) -> set[tuple[str, str]]:

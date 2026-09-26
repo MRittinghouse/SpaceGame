@@ -7,7 +7,6 @@ and end-of-round processing.
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.combat import (
@@ -33,6 +32,7 @@ from spacegame.models.momentum import (
     MOMENTUM_ON_KILL,
     MOMENTUM_ON_STATUS_APPLIED,
 )
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.action_queue import ActionQueue
@@ -68,7 +68,7 @@ class CombatEngine:
         complications: Optional[list[CombatComplication]] = None,
     ) -> None:
         self._state = state
-        self._rng = random.Random(seed)
+        self._rng = SimRng.from_key("combat", seed)
         # CE-3 Wave 2: live complication resolution. Caller resolves
         # ``EncounterDefinition.complication_ids`` against the data loader
         # and passes the actual CombatComplication instances. The engine
