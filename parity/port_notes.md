@@ -39,6 +39,28 @@ Seeds computed from stream keys that later feed other streams. A port must build
   `stable_seed` namespace (`game.py`, the customs `encounter_seed`). Consumers re-hash the seed,
   so the overlap is harmless, but the port's key registry must keep both uses.
 
+## Procedural mission IDs
+
+`ProceduralMissionGenerator._mission_id` builds `proc_{type}_{system}_{day}_{base_seed}`,
+keyed like the mission's content. A board holds at most one mission of each type, so the
+ID is unique, and a board regenerated after a same-day load collides with the restored
+missions in `MissionManager.add_mission` instead of offering copies. A port must not add a
+counter or any other per-process part to the ID.
+
+## SP3 must cover
+
+- A combat golden that exercises the engine's module-hit path: `resolve_module_hit` and
+  `process_overkill_chain` in `CombatEngine` (`combat_engine.py`, about lines 2134-2232),
+  both drawing from `rng=self._rng`. No SP2 golden reaches it, so "combat reproduces from
+  its seed" is untested there.
+- The `except Exception: pass` around that block (`combat_engine.py`, about line 2231)
+  hides runtime failures: an exception anywhere in the module hit silently abandons the
+  rest of it while the hull damage still lands. Decide whether the port keeps the guard
+  before recording the golden.
+- COMPLETED runtime missions stay in `MissionManager._runtime_ids` (`remove_mission`
+  refuses ACTIVE and COMPLETED), and `get_state` saves each in full, so saves grow over a
+  long career. The Godot save format should prune or compact them.
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.
