@@ -1,5 +1,7 @@
 # Aurelia: A Ledger of Stars. Overhaul Master Design
 
+> **Moved.** The living copy is in the `aurelia` repo at `docs/specs/2026-09-25-aurelia-overhaul-master-design.md`. This copy is frozen as of the SP2-b merge (2026-09-26); edit the aurelia copy.
+
 - **Date:** 2026-09-25
 - **Status:** Approved section by section in a paired brainstorm (2026-09-25). This written form awaits
   the author's review.
