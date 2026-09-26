@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "types": {
+    "Commodity": {
+      "base_price": "int",
+      "category": "enum",
+      "consumption_tags": "list<str>",
+      "description": "str",
+      "id": "str",
+      "legality": "enum",
+      "name": "str",
+      "production_tags": "list<str>",
+      "variance_max": "float",
+      "variance_min": "float",
+      "volume_per_unit": "int"
+    },
+    "Coordinates": {
+      "x": "float",
+      "y": "float"
+    },
+    "Economy": {
+      "available_commodities": "optional<list<str>>",
+      "consumption_tags": "list<str>",
+      "production_tags": "list<str>",
+      "specialty_exports": "list<str>",
+      "specialty_imports": "list<str>",
+      "tariff_rate": "float"
+    },
+    "StarSystem": {
+      "coordinates": "Coordinates",
+      "danger_level": "str",
+      "description": "str",
+      "economy": "Economy",
+      "faction": "str",
+      "id": "str",
+      "name": "str",
+      "rest_cost": "int",
+      "stations": "list<Station>",
+      "type": "str"
+    },
+    "Station": {
+      "description": "str",
+      "docking_fee": "int",
+      "id": "str",
+      "market_variety": "str",
+      "name": "str",
+      "type": "str"
+    }
+  }
+}

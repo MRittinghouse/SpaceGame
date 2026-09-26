@@ -1,0 +1,460 @@
+{
+  "case": "price_table_herons_mark",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "herons_mark"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

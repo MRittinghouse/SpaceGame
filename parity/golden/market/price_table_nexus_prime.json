@@ -1,0 +1,1060 @@
+{
+  "case": "price_table_nexus_prime",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "nexus_prime"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 189,
+          "art": 651,
+          "common_metals": 63,
+          "electronics": 135,
+          "food": 50,
+          "fuel": 9,
+          "iron_ore": 14,
+          "machinery": 104,
+          "manufactured_goods": 81,
+          "medical": 375,
+          "precious_metals": 503,
+          "purified_crystal": 489,
+          "rare_metals": 320,
+          "raw_ore": 4,
+          "refined_propellant": 183,
+          "salvaged_electronics": 46,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2441,
+          "textiles": 50
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 204,
+          "art": 603,
+          "common_metals": 60,
+          "electronics": 101,
+          "food": 53,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 105,
+          "manufactured_goods": 61,
+          "medical": 320,
+          "precious_metals": 466,
+          "purified_crystal": 537,
+          "rare_metals": 301,
+          "raw_ore": 4,
+          "refined_propellant": 190,
+          "salvaged_electronics": 54,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2415,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 192,
+          "art": 659,
+          "common_metals": 57,
+          "electronics": 132,
+          "food": 49,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 125,
+          "manufactured_goods": 80,
+          "medical": 354,
+          "precious_metals": 532,
+          "purified_crystal": 522,
+          "rare_metals": 298,
+          "raw_ore": 4,
+          "refined_propellant": 172,
+          "salvaged_electronics": 52,
+          "scrap_metal": 13,
+          "stellarium_ingot": 2634,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 233,
+          "art": 609,
+          "common_metals": 59,
+          "electronics": 118,
+          "food": 53,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 115,
+          "manufactured_goods": 67,
+          "medical": 333,
+          "precious_metals": 474,
+          "purified_crystal": 538,
+          "rare_metals": 325,
+          "raw_ore": 4,
+          "refined_propellant": 187,
+          "salvaged_electronics": 45,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2570,
+          "textiles": 48
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 205,
+          "art": 609,
+          "common_metals": 62,
+          "electronics": 124,
+          "food": 51,
+          "fuel": 9,
+          "iron_ore": 13,
+          "machinery": 117,
+          "manufactured_goods": 75,
+          "medical": 382,
+          "precious_metals": 469,
+          "purified_crystal": 535,
+          "rare_metals": 321,
+          "raw_ore": 4,
+          "refined_propellant": 183,
+          "salvaged_electronics": 51,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2647,
+          "textiles": 52
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 194,
+          "art": 624,
+          "common_metals": 62,
+          "electronics": 111,
+          "food": 51,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 126,
+          "manufactured_goods": 77,
+          "medical": 368,
+          "precious_metals": 492,
+          "purified_crystal": 535,
+          "rare_metals": 293,
+          "raw_ore": 4,
+          "refined_propellant": 162,
+          "salvaged_electronics": 52,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2381,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 215,
+          "art": 650,
+          "common_metals": 61,
+          "electronics": 102,
+          "food": 52,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 122,
+          "manufactured_goods": 71,
+          "medical": 363,
+          "precious_metals": 461,
+          "purified_crystal": 462,
+          "rare_metals": 309,
+          "raw_ore": 5,
+          "refined_propellant": 177,
+          "salvaged_electronics": 53,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2414,
+          "textiles": 49
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 202,
+          "art": 655,
+          "common_metals": 60,
+          "electronics": 111,
+          "food": 50,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 113,
+          "manufactured_goods": 79,
+          "medical": 342,
+          "precious_metals": 471,
+          "purified_crystal": 486,
+          "rare_metals": 303,
+          "raw_ore": 5,
+          "refined_propellant": 181,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2595,
+          "textiles": 52
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 206,
+          "art": 630,
+          "common_metals": 59,
+          "electronics": 102,
+          "food": 46,
+          "fuel": 9,
+          "iron_ore": 15,
+          "machinery": 101,
+          "manufactured_goods": 80,
+          "medical": 380,
+          "precious_metals": 485,
+          "purified_crystal": 502,
+          "rare_metals": 322,
+          "raw_ore": 5,
+          "refined_propellant": 176,
+          "salvaged_electronics": 52,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2539,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 210,
+          "art": 626,
+          "common_metals": 59,
+          "electronics": 136,
+          "food": 46,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 107,
+          "manufactured_goods": 62,
+          "medical": 339,
+          "precious_metals": 527,
+          "purified_crystal": 497,
+          "rare_metals": 310,
+          "raw_ore": 4,
+          "refined_propellant": 196,
+          "salvaged_electronics": 48,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2463,
+          "textiles": 46
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 229,
+          "art": 600,
+          "common_metals": 60,
+          "electronics": 102,
+          "food": 49,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 117,
+          "manufactured_goods": 76,
+          "medical": 362,
+          "precious_metals": 531,
+          "purified_crystal": 498,
+          "rare_metals": 304,
+          "raw_ore": 5,
+          "refined_propellant": 164,
+          "salvaged_electronics": 50,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2688,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 236,
+          "art": 625,
+          "common_metals": 62,
+          "electronics": 108,
+          "food": 49,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 99,
+          "manufactured_goods": 61,
+          "medical": 356,
+          "precious_metals": 511,
+          "purified_crystal": 492,
+          "rare_metals": 316,
+          "raw_ore": 4,
+          "refined_propellant": 174,
+          "salvaged_electronics": 48,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2417,
+          "textiles": 52
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 218,
+          "art": 633,
+          "common_metals": 60,
+          "electronics": 117,
+          "food": 50,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 113,
+          "manufactured_goods": 73,
+          "medical": 333,
+          "precious_metals": 515,
+          "purified_crystal": 524,
+          "rare_metals": 308,
+          "raw_ore": 5,
+          "refined_propellant": 178,
+          "salvaged_electronics": 53,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2539,
+          "textiles": 49
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 229,
+          "art": 581,
+          "common_metals": 56,
+          "electronics": 108,
+          "food": 46,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 104,
+          "manufactured_goods": 62,
+          "medical": 357,
+          "precious_metals": 525,
+          "purified_crystal": 480,
+          "rare_metals": 322,
+          "raw_ore": 5,
+          "refined_propellant": 177,
+          "salvaged_electronics": 45,
+          "scrap_metal": 13,
+          "stellarium_ingot": 2313,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 201,
+          "art": 597,
+          "common_metals": 60,
+          "electronics": 124,
+          "food": 47,
+          "fuel": 9,
+          "iron_ore": 14,
+          "machinery": 97,
+          "manufactured_goods": 80,
+          "medical": 384,
+          "precious_metals": 516,
+          "purified_crystal": 462,
+          "rare_metals": 310,
+          "raw_ore": 4,
+          "refined_propellant": 174,
+          "salvaged_electronics": 52,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2660,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 191,
+          "art": 646,
+          "common_metals": 62,
+          "electronics": 125,
+          "food": 48,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 119,
+          "manufactured_goods": 76,
+          "medical": 382,
+          "precious_metals": 519,
+          "purified_crystal": 462,
+          "rare_metals": 291,
+          "raw_ore": 5,
+          "refined_propellant": 195,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2510,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 213,
+          "art": 623,
+          "common_metals": 61,
+          "electronics": 119,
+          "food": 46,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 104,
+          "manufactured_goods": 72,
+          "medical": 327,
+          "precious_metals": 502,
+          "purified_crystal": 535,
+          "rare_metals": 335,
+          "raw_ore": 4,
+          "refined_propellant": 162,
+          "salvaged_electronics": 50,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2363,
+          "textiles": 48
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 185,
+          "art": 623,
+          "common_metals": 58,
+          "electronics": 129,
+          "food": 53,
+          "fuel": 9,
+          "iron_ore": 14,
+          "machinery": 101,
+          "manufactured_goods": 62,
+          "medical": 342,
+          "precious_metals": 522,
+          "purified_crystal": 483,
+          "rare_metals": 333,
+          "raw_ore": 4,
+          "refined_propellant": 171,
+          "salvaged_electronics": 48,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2678,
+          "textiles": 49
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 196,
+          "art": 638,
+          "common_metals": 63,
+          "electronics": 115,
+          "food": 52,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 109,
+          "manufactured_goods": 64,
+          "medical": 326,
+          "precious_metals": 465,
+          "purified_crystal": 464,
+          "rare_metals": 301,
+          "raw_ore": 5,
+          "refined_propellant": 193,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2301,
+          "textiles": 50
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 188,
+          "art": 650,
+          "common_metals": 60,
+          "electronics": 101,
+          "food": 51,
+          "fuel": 9,
+          "iron_ore": 15,
+          "machinery": 97,
+          "manufactured_goods": 68,
+          "medical": 350,
+          "precious_metals": 499,
+          "purified_crystal": 521,
+          "rare_metals": 317,
+          "raw_ore": 5,
+          "refined_propellant": 184,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2684,
+          "textiles": 52
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 185,
+          "art": 592,
+          "common_metals": 57,
+          "electronics": 118,
+          "food": 47,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 127,
+          "manufactured_goods": 62,
+          "medical": 375,
+          "precious_metals": 511,
+          "purified_crystal": 510,
+          "rare_metals": 299,
+          "raw_ore": 5,
+          "refined_propellant": 170,
+          "salvaged_electronics": 50,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2636,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 227,
+          "art": 631,
+          "common_metals": 58,
+          "electronics": 128,
+          "food": 51,
+          "fuel": 10,
+          "iron_ore": 14,
+          "machinery": 124,
+          "manufactured_goods": 63,
+          "medical": 330,
+          "precious_metals": 536,
+          "purified_crystal": 532,
+          "rare_metals": 308,
+          "raw_ore": 5,
+          "refined_propellant": 181,
+          "salvaged_electronics": 47,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2563,
+          "textiles": 48
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 208,
+          "art": 614,
+          "common_metals": 58,
+          "electronics": 138,
+          "food": 48,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 123,
+          "manufactured_goods": 72,
+          "medical": 317,
+          "precious_metals": 530,
+          "purified_crystal": 494,
+          "rare_metals": 300,
+          "raw_ore": 4,
+          "refined_propellant": 181,
+          "salvaged_electronics": 46,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2522,
+          "textiles": 49
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 217,
+          "art": 657,
+          "common_metals": 58,
+          "electronics": 106,
+          "food": 51,
+          "fuel": 10,
+          "iron_ore": 16,
+          "machinery": 108,
+          "manufactured_goods": 64,
+          "medical": 374,
+          "precious_metals": 515,
+          "purified_crystal": 481,
+          "rare_metals": 305,
+          "raw_ore": 5,
+          "refined_propellant": 192,
+          "salvaged_electronics": 45,
+          "scrap_metal": 13,
+          "stellarium_ingot": 2329,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 209,
+          "art": 604,
+          "common_metals": 61,
+          "electronics": 114,
+          "food": 46,
+          "fuel": 9,
+          "iron_ore": 15,
+          "machinery": 99,
+          "manufactured_goods": 74,
+          "medical": 355,
+          "precious_metals": 507,
+          "purified_crystal": 486,
+          "rare_metals": 317,
+          "raw_ore": 4,
+          "refined_propellant": 177,
+          "salvaged_electronics": 53,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2588,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 219,
+          "art": 636,
+          "common_metals": 59,
+          "electronics": 120,
+          "food": 48,
+          "fuel": 9,
+          "iron_ore": 15,
+          "machinery": 126,
+          "manufactured_goods": 67,
+          "medical": 333,
+          "precious_metals": 470,
+          "purified_crystal": 513,
+          "rare_metals": 306,
+          "raw_ore": 4,
+          "refined_propellant": 197,
+          "salvaged_electronics": 54,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2429,
+          "textiles": 52
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 193,
+          "art": 658,
+          "common_metals": 57,
+          "electronics": 124,
+          "food": 49,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 125,
+          "manufactured_goods": 77,
+          "medical": 341,
+          "precious_metals": 539,
+          "purified_crystal": 463,
+          "rare_metals": 296,
+          "raw_ore": 5,
+          "refined_propellant": 179,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2550,
+          "textiles": 50
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 191,
+          "art": 652,
+          "common_metals": 58,
+          "electronics": 134,
+          "food": 46,
+          "fuel": 10,
+          "iron_ore": 13,
+          "machinery": 116,
+          "manufactured_goods": 62,
+          "medical": 355,
+          "precious_metals": 483,
+          "purified_crystal": 484,
+          "rare_metals": 337,
+          "raw_ore": 5,
+          "refined_propellant": 170,
+          "salvaged_electronics": 53,
+          "scrap_metal": 12,
+          "stellarium_ingot": 2446,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 205,
+          "art": 577,
+          "common_metals": 61,
+          "electronics": 133,
+          "food": 52,
+          "fuel": 10,
+          "iron_ore": 15,
+          "machinery": 124,
+          "manufactured_goods": 70,
+          "medical": 356,
+          "precious_metals": 538,
+          "purified_crystal": 466,
+          "rare_metals": 293,
+          "raw_ore": 4,
+          "refined_propellant": 163,
+          "salvaged_electronics": 50,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2454,
+          "textiles": 47
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 210,
+          "art": 662,
+          "common_metals": 59,
+          "electronics": 118,
+          "food": 53,
+          "fuel": 9,
+          "iron_ore": 16,
+          "machinery": 126,
+          "manufactured_goods": 70,
+          "medical": 338,
+          "precious_metals": 471,
+          "purified_crystal": 503,
+          "rare_metals": 307,
+          "raw_ore": 4,
+          "refined_propellant": 189,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stellarium_ingot": 2412,
+          "textiles": 51
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

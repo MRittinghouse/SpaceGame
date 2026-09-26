@@ -1,0 +1,203 @@
+{
+  "case": "falling",
+  "format": 1,
+  "setup": {
+    "max_days": 7
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [
+        "verdant",
+        "fuel",
+        1,
+        96
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "verdant",
+        "fuel",
+        2,
+        92
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ],
+              [
+                2,
+                92
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "verdant",
+        "fuel",
+        3,
+        88
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ],
+              [
+                2,
+                92
+              ],
+              [
+                3,
+                88
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "verdant",
+        "fuel",
+        4,
+        84
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ],
+              [
+                2,
+                92
+              ],
+              [
+                3,
+                88
+              ],
+              [
+                4,
+                84
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "verdant",
+        "fuel",
+        5,
+        80
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ],
+              [
+                2,
+                92
+              ],
+              [
+                3,
+                88
+              ],
+              [
+                4,
+                84
+              ],
+              [
+                5,
+                80
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "verdant",
+        "fuel"
+      ],
+      "call": "get_trend",
+      "result": "falling",
+      "state": {
+        "history": {
+          "verdant": {
+            "fuel": [
+              [
+                1,
+                96
+              ],
+              [
+                2,
+                92
+              ],
+              [
+                3,
+                88
+              ],
+              [
+                4,
+                84
+              ],
+              [
+                5,
+                80
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    }
+  ],
+  "subsystem": "price_history"
+}

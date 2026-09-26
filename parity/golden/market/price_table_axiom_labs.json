@@ -1,0 +1,850 @@
+{
+  "case": "price_table_axiom_labs",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "axiom_labs"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 298,
+          "contraband_medicine": 143,
+          "crystal_ore": 48,
+          "electronics": 116,
+          "food": 46,
+          "fuel": 10,
+          "manufactured_goods": 108,
+          "medical": 185,
+          "neural_weave": 1006,
+          "purified_crystal": 270,
+          "rare_metals": 296,
+          "rare_ore": 90
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 267,
+          "contraband_medicine": 154,
+          "crystal_ore": 54,
+          "electronics": 136,
+          "food": 46,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 219,
+          "neural_weave": 1188,
+          "purified_crystal": 215,
+          "rare_metals": 275,
+          "rare_ore": 94
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 256,
+          "contraband_medicine": 153,
+          "crystal_ore": 54,
+          "electronics": 124,
+          "food": 49,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 201,
+          "neural_weave": 1121,
+          "purified_crystal": 215,
+          "rare_metals": 310,
+          "rare_ore": 94
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 261,
+          "contraband_medicine": 130,
+          "crystal_ore": 49,
+          "electronics": 132,
+          "food": 52,
+          "fuel": 10,
+          "manufactured_goods": 114,
+          "medical": 226,
+          "neural_weave": 1186,
+          "purified_crystal": 263,
+          "rare_metals": 301,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 303,
+          "contraband_medicine": 138,
+          "crystal_ore": 47,
+          "electronics": 137,
+          "food": 50,
+          "fuel": 9,
+          "manufactured_goods": 111,
+          "medical": 240,
+          "neural_weave": 1011,
+          "purified_crystal": 246,
+          "rare_metals": 310,
+          "rare_ore": 89
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 276,
+          "contraband_medicine": 152,
+          "crystal_ore": 47,
+          "electronics": 118,
+          "food": 50,
+          "fuel": 10,
+          "manufactured_goods": 120,
+          "medical": 218,
+          "neural_weave": 934,
+          "purified_crystal": 260,
+          "rare_metals": 310,
+          "rare_ore": 87
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 273,
+          "contraband_medicine": 164,
+          "crystal_ore": 50,
+          "electronics": 121,
+          "food": 49,
+          "fuel": 9,
+          "manufactured_goods": 126,
+          "medical": 216,
+          "neural_weave": 1113,
+          "purified_crystal": 256,
+          "rare_metals": 292,
+          "rare_ore": 97
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 283,
+          "contraband_medicine": 166,
+          "crystal_ore": 49,
+          "electronics": 136,
+          "food": 51,
+          "fuel": 10,
+          "manufactured_goods": 113,
+          "medical": 231,
+          "neural_weave": 1097,
+          "purified_crystal": 233,
+          "rare_metals": 304,
+          "rare_ore": 84
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 255,
+          "contraband_medicine": 162,
+          "crystal_ore": 56,
+          "electronics": 136,
+          "food": 52,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 223,
+          "neural_weave": 1097,
+          "purified_crystal": 240,
+          "rare_metals": 263,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 252,
+          "contraband_medicine": 155,
+          "crystal_ore": 49,
+          "electronics": 118,
+          "food": 48,
+          "fuel": 9,
+          "manufactured_goods": 131,
+          "medical": 207,
+          "neural_weave": 1146,
+          "purified_crystal": 247,
+          "rare_metals": 281,
+          "rare_ore": 86
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 269,
+          "contraband_medicine": 169,
+          "crystal_ore": 48,
+          "electronics": 130,
+          "food": 48,
+          "fuel": 10,
+          "manufactured_goods": 124,
+          "medical": 212,
+          "neural_weave": 1127,
+          "purified_crystal": 274,
+          "rare_metals": 274,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 258,
+          "contraband_medicine": 163,
+          "crystal_ore": 52,
+          "electronics": 120,
+          "food": 47,
+          "fuel": 9,
+          "manufactured_goods": 116,
+          "medical": 195,
+          "neural_weave": 1013,
+          "purified_crystal": 263,
+          "rare_metals": 276,
+          "rare_ore": 97
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 301,
+          "contraband_medicine": 153,
+          "crystal_ore": 48,
+          "electronics": 124,
+          "food": 50,
+          "fuel": 9,
+          "manufactured_goods": 124,
+          "medical": 239,
+          "neural_weave": 1072,
+          "purified_crystal": 213,
+          "rare_metals": 304,
+          "rare_ore": 91
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 305,
+          "contraband_medicine": 154,
+          "crystal_ore": 54,
+          "electronics": 136,
+          "food": 50,
+          "fuel": 10,
+          "manufactured_goods": 129,
+          "medical": 184,
+          "neural_weave": 1189,
+          "purified_crystal": 205,
+          "rare_metals": 271,
+          "rare_ore": 84
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 256,
+          "contraband_medicine": 152,
+          "crystal_ore": 53,
+          "electronics": 127,
+          "food": 47,
+          "fuel": 9,
+          "manufactured_goods": 127,
+          "medical": 215,
+          "neural_weave": 1086,
+          "purified_crystal": 220,
+          "rare_metals": 279,
+          "rare_ore": 95
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 269,
+          "contraband_medicine": 133,
+          "crystal_ore": 49,
+          "electronics": 109,
+          "food": 52,
+          "fuel": 10,
+          "manufactured_goods": 128,
+          "medical": 183,
+          "neural_weave": 1085,
+          "purified_crystal": 244,
+          "rare_metals": 303,
+          "rare_ore": 92
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 297,
+          "contraband_medicine": 145,
+          "crystal_ore": 47,
+          "electronics": 117,
+          "food": 52,
+          "fuel": 10,
+          "manufactured_goods": 125,
+          "medical": 235,
+          "neural_weave": 967,
+          "purified_crystal": 207,
+          "rare_metals": 299,
+          "rare_ore": 97
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 254,
+          "contraband_medicine": 153,
+          "crystal_ore": 51,
+          "electronics": 111,
+          "food": 48,
+          "fuel": 10,
+          "manufactured_goods": 124,
+          "medical": 234,
+          "neural_weave": 1000,
+          "purified_crystal": 234,
+          "rare_metals": 306,
+          "rare_ore": 96
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 270,
+          "contraband_medicine": 140,
+          "crystal_ore": 54,
+          "electronics": 118,
+          "food": 51,
+          "fuel": 10,
+          "manufactured_goods": 120,
+          "medical": 244,
+          "neural_weave": 942,
+          "purified_crystal": 209,
+          "rare_metals": 271,
+          "rare_ore": 92
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 266,
+          "contraband_medicine": 164,
+          "crystal_ore": 54,
+          "electronics": 126,
+          "food": 49,
+          "fuel": 9,
+          "manufactured_goods": 123,
+          "medical": 236,
+          "neural_weave": 1147,
+          "purified_crystal": 227,
+          "rare_metals": 266,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 253,
+          "contraband_medicine": 150,
+          "crystal_ore": 55,
+          "electronics": 132,
+          "food": 46,
+          "fuel": 9,
+          "manufactured_goods": 119,
+          "medical": 244,
+          "neural_weave": 1130,
+          "purified_crystal": 237,
+          "rare_metals": 309,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 260,
+          "contraband_medicine": 140,
+          "crystal_ore": 52,
+          "electronics": 108,
+          "food": 47,
+          "fuel": 10,
+          "manufactured_goods": 115,
+          "medical": 242,
+          "neural_weave": 1069,
+          "purified_crystal": 206,
+          "rare_metals": 295,
+          "rare_ore": 97
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 280,
+          "contraband_medicine": 154,
+          "crystal_ore": 50,
+          "electronics": 115,
+          "food": 50,
+          "fuel": 9,
+          "manufactured_goods": 110,
+          "medical": 242,
+          "neural_weave": 1144,
+          "purified_crystal": 207,
+          "rare_metals": 284,
+          "rare_ore": 93
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 306,
+          "contraband_medicine": 155,
+          "crystal_ore": 55,
+          "electronics": 133,
+          "food": 52,
+          "fuel": 9,
+          "manufactured_goods": 129,
+          "medical": 204,
+          "neural_weave": 916,
+          "purified_crystal": 212,
+          "rare_metals": 291,
+          "rare_ore": 86
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 274,
+          "contraband_medicine": 138,
+          "crystal_ore": 55,
+          "electronics": 102,
+          "food": 46,
+          "fuel": 10,
+          "manufactured_goods": 124,
+          "medical": 217,
+          "neural_weave": 923,
+          "purified_crystal": 274,
+          "rare_metals": 294,
+          "rare_ore": 92
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 302,
+          "contraband_medicine": 144,
+          "crystal_ore": 48,
+          "electronics": 130,
+          "food": 52,
+          "fuel": 9,
+          "manufactured_goods": 122,
+          "medical": 191,
+          "neural_weave": 1045,
+          "purified_crystal": 243,
+          "rare_metals": 263,
+          "rare_ore": 97
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 288,
+          "contraband_medicine": 148,
+          "crystal_ore": 49,
+          "electronics": 127,
+          "food": 49,
+          "fuel": 10,
+          "manufactured_goods": 118,
+          "medical": 203,
+          "neural_weave": 1166,
+          "purified_crystal": 264,
+          "rare_metals": 291,
+          "rare_ore": 91
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 264,
+          "contraband_medicine": 132,
+          "crystal_ore": 53,
+          "electronics": 125,
+          "food": 48,
+          "fuel": 10,
+          "manufactured_goods": 113,
+          "medical": 230,
+          "neural_weave": 983,
+          "purified_crystal": 277,
+          "rare_metals": 268,
+          "rare_ore": 85
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 269,
+          "contraband_medicine": 165,
+          "crystal_ore": 54,
+          "electronics": 114,
+          "food": 46,
+          "fuel": 9,
+          "manufactured_goods": 114,
+          "medical": 183,
+          "neural_weave": 1083,
+          "purified_crystal": 217,
+          "rare_metals": 263,
+          "rare_ore": 85
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 276,
+          "contraband_medicine": 154,
+          "crystal_ore": 53,
+          "electronics": 112,
+          "food": 47,
+          "fuel": 9,
+          "manufactured_goods": 128,
+          "medical": 227,
+          "neural_weave": 1168,
+          "purified_crystal": 258,
+          "rare_metals": 273,
+          "rare_ore": 96
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

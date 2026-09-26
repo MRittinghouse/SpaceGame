@@ -1,0 +1,970 @@
+{
+  "case": "price_table_stellaris_port",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "stellaris_port"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 214,
+          "art": 345,
+          "common_metals": 72,
+          "electronics": 198,
+          "exotic_goods": 318,
+          "food": 52,
+          "fuel": 9,
+          "machinery": 125,
+          "manufactured_goods": 88,
+          "medical": 332,
+          "neural_weave": 946,
+          "precious_metals": 250,
+          "purified_crystal": 307,
+          "rare_metals": 283,
+          "refined_propellant": 166,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 182,
+          "art": 346,
+          "common_metals": 71,
+          "electronics": 208,
+          "exotic_goods": 400,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 100,
+          "manufactured_goods": 84,
+          "medical": 358,
+          "neural_weave": 977,
+          "precious_metals": 204,
+          "purified_crystal": 291,
+          "rare_metals": 268,
+          "refined_propellant": 163,
+          "textiles": 36
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 234,
+          "art": 291,
+          "common_metals": 67,
+          "electronics": 200,
+          "exotic_goods": 385,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 112,
+          "manufactured_goods": 101,
+          "medical": 354,
+          "neural_weave": 1024,
+          "precious_metals": 267,
+          "purified_crystal": 334,
+          "rare_metals": 288,
+          "refined_propellant": 184,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 221,
+          "art": 283,
+          "common_metals": 72,
+          "electronics": 190,
+          "exotic_goods": 375,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 125,
+          "manufactured_goods": 82,
+          "medical": 355,
+          "neural_weave": 1155,
+          "precious_metals": 249,
+          "purified_crystal": 310,
+          "rare_metals": 271,
+          "refined_propellant": 163,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 212,
+          "art": 300,
+          "common_metals": 68,
+          "electronics": 195,
+          "exotic_goods": 314,
+          "food": 51,
+          "fuel": 10,
+          "machinery": 122,
+          "manufactured_goods": 94,
+          "medical": 366,
+          "neural_weave": 1104,
+          "precious_metals": 231,
+          "purified_crystal": 300,
+          "rare_metals": 277,
+          "refined_propellant": 164,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 202,
+          "art": 302,
+          "common_metals": 67,
+          "electronics": 216,
+          "exotic_goods": 377,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 110,
+          "manufactured_goods": 81,
+          "medical": 358,
+          "neural_weave": 941,
+          "precious_metals": 245,
+          "purified_crystal": 289,
+          "rare_metals": 305,
+          "refined_propellant": 165,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 228,
+          "art": 291,
+          "common_metals": 66,
+          "electronics": 180,
+          "exotic_goods": 318,
+          "food": 50,
+          "fuel": 10,
+          "machinery": 110,
+          "manufactured_goods": 94,
+          "medical": 359,
+          "neural_weave": 1059,
+          "precious_metals": 234,
+          "purified_crystal": 338,
+          "rare_metals": 306,
+          "refined_propellant": 166,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 196,
+          "art": 277,
+          "common_metals": 68,
+          "electronics": 186,
+          "exotic_goods": 312,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 120,
+          "manufactured_goods": 98,
+          "medical": 363,
+          "neural_weave": 933,
+          "precious_metals": 210,
+          "purified_crystal": 295,
+          "rare_metals": 310,
+          "refined_propellant": 163,
+          "textiles": 41
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 182,
+          "art": 253,
+          "common_metals": 65,
+          "electronics": 214,
+          "exotic_goods": 360,
+          "food": 47,
+          "fuel": 9,
+          "machinery": 109,
+          "manufactured_goods": 87,
+          "medical": 334,
+          "neural_weave": 947,
+          "precious_metals": 250,
+          "purified_crystal": 336,
+          "rare_metals": 281,
+          "refined_propellant": 192,
+          "textiles": 42
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 232,
+          "art": 340,
+          "common_metals": 66,
+          "electronics": 200,
+          "exotic_goods": 396,
+          "food": 50,
+          "fuel": 10,
+          "machinery": 124,
+          "manufactured_goods": 98,
+          "medical": 359,
+          "neural_weave": 971,
+          "precious_metals": 278,
+          "purified_crystal": 285,
+          "rare_metals": 312,
+          "refined_propellant": 165,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 204,
+          "art": 298,
+          "common_metals": 71,
+          "electronics": 207,
+          "exotic_goods": 320,
+          "food": 51,
+          "fuel": 10,
+          "machinery": 103,
+          "manufactured_goods": 82,
+          "medical": 318,
+          "neural_weave": 1115,
+          "precious_metals": 224,
+          "purified_crystal": 333,
+          "rare_metals": 264,
+          "refined_propellant": 179,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 203,
+          "art": 259,
+          "common_metals": 66,
+          "electronics": 209,
+          "exotic_goods": 307,
+          "food": 50,
+          "fuel": 9,
+          "machinery": 114,
+          "manufactured_goods": 81,
+          "medical": 372,
+          "neural_weave": 948,
+          "precious_metals": 238,
+          "purified_crystal": 262,
+          "rare_metals": 296,
+          "refined_propellant": 166,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 219,
+          "art": 302,
+          "common_metals": 72,
+          "electronics": 181,
+          "exotic_goods": 381,
+          "food": 50,
+          "fuel": 9,
+          "machinery": 115,
+          "manufactured_goods": 79,
+          "medical": 331,
+          "neural_weave": 922,
+          "precious_metals": 237,
+          "purified_crystal": 289,
+          "rare_metals": 274,
+          "refined_propellant": 190,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 184,
+          "art": 310,
+          "common_metals": 68,
+          "electronics": 211,
+          "exotic_goods": 365,
+          "food": 46,
+          "fuel": 10,
+          "machinery": 120,
+          "manufactured_goods": 78,
+          "medical": 335,
+          "neural_weave": 1036,
+          "precious_metals": 200,
+          "purified_crystal": 260,
+          "rare_metals": 276,
+          "refined_propellant": 192,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 235,
+          "art": 318,
+          "common_metals": 66,
+          "electronics": 198,
+          "exotic_goods": 341,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 120,
+          "manufactured_goods": 91,
+          "medical": 350,
+          "neural_weave": 1111,
+          "precious_metals": 262,
+          "purified_crystal": 297,
+          "rare_metals": 292,
+          "refined_propellant": 192,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 202,
+          "art": 265,
+          "common_metals": 69,
+          "electronics": 208,
+          "exotic_goods": 397,
+          "food": 50,
+          "fuel": 10,
+          "machinery": 126,
+          "manufactured_goods": 91,
+          "medical": 362,
+          "neural_weave": 1058,
+          "precious_metals": 241,
+          "purified_crystal": 280,
+          "rare_metals": 278,
+          "refined_propellant": 185,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 229,
+          "art": 291,
+          "common_metals": 66,
+          "electronics": 219,
+          "exotic_goods": 355,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 114,
+          "manufactured_goods": 96,
+          "medical": 353,
+          "neural_weave": 1060,
+          "precious_metals": 218,
+          "purified_crystal": 311,
+          "rare_metals": 283,
+          "refined_propellant": 184,
+          "textiles": 41
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 207,
+          "art": 281,
+          "common_metals": 65,
+          "electronics": 189,
+          "exotic_goods": 344,
+          "food": 48,
+          "fuel": 9,
+          "machinery": 124,
+          "manufactured_goods": 97,
+          "medical": 336,
+          "neural_weave": 941,
+          "precious_metals": 278,
+          "purified_crystal": 286,
+          "rare_metals": 306,
+          "refined_propellant": 183,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 200,
+          "art": 344,
+          "common_metals": 67,
+          "electronics": 184,
+          "exotic_goods": 322,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 99,
+          "manufactured_goods": 101,
+          "medical": 339,
+          "neural_weave": 1083,
+          "precious_metals": 227,
+          "purified_crystal": 320,
+          "rare_metals": 299,
+          "refined_propellant": 164,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 231,
+          "art": 337,
+          "common_metals": 70,
+          "electronics": 215,
+          "exotic_goods": 409,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 127,
+          "manufactured_goods": 89,
+          "medical": 364,
+          "neural_weave": 1127,
+          "precious_metals": 259,
+          "purified_crystal": 320,
+          "rare_metals": 303,
+          "refined_propellant": 181,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 209,
+          "art": 265,
+          "common_metals": 68,
+          "electronics": 217,
+          "exotic_goods": 365,
+          "food": 49,
+          "fuel": 9,
+          "machinery": 112,
+          "manufactured_goods": 88,
+          "medical": 328,
+          "neural_weave": 1121,
+          "precious_metals": 273,
+          "purified_crystal": 287,
+          "rare_metals": 288,
+          "refined_propellant": 170,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 208,
+          "art": 327,
+          "common_metals": 65,
+          "electronics": 206,
+          "exotic_goods": 334,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 111,
+          "manufactured_goods": 101,
+          "medical": 331,
+          "neural_weave": 1059,
+          "precious_metals": 272,
+          "purified_crystal": 324,
+          "rare_metals": 305,
+          "refined_propellant": 188,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 232,
+          "art": 316,
+          "common_metals": 69,
+          "electronics": 190,
+          "exotic_goods": 363,
+          "food": 51,
+          "fuel": 10,
+          "machinery": 119,
+          "manufactured_goods": 92,
+          "medical": 350,
+          "neural_weave": 1148,
+          "precious_metals": 227,
+          "purified_crystal": 264,
+          "rare_metals": 309,
+          "refined_propellant": 171,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 217,
+          "art": 269,
+          "common_metals": 70,
+          "electronics": 183,
+          "exotic_goods": 419,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 126,
+          "manufactured_goods": 98,
+          "medical": 384,
+          "neural_weave": 1064,
+          "precious_metals": 227,
+          "purified_crystal": 269,
+          "rare_metals": 273,
+          "refined_propellant": 187,
+          "textiles": 41
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 196,
+          "art": 319,
+          "common_metals": 72,
+          "electronics": 195,
+          "exotic_goods": 382,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 98,
+          "manufactured_goods": 90,
+          "medical": 341,
+          "neural_weave": 1043,
+          "precious_metals": 230,
+          "purified_crystal": 282,
+          "rare_metals": 307,
+          "refined_propellant": 195,
+          "textiles": 41
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 209,
+          "art": 310,
+          "common_metals": 69,
+          "electronics": 212,
+          "exotic_goods": 327,
+          "food": 51,
+          "fuel": 10,
+          "machinery": 121,
+          "manufactured_goods": 88,
+          "medical": 346,
+          "neural_weave": 1116,
+          "precious_metals": 271,
+          "purified_crystal": 324,
+          "rare_metals": 301,
+          "refined_propellant": 171,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 217,
+          "art": 313,
+          "common_metals": 68,
+          "electronics": 190,
+          "exotic_goods": 412,
+          "food": 51,
+          "fuel": 9,
+          "machinery": 112,
+          "manufactured_goods": 87,
+          "medical": 363,
+          "neural_weave": 1054,
+          "precious_metals": 258,
+          "purified_crystal": 261,
+          "rare_metals": 265,
+          "refined_propellant": 197,
+          "textiles": 42
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 208,
+          "art": 345,
+          "common_metals": 68,
+          "electronics": 196,
+          "exotic_goods": 300,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 126,
+          "manufactured_goods": 101,
+          "medical": 378,
+          "neural_weave": 950,
+          "precious_metals": 210,
+          "purified_crystal": 274,
+          "rare_metals": 312,
+          "refined_propellant": 189,
+          "textiles": 42
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 211,
+          "art": 295,
+          "common_metals": 67,
+          "electronics": 187,
+          "exotic_goods": 332,
+          "food": 46,
+          "fuel": 10,
+          "machinery": 104,
+          "manufactured_goods": 90,
+          "medical": 367,
+          "neural_weave": 926,
+          "precious_metals": 277,
+          "purified_crystal": 326,
+          "rare_metals": 277,
+          "refined_propellant": 180,
+          "textiles": 42
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 195,
+          "art": 313,
+          "common_metals": 65,
+          "electronics": 193,
+          "exotic_goods": 347,
+          "food": 52,
+          "fuel": 9,
+          "machinery": 110,
+          "manufactured_goods": 97,
+          "medical": 317,
+          "neural_weave": 1146,
+          "precious_metals": 262,
+          "purified_crystal": 337,
+          "rare_metals": 268,
+          "refined_propellant": 192,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}
