@@ -18,6 +18,7 @@ from pathlib import Path
 from tools.parity import rng_vectors
 from tools.parity.driver import REPO_ROOT, Case, dirty_paths_outside, source_commit, write_cases
 from tools.parity.drivers import market as market_driver
+from tools.parity.export_schema import write_schema
 
 DRIVERS: list[Callable[[], list[Case]]] = [rng_vectors.build_cases, market_driver.build_cases]
 
@@ -48,6 +49,8 @@ def main(argv: list[str] | None = None) -> int:
     cases = [case for build in DRIVERS for case in build()]
     written = write_cases(cases, out / "golden", commit)
     print(f"Wrote {len(written)} golden files under {out / 'golden'} from {commit[:10]}")
+    write_schema(out / "schema.json")
+    print(f"Wrote schema to {out / 'schema.json'}")
     return 0
 
 
