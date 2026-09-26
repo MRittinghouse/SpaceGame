@@ -2307,6 +2307,17 @@ Python floors; GDScript truncates. Use `PyMath.floor_div` and `PyMath.floor_mod`
 These sites branch on `isinstance(x, int)` and need the cast before the check:
 `capstone.py:128`, `lens_investment.py:174`, `bidding.py:724`, `build_sharing.py:253`.
 
+## Derived seeds
+
+Seeds computed from stream keys that later feed other streams. A port must build them the same way.
+
+- Travel encounters: `EncounterRef.encounter_seed = stable_seed("encounter", game_day, system_id)`
+  (`encounter.py`, `check_travel_encounter`). It feeds the combat, crew interjection,
+  encounter selection, and loot seeds.
+- The name `"customs"` is both a stream (`smuggling.py`, the inspection roll) and a
+  `stable_seed` namespace (`game.py`, the customs `encounter_seed`). Consumers re-hash the seed,
+  so the overlap is harmless, but the port's key registry must keep both uses.
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

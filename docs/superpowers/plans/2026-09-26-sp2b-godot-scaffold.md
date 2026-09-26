@@ -3066,6 +3066,7 @@ design inputs for the sub-project that owns them, not parity deviations (SP2 spe
 | F-5 | The main loop consumes ESC before any view sees it | `game.py:6899` (read in code) | SP6 | open |
 | F-6 | Refuel defaults to one unit | `trading_view.py:323,1262` (F-001 in SpaceGame) | SP6 | open |
 | F-7 | About a dozen `Game` fields are never saved (news buffer, pending chain events, bounty immunity, and others) | survey 2026-09-26 | SP3 | open |
+| F-8 | The ground map generator violates its own invariants (floor ratio, entrance-exit distance, chunk count) on about 58% of seeds, under either random generator | SP2-a Task 3 review survey (290 of 500 seeds) | SP8 (away team, planets) | open |
 ```
 
 `docs/dev_setup.md`:
