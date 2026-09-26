@@ -144,6 +144,24 @@ def test_seed_rngs_reproduces_random() -> None:
     assert r1_numpy == r2_numpy, f"numpy random diverged after same seed: {r1_numpy} != {r2_numpy}"
 
 
+def test_seed_rngs_seeds_sim_rng_entropy() -> None:
+    """Models constructed without a stream replay under the crawler's seed."""
+    from spacegame.sim_rng import SimRng, seed_entropy
+
+    game1 = Game()
+    game1.seed_rngs(42)
+    first = SimRng.from_entropy().next_u32()
+    pygame.quit()
+
+    game2 = Game()
+    game2.seed_rngs(42)
+    second = SimRng.from_entropy().next_u32()
+    pygame.quit()
+    seed_entropy(None)
+
+    assert first == second, "seed_rngs must make SimRng.from_entropy reproducible"
+
+
 def test_step_determinism_with_seeded_events() -> None:
     """Two seeded Game instances driven with identical step() sequences stay in sync."""
     N = 5

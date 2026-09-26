@@ -6,14 +6,15 @@ repos:
     rev: v0.14.13
     hooks:
       - id: ruff
-        # Scope: spacegame/ only. tests/ has 874 pre-existing lint findings that are
+        # Scope: spacegame/ and tools/parity/. tests/ has 874 pre-existing lint findings that are
         # out of this sprint's scope (Decision 1 in QF-1 plan). Widening to tests/ would
         # either fail the hook from day one or require an out-of-scope 874-item cleanup.
         # See QF-1 Activity log for the full rationale; a follow-up sprint can address tests/.
-        args: [spacegame/]
+        # tools/parity/ was born lint-clean under SP2 and is gated from the start.
+        args: [spacegame/, tools/parity/]
         pass_filenames: false
       - id: ruff-format
-        args: [--check, spacegame/, tests/]
+        args: [--check, spacegame/, tests/, tools/parity/]
         pass_filenames: false
   - repo: local
     hooks:
@@ -33,5 +34,12 @@ repos:
         # utilities, not shipped code.
         language: system
         entry: "python -m mypy tools/crawler/ --follow-imports=silent"
+        pass_filenames: false
+        types_or: [python]
+      - id: mypy-parity-strict
+        name: mypy tools/parity (zero tolerance, no baseline)
+        # tools/parity/ is born clean under SP2, same bar as tools/crawler/.
+        language: system
+        entry: "python -m mypy tools/parity/ --follow-imports=silent"
         pass_filenames: false
         types_or: [python]

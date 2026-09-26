@@ -1,0 +1,236 @@
+{
+  "case": "edges",
+  "format": 1,
+  "setup": {
+    "max_days": 7
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [
+        "nowhere",
+        "food"
+      ],
+      "call": "get_trend",
+      "result": "stable",
+      "state": {
+        "history": {},
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nowhere",
+        "food"
+      ],
+      "call": "get_history",
+      "result": [],
+      "state": {
+        "history": {},
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "medical",
+        1,
+        50
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "medical": [
+              [
+                1,
+                50
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "medical"
+      ],
+      "call": "get_trend",
+      "result": "stable",
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "medical": [
+              [
+                1,
+                50
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "medical",
+        2,
+        51
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "medical": [
+              [
+                1,
+                50
+              ],
+              [
+                2,
+                51
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "medical"
+      ],
+      "call": "get_trend",
+      "result": "stable",
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "medical": [
+              [
+                1,
+                50
+              ],
+              [
+                2,
+                51
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "art",
+        1,
+        0
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "art": [
+              [
+                1,
+                0
+              ]
+            ],
+            "medical": [
+              [
+                1,
+                50
+              ],
+              [
+                2,
+                51
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "art",
+        2,
+        3
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "art": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "medical": [
+              [
+                1,
+                50
+              ],
+              [
+                2,
+                51
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "art"
+      ],
+      "call": "get_trend",
+      "result": "rising",
+      "state": {
+        "history": {
+          "axiom_labs": {
+            "art": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "medical": [
+              [
+                1,
+                50
+              ],
+              [
+                2,
+                51
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    }
+  ],
+  "subsystem": "price_history"
+}

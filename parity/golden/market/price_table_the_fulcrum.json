@@ -1,0 +1,790 @@
+{
+  "case": "price_table_the_fulcrum",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "the_fulcrum"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 329,
+          "food": 59,
+          "fuel": 11,
+          "medical": 412,
+          "rare_parts": 111,
+          "restricted_tech": 862,
+          "salvaged_electronics": 47,
+          "scrap_metal": 11,
+          "stolen_data": 460,
+          "weapons_components": 348
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 284,
+          "food": 54,
+          "fuel": 11,
+          "medical": 410,
+          "rare_parts": 116,
+          "restricted_tech": 870,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stolen_data": 480,
+          "weapons_components": 411
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 312,
+          "food": 56,
+          "fuel": 10,
+          "medical": 415,
+          "rare_parts": 109,
+          "restricted_tech": 729,
+          "salvaged_electronics": 48,
+          "scrap_metal": 11,
+          "stolen_data": 457,
+          "weapons_components": 357
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 281,
+          "food": 53,
+          "fuel": 10,
+          "medical": 403,
+          "rare_parts": 119,
+          "restricted_tech": 878,
+          "salvaged_electronics": 54,
+          "scrap_metal": 12,
+          "stolen_data": 491,
+          "weapons_components": 370
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 267,
+          "food": 60,
+          "fuel": 11,
+          "medical": 429,
+          "rare_parts": 100,
+          "restricted_tech": 826,
+          "salvaged_electronics": 54,
+          "scrap_metal": 12,
+          "stolen_data": 546,
+          "weapons_components": 377
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 279,
+          "food": 58,
+          "fuel": 12,
+          "medical": 432,
+          "rare_parts": 118,
+          "restricted_tech": 722,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stolen_data": 566,
+          "weapons_components": 348
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 302,
+          "food": 56,
+          "fuel": 12,
+          "medical": 432,
+          "rare_parts": 110,
+          "restricted_tech": 721,
+          "salvaged_electronics": 52,
+          "scrap_metal": 12,
+          "stolen_data": 552,
+          "weapons_components": 340
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 302,
+          "food": 56,
+          "fuel": 10,
+          "medical": 382,
+          "rare_parts": 101,
+          "restricted_tech": 877,
+          "salvaged_electronics": 46,
+          "scrap_metal": 12,
+          "stolen_data": 535,
+          "weapons_components": 383
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 285,
+          "food": 55,
+          "fuel": 11,
+          "medical": 405,
+          "rare_parts": 119,
+          "restricted_tech": 730,
+          "salvaged_electronics": 45,
+          "scrap_metal": 11,
+          "stolen_data": 526,
+          "weapons_components": 390
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 317,
+          "food": 57,
+          "fuel": 12,
+          "medical": 415,
+          "rare_parts": 110,
+          "restricted_tech": 752,
+          "salvaged_electronics": 45,
+          "scrap_metal": 11,
+          "stolen_data": 557,
+          "weapons_components": 423
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 290,
+          "food": 53,
+          "fuel": 11,
+          "medical": 434,
+          "rare_parts": 114,
+          "restricted_tech": 785,
+          "salvaged_electronics": 51,
+          "scrap_metal": 12,
+          "stolen_data": 470,
+          "weapons_components": 382
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 285,
+          "food": 58,
+          "fuel": 11,
+          "medical": 378,
+          "rare_parts": 106,
+          "restricted_tech": 841,
+          "salvaged_electronics": 54,
+          "scrap_metal": 13,
+          "stolen_data": 525,
+          "weapons_components": 401
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 314,
+          "food": 54,
+          "fuel": 10,
+          "medical": 381,
+          "rare_parts": 105,
+          "restricted_tech": 843,
+          "salvaged_electronics": 53,
+          "scrap_metal": 12,
+          "stolen_data": 550,
+          "weapons_components": 364
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 295,
+          "food": 56,
+          "fuel": 10,
+          "medical": 370,
+          "rare_parts": 117,
+          "restricted_tech": 813,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stolen_data": 507,
+          "weapons_components": 426
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 311,
+          "food": 56,
+          "fuel": 10,
+          "medical": 424,
+          "rare_parts": 109,
+          "restricted_tech": 759,
+          "salvaged_electronics": 52,
+          "scrap_metal": 10,
+          "stolen_data": 455,
+          "weapons_components": 368
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 306,
+          "food": 55,
+          "fuel": 10,
+          "medical": 418,
+          "rare_parts": 99,
+          "restricted_tech": 799,
+          "salvaged_electronics": 47,
+          "scrap_metal": 12,
+          "stolen_data": 558,
+          "weapons_components": 414
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 313,
+          "food": 58,
+          "fuel": 11,
+          "medical": 414,
+          "rare_parts": 106,
+          "restricted_tech": 792,
+          "salvaged_electronics": 46,
+          "scrap_metal": 12,
+          "stolen_data": 513,
+          "weapons_components": 427
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 290,
+          "food": 58,
+          "fuel": 11,
+          "medical": 419,
+          "rare_parts": 110,
+          "restricted_tech": 862,
+          "salvaged_electronics": 45,
+          "scrap_metal": 12,
+          "stolen_data": 569,
+          "weapons_components": 415
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 280,
+          "food": 54,
+          "fuel": 12,
+          "medical": 394,
+          "rare_parts": 105,
+          "restricted_tech": 864,
+          "salvaged_electronics": 45,
+          "scrap_metal": 12,
+          "stolen_data": 524,
+          "weapons_components": 360
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 272,
+          "food": 59,
+          "fuel": 12,
+          "medical": 394,
+          "rare_parts": 109,
+          "restricted_tech": 848,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stolen_data": 539,
+          "weapons_components": 350
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 312,
+          "food": 55,
+          "fuel": 11,
+          "medical": 387,
+          "rare_parts": 115,
+          "restricted_tech": 869,
+          "salvaged_electronics": 48,
+          "scrap_metal": 11,
+          "stolen_data": 499,
+          "weapons_components": 351
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 320,
+          "food": 58,
+          "fuel": 11,
+          "medical": 370,
+          "rare_parts": 106,
+          "restricted_tech": 879,
+          "salvaged_electronics": 50,
+          "scrap_metal": 12,
+          "stolen_data": 549,
+          "weapons_components": 403
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 315,
+          "food": 61,
+          "fuel": 11,
+          "medical": 385,
+          "rare_parts": 100,
+          "restricted_tech": 727,
+          "salvaged_electronics": 53,
+          "scrap_metal": 11,
+          "stolen_data": 481,
+          "weapons_components": 365
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 282,
+          "food": 53,
+          "fuel": 11,
+          "medical": 437,
+          "rare_parts": 104,
+          "restricted_tech": 759,
+          "salvaged_electronics": 52,
+          "scrap_metal": 11,
+          "stolen_data": 554,
+          "weapons_components": 341
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 293,
+          "food": 59,
+          "fuel": 11,
+          "medical": 434,
+          "rare_parts": 117,
+          "restricted_tech": 810,
+          "salvaged_electronics": 49,
+          "scrap_metal": 11,
+          "stolen_data": 478,
+          "weapons_components": 376
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 278,
+          "food": 59,
+          "fuel": 11,
+          "medical": 404,
+          "rare_parts": 101,
+          "restricted_tech": 825,
+          "salvaged_electronics": 54,
+          "scrap_metal": 12,
+          "stolen_data": 538,
+          "weapons_components": 387
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 269,
+          "food": 54,
+          "fuel": 11,
+          "medical": 389,
+          "rare_parts": 118,
+          "restricted_tech": 818,
+          "salvaged_electronics": 51,
+          "scrap_metal": 11,
+          "stolen_data": 456,
+          "weapons_components": 344
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 266,
+          "food": 59,
+          "fuel": 11,
+          "medical": 386,
+          "rare_parts": 112,
+          "restricted_tech": 865,
+          "salvaged_electronics": 53,
+          "scrap_metal": 11,
+          "stolen_data": 452,
+          "weapons_components": 384
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 302,
+          "food": 54,
+          "fuel": 12,
+          "medical": 375,
+          "rare_parts": 106,
+          "restricted_tech": 802,
+          "salvaged_electronics": 47,
+          "scrap_metal": 11,
+          "stolen_data": 453,
+          "weapons_components": 338
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "combat_stims": 291,
+          "food": 54,
+          "fuel": 11,
+          "medical": 428,
+          "rare_parts": 109,
+          "restricted_tech": 755,
+          "salvaged_electronics": 50,
+          "scrap_metal": 11,
+          "stolen_data": 521,
+          "weapons_components": 352
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

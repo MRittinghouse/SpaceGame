@@ -28,6 +28,8 @@ from spacegame.models.mission import MissionManager
 from spacegame.views.wreckers_guild_view import WreckersGuildView
 from tests.test_scenarios._helpers import fresh_player
 
+pytestmark = pytest.mark.act_two_v1
+
 _DEFAULT_LINE = (
     "Heard you do real work. Guild takes a cut, you take the rest. "
     "Standing builds with completed contracts. Say the word."

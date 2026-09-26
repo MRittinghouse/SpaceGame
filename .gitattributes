@@ -1,0 +1,3 @@
+# Parity goldens and the schema are compared byte for byte (tests/test_parity/test_goldens_current.py)
+# and synced to the aurelia repo as written, so they keep LF endings on every checkout.
+parity/** text eol=lf

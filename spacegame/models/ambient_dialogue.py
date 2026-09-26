@@ -5,9 +5,10 @@ arriving at home systems, visiting faction territory, idle chatter, and
 inter-crew banter. Fire-and-forget flavor text, not interactive conversations.
 """
 
-import random
 from dataclasses import dataclass, field
 from typing import Any, Optional
+
+from spacegame.sim_rng import SimRng
 
 
 @dataclass
@@ -32,7 +33,14 @@ class AmbientLine:
 class AmbientDialogueManager:
     """Manages ambient dialogue selection and cooldowns."""
 
-    def __init__(self, lines: list[AmbientLine]) -> None:
+    def __init__(self, lines: list[AmbientLine], rng: SimRng | None = None) -> None:
+        """Initialize the ambient dialogue manager.
+
+        Args:
+            lines: Available ambient dialogue lines.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self._lines = lines
         self._shown: set[int] = set()  # Indices of shown lines
         self.last_combat_day: Optional[int] = None
@@ -77,7 +85,7 @@ class AmbientDialogueManager:
         if not available:
             return None
 
-        idx, line = random.choice(available)
+        idx, line = self._rng.choice(available)
         self._shown.add(idx)
         return line.text
 
@@ -167,7 +175,7 @@ class AmbientDialogueManager:
         if not all_available:
             return None
 
-        crew_id, idx, line = random.choice(all_available)
+        crew_id, idx, line = self._rng.choice(all_available)
         self._shown.add(idx)
         return (crew_id, line.text)
 
@@ -205,7 +213,7 @@ class AmbientDialogueManager:
         if not all_available:
             return None
 
-        crew_id, idx, line = random.choice(all_available)
+        crew_id, idx, line = self._rng.choice(all_available)
         self._shown.add(idx)
         return (crew_id, line.text)
 
@@ -259,7 +267,7 @@ class AmbientDialogueManager:
         if not all_available:
             return None
 
-        crew_id, idx, line = random.choice(all_available)
+        crew_id, idx, line = self._rng.choice(all_available)
         self._shown.add(idx)
         return (crew_id, line.text)
 
@@ -299,7 +307,7 @@ class AmbientDialogueManager:
         if not all_available:
             return None
 
-        crew_id, idx, line = random.choice(all_available)
+        crew_id, idx, line = self._rng.choice(all_available)
         self._shown.add(idx)
         return (crew_id, line.text)
 

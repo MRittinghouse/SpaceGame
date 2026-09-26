@@ -471,3 +471,28 @@ existing origin stays the author's call. `aurelia` gets no remote until the pair
 - **md5 and UTF-8 differences between engines.** Covered by the unicode key in the test vectors.
 - **SpaceGame drift during the port.** Covered by the sync hash check and the frozen-reference rule
   (master spec 9.1).
+
+---
+
+## Amendments (2026-09-26, made while planning and executing SP2-a and SP2-b)
+
+Each amendment supersedes the section it names. The plans record the matching rulings.
+
+| Id | Supersedes | Amendment | Why |
+|---|---|---|---|
+| A1 | 7.3 (floats in goldens) | Goldens write every float as the string `f:<repr>:<int64 bits>`; `Case.steps` keep raw floats in Python. The Godot harness rebuilds each double from its bits. | Godot 4.7.2's JSON parser and `String.to_float()` misround 501 of 2,000 long decimals by one bit (probe 2026-09-26), so plain JSON floats cannot support exact comparison. `var_to_str` matches Python's repr, and short literals (every float in `data/`, at most four digits) parse exactly. |
+| A2 | 3.3 (`approx_normal`) | Not implemented. | The census found no Gaussian draw in any model; the methods in use are `choice`, `randint`, `random`, `uniform`, `shuffle`, `sample`, `choices`. |
+| A3 | 3.3 (API) | `SimRng` also exposes the `random.Random`-compatible aliases `random()` and `choices(population, weights=None, k=1)`, and `stable_seed(*parts)`; `seed_entropy(seed)` makes `from_entropy()` reproducible for the crawler. | Conversions become constructor swaps; `stable_seed` replaces salted `hash()` seeds. |
+| A4 | R5 (orchestration randomness) | The salted `hash()` seeds in `game.py`, `galaxy_map_view.py`, and `combat_view.py` move to `stable_seed`. Other orchestration randomness stays. | Those seeds are the actual source of per-launch variation in fights and missions. |
+| A5 | 4.2 (pattern D) | Injected models take an optional `rng` parameter that defaults to `SimRng.from_entropy()`. | Keeps `game.py` and view call sites unchanged; the trace drivers always inject. |
+| A6 | 4.5 (`round(x, ndigits)`) | No site touches money; the five sites are listed in `parity/port_notes.md`. | Census. |
+| A7 | 8.5 (schema location) | `schema.json` syncs to `data/schema.json`. | Runtime loaders read it, and `test/` is excluded from exports. |
+| A8 | 8.6 (autoloads, SaveIO, GameConfig) | SP2-b builds two autoloads (Game, DataRegistry); DebugConsole, GameConfig, and SaveIO wait for their first caller. | Master spec 11: wire it or delete it. |
+| A9 | 8.6 (`KernelSystem`) | State methods are `save_state()` and `load_state(data)`. | A method named `load` shadows Godot's global `load()` inside subclasses. |
+| A10 | 8.8 (market branches) | The event, politics, and galaxy-event branches of `Market._calculate_price` are ported in SP3 with their goldens, not in SP2. | Untested code violates wire it or delete it. |
+| A11 | R6 (one test per golden) | One gdUnit4 test per golden subsystem replays every file, names each failing case, and asserts the case count. | gdUnit4 cannot generate tests from a directory listing, and suites are capped at 25 public methods. |
+| A12 | 3.3 (GDScript signature) | GDScript `SimRng.from_key` and `stable_seed` take an Array of parts. | GDScript has no varargs; the key string is identical. |
+| A13 | 5 (the fixture) | The dilemma scenario modules' module-scoped fixtures call `load_act_two_v1()` when the registries are empty. | Module-scoped fixtures run before the function-scoped marker fixture. |
+| A14 | 4.4 (invariant tests pass unchanged) | A test that checks an invariant against one fixed seed may have that seed reselected when the invariant fails for a large share of seeds under both generators; the commit records the survey. Applied to three ground mapgen tests (42 to 1) and one archetype damage test (42 to 100). | A survey showed the generator swap leaves the distributions unchanged (combat damage below 40: 66 of 1,000 seeds before, 86 after; mapgen invariant failures: 289 of 500 before, 290 after). These tests were always single-seed samples. |
+| A15 | 7 (key table) | The travel encounter seed is `stable_seed("encounter", game_day, system_id)`, recorded in `parity/port_notes.md` under "Derived seeds" with the shared `"customs"` namespace. | The seed feeds combat, interjection, selection, and loot streams; the plan's table omitted it. |
+| A16 | 3.4 (vector file), 5 (hygiene gates), 4.4 (re-baseline commits) | Three records. The vectors are `parity/golden/sim_rng/key_0.json` through `key_5.json`, one case per key, rather than one `vectors.json`. The LensReactor in `wreckers_guild_view.py:164` needs no hygiene gate. Task 3 committed its conversions and re-baselines together (`f082aba`), and its commit message lists each re-baselined test with the site that changed. | One file per case is the layout every driver shares (7.1). With Act II off the `lens_reactions` registry is empty, so `LensReactor.choose_variant` returns the default line and the reactor is inert. A conversion commit without its re-baselines would fail the gate; the message keeps the one-line-per-test record 4.4 asks for. |

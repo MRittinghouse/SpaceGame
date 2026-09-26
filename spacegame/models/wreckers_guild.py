@@ -7,7 +7,6 @@ stays Scanner B-clean (CLAUDE.md cross-cutting table; SI-2 cookbook).
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -16,6 +15,7 @@ from spacegame.models.sub_reputation import (
     OrganizationTier,
     get_tier_for_rep,
 )
+from spacegame.sim_rng import SimRng
 
 # ---------------------------------------------------------------------------
 # Tunables (decisions locked in the SA-1 plan; risks/open-questions section)
@@ -315,7 +315,7 @@ def roll_offers(
     if not eligible:
         return []
     window = seed_for_window(game_day)
-    rng = random.Random(f"{window}_{player_seed_token}_wreckers")
+    rng = SimRng.from_key("wreckers_offers", window, player_seed_token)
     # Slot count is bounded by both the design clamp and the eligible pool —
     # apprentice may have fewer templates than SLOT_OFFER_MIN, in which case
     # we show every eligible template rather than padding with placeholders.

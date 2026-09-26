@@ -4,9 +4,10 @@ Faction reputation system models.
 Defines factions, reputation tiers, tariff modifiers, and random faction assignment.
 """
 
-import random
 from dataclasses import dataclass
 from enum import Enum
+
+from spacegame.sim_rng import SimRng
 
 
 class ReputationTier(Enum):
@@ -117,7 +118,9 @@ class Faction:
     rivalry: str
 
 
-def generate_faction_assignments(system_ids: list[str], faction_ids: list[str]) -> dict[str, str]:
+def generate_faction_assignments(
+    system_ids: list[str], faction_ids: list[str], rng: SimRng | None = None
+) -> dict[str, str]:
     """Randomly assign systems to factions in a balanced distribution.
 
     Shuffles systems and deals them round-robin to factions, ensuring each
@@ -126,12 +129,13 @@ def generate_faction_assignments(system_ids: list[str], faction_ids: list[str]) 
     Args:
         system_ids: List of system IDs to assign.
         faction_ids: List of faction IDs to assign to.
+        rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
     Returns:
         Dict mapping system_id -> faction_id.
     """
     shuffled = list(system_ids)
-    random.shuffle(shuffled)
+    (rng if rng is not None else SimRng.from_entropy()).shuffle(shuffled)
     assignments: dict[str, str] = {}
     for i, system_id in enumerate(shuffled):
         assignments[system_id] = faction_ids[i % len(faction_ids)]

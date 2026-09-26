@@ -213,6 +213,33 @@ class TestProceduralMissionGenerator:
             assert mission.id not in ids, f"Duplicate ID: {mission.id}"
             ids.add(mission.id)
 
+    def test_id_names_type_system_day_and_seed(self) -> None:
+        """The ID is keyed like the content: type, system, day, and base seed."""
+        gen = self._make_generator(seed=42)
+        mission = gen.generate_delivery("nexus_prime", game_day=10)
+        assert mission.id == "proc_delivery_nexus_prime_10_42"
+
+    def test_ids_do_not_depend_on_generator_history(self) -> None:
+        """A generator rebuilt on load names a regenerated board exactly as before.
+
+        Otherwise a same-day reload offers a copy of an accepted contract under a new ID.
+        """
+        used = self._make_generator()
+        for day in range(1, 6):
+            used.generate_for_system("nexus_prime", game_day=day)
+        fresh = self._make_generator()
+        used_ids = [m.id for m in used.generate_for_system("forgeworks", game_day=9)]
+        fresh_ids = [m.id for m in fresh.generate_for_system("forgeworks", game_day=9)]
+        assert used_ids == fresh_ids
+
+    def test_board_ids_are_unique_on_every_board(self) -> None:
+        """No board holds two missions of one type, so type-keyed IDs never collide."""
+        gen = self._make_generator()
+        for system_id in get_data_loader().systems:
+            for day in range(1, 61):
+                ids = [m.id for m in gen.generate_for_system(system_id, game_day=day)]
+                assert len(ids) == len(set(ids)), f"{system_id} day {day} repeats an ID: {ids}"
+
     def test_available_at_matches_origin_system(self) -> None:
         """Generated missions are available at the system they were generated for."""
         gen = self._make_generator()

@@ -31,6 +31,7 @@ from spacegame.models.encounter import (
 from spacegame.models.faction import ReputationTier
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
@@ -518,7 +519,7 @@ class GalaxyMapView(BaseView):
                 self.player.dialogue_flags[fe.trigger_flag] = True
             return EncounterRef(
                 enemy_template_ids=list(fe.enemy_template_ids),
-                encounter_seed=hash(fe.trigger_flag) & 0xFFFFFFFF,
+                encounter_seed=stable_seed("forced_encounter", fe.trigger_flag),
                 encounter_type=fe.encounter_type,
                 encounter_def_id=fe.encounter_def_id,
             )

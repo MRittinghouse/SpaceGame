@@ -25,6 +25,8 @@ ruff check spacegame/ --fix                      # Auto-fix lint issues
 mypy spacegame/                                  # Type check (raw, all errors)
 python -m mypy spacegame/ | grep -v ": note:" | python -m mypy_baseline filter   # Type check against ratchet
 python scripts/mypy_populations.py              # Print A/B/C population counts
+python -m tools.parity.regen                     # Regenerate parity goldens (clean tree only; see Parity goldens)
+python -m tools.parity.check_determinism         # Goldens byte-identical across PYTHONHASHSEED values
 uv sync --extra dev                              # Install all dependencies (preferred)
 pip install -e ".[dev]"                          # Install with dev dependencies (fallback)
 pre-commit install                               # REQUIRED once per clone -- activates the local gate
@@ -146,7 +148,19 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 - **pytest** — class-based tests with function-style also acceptable
 - Naming: `class TestClassName:` containing `def test_behavior_description(self):`
 - Helpers: `_make_<object>()` methods for creating test fixtures inline
-- conftest.py at `tests/` sets `SDL_AUDIODRIVER=dummy` so pygame audio is silent during the suite. `tests/test_ui_layout/conftest.py` sets `SDL_VIDEODRIVER=dummy` and provides the resolution-matrix fixture. No other shared fixtures — each test is self-contained.
+- conftest.py at `tests/` sets `SDL_AUDIODRIVER=dummy` so pygame audio is silent during the suite. `tests/test_ui_layout/conftest.py` sets `SDL_VIDEODRIVER=dummy` and provides the resolution-matrix fixture.
+- `tests/conftest.py` also holds two autouse fixtures that apply to every test (`tests/test_ralph/conftest.py` has one more for its own tests); beyond these, each test builds what it needs inline:
+  - `_act_two_v1_marker`: for a test marked `act_two_v1`, sets `ACT_TWO_V1_ENABLED` to True and loads the Act II v1 registries.
+  - `_reset_sim_rng_entropy`: calls `seed_entropy(None)` after every test, so a test that seeds `SimRng.from_entropy()` (directly or through `Game.seed_rngs`) cannot change the streams of later tests in the same xdist worker.
+
+### Act II v1 (archived)
+- `ACT_TWO_V1_ENABLED = False` in `spacegame/config.py` keeps the Act II v1 lens arc (tag `act2-v1-archive`) off, so the Python reference behaves as Act I only. The Godot port does not carry it. Read it as `sg_config.ACT_TWO_V1_ENABLED` so the fixture's monkeypatch takes effect.
+- Tests that exercise Act II content carry the `act_two_v1` marker (`pytestmark = pytest.mark.act_two_v1` for a whole module). Without it, the flag stays off and the lens, dilemma, and capstone registries are not loaded for the test. The fixture never unloads them, so after a marked test they stay loaded on that worker's singleton; a test that needs them empty builds a fresh `DataLoader()`.
+
+### Parity goldens (SP2)
+- `parity/golden/` holds golden traces the Godot port replays; `tools/parity/` builds them. `tests/test_parity/test_goldens_current.py` fails when a committed golden or `parity/schema.json` no longer matches the code.
+- After touching `spacegame/sim_rng.py`, `spacegame/models/market.py`, or anything under `tools/parity/`: commit the code, run `python -m tools.parity.regen` from the clean tree, review the diff of `parity/`, and commit the goldens and schema on their own. regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
+- `python -m tools.parity.check_determinism` proves the goldens do not depend on `PYTHONHASHSEED` (the suite runs it too).
 
 ### Test-Driven Development
 - **Write the failing test first** (Red), then implement (Green), then refactor
@@ -245,6 +259,7 @@ When modifying a gameplay system, check these secondary impacts:
 | Ship stats | Both build-derived path AND legacy ShipType path in `build_player_combat_state()` |
 | Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
 | Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |
+| Simulation randomness or the market model | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
 
 ## Common Pitfalls
 
@@ -252,7 +267,7 @@ When modifying a gameplay system, check these secondary impacts:
 - Views **must** `_destroy_ui()` on exit — call `.kill()` on all pygame_gui elements
 - Models **must not** create pygame objects (Surfaces, Fonts) — that belongs in views
 - Use `get_data_loader()`, not `DataLoader()` directly — it's a singleton
-- Deterministic randomness: seed with `f"{game_day}_{commodity_id}_{system_id}"` for market prices
+- Deterministic randomness: models draw only through a keyed `SimRng.from_key(...)` or an injected `rng: SimRng` (`spacegame/sim_rng.py`); the scanner `tests/test_compliance/test_no_global_random_in_models.py` enforces this. Use `stable_seed(...)`, never `hash()`, for seeds: `hash()` of a string is salted per process
 - Never create Surfaces inside `update()` — create in `__init__` or `on_enter()`, reuse each frame
 - Use `.convert_alpha()` on loaded images for rendering performance
 - Pool particles and reuse objects — avoid GC pressure in the game loop

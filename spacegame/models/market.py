@@ -6,13 +6,13 @@ Implements dynamic pricing based on supply/demand, system economy, and random va
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from spacegame.models.commodity import Commodity
 from spacegame.models.event import MarketEvent
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.politics_dispute import PoliticsMarketShift
@@ -295,7 +295,7 @@ class Market:
             Small random modifier (-0.05 to +0.05 typically)
         """
         # Use a local RNG so the global random state is never mutated.
-        local_rng = random.Random(f"{self.game_day}_{commodity.id}_{self.system.id}")
+        local_rng = SimRng.from_key("market", self.game_day, commodity.id, self.system.id)
 
         # Small variance: ±5% to ±10% depending on commodity volatility
         variance_range = abs(commodity.variance_max - commodity.variance_min)

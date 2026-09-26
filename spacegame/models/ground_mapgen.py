@@ -7,7 +7,6 @@ using a critical-path-first algorithm. Supports 5 mission types,
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
@@ -24,6 +23,7 @@ from spacegame.models.ground import (
 from spacegame.models.ground_combat import GROUND_ENEMY_TEMPLATES
 from spacegame.models.ground_crew import GroundCrewBonuses
 from spacegame.models.ground_enemy import Direction, GroundEnemy, GroundMissionState
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.attributes import AttributeSheet
@@ -563,7 +563,7 @@ class GroundMapGenerator:
         Returns:
             MapGenResult with ground_map and enemies.
         """
-        rng = random.Random(config.seed)
+        rng = SimRng.from_key("ground_map", config.seed)
         tier = config.difficulty
 
         w = tier.map_width
@@ -631,7 +631,7 @@ class GroundMapGenerator:
         map_w: int,
         map_h: int,
         tier: DifficultyTier,
-        rng: random.Random,
+        rng: SimRng,
     ) -> tuple[list[tuple[int, int, int, int]], list[tuple[str, int, int]]]:
         """Place non-overlapping rooms on the grid using chunk templates.
 
@@ -727,7 +727,7 @@ class GroundMapGenerator:
         rooms: list[tuple[int, int, int, int]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
     ) -> None:
         """Connect all rooms with L-shaped corridors ensuring connectivity."""
         if len(rooms) < 2:
@@ -793,7 +793,7 @@ class GroundMapGenerator:
         r2: tuple[int, int, int, int],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
     ) -> None:
         """Carve an L-shaped corridor between two rooms."""
         # Find clear floor tile in each room for connection
@@ -873,7 +873,7 @@ class GroundMapGenerator:
         rooms: list[tuple[int, int, int, int]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
     ) -> tuple[tuple[int, int], tuple[int, int]]:
         """Place entrance and exit in rooms maximizing distance.
 
@@ -913,7 +913,7 @@ class GroundMapGenerator:
         rooms: list[tuple[int, int, int, int]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
     ) -> None:
         """Place doors where corridors meet room walls."""
         for rx, ry, rw, rh in rooms:
@@ -981,7 +981,7 @@ class GroundMapGenerator:
         tiles: list[list[GroundTile]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
         tier: DifficultyTier,
     ) -> None:
         """Scatter noisy floor tiles in corridors and rooms."""
@@ -1006,7 +1006,7 @@ class GroundMapGenerator:
         tiles: list[list[GroundTile]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
         tier: DifficultyTier,
     ) -> None:
         """Scatter hazard tiles on floor spaces. Higher difficulty = more hazards."""
@@ -1028,7 +1028,7 @@ class GroundMapGenerator:
         tiles: list[list[GroundTile]],
         map_w: int,
         map_h: int,
-        rng: random.Random,
+        rng: SimRng,
         tier: DifficultyTier,
         entrance_pos: tuple[int, int],
         exit_pos: tuple[int, int],
@@ -1099,7 +1099,7 @@ class GroundMapGenerator:
         rooms: list[tuple[int, int, int, int]],
         entrance_pos: tuple[int, int],
         tier: DifficultyTier,
-        rng: random.Random,
+        rng: SimRng,
         config: MapGenConfig,
     ) -> list[GroundEnemy]:
         """Place enemies with patrol routes on the map."""
@@ -1161,7 +1161,7 @@ class GroundMapGenerator:
     def _build_template_pool(
         self,
         tier: DifficultyTier,
-        rng: random.Random,
+        rng: SimRng,
         faction_id: Optional[str] = None,
     ) -> list[str]:
         """Build a weighted pool of enemy template IDs for this tier.
@@ -1185,7 +1185,7 @@ class GroundMapGenerator:
         ground_map: GroundMap,
         start_x: int,
         start_y: int,
-        rng: random.Random,
+        rng: SimRng,
     ) -> list[tuple[int, int]]:
         """Generate a patrol route starting from a position.
 

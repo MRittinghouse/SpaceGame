@@ -6,14 +6,13 @@ and smuggling contracts for the underground economy.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.commodity import Legality
 from spacegame.models.faction import ReputationTier, get_reputation_tier
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.encounter import EncounterDefinition
@@ -384,9 +383,7 @@ def should_trigger_inspection(
         return False
 
     # Deterministic seed
-    seed_str = f"{game_day}_{system_id}_customs"
-    seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-    rng = _rng.Random(seed)
+    rng = SimRng.from_key("customs", game_day, system_id)
 
     roll = rng.random()
     return roll < chance
@@ -1004,9 +1001,7 @@ class SmugglingContractManager:
         """
         # Seed groups by 3-day windows for refresh cycle
         day_window = game_day // 3
-        seed_str = f"{system_id}_{day_window}_smuggling_contracts"
-        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        rng = _rng.Random(seed)
+        rng = SimRng.from_key("smuggling_contracts", system_id, day_window)
 
         # Build pool based on player level
         pool: list[tuple[str, str, str]] = []
@@ -1640,9 +1635,7 @@ def should_trigger_bounty_hunter(
     if chance <= 0.0:
         return False
 
-    seed_str = f"{game_day}_{system_id}_bounty_hunter"
-    seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-    rng = _rng.Random(seed)
+    rng = SimRng.from_key("bounty_hunter", game_day, system_id)
 
     return rng.random() < chance
 
@@ -1657,7 +1650,7 @@ def get_bounty_hunter_enemies(tier: BountyHunterTier, seed: int) -> list[str]:
     Returns:
         List of enemy template IDs.
     """
-    rng = _rng.Random(seed)
+    rng = SimRng.from_key("bounty_enemies", seed)
     pool = _BOUNTY_ENEMY_POOL[tier]
     min_count, max_count = _BOUNTY_ENEMY_COUNTS[tier]
     count = rng.randint(min_count, max_count)

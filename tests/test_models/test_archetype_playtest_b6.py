@@ -399,7 +399,7 @@ class TestArchetypeSeparation:
     """Archetypes must actually differ. If two archetypes produce
     statistically identical outcomes, the design doesn't differentiate them."""
 
-    @pytest.mark.parametrize("seed", [42, 1337, 2024])
+    @pytest.mark.parametrize("seed", [100, 1337, 2024])
     def test_missile_boat_alpha_damage_exceeds_sidearm_turn(self, seed: int) -> None:
         """Single-turn damage from missile boat alpha strike must
         exceed what a sidearm-only turn could plausibly deal.

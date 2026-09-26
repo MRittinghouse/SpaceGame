@@ -1,0 +1,790 @@
+{
+  "case": "price_table_verdant",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "verdant"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 76,
+          "electronics": 261,
+          "food": 28,
+          "fresh_water": 17,
+          "fuel": 9,
+          "hydroponics_yield": 42,
+          "machinery": 158,
+          "manufactured_goods": 131,
+          "medical": 328,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 78,
+          "electronics": 295,
+          "food": 28,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 46,
+          "machinery": 164,
+          "manufactured_goods": 115,
+          "medical": 372,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 76,
+          "electronics": 276,
+          "food": 28,
+          "fresh_water": 17,
+          "fuel": 9,
+          "hydroponics_yield": 51,
+          "machinery": 184,
+          "manufactured_goods": 126,
+          "medical": 333,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 292,
+          "food": 26,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 52,
+          "machinery": 174,
+          "manufactured_goods": 130,
+          "medical": 352,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 74,
+          "electronics": 292,
+          "food": 32,
+          "fresh_water": 16,
+          "fuel": 10,
+          "hydroponics_yield": 44,
+          "machinery": 162,
+          "manufactured_goods": 131,
+          "medical": 349,
+          "textiles": 27
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 71,
+          "electronics": 260,
+          "food": 31,
+          "fresh_water": 19,
+          "fuel": 10,
+          "hydroponics_yield": 53,
+          "machinery": 172,
+          "manufactured_goods": 127,
+          "medical": 320,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 74,
+          "electronics": 286,
+          "food": 29,
+          "fresh_water": 18,
+          "fuel": 9,
+          "hydroponics_yield": 44,
+          "machinery": 167,
+          "manufactured_goods": 116,
+          "medical": 333,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 73,
+          "electronics": 292,
+          "food": 31,
+          "fresh_water": 17,
+          "fuel": 9,
+          "hydroponics_yield": 40,
+          "machinery": 175,
+          "manufactured_goods": 108,
+          "medical": 347,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 76,
+          "electronics": 295,
+          "food": 33,
+          "fresh_water": 16,
+          "fuel": 10,
+          "hydroponics_yield": 43,
+          "machinery": 181,
+          "manufactured_goods": 123,
+          "medical": 331,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 71,
+          "electronics": 268,
+          "food": 27,
+          "fresh_water": 18,
+          "fuel": 9,
+          "hydroponics_yield": 50,
+          "machinery": 173,
+          "manufactured_goods": 114,
+          "medical": 346,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 273,
+          "food": 29,
+          "fresh_water": 20,
+          "fuel": 10,
+          "hydroponics_yield": 48,
+          "machinery": 161,
+          "manufactured_goods": 124,
+          "medical": 322,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 71,
+          "electronics": 281,
+          "food": 29,
+          "fresh_water": 18,
+          "fuel": 10,
+          "hydroponics_yield": 43,
+          "machinery": 178,
+          "manufactured_goods": 118,
+          "medical": 364,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 71,
+          "electronics": 269,
+          "food": 30,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 48,
+          "machinery": 159,
+          "manufactured_goods": 114,
+          "medical": 318,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 77,
+          "electronics": 288,
+          "food": 33,
+          "fresh_water": 16,
+          "fuel": 9,
+          "hydroponics_yield": 40,
+          "machinery": 181,
+          "manufactured_goods": 123,
+          "medical": 338,
+          "textiles": 25
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 262,
+          "food": 29,
+          "fresh_water": 16,
+          "fuel": 10,
+          "hydroponics_yield": 54,
+          "machinery": 169,
+          "manufactured_goods": 129,
+          "medical": 381,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 278,
+          "food": 31,
+          "fresh_water": 17,
+          "fuel": 10,
+          "hydroponics_yield": 49,
+          "machinery": 178,
+          "manufactured_goods": 111,
+          "medical": 327,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 78,
+          "electronics": 287,
+          "food": 31,
+          "fresh_water": 18,
+          "fuel": 10,
+          "hydroponics_yield": 43,
+          "machinery": 169,
+          "manufactured_goods": 116,
+          "medical": 381,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 71,
+          "electronics": 284,
+          "food": 26,
+          "fresh_water": 17,
+          "fuel": 9,
+          "hydroponics_yield": 42,
+          "machinery": 157,
+          "manufactured_goods": 129,
+          "medical": 348,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 76,
+          "electronics": 290,
+          "food": 28,
+          "fresh_water": 15,
+          "fuel": 9,
+          "hydroponics_yield": 55,
+          "machinery": 162,
+          "manufactured_goods": 112,
+          "medical": 381,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 75,
+          "electronics": 272,
+          "food": 26,
+          "fresh_water": 15,
+          "fuel": 9,
+          "hydroponics_yield": 52,
+          "machinery": 179,
+          "manufactured_goods": 130,
+          "medical": 344,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 74,
+          "electronics": 270,
+          "food": 27,
+          "fresh_water": 17,
+          "fuel": 9,
+          "hydroponics_yield": 46,
+          "machinery": 159,
+          "manufactured_goods": 128,
+          "medical": 325,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 76,
+          "electronics": 294,
+          "food": 29,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 44,
+          "machinery": 186,
+          "manufactured_goods": 126,
+          "medical": 355,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 78,
+          "electronics": 275,
+          "food": 27,
+          "fresh_water": 20,
+          "fuel": 9,
+          "hydroponics_yield": 42,
+          "machinery": 186,
+          "manufactured_goods": 108,
+          "medical": 350,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 73,
+          "electronics": 264,
+          "food": 26,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 50,
+          "machinery": 173,
+          "manufactured_goods": 111,
+          "medical": 334,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 75,
+          "electronics": 273,
+          "food": 30,
+          "fresh_water": 16,
+          "fuel": 10,
+          "hydroponics_yield": 48,
+          "machinery": 180,
+          "manufactured_goods": 111,
+          "medical": 356,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 74,
+          "electronics": 272,
+          "food": 26,
+          "fresh_water": 19,
+          "fuel": 9,
+          "hydroponics_yield": 40,
+          "machinery": 164,
+          "manufactured_goods": 113,
+          "medical": 326,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 74,
+          "electronics": 294,
+          "food": 31,
+          "fresh_water": 18,
+          "fuel": 10,
+          "hydroponics_yield": 54,
+          "machinery": 177,
+          "manufactured_goods": 121,
+          "medical": 378,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 293,
+          "food": 27,
+          "fresh_water": 20,
+          "fuel": 9,
+          "hydroponics_yield": 52,
+          "machinery": 171,
+          "manufactured_goods": 108,
+          "medical": 372,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 72,
+          "electronics": 275,
+          "food": 31,
+          "fresh_water": 19,
+          "fuel": 10,
+          "hydroponics_yield": 53,
+          "machinery": 181,
+          "manufactured_goods": 117,
+          "medical": 365,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 73,
+          "electronics": 261,
+          "food": 33,
+          "fresh_water": 19,
+          "fuel": 10,
+          "hydroponics_yield": 52,
+          "machinery": 181,
+          "manufactured_goods": 114,
+          "medical": 354,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

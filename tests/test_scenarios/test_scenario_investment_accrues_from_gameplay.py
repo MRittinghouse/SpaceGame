@@ -10,8 +10,12 @@ works with real producers.
 
 from __future__ import annotations
 
+import pytest
+
 from spacegame.data_loader import get_data_loader
 from tests.test_scenarios._helpers import fresh_player
+
+pytestmark = pytest.mark.act_two_v1
 
 
 def _dl():

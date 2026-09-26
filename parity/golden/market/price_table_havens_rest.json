@@ -1,0 +1,670 @@
+{
+  "case": "price_table_havens_rest",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "havens_rest"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 27,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 406,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 60,
+          "food": 28,
+          "fuel": 9,
+          "manufactured_goods": 109,
+          "medical": 405,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 31,
+          "fuel": 9,
+          "manufactured_goods": 129,
+          "medical": 372,
+          "textiles": 25
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 63,
+          "food": 27,
+          "fuel": 10,
+          "manufactured_goods": 131,
+          "medical": 372,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 28,
+          "fuel": 9,
+          "manufactured_goods": 109,
+          "medical": 384,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 60,
+          "food": 27,
+          "fuel": 10,
+          "manufactured_goods": 122,
+          "medical": 427,
+          "textiles": 20
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 31,
+          "fuel": 10,
+          "manufactured_goods": 126,
+          "medical": 393,
+          "textiles": 25
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 59,
+          "food": 32,
+          "fuel": 9,
+          "manufactured_goods": 128,
+          "medical": 425,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 9,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 61,
+          "food": 31,
+          "fuel": 10,
+          "manufactured_goods": 120,
+          "medical": 386,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 10,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 33,
+          "fuel": 9,
+          "manufactured_goods": 120,
+          "medical": 435,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 11,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 63,
+          "food": 30,
+          "fuel": 10,
+          "manufactured_goods": 119,
+          "medical": 395,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 12,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 33,
+          "fuel": 10,
+          "manufactured_goods": 130,
+          "medical": 393,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 13,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 60,
+          "food": 29,
+          "fuel": 10,
+          "manufactured_goods": 113,
+          "medical": 369,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 14,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 59,
+          "food": 27,
+          "fuel": 10,
+          "manufactured_goods": 130,
+          "medical": 396,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 15,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 26,
+          "fuel": 10,
+          "manufactured_goods": 108,
+          "medical": 416,
+          "textiles": 24
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 16,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 28,
+          "fuel": 10,
+          "manufactured_goods": 120,
+          "medical": 431,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 17,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 59,
+          "food": 31,
+          "fuel": 9,
+          "manufactured_goods": 108,
+          "medical": 421,
+          "textiles": 27
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 18,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 60,
+          "food": 31,
+          "fuel": 10,
+          "manufactured_goods": 111,
+          "medical": 408,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 19,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 31,
+          "fuel": 9,
+          "manufactured_goods": 119,
+          "medical": 422,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 20,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 28,
+          "fuel": 10,
+          "manufactured_goods": 115,
+          "medical": 367,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 21,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 58,
+          "food": 31,
+          "fuel": 9,
+          "manufactured_goods": 115,
+          "medical": 413,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 22,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 29,
+          "fuel": 9,
+          "manufactured_goods": 122,
+          "medical": 397,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 23,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 63,
+          "food": 28,
+          "fuel": 9,
+          "manufactured_goods": 109,
+          "medical": 414,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 24,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 60,
+          "food": 29,
+          "fuel": 9,
+          "manufactured_goods": 128,
+          "medical": 434,
+          "textiles": 21
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 25,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 61,
+          "food": 32,
+          "fuel": 10,
+          "manufactured_goods": 118,
+          "medical": 374,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 26,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 57,
+          "food": 28,
+          "fuel": 9,
+          "manufactured_goods": 108,
+          "medical": 375,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 27,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 61,
+          "food": 29,
+          "fuel": 9,
+          "manufactured_goods": 122,
+          "medical": 376,
+          "textiles": 26
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 28,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 61,
+          "food": 28,
+          "fuel": 9,
+          "manufactured_goods": 111,
+          "medical": 374,
+          "textiles": 25
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 29,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 59,
+          "food": 29,
+          "fuel": 10,
+          "manufactured_goods": 116,
+          "medical": 395,
+          "textiles": 22
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 30,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 56,
+          "food": 27,
+          "fuel": 9,
+          "manufactured_goods": 109,
+          "medical": 391,
+          "textiles": 23
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

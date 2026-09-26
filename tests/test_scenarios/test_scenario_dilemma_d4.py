@@ -39,6 +39,8 @@ from tests.test_compliance.test_dilemma_integrity import (
 )
 from tests.test_scenarios._helpers import fresh_player
 
+pytestmark = pytest.mark.act_two_v1
+
 D4_ID = "d4_truth_vengeance"
 
 
@@ -47,6 +49,11 @@ def d4_dilemma():
     """Return the loaded D4 dilemma from the singleton DataLoader."""
     dl = get_data_loader()
     dl.load_all()
+    # Module-scoped: pytest sets this up before the function-scoped
+    # ``act_two_v1`` marker fixture can flip the flag on, so ``load_all``
+    # may have skipped the Act II registries. Load them directly.
+    if not dl.dilemmas:
+        dl.load_act_two_v1()
     assert D4_ID in dl.dilemmas, (
         f"{D4_ID} not loaded from data/narrative/dilemmas/. Available: {sorted(dl.dilemmas.keys())}"
     )

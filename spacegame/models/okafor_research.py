@@ -7,17 +7,18 @@ mutable :class:`OkaforResearchState` lives on
 patent holdings, and the player's relationship-value with Dr. Kweon.
 
 Risk resolution is deterministic per CLAUDE.md "Gameplay Philosophy":
-the seeded RNG ``random.Random(f"{template_id}_{accept_day}_{player_seed}")``
-fixes the outcome the moment the player funds. Reload-and-retry never
-changes the result.
+the keyed ``SimRng.from_key("okafor_outcome", template_id, accept_day,
+player_seed)`` stream fixes the outcome the moment the player funds.
+Reload-and-retry never changes the result.
 """
 
 from __future__ import annotations
 
 import math
-import random
 from dataclasses import dataclass, field
 from typing import Any, Optional
+
+from spacegame.sim_rng import SimRng
 
 # ---------------------------------------------------------------------------
 # Tunables (decisions locked in the SA-R1 plan; risks/open-questions section)
@@ -507,7 +508,7 @@ def roll_offers(
     if not templates:
         return []
     window = seed_for_window(game_day)
-    rng = random.Random(f"{window}_{player_seed_token}_okafor")
+    rng = SimRng.from_key("okafor_offers", window, player_seed_token)
     upper = min(SLOT_OFFER_MAX, len(templates))
     lower = min(SLOT_OFFER_MIN, upper)
     count = rng.randint(lower, upper) if upper > lower else upper
@@ -689,7 +690,7 @@ def resolve_completion(
         success payout with bonus applied; on failure ``payout`` is the
         30% refund of ``active.cost_paid``.
     """
-    rng = random.Random(f"{template.id}_{active.accept_day}_{player_seed_token}")
+    rng = SimRng.from_key("okafor_outcome", template.id, active.accept_day, player_seed_token)
     roll = rng.random()
     base_odds = template.base_failure_odds
     effective_odds = max(0.0, min(base_odds, base_odds - risk_reduction_total))

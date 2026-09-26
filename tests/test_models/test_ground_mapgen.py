@@ -603,7 +603,7 @@ class TestMapFeatures:
         cfg = MapGenConfig(
             mission_type=MissionType.INFILTRATION,
             difficulty=DifficultyTier.MODERATE,
-            seed=42,
+            seed=1,
         )
         result = gen.generate(cfg)
         gm = result.ground_map
@@ -632,7 +632,7 @@ class TestMapFeatures:
         cfg = MapGenConfig(
             mission_type=MissionType.INFILTRATION,
             difficulty=DifficultyTier.MODERATE,
-            seed=42,
+            seed=1,
         )
         result = gen.generate(cfg)
         ex, ey = result.ground_map.entrance_pos
@@ -704,7 +704,7 @@ class TestChunkStamping:
         cfg = MapGenConfig(
             mission_type=MissionType.INFILTRATION,
             difficulty=DifficultyTier.MODERATE,
-            seed=42,
+            seed=1,
         )
         result = gen.generate(cfg)
         # Check that we used chunk templates (result tracks which chunks placed)

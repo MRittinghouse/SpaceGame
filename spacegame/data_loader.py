@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+import spacegame.config as sg_config
 from spacegame.models.achievement import Achievement
 from spacegame.models.ambient_dialogue import AmbientLine
 from spacegame.models.combat import (
@@ -244,11 +245,8 @@ class DataLoader:
         self._safe_load("news_templates", self.load_news_templates)
         self._safe_load("travel_log_templates", self.load_travel_log_templates)
         self._safe_load("balance_config", self.load_balance_config)
-        self._safe_load("lenses", self.load_lenses)
-        self._safe_load("capstones", self.load_capstones)
-        self._safe_load("lens_reactions", self.load_lens_reactions)
-        self._safe_load("dilemmas", self.load_dilemmas)
-        self._safe_load("post_capstone_templates", self.load_post_capstone_templates)
+        if sg_config.ACT_TWO_V1_ENABLED:
+            self.load_act_two_v1()
         logger.info(
             f"Data loaded: {len(self.systems)} systems, "
             f"{len(self.commodities)} commodities, "
@@ -262,6 +260,18 @@ class DataLoader:
             f"{len(self.enemy_templates)} enemy templates, "
             f"{len(self.journal_entries)} journal entries"
         )
+
+    def load_act_two_v1(self) -> None:
+        """Load the archived Act II v1 registries.
+
+        Called by ``load_all`` only while ``ACT_TWO_V1_ENABLED`` is on, and by
+        the ``act_two_v1`` test fixture.
+        """
+        self._safe_load("lenses", self.load_lenses)
+        self._safe_load("capstones", self.load_capstones)
+        self._safe_load("lens_reactions", self.load_lens_reactions)
+        self._safe_load("dilemmas", self.load_dilemmas)
+        self._safe_load("post_capstone_templates", self.load_post_capstone_templates)
 
     def validate(self) -> list[str]:
         """Cross-reference all loaded data and log warnings for mismatches.

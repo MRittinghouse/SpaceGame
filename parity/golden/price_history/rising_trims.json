@@ -1,0 +1,516 @@
+{
+  "case": "rising_trims",
+  "format": 1,
+  "setup": {
+    "max_days": 7
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        1,
+        23
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        2,
+        26
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        3,
+        29
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        4,
+        32
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        5,
+        35
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        6,
+        38
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        7,
+        41
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                1,
+                23
+              ],
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        8,
+        44
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                2,
+                26
+              ],
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ],
+              [
+                8,
+                44
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        9,
+        47
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                3,
+                29
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ],
+              [
+                8,
+                44
+              ],
+              [
+                9,
+                47
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        10,
+        50
+      ],
+      "call": "record",
+      "result": null,
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ],
+              [
+                8,
+                44
+              ],
+              [
+                9,
+                47
+              ],
+              [
+                10,
+                50
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food"
+      ],
+      "call": "get_history",
+      "result": [
+        [
+          4,
+          32
+        ],
+        [
+          5,
+          35
+        ],
+        [
+          6,
+          38
+        ],
+        [
+          7,
+          41
+        ],
+        [
+          8,
+          44
+        ],
+        [
+          9,
+          47
+        ],
+        [
+          10,
+          50
+        ]
+      ],
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ],
+              [
+                8,
+                44
+              ],
+              [
+                9,
+                47
+              ],
+              [
+                10,
+                50
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food"
+      ],
+      "call": "get_trend",
+      "result": "rising",
+      "state": {
+        "history": {
+          "nexus_prime": {
+            "food": [
+              [
+                4,
+                32
+              ],
+              [
+                5,
+                35
+              ],
+              [
+                6,
+                38
+              ],
+              [
+                7,
+                41
+              ],
+              [
+                8,
+                44
+              ],
+              [
+                9,
+                47
+              ],
+              [
+                10,
+                50
+              ]
+            ]
+          }
+        },
+        "max_days": 7
+      }
+    }
+  ],
+  "subsystem": "price_history"
+}

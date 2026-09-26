@@ -5,9 +5,10 @@ daily returns (credits or commodities). Three tiers per system with
 increasing costs and returns.
 """
 
-import random
 from dataclasses import dataclass
 from typing import Optional
+
+from spacegame.sim_rng import SimRng
 
 
 @dataclass
@@ -114,7 +115,16 @@ class InvestmentManager:
         self,
         templates: dict[str, InvestmentTemplate],
         active: Optional[dict[str, Investment]] = None,
+        rng: SimRng | None = None,
     ) -> None:
+        """Initialize the investment manager.
+
+        Args:
+            templates: Investment templates keyed by system ID.
+            active: Active investments keyed by system ID, or None for empty.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self.templates = templates
         self.active: dict[str, Investment] = active if active is not None else {}
 
@@ -252,7 +262,7 @@ class InvestmentManager:
                 day_return = tier_info.daily_return_amount
                 # Dangerous systems: 10% chance of pirate interference
                 danger = danger_levels.get(system_id, "safe")
-                if danger == "dangerous" and random.random() < 0.10:
+                if danger == "dangerous" and self._rng.random() < 0.10:
                     day_return = day_return // 2
                 total_return += day_return
 

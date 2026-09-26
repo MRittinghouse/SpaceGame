@@ -7,7 +7,6 @@ and end-of-round processing.
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.combat import (
@@ -33,6 +32,7 @@ from spacegame.models.momentum import (
     MOMENTUM_ON_KILL,
     MOMENTUM_ON_STATUS_APPLIED,
 )
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.action_queue import ActionQueue
@@ -68,7 +68,7 @@ class CombatEngine:
         complications: Optional[list[CombatComplication]] = None,
     ) -> None:
         self._state = state
-        self._rng = random.Random(seed)
+        self._rng = SimRng.from_key("combat", seed)
         # CE-3 Wave 2: live complication resolution. Caller resolves
         # ``EncounterDefinition.complication_ids`` against the data loader
         # and passes the actual CombatComplication instances. The engine
@@ -1520,7 +1520,9 @@ class CombatEngine:
 
                         # Get base damage from move's first DAMAGE effect
                         base_dmg = sum(e.value for e in move.effects if e.type == EffectType.DAMAGE)
-                        triggered, mult = process_chain_fire(attacker_state._legendary, base_dmg)
+                        triggered, mult = process_chain_fire(
+                            attacker_state._legendary, base_dmg, rng=self._rng
+                        )
                         if triggered:
                             chain_dmg = base_dmg * mult
                             chain_msgs: list[str] = [f"CHAIN FIRE! ({int(chain_dmg)} damage)"]
@@ -2030,8 +2032,8 @@ class CombatEngine:
             )
         return messages
 
-    @staticmethod
     def _apply_direct_damage(
+        self,
         target: PlayerCombatState | EnemyShip,
         reduced: float,
         messages: list[str],
@@ -2137,6 +2139,7 @@ class CombatEngine:
                             target._ship_build,
                             target._module_catalog,
                             target.module_states,
+                            rng=self._rng,
                         )
                         if target._ship_build
                         else None
@@ -2205,6 +2208,7 @@ class CombatEngine:
                                 hit_idx,
                                 target.module_states,
                                 target._adjacency_map,
+                                rng=self._rng,
                             )
                             if chain:
                                 chain_target = target.module_states[chain["target_idx"]]

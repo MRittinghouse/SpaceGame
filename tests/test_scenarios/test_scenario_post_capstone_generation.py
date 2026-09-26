@@ -22,6 +22,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 import pygame_gui
+import pytest
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.dilemma import DilemmaRuntimeState
@@ -31,6 +32,8 @@ from spacegame.models.player import Player
 from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
 from spacegame.models.procedural_missions import ProceduralMissionGenerator
 from spacegame.models.ship import Ship
+
+pytestmark = pytest.mark.act_two_v1
 
 
 def _real_ui_manager() -> pygame_gui.UIManager:

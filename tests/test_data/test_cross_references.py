@@ -9,8 +9,12 @@ they reach playtesters.
 from collections import defaultdict
 from pathlib import Path
 
+import pytest
+
 from spacegame.data_loader import DataLoader
 from spacegame.models.mission import ObjectiveType
+
+pytestmark = pytest.mark.act_two_v1
 
 # ---------------------------------------------------------------------------
 # Shared loader fixture

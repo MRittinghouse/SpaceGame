@@ -6,8 +6,6 @@ and manages political events and intel reports.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
@@ -22,6 +20,7 @@ from spacegame.config import (
     REP_SPILLOVER_RATIO,
 )
 from spacegame.models.faction import Faction, TensionLevel, get_tension_level
+from spacegame.sim_rng import SimRng
 
 
 class PoliticalEventType(Enum):
@@ -451,9 +450,7 @@ class PoliticsManager:
             return None
 
         # Deterministic random
-        seed_str = f"{current_day}_political"
-        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        rng = _rng.Random(seed)
+        rng = SimRng.from_key("political_event", current_day)
 
         if rng.random() >= POLITICAL_EVENT_DAILY_CHANCE:
             return None

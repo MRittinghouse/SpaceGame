@@ -609,9 +609,8 @@ class TestCorruptionTimer:
 
     def test_corrupted_extraction_50_percent_zero(self):
         """Corrupted cells have ~50% chance of yielding 0 on extraction."""
-        import random as rng
+        from spacegame.sim_rng import SimRng
 
-        rng.seed(42)
         zero_count = 0
         total = 50
         for i in range(total):
@@ -626,7 +625,7 @@ class TestCorruptionTimer:
                 corruption_seconds=0.1,
             )
             config = SalvageConfig(system_id="test", max_charges=20)
-            session = SalvageSession(config, derelict_type=derelict)
+            session = SalvageSession(config, derelict_type=derelict, rng=SimRng.from_key("test", i))
             session.scan_cell(0, 0)  # Start timer
             session.update(1.0)  # Trigger corruption
             # Scan and extract a corrupted cell

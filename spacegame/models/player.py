@@ -7,6 +7,7 @@ Tracks player credits, location, ship, and game progress.
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
+import spacegame.config as sg_config
 from spacegame.models.bidding import AuctionState
 from spacegame.models.captain_memory import CaptainMemory
 from spacegame.models.deep_core import DeepCoreUpgradeState
@@ -482,6 +483,9 @@ class Player:
             List of lens_ids that were actually incremented (closed lenses
             are not included).
         """
+        if not sg_config.ACT_TWO_V1_ENABLED:
+            return []
+
         from spacegame.data_loader import get_data_loader
         from spacegame.utils.logger import logger
 

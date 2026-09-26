@@ -9,8 +9,6 @@ skills to create situational opportunities for different character builds.
 
 from __future__ import annotations
 
-import hashlib
-import random as _rng
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Optional
@@ -21,6 +19,7 @@ from spacegame.config import (
     GALAXY_EVENT_MAX_DURATION,
     GALAXY_EVENT_MIN_DURATION,
 )
+from spacegame.sim_rng import SimRng
 
 
 class GalaxyEventType(Enum):
@@ -185,7 +184,7 @@ class GalaxyEventGenerator:
         Returns:
             Constructed GalaxyEvent.
         """
-        rng = _rng.Random(current_day)
+        rng = SimRng.from_key("galaxy_event_build", current_day)
         event_type = GalaxyEventType(template["event_type"])
         duration = rng.randint(
             template.get("duration_min", GALAXY_EVENT_MIN_DURATION),
@@ -258,9 +257,7 @@ class GalaxyEventGenerator:
             return None
 
         # Deterministic random
-        seed_str = f"{current_day}_galaxy"
-        seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-        rng = _rng.Random(seed)
+        rng = SimRng.from_key("galaxy_event", current_day)
 
         if rng.random() >= GALAXY_EVENT_DAILY_CHANCE:
             return None

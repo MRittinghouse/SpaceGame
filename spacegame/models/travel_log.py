@@ -7,10 +7,10 @@ and galaxy events. Uses templates from data/journal/travel_log_templates.json.
 
 from __future__ import annotations
 
-import random as _rng
 from typing import Any, Optional
 
 from spacegame.models.journal import JournalEntry
+from spacegame.sim_rng import SimRng
 
 
 class TravelLogGenerator:
@@ -20,7 +20,14 @@ class TravelLogGenerator:
     selects random templates and fills in placeholders.
     """
 
-    def __init__(self, templates: dict[str, Any]) -> None:
+    def __init__(self, templates: dict[str, Any], rng: SimRng | None = None) -> None:
+        """Initialize the travel log generator.
+
+        Args:
+            templates: Template data loaded by DataLoader.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self._first_visit: dict[str, str] = templates.get("first_visit", {})
         self._major_trade: list[str] = templates.get("major_trade", [])
         self._encounter: list[str] = templates.get("encounter_survived", [])
@@ -70,7 +77,7 @@ class TravelLogGenerator:
         """
         if not self._major_trade:
             return None
-        template = _rng.choice(self._major_trade)
+        template = self._rng.choice(self._major_trade)
         text = template.format(commodity=commodity, profit=profit, system=system_id)
         return JournalEntry(
             entry_id=self._next_id("trade"),
@@ -93,7 +100,7 @@ class TravelLogGenerator:
         """
         if not self._encounter:
             return None
-        template = _rng.choice(self._encounter)
+        template = self._rng.choice(self._encounter)
         text = template.format(system=system_id)
         return JournalEntry(
             entry_id=self._next_id("encounter"),
@@ -124,7 +131,7 @@ class TravelLogGenerator:
         """
         if not self._galaxy_event:
             return None
-        template = _rng.choice(self._galaxy_event)
+        template = self._rng.choice(self._galaxy_event)
         text = template.format(event_type=event_type, description=description, system=system_id)
         return JournalEntry(
             entry_id=self._next_id("event"),

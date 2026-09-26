@@ -1,0 +1,98 @@
+{
+  "case": "off_market_herons_mark",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "herons_mark"
+  },
+  "source_commit": "a3c88fb9ad522eed6fed7876bf6c1c570e755438",
+  "steps": [
+    {
+      "args": [],
+      "call": "snapshot",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        "food"
+      ],
+      "call": "get_price",
+      "result": 0,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        "food"
+      ],
+      "call": "get_sell_price",
+      "result": 25,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        "data_chip"
+      ],
+      "call": "get_sell_price",
+      "result": 0,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        "not_a_commodity"
+      ],
+      "call": "get_sell_price",
+      "result": 0,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    },
+    {
+      "args": [],
+      "call": "initialize_stock",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {},
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

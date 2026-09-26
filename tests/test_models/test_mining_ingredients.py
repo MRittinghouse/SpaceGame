@@ -1,9 +1,9 @@
 """Tests for mining ingredient drops (flux_catalyst, resonance_core)."""
 
 import pytest
-import random
 
 from spacegame.models.mining import MiningResult, MiningSession, MiningConfig, ChainBreak
+from spacegame.sim_rng import SimRng
 
 
 def _make_config() -> MiningConfig:
@@ -136,8 +136,7 @@ class TestClickRockIngredientDrop:
         config.base_click_power = 100.0  # Ensure one-shot breaks
         found_ingredient = False
         for seed in range(50):
-            random.seed(seed)
-            session = MiningSession(config)
+            session = MiningSession(config, rng=SimRng.from_key("test", seed))
             session.depth = 100
             for rock in session.rocks:
                 if not rock.depleted:
@@ -157,8 +156,7 @@ class TestPassiveDrillIngredientDrop:
         config = _make_config()
         found_ingredient = False
         for seed in range(50):
-            random.seed(seed)
-            session = MiningSession(config)
+            session = MiningSession(config, rng=SimRng.from_key("test", seed))
             session.depth = 100
             # Pick an active rock and set it nearly done
             for rock in session.rocks:
