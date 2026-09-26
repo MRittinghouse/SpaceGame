@@ -4,13 +4,17 @@ Usage:
     python -m tools.parity.regen [--out DIR] [--allow-dirty]
 
 Refuses to run when files outside ``parity/`` are modified, so a golden's
-``source_commit`` always names the code that produced it. Review the git diff
-of ``parity/`` before committing a regen; a regen commit holds only goldens.
+``source_commit`` always names the code that produced it. ``--allow-dirty``
+(used by the determinism check) writes anyway and stamps ``<sha>-dirty``.
+Each run clears ``<out>/golden/`` first, so a case a driver no longer produces
+leaves no file behind. Review the git diff of ``parity/`` before committing a
+regen; a regen commit holds only goldens.
 """
 
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -24,7 +28,11 @@ DRIVERS: list[Callable[[], list[Case]]] = [rng_vectors.build_cases, market_drive
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run every driver and write the goldens.
+    """Run every driver and write the goldens and the schema.
+
+    Clears ``<out>/golden/`` before writing. With ``--allow-dirty`` on a tree
+    that has changes outside ``parity/``, stamps ``<sha>-dirty`` as each
+    golden's ``source_commit``.
 
     Args:
         argv: Command-line arguments (defaults to ``sys.argv[1:]``).
@@ -45,10 +53,15 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     out = Path(args.out)
-    commit = source_commit()
+    head = source_commit()
+    commit = f"{head}-dirty" if dirty else head
     cases = [case for build in DRIVERS for case in build()]
-    written = write_cases(cases, out / "golden", commit)
-    print(f"Wrote {len(written)} golden files under {out / 'golden'} from {commit[:10]}")
+    golden_root = out / "golden"
+    if golden_root.exists():
+        shutil.rmtree(golden_root)
+    written = write_cases(cases, golden_root, commit)
+    label = f"{head[:10]}-dirty" if dirty else head[:10]
+    print(f"Wrote {len(written)} golden files under {golden_root} from {label}")
     write_schema(out / "schema.json")
     print(f"Wrote schema to {out / 'schema.json'}")
     return 0

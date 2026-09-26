@@ -114,3 +114,56 @@ class TestRegenRefusesDirtyTree:
         monkeypatch.setattr(regen, "dirty_paths_outside", lambda prefix: ["spacegame/x.py"])
         assert regen.main(["--out", str(tmp_path), "--allow-dirty"]) == 0
         assert (tmp_path / "golden" / "sim_rng").is_dir()
+
+
+def _stamped_commits(out: Path) -> set[str]:
+    return {
+        json.loads(path.read_bytes())["source_commit"] for path in (out / "golden").rglob("*.json")
+    }
+
+
+class TestRegenSourceCommit:
+    def test_allow_dirty_on_a_dirty_tree_stamps_a_dirty_commit(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from tools.parity import regen
+
+        monkeypatch.setattr(regen, "dirty_paths_outside", lambda prefix: ["spacegame/x.py"])
+        monkeypatch.setattr(regen, "source_commit", lambda: "abc123")
+        assert regen.main(["--out", str(tmp_path), "--allow-dirty"]) == 0
+        assert _stamped_commits(tmp_path) == {"abc123-dirty"}, (
+            "a golden written from a dirty tree must not claim the clean HEAD produced it"
+        )
+
+    def test_clean_tree_stamps_head(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        from tools.parity import regen
+
+        monkeypatch.setattr(regen, "dirty_paths_outside", lambda prefix: [])
+        monkeypatch.setattr(regen, "source_commit", lambda: "abc123")
+        assert regen.main(["--out", str(tmp_path), "--allow-dirty"]) == 0
+        assert _stamped_commits(tmp_path) == {"abc123"}
+
+
+class TestRegenClearsGoldens:
+    def test_goldens_no_driver_produces_are_removed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from tools.parity import regen
+
+        orphan = tmp_path / "golden" / "retired" / "old_case.json"
+        orphan.parent.mkdir(parents=True)
+        orphan.write_text("{}\n", encoding="utf-8")
+        stale = tmp_path / "golden" / "sim_rng" / "key_99.json"
+        stale.parent.mkdir(parents=True)
+        stale.write_text("{}\n", encoding="utf-8")
+        notes = tmp_path / "port_notes.md"
+        notes.write_text("kept\n", encoding="utf-8")
+
+        monkeypatch.setattr(regen, "dirty_paths_outside", lambda prefix: [])
+        assert regen.main(["--out", str(tmp_path)]) == 0
+
+        assert not orphan.exists() and not orphan.parent.exists(), "orphan subsystem left behind"
+        assert not stale.exists(), "orphan case left beside current goldens"
+        assert (tmp_path / "golden" / "sim_rng" / "key_0.json").is_file()
+        assert (tmp_path / "schema.json").is_file()
+        assert notes.read_text(encoding="utf-8") == "kept\n", "only golden/ is cleared"
