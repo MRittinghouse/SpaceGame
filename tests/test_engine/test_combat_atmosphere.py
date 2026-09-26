@@ -133,12 +133,19 @@ def _contains_color(surf: pygame.Surface, rgb: tuple[int, int, int]) -> bool:
     return False
 
 
+def _on_canvas_streak() -> _DebrisStreak:
+    """A mid-life streak well inside the 400x300 arena.
+
+    A spawned streak takes a random lane and drift, and one near the top or bottom edge
+    can leave the canvas within 0.3s; these tests check the color, not the lane.
+    """
+    return _DebrisStreak(x=300, y=150, vx=-200, vy=0, length=40, life_remaining=1.0, max_life=2.0)
+
+
 class TestDebrisRendering:
     def test_dangerous_debris_uses_hud_warning(self) -> None:
         atm = CombatAtmosphere(_arena(), danger_level="dangerous")
-        # Force-spawn a fresh streak and advance slightly so alpha > 0.
-        atm._spawn_debris_streak()
-        atm.update(0.3)
+        atm._debris.append(_on_canvas_streak())
         canvas = pygame.Surface((400, 300), pygame.SRCALPHA)
         canvas.fill((0, 0, 0, 0))
         atm._render_debris(canvas)
@@ -146,8 +153,7 @@ class TestDebrisRendering:
 
     def test_crimson_debris_uses_hud_critical(self) -> None:
         atm = CombatAtmosphere(_arena(), danger_level="crimson")
-        atm._spawn_debris_streak()
-        atm.update(0.3)
+        atm._debris.append(_on_canvas_streak())
         canvas = pygame.Surface((400, 300), pygame.SRCALPHA)
         canvas.fill((0, 0, 0, 0))
         atm._render_debris(canvas)
