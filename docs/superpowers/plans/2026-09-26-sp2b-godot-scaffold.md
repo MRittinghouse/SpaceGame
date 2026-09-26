@@ -1,5 +1,7 @@
 # SP2-b Godot Scaffold Implementation Plan
 
+> **Moved.** The living copy is in the `aurelia` repo at `docs/plans/2026-09-26-sp2b-godot-scaffold.md`. This copy is frozen as of the SP2-b merge (2026-09-26); edit the aurelia copy.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Stand up the `aurelia` Godot 4.7 repo with Everember's gates, a synced copy of the Python reference's content and goldens, the GDScript twins of `SimRng` and Python's arithmetic, a golden-replay parity harness, and market pricing ported at parity as the tracer bullet.
