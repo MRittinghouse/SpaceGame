@@ -45,6 +45,7 @@ from spacegame.models.station_salience import (
     is_investment_unlocked,
 )
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import stable_seed
 from spacegame.utils import telemetry
 from spacegame.utils.logger import logger
 from spacegame.views._glow import render_pulsing_glow
@@ -287,7 +288,7 @@ class StationHubView(BaseView):
         self._flavor_index = 0
         self._flavor_timer = 0.0
         if self._flavor_texts:
-            rng = random.Random(hash(system.id))
+            rng = random.Random(stable_seed("station_flavor", system.id))
             rng.shuffle(self._flavor_texts)
 
         # Fonts — role-based for narrative immersion
@@ -349,7 +350,10 @@ class StationHubView(BaseView):
 
         # Background
         self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=hash(system.id) % 10000
+            "station",
+            WINDOW_WIDTH,
+            WINDOW_HEIGHT,
+            seed=stable_seed("station_background", system.id) % 10000,
         )
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))

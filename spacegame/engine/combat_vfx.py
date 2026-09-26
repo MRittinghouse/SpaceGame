@@ -16,6 +16,7 @@ import pygame
 
 from spacegame.config import scale_x
 from spacegame.engine.material_palette import get_role
+from spacegame.sim_rng import stable_seed
 
 # ==========================================================================
 # Shield Visualization
@@ -983,7 +984,7 @@ class CombatAtmosphere:
         self._arena = arena_rect
         self._danger = danger_level
         self._config = _ATMOSPHERE.get(danger_level, _ATMOSPHERE["safe"])
-        self._rng = _random.Random(hash(danger_level) + 777)
+        self._rng = _random.Random(stable_seed("combat_atmosphere", danger_level))
         self._elapsed: float = 0.0
 
         # Generate dust motes

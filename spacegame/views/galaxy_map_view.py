@@ -196,7 +196,9 @@ class GalaxyMapView(BaseView):
             else:
                 # Procedural fallback (already circular from generate_planet)
                 planet_type = system.type if system.type else "terran"
-                surface = generate_planet(12, planet_type, seed=hash(sys_id) % 10000)
+                surface = generate_planet(
+                    12, planet_type, seed=stable_seed("planet", sys_id) % 10000
+                )
                 self._planet_surfaces[sys_id] = surface
 
     @staticmethod

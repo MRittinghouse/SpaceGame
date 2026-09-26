@@ -1667,7 +1667,9 @@ class CombatView(BaseView):
         surf = pygame.Surface((64, 80), pygame.SRCALPHA)
         # Deterministic colorization by crew id so each crew reads distinct.
         if crew_id:
-            role = "hud_accent_warm" if hash(crew_id) % 2 == 0 else "hud_cyan"
+            role = (
+                "hud_accent_warm" if stable_seed("crew_portrait", crew_id) % 2 == 0 else "hud_cyan"
+            )
         else:
             role = "hud_muted"
         color = get_role(role)

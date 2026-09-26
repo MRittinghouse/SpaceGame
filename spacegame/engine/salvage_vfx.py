@@ -18,6 +18,7 @@ from spacegame.config import (
     scale_y,
 )
 from spacegame.engine.fonts import FONT_MD, FONT_XS, get_font
+from spacegame.sim_rng import stable_seed
 
 # ==========================================================================
 # Derelict Type Visual Profiles
@@ -99,7 +100,7 @@ class SalvageAtmosphere:
         self._particles: list[dict] = []
         self._emit_timer: float = 0.0
         self._elapsed: float = 0.0
-        self._rng = _random.Random(hash(derelict_type) + 99)
+        self._rng = _random.Random(stable_seed("salvage_atmosphere", derelict_type))
 
         # Transition state
         self._transitioning: bool = False

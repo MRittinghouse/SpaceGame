@@ -27,6 +27,7 @@ from typing import Optional
 
 from spacegame.models.combat import EnemyBehavior, EnemyShipTemplate
 from spacegame.models.ship_build import WEIGHT_CLASSES, PlacedPixel, ShipBuild
+from spacegame.sim_rng import stable_seed
 
 # ---------------------------------------------------------------------------
 # Mapping tables (spec §4.1 + Bible §4 manufacturer identity)
@@ -139,7 +140,7 @@ def generate_enemy_build(template: EnemyShipTemplate) -> ShipBuild:
 
 def _deterministic_seed(template_id: str) -> int:
     """Stable 31-bit seed derived from the template id."""
-    return hash(template_id) & 0x7FFFFFFF
+    return stable_seed("enemy_build", template_id) & 0x7FFFFFFF
 
 
 def _place_enemy_silhouette(
