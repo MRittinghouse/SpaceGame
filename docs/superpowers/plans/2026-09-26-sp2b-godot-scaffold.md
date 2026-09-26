@@ -10,14 +10,14 @@
 
 **Tech Stack:** Godot 4.7.2 (typed GDScript, console exe), gdUnit4 6.2.1, gdtoolkit 4.5 (gdformat, gdlint), Python 3.13 via uv (pytest, mypy strict, black 100).
 
-**Spec:** `docs/superpowers/specs/2026-09-26-sp2-foundation-design.md` in `C:\Users\matth\PycharmProjects\SpaceGame` (Sections 8, 9, 10). Read it, and the "Amendments" section at its end, before any task.
+**Spec:** `docs/superpowers/specs/2026-09-26-sp2-foundation-design.md` in `%USERPROFILE%\PycharmProjects\SpaceGame` (Sections 8, 9, 10). Read it, and the "Amendments" section at its end, before any task.
 
 **Precondition:** SP2-a is merged to SpaceGame `master`: `parity/golden/` (with `sim_rng/`, `market/`, `price_history/`) and `parity/schema.json` exist and the SpaceGame working tree is clean.
 
 ## Global Constraints
 
-- Repo: `C:\Users\matth\PycharmProjects\aurelia`, created in Task 1 with a root commit on `main`; all other work on branch `sp2b-scaffold`, merged with `git merge --no-ff` in Task 9. No remote; the first push is paired with the author.
-- Godot: `C:/Users/matth/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe` (the console exe; never the GUI exe for headless runs). Every headless script run passes `--remote-debug tcp://127.0.0.1:0` and closes stdin; `tools/gate.py` does both.
+- Repo: `%USERPROFILE%\PycharmProjects\aurelia`, created in Task 1 with a root commit on `main`; all other work on branch `sp2b-scaffold`, merged with `git merge --no-ff` in Task 9. No remote; the first push is paired with the author.
+- Godot: `%USERPROFILE%/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe` (the console exe; never the GUI exe for headless runs). Every headless script run passes `--remote-debug tcp://127.0.0.1:0` and closes stdin; `tools/gate.py` does both.
 - Typed GDScript everywhere: annotate every var, param, and return; untyped declarations are errors. `core/` holds RefCounted classes only: never Node, never `get_tree()`.
 - Files under about 300 lines; at most 25 public methods per class (gdlint enforces, including test suites); at most 8 returns per function (gdlint). Tabs, gdformat style.
 - Porting rules (spec 8.4, verbatim): (1) every Python `/` becomes `PyMath.true_div` or an explicit float division; (2) every Python `//` and `%` becomes `PyMath.floor_div_int`/`floor_div_float` and `PyMath.floor_mod_int`/`floor_mod_float`; (3) every Python `round(x)` becomes `PyMath.round_half_even(x)`, and `int(x)` stays `int(x)`; (4) float expressions keep Python's operand order and grouping; (5) dictionaries are built in Python's insertion order wherever order feeds a draw or an output list; (6) loaders cast by `data/schema.json`; (7) all simulation randomness goes through `SimRng`; (8) a ported subsystem is not redesigned until its parity suite passes.
@@ -87,7 +87,7 @@
 - [ ] **Step 1: Create the repo with a root commit on main**
 
 ```bash
-mkdir -p /c/Users/matth/PycharmProjects/aurelia && cd /c/Users/matth/PycharmProjects/aurelia
+mkdir -p ~/PycharmProjects/aurelia && cd ~/PycharmProjects/aurelia
 git init -b main
 ```
 
@@ -132,7 +132,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Godot MCP Pro is a paid, non-redistributable addon. Restore from C:\Users\matth\Tools\godot-mcp-pro\addons\
+# Godot MCP Pro is a paid, non-redistributable addon. Restore from %USERPROFILE%\Tools\godot-mcp-pro\addons\
 addons/godot_mcp/
 .claude/settings.local.json
 
@@ -154,17 +154,17 @@ git switch -c sp2b-scaffold
 - [ ] **Step 2: Copy the seed files from Everember**
 
 ```bash
-E=/c/Users/matth/PycharmProjects/fantasy-idler
-A=/c/Users/matth/PycharmProjects/aurelia
+E=~/PycharmProjects/fantasy-idler
+A=~/PycharmProjects/aurelia
 cp -r $E/addons/gdUnit4 $A/addons/
-mkdir -p $A/addons/godot_mcp && cp -r /c/Users/matth/Tools/godot-mcp-pro/addons/godot_mcp/. $A/addons/godot_mcp/
+mkdir -p $A/addons/godot_mcp && cp -r ~/Tools/godot-mcp-pro/addons/godot_mcp/. $A/addons/godot_mcp/
 cp $E/.gdlintrc $E/.mcp.json $E/.python-version $A/
 mkdir -p $A/tools && cp $E/tools/goal_run.py $E/tools/mcp_headless.json $A/tools/
 cp $E/tools/config.local.json $A/tools/config.local.json
 mkdir -p $A/docs/specs $A/docs/plans
-cp /c/Users/matth/PycharmProjects/SpaceGame/docs/superpowers/specs/2026-09-25-aurelia-overhaul-master-design.md $A/docs/specs/
-cp /c/Users/matth/PycharmProjects/SpaceGame/docs/superpowers/specs/2026-09-26-sp2-foundation-design.md $A/docs/specs/
-cp /c/Users/matth/PycharmProjects/SpaceGame/docs/superpowers/plans/2026-09-26-sp2b-godot-scaffold.md $A/docs/plans/
+cp ~/PycharmProjects/SpaceGame/docs/superpowers/specs/2026-09-25-aurelia-overhaul-master-design.md $A/docs/specs/
+cp ~/PycharmProjects/SpaceGame/docs/superpowers/specs/2026-09-26-sp2-foundation-design.md $A/docs/specs/
+cp ~/PycharmProjects/SpaceGame/docs/superpowers/plans/2026-09-26-sp2b-godot-scaffold.md $A/docs/plans/
 ```
 
 `tools/config.local.json` is git-ignored; it keeps the `godot` path. In `tools/goal_run.py`, nothing changes: it reads `tools/goal_slices.json` (Task 9) and the runbook templates.
@@ -555,7 +555,7 @@ script = ExtResource("1")
 # Aurelia: A Ledger of Stars (Godot)
 
 Godot 4.7 narrative space-trading RPG, ported from the Python build at
-`C:\Users\matth\PycharmProjects\SpaceGame` (the reference implementation). Master spec:
+`%USERPROFILE%\PycharmProjects\SpaceGame` (the reference implementation). Master spec:
 `docs/specs/2026-09-25-aurelia-overhaul-master-design.md`; SP2 spec:
 `docs/specs/2026-09-26-sp2-foundation-design.md`. Plans live in `docs/plans/`; the queue is
 `docs/roadmap.md`; environment: `docs/dev_setup.md`.
@@ -604,7 +604,7 @@ Godot 4.7 narrative space-trading RPG, ported from the Python build at
 
 ## Godot MCP Pro
 - Start Claude Code FROM this directory so `.mcp.json` loads the `godot-mcp-pro` server.
-- The addon under `addons/godot_mcp/` is git-ignored. Restore from `C:\Users\matth\Tools\godot-mcp-pro\addons\`.
+- The addon under `addons/godot_mcp/` is git-ignored. Restore from `%USERPROFILE%\Tools\godot-mcp-pro\addons\`.
 - While the editor runs, the addon injects `MCP*` autoloads into project.godot; never commit that diff.
 
 ## Layout
@@ -616,10 +616,10 @@ plans, roadmap, runbook
 - [ ] **Step 7: Import, format, and run the gate**
 
 ```bash
-cd /c/Users/matth/PycharmProjects/aurelia
+cd ~/PycharmProjects/aurelia
 mkdir -p core && touch core/.gitkeep
 python tools/install_hooks.py
-"C:/Users/matth/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe" --headless --path . --import
+"$USERPROFILE/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe" --headless --path . --import
 gdformat core autoload scenes test
 uv run black tools
 python tools/gate.py
@@ -907,7 +907,7 @@ def sync_check() -> bool:
 and call it in the full gate directly after `tools_tests` (`results["sync"] = sync_check()`).
 
 ```bash
-uv run python tools/sync_data.py --from /c/Users/matth/PycharmProjects/SpaceGame
+uv run python tools/sync_data.py --from ~/PycharmProjects/SpaceGame
 uv run python tools/sync_data.py --check
 ls test/parity/golden
 ```
@@ -3077,13 +3077,13 @@ design inputs for the sub-project that owns them, not parity deviations (SP2 spe
 # Development setup
 
 ## Tools
-- Godot 4.7.2 standard build at `C:\Users\matth\Tools\Godot\`. Use the console exe for every
+- Godot 4.7.2 standard build at `%USERPROFILE%\Tools\Godot\`. Use the console exe for every
   headless run. Its path lives in `tools/config.local.json` (git-ignored):
-  `{"godot": "C:/Users/matth/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe"}`.
+  `{"godot": "C:/Users/<you>/Tools/Godot/Godot_v4.7.2-stable_win64_console.exe"}`.
 - gdtoolkit 4.5 (`gdformat`, `gdlint`) on PATH (installed as uv tools in `~/.local/bin`).
 - uv with Python 3.13: run `uv sync` once per clone.
 - gdUnit4 6.2.1 is vendored under `addons/gdUnit4/`.
-- Godot MCP Pro: restore `addons/godot_mcp/` from `C:\Users\matth\Tools\godot-mcp-pro\addons\`;
+- Godot MCP Pro: restore `addons/godot_mcp/` from `%USERPROFILE%\Tools\godot-mcp-pro\addons\`;
   start Claude Code from this directory so `.mcp.json` loads.
 
 ## Once per clone
@@ -3093,7 +3093,7 @@ design inputs for the sub-project that owns them, not parity deviations (SP2 spe
 4. `python tools/gate.py`
 
 ## Syncing from the Python reference
-Content and goldens are generated in `C:\Users\matth\PycharmProjects\SpaceGame`
+Content and goldens are generated in `%USERPROFILE%\PycharmProjects\SpaceGame`
 (`python -m tools.parity.regen` there, reviewed and committed), then
 `uv run python tools/sync_data.py --from ../SpaceGame` here. Never edit `data/` or
 `test/parity/golden/` in this repo.
