@@ -24,6 +24,8 @@ scanner catches drift between the templates JSON and the generator.
 
 from __future__ import annotations
 
+import pytest
+
 from spacegame.data_loader import get_data_loader
 from spacegame.models.dilemma import DilemmaRuntimeState
 from spacegame.models.lens_investment import LensInvestment
@@ -31,6 +33,8 @@ from spacegame.models.mission import ObjectiveType
 from spacegame.models.player import Player
 from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
 from spacegame.models.ship import Ship
+
+pytestmark = pytest.mark.act_two_v1
 
 
 def _make_player(system_id: str = "nexus_prime") -> Player:

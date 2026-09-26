@@ -22,11 +22,14 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 import pygame_gui
+import pytest
 
 from spacegame.config import GameState
 from spacegame.data_loader import get_data_loader
 from spacegame.models.dilemma import DilemmaRuntimeState
 from spacegame.models.lens_investment import LensInvestment
+
+pytestmark = pytest.mark.act_two_v1
 
 
 def _real_ui_manager() -> pygame_gui.UIManager:

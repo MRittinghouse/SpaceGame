@@ -697,3 +697,13 @@ SYSTEM_IMAGES = [
     "iron_depths",
     "nova_research",
 ]
+
+# ============================================================================
+# ACT II V1 ARCHIVE
+# ============================================================================
+
+# Act II v1 (the A2 lens arc) was written into the Act I galaxy and is not
+# ported to Godot (overhaul master spec, Appendix B). Off by default so the
+# Python reference behaves as Act I only. Archived tests turn it on with the
+# ``act_two_v1`` pytest marker. Read it as ``sg_config.ACT_TWO_V1_ENABLED``.
+ACT_TWO_V1_ENABLED = False

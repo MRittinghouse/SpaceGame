@@ -24,6 +24,25 @@ any test or fixture imports pygame.
 from __future__ import annotations
 
 import os
+import pytest
 
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+
+
+@pytest.fixture(autouse=True)
+def _act_two_v1_marker(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Turn archived Act II v1 content on for tests marked ``act_two_v1``.
+
+    Imports are local so the SDL environment variables above are set before
+    anything pulls in pygame.
+    """
+    if request.node.get_closest_marker("act_two_v1") is None:
+        return
+    import spacegame.config as sg_config
+    from spacegame.data_loader import get_data_loader
+
+    monkeypatch.setattr(sg_config, "ACT_TWO_V1_ENABLED", True)
+    loader = get_data_loader()
+    if not loader.lenses:
+        loader.load_act_two_v1()

@@ -48,6 +48,8 @@ from tests.test_compliance.test_dilemma_integrity import (
 )
 from tests.test_scenarios._helpers import fresh_player
 
+pytestmark = pytest.mark.act_two_v1
+
 D5_ID = "d5_legacy_connection"
 
 
@@ -56,6 +58,11 @@ def d5_dilemma():
     """Return the loaded D5 dilemma from the singleton DataLoader."""
     dl = get_data_loader()
     dl.load_all()
+    # Module-scoped: pytest sets this up before the function-scoped
+    # ``act_two_v1`` marker fixture can flip the flag on, so ``load_all``
+    # may have skipped the Act II registries. Load them directly.
+    if not dl.dilemmas:
+        dl.load_act_two_v1()
     assert D5_ID in dl.dilemmas, (
         f"{D5_ID} not loaded from data/narrative/dilemmas/. Available: {sorted(dl.dilemmas.keys())}"
     )

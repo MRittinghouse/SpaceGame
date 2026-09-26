@@ -18,6 +18,8 @@ import pytest
 from spacegame.data_loader import DataLoader, get_data_loader
 from spacegame.models.lens_reaction import LensReaction
 
+pytestmark = pytest.mark.act_two_v1
+
 # Context strings that are legitimate seam identifiers. Extend when a new
 # consumer sprint wires the reactor into a new NPC seam.
 _KNOWN_CONTEXTS: set[str] = {"wreckers_hall_enrollment_pitch"}

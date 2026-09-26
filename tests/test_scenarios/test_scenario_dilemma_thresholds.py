@@ -25,6 +25,8 @@ from spacegame.data_loader import get_data_loader
 from spacegame.models.dilemma import Dilemma, DilemmaOutcome, DilemmaRuntimeState
 from spacegame.models.lens_investment import LensInvestment
 
+pytestmark = pytest.mark.act_two_v1
+
 
 def _outcome(lens_id: str) -> DilemmaOutcome:
     return DilemmaOutcome(

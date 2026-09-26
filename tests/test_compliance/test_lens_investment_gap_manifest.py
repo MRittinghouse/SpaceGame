@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from spacegame.data_loader import get_data_loader
+
+pytestmark = pytest.mark.act_two_v1
 
 # ---------------------------------------------------------------------------
 # Partition manifest

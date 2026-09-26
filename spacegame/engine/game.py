@@ -38,6 +38,7 @@ import numpy as np
 import pygame
 import pygame_gui
 
+import spacegame.config as sg_config
 from spacegame.achievement_manager import AchievementManager
 from spacegame.config import (
     FPS_TARGET,
@@ -704,15 +705,16 @@ class Game:
         # A2-21: post-capstone identity-keyed content generator. Merges its
         # output into the same station board as the procedural generator;
         # per-day refresh strips stale post_capstone_* alongside proc_*.
-        from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
+        if sg_config.ACT_TWO_V1_ENABLED:
+            from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
 
-        self.post_capstone_content_gen = PostCapstoneContentGenerator(
-            systems=self.data_loader.systems,
-            commodities=self.data_loader.commodities,
-            enemy_templates=self.data_loader.enemy_templates,
-            templates=self.data_loader.post_capstone_templates,
-            seed=hash(self.player.name) & 0xFFFFFFFF,
-        )
+            self.post_capstone_content_gen = PostCapstoneContentGenerator(
+                systems=self.data_loader.systems,
+                commodities=self.data_loader.commodities,
+                enemy_templates=self.data_loader.enemy_templates,
+                templates=self.data_loader.post_capstone_templates,
+                seed=hash(self.player.name) & 0xFFFFFFFF,
+            )
 
         # Initialize crew system
         from spacegame.models.crew import CrewRoster
@@ -4468,8 +4470,9 @@ class Game:
         ):
             return
         self._trigger_crew_reaction(action_type)
-        self._tick_dilemma_engine()
-        self._tick_capstone_engine()
+        if sg_config.ACT_TWO_V1_ENABLED:
+            self._tick_dilemma_engine()
+            self._tick_capstone_engine()
 
     def _tick_dilemma_engine(self) -> None:
         """Run the dilemma coordinator and dispatch telegraph / collision.
@@ -5350,15 +5353,16 @@ class Game:
         # A2-21: post-capstone identity-keyed content generator. Same as
         # _new_game -- no save-state to restore (all inputs come from
         # already-serialized Player fields).
-        from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
+        if sg_config.ACT_TWO_V1_ENABLED:
+            from spacegame.models.post_capstone_content import PostCapstoneContentGenerator
 
-        self.post_capstone_content_gen = PostCapstoneContentGenerator(
-            systems=self.data_loader.systems,
-            commodities=self.data_loader.commodities,
-            enemy_templates=self.data_loader.enemy_templates,
-            templates=self.data_loader.post_capstone_templates,
-            seed=hash(self.player.name) & 0xFFFFFFFF,
-        )
+            self.post_capstone_content_gen = PostCapstoneContentGenerator(
+                systems=self.data_loader.systems,
+                commodities=self.data_loader.commodities,
+                enemy_templates=self.data_loader.enemy_templates,
+                templates=self.data_loader.post_capstone_templates,
+                seed=hash(self.player.name) & 0xFFFFFFFF,
+            )
 
         # Restore crew roster
         from spacegame.models.crew import CrewRoster

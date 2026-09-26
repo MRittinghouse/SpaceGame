@@ -12,7 +12,11 @@ from __future__ import annotations
 import pathlib
 import re
 
+import pytest
+
 from spacegame.data_loader import get_data_loader
+
+pytestmark = pytest.mark.act_two_v1
 
 _SNAKE_CASE_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 

@@ -79,6 +79,9 @@ testpaths = ["tests"]
 # Any legitimately slow test opts in with @pytest.mark.timeout(N).
 timeout = 120
 timeout_method = "thread"
+markers = [
+    "act_two_v1: archived Act II v1 test; runs with ACT_TWO_V1_ENABLED on and the registries loaded",
+]
 
 [tool.mypy]
 python_version = "3.13"

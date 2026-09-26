@@ -35,6 +35,8 @@ from tests.test_compliance.test_dilemma_integrity import (
 )
 from tests.test_scenarios._helpers import fresh_player
 
+pytestmark = pytest.mark.act_two_v1
+
 D3_ID = "d3_power_revolution_empire"
 POLES = ("political_power", "revolution", "empire")
 NPC_ID_BY_POLE = {
@@ -71,6 +73,11 @@ def d3_dilemma():
     """Return the loaded D3 dilemma from the singleton DataLoader."""
     dl = get_data_loader()
     dl.load_all()
+    # Module-scoped: pytest sets this up before the function-scoped
+    # ``act_two_v1`` marker fixture can flip the flag on, so ``load_all``
+    # may have skipped the Act II registries. Load them directly.
+    if not dl.dilemmas:
+        dl.load_act_two_v1()
     assert D3_ID in dl.dilemmas, (
         f"{D3_ID} not loaded from data/narrative/dilemmas/. Available: {sorted(dl.dilemmas.keys())}"
     )
