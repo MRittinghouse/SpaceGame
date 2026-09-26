@@ -58,16 +58,21 @@ class ProceduralMissionGenerator:
         self._commodities = commodities
         self._enemy_templates = enemy_templates
         self._base_seed = seed
-        self._counter = 0
 
     def _make_rng(self, system_id: str, game_day: int, salt: str = "") -> SimRng:
         """Create a seeded RNG for deterministic generation."""
         return SimRng.from_key("procedural", self._base_seed, system_id, game_day, salt)
 
-    def _next_id(self, prefix: str, system_id: str, game_day: int) -> str:
-        """Generate a unique mission ID."""
-        self._counter += 1
-        return f"proc_{prefix}_{system_id}_{game_day}_{self._base_seed}_{self._counter}"
+    def _mission_id(self, prefix: str, system_id: str, game_day: int) -> str:
+        """Build a mission ID keyed like the mission's content.
+
+        A board holds at most one mission of each type (``generate_for_system``
+        samples distinct generators), so type, system, day, and base seed name a
+        mission uniquely. A generator rebuilt on load gives a regenerated mission
+        the ID it had before, so the copy collides with the restored mission in
+        ``MissionManager.add_mission`` instead of being offered twice.
+        """
+        return f"proc_{prefix}_{system_id}_{game_day}_{self._base_seed}"
 
     def _danger_mult(self, system_id: str) -> float:
         """Get credit multiplier for system danger."""
@@ -107,7 +112,7 @@ class ProceduralMissionGenerator:
             A bounty Mission.
         """
         rng = self._make_rng(system_id, game_day, "bounty")
-        mid = self._next_id("bounty", system_id, game_day)
+        mid = self._mission_id("bounty", system_id, game_day)
         system = self._systems[system_id]
         kills = rng.randint(1, 3)
         base_reward = rng.randint(300, 600)
@@ -157,7 +162,7 @@ class ProceduralMissionGenerator:
             A delivery Mission.
         """
         rng = self._make_rng(system_id, game_day, "delivery")
-        mid = self._next_id("delivery", system_id, game_day)
+        mid = self._mission_id("delivery", system_id, game_day)
         dest_id = self._pick_other_system(rng, system_id)
         dest = self._systems[dest_id]
         commodity_id = self._pick_trade_commodity(rng, system_id)
@@ -214,7 +219,7 @@ class ProceduralMissionGenerator:
             A smuggling Mission.
         """
         rng = self._make_rng(system_id, game_day, "smuggling")
-        mid = self._next_id("smuggling", system_id, game_day)
+        mid = self._mission_id("smuggling", system_id, game_day)
         system = self._systems[system_id]
         dest_id = self._pick_other_system(rng, system_id)
         dest = self._systems[dest_id]
@@ -270,7 +275,7 @@ class ProceduralMissionGenerator:
             A survey Mission.
         """
         rng = self._make_rng(system_id, game_day, "survey")
-        mid = self._next_id("survey", system_id, game_day)
+        mid = self._mission_id("survey", system_id, game_day)
         system = self._systems[system_id]
         num_targets = rng.randint(2, 3)
         candidates = [sid for sid in self._systems if sid != system_id]
@@ -326,7 +331,7 @@ class ProceduralMissionGenerator:
             A salvage Mission.
         """
         rng = self._make_rng(system_id, game_day, "salvage")
-        mid = self._next_id("salvage", system_id, game_day)
+        mid = self._mission_id("salvage", system_id, game_day)
         system = self._systems[system_id]
         # Prefer dangerous systems for salvage
         danger_systems = [
