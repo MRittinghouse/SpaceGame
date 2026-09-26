@@ -4,7 +4,7 @@
 
 **Goal:** Stand up the `aurelia` Godot 4.7 repo with Everember's gates, a synced copy of the Python reference's content and goldens, the GDScript twins of `SimRng` and Python's arithmetic, a golden-replay parity harness, and market pricing ported at parity as the tracer bullet.
 
-**Architecture:** Simulation code lives in `core/` as RefCounted classes with no nodes; two autoloads (`DataRegistry`, `Game`) load synced data and own a `SimRoot`. The parity harness lives in `test/parity/`: `GoldenCodec` restores exact floats from the tagged goldens, `ParityRunner` replays each golden through a subsystem `ParityAdapter`, and `Comparator` reports the first divergent step by path. Python tooling (`tools/gate.py`, `tools/sync_data.py`) runs under uv.
+**Architecture:** Simulation code lives in `core/` as RefCounted classes with no nodes; two autoloads (`DataRegistry`, `Game`) load synced data and own a `SimRoot`. The parity harness lives in `test/parity/`: `GoldenCodec` restores exact floats from the tagged goldens, `ParityRunner` replays each golden through a subsystem `ParityAdapter`, and `ParityComparator` reports the first divergent step by path. Python tooling (`tools/gate.py`, `tools/sync_data.py`) runs under uv.
 
 **Tech Stack:** Godot 4.7.2 (typed GDScript, console exe), gdUnit4 6.2.1, gdtoolkit 4.5 (gdformat, gdlint), Python 3.13 via uv (pytest, mypy strict, black 100).
 
@@ -1421,7 +1421,7 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 - Consumes: `SimRng` (Task 3); synced `test/parity/golden/sim_rng/*.json` (Task 2).
 - Produces:
   - `GoldenCodec.decode(value: Variant) -> Variant`, `GoldenCodec.bits_to_float(bits: int) -> float`
-  - `Comparator.diff(expected: Variant, actual: Variant, path: String) -> Array[String]`
+  - `ParityComparator.diff(expected: Variant, actual: Variant, path: String) -> Array[String]`
   - `ParityAdapter` with overridable `setup(setup_data: Dictionary) -> void`, `call_step(call_name: String, args: Array) -> Variant`, `snapshot() -> Dictionary`; static `key_parts(raw: Array) -> Array` (whole-number floats back to ints)
   - `ParityRunner.GOLDEN_ROOT`, `case_names(subsystem: String) -> PackedStringArray`, `load_case(subsystem: String, case_name: String) -> Dictionary`, `replay(document: Dictionary, adapter: ParityAdapter) -> Array[String]`, `replay_subsystem(subsystem: String, make_adapter: Callable) -> Array[String]`
   - `SimRngAdapter` (subsystem `sim_rng`)
@@ -1466,27 +1466,27 @@ extends GdUnitTestSuite
 
 
 func test_int_and_float_compare_numerically() -> void:
-	assert_array(Comparator.diff(10.0, 10, "x")).is_empty()
+	assert_array(ParityComparator.diff(10.0, 10, "x")).is_empty()
 
 
 func test_one_bit_float_difference_fails() -> void:
 	var a: float = GoldenCodec.bits_to_float(4595220858189721370)
 	var b: float = GoldenCodec.bits_to_float(4595220858189721371)
-	assert_array(Comparator.diff(a, b, "x")).has_size(1)
+	assert_array(ParityComparator.diff(a, b, "x")).has_size(1)
 
 
 func test_string_and_string_name_compare_as_text() -> void:
-	assert_array(Comparator.diff("food", &"food", "x")).is_empty()
+	assert_array(ParityComparator.diff("food", &"food", "x")).is_empty()
 
 
 func test_type_mismatch_is_reported() -> void:
-	var failures: Array[String] = Comparator.diff(true, 1, "flag")
+	var failures: Array[String] = ParityComparator.diff(true, 1, "flag")
 	assert_int(failures.size()).is_equal(1)
 	assert_str(failures[0]).starts_with("flag:")
 
 
 func test_dictionary_key_sets_must_match_and_paths_nest() -> void:
-	var failures: Array[String] = Comparator.diff(
+	var failures: Array[String] = ParityComparator.diff(
 		{"stock": {"iron_ore": 40.0}, "gone": 1}, {"stock": {"iron_ore": 39}, "new": 2}, "state"
 	)
 	assert_array(failures).contains(["state.stock.iron_ore: expected 40.0, got 39"])
@@ -1494,17 +1494,17 @@ func test_dictionary_key_sets_must_match_and_paths_nest() -> void:
 
 
 func test_list_length_mismatch_is_reported() -> void:
-	assert_array(Comparator.diff([1, 2], [1], "list")).has_size(1)
+	assert_array(ParityComparator.diff([1, 2], [1], "list")).has_size(1)
 
 
 func test_null_matches_null() -> void:
-	assert_array(Comparator.diff(null, null, "x")).is_empty()
+	assert_array(ParityComparator.diff(null, null, "x")).is_empty()
 ```
 
 Run: `python tools/gate.py --tests-only`
-Expected: FAIL (`GoldenCodec`, `Comparator` not declared).
+Expected: FAIL (`GoldenCodec`, `ParityComparator` not declared).
 
-- [ ] **Step 2: Implement `GoldenCodec` and `Comparator`**
+- [ ] **Step 2: Implement `GoldenCodec` and `ParityComparator`**
 
 `test/parity/golden_codec.gd`:
 
@@ -1553,7 +1553,7 @@ static func bits_to_float(bits: int) -> float:
 `test/parity/comparator.gd`:
 
 ```gdscript
-class_name Comparator
+class_name ParityComparator
 extends RefCounted
 
 ## Exact comparison of decoded golden values against GDScript values (SP2 spec 8.7). Ints and
@@ -1799,11 +1799,11 @@ static func replay(document: Dictionary, adapter: ParityAdapter) -> Array[String
 	for i: int in range(steps.size()):
 		var step: Dictionary = steps[i] as Dictionary
 		var result: Variant = adapter.call_step(str(step["call"]), step["args"] as Array)
-		var failures: Array[String] = Comparator.diff(
+		var failures: Array[String] = ParityComparator.diff(
 			step["result"], result, "steps[%d].result" % i
 		)
 		failures.append_array(
-			Comparator.diff(step["state"], adapter.snapshot(), "steps[%d].state" % i)
+			ParityComparator.diff(step["state"], adapter.snapshot(), "steps[%d].state" % i)
 		)
 		if not failures.is_empty():
 			failures.push_front("steps[%d] %s %s" % [i, step["call"], str(step["args"])])
