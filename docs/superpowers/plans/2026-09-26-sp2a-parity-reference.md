@@ -1349,7 +1349,8 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: `SimRng` (Task 2).
 - Produces:
-  - `tools.parity.driver`: `REPO_ROOT: Path`, `FORMAT_VERSION = 1`, `normalize(value: object) -> object`, `@dataclass Case(subsystem: str, name: str, setup: dict[str, object], steps: list[dict[str, object]])` with `record(call: str, args: list[object], result: object, state: dict[str, object]) -> None` and `to_json(source_commit: str) -> str`, `source_commit() -> str`, `dirty_paths_outside(prefix: str) -> list[str]`, `write_cases(cases: list[Case], golden_root: Path, commit: str) -> list[Path]`.
+  - `tools.parity.driver`: `REPO_ROOT: Path`, `FORMAT_VERSION = 1`, `normalize(value: object) -> object`, `float_tag(value: float) -> str`, `tag_floats(value: object) -> object`, `@dataclass Case(subsystem: str, name: str, setup: dict[str, object], steps: list[dict[str, object]])` with `record(call: str, args: list[object], result: object, state: dict[str, object]) -> None` and `to_json(source_commit: str) -> str`, `source_commit() -> str`, `dirty_paths_outside(prefix: str) -> list[str]`, `write_cases(cases: list[Case], golden_root: Path, commit: str) -> list[Path]`.
+  - Float encoding (controller ruling R5, spec Amendments A1): `Case.steps` keep raw Python floats, and `to_json` writes every float as the string `f:<repr>:<int64 bits>`. Godot 4.7.2's JSON parser misrounds about a quarter of long decimals by one bit (probe: 501 of 2,000), so the Godot harness rebuilds each double from its bits; the repr keeps goldens readable.
   - `tools.parity.regen`: `DRIVERS: list[Callable[[], list[Case]]]`, `main(argv: list[str] | None = None) -> int`, CLI `python -m tools.parity.regen [--out DIR] [--allow-dirty]`.
   - `tools.parity.rng_vectors.build_cases() -> list[Case]` (subsystem `sim_rng`).
   - Golden layout: `<out>/golden/<subsystem>/<case>.json`.
@@ -1404,6 +1405,18 @@ class TestNormalize:
             normalize(bad)
 
 
+class TestFloatTags:
+    def test_float_tag_carries_repr_and_int64_bits(self) -> None:
+        assert driver.float_tag(0.1) == "f:0.1:4591870180066957722"
+        assert driver.float_tag(1.5) == "f:1.5:4609434218613702656"
+        assert driver.float_tag(-0.0) == "f:-0.0:-9223372036854775808"
+
+    def test_tag_floats_walks_containers_and_leaves_other_scalars(self) -> None:
+        assert driver.tag_floats({"x": [1.5, 2, True, None, "s"]}) == {
+            "x": ["f:1.5:4609434218613702656", 2, True, None, "s"]
+        }
+
+
 class TestCaseJson:
     def test_sorted_keys_two_space_indent_trailing_newline(self) -> None:
         case = Case("demo", "one", {"z": 1, "a": 2})
@@ -1413,8 +1426,14 @@ class TestCaseJson:
         assert doc["format"] == 1
         assert doc["source_commit"] == "abc123"
         assert doc["steps"] == [
-            {"call": "call", "args": [1, [2, 3]], "result": None, "state": {"a": 1, "b": 0.1}}
+            {
+                "call": "call",
+                "args": [1, [2, 3]],
+                "result": None,
+                "state": {"a": 1, "b": "f:0.1:4591870180066957722"},
+            }
         ]
+        assert case.steps[0]["state"] == {"a": 1, "b": 0.1}, "steps keep raw floats"
         assert text.endswith("\n")
         assert text.index('"a"') < text.index('"z"'), "keys must be sorted"
 
@@ -1493,6 +1512,7 @@ from __future__ import annotations
 
 import json
 import math
+import struct
 import subprocess
 from dataclasses import dataclass, field
 from enum import Enum
@@ -1500,6 +1520,27 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FORMAT_VERSION = 1
+
+
+def float_tag(value: float) -> str:
+    """Encode a float as ``f:<repr>:<int64 bits>``.
+
+    Godot's JSON parser misrounds about a quarter of long decimals by one bit, so the
+    Godot harness rebuilds each double from its bits; the repr keeps goldens readable.
+    """
+    bits: int = struct.unpack("<q", struct.pack("<d", value))[0]
+    return f"f:{value!r}:{bits}"
+
+
+def tag_floats(value: object) -> object:
+    """Replace every float inside an already-normalized value with its ``float_tag``."""
+    if isinstance(value, float):
+        return float_tag(value)
+    if isinstance(value, dict):
+        return {key: tag_floats(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [tag_floats(item) for item in value]
+    return value
 
 
 def normalize(value: object) -> object:
@@ -1559,14 +1600,14 @@ class Case:
         )
 
     def to_json(self, source_commit: str) -> str:
-        """Serialize with sorted keys, two-space indent, and a trailing newline."""
+        """Serialize with tagged floats, sorted keys, two-space indent, and a trailing newline."""
         document = {
             "format": FORMAT_VERSION,
             "subsystem": self.subsystem,
             "case": self.name,
             "source_commit": source_commit,
-            "setup": normalize(self.setup),
-            "steps": self.steps,
+            "setup": tag_floats(normalize(self.setup)),
+            "steps": tag_floats(self.steps),
         }
         return json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n"
 
