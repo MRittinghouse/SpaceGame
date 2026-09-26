@@ -720,7 +720,7 @@ class TestRareChanceWiring:
 
     def test_rare_bonus_increases_rare_weight(self) -> None:
         """Large rare bonus produces statistically more rare rocks."""
-        import random as rng_module
+        from spacegame.sim_rng import SimRng
 
         config = MiningConfig(
             system_id="test",
@@ -728,17 +728,20 @@ class TestRareChanceWiring:
             grid_height=10,
             rock_distribution={"common": 0.50, "iron": 0.30, "crystal": 0.15, "rare": 0.05},
         )
-        # Seed for deterministic results across runs
-        rng_module.seed(42)
+        # Same per-iteration key in both loops: each pair of sessions draws the
+        # same underlying dice, so the only difference is rare_chance_bonus.
         counts_base = 0
-        for _ in range(50):
-            session = MiningSession(config, rare_chance_bonus=0.0, starting_depth=80)
+        for i in range(50):
+            session = MiningSession(
+                config, rare_chance_bonus=0.0, starting_depth=80, rng=SimRng.from_key("test", i)
+            )
             counts_base += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
-        rng_module.seed(42)
         counts_bonus = 0
-        for _ in range(50):
-            session = MiningSession(config, rare_chance_bonus=5.0, starting_depth=80)
+        for i in range(50):
+            session = MiningSession(
+                config, rare_chance_bonus=5.0, starting_depth=80, rng=SimRng.from_key("test", i)
+            )
             counts_bonus += sum(1 for r in session.rocks if r.rock_type == RockType.RARE)
 
         assert counts_bonus > counts_base, (
