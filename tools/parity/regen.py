@@ -17,8 +17,9 @@ from pathlib import Path
 
 from tools.parity import rng_vectors
 from tools.parity.driver import REPO_ROOT, Case, dirty_paths_outside, source_commit, write_cases
+from tools.parity.drivers import market as market_driver
 
-DRIVERS: list[Callable[[], list[Case]]] = [rng_vectors.build_cases]
+DRIVERS: list[Callable[[], list[Case]]] = [rng_vectors.build_cases, market_driver.build_cases]
 
 
 def main(argv: list[str] | None = None) -> int:
