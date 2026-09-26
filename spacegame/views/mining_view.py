@@ -60,6 +60,7 @@ from spacegame.models.mining import (
 from spacegame.models.ore_silo import OreSilo
 from spacegame.models.player import Player
 from spacegame.models.rating import MINING_THRESHOLDS, RATING_COLORS, calculate_rating
+from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 
@@ -357,7 +358,9 @@ class MiningView(BaseView):
         if not variants:
             return None
         # Deterministic variant selection based on grid position
-        variant_index = (gx * 7 + gy * 13 + hash(rock_type)) % len(variants)
+        variant_index = (gx * 7 + gy * 13 + stable_seed("rock_variant", rock_type.value)) % len(
+            variants
+        )
         return variants[variant_index]
 
     def _get_hazard_sprite(
@@ -386,7 +389,7 @@ class MiningView(BaseView):
         if key in self._rock_shapes:
             return self._rock_shapes[key]
 
-        rng = random.Random(hash(key) + 42)
+        rng = random.Random(stable_seed("rock_shape", gx, gy))
         cx, cy = w // 2, h // 2
         points = []
         num_vertices = rng.randint(6, 10)

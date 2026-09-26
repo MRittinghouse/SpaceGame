@@ -25,6 +25,7 @@ from spacegame.engine.tooltip import TooltipState
 from spacegame.models.location import Location
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
+from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
 from spacegame.views._glow import render_pulsing_glow
 from spacegame.views.base_view import BaseView
@@ -120,7 +121,10 @@ class CantinaView(BaseView):
 
         # Background
         self.background = AnimatedBackground(
-            "station", WINDOW_WIDTH, WINDOW_HEIGHT, seed=hash(system.id) % 10000
+            "station",
+            WINDOW_WIDTH,
+            WINDOW_HEIGHT,
+            seed=stable_seed("station_background", system.id) % 10000,
         )
         self._bg_dim = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         self._bg_dim.fill((0, 0, 0))
