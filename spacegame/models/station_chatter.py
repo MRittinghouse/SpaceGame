@@ -12,9 +12,10 @@ NPCs endlessly reference the same player achievement.
 
 from __future__ import annotations
 
-import random as _rng
 from dataclasses import dataclass, field
 from typing import Any
+
+from spacegame.sim_rng import SimRng
 
 
 @dataclass
@@ -52,7 +53,14 @@ class StationChatterManager:
     One-shot lines are permanently retired after first display.
     """
 
-    def __init__(self, lines: list[ChatterLine]) -> None:
+    def __init__(self, lines: list[ChatterLine], rng: SimRng | None = None) -> None:
+        """Initialize the station chatter manager.
+
+        Args:
+            lines: Available station chatter lines.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self._lines = lines
         self._shown: dict[str, set[str]] = {}  # system_id -> shown this visit
         self._retired: set[str] = set()  # Permanently retired one-shot line IDs
@@ -101,7 +109,7 @@ class StationChatterManager:
                     continue
             candidates.append(line)
 
-        selected = _rng.sample(candidates, min(count, len(candidates)))
+        selected = self._rng.sample(candidates, min(count, len(candidates)))
 
         # Track shown
         if system_id not in self._shown:

@@ -1520,7 +1520,9 @@ class CombatEngine:
 
                         # Get base damage from move's first DAMAGE effect
                         base_dmg = sum(e.value for e in move.effects if e.type == EffectType.DAMAGE)
-                        triggered, mult = process_chain_fire(attacker_state._legendary, base_dmg)
+                        triggered, mult = process_chain_fire(
+                            attacker_state._legendary, base_dmg, rng=self._rng
+                        )
                         if triggered:
                             chain_dmg = base_dmg * mult
                             chain_msgs: list[str] = [f"CHAIN FIRE! ({int(chain_dmg)} damage)"]
@@ -2030,8 +2032,8 @@ class CombatEngine:
             )
         return messages
 
-    @staticmethod
     def _apply_direct_damage(
+        self,
         target: PlayerCombatState | EnemyShip,
         reduced: float,
         messages: list[str],
@@ -2137,6 +2139,7 @@ class CombatEngine:
                             target._ship_build,
                             target._module_catalog,
                             target.module_states,
+                            rng=self._rng,
                         )
                         if target._ship_build
                         else None
@@ -2205,6 +2208,7 @@ class CombatEngine:
                                 hit_idx,
                                 target.module_states,
                                 target._adjacency_map,
+                                rng=self._rng,
                             )
                             if chain:
                                 chain_target = target.module_states[chain["target_idx"]]

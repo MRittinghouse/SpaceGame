@@ -186,13 +186,17 @@ class TestDeepCoreEffects:
 
     def test_chain_depth_bonus_limits_recursion(self) -> None:
         """Chain detonation should respect the increased max depth."""
-        import random
         from spacegame.models.mining import AsteroidRock, RockType, CHAIN_MAX_DEPTH
+        from spacegame.sim_rng import SimRng
 
-        random.seed(1)
         config = MiningConfig(system_id="breakstone", grid_width=6, grid_height=1)
         # Guarantee chains fire, and add +1 max chain depth
-        session = MiningSession(config, chain_chance_bonus=10.0, max_chain_depth_bonus=1)
+        session = MiningSession(
+            config,
+            chain_chance_bonus=10.0,
+            max_chain_depth_bonus=1,
+            rng=SimRng.from_key("test", 1),
+        )
         # Place a line of common rocks with high progress so chain breaks them
         session.rocks = [
             AsteroidRock(rock_type=RockType.COMMON, grid_x=i, grid_y=0) for i in range(6)

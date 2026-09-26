@@ -13,10 +13,10 @@ LegendaryState, making them testable and composable.
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
 
 from spacegame.models.ship_build import ShipBuild
+from spacegame.sim_rng import SimRng
 
 
 @dataclass
@@ -114,12 +114,14 @@ def init_legendary_state(
 def process_chain_fire(
     state: LegendaryState,
     base_damage: float,
+    rng: SimRng | None = None,
 ) -> tuple[bool, float]:
     """Roll for chain fire after a weapon hit.
 
     Args:
         state: Legendary combat state.
         base_damage: The original hit's damage.
+        rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
     Returns:
         (triggered, damage_multiplier). If triggered is True, a follow-up
@@ -128,7 +130,8 @@ def process_chain_fire(
     if state.chain_fire_chance <= 0:
         return False, 0.0
 
-    if random.random() < state.chain_fire_chance:
+    roll = rng if rng is not None else SimRng.from_entropy()
+    if roll.random() < state.chain_fire_chance:
         return True, state.chain_fire_damage_mult
 
     return False, 0.0

@@ -19,8 +19,6 @@ the combat engine processes a queued multi-action turn:
 
 from __future__ import annotations
 
-import random
-
 from spacegame.models.action_queue import ActionQueue
 from spacegame.models.combat import (
     CombatEffect,
@@ -162,7 +160,6 @@ class TestChainFireMultiAction:
         """With chain_fire_chance=1.0, every full hit in the queue should
         produce one chain-fire entry. Grazes don't trigger chain fire
         (engine design: mechanics fire on hits, not partial hits)."""
-        random.seed(0)
         legendary = LegendaryState(chain_fire_chance=1.0, chain_fire_damage_mult=0.5)
         weapons = [
             _move(move_id="a", damage=20, energy=2, cooldown=0),

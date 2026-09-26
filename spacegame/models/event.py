@@ -4,10 +4,11 @@ Random market events system.
 Events that cause dramatic price fluctuations for specific commodities.
 """
 
-import random
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
+
+from spacegame.sim_rng import SimRng
 
 
 class EventType(Enum):
@@ -109,14 +110,16 @@ class EventGenerator:
         ],
     }
 
-    def __init__(self, commodities: list[str], systems: list[str]):
+    def __init__(self, commodities: list[str], systems: list[str], rng: SimRng | None = None):
         """
         Initialize event generator.
 
         Args:
             commodities: List of commodity IDs
             systems: List of system IDs
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
         """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self.commodities = commodities
         self.systems = systems
 
@@ -134,22 +137,22 @@ class EventGenerator:
             MarketEvent if generated, None otherwise
         """
         # Check if event should occur
-        if random.random() > self.EVENT_CHANCE:
+        if self._rng.random() > self.EVENT_CHANCE:
             return None
 
         # Select random event parameters
-        event_type = random.choice(list(EventType))
-        commodity_id = random.choice(self.commodities)
-        system_id = random.choice(self.systems)
-        duration = random.randint(self.MIN_DURATION, self.MAX_DURATION)
+        event_type = self._rng.choice(list(EventType))
+        commodity_id = self._rng.choice(self.commodities)
+        system_id = self._rng.choice(self.systems)
+        duration = self._rng.randint(self.MIN_DURATION, self.MAX_DURATION)
 
         # Get price multiplier for this event type
         min_mult, max_mult = self.EVENT_EFFECTS[event_type]
-        price_multiplier = random.uniform(min_mult, max_mult)
+        price_multiplier = self._rng.uniform(min_mult, max_mult)
 
         # Generate description
         commodity_name = commodity_names.get(commodity_id, commodity_id)
-        template = random.choice(self.EVENT_DESCRIPTIONS[event_type])
+        template = self._rng.choice(self.EVENT_DESCRIPTIONS[event_type])
         description = template.format(commodity=commodity_name)
 
         return MarketEvent(

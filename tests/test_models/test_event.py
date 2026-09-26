@@ -1,7 +1,8 @@
 """Tests for event display, event log, and event serialization."""
 
-from unittest.mock import patch
 from spacegame.models.event import MarketEvent, EventType, EventGenerator
+from spacegame.sim_rng import SimRng
+from tests.sim_rng_helpers import ScriptedRng
 
 
 class TestEventLog:
@@ -205,29 +206,28 @@ class TestMarketEventSerialization:
 class TestDayAdvanceEventGeneration:
     """Tests for event generation triggered by day advances."""
 
-    def _make_generator(self) -> EventGenerator:
+    def _make_generator(self, rng: SimRng | None = None) -> EventGenerator:
         return EventGenerator(
             commodities=["food", "iron_ore", "fuel"],
             systems=["nexus_prime", "verdant", "forgeworks"],
+            rng=rng,
         )
 
     def test_event_generator_produces_event_when_rng_hits(self) -> None:
         """EventGenerator should produce event when random < EVENT_CHANCE."""
-        gen = self._make_generator()
+        # Force the roll to return 0.0 (always below EVENT_CHANCE)
+        gen = self._make_generator(rng=ScriptedRng([0.0]))
         names = {"food": "Food", "iron_ore": "Iron Ore", "fuel": "Fuel"}
-        # Force random.random() to return 0.0 (always below EVENT_CHANCE)
-        with patch("spacegame.models.event.random.random", return_value=0.0):
-            event = gen.try_generate_event(5, names)
+        event = gen.try_generate_event(5, names)
         assert event is not None
         assert event.day_started == 5
 
     def test_event_generator_no_event_when_rng_misses(self) -> None:
         """EventGenerator should return None when random > EVENT_CHANCE."""
-        gen = self._make_generator()
+        # Force the roll to return 1.0 (always above EVENT_CHANCE)
+        gen = self._make_generator(rng=ScriptedRng([1.0]))
         names = {"food": "Food", "iron_ore": "Iron Ore", "fuel": "Fuel"}
-        # Force random.random() to return 1.0 (always above EVENT_CHANCE)
-        with patch("spacegame.models.event.random.random", return_value=1.0):
-            event = gen.try_generate_event(5, names)
+        event = gen.try_generate_event(5, names)
         assert event is None
 
     def test_event_expires_after_duration(self) -> None:

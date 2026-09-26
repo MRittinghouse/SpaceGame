@@ -4,8 +4,6 @@ Covers Chain Fire, Void Absorption, Heat Hardening, Cooldown Reduction,
 and Phase Shift — the 5 unique mechanics from superboss drops.
 """
 
-import random
-
 from spacegame.models.legendary_effects import (
     LegendaryState,
     apply_cooldown_reduction,
@@ -18,6 +16,7 @@ from spacegame.models.legendary_effects import (
 )
 from spacegame.models.ship_build import PlacedSlot, ShipBuild
 from spacegame.models.ship_part import ShipPart
+from spacegame.sim_rng import SimRng
 
 # ============================================================================
 # Helpers
@@ -119,9 +118,10 @@ class TestLegendaryStateInit:
 
 class TestChainFire:
     def test_chain_fires_on_success(self) -> None:
-        random.seed(1)  # Deterministic
         state = LegendaryState(chain_fire_chance=1.0, chain_fire_damage_mult=0.5)
-        triggered, mult = process_chain_fire(state, base_damage=20.0)
+        triggered, mult = process_chain_fire(
+            state, base_damage=20.0, rng=SimRng.from_key("test", 1)
+        )
         assert triggered is True
         assert mult == 0.5
 
@@ -132,9 +132,9 @@ class TestChainFire:
             assert not triggered
 
     def test_chain_respects_probability(self) -> None:
-        random.seed(42)
         state = LegendaryState(chain_fire_chance=0.4, chain_fire_damage_mult=0.5)
-        fires = sum(1 for _ in range(1000) if process_chain_fire(state, 20.0)[0])
+        rng = SimRng.from_key("test", 42)
+        fires = sum(1 for _ in range(1000) if process_chain_fire(state, 20.0, rng=rng)[0])
         # Should be roughly 400 out of 1000 (±60)
         assert 300 < fires < 500, f"Expected ~400 fires, got {fires}"
 

@@ -72,7 +72,7 @@ from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
 from spacegame.save_manager import SaveManager
-from spacegame.sim_rng import stable_seed
+from spacegame.sim_rng import seed_entropy, stable_seed
 from spacegame.tutorial_manager import TutorialManager
 from spacegame.utils.logger import logger
 
@@ -7146,10 +7146,12 @@ class Game:
         """Seed global random sources for deterministic replay.
 
         Args:
-            seed: Integer seed applied to both stdlib random and numpy.random.
+            seed: Integer seed applied to stdlib random, numpy.random, and the
+                SimRng entropy fallback used by models constructed without a stream.
         """
         random.seed(seed)
         np.random.seed(seed)
+        seed_entropy(seed)
 
     def quit(self) -> None:
         """Clean shutdown of the game."""

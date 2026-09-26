@@ -7,10 +7,11 @@ Falls back to flavor text when nothing dramatic is happening.
 
 from __future__ import annotations
 
-import random as _rng
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
+
+from spacegame.sim_rng import SimRng
 
 # ============================================================================
 # Data Model
@@ -66,7 +67,17 @@ class NewsTicker:
     once it reaches `buffer_size`.
     """
 
-    def __init__(self, templates: list[HeadlineTemplate], buffer_size: int = 8) -> None:
+    def __init__(
+        self, templates: list[HeadlineTemplate], buffer_size: int = 8, rng: SimRng | None = None
+    ) -> None:
+        """Initialize the news ticker.
+
+        Args:
+            templates: Headline templates available for generation.
+            buffer_size: Maximum number of headlines retained in the buffer.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self._templates = templates
         self._buffer_size = buffer_size
         # deque left=oldest, right=newest
@@ -237,7 +248,7 @@ class NewsTicker:
         candidates = [t for t in self._templates if t.trigger == trigger]
         if not candidates:
             return ""
-        template = _rng.choice(candidates)
+        template = self._rng.choice(candidates)
         return _fill(template.template, ctx)
 
     def _pick_flavor(self) -> str:
@@ -258,6 +269,6 @@ class NewsTicker:
             self._used_flavor_ids.clear()
             available = flavor_pool
 
-        chosen = _rng.choice(available)
+        chosen = self._rng.choice(available)
         self._used_flavor_ids.add(chosen.id)
         return _fill(chosen.template, {})

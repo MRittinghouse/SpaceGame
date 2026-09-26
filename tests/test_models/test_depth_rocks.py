@@ -1,7 +1,6 @@
 """Tests for depth-gated rock types (DENSE, VOLATILE) and Monolith boss rocks."""
 
 import pytest
-import random
 
 from spacegame.models.mining import (
     MiningSession,
@@ -10,6 +9,7 @@ from spacegame.models.mining import (
     ROCK_TYPE_CONFIGS,
     AsteroidRock,
 )
+from spacegame.sim_rng import SimRng
 
 
 class TestDenseRock:
@@ -28,8 +28,7 @@ class TestDenseRock:
     def test_dense_not_in_shallow_depths(self) -> None:
         """DENSE rocks should not appear at depths 1-4."""
         config = MiningConfig(system_id="breakstone")
-        random.seed(42)
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         # At depth 1, no dense rocks
         for rock in session.rocks:
             assert rock.rock_type != RockType.DENSE

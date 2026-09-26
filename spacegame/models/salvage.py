@@ -5,10 +5,11 @@ Grid-based scanning and extraction puzzle at industrial systems.
 """
 
 import math
-import random
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
+
+from spacegame.sim_rng import SimRng
 
 
 class SalvageItemType(Enum):
@@ -134,11 +135,18 @@ class SalvageCell:
         self.extract_progress = 0.0
         return True
 
-    def update_extract(self, dt: float, speed_bonus: float = 1.0) -> Optional[int]:
+    def update_extract(
+        self, dt: float, speed_bonus: float = 1.0, rng: SimRng | None = None
+    ) -> Optional[int]:
         """
         Update extraction progress.
 
         Returns yield amount if extraction completes, None otherwise.
+
+        Args:
+            dt: Delta time in seconds.
+            speed_bonus: Extraction speed multiplier.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
         """
         if self.state != CellState.EXTRACTING or not self.config:
             return None
@@ -150,9 +158,10 @@ class SalvageCell:
         if self.extract_progress >= 1.0:
             self.extract_progress = 1.0
             self.state = CellState.EXTRACTED
-            if self.corrupted and random.random() < 0.5:
+            roll = rng if rng is not None else SimRng.from_entropy()
+            if self.corrupted and roll.random() < 0.5:
                 return 0
-            base_yield = random.randint(self.config.min_yield, self.config.max_yield)
+            base_yield = roll.randint(self.config.min_yield, self.config.max_yield)
             return max(1, round(base_yield * self.quality))
 
         return None
@@ -262,6 +271,7 @@ class SalvageSession:
         prestige_level: int = 0,
         corruption_shield_bonus: float = 0.0,
         charge_regen_bonus: float = 0.0,
+        rng: SimRng | None = None,
     ):
         """
         Initialize salvage session.
@@ -275,9 +285,11 @@ class SalvageSession:
             prestige_level: Player's salvage prestige level
             corruption_shield_bonus: Bonus to corruption timer from upgrades
             charge_regen_bonus: Bonus to charge regen speed from upgrades
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
         """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self.config = config
-        self.derelict_type = derelict_type or random.choice(DERELICT_TYPES)
+        self.derelict_type = derelict_type or self._rng.choice(DERELICT_TYPES)
         self.extract_speed_bonus = extract_speed_bonus
         self.prestige_level = prestige_level
         self.charges = config.max_charges + extra_charges
@@ -310,7 +322,7 @@ class SalvageSession:
         all_positions = [(x, y) for x in range(size) for y in range(size)]
         item_positions = set()
         if item_count > 0:
-            chosen = random.sample(all_positions, min(item_count, total_cells))
+            chosen = self._rng.sample(all_positions, min(item_count, total_cells))
             item_positions = set(chosen)
 
         # Build weighted item type list from derelict type distribution
@@ -330,9 +342,9 @@ class SalvageSession:
         for y in range(size):
             for x in range(size):
                 if (x, y) in item_positions:
-                    item_type = random.choices(item_types, weights=weights, k=1)[0]
+                    item_type = self._rng.choices(item_types, weights=weights, k=1)[0]
                     quality_min = min(0.8 + (self.current_deck - 1) * 0.1, 1.2)
-                    quality = round(random.uniform(quality_min, 1.5), 2)
+                    quality = round(self._rng.uniform(quality_min, 1.5), 2)
                 else:
                     item_type = SalvageItemType.EMPTY
                     quality = 1.0
@@ -459,16 +471,16 @@ class SalvageSession:
         """
         drops: dict[str, int] = {}
         # Charged filament: 15% on EXCELLENT quality extraction
-        if quality_tier == QualityTier.EXCELLENT and random.random() < 0.15:
+        if quality_tier == QualityTier.EXCELLENT and self._rng.random() < 0.15:
             drops["charged_filament"] = 1
         # Signal fragment: 8% on deck 4+ extraction
-        if self.current_deck >= 4 and random.random() < 0.08:
+        if self.current_deck >= 4 and self._rng.random() < 0.08:
             drops["signal_fragment"] = 1
         # Schematic data: 12% on deck 3+ with GOOD or EXCELLENT quality
         if (
             self.current_deck >= 3
             and quality_tier in (QualityTier.GOOD, QualityTier.EXCELLENT)
-            and random.random() < 0.12
+            and self._rng.random() < 0.12
         ):
             drops["schematic_data"] = 1
         return drops
@@ -489,7 +501,7 @@ class SalvageSession:
         # Update all active extractions
         for cell in self.active_extractions:
             if cell.state == CellState.EXTRACTING:
-                yield_amount = cell.update_extract(dt, self.extract_speed_bonus)
+                yield_amount = cell.update_extract(dt, self.extract_speed_bonus, rng=self._rng)
                 if yield_amount is not None:
                     yield_amount = self._apply_danger_multiplier(yield_amount)
                     # QF-8: cell.config is Optional (returns None for EMPTY

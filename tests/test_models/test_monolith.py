@@ -1,7 +1,6 @@
 """Tests for Monolith boss rocks."""
 
 import pytest
-import random
 
 from spacegame.models.mining import (
     MiningSession,
@@ -9,6 +8,7 @@ from spacegame.models.mining import (
     RockType,
     AsteroidRock,
 )
+from spacegame.sim_rng import SimRng
 
 
 class TestMonolith:
@@ -16,9 +16,8 @@ class TestMonolith:
 
     def test_monolith_spawns_at_depth_25(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 24
-        random.seed(42)
         session.regenerate_field()
         assert session.depth == 25
         monoliths = [r for r in session.rocks if r.rock_type == RockType.MONOLITH]
@@ -26,18 +25,16 @@ class TestMonolith:
 
     def test_monolith_spawns_at_depth_50(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 49
-        random.seed(42)
         session.regenerate_field()
         monoliths = [r for r in session.rocks if r.rock_type == RockType.MONOLITH]
         assert len(monoliths) == 1
 
     def test_no_monolith_at_non_multiple_of_25(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 6
-        random.seed(42)
         session.regenerate_field()
         assert session.depth == 7
         monoliths = [r for r in session.rocks if r.rock_type == RockType.MONOLITH]
@@ -45,9 +42,8 @@ class TestMonolith:
 
     def test_monolith_hardness_scales_with_depth(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 49
-        random.seed(42)
         session.regenerate_field()
         monolith = next(r for r in session.rocks if r.rock_type == RockType.MONOLITH)
         # At depth 50: 10.0 + 50 * 0.05 = 12.5
@@ -55,9 +51,8 @@ class TestMonolith:
 
     def test_monolith_yield_scales_with_depth(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 99
-        random.seed(42)
         session.regenerate_field()
         monolith = next(r for r in session.rocks if r.rock_type == RockType.MONOLITH)
         # At depth 100: 5 + 100 // 10 = 15
@@ -65,9 +60,8 @@ class TestMonolith:
 
     def test_monolith_strata_reward(self) -> None:
         config = MiningConfig(system_id="breakstone")
-        session = MiningSession(config)
+        session = MiningSession(config, rng=SimRng.from_key("test", 42))
         session.depth = 99
-        random.seed(42)
         session.regenerate_field()
         monolith = next(r for r in session.rocks if r.rock_type == RockType.MONOLITH)
         # depth // 5 = 100 // 5 = 20

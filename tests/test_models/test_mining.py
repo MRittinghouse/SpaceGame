@@ -1285,16 +1285,20 @@ class TestSessionMilestones:
         assert milestones[0].completed
 
     def test_rare_ores_tracked(self) -> None:
-        import random
+        from spacegame.sim_rng import SimRng
 
-        random.seed(42)  # Deterministic: avoid flaky results from test ordering
         config = MiningConfig(
             system_id="test",
             rock_distribution={"crystal": 1.0},
             base_click_power=5.0,
         )
         milestones = self._make_milestones("rare_ores", threshold=1)
-        session = MiningSession(config, milestones=milestones, starting_depth=80)
+        session = MiningSession(
+            config,
+            milestones=milestones,
+            starting_depth=80,
+            rng=SimRng.from_key("test", 42),
+        )
         # Crystal and rare both count as rare ores. At depth 9,
         # depth gating adds iron/dense/rare alongside crystal.
         # Click all rocks to guarantee at least one crystal or rare.

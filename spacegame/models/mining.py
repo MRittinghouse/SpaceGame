@@ -8,10 +8,11 @@ drone automation, and skill-driven progression.
 from __future__ import annotations
 
 import math
-import random
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Dict, List, Optional
+
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.drone import MiningDrone
@@ -182,12 +183,17 @@ class AsteroidRock:
             return self.commodity_override
         return self.config.commodity_id
 
-    def get_yield(self) -> int:
-        """Get random yield amount when rock breaks."""
+    def get_yield(self, rng: SimRng | None = None) -> int:
+        """Get random yield amount when rock breaks.
+
+        Args:
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        """
         if self.yield_override is not None:
             return self.yield_override
         cfg = self.config
-        return random.randint(cfg.min_yield, cfg.max_yield)
+        roll = rng if rng is not None else SimRng.from_entropy()
+        return roll.randint(cfg.min_yield, cfg.max_yield)
 
     def start_drilling(self) -> bool:
         """Start drilling this rock. Returns False if already depleted."""
@@ -197,13 +203,16 @@ class AsteroidRock:
         self.drill_progress = 0.0
         return True
 
-    def update_drill(self, dt: float, speed_bonus: float = 1.0) -> Optional[int]:
+    def update_drill(
+        self, dt: float, speed_bonus: float = 1.0, rng: SimRng | None = None
+    ) -> Optional[int]:
         """
         Update drill progress. Returns yield amount if rock breaks, None otherwise.
 
         Args:
             dt: Delta time in seconds
             speed_bonus: Multiplier for drill speed (skill bonus)
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
         Returns:
             Yield amount if rock is broken, None if still drilling
@@ -218,11 +227,11 @@ class AsteroidRock:
             self.drill_progress = 1.0
             self.drilling = False
             self.depleted = True
-            return self.get_yield()
+            return self.get_yield(rng)
 
         return None
 
-    def apply_click(self, click_power: float) -> Optional[int]:
+    def apply_click(self, click_power: float, rng: SimRng | None = None) -> Optional[int]:
         """Apply a click to this rock.
 
         Adds click_power / hardness to drill_progress. Sets drilling=True
@@ -230,6 +239,7 @@ class AsteroidRock:
 
         Args:
             click_power: Raw click power before hardness scaling.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
         Returns:
             Yield amount if rock broke, None otherwise.
@@ -244,7 +254,7 @@ class AsteroidRock:
             self.drill_progress = 1.0
             self.drilling = False
             self.depleted = True
-            return self.get_yield()
+            return self.get_yield(rng)
 
         return None
 
@@ -445,6 +455,7 @@ class MiningSession:
         auto_drill_level: int = 0,
         ore_scanner_level: int = 0,
         guaranteed_rare: bool = False,
+        rng: SimRng | None = None,
     ):
         """
         Initialize mining session.
@@ -463,7 +474,9 @@ class MiningSession:
             starting_depth: Initial depth (from Depth Scanner).
             drones: List of active MiningDrone instances.
             guaranteed_rare: If True, first rock break yields rare ore (Ore Sense skill).
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
         """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         self.config = config
         self.drill_speed_bonus = drill_speed_bonus
         self.click_power_bonus = click_power_bonus
@@ -571,8 +584,8 @@ class MiningSession:
         monolith_cell = None
         if self.depth > 1 and self.depth % 25 == 0:
             monolith_cell = (
-                random.randint(0, self.config.grid_width - 1),
-                random.randint(0, self.config.grid_height - 1),
+                self._rng.randint(0, self.config.grid_width - 1),
+                self._rng.randint(0, self.config.grid_height - 1),
             )
 
         for y in range(self.config.grid_height):
@@ -589,7 +602,7 @@ class MiningSession:
                         )
                     )
                 else:
-                    rock_type = random.choices(rock_types, weights=weights, k=1)[0]
+                    rock_type = self._rng.choices(rock_types, weights=weights, k=1)[0]
                     self.rocks.append(
                         AsteroidRock(
                             rock_type=rock_type,
@@ -620,7 +633,7 @@ class MiningSession:
 
         # Pick random non-monolith rocks to replace with hazards
         candidates = [r for r in self.rocks if r.rock_type != RockType.MONOLITH]
-        random.shuffle(candidates)
+        self._rng.shuffle(candidates)
         for i, htype in enumerate(hazard_types):
             if i >= len(candidates):
                 break
@@ -676,10 +689,10 @@ class MiningSession:
         """
         drops: dict[str, int] = {}
         # Resonance core: 5% at depth 150+ (checked first — rarer, higher priority)
-        if self.depth >= 150 and random.random() < 0.05:
+        if self.depth >= 150 and self._rng.random() < 0.05:
             drops["resonance_core"] = 1
         # Flux catalyst: 10% at depth 60+
-        if self.depth >= 60 and random.random() < 0.10:
+        if self.depth >= 60 and self._rng.random() < 0.10:
             drops["flux_catalyst"] = 1
         return drops
 
@@ -725,7 +738,7 @@ class MiningSession:
         effective_power = (
             self.config.base_click_power * (1 + self.click_power_bonus) * power_multiplier
         )
-        yield_amount = rock.apply_click(effective_power)
+        yield_amount = rock.apply_click(effective_power, rng=self._rng)
 
         if yield_amount is not None:
             final_yield = self._apply_yield_bonus(yield_amount)
@@ -806,7 +819,7 @@ class MiningSession:
                 self.active_rock.drill_progress = 1.0
                 self.active_rock.drilling = False
                 self.active_rock.depleted = True
-                yield_amount = self._apply_yield_bonus(self.active_rock.get_yield())
+                yield_amount = self._apply_yield_bonus(self.active_rock.get_yield(self._rng))
                 result = MiningResult(
                     commodity_id=self.active_rock.commodity_id,
                     quantity=yield_amount,
@@ -880,7 +893,7 @@ class MiningSession:
                 target.drill_progress = 1.0
                 target.drilling = False
                 target.depleted = True
-                base_yield = target.get_yield()
+                base_yield = target.get_yield(self._rng)
                 # Apply drone yield bonus + depth yield bonus
                 bonus_yield = math.floor(base_yield * drone.yield_bonus)
                 final_yield = self._apply_yield_bonus(base_yield + bonus_yield)
@@ -935,10 +948,10 @@ class MiningSession:
         if drone.target_preference is not None:
             preferred = [r for r in available if r.rock_type == drone.target_preference]
             if preferred:
-                return random.choice(preferred)
+                return self._rng.choice(preferred)
 
         # Fall back to any available rock
-        return random.choice(available)
+        return self._rng.choice(available)
 
     def _select_milestones(self) -> list[MiningMilestone]:
         """Select 3 random milestones (one per category, then sample 3)."""
@@ -947,8 +960,8 @@ class MiningSession:
         by_category: dict[str, list[MiningMilestone]] = {}
         for m in MILESTONE_POOL:
             by_category.setdefault(m.category, []).append(m)
-        candidates = [random.choice(v) for v in by_category.values()]
-        selected = random.sample(candidates, min(3, len(candidates)))
+        candidates = [self._rng.choice(v) for v in by_category.values()]
+        selected = self._rng.sample(candidates, min(3, len(candidates)))
         # Fresh per-session copy — session mutates ``completed`` on the
         # returned instances and those writes must not leak back into the
         # shared MILESTONE_POOL templates.
@@ -1017,13 +1030,13 @@ class MiningSession:
             # Chain-immune rocks cannot be chain targets
             if neighbor.config.chain_immune:
                 continue
-            if random.random() < chain_chance:
+            if self._rng.random() < chain_chance:
                 neighbor.drill_progress += CHAIN_PROGRESS_AMOUNT
                 if neighbor.drill_progress >= 1.0:
                     neighbor.drill_progress = 1.0
                     neighbor.depleted = True
                     neighbor.drilling = False
-                    yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                    yield_amount = self._apply_yield_bonus(neighbor.get_yield(self._rng))
                     commodity = ROCK_TYPE_CONFIGS[neighbor.rock_type].commodity_id
                     self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                     self._on_rock_broken(neighbor)
@@ -1054,7 +1067,7 @@ class MiningSession:
                 neighbor.drill_progress = 1.0
                 neighbor.depleted = True
                 neighbor.drilling = False
-                yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                yield_amount = self._apply_yield_bonus(neighbor.get_yield(self._rng))
                 commodity = neighbor.commodity_id
                 self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                 self._on_rock_broken(neighbor)
@@ -1116,7 +1129,7 @@ class MiningSession:
                     neighbor.drill_progress = 1.0
                     neighbor.depleted = True
                     neighbor.drilling = False
-                    yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                    yield_amount = self._apply_yield_bonus(neighbor.get_yield(self._rng))
                     commodity = neighbor.commodity_id
                     self.total_mined[commodity] = self.total_mined.get(commodity, 0) + yield_amount
                     self._on_rock_broken(neighbor)
@@ -1145,7 +1158,7 @@ class MiningSession:
         target = min(candidates, key=lambda r: r.hardness)
         target.depleted = True
         target.drill_progress = 1.0
-        yield_amount = self._apply_yield_bonus(target.get_yield())
+        yield_amount = self._apply_yield_bonus(target.get_yield(self._rng))
         result = MiningResult(
             commodity_id=target.commodity_id,
             quantity=yield_amount,
@@ -1187,7 +1200,7 @@ class MiningSession:
                         neighbor.drill_progress = 1.0
                         neighbor.depleted = True
                         neighbor.drilling = False
-                        yield_amount = self._apply_yield_bonus(neighbor.get_yield())
+                        yield_amount = self._apply_yield_bonus(neighbor.get_yield(self._rng))
                         commodity = neighbor.commodity_id
                         self.total_mined[commodity] = (
                             self.total_mined.get(commodity, 0) + yield_amount

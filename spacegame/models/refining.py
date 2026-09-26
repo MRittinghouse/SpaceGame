@@ -6,11 +6,11 @@ Process raw materials into valuable goods through recipes and job queues.
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from spacegame.models.forge_upgrade import calculate_forge_tokens
+from spacegame.sim_rng import SimRng
 
 if TYPE_CHECKING:
     from spacegame.models.recipe_mastery import RecipeMasteryTracker
@@ -113,6 +113,7 @@ class RefiningSession:
         mastery_tracker: Optional["RecipeMasteryTracker"] = None,
         token_earn_bonus: float = 0.0,
         discovered_recipes: Optional[set[str]] = None,
+        rng: SimRng | None = None,
     ):
         """
         Initialize refining session.
@@ -129,7 +130,9 @@ class RefiningSession:
             token_earn_bonus: Fractional bonus to forge token earning
             discovered_recipes: Set of discovered recipe IDs (discoverable recipes
                 not in this set are hidden). If None, discoverable recipes are hidden.
+            rng: Random stream; defaults to ``SimRng.from_entropy()``.
         """
+        self._rng = rng if rng is not None else SimRng.from_entropy()
         location_recipes = [r for r in recipes if system_id in r.location_ids]
         # Filter out undiscovered discoverable recipes
         self.available_recipes = [
@@ -295,7 +298,7 @@ class RefiningSession:
         chance = yield_chance if yield_chance is not None else self.yield_bonus
         boosted: Dict[str, int] = {}
         for cid, qty in outputs.items():
-            bonus = sum(1 for _ in range(qty) if random.random() < chance)
+            bonus = sum(1 for _ in range(qty) if self._rng.random() < chance)
             boosted[cid] = qty + bonus
         return boosted
 

@@ -9,12 +9,12 @@ Part of the Shipbuilder Upgrade — Phase 9 (Combat Integration).
 
 from __future__ import annotations
 
-import random
 from dataclasses import dataclass
 from typing import Optional
 
 from spacegame.models.ship_build import ShipBuild
 from spacegame.models.ship_module import ShipModule
+from spacegame.sim_rng import SimRng
 
 # Module HP scales linearly with pixel count
 HP_PER_MODULE_PIXEL = 5
@@ -131,6 +131,7 @@ def resolve_module_hit(
     build: ShipBuild,
     module_catalog: dict[str, ShipModule],
     states: list[ModuleCombatState],
+    rng: SimRng | None = None,
 ) -> Optional[int]:
     """Determine which slot (or hull) a hit lands on.
 
@@ -142,6 +143,7 @@ def resolve_module_hit(
         build: The ship build.
         module_catalog: Module/slot catalog (kept for API compat).
         states: Current module combat states.
+        rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
     Returns:
         Module state index (into states list) if a slot is hit,
@@ -163,7 +165,8 @@ def resolve_module_hit(
     if not choices:
         return None
 
-    result = random.choices(choices, weights=weights, k=1)[0]
+    roll = rng if rng is not None else SimRng.from_entropy()
+    result = roll.choices(choices, weights=weights, k=1)[0]
     return result
 
 
@@ -403,6 +406,7 @@ def process_overkill_chain(
     states: list[ModuleCombatState],
     adjacency: dict[int, list[int]],
     force_chain: bool = False,
+    rng: SimRng | None = None,
 ) -> Optional[dict]:
     """Process overkill chain damage to an adjacent module.
 
@@ -416,6 +420,7 @@ def process_overkill_chain(
         states: All module combat states.
         adjacency: Module adjacency map.
         force_chain: If True, skip probability roll (for testing).
+        rng: Random stream; defaults to ``SimRng.from_entropy()``.
 
     Returns:
         Dict with 'target_idx', 'damage', 'message' if chain triggers,
@@ -431,12 +436,14 @@ def process_overkill_chain(
     if not valid_targets:
         return None
 
+    roll = rng if rng is not None else SimRng.from_entropy()
+
     # Probability check
-    if not force_chain and random.random() >= CHAIN_DAMAGE_CHANCE:
+    if not force_chain and roll.random() >= CHAIN_DAMAGE_CHANCE:
         return None
 
     # Pick a random neighbor
-    target_idx = random.choice(valid_targets)
+    target_idx = roll.choice(valid_targets)
     chain_dmg = int(excess * CHAIN_DAMAGE_RATIO)
 
     if chain_dmg <= 0:

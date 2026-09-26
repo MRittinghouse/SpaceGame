@@ -4,8 +4,6 @@ Covers excess damage tracking, hull propagation, adjacency map
 construction, chain damage mechanics, and cascade limits.
 """
 
-import random
-
 from spacegame.models.module_combat import (
     ModuleCombatState,
     apply_module_damage,
@@ -17,6 +15,8 @@ from spacegame.models.module_combat import (
 )
 from spacegame.models.ship_build import PlacedSlot, ShipBuild
 from spacegame.models.slot_definition import SlotDefinition
+from spacegame.sim_rng import SimRng
+from tests.sim_rng_helpers import ScriptedRng
 
 
 # ============================================================================
@@ -162,7 +162,6 @@ class TestOverkillChain:
             ModuleCombatState("b", 1, 20, 20, False, "shield"),
         ]
         adj = {0: [1], 1: [0]}
-        random.seed(42)
         result = process_overkill_chain(
             excess=MIN_EXCESS_FOR_CHAIN - 1,
             source_idx=0,
@@ -178,8 +177,6 @@ class TestOverkillChain:
             ModuleCombatState("b", 1, 20, 20, False, "shield"),
         ]
         adj = {0: [1], 1: [0]}
-        # Force trigger by seeding
-        random.seed(0)  # Need to find a seed that triggers at 30%
         # Instead test with sufficient excess and verify the chain mechanic
         result = process_overkill_chain(
             excess=100,
@@ -187,6 +184,7 @@ class TestOverkillChain:
             states=states,
             adjacency=adj,
             force_chain=True,  # Test helper
+            rng=ScriptedRng([0.0]),
         )
         assert result is not None
         assert result["target_idx"] == 1
@@ -249,7 +247,7 @@ class TestOverkillChain:
             ModuleCombatState("c", 2, 20, 20, False, "engine"),
         ]
         adj = {0: [1, 2], 1: [0], 2: [0]}
-        random.seed(42)
+        rng = SimRng.from_key("test", 42)
         targets = set()
         for _ in range(50):
             result = process_overkill_chain(
@@ -258,6 +256,7 @@ class TestOverkillChain:
                 states=states,
                 adjacency=adj,
                 force_chain=True,
+                rng=rng,
             )
             if result:
                 targets.add(result["target_idx"])
@@ -271,11 +270,13 @@ class TestOverkillChain:
             ModuleCombatState("b", 1, 20, 20, False, "shield"),
         ]
         adj = {0: [1], 1: [0]}
-        random.seed(42)
+        rng = SimRng.from_key("test", 42)
         triggers = sum(
             1
             for _ in range(1000)
-            if process_overkill_chain(excess=20, source_idx=0, states=states, adjacency=adj)
+            if process_overkill_chain(
+                excess=20, source_idx=0, states=states, adjacency=adj, rng=rng
+            )
             is not None
         )
         # Should be ~300 ± 50
