@@ -13,7 +13,7 @@ repos:
         args: [spacegame/]
         pass_filenames: false
       - id: ruff-format
-        args: [--check, spacegame/, tests/]
+        args: [--check, spacegame/, tests/, tools/parity/]
         pass_filenames: false
   - repo: local
     hooks:
@@ -33,5 +33,12 @@ repos:
         # utilities, not shipped code.
         language: system
         entry: "python -m mypy tools/crawler/ --follow-imports=silent"
+        pass_filenames: false
+        types_or: [python]
+      - id: mypy-parity-strict
+        name: mypy tools/parity (zero tolerance, no baseline)
+        # tools/parity/ is born clean under SP2, same bar as tools/crawler/.
+        language: system
+        entry: "python -m mypy tools/parity/ --follow-imports=silent"
         pass_filenames: false
         types_or: [python]
