@@ -32,7 +32,7 @@ class TestSkillsJson:
         first["negotiator"].current_level = 2
         assert create_default_skills()["negotiator"].current_level == 0
 
-    def test_bonus_values_are_numbers_and_levels_ints(self) -> None:
+    def test_bonus_values_are_floats_and_levels_ints(self) -> None:
         for s in create_default_skills().values():
             assert type(s.max_level) is int and type(s.cost_per_level) is int, s.id
-            assert type(s.bonus_per_level) in (int, float), s.id
+            assert type(s.bonus_per_level) is float, s.id
