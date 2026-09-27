@@ -2,10 +2,37 @@
   "case": "prices_plain",
   "format": 1,
   "setup": {
+    "crew": [],
+    "crew_slots": 4,
     "day": 3,
-    "profile": "plain"
+    "faction_assignments": {
+      "axiom_labs": "Axiom Research Institute",
+      "breakstone": "Independent Miners Guild",
+      "crimson_reach": "Free Salvagers Union",
+      "forgeworks": "Forgeworks Industrial Syndicate",
+      "havens_rest": "Haven Pastoral Alliance",
+      "herons_mark": "",
+      "iron_depths": "Deep Core Mining Corp",
+      "nexus_prime": "Nexus Trade Consortium",
+      "nova_research": "Nova Science Collective",
+      "stellaris_port": "Stellaris Commerce Guild",
+      "the_fulcrum": "Commerce Guild",
+      "verdant": "Verdant Agricultural Cooperative"
+    },
+    "faction_reputation": {},
+    "max_level_bonus_types": [],
+    "player": {
+      "credits": 10000,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "previous_system_id": "",
+    "profile": "plain",
+    "route_trips": []
   },
-  "source_commit": "ee688208d6c0dfb64d7a7ed7800acef6932b962c",
+  "source_commit": "efd8d30583dd8258838ea5f5a8109a05b00167ad",
   "steps": [
     {
       "args": [

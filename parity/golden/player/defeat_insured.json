@@ -2,9 +2,39 @@
   "case": "defeat_insured",
   "format": 1,
   "setup": {
-    "insured": true
+    "cargo": [
+      {
+        "commodity_id": "food",
+        "price": 10,
+        "quantity": 20
+      },
+      {
+        "commodity_id": "electronics",
+        "price": 10,
+        "quantity": 10
+      },
+      {
+        "commodity_id": "scrap_metal",
+        "price": 10,
+        "quantity": 1
+      }
+    ],
+    "faction_assignments": {
+      "nexus_prime": "commerce_guild"
+    },
+    "insured": true,
+    "max_level_bonus_types": [
+      "insurance"
+    ],
+    "player": {
+      "credits": 3000,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    }
   },
-  "source_commit": "ee688208d6c0dfb64d7a7ed7800acef6932b962c",
+  "source_commit": "efd8d30583dd8258838ea5f5a8109a05b00167ad",
   "steps": [
     {
       "args": [
