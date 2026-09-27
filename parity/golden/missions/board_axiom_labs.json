@@ -1,0 +1,612 @@
+{
+  "case": "board_axiom_labs",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "0e49d45a485d5c3698aef93ec47df1d192f95967",
+  "steps": [
+    {
+      "args": [
+        "axiom_labs",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Sensors have detected a derelict vessel near Heron's Mark. Travel there to claim salvage rights, then return to Axiom Labs for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_axiom_labs_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Heron's Mark",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A research consortium in Axiom Labs needs market and navigational data from Heron's Mark, Stellaris Port, Forgeworks. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_axiom_labs_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs with survey data",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 900,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Local authorities in Axiom Labs are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_axiom_labs_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Axiom Labs to collect bounty",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 736,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A contact in Axiom Labs needs 4 units of Weapons Components moved to Nexus Prime — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_axiom_labs_2_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Weapons Components to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "weapons_components",
+              "quantity": 4
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3240,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 90,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "weapons_components"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Sensors have detected a derelict vessel near Forgeworks. Travel there to claim salvage rights, then return to Axiom Labs for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_axiom_labs_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Forgeworks",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A research consortium in Axiom Labs needs market and navigational data from Nova Research, Nexus Prime. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_axiom_labs_3_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs with survey data",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Local authorities in Axiom Labs are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_axiom_labs_3_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Axiom Labs to collect bounty",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2353,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A research consortium in Axiom Labs needs market and navigational data from Breakstone, Nova Research, The Fulcrum. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_axiom_labs_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs with survey data",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 900,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Local authorities in Axiom Labs are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_axiom_labs_4_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Axiom Labs to collect bounty",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 591,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Sensors have detected a derelict vessel near Breakstone. Travel there to claim salvage rights, then return to Axiom Labs for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_axiom_labs_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Breakstone",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A contact in Axiom Labs needs 3 units of Restricted Tech moved to Forgeworks — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_axiom_labs_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to Forgeworks",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4320,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A research consortium in Axiom Labs needs market and navigational data from Heron's Mark, Breakstone. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_axiom_labs_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Axiom Labs with survey data",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "Local authorities in Axiom Labs are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_axiom_labs_6_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Axiom Labs to collect bounty",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 823,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "axiom_labs"
+          ],
+          "description": "A contact in Axiom Labs needs 5 units of Weapons Components moved to Crimson Reach — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_axiom_labs_6_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Weapons Components to Crimson Reach",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "weapons_components",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4050,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "weapons_components"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

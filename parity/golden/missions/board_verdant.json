@@ -1,0 +1,610 @@
+{
+  "case": "board_verdant",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "0e49d45a485d5c3698aef93ec47df1d192f95967",
+  "steps": [
+    {
+      "args": [
+        "verdant",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "A research consortium in Verdant needs market and navigational data from Axiom Labs, Forgeworks. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_verdant_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant with survey data",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Transport 5 units of Food & Water to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_verdant_1_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Food & Water to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 5 Food & Water",
+              "target_id": "food",
+              "target_quantity": 5,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 55,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "food"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Sensors have detected a derelict vessel near Nova Research. Travel there to claim salvage rights, then return to Verdant for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_verdant_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Nova Research",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Sensors have detected a derelict vessel near Axiom Labs. Travel there to claim salvage rights, then return to Verdant for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_verdant_2_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Axiom Labs",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Transport 4 units of Machinery to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_verdant_2_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Machinery to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 4 Machinery",
+              "target_id": "machinery",
+              "target_quantity": 4,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 300,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "machinery"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "A research consortium in Verdant needs market and navigational data from Crimson Reach, Iron Depths, Breakstone. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_verdant_3_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant with survey data",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Sensors have detected a derelict vessel near Nova Research. Travel there to claim salvage rights, then return to Verdant for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_verdant_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Nova Research",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Local authorities in Verdant are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_verdant_4_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Verdant to collect bounty",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 474,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "A research consortium in Verdant needs market and navigational data from Breakstone, Nexus Prime. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_verdant_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant with survey data",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Sensors have detected a derelict vessel near The Fulcrum. Travel there to claim salvage rights, then return to Verdant for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_verdant_4_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near The Fulcrum",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "A contact in Verdant needs 2 units of Diverted Medicine moved to The Fulcrum — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_verdant_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to The Fulcrum",
+          "objectives": [
+            {
+              "description": "Deliver contraband to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 480,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Transport 6 units of Food & Water to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_verdant_5_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Food & Water to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 6 Food & Water",
+              "target_id": "food",
+              "target_quantity": 6,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 6,
+              "reward_type": "remove_cargo",
+              "target_id": "food"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Sensors have detected a derelict vessel near Forgeworks. Travel there to claim salvage rights, then return to Verdant for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_verdant_6_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Forgeworks",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "verdant"
+          ],
+          "description": "Transport 4 units of Food & Water to Haven's Rest. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_verdant_6_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Food & Water to Haven's Rest",
+          "objectives": [
+            {
+              "description": "Acquire 4 Food & Water",
+              "target_id": "food",
+              "target_quantity": 4,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "food"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

@@ -1,0 +1,683 @@
+{
+  "case": "board_crimson_reach",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "0e49d45a485d5c3698aef93ec47df1d192f95967",
+  "steps": [
+    {
+      "args": [
+        "crimson_reach",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Sensors have detected a derelict vessel near Nova Research. Travel there to claim salvage rights, then return to Crimson Reach for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_crimson_reach_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Nova Research",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Transport 8 units of Medical Supplies to Axiom Labs. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_crimson_reach_1_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Medical Supplies to Axiom Labs",
+          "objectives": [
+            {
+              "description": "Acquire 8 Medical Supplies",
+              "target_id": "medical",
+              "target_quantity": 8,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 8,
+              "reward_type": "remove_cargo",
+              "target_id": "medical"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A research consortium in Crimson Reach needs market and navigational data from Stellaris Port, Axiom Labs. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_crimson_reach_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach with survey data",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A contact in Crimson Reach needs 5 units of Combat Stimulants moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_crimson_reach_2_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Stellaris Port",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Transport 7 units of Fuel Cells to Verdant. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_crimson_reach_2_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Fuel Cells to Verdant",
+          "objectives": [
+            {
+              "description": "Acquire 7 Fuel Cells",
+              "target_id": "fuel",
+              "target_quantity": 7,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 65,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 7,
+              "reward_type": "remove_cargo",
+              "target_id": "fuel"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A contact in Crimson Reach needs 3 units of Diverted Medicine moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_crimson_reach_3_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Stellaris Port",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1440,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Transport 7 units of Fuel Cells to Haven's Rest. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_crimson_reach_3_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Fuel Cells to Haven's Rest",
+          "objectives": [
+            {
+              "description": "Acquire 7 Fuel Cells",
+              "target_id": "fuel",
+              "target_quantity": 7,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 65,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 7,
+              "reward_type": "remove_cargo",
+              "target_id": "fuel"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Transport 5 units of Salvaged Electronics to Nexus Prime. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_crimson_reach_4_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Salvaged Electronics to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Acquire 5 Salvaged Electronics",
+              "target_id": "salvaged_electronics",
+              "target_quantity": 5,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 250,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 55,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "salvaged_electronics"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A research consortium in Crimson Reach needs market and navigational data from Nexus Prime, Nova Research, The Fulcrum. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_crimson_reach_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach with survey data",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Sensors have detected a derelict vessel near Heron's Mark. Travel there to claim salvage rights, then return to Crimson Reach for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_crimson_reach_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Heron's Mark",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A research consortium in Crimson Reach needs market and navigational data from Verdant, Iron Depths, Axiom Labs. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_crimson_reach_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach with survey data",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A contact in Crimson Reach needs 3 units of Stolen Data moved to Axiom Labs — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_crimson_reach_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Stolen Data to Axiom Labs",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "stolen_data",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4320,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "stolen_data"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A contact in Crimson Reach needs 5 units of Combat Stimulants moved to Verdant — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_crimson_reach_6_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Verdant",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "A research consortium in Crimson Reach needs market and navigational data from The Fulcrum, Breakstone, Nexus Prime. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_crimson_reach_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Crimson Reach with survey data",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "crimson_reach"
+          ],
+          "description": "Transport 9 units of Scrap Metal to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_crimson_reach_6_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Scrap Metal to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 9 Scrap Metal",
+              "target_id": "scrap_metal",
+              "target_quantity": 9,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 9,
+              "reward_type": "remove_cargo",
+              "target_id": "scrap_metal"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

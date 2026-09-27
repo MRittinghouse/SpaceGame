@@ -1,0 +1,691 @@
+{
+  "case": "board_herons_mark",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "0e49d45a485d5c3698aef93ec47df1d192f95967",
+  "steps": [
+    {
+      "args": [
+        "herons_mark",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A contact in Heron's Mark needs 5 units of Combat Stimulants moved to Nexus Prime — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_herons_mark_1_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Local authorities in Heron's Mark are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_herons_mark_1_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Heron's Mark to collect bounty",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3528,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Local authorities in Heron's Mark are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_herons_mark_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Heron's Mark to collect bounty",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 772,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Transport 10 units of Deep Scan Probe to The Fulcrum. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_herons_mark_2_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Deep Scan Probe to The Fulcrum",
+          "objectives": [
+            {
+              "description": "Acquire 10 Deep Scan Probe",
+              "target_id": "crafted_deep_scan_probe",
+              "target_quantity": 10,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 10,
+              "reward_type": "remove_cargo",
+              "target_id": "crafted_deep_scan_probe"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A research consortium in Heron's Mark needs market and navigational data from Verdant, Axiom Labs. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_herons_mark_2_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark with survey data",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Sensors have detected a derelict vessel near Nova Research. Travel there to claim salvage rights, then return to Heron's Mark for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_herons_mark_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Nova Research",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Transport 6 units of Anomalous Sample to Breakstone. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_herons_mark_3_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Anomalous Sample to Breakstone",
+          "objectives": [
+            {
+              "description": "Acquire 6 Anomalous Sample",
+              "target_id": "anomalous_sample",
+              "target_quantity": 6,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 6,
+              "reward_type": "remove_cargo",
+              "target_id": "anomalous_sample"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A contact in Heron's Mark needs 5 units of Stolen Data moved to Verdant — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_herons_mark_4_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Stolen Data to Verdant",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "stolen_data",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 7200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "stolen_data"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Transport 3 units of Textiles to Iron Depths. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_herons_mark_4_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Textiles to Iron Depths",
+          "objectives": [
+            {
+              "description": "Acquire 3 Textiles",
+              "target_id": "textiles",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 45,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "textiles"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A research consortium in Heron's Mark needs market and navigational data from Nexus Prime, Stellaris Port. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_herons_mark_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark with survey data",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A research consortium in Heron's Mark needs market and navigational data from Haven's Rest, Axiom Labs, Stellaris Port. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_herons_mark_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark with survey data",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Sensors have detected a derelict vessel near The Fulcrum. Travel there to claim salvage rights, then return to Heron's Mark for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_herons_mark_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near The Fulcrum",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Transport 10 units of Stellarium Crucible to Iron Depths. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_herons_mark_5_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Stellarium Crucible to Iron Depths",
+          "objectives": [
+            {
+              "description": "Acquire 10 Stellarium Crucible",
+              "target_id": "crafted_stellarium_crucible",
+              "target_quantity": 10,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 10,
+              "reward_type": "remove_cargo",
+              "target_id": "crafted_stellarium_crucible"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Sensors have detected a derelict vessel near Axiom Labs. Travel there to claim salvage rights, then return to Heron's Mark for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_herons_mark_6_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Axiom Labs",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "Local authorities in Heron's Mark are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_herons_mark_6_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Heron's Mark to collect bounty",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 720,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "herons_mark"
+          ],
+          "description": "A research consortium in Heron's Mark needs market and navigational data from Breakstone, The Fulcrum. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_herons_mark_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Heron's Mark with survey data",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}
