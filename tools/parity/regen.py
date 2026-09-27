@@ -24,7 +24,9 @@ from tools.parity.driver import REPO_ROOT, Case, dirty_paths_outside, source_com
 from tools.parity.drivers import crew as crew_driver
 from tools.parity.drivers import galaxy as galaxy_driver
 from tools.parity.drivers import market as market_driver
+from tools.parity.drivers import player as player_driver
 from tools.parity.drivers import skills as skills_driver
+from tools.parity.drivers import trade as trade_driver
 from tools.parity.export_schema import write_schema
 
 DRIVERS: list[Callable[[], list[Case]]] = [
@@ -33,6 +35,8 @@ DRIVERS: list[Callable[[], list[Case]]] = [
     skills_driver.build_cases,
     galaxy_driver.build_cases,
     crew_driver.build_cases,
+    trade_driver.build_cases,
+    player_driver.build_cases,
 ]
 
 

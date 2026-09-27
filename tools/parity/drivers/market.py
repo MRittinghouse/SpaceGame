@@ -7,7 +7,10 @@ from __future__ import annotations
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.commodity import Commodity
+from spacegame.models.event import EventType, MarketEvent
+from spacegame.models.galaxy_event import GalaxyEvent, GalaxyEventGenerator
 from spacegame.models.market import Market, PriceHistory
+from spacegame.models.politics_dispute import PoliticsMarketShift
 from tools.parity.driver import Case
 
 PRICE_TABLE_DAYS = range(2, 31)  # spec 7.4: days 1 to 30
@@ -35,6 +38,19 @@ class _Recorder:
             result: object = None
         elif name == "initialize_stock":
             self.market.initialize_stock(self.system, _all_commodities())
+            result = None
+        elif name == "apply_event":
+            spec = dict(args[0])  # type: ignore[call-overload]
+            spec["event_type"] = EventType(spec["event_type"])
+            self.market.apply_event(MarketEvent(**spec))
+            result = None
+        elif name == "add_politics_shift":
+            self.market.add_politics_shift(PoliticsMarketShift(**args[0]))  # type: ignore[arg-type]
+            result = None
+        elif name == "add_galaxy_event":
+            # No public entry point exists: game.py never feeds galaxy events to markets (F-2).
+            self.market.galaxy_events.append(GalaxyEvent.from_dict(args[0]))  # type: ignore[arg-type]
+            self.market._generate_prices()
             result = None
         else:
             result = getattr(self.market, name)(*args)
@@ -137,6 +153,91 @@ def _histories() -> list[Case]:
     ]
 
 
+EVENT_MULTIPLIERS = (("shortage", 1.8), ("surplus", 0.6), ("disaster", 2.5), ("boom", 1.4))
+
+
+def _event_cases() -> list[Case]:
+    cases: list[Case] = []
+    for event_type, mult in EVENT_MULTIPLIERS:
+        case = Case("market", f"event_{event_type}", {"system_id": "nexus_prime", "day": 1})
+        rec = _Recorder(case, "nexus_prime", 1)
+        rec.call(
+            "apply_event",
+            {
+                "event_type": event_type,
+                "commodity_id": "food",
+                "system_id": "nexus_prime",
+                "price_multiplier": mult,
+                "duration_days": 4,
+                "day_started": 1,
+                "description": event_type,
+            },
+        )
+        for day in range(2, 8):
+            rec.call("update_day", day)
+        cases.append(case)
+    return cases
+
+
+def _politics_case() -> Case:
+    case = Case("market", "politics_shifts", {"system_id": "nexus_prime", "day": 1})
+    rec = _Recorder(case, "nexus_prime", 1)
+    rec.call(
+        "add_politics_shift",
+        {
+            "commodity_id": "food",
+            "system_id": "nexus_prime",
+            "magnitude": 0.1,
+            "duration_days": 5,
+            "start_day": 1,
+        },
+    )
+    rec.call(
+        "add_politics_shift",
+        {
+            "commodity_id": "food",
+            "system_id": "nexus_prime",
+            "magnitude": -0.25,
+            "duration_days": 3,
+            "start_day": 2,
+        },
+    )
+    rec.call(
+        "add_politics_shift",
+        {
+            "commodity_id": "food",
+            "system_id": "verdant",
+            "magnitude": 0.5,
+            "duration_days": 9,
+            "start_day": 1,
+        },
+    )
+    for day in range(2, 11):
+        rec.call("update_day", day)
+    return case
+
+
+def _galaxy_event_cases() -> list[Case]:
+    dl = get_data_loader()
+    gen = GalaxyEventGenerator(dl.galaxy_event_templates, chains=dl.galaxy_event_chains)
+    cases: list[Case] = []
+    seen: set[str] = set()
+    for template in dl.galaxy_event_templates:
+        event_type = str(template["event_type"])
+        if event_type in seen or event_type == "pirate_surge":
+            continue
+        seen.add(event_type)
+        event = gen._build_event_from_template(template, 1)
+        system_id = event.system_id
+        case = Case("market", f"galaxy_{event_type}", {"system_id": system_id, "day": 1})
+        rec = _Recorder(case, system_id, 1)
+        rec.call("add_galaxy_event", event.to_dict())
+        for day in range(2, event.duration_days + 3):
+            rec.call("update_day", day)
+        cases.append(case)
+    return cases
+
+
 def build_cases() -> list[Case]:
     """Every market and price-history case."""
     return [
@@ -146,4 +247,7 @@ def build_cases() -> list[Case]:
         _stock(),
         _off_market(),
         *_histories(),
+        *_event_cases(),
+        _politics_case(),
+        *_galaxy_event_cases(),
     ]
