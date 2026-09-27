@@ -4,9 +4,16 @@ Player progression system.
 XP, leveling, and skill trees for trading and resource gathering.
 """
 
+import functools
+import json
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Dict, List, Optional
+
+from spacegame.config import PROJECT_ROOT
+
+SKILLS_PATH: Path = PROJECT_ROOT / "data" / "progression" / "skills.json"
 
 
 class SkillTreeType(Enum):
@@ -366,6 +373,32 @@ class PlayerProgression:
                     prog.skills[mapped_id].current_level, level
                 )
         return prog
+
+
+@functools.cache
+def load_skill_definitions() -> tuple[dict[str, object], ...]:
+    """Read the skill definitions once per process.
+
+    Returns:
+        One raw row per skill, in file order.
+    """
+    with open(SKILLS_PATH, encoding="utf-8") as handle:
+        return tuple(json.load(handle)["skills"])
+
+
+def _node_from_row(row: dict[str, object]) -> SkillNode:
+    """Build a fresh SkillNode (current_level 0) from one JSON row."""
+    return SkillNode(
+        id=str(row["id"]),
+        name=str(row["name"]),
+        description=str(row["description"]),
+        tree=SkillTreeType(row["tree"]),
+        max_level=row["max_level"],  # type: ignore[arg-type]
+        cost_per_level=row["cost_per_level"],  # type: ignore[arg-type]
+        prerequisite_id=row["prerequisite_id"],  # type: ignore[arg-type]
+        bonus_type=str(row["bonus_type"]),
+        bonus_per_level=row["bonus_per_level"],  # type: ignore[arg-type]
+    )
 
 
 def create_default_skills() -> Dict[str, SkillNode]:
