@@ -66,6 +66,13 @@ counter or any other per-process part to the ID.
 - COMPLETED runtime missions stay in `MissionManager._runtime_ids` (`remove_mission`
   refuses ACTIVE and COMPLETED), and `get_state` saves each in full, so saves grow over a
   long career. The Godot save format should prune or compact them.
+- `parity/golden/encounters/select.json` (SP3-a) records `select_encounter_definition`
+  with every `EncounterContext` at its default `dialogue_flags={}` and
+  `resolved_captain_ids=set()`. So the golden never exercises `EncounterDefinition.unique`,
+  `requires_flags`, `excludes_flags`, or the RC-5 resolved-captain filter inside
+  `_is_eligible` (`encounter.py`); it covers only `encounter_type`, `danger_levels`,
+  `only_systems`/`excluded_systems`, `required_faction`, and level gates. A port checking
+  those flag-gated branches needs a golden case that sets them.
 
 ## Act II v1
 
