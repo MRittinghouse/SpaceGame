@@ -26,6 +26,7 @@ from tools.parity.drivers import crew as crew_driver
 from tools.parity.drivers import encounters as encounters_driver
 from tools.parity.drivers import galaxy as galaxy_driver
 from tools.parity.drivers import market as market_driver
+from tools.parity.drivers import missions as missions_driver
 from tools.parity.drivers import player as player_driver
 from tools.parity.drivers import skills as skills_driver
 from tools.parity.drivers import trade as trade_driver
@@ -43,6 +44,7 @@ DRIVERS: list[Callable[[], list[Case]]] = [
     travel_driver.build_cases,
     encounters_driver.build_cases,
     combat_driver.build_cases,
+    missions_driver.build_cases,
 ]
 
 
