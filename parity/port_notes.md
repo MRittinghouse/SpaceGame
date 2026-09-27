@@ -38,6 +38,8 @@ Seeds computed from stream keys that later feed other streams. A port must build
 - The name `"customs"` is both a stream (`smuggling.py`, the inspection roll) and a
   `stable_seed` namespace (`game.py`, the customs `encounter_seed`). Consumers re-hash the seed,
   so the overlap is harmless, but the port's key registry must keep both uses.
+- Travel protection roll: `SimRng.from_key("protection", game_day, system_id).randint(0, 99) < protection_chance`
+  (`travel.post_process_encounter`). Replaced an md5 of `f"{day}_{system}_protection"` in SP3-a.
 
 ## Procedural mission IDs
 

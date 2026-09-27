@@ -31,6 +31,12 @@ from spacegame.models.encounter import (
 from spacegame.models.faction import ReputationTier
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
+from spacegame.models.travel import (
+    fuel_after_jump,
+    jump_fuel_cost,
+    jump_hull_restore,
+    post_process_encounter,
+)
 from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -403,12 +409,12 @@ class GalaxyMapView(BaseView):
     def _calculate_fuel_cost(self, target_system_id: str) -> int:
         current = self.systems[self.player.current_system_id]
         target = self.systems[target_system_id]
-        base_cost = current.fuel_cost_to(target, self.player.ship.effective_fuel_efficiency)
-        # Exploration skill: fuel_reduction lowers fuel cost per jump
-        fuel_reduction = self.player.progression.get_bonus("fuel_reduction")
-        if fuel_reduction > 0:
-            base_cost = max(1, int(base_cost * (1 - fuel_reduction)))
-        return base_cost
+        return jump_fuel_cost(
+            current,
+            target,
+            self.player.ship.effective_fuel_efficiency,
+            self.player.progression.get_bonus("fuel_reduction"),
+        )
 
     def _world_to_screen(self, world_x: float, world_y: float) -> tuple[int, int]:
         screen_x = int(self.map_center_x + (world_x * self.zoom))
@@ -547,9 +553,10 @@ class GalaxyMapView(BaseView):
             return
         self.player.ship.consume_fuel(fuel_cost)
         # Exploration skill: emergency_reserves ensures minimum 1 fuel after any jump
-        if self.player.progression.get_bonus("emergency_reserves") > 0:
-            if self.player.ship.current_fuel < 1:
-                self.player.ship.current_fuel = 1
+        self.player.ship.current_fuel = fuel_after_jump(
+            self.player.ship.current_fuel,
+            self.player.progression.get_bonus("emergency_reserves"),
+        )
         self.player.game_day += 1
         self.player.decay_criminal_heat(1)
         self.player.jumps_traveled += 1
@@ -602,37 +609,19 @@ class GalaxyMapView(BaseView):
                 )
 
                 # Apply reputation modifiers to encounter
-                if encounter and enc_mods:
-                    # Scale shakedown demands by reputation multiplier
-                    if encounter.shakedown_demand > 0:
-                        mult = enc_mods.get("shakedown_multiplier", 1.0)
-                        encounter = EncounterRef(
-                            enemy_template_ids=encounter.enemy_template_ids,
-                            encounter_seed=encounter.encounter_seed,
-                            encounter_type=encounter.encounter_type,
-                            shakedown_demand=int(encounter.shakedown_demand * mult),
-                        )
-
-                    # Safe passage perk: no hostile encounters in faction systems
-                    if (
-                        self.politics_manager
-                        and encounter.encounter_type == "hostile"
-                        and self.politics_manager.has_perk(
-                            self.player, self.selected_system, "safe_passage"
-                        )
-                    ):
-                        encounter = None  # Alliance escort grants safe passage
-
-                    # Allied/friendly protection: chance to cancel hostile encounter
-                    if encounter:
-                        protection = enc_mods.get("protection_chance", 0)
-                        if protection > 0 and encounter.encounter_type == "hostile":
-                            import hashlib
-
-                            seed_str = f"{self.player.game_day}_{self.selected_system}_protection"
-                            seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
-                            if (seed % 100) < protection:
-                                encounter = None  # Faction patrol escorts you safely
+                safe_passage = bool(
+                    self.politics_manager
+                    and self.politics_manager.has_perk(
+                        self.player, self.selected_system, "safe_passage"
+                    )
+                )
+                encounter = post_process_encounter(
+                    encounter,
+                    enc_mods,
+                    safe_passage=safe_passage,
+                    game_day=self.player.game_day,
+                    system_id=self.selected_system,
+                )
 
             # Start travel animation
             get_audio_manager().play_sfx("nav_jump")
@@ -833,11 +822,11 @@ class GalaxyMapView(BaseView):
 
             # Exploration skill: jump_hull_restore heals % hull on arrival
             hull_restore_pct = self.player.progression.get_bonus("jump_hull_restore")
-            if hull_restore_pct > 0:
-                max_hull = self.player.ship.ship_type.combat_hull
-                if self.player.ship._computed_stats and self.player.ship._computed_stats.hull > 0:
-                    max_hull = self.player.ship._computed_stats.hull
-                heal_amount = max(1, int(max_hull * hull_restore_pct))
+            max_hull = self.player.ship.ship_type.combat_hull
+            if self.player.ship._computed_stats and self.player.ship._computed_stats.hull > 0:
+                max_hull = self.player.ship._computed_stats.hull
+            heal_amount = jump_hull_restore(max_hull, hull_restore_pct)
+            if heal_amount > 0:
                 healed = self.player.ship.repair_hull(heal_amount)
                 if healed > 0:
                     logger.info(f"Field Repairs: restored {healed} hull on arrival")
