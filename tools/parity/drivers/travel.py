@@ -58,7 +58,11 @@ def _post_process() -> Case:
     system = dl.systems["crimson_reach"]
     enemy_ids = filter_enemies_for_system(dl.enemy_templates, system.faction, system.danger_level)
     case = Case("travel", "post_process", {"system_id": system.id, "enemy_ids": enemy_ids})
-    for day in range(1, 61):
+    # The window runs through day 130 because crimson_reach's first shakedown
+    # roll happens on day 126 at these arguments (distance 120.0, player_level
+    # 5). The rolled encounter travels in the step args, so a port replays
+    # post_process_encounter on it without re-rolling.
+    for day in range(1, 131):
         rolled = check_travel_encounter(system.danger_level, enemy_ids, day, system.id, 120.0, 5)
         for mods in MOD_SETS:
             for safe in (False, True):

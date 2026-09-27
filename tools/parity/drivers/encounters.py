@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Optional
+from typing import Any, Optional
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.captain_memory import (
@@ -28,7 +28,13 @@ from spacegame.models.encounter import (
     resolve_encounter_skill_check,
     select_encounter_definition,
 )
-from spacegame.models.social import SocialManager
+from spacegame.models.player import Player
+from spacegame.models.social import (
+    MAX_SOCIAL_LEVEL,
+    SOCIAL_SKILL_DEFINITIONS,
+    SOCIAL_XP_THRESHOLDS,
+    SocialManager,
+)
 from tools.parity.driver import Case
 from tools.parity.snapshots import fresh_player, player_snapshot
 
@@ -52,6 +58,66 @@ PROFILES: dict[str, dict[str, object]] = {
 SHAKEDOWN_DEMAND = 150
 OUTCOMES = (OUTCOME_VICTORY, OUTCOME_DEFEAT, OUTCOME_NEGOTIATED, OUTCOME_BRIBED, OUTCOME_FLED)
 
+# The player sub-dict every outcomes_<type> and skill_checks setup shares: the same
+# five fresh_player parameters trade.py and player.py record.
+_PLAYER_SETUP: dict[str, Any] = {
+    "name": "ParityPilot",
+    "credits": 500,
+    "system_id": "nexus_prime",
+    "ship_type": "shuttle",
+    "fuel": 40,
+}
+_OUTCOMES_SETUP: dict[str, Any] = {
+    "shakedown_demand": SHAKEDOWN_DEMAND,
+    "player": _PLAYER_SETUP,
+    "cargo": [{"commodity_id": "food", "quantity": 10, "price": 20}],
+    "fresh_player_per_step": True,
+    "reputation_spillover": False,
+}
+_SKILL_CHECKS_SETUP: dict[str, Any] = {
+    "player": {
+        "name": "ParityPilot",
+        "credits": 10000,
+        "system_id": "nexus_prime",
+        "ship_type": "shuttle",
+        "fuel": 40,
+    },
+    "fresh_per_step": True,
+    "manager_progression": None,
+    "manager_attribute_sheet": None,
+    "social_profiles": {
+        "default": {},
+        "boosted": {
+            "skills": {
+                sid: {
+                    "id": sid,
+                    "name": name,
+                    "level": MAX_SOCIAL_LEVEL,
+                    "xp": SOCIAL_XP_THRESHOLDS[MAX_SOCIAL_LEVEL - 1],
+                }
+                for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
+            },
+            "disposition": {},
+        },
+    },
+}
+_CAPTAINS_SETUP: dict[str, Any] = {
+    "outcomes": list(OUTCOMES),
+    "days": [3, 9, 15],
+    "memory_reset_per": ["captain_id", "outcome"],
+}
+
+
+def _build_player(fields: dict[str, Any]) -> Player:
+    """Construct a Player from a setup's player sub-dict, plus synced data only."""
+    return fresh_player(
+        name=fields["name"],
+        credits=fields["credits"],
+        system_id=fields["system_id"],
+        ship_type_id=fields["ship_type"],
+        fuel=fields["fuel"],
+    )
+
 
 def _roll(system_id: str) -> Case:
     dl = get_data_loader()
@@ -59,16 +125,15 @@ def _roll(system_id: str) -> Case:
     origin = dl.systems["nexus_prime"]
     distance = origin.distance_to(system) if system_id != "nexus_prime" else 80.0
     enemy_ids = filter_enemies_for_system(dl.enemy_templates, system.faction, system.danger_level)
-    case = Case(
-        "encounters",
-        f"roll_{system_id}",
-        {
-            "danger": system.danger_level,
-            "distance": distance,
-            "enemy_ids": enemy_ids,
-        },
-    )
-    for profile, knobs in PROFILES.items():
+    setup: dict[str, Any] = {
+        "danger": system.danger_level,
+        "distance": distance,
+        "enemy_ids": enemy_ids,
+        "system_id": system_id,
+        "profiles": PROFILES,
+    }
+    case = Case("encounters", f"roll_{system_id}", setup)
+    for profile, knobs in setup["profiles"].items():
         for day in ROLL_DAYS:
             ref = check_travel_encounter(
                 system.danger_level,
@@ -76,7 +141,7 @@ def _roll(system_id: str) -> Case:
                 day,
                 system_id,
                 distance,
-                **knobs,  # type: ignore[arg-type]
+                **knobs,
             )
             case.record(
                 "check_travel_encounter",
@@ -92,7 +157,15 @@ def _select() -> Case:
     definitions = dl.encounter_definitions
     types = sorted({d.encounter_type for d in definitions})
     factions = ["", *sorted(dl.factions)]
-    case = Case("encounters", "select", {"types": types, "factions": factions})
+    setup: dict[str, Any] = {
+        "types": types,
+        "factions": factions,
+        "system_id": "",
+        "player_level": 3,
+        "dialogue_flags": {},
+        "resolved_captain_ids": [],
+    }
+    case = Case("encounters", "select", setup)
     for encounter_type in types:
         for danger in ("moderate", "dangerous"):
             for faction_id in factions:
@@ -101,9 +174,11 @@ def _select() -> Case:
                         encounter_type=encounter_type,
                         danger_level=danger,
                         seed=seed,
-                        system_id="",
+                        system_id=setup["system_id"],
                         faction_id=faction_id,
-                        player_level=3,
+                        player_level=setup["player_level"],
+                        dialogue_flags=dict(setup["dialogue_flags"]),
+                        resolved_captain_ids=set(setup["resolved_captain_ids"]),
                     )
                     chosen = select_encounter_definition(definitions, ctx)
                     case.record(
@@ -116,14 +191,19 @@ def _select() -> Case:
 
 
 def _outcomes(encounter_type: str, definitions: list[EncounterDefinition]) -> Case:
-    case = Case("encounters", f"outcomes_{encounter_type}", {"shakedown_demand": SHAKEDOWN_DEMAND})
+    setup = _OUTCOMES_SETUP
+    case = Case("encounters", f"outcomes_{encounter_type}", setup)
+    demand = setup["shakedown_demand"]
     for definition in definitions:
         for choice in definition.choices:
             passes = (True, False) if choice.skill_check is not None else (True,)
             for passed in passes:
-                player = fresh_player(credits=500)
-                player.ship.add_cargo("food", 10, 20)
-                outcome = resolve_choice_outcome(choice, SHAKEDOWN_DEMAND, passed)
+                player = _build_player(setup["player"])
+                for entry in setup["cargo"]:
+                    player.ship.add_cargo(entry["commodity_id"], entry["quantity"], entry["price"])
+                outcome = resolve_choice_outcome(choice, demand, passed)
+                # No PoliticsManager in these goldens: reputation rewards apply
+                # directly, with no spillover (apply_reputation stays None).
                 effects = apply_encounter_outcome(player, outcome)
                 case.record(
                     "choose",
@@ -152,14 +232,13 @@ def _skill_checks() -> Case:
             if c.skill_check is not None
         }
     )
-    case = Case("encounters", "skill_checks", {})
+    setup = _SKILL_CHECKS_SETUP
+    case = Case("encounters", "skill_checks", setup)
     for profile in ("default", "boosted"):
         for skill, difficulty, on_pass, on_fail in checks:
             manager = SocialManager()
-            if profile == "boosted":
-                for social_skill in manager._skills.values():
-                    social_skill.level = 10
-            player = fresh_player()
+            manager.load_state(setup["social_profiles"][profile])
+            player = _build_player(setup["player"])
             check = next(
                 c.skill_check
                 for d in dl.encounter_definitions
@@ -186,12 +265,14 @@ def _skill_checks() -> Case:
 
 def _captains() -> Case:
     dl = get_data_loader()
-    case = Case("encounters", "captains", {"outcomes": list(OUTCOMES)})
+    case = Case("encounters", "captains", _CAPTAINS_SETUP)
     for captain_id in sorted(dl.captains):
         captain = dl.captains[captain_id]
         for outcome in OUTCOMES:
+            # CaptainMemory starts fresh for each (captain_id, outcome) pair
+            # and accumulates over the days.
             memory: Optional[CaptainMemory] = None
-            for day in (3, 9, 15):
+            for day in _CAPTAINS_SETUP["days"]:
                 memory = memory or CaptainMemory(captain_id=captain_id)
                 memory.record_encounter(outcome, day)
                 dialogue = get_effective_captain_dialogue(captain, memory, dl.captain_variants)
