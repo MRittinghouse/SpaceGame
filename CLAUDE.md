@@ -195,7 +195,7 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 
 ## Skill System (6 Trees)
 
-The progression uses 6 skill trees with 89 skills and 88 bonus types. Skills are defined in `data/progression/skills.json`; `create_default_skills()` in `progression.py` builds fresh nodes from it (the Godot port reads the same file). `ghost_protocol` stacks with the base `deception_bonus` only while the `contraband_present` flag is active; that rule lives in the consumer, not the skill data.
+The progression uses 6 skill trees with 89 skills and 88 bonus types. Skills are defined in `data/progression/skills.json`; `create_default_skills()` in `progression.py` builds fresh nodes from it, and the Godot port receives the same file through its `tools/sync_data.py`. `ghost_protocol` (bonus type `deception_contraband_bonus`) was designed to stack with the base `deception_bonus` only while the `contraband_present` flag is active, but nothing in `spacegame/` reads that bonus yet (finding F-13, owner SP3-c); the rule belongs in the consumer, not the skill data.
 
 - **Trees**: Commerce, Combat, Exploration, Leadership, Social, Industry
 - **Point economy**: 1 skill point per level, no cap, no milestones
@@ -203,7 +203,7 @@ The progression uses 6 skill trees with 89 skills and 88 bonus types. Skills are
 - **Prerequisites**: Tier 1 (roots) → Tier 2 (specialization) → Tier 3 (capstones)
 - **Capstones**: Identity-defining skills (Juggernaut, Sentinel, Ghost, Peacemaker, etc.)
 
-When modifying any gameplay system, check if a skill bonus should apply. Search `create_default_skills()` for existing bonus_types before adding new ones.
+When modifying any gameplay system, check if a skill bonus should apply. Search `data/progression/skills.json` for existing bonus_types before adding new ones.
 
 ## Save Migration
 
@@ -251,7 +251,7 @@ When modifying a gameplay system, check these secondary impacts:
 | If you change... | Also update... |
 |-----------------|----------------|
 | Model fields | `to_dict()`, `from_dict()`, relevant tests |
-| Skill bonus_types | `create_default_skills()`, the system that reads it, integration test |
+| Skill bonus_types | `data/progression/skills.json`, the system that reads it, integration test |
 | GameState enum | `game.py` transition router, `_ensure_*_view()` factory, cockpit_hud context map |
 | Commodity/system data | `test_cross_references.py` data validation tests |
 | Dialogue flags | Use `spacegame/constants/flags.py` helpers for cross-module flags (cookbook: `requirements/si3_flag_registry_cookbook.md`); check all `dialogue_flags.get(...)` consumers |
