@@ -14,6 +14,13 @@
       "armor_plating"
     ],
     "momentum": "f:1.0:4607182418800017408",
+    "payout_player": {
+      "credits": 0,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
     "player": {
       "accuracy": 70,
       "active_effects": [],
@@ -74,7 +81,12 @@
       "max_energy": 12,
       "max_hull": 600,
       "max_shields": 50,
-      "momentum": "f:0.0:0",
+      "momentum": {
+        "current": "f:1.0:4607182418800017408",
+        "overclock_triggered": false,
+        "overdriven_available": false,
+        "thresholds_crossed": []
+      },
       "shield_break_vulnerable": false,
       "shield_regen": 0,
       "shields": 50,
@@ -86,7 +98,7 @@
     "seed": 4048113902,
     "ship_type_id": "frontier_runner"
   },
-  "source_commit": "6d56bf2bc1d82712e496420b80377db03122317b",
+  "source_commit": "a221aebc76f88689fdf486d696dcbd7c0b68c4f8",
   "steps": [
     {
       "args": [],
@@ -205,7 +217,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.5:4602678819172646912",
+          "momentum": {
+            "current": "f:0.5:4602678819172646912",
+            "overclock_triggered": false,
+            "overdriven_available": true,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 50,
@@ -360,7 +380,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.5700000000000001:4603309323120478782",
+          "momentum": {
+            "current": "f:0.5700000000000001:4603309323120478782",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 50,
@@ -511,7 +539,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.6200000000000001:4603759683083215832",
+          "momentum": {
+            "current": "f:0.6200000000000001:4603759683083215832",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -649,7 +685,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.6200000000000001:4603759683083215832",
+          "momentum": {
+            "current": "f:0.6200000000000001:4603759683083215832",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -815,7 +859,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.6900000000000002:4604390187031047702",
+          "momentum": {
+            "current": "f:0.6900000000000002:4604390187031047702",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -975,7 +1027,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.6900000000000002:4604390187031047702",
+          "momentum": {
+            "current": "f:0.6900000000000002:4604390187031047702",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1118,7 +1178,15 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.6900000000000002:4604390187031047702",
+          "momentum": {
+            "current": "f:0.6900000000000002:4604390187031047702",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1291,7 +1359,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.7600000000000002:4605020690978879572",
+          "momentum": {
+            "current": "f:0.7600000000000002:4605020690978879572",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1458,7 +1535,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.7600000000000002:4605020690978879572",
+          "momentum": {
+            "current": "f:0.7600000000000002:4605020690978879572",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1610,7 +1696,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.7600000000000002:4605020690978879572",
+          "momentum": {
+            "current": "f:0.7600000000000002:4605020690978879572",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1783,7 +1878,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8300000000000003:4605651194926711442",
+          "momentum": {
+            "current": "f:0.8300000000000003:4605651194926711442",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 44,
@@ -1950,7 +2054,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8800000000000003:4606101554889448492",
+          "momentum": {
+            "current": "f:0.8800000000000003:4606101554889448492",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2093,7 +2206,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8800000000000003:4606101554889448492",
+          "momentum": {
+            "current": "f:0.8800000000000003:4606101554889448492",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2257,7 +2379,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8800000000000003:4606101554889448492",
+          "momentum": {
+            "current": "f:0.8800000000000003:4606101554889448492",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2415,7 +2546,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8800000000000003:4606101554889448492",
+          "momentum": {
+            "current": "f:0.8800000000000003:4606101554889448492",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2558,7 +2698,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.8800000000000003:4606101554889448492",
+          "momentum": {
+            "current": "f:0.8800000000000003:4606101554889448492",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2722,7 +2871,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.9500000000000004:4606732058837280362",
+          "momentum": {
+            "current": "f:0.9500000000000004:4606732058837280362",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -2880,7 +3038,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.9500000000000004:4606732058837280362",
+          "momentum": {
+            "current": "f:0.9500000000000004:4606732058837280362",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3023,7 +3190,16 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:0.9500000000000004:4606732058837280362",
+          "momentum": {
+            "current": "f:0.9500000000000004:4606732058837280362",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3187,7 +3363,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3345,7 +3531,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3488,7 +3684,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3643,7 +3849,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 39,
@@ -3786,7 +4002,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 33,
@@ -3919,7 +4145,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 33,
@@ -4074,7 +4310,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 33,
@@ -4217,7 +4463,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 27,
@@ -4353,7 +4609,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 27,
@@ -4517,7 +4783,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 27,
@@ -4669,7 +4945,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 22,
@@ -4812,7 +5098,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 22,
@@ -4976,7 +5272,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 22,
@@ -5128,7 +5434,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 17,
@@ -5271,7 +5587,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 17,
@@ -5435,7 +5761,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 17,
@@ -5587,7 +5923,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -5730,7 +6076,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -5894,7 +6250,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6046,7 +6412,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6189,7 +6565,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6353,7 +6739,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6505,7 +6901,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6648,7 +7054,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6812,7 +7228,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -6964,7 +7390,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -7107,7 +7543,17 @@
           "max_energy": 12,
           "max_hull": 600,
           "max_shields": 50,
-          "momentum": "f:1.0:4607182418800017408",
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
           "shield_break_vulnerable": false,
           "shield_regen": 0,
           "shields": 16,
@@ -7124,7 +7570,21 @@
       }
     },
     {
-      "args": [],
+      "args": [
+        [
+          {
+            "dead": true,
+            "fled": false,
+            "template_id": "pirate_raider"
+          },
+          {
+            "dead": false,
+            "fled": true,
+            "template_id": "pirate_scout"
+          }
+        ],
+        4048113902
+      ],
       "call": "apply_combat_victory",
       "result": {
         "credits": 50,
