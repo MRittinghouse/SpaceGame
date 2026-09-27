@@ -1,0 +1,174 @@
+{
+  "case": "galaxy_research_breakthrough",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "axiom_labs"
+  },
+  "source_commit": "ee688208d6c0dfb64d7a7ed7800acef6932b962c",
+  "steps": [
+    {
+      "args": [
+        {
+          "blocked_commodities": [],
+          "chain_id": "",
+          "chain_step": 0,
+          "danger_modifier": 0,
+          "day_started": 1,
+          "description": "Collective announces breakthrough in applied medical synthesis",
+          "duration_days": 3,
+          "encounter_chance_modifier": "f:1.0:4607182418800017408",
+          "event_type": "research_breakthrough",
+          "faction_id": "science_collective",
+          "flavor_text": "Supply manifests show triple the usual outbound medical shipments. The patents, for once, are open.",
+          "id": "medical_breakthrough_1",
+          "price_modifiers": {
+            "medical": "f:0.5:4602678819172646912",
+            "purified_crystal": "f:0.7:4604480259023595110"
+          },
+          "rep_bonus_amount": 0,
+          "rep_bonus_faction": "",
+          "shutdown_tags": [],
+          "skill_opportunity": "observation_bonus",
+          "system_id": "axiom_labs"
+        }
+      ],
+      "call": "add_galaxy_event",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 298,
+          "contraband_medicine": 143,
+          "crystal_ore": 48,
+          "electronics": 116,
+          "food": 46,
+          "fuel": 10,
+          "manufactured_goods": 108,
+          "medical": 92,
+          "neural_weave": 1006,
+          "purified_crystal": 189,
+          "rare_metals": 296,
+          "rare_ore": 90
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 267,
+          "contraband_medicine": 154,
+          "crystal_ore": 54,
+          "electronics": 136,
+          "food": 46,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 109,
+          "neural_weave": 1188,
+          "purified_crystal": 150,
+          "rare_metals": 275,
+          "rare_ore": 94
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 256,
+          "contraband_medicine": 153,
+          "crystal_ore": 54,
+          "electronics": 124,
+          "food": 49,
+          "fuel": 9,
+          "manufactured_goods": 112,
+          "medical": 100,
+          "neural_weave": 1121,
+          "purified_crystal": 150,
+          "rare_metals": 310,
+          "rare_ore": 94
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 261,
+          "contraband_medicine": 130,
+          "crystal_ore": 49,
+          "electronics": 132,
+          "food": 52,
+          "fuel": 10,
+          "manufactured_goods": 114,
+          "medical": 226,
+          "neural_weave": 1186,
+          "purified_crystal": 263,
+          "rare_metals": 301,
+          "rare_ore": 99
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 303,
+          "contraband_medicine": 138,
+          "crystal_ore": 47,
+          "electronics": 137,
+          "food": 50,
+          "fuel": 9,
+          "manufactured_goods": 111,
+          "medical": 240,
+          "neural_weave": 1011,
+          "purified_crystal": 246,
+          "rare_metals": 310,
+          "rare_ore": 89
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

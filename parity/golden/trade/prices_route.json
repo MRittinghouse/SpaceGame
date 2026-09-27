@@ -1,0 +1,1773 @@
+{
+  "case": "prices_route",
+  "format": 1,
+  "setup": {
+    "day": 3,
+    "profile": "route"
+  },
+  "source_commit": "ee688208d6c0dfb64d7a7ed7800acef6932b962c",
+  "steps": [
+    {
+      "args": [
+        "nexus_prime",
+        "alloy_composite",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 220,
+        "bm_sell": 220,
+        "buy": 163,
+        "sell": 220
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "alloy_composite",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 220,
+        "bm_sell": 220,
+        "buy": 153,
+        "sell": 230
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "art",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 757,
+        "bm_sell": 757,
+        "buy": 560,
+        "sell": 757
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "art",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 757,
+        "bm_sell": 757,
+        "buy": 527,
+        "sell": 790
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "common_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 65,
+        "bm_sell": 65,
+        "buy": 48,
+        "sell": 65
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "common_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 65,
+        "bm_sell": 65,
+        "buy": 45,
+        "sell": 68
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "electronics",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 151,
+        "bm_sell": 151,
+        "buy": 112,
+        "sell": 151
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "electronics",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 151,
+        "bm_sell": 151,
+        "buy": 105,
+        "sell": 158
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 56,
+        "bm_sell": 56,
+        "buy": 41,
+        "sell": 56
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "food",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 56,
+        "bm_sell": 56,
+        "buy": 39,
+        "sell": 58
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "fuel",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 11,
+        "bm_sell": 11,
+        "buy": 8,
+        "sell": 11
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "fuel",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 11,
+        "bm_sell": 11,
+        "buy": 8,
+        "sell": 12
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_ore",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 16,
+        "bm_sell": 16,
+        "buy": 11,
+        "sell": 16
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_ore",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 16,
+        "bm_sell": 16,
+        "buy": 11,
+        "sell": 16
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "machinery",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 143,
+        "bm_sell": 143,
+        "buy": 106,
+        "sell": 143
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "machinery",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 143,
+        "bm_sell": 143,
+        "buy": 100,
+        "sell": 150
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "manufactured_goods",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 92,
+        "bm_sell": 92,
+        "buy": 68,
+        "sell": 92
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "manufactured_goods",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 92,
+        "bm_sell": 92,
+        "buy": 64,
+        "sell": 96
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "medical",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 407,
+        "bm_sell": 407,
+        "buy": 300,
+        "sell": 407
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "medical",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 407,
+        "bm_sell": 407,
+        "buy": 283,
+        "sell": 424
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "precious_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 611,
+        "bm_sell": 611,
+        "buy": 452,
+        "sell": 611
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "precious_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 611,
+        "bm_sell": 611,
+        "buy": 425,
+        "sell": 638
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "purified_crystal",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 600,
+        "bm_sell": 600,
+        "buy": 443,
+        "sell": 600
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "purified_crystal",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 600,
+        "bm_sell": 600,
+        "buy": 417,
+        "sell": 626
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "rare_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 342,
+        "bm_sell": 342,
+        "buy": 253,
+        "sell": 342
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "rare_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 342,
+        "bm_sell": 342,
+        "buy": 238,
+        "sell": 357
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "raw_ore",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 4,
+        "bm_sell": 4,
+        "buy": 3,
+        "sell": 4
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "raw_ore",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 4,
+        "bm_sell": 4,
+        "buy": 3,
+        "sell": 4
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "refined_propellant",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 197,
+        "bm_sell": 197,
+        "buy": 146,
+        "sell": 197
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "refined_propellant",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 197,
+        "bm_sell": 197,
+        "buy": 137,
+        "sell": 206
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "salvaged_electronics",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 59,
+        "bm_sell": 59,
+        "buy": 44,
+        "sell": 59
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "salvaged_electronics",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 59,
+        "bm_sell": 59,
+        "buy": 41,
+        "sell": 62
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "scrap_metal",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 14,
+        "bm_sell": 14,
+        "buy": 11,
+        "sell": 14
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "scrap_metal",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 14,
+        "bm_sell": 14,
+        "buy": 10,
+        "sell": 15
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellarium_ingot",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 3029,
+        "bm_sell": 3029,
+        "buy": 2238,
+        "sell": 3029
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellarium_ingot",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 3029,
+        "bm_sell": 3029,
+        "buy": 2107,
+        "sell": 3160
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "textiles",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 58,
+        "bm_sell": 58,
+        "buy": 43,
+        "sell": 58
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "textiles",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 58,
+        "bm_sell": 58,
+        "buy": 40,
+        "sell": 61
+      },
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        false
+      ],
+      "call": "refuel_price",
+      "result": 10,
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime",
+        true
+      ],
+      "call": "refuel_price",
+      "result": 0,
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "nexus_prime"
+      ],
+      "call": "trade_reputation_gain",
+      "result": 1,
+      "state": {
+        "route_bonus": "f:0.15:4594572339843380019",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "alloy_composite",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 172,
+        "bm_sell": 172,
+        "buy": 150,
+        "sell": 150
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "alloy_composite",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 172,
+        "bm_sell": 172,
+        "buy": 142,
+        "sell": 157
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "common_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 55,
+        "bm_sell": 55,
+        "buy": 48,
+        "sell": 48
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "common_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 55,
+        "bm_sell": 55,
+        "buy": 45,
+        "sell": 50
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "food",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 70,
+        "bm_sell": 70,
+        "buy": 61,
+        "sell": 61
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "food",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 70,
+        "bm_sell": 70,
+        "buy": 57,
+        "sell": 64
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "fuel",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 11,
+        "bm_sell": 11,
+        "buy": 10,
+        "sell": 10
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "fuel",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 11,
+        "bm_sell": 11,
+        "buy": 9,
+        "sell": 10
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_ore",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 17,
+        "bm_sell": 17,
+        "buy": 15,
+        "sell": 15
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_ore",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 17,
+        "bm_sell": 17,
+        "buy": 14,
+        "sell": 15
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "machinery",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 109,
+        "bm_sell": 109,
+        "buy": 95,
+        "sell": 95
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "machinery",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 109,
+        "bm_sell": 109,
+        "buy": 90,
+        "sell": 99
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "manufactured_goods",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 78,
+        "bm_sell": 78,
+        "buy": 68,
+        "sell": 68
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "manufactured_goods",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 78,
+        "bm_sell": 78,
+        "buy": 64,
+        "sell": 71
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "medical",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 409,
+        "bm_sell": 409,
+        "buy": 356,
+        "sell": 356
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "medical",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 409,
+        "bm_sell": 409,
+        "buy": 338,
+        "sell": 373
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "rare_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 335,
+        "bm_sell": 335,
+        "buy": 292,
+        "sell": 292
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "rare_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 335,
+        "bm_sell": 335,
+        "buy": 277,
+        "sell": 306
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "raw_ore",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 4,
+        "bm_sell": 4,
+        "buy": 4,
+        "sell": 4
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "raw_ore",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 4,
+        "bm_sell": 4,
+        "buy": 3,
+        "sell": 4
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "refined_propellant",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 193,
+        "bm_sell": 193,
+        "buy": 168,
+        "sell": 168
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "refined_propellant",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 193,
+        "bm_sell": 193,
+        "buy": 159,
+        "sell": 176
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "salvaged_electronics",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 60,
+        "bm_sell": 60,
+        "buy": 53,
+        "sell": 53
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "salvaged_electronics",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 60,
+        "bm_sell": 60,
+        "buy": 50,
+        "sell": 55
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "scrap_metal",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 12,
+        "bm_sell": 12,
+        "buy": 11,
+        "sell": 11
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "scrap_metal",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 12,
+        "bm_sell": 12,
+        "buy": 10,
+        "sell": 11
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "textiles",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 46,
+        "bm_sell": 46,
+        "buy": 40,
+        "sell": 40
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        "textiles",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 46,
+        "bm_sell": 46,
+        "buy": 38,
+        "sell": 42
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        false
+      ],
+      "call": "refuel_price",
+      "result": 10,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks",
+        true
+      ],
+      "call": "refuel_price",
+      "result": 0,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "forgeworks"
+      ],
+      "call": "trade_reputation_gain",
+      "result": 1,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "combat_stims",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 326,
+        "bm_sell": 326,
+        "buy": 363,
+        "sell": 363
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "combat_stims",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 326,
+        "bm_sell": 326,
+        "buy": 344,
+        "sell": 381
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "common_metals",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 49,
+        "bm_sell": 49,
+        "buy": 43,
+        "sell": 43
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "common_metals",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 49,
+        "bm_sell": 49,
+        "buy": 40,
+        "sell": 45
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "food",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 63,
+        "bm_sell": 63,
+        "buy": 55,
+        "sell": 55
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "food",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 63,
+        "bm_sell": 63,
+        "buy": 52,
+        "sell": 57
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "fortified_stims",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 730,
+        "bm_sell": 730,
+        "buy": 812,
+        "sell": 812
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "fortified_stims",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 730,
+        "bm_sell": 730,
+        "buy": 771,
+        "sell": 852
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "fuel",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 10,
+        "bm_sell": 10,
+        "buy": 9,
+        "sell": 9
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "fuel",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 10,
+        "bm_sell": 10,
+        "buy": 8,
+        "sell": 9
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "manufactured_goods",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 95,
+        "bm_sell": 95,
+        "buy": 83,
+        "sell": 83
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "manufactured_goods",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 95,
+        "bm_sell": 95,
+        "buy": 78,
+        "sell": 87
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "medical",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 426,
+        "bm_sell": 426,
+        "buy": 371,
+        "sell": 371
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "medical",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 426,
+        "bm_sell": 426,
+        "buy": 352,
+        "sell": 389
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "rare_parts",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 86,
+        "bm_sell": 86,
+        "buy": 75,
+        "sell": 75
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "rare_parts",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 86,
+        "bm_sell": 86,
+        "buy": 71,
+        "sell": 78
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "restricted_tech",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 814,
+        "bm_sell": 814,
+        "buy": 814,
+        "sell": 814
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "restricted_tech",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 814,
+        "bm_sell": 814,
+        "buy": 773,
+        "sell": 854
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "salvaged_electronics",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 34,
+        "bm_sell": 34,
+        "buy": 30,
+        "sell": 30
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "salvaged_electronics",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 34,
+        "bm_sell": 34,
+        "buy": 28,
+        "sell": 31
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "scrap_metal",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 6,
+        "bm_sell": 6,
+        "buy": 6,
+        "sell": 6
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "scrap_metal",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 6,
+        "bm_sell": 6,
+        "buy": 5,
+        "sell": 6
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stolen_data",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 531,
+        "bm_sell": 531,
+        "buy": 591,
+        "sell": 591
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stolen_data",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 531,
+        "bm_sell": 531,
+        "buy": 561,
+        "sell": 620
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "weapons_components",
+        "f:0.0:0"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 380,
+        "bm_sell": 380,
+        "buy": 380,
+        "sell": 380
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "weapons_components",
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "prices",
+      "result": {
+        "bm_buy": 380,
+        "bm_sell": 380,
+        "buy": 361,
+        "sell": 399
+      },
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        false
+      ],
+      "call": "refuel_price",
+      "result": 9,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach",
+        true
+      ],
+      "call": "refuel_price",
+      "result": 0,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    },
+    {
+      "args": [
+        "crimson_reach"
+      ],
+      "call": "trade_reputation_gain",
+      "result": 1,
+      "state": {
+        "route_bonus": "f:0.0:0",
+        "tariff": "f:0.0:0"
+      }
+    }
+  ],
+  "subsystem": "trade"
+}

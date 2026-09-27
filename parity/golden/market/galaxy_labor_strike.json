@@ -1,0 +1,223 @@
+{
+  "case": "galaxy_labor_strike",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "breakstone"
+  },
+  "source_commit": "ee688208d6c0dfb64d7a7ed7800acef6932b962c",
+  "steps": [
+    {
+      "args": [
+        {
+          "blocked_commodities": [],
+          "chain_id": "strike_cascade",
+          "chain_step": 0,
+          "danger_modifier": 0,
+          "day_started": 1,
+          "description": "Workers walk off the job at Breakstone  -- Union leadership calls for solidarity",
+          "duration_days": 5,
+          "encounter_chance_modifier": "f:1.0:4607182418800017408",
+          "event_type": "labor_strike",
+          "faction_id": "miners_union",
+          "flavor_text": "Picket lines form at every cargo bay. 'We Built This' banners stretch between support columns.",
+          "id": "breakstone_strike_1",
+          "price_modifiers": {},
+          "rep_bonus_amount": 0,
+          "rep_bonus_faction": "",
+          "shutdown_tags": [
+            "raw_materials",
+            "mining"
+          ],
+          "skill_opportunity": "persuasion_bonus",
+          "system_id": "breakstone"
+        }
+      ],
+      "call": "add_galaxy_event",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 43,
+          "crystal_ore": 45,
+          "food": 59,
+          "fuel": 10,
+          "iron_ore": 10,
+          "machinery": 161,
+          "manufactured_goods": 125,
+          "medical": 415,
+          "rare_metals": 236,
+          "raw_ore": 3,
+          "scrap_metal": 10
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 41,
+          "crystal_ore": 46,
+          "food": 56,
+          "fuel": 9,
+          "iron_ore": 10,
+          "machinery": 137,
+          "manufactured_goods": 120,
+          "medical": 387,
+          "rare_metals": 205,
+          "raw_ore": 3,
+          "scrap_metal": 11
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 45,
+          "crystal_ore": 41,
+          "food": 55,
+          "fuel": 9,
+          "iron_ore": 10,
+          "machinery": 163,
+          "manufactured_goods": 123,
+          "medical": 409,
+          "rare_metals": 227,
+          "raw_ore": 3,
+          "scrap_metal": 11
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 46,
+          "crystal_ore": 40,
+          "food": 58,
+          "fuel": 9,
+          "iron_ore": 8,
+          "machinery": 158,
+          "manufactured_goods": 116,
+          "medical": 432,
+          "rare_metals": 251,
+          "raw_ore": 2,
+          "scrap_metal": 10
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 46,
+          "crystal_ore": 41,
+          "food": 57,
+          "fuel": 10,
+          "iron_ore": 12,
+          "machinery": 163,
+          "manufactured_goods": 120,
+          "medical": 373,
+          "rare_metals": 211,
+          "raw_ore": 3,
+          "scrap_metal": 11
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 39,
+          "crystal_ore": 30,
+          "food": 61,
+          "fuel": 9,
+          "iron_ore": 8,
+          "machinery": 139,
+          "manufactured_goods": 125,
+          "medical": 412,
+          "rare_metals": 198,
+          "raw_ore": 3,
+          "scrap_metal": 8
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "common_metals": 36,
+          "crystal_ore": 33,
+          "food": 58,
+          "fuel": 9,
+          "iron_ore": 8,
+          "machinery": 136,
+          "manufactured_goods": 127,
+          "medical": 385,
+          "rare_metals": 204,
+          "raw_ore": 2,
+          "scrap_metal": 8
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}
