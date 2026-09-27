@@ -3,9 +3,24 @@
   "format": 1,
   "setup": {
     "complete_on_day": 1,
-    "mission_id": "recruit_engineer"
+    "crew": [],
+    "crew_slots": 4,
+    "mission_id": "recruit_engineer",
+    "mission_state": {
+      "status": {
+        "recruit_engineer": "available"
+      }
+    },
+    "player": {
+      "credits": 5000,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "reputation_spillover": false
   },
-  "source_commit": "0e49d45a485d5c3698aef93ec47df1d192f95967",
+  "source_commit": "5c8857d177aaed61c3f7c2d928655824b3f7425c",
   "steps": [
     {
       "args": [
@@ -180,7 +195,9 @@
       }
     },
     {
-      "args": [],
+      "args": [
+        0
+      ],
       "call": "check_objectives",
       "result": [
         "recruit_engineer"
