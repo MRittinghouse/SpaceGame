@@ -23,6 +23,7 @@ from tools.parity import rng_vectors
 from tools.parity.driver import REPO_ROOT, Case, dirty_paths_outside, source_commit, write_cases
 from tools.parity.drivers import combat as combat_driver
 from tools.parity.drivers import crew as crew_driver
+from tools.parity.drivers import dialogue as dialogue_driver
 from tools.parity.drivers import encounters as encounters_driver
 from tools.parity.drivers import galaxy as galaxy_driver
 from tools.parity.drivers import market as market_driver
@@ -45,6 +46,7 @@ DRIVERS: list[Callable[[], list[Case]]] = [
     encounters_driver.build_cases,
     combat_driver.build_cases,
     missions_driver.build_cases,
+    dialogue_driver.build_cases,
 ]
 
 
