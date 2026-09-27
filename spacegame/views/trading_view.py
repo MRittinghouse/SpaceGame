@@ -18,10 +18,18 @@ from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_LG, FONT_MD, ge
 from spacegame.engine.particles import COLLECT_SPARKLE, ParticleConfig, ParticlePool
 from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.commodity import Commodity
-from spacegame.models.faction import get_tariff_modifier
 from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
+from spacegame.models.trade_pricing import (
+    black_market_buy_price,
+    black_market_sell_price,
+    buy_price,
+    refuel_price,
+    route_bonus,
+    sell_price,
+    trade_reputation_gain,
+)
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
@@ -751,54 +759,21 @@ class TradingView(BaseView):
             return self._cargo_commodity_ids[idx]
         return None
 
-    def _get_faction_tariff(self) -> float:
-        """Get the tariff modifier for the current system's faction."""
-        faction_id = self.player.get_faction_for_system(self.player.current_system_id)
-        if not faction_id:
-            return 0.0
-        return get_tariff_modifier(self.player.get_reputation(faction_id))
-
-    def _get_route_bonus(self) -> float:
-        """Get trade route efficiency bonus for current route."""
-        if not self.player.previous_system_id:
-            return 0.0
-        return self.player.trade_route_tracker.get_efficiency_bonus(
-            self.player.previous_system_id, self.player.current_system_id
-        )
-
     def _get_adjusted_buy_price(self, commodity_id: str, quantity: int) -> int:
-        base_price = self.market.get_price(commodity_id)
-        discount = self.player.progression.get_bonus("buy_price_reduction")
-        discount += self.player.ship.get_crew_bonus("buy_price_reduction")
-        discount += self._get_route_bonus()
-        # Faction perk buy discount
+        perk = 0.0
         if self.politics_manager:
-            discount += self.politics_manager.get_perk_bonus(
+            perk = self.politics_manager.get_perk_bonus(
                 self.player, self.player.current_system_id, "buy_price_bonus"
             )
-        tariff = self._get_faction_tariff()
-        # Leadership tariff reduction only reduces penalties, not discounts
-        if tariff > 0:
-            tariff = max(0.0, tariff - self.player.progression.get_bonus("tariff_reduction"))
-        adjusted = base_price * (1.0 - discount + tariff)
-        return max(1, int(adjusted))
+        return buy_price(self.player, self.market, commodity_id, perk_bonus=perk)
 
     def _get_adjusted_sell_price(self, commodity_id: str) -> int:
-        base_price = self.market.get_sell_price(commodity_id)
-        bonus = self.player.progression.get_bonus("sell_price_bonus")
-        bonus += self.player.ship.get_crew_bonus("sell_price_bonus")
-        bonus += self._get_route_bonus()
-        # Faction perk sell bonus
+        perk = 0.0
         if self.politics_manager:
-            bonus += self.politics_manager.get_perk_bonus(
+            perk = self.politics_manager.get_perk_bonus(
                 self.player, self.player.current_system_id, "sell_price_bonus"
             )
-        tariff = self._get_faction_tariff()
-        # Leadership tariff reduction only reduces penalties, not discounts
-        if tariff > 0:
-            tariff = max(0.0, tariff - self.player.progression.get_bonus("tariff_reduction"))
-        adjusted = base_price * (1.0 + bonus - tariff)
-        return max(1, int(adjusted))
+        return sell_price(self.player, self.market, commodity_id, perk_bonus=perk)
 
     def _apply_trade_reputation(self) -> None:
         """Apply reputation change once per landing after a successful trade."""
@@ -806,20 +781,13 @@ class TradingView(BaseView):
             return
         self._trade_rep_awarded = True
 
-        from spacegame.config import REP_PER_TRADE
         from spacegame.data_loader import get_data_loader
 
         faction_id = self.player.get_faction_for_system(self.player.current_system_id)
         if not faction_id:
             return
 
-        # Leadership bonus to reputation gains
-        rep_bonus = int(self.player.progression.get_bonus("reputation_gain_bonus"))
-        rep_gain = REP_PER_TRADE + rep_bonus
-        # Faction Ambassador: double all rep gains
-        ambassador_lvl = self.player.progression.get_bonus("faction_rep_multiplier")
-        if ambassador_lvl > 0:
-            rep_gain = int(rep_gain * (1.0 + ambassador_lvl))
+        rep_gain = trade_reputation_gain(self.player)
 
         dl = get_data_loader()
 
@@ -1001,27 +969,19 @@ class TradingView(BaseView):
 
     def _get_black_market_buy_price(self, commodity_id: str) -> int:
         """Get buy price in black market mode (modifier-based, no tariff)."""
-        from spacegame.models.smuggling import get_black_market_price_modifier
-
         base_price = self.market.get_price(commodity_id)
         commodity = self.commodities.get(commodity_id)
         if not commodity:
             return base_price
-        modifier = get_black_market_price_modifier(commodity.legality)
-        return max(1, int(base_price * (1.0 + modifier)))
+        return black_market_buy_price(self.market, commodity)
 
     def _get_black_market_sell_price(self, commodity_id: str) -> int:
         """Get sell price in black market mode (modifier-based, no tariff)."""
-        from spacegame.models.smuggling import get_black_market_price_modifier
-
         base_price = self.market.get_sell_price(commodity_id)
         commodity = self.commodities.get(commodity_id)
         if not commodity:
             return base_price
-        modifier = get_black_market_price_modifier(commodity.legality)
-        # Commerce skill: black_market_sell_bonus increases sell prices
-        modifier += self.player.progression.get_bonus("black_market_sell_bonus")
-        return max(1, int(base_price * (1.0 + modifier)))
+        return black_market_sell_price(self.player, self.market, commodity)
 
     def _execute_buy(self) -> None:
         if not self._has_trade_permit():
@@ -1266,12 +1226,13 @@ class TradingView(BaseView):
         except ValueError:
             quantity = fuel_needed
 
-        fuel_price = self.market.get_price("fuel")
-        # Free fuel perk
-        if self.politics_manager and self.politics_manager.has_perk(
-            self.player, self.player.current_system_id, "free_fuel"
-        ):
-            fuel_price = 0
+        free_fuel = bool(
+            self.politics_manager
+            and self.politics_manager.has_perk(
+                self.player, self.player.current_system_id, "free_fuel"
+            )
+        )
+        fuel_price = refuel_price(self.market, free_fuel)
         success, msg = self.player.refuel_ship(quantity, fuel_price)
         if success:
             get_audio_manager().play_sfx("trade_refuel")
@@ -1471,9 +1432,9 @@ class TradingView(BaseView):
         screen.blit(title, (20, 20))
 
         # Route bonus indicator
-        route_bonus = self._get_route_bonus()
-        if route_bonus > 0:
-            bonus_pct = int(route_bonus * 100)
+        route_bonus_value = route_bonus(self.player)
+        if route_bonus_value > 0:
+            bonus_pct = int(route_bonus_value * 100)
             bonus_text = f"Route Bonus: {bonus_pct}%"
             bonus_surf = self.info_font.render(bonus_text, True, Colors.GREEN)
             screen.blit(bonus_surf, (20, 42))
