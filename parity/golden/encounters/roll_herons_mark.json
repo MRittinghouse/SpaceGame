@@ -1,0 +1,708 @@
+{
+  "case": "roll_herons_mark",
+  "format": 1,
+  "setup": {
+    "danger": "dangerous",
+    "distance": "f:121.6552506059644:4638261144144630600",
+    "enemy_ids": [
+      "pirate_scout",
+      "pirate_raider",
+      "pirate_heavy",
+      "smuggler",
+      "patrol_vessel",
+      "reach_rustrunner",
+      "reach_wrecker",
+      "reach_dreadwreck",
+      "bounty_tracker",
+      "bounty_enforcer",
+      "bounty_vanguard",
+      "bounty_ace",
+      "faction_enforcer",
+      "ledger_raider",
+      "ledger_striker",
+      "ledger_vanguard",
+      "armored_transport",
+      "ghost_raider",
+      "plasma_bomber",
+      "support_frigate",
+      "skiff_raider",
+      "hulk_derelict",
+      "reach_scout_ace",
+      "reach_bulwark",
+      "reach_void_dancer",
+      "mercenary_ace"
+    ]
+  },
+  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        1
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 442714150,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        2
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1634135877,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "smuggler"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        3
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3695293211,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_ace",
+          "ghost_raider"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        4
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1386652096,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        5
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1532067689,
+        "encounter_type": "debris",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        6
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        7
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        8
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        9
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        10
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        11
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 931065027,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        12
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        13
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        14
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        15
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        16
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        17
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        18
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        19
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        20
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3909143431,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber",
+          "support_frigate",
+          "mercenary_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        21
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        22
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        23
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3969169728,
+        "encounter_type": "shakedown",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 160
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        24
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        25
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        26
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1163301782,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_wrecker",
+          "skiff_raider",
+          "pirate_raider"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        27
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3957490081,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        28
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        29
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        30
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3799256161,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_raider",
+          "bounty_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        1
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        2
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        3
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3695293211,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_ace",
+          "ghost_raider"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        4
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1386652096,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "faction_enforcer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        5
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1532067689,
+        "encounter_type": "debris",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        6
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        7
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        8
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        9
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        10
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        11
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 931065027,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        12
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        13
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        14
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        15
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        16
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        17
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        18
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        19
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        20
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        21
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        22
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        23
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        24
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        25
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        26
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        27
+      ],
+      "call": "check_travel_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3957490081,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        28
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        29
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        30
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    }
+  ],
+  "subsystem": "encounters"
+}

@@ -2,7 +2,7 @@
   "case": "catalog",
   "format": 1,
   "setup": {},
-  "source_commit": "efd8d30583dd8258838ea5f5a8109a05b00167ad",
+  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
   "steps": [
     {
       "args": [],

@@ -1,0 +1,171 @@
+{
+  "case": "reserve_and_restore",
+  "format": 1,
+  "setup": {},
+  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "steps": [
+    {
+      "args": [
+        0,
+        "f:0.0:0"
+      ],
+      "call": "fuel_after_jump",
+      "result": 0,
+      "state": {}
+    },
+    {
+      "args": [
+        0,
+        "f:1.0:4607182418800017408"
+      ],
+      "call": "fuel_after_jump",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        1,
+        "f:0.0:0"
+      ],
+      "call": "fuel_after_jump",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        1,
+        "f:1.0:4607182418800017408"
+      ],
+      "call": "fuel_after_jump",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        7,
+        "f:0.0:0"
+      ],
+      "call": "fuel_after_jump",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        7,
+        "f:1.0:4607182418800017408"
+      ],
+      "call": "fuel_after_jump",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_hull_restore",
+      "result": 0,
+      "state": {}
+    },
+    {
+      "args": [
+        10,
+        "f:0.01:4576918229304087675"
+      ],
+      "call": "jump_hull_restore",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        10,
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "jump_hull_restore",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        10,
+        "f:0.1:4591870180066957722"
+      ],
+      "call": "jump_hull_restore",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        100,
+        "f:0.0:0"
+      ],
+      "call": "jump_hull_restore",
+      "result": 0,
+      "state": {}
+    },
+    {
+      "args": [
+        100,
+        "f:0.01:4576918229304087675"
+      ],
+      "call": "jump_hull_restore",
+      "result": 1,
+      "state": {}
+    },
+    {
+      "args": [
+        100,
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "jump_hull_restore",
+      "result": 5,
+      "state": {}
+    },
+    {
+      "args": [
+        100,
+        "f:0.1:4591870180066957722"
+      ],
+      "call": "jump_hull_restore",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        340,
+        "f:0.0:0"
+      ],
+      "call": "jump_hull_restore",
+      "result": 0,
+      "state": {}
+    },
+    {
+      "args": [
+        340,
+        "f:0.01:4576918229304087675"
+      ],
+      "call": "jump_hull_restore",
+      "result": 3,
+      "state": {}
+    },
+    {
+      "args": [
+        340,
+        "f:0.05:4587366580439587226"
+      ],
+      "call": "jump_hull_restore",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        340,
+        "f:0.1:4591870180066957722"
+      ],
+      "call": "jump_hull_restore",
+      "result": 34,
+      "state": {}
+    }
+  ],
+  "subsystem": "travel"
+}

@@ -1,0 +1,559 @@
+{
+  "case": "roll_verdant",
+  "format": 1,
+  "setup": {
+    "danger": "safe",
+    "distance": "f:89.44271909999159:4635994388755771858",
+    "enemy_ids": [
+      "pirate_scout",
+      "smuggler",
+      "reach_rustrunner",
+      "skiff_raider",
+      "hulk_derelict"
+    ]
+  },
+  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        1
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        2
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        3
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        4
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        5
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        6
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        7
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        8
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        9
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        10
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        11
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        12
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        13
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        14
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        15
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        16
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        17
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        18
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        19
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        20
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        21
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        22
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        23
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        24
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        25
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        26
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        27
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        28
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        29
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        30
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        1
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        2
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        3
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        4
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        5
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        6
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        7
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        8
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        9
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        10
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        11
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        12
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        13
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        14
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        15
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        16
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        17
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        18
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        19
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        20
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        21
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        22
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        23
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        24
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        25
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        26
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        27
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        28
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        29
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        30
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    }
+  ],
+  "subsystem": "encounters"
+}

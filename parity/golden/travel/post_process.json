@@ -1,0 +1,8691 @@
+{
+  "case": "post_process",
+  "format": 1,
+  "setup": {
+    "enemy_ids": [
+      "pirate_scout",
+      "pirate_raider",
+      "pirate_heavy",
+      "smuggler",
+      "patrol_vessel",
+      "reach_rustrunner",
+      "reach_wrecker",
+      "reach_dreadwreck",
+      "bounty_tracker",
+      "bounty_enforcer",
+      "bounty_vanguard",
+      "bounty_ace",
+      "faction_enforcer",
+      "ledger_raider",
+      "ledger_striker",
+      "ledger_vanguard",
+      "armored_transport",
+      "ghost_raider",
+      "plasma_bomber",
+      "support_frigate",
+      "skiff_raider",
+      "hulk_derelict",
+      "reach_scout_ace",
+      "reach_bulwark",
+      "reach_void_dancer",
+      "mercenary_ace"
+    ],
+    "system_id": "crimson_reach"
+  },
+  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "steps": [
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3970685042,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        1
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3970685042,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        2
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        3
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        4
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        5
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2782169950,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2782169950,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2782169950,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2782169950,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        6
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3165628159,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_striker",
+          "hulk_derelict",
+          "support_frigate"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3165628159,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_striker",
+          "hulk_derelict",
+          "support_frigate"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3165628159,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_striker",
+          "hulk_derelict",
+          "support_frigate"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3165628159,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_striker",
+          "hulk_derelict",
+          "support_frigate"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3165628159,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "ledger_striker",
+          "hulk_derelict",
+          "support_frigate"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3165628159,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "ledger_striker",
+            "hulk_derelict",
+            "support_frigate"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        7
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        8
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1774124236,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel",
+          "bounty_tracker",
+          "ledger_striker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1774124236,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel",
+          "bounty_tracker",
+          "ledger_striker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1774124236,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel",
+          "bounty_tracker",
+          "ledger_striker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1774124236,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel",
+          "bounty_tracker",
+          "ledger_striker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1774124236,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel",
+          "bounty_tracker",
+          "ledger_striker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1774124236,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel",
+            "bounty_tracker",
+            "ledger_striker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        9
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        10
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 979507831,
+          "encounter_type": "distress_signal",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        11
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 979507831,
+        "encounter_type": "distress_signal",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        12
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        13
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 188582975,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "mercenary_ace",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 188582975,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "mercenary_ace",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 188582975,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "mercenary_ace",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 188582975,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "mercenary_ace",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 188582975,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "hulk_derelict",
+          "mercenary_ace",
+          "ledger_vanguard"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 188582975,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "hulk_derelict",
+            "mercenary_ace",
+            "ledger_vanguard"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        14
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        15
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3326498676,
+          "encounter_type": "comm_intercept",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        16
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3326498676,
+        "encounter_type": "comm_intercept",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        17
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        18
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 933500598,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_void_dancer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 933500598,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_void_dancer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 933500598,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_void_dancer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 933500598,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_void_dancer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 933500598,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_void_dancer"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 933500598,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_void_dancer"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        19
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        20
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3757217791,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3757217791,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3757217791,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3757217791,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3757217791,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner",
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3757217791,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner",
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        21
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        22
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3539717672,
+          "encounter_type": "smuggler",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        23
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3539717672,
+        "encounter_type": "smuggler",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        24
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        25
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        26
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        27
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        28
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 194781179,
+          "encounter_type": "derelict",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        29
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 194781179,
+        "encounter_type": "derelict",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        30
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        31
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        32
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        33
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        34
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        35
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        36
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        37
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3933369983,
+          "encounter_type": "ransom_demand",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        38
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3933369983,
+        "encounter_type": "ransom_demand",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        39
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        40
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        41
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1208835812,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        42
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1208835812,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 878362855,
+          "encounter_type": "patrol",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        43
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 878362855,
+        "encounter_type": "patrol",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3781326921,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        44
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3781326921,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 809244082,
+          "encounter_type": "anomaly",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        45
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 809244082,
+        "encounter_type": "anomaly",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1235090831,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "reach_wrecker",
+          "hulk_derelict"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1235090831,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "reach_wrecker",
+          "hulk_derelict"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1235090831,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "reach_wrecker",
+          "hulk_derelict"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1235090831,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "reach_wrecker",
+          "hulk_derelict"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 1235090831,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "reach_wrecker",
+          "hulk_derelict"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 1235090831,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "reach_wrecker",
+            "hulk_derelict"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        46
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        47
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        48
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        49
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3243810999,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_scout_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3243810999,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_scout_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3243810999,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_scout_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3243810999,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_scout_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3243810999,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_scout_ace"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3243810999,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_scout_ace"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        50
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3798936586,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3798936586,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3798936586,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "patrol_vessel"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3798936586,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "patrol_vessel"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        51
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3025196350,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3025196350,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3025196350,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3025196350,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3025196350,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "reach_rustrunner"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3025196350,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "reach_rustrunner"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        52
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3752849484,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3752849484,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3752849484,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3752849484,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3752849484,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "plasma_bomber"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3752849484,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "plasma_bomber"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        53
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3292115991,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_tracker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3292115991,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_tracker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3292115991,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_tracker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 3292115991,
+        "encounter_type": "hostile",
+        "enemy_template_ids": [
+          "bounty_enforcer",
+          "bounty_tracker"
+        ],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 3292115991,
+          "encounter_type": "hostile",
+          "enemy_template_ids": [
+            "bounty_enforcer",
+            "bounty_tracker"
+          ],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        54
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        55
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        56
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 572781136,
+          "encounter_type": "merchant",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        57
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 572781136,
+        "encounter_type": "merchant",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        58
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        false,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {},
+        true,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        false,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 15
+        },
+        true,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        {
+          "encounter_def_id": "",
+          "encounter_seed": 2007258409,
+          "encounter_type": "wandering_trader",
+          "enemy_template_ids": [],
+          "shakedown_demand": 0
+        },
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        59
+      ],
+      "call": "post_process_encounter",
+      "result": {
+        "encounter_def_id": "",
+        "encounter_seed": 2007258409,
+        "encounter_type": "wandering_trader",
+        "enemy_template_ids": [],
+        "shakedown_demand": 0
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        false,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {},
+        true,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        false,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "shakedown_multiplier": "f:2.0:4611686018427387904"
+        },
+        true,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        false,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 15
+        },
+        true,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        false,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        null,
+        {
+          "protection_chance": 30,
+          "shakedown_multiplier": "f:0.5:4602678819172646912"
+        },
+        true,
+        60
+      ],
+      "call": "post_process_encounter",
+      "result": null,
+      "state": {}
+    }
+  ],
+  "subsystem": "travel"
+}
