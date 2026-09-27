@@ -94,3 +94,61 @@ def test_cases_are_stable() -> None:
     assert [c.to_json("x") for c in combat.build_cases()] == [
         c.to_json("x") for c in combat.build_cases()
     ]
+
+
+def test_dual_tech_reveals_are_logged(cases: dict) -> None:
+    for tech in DUAL_TECH_PALETTE.values():
+        case = cases[f"dual_tech_{tech.id}"]
+        found = any(
+            entry[2].endswith(" (reveal)")
+            for step in case.steps
+            if step["call"] == "player_turn"
+            for entry in step["result"]
+        )
+        assert found, tech.id
+
+
+def test_payout_steps_rebuild_from_setup(cases: dict) -> None:
+    for case in cases.values():
+        assert set(case.setup["payout_player"].keys()) == {
+            "name",
+            "credits",
+            "system_id",
+            "ship_type",
+            "fuel",
+        }
+        for step in case.steps:
+            if step["call"] in ("apply_combat_victory", "apply_combat_negotiated"):
+                enemies = step["args"][0]
+                assert all(set(e.keys()) == {"template_id", "dead", "fled"} for e in enemies)
+                assert step["args"][1] == case.setup["seed"]
+
+
+def test_negotiation_succeeds_and_pays(cases: dict) -> None:
+    negotiate = cases["resolve_negotiate"]
+    assert negotiate.steps[0]["call"] == "attempt_negotiate"
+    assert negotiate.steps[0]["result"][0] is True
+    assert _last_fight_state(negotiate)["result"] == "negotiated"
+    assert any(s["call"] == "apply_combat_negotiated" for s in negotiate.steps)
+
+    failed = cases["resolve_negotiate_failed"]
+    assert failed.steps[0]["result"][0] is False
+
+    assert "social" in negotiate.setup
+    assert "social" in failed.setup
+
+
+def test_momentum_gauge_is_recorded_whole(cases: dict) -> None:
+    dual_tech_states = [
+        step["state"]
+        for tech in DUAL_TECH_PALETTE.values()
+        for step in cases[f"dual_tech_{tech.id}"].steps
+        if step["call"] in FIGHT_CALLS
+    ]
+    assert any(
+        s["player"]["momentum"] is not None and s["player"]["momentum"]["overdriven_available"]
+        for s in dual_tech_states
+    )
+    for category in get_data_loader().ship_ultimates:
+        case = cases[f"ultimate_{category}"]
+        assert case.setup["player"]["momentum"]["current"] == 1.0

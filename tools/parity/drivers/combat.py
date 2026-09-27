@@ -3,8 +3,9 @@
 A fight starts from a PlayerCombatState built on the ship-type path (spec R1 moves the
 module-hit path to SP4). Each round the policy queues every affordable equipment move in
 list order at the first living target, then enemies act, then the round ends. The setup
-records the full player state and the enemy template ids, so the Godot adapter rebuilds
-the same fight.
+records the full player state, the enemy template ids, and the payout player the victory
+or negotiated reward runs on, so the Godot adapter rebuilds the same fight and the same
+payout.
 """
 
 from __future__ import annotations
@@ -27,7 +28,13 @@ from spacegame.models.combat import (
 from spacegame.models.combat_engine import CombatEngine
 from spacegame.models.crew import CrewRoster
 from spacegame.models.dual_tech import DUAL_TECH_PALETTE
-from spacegame.models.social import SocialManager
+from spacegame.models.player import Player
+from spacegame.models.social import (
+    MAX_SOCIAL_LEVEL,
+    SOCIAL_SKILL_DEFINITIONS,
+    SOCIAL_XP_THRESHOLDS,
+    SocialManager,
+)
 from spacegame.models.upgrades import ShipUpgradeManager
 from spacegame.sim_rng import stable_seed
 from tools.parity.driver import Case
@@ -59,6 +66,20 @@ BOSS_MAX_ROUNDS = 50
 # reaches <= 0.3 before the fight ends (113 falls just short, at 34/113).
 MORALE_SHIFT_HULL = 112
 COMPANIONS = ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter")
+# A SocialManager.load_state() profile with persuasion maxed and every other skill at its
+# default (level 1, xp 0). Only "persuasion" needs an entry: load_state only overwrites the
+# skills a profile names, leaving the rest at the defaults it just reset to.
+NEGOTIATE_PROFILE: dict[str, object] = {
+    "skills": {
+        "persuasion": {
+            "id": "persuasion",
+            "name": SOCIAL_SKILL_DEFINITIONS["persuasion"],
+            "level": MAX_SOCIAL_LEVEL,
+            "xp": SOCIAL_XP_THRESHOLDS[MAX_SOCIAL_LEVEL - 1],
+        }
+    },
+    "disposition": {},
+}
 
 
 @dataclass
@@ -106,7 +127,7 @@ def _player_state(p: PlayerCombatState) -> dict[str, object]:
         "shield_break_vulnerable": p.shield_break_vulnerable,
         "evasion_decay": p.evasion_decay,
         "ship_class_category": p.ship_class_category,
-        "momentum": p.momentum.current if p.momentum else None,
+        "momentum": p.momentum.to_dict() if p.momentum else None,
         "critical_hp_surge_fired": p.critical_hp_surge_fired,
         "fire_at_will_active": p.fire_at_will_active,
         "crew_sync_used": p.crew_sync_used,
@@ -161,6 +182,26 @@ def state_snapshot(state: CombatState) -> dict[str, object]:
 
 def _log(entries: list[CombatLogEntry]) -> list[list[object]]:
     return [[e.round_number, e.actor, e.action, e.hit] for e in entries]
+
+
+def _take_log(fight: Fight) -> list[list[object]]:
+    """Every ``combat_log`` entry appended since the last take.
+
+    An engine call's return value is not the full story: a dual tech's cinematic
+    reveal, and for some techs its own activation entry, are appended straight to
+    ``state.combat_log`` without ever appearing in what the call returns. Reading
+    the log itself, and tracking how much of it this fight has already recorded
+    via ``log_seen``, is the only way to miss nothing.
+
+    Args:
+        fight: The fight whose log to read from.
+
+    Returns:
+        Every new entry since the last call, in golden log-row form.
+    """
+    entries = _log(fight.state.combat_log[fight.log_seen :])
+    fight.log_seen = len(fight.state.combat_log)
+    return entries
 
 
 def _roster(loyalty: int) -> CrewRoster:
@@ -231,6 +272,13 @@ def build_fight(
         "hull": hull,
         "complication_ids": list(complication_ids),
         "player": _player_state(pcs),
+        "payout_player": {
+            "name": "ParityPilot",
+            "credits": 0,
+            "system_id": "nexus_prime",
+            "ship_type": "shuttle",
+            "fuel": 40,
+        },
     }
     return Fight(engine, state, setup)
 
@@ -257,11 +305,14 @@ def play_round(fight: Fight, case: Case, extra_moves: tuple[str, ...] = ()) -> N
         ok, _msg = queue.add(move.id, target, move)
         if ok:
             queued.append(move.id)
-    _record(fight, case, "player_turn", [queued, target], _log(engine.execute_player_turn(queue)))
+    engine.execute_player_turn(queue)
+    _record(fight, case, "player_turn", [queued, target], _take_log(fight))
     if not engine.is_combat_over() and any(e.is_alive and not e.is_fled for e in state.enemies):
-        _record(fight, case, "enemy_turns", [], _log(engine.execute_enemy_turns()))
+        engine.execute_enemy_turns()
+        _record(fight, case, "enemy_turns", [], _take_log(fight))
     if not engine.is_combat_over():
-        _record(fight, case, "end_round", [], _log(engine.end_round()))
+        engine.end_round()
+        _record(fight, case, "end_round", [], _take_log(fight))
 
 
 def _finish(fight: Fight, case: Case, max_rounds: int = MAX_ROUNDS) -> None:
@@ -272,17 +323,42 @@ def _finish(fight: Fight, case: Case, max_rounds: int = MAX_ROUNDS) -> None:
     _payout(fight, case)
 
 
+def _build_player(fields: Any) -> Player:
+    """Construct the payout player from ``setup['payout_player']``'s five fields.
+
+    This is the shape ``trade.py``, ``player.py`` and ``encounters.py`` already
+    record: a player only ``fresh_player``'s five keyword arguments can rebuild,
+    so the Godot adapter never has to guess what the payout ran on.
+    """
+    return fresh_player(
+        name=fields["name"],
+        credits=fields["credits"],
+        system_id=fields["system_id"],
+        ship_type_id=fields["ship_type"],
+        fuel=fields["fuel"],
+    )
+
+
 def _payout(fight: Fight, case: Case) -> None:
     state = fight.state
-    player = fresh_player(credits=0)
+    player = _build_player(fight.setup["payout_player"])
     seed = state.encounter.encounter_seed
+    enemies = [
+        {"template_id": e.template.id, "dead": not e.is_alive, "fled": e.is_fled}
+        for e in state.enemies
+    ]
     if state.result == CombatResult.VICTORY:
         victory = player.apply_combat_victory(state.enemies, seed)
         result: object = {"xp": victory.xp, "credits": victory.credits, "loot": victory.loot}
-        case.record("apply_combat_victory", [], result, player_snapshot(player))
+        case.record("apply_combat_victory", [enemies, seed], result, player_snapshot(player))
     elif state.result == CombatResult.NEGOTIATED:
         loot = player.apply_combat_negotiated(state.enemies, seed, state.negotiate_partial_loot)
-        case.record("apply_combat_negotiated", [], loot, player_snapshot(player))
+        case.record(
+            "apply_combat_negotiated",
+            [enemies, seed, state.negotiate_partial_loot],
+            loot,
+            player_snapshot(player),
+        )
 
 
 def _new_case(name: str, fight: Fight) -> Case:
@@ -344,8 +420,12 @@ def _ultimate_fights() -> list[Case]:
         assert fight.state.player.momentum is not None
         fight.state.player.momentum.current = 1.0
         fight.setup["momentum"] = 1.0
+        # Re-record the player state now that momentum is pinned to 1.0, so the setup
+        # the port rebuilds from matches the state the fight actually starts from.
+        fight.setup["player"] = _player_state(fight.state.player)
         case = _new_case(f"ultimate_{category}", fight)
-        _record(fight, case, "execute_ultimate", [], _log(fight.engine.execute_ultimate()))
+        fight.engine.execute_ultimate()
+        _record(fight, case, "execute_ultimate", [], _take_log(fight))
         _finish(fight, case)
         cases.append(case)
     return cases
@@ -372,7 +452,7 @@ def _dual_tech_fights() -> list[Case]:
 
 def _resolution_fights() -> list[Case]:
     cases: list[Case] = []
-    for kind in ("flee", "bribe", "negotiate"):
+    for kind in ("flee", "bribe", "negotiate", "negotiate_failed"):
         fight = build_fight(
             f"resolve_{kind}",
             ship_type_id="shuttle",
@@ -380,17 +460,32 @@ def _resolution_fights() -> list[Case]:
             enemy_ids=("pirate_raider",),
             seed=stable_seed("parity_resolve", kind),
         )
-        case = _new_case(f"resolve_{kind}", fight)
         engine = fight.engine
+        social: dict[str, object] = {}
+        if kind in ("negotiate", "negotiate_failed"):
+            # "negotiate" carries a maxed persuasion so the check passes; "negotiate_failed"
+            # keeps SocialManager's own defaults (level 1), which do not, preserving the
+            # difficulty-message failure branch this fight recorded before this change.
+            social = NEGOTIATE_PROFILE if kind == "negotiate" else {}
+            fight.setup["social"] = social
+        case = _new_case(f"resolve_{kind}", fight)
         if kind == "flee":
-            ok, logs = engine.attempt_flee()
-            _record(fight, case, "attempt_flee", [], [ok, _log(logs)])
+            ok, _logs = engine.attempt_flee()
+            _record(fight, case, "attempt_flee", [], [ok, _take_log(fight)])
         elif kind == "bribe":
-            ok, cost, logs = engine.attempt_bribe(10_000)
-            _record(fight, case, "attempt_bribe", [10_000], [ok, cost, _log(logs)])
+            ok, cost, _logs = engine.attempt_bribe(10_000)
+            _record(fight, case, "attempt_bribe", [10_000], [ok, cost, _take_log(fight)])
         else:
-            ok, msg, logs = engine.attempt_negotiate("persuasion", SocialManager(), None)
-            _record(fight, case, "attempt_negotiate", ["persuasion"], [ok, msg, _log(logs)])
+            manager = SocialManager()
+            manager.load_state(social)
+            ok, msg, _logs = engine.attempt_negotiate("persuasion", manager, None)
+            _record(
+                fight,
+                case,
+                "attempt_negotiate",
+                ["persuasion", None],
+                [ok, msg, _take_log(fight)],
+            )
         _finish(fight, case)
         cases.append(case)
     return cases
