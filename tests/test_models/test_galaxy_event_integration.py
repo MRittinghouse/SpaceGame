@@ -171,11 +171,7 @@ class TestGalaxyEventDayAdvance:
         )
         active: dict[str, list[GalaxyEvent]] = {"nexus_prime": [event]}
         current_day = 10  # Well past expiry
-        # Clean up expired
-        for sid in list(active.keys()):
-            active[sid] = [e for e in active[sid] if e.is_active(current_day)]
-            if not active[sid]:
-                del active[sid]
+        GalaxyEventGenerator([]).advance_day(current_day, active)
         assert "nexus_prime" not in active
 
     def test_active_events_kept(self) -> None:
@@ -192,10 +188,7 @@ class TestGalaxyEventDayAdvance:
         )
         active: dict[str, list[GalaxyEvent]] = {"breakstone": [event]}
         current_day = 8
-        for sid in list(active.keys()):
-            active[sid] = [e for e in active[sid] if e.is_active(current_day)]
-            if not active[sid]:
-                del active[sid]
+        GalaxyEventGenerator([]).advance_day(current_day, active)
         assert "breakstone" in active
         assert len(active["breakstone"]) == 1
 
