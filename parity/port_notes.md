@@ -73,6 +73,19 @@ counter or any other per-process part to the ID.
   `_is_eligible` (`encounter.py`); it covers only `encounter_type`, `danger_levels`,
   `only_systems`/`excluded_systems`, `required_faction`, and level gates. A port checking
   those flag-gated branches needs a golden case that sets them.
+- `parity/golden/missions/lifecycle_*.json` and `soft_deadline_*.json` (SP3-a) replay from
+  `setup` alone: build the player from `setup["player"]`, recruit `setup["crew"]` with
+  `setup["crew_slots"]`, load `setup["mission_state"]` through `MissionManager.load_state`,
+  and replay `accept_mission`. Then set `player.game_day` to `setup["complete_on_day"]`
+  before the first `check_objectives` step. Before each `check_objectives` step, apply
+  `objectives[args[0]]` by these seven rules: `reach_system` sets `current_system_id` to
+  the target; `talk_to_npc` sets the `talked_to_npc(target)` flag True; `have_credits`
+  raises credits to at least the quantity; `collect_cargo` adds the quantity of the target
+  at price 0; `has_flag` sets the target flag True; `complete_trade` raises
+  `trades_completed` to at least the quantity; `win_combat` raises `combats_won` to at
+  least the quantity. Pass the roster's recruited ids to `check_objectives`.
+  `complete_mission` runs with the case roster, every synced faction id, and no
+  reputation hook.
 
 ## Act II v1
 

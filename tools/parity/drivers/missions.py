@@ -1,19 +1,20 @@
 """Mission goldens (SP3 spec 6.2).
 
-Lifecycle cases force a mission to AVAILABLE through the manager's status table, so each
-authored mission is tested alone, whatever its prerequisites. The Godot adapter does the
-same through its own manager.
+Lifecycle cases force a mission to AVAILABLE through MissionManager.load_state, from
+setup["mission_state"], a public path the Godot manager also has. Each authored mission is
+tested alone, whatever its prerequisites.
 """
 
 from __future__ import annotations
 
 import copy
 import dataclasses
+from typing import Any
 
 from spacegame.constants.flags import talked_to_npc
 from spacegame.data_loader import get_data_loader
 from spacegame.models.crew import CrewRoster
-from spacegame.models.mission import MissionManager, MissionObjective, MissionStatus, ObjectiveType
+from spacegame.models.mission import MissionManager, MissionObjective, ObjectiveType
 from spacegame.models.player import Player
 from spacegame.models.procedural_missions import ProceduralMissionGenerator
 from spacegame.sim_rng import stable_seed
@@ -30,6 +31,17 @@ def _manager() -> MissionManager:
     dl = get_data_loader()
     dl.load_all()
     return MissionManager(copy.deepcopy(dl.missions))
+
+
+def _build_player(fields: dict[str, Any]) -> Player:
+    """Construct a Player from a setup's player sub-dict, plus synced data only."""
+    return fresh_player(
+        name=fields["name"],
+        credits=fields["credits"],
+        system_id=fields["system_id"],
+        ship_type_id=fields["ship_type"],
+        fuel=fields["fuel"],
+    )
 
 
 def _satisfy(player: Player, objective: MissionObjective) -> None:
@@ -74,15 +86,38 @@ def _mission_state(
 
 def _lifecycle(mission_id: str, name: str, *, complete_on_day: int = 1) -> Case:
     dl = get_data_loader()
+    loader_mission = next(m for m in dl.missions if m.id == mission_id)
+    player_fields: dict[str, Any] = {
+        "name": PLAYER_NAME,
+        "credits": 5000,
+        "system_id": "nexus_prime",
+        "ship_type": "shuttle",
+        "fuel": 40,
+    }
+    crew_entries: list[dict[str, Any]] = (
+        [{"crew_id": loader_mission.crew_member_id}] if loader_mission.crew_member_id else []
+    )
+    mission_state: dict[str, Any] = {"status": {mission_id: "available"}}
+    setup: dict[str, Any] = {
+        "mission_id": mission_id,
+        "complete_on_day": complete_on_day,
+        "player": player_fields,
+        "crew_slots": 4,
+        "crew": crew_entries,
+        "mission_state": mission_state,
+        "reputation_spillover": False,
+    }
+    case = Case("missions", name, setup)
+
     manager = _manager()
-    player = fresh_player(name=PLAYER_NAME, credits=5000)
+    player = _build_player(setup["player"])
     roster = CrewRoster(dl.crew_templates)
+    for entry in setup["crew"]:
+        roster.recruit(entry["crew_id"], setup["crew_slots"])
+    manager.load_state(setup["mission_state"])
     mission = manager.get_mission(mission_id)
     assert mission is not None
-    case = Case("missions", name, {"mission_id": mission_id, "complete_on_day": complete_on_day})
-    if mission.crew_member_id:
-        roster.recruit(mission.crew_member_id, 4)
-    manager._status[mission_id] = MissionStatus.AVAILABLE
+
     result = manager.accept_mission(mission_id, game_day=1, player=player)
     case.record(
         "accept_mission",
@@ -90,28 +125,24 @@ def _lifecycle(mission_id: str, name: str, *, complete_on_day: int = 1) -> Case:
         result,
         _mission_state(manager, mission_id, player, roster),
     )
-    player.game_day = complete_on_day
-    # Satisfy and re-check one objective at a time, breaking as soon as the mission
-    # completes. A mission with two distinct reach_system targets (deliver-then-return
-    # shapes, several authored side missions) can never have both true from one
-    # simultaneous _satisfy pass, because current_system_id holds only one value at a
-    # time; check_objectives also stops reporting a mission as newly-completed once its
-    # status leaves ACTIVE, so a call made after that point would wrongly read back
-    # empty. Stepping through the objectives in their authored order, and recording the
-    # call that first reports completion, mirrors how the player actually clears them
-    # in play and keeps every authored mission's lifecycle golden real.
+    player.game_day = setup["complete_on_day"]
+    # Each check step is exactly one check_objectives call, made after _satisfy applied
+    # objectives[args[0]]. The loop stops at the call that completes the mission. The
+    # objective-progress lock (check_objectives never re-evaluates an objective already
+    # marked true) plus the side-mission HAS_FLAG auto-resolve are why a golden can end
+    # before its last objective.
     completed: list[str] = []
-    for objective in mission.objectives:
+    for index, objective in enumerate(mission.objectives):
         _satisfy(player, objective)
         completed = manager.check_objectives(player, recruited_crew_ids=roster.recruited_ids)
+        case.record(
+            "check_objectives",
+            [index],
+            sorted(completed),
+            _mission_state(manager, mission_id, player, roster),
+        )
         if mission_id in completed:
             break
-    case.record(
-        "check_objectives",
-        [],
-        sorted(completed),
-        _mission_state(manager, mission_id, player, roster),
-    )
     if mission_id in completed:
         done = manager.complete_mission(
             mission_id, player, crew_roster=roster, faction_ids=list(dl.factions)
@@ -139,14 +170,18 @@ def _board(system_id: str) -> Case:
 
 
 def _availability() -> Case:
+    dl = get_data_loader()
     manager = _manager()
-    case = Case("missions", "availability", {})
-    all_flags = {flag: True for m in manager._missions.values() for flag in m.required_flags}
+    reputation: dict[str, int] = {}
+    setup: dict[str, Any] = {"player_reputation": reputation, "player": None}
+    case = Case("missions", "availability", setup)
+    all_flags = {flag: True for m in dl.missions for flag in m.required_flags}
     for flags, day in (({}, 1), (all_flags, 1), (all_flags, 60)):
-        newly = manager.update_availability(dict(flags), player_reputation={}, game_day=day)
-        statuses: dict[str, object] = {
-            mid: _status_value(manager, mid) for mid in manager._missions
-        }
+        # args[0] lists the flag names, each passed as True in the flags dict.
+        newly = manager.update_availability(
+            dict(flags), player_reputation=reputation, game_day=day, player=None
+        )
+        statuses = manager.get_state()["status"]
         case.record("update_availability", [sorted(flags), day], sorted(newly), statuses)
     return case
 
