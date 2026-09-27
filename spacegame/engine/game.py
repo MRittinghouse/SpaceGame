@@ -5826,34 +5826,17 @@ class Game:
                 for key, value in self.player.dialogue_flags.items()
                 if value and key.endswith("_capstone_reached")
             }
-            new_galaxy_event = self.galaxy_event_generator.try_generate_event(
+            new_galaxy_event = self.galaxy_event_generator.advance_day(
                 current_day,
                 self.active_galaxy_events,
                 identity_lens_weights=reached_lens_weights or None,
             )
             if new_galaxy_event:
-                sid = new_galaxy_event.system_id
-                if sid not in self.active_galaxy_events:
-                    self.active_galaxy_events[sid] = []
-                self.active_galaxy_events[sid].append(new_galaxy_event)
                 self._mission_notifications.append(f"Galaxy Event: {new_galaxy_event.description}")
                 logger.info(
-                    f"Galaxy event: {new_galaxy_event.id} at {sid} "
+                    f"Galaxy event: {new_galaxy_event.id} at {new_galaxy_event.system_id} "
                     f"(type={new_galaxy_event.event_type.value})"
                 )
-
-            # Clean up expired galaxy events and trigger chains
-            for sid in list(self.active_galaxy_events.keys()):
-                still_active = []
-                for e in self.active_galaxy_events[sid]:
-                    if e.is_active(current_day):
-                        still_active.append(e)
-                    else:
-                        # Check for chain follow-up
-                        self.galaxy_event_generator.check_chain_triggers(e, current_day)
-                self.active_galaxy_events[sid] = still_active
-                if not self.active_galaxy_events[sid]:
-                    del self.active_galaxy_events[sid]
 
         # Generate news ticker headlines from current state
         if self.news_ticker:
