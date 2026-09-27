@@ -1,0 +1,548 @@
+{
+  "case": "cap_blocks_roll",
+  "format": 1,
+  "setup": {
+    "active": [
+      {
+        "blocked_commodities": [
+          "raw_ore",
+          "iron_ore",
+          "common_metals"
+        ],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 38,
+        "description": "Guild Board suspends import licenses for unprocessed ore",
+        "duration_days": 7,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "embargo",
+        "faction_id": "commerce_guild",
+        "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+        "id": "guild_embargo_ore_38",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "scan_evasion",
+        "system_id": "nexus_prime"
+      },
+      {
+        "blocked_commodities": [
+          "electronics",
+          "restricted_tech"
+        ],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 38,
+        "description": "Collective Council suspends technology licensing agreements",
+        "duration_days": 6,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "embargo",
+        "faction_id": "science_collective",
+        "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+        "id": "collective_embargo_tech_38",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "manifest_forgery",
+        "system_id": "axiom_labs"
+      }
+    ]
+  },
+  "source_commit": "2dae4116663ccc28eac7f0eed8770a2d5b5f28c9",
+  "steps": [
+    {
+      "args": [
+        39
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [
+                "electronics",
+                "restricted_tech"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Collective Council suspends technology licensing agreements",
+              "duration_days": 6,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "science_collective",
+              "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+              "id": "collective_embargo_tech_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "manifest_forgery",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        40
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [
+                "electronics",
+                "restricted_tech"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Collective Council suspends technology licensing agreements",
+              "duration_days": 6,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "science_collective",
+              "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+              "id": "collective_embargo_tech_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "manifest_forgery",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        41
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [
+                "electronics",
+                "restricted_tech"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Collective Council suspends technology licensing agreements",
+              "duration_days": 6,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "science_collective",
+              "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+              "id": "collective_embargo_tech_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "manifest_forgery",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        42
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [
+                "electronics",
+                "restricted_tech"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Collective Council suspends technology licensing agreements",
+              "duration_days": 6,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "science_collective",
+              "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+              "id": "collective_embargo_tech_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "manifest_forgery",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        43
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [
+                "electronics",
+                "restricted_tech"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Collective Council suspends technology licensing agreements",
+              "duration_days": 6,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "science_collective",
+              "flavor_text": "Export manifests pile up, unsigned. The licensing office has gone dark.",
+              "id": "collective_embargo_tech_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "manifest_forgery",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        44
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 38,
+              "description": "Guild Board suspends import licenses for unprocessed ore",
+              "duration_days": 7,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_38",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        45
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        46
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        47
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        48
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        49
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        50
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        51
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        52
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 52,
+        "description": "Okafor Institute opens its doors for the Biennial Knowledge Exchange",
+        "duration_days": 2,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "festival",
+        "faction_id": "science_collective",
+        "flavor_text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming.",
+        "id": "collective_symposium_52",
+        "price_modifiers": {
+          "electronics": "f:0.8:4605380978949069210",
+          "medical": "f:0.7:4604480259023595110"
+        },
+        "rep_bonus_amount": 2,
+        "rep_bonus_faction": "science_collective",
+        "shutdown_tags": [],
+        "skill_opportunity": "observation_bonus",
+        "system_id": "nova_research"
+      },
+      "state": {
+        "active": {
+          "nova_research": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 52,
+              "description": "Okafor Institute opens its doors for the Biennial Knowledge Exchange",
+              "duration_days": 2,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming.",
+              "id": "collective_symposium_52",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "nova_research"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    }
+  ],
+  "subsystem": "galaxy"
+}
