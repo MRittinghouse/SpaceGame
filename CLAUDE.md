@@ -195,7 +195,7 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 
 ## Skill System (6 Trees)
 
-The progression uses 6 skill trees with 75 total skills. Skills are defined in Python code (`create_default_skills()` in `progression.py`), NOT in JSON. The old `data/progression/skill_trees.json` was removed.
+The progression uses 6 skill trees with 89 skills and 88 bonus types. Skills are defined in `data/progression/skills.json`; `create_default_skills()` in `progression.py` builds fresh nodes from it (the Godot port reads the same file). `ghost_protocol` stacks with the base `deception_bonus` only while the `contraband_present` flag is active; that rule lives in the consumer, not the skill data.
 
 - **Trees**: Commerce, Combat, Exploration, Leadership, Social, Industry
 - **Point economy**: 1 skill point per level, no cap, no milestones

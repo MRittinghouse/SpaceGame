@@ -694,7 +694,7 @@ class TestSkillBonusConsumers:
     """
 
     def test_every_skill_bonus_type_has_a_consumer(self) -> None:
-        from spacegame.models.progression import create_default_skills
+        from spacegame.models.progression import SKILLS_PATH, create_default_skills
 
         skills = create_default_skills()
         # bonus_type → set of skill_ids declaring it (for diagnostic clarity)
@@ -708,6 +708,10 @@ class TestSkillBonusConsumers:
         all_source = ""
         for py_file in (project_root / "spacegame").rglob("*.py"):
             all_source += py_file.read_text(encoding="utf-8", errors="ignore")
+        # Skill bonus_type literals moved from progression.py into
+        # skills.json (SP3-a Task 1). Include it so a declaration still
+        # counts here exactly as it did when it lived in Python source.
+        all_source += SKILLS_PATH.read_text(encoding="utf-8")
 
         # A bonus_type counts as consumed if it appears as a literal
         # somewhere in source — this is intentionally permissive (avoids
