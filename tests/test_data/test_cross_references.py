@@ -683,6 +683,26 @@ class TestEnemySubsystemTags:
 # ---------------------------------------------------------------------------
 
 
+def _spacegame_source_text() -> str:
+    """Concatenate every ``spacegame/**/*.py`` file's text, cached for reuse.
+
+    Skill bonus_type declarations live only in ``data/progression/skills.json``
+    (SP3-a Task 1) — ``progression.py`` itself holds no bonus_type literals
+    any more, so it is scanned like any other module here.
+    """
+    global _source_text_cache
+    if _source_text_cache is None:
+        project_root = Path(__file__).parent.parent.parent
+        text = ""
+        for py_file in (project_root / "spacegame").rglob("*.py"):
+            text += py_file.read_text(encoding="utf-8", errors="ignore")
+        _source_text_cache = text
+    return _source_text_cache
+
+
+_source_text_cache: str | None = None
+
+
 class TestSkillBonusConsumers:
     """Every bonus_type defined on a SkillNode must have at least one consumer.
 
@@ -691,10 +711,40 @@ class TestSkillBonusConsumers:
     bonuses, ``crew_roster.get_bonus("name")``. Dialogue-skill checks call
     ``has_skill`` instead of get_bonus, so those skill IDs (not bonus_types)
     are exempt.
+
+    Declared bonus types come from ``create_default_skills()`` (which loads
+    ``data/progression/skills.json``); consumers are searched for as string
+    literals across ``spacegame/**/*.py`` only — the JSON itself is never
+    read as a "consumer" source, since every bonus_type it declares would
+    trivially match its own declaration there.
     """
 
+    # bonus_type -> why the literal scan below can't find a consumer for it.
+    # Either the read is dynamic (an f-string the scan can't see — cite the
+    # exact site) or it is a genuine gap (a numbered finding for later work).
+    # No quiet exemptions: every entry needs one of these two justifications.
+    UNCONSUMED_SKILL_BONUS_TYPES: set[str] = {
+        # social.get_effective_level reads f"{skill_id}_bonus" for the 7 core
+        # social/expertise skill ids (persuasion, intimidation, observation,
+        # deception, technical, piloting, leadership) — a dynamic read the
+        # literal scan cannot see.
+        "deception_bonus",  # dynamic: spacegame/models/social.py:279
+        "intimidation_bonus",  # dynamic: spacegame/models/social.py:279
+        "leadership_bonus",  # dynamic: spacegame/models/social.py:279
+        "observation_bonus",  # dynamic: spacegame/models/social.py:279
+        "persuasion_bonus",  # dynamic: spacegame/models/social.py:279
+        "piloting_bonus",  # dynamic: spacegame/models/social.py:279
+        "technical_bonus",  # dynamic: spacegame/models/social.py:279
+        # Genuinely unwired: no reader anywhere, dynamic or literal.
+        "deception_contraband_bonus",  # never read (finding F-13)
+        "drone_slot",  # never read (finding F-13) -- drone.py reads
+        # the drone_fleet skill's current_level directly, not this bonus_type
+        "leadership_crew_bonus",  # never read (finding F-13)
+        "technical_refining_bonus",  # never read (finding F-13)
+    }
+
     def test_every_skill_bonus_type_has_a_consumer(self) -> None:
-        from spacegame.models.progression import SKILLS_PATH, create_default_skills
+        from spacegame.models.progression import create_default_skills
 
         skills = create_default_skills()
         # bonus_type → set of skill_ids declaring it (for diagnostic clarity)
@@ -704,37 +754,41 @@ class TestSkillBonusConsumers:
             if bt:
                 declared[bt].add(sid)
 
-        project_root = Path(__file__).parent.parent.parent
-        all_source = ""
-        for py_file in (project_root / "spacegame").rglob("*.py"):
-            all_source += py_file.read_text(encoding="utf-8", errors="ignore")
-        # Skill bonus_type literals moved from progression.py into
-        # skills.json (SP3-a Task 1). Include it so a declaration still
-        # counts here exactly as it did when it lived in Python source.
-        all_source += SKILLS_PATH.read_text(encoding="utf-8")
+        all_source = _spacegame_source_text()
 
         # A bonus_type counts as consumed if it appears as a literal
         # somewhere in source — this is intentionally permissive (avoids
         # false positives from wrappers and indirection layers).
         orphans: list[str] = []
         for bt, owners in declared.items():
+            if bt in self.UNCONSUMED_SKILL_BONUS_TYPES:
+                continue
             if f'"{bt}"' not in all_source and f"'{bt}'" not in all_source:
                 orphans.append(f"{bt} (declared by: {sorted(owners)})")
 
-        # Known-deferred bonuses with documented reasons live here so the
-        # test stays green while we hold the line on net new orphans. Each
-        # entry MUST have a justification — no quiet exemptions.
-        #
-        # QA Pass 5 Tier 3.F (2026-04-21): price_memory was the last entry
-        # and is now wired — PriceMemory model + galaxy map reader shipped.
-        # Set intentionally empty: net-new orphans fail the test loudly.
-        ALLOWED_ORPHANS: set[str] = set()
-
-        unjustified = sorted(o for o in orphans if o.split(" ")[0] not in ALLOWED_ORPHANS)
-        assert not unjustified, (
+        assert not orphans, (
             "These skill bonus_types are declared but not read anywhere in "
             "source. Either wire them, remove the skill, or add to "
-            "ALLOWED_ORPHANS with a justification:\n  " + "\n  ".join(unjustified)
+            "UNCONSUMED_SKILL_BONUS_TYPES with a dynamic: <file:line> or "
+            "never read (finding ...) justification:\n  " + "\n  ".join(orphans)
+        )
+
+    def test_unconsumed_allowlist_has_no_literal_consumer(self) -> None:
+        """The allowlist shrinks the moment a listed bonus_type is wired.
+
+        If code later reads one of these bonus_types as a literal (rather
+        than only dynamically, or not at all), it now passes the main scan
+        on its own merits and must be dropped from the allowlist.
+        """
+        all_source = _spacegame_source_text()
+        newly_consumed = sorted(
+            bt
+            for bt in self.UNCONSUMED_SKILL_BONUS_TYPES
+            if f'"{bt}"' in all_source or f"'{bt}'" in all_source
+        )
+        assert not newly_consumed, (
+            "These bonus_types now have a literal consumer and no longer "
+            "belong in UNCONSUMED_SKILL_BONUS_TYPES: " + ", ".join(newly_consumed)
         )
 
 
