@@ -86,6 +86,22 @@ counter or any other per-process part to the ID.
   least the quantity. Pass the roster's recruited ids to `check_objectives`.
   `complete_mission` runs with the case roster, every synced faction id, and no
   reputation hook.
+- `parity/golden/dialogue/*.json` (SP3-a) replay from `setup` alone. Each `tree_<id>` step
+  builds fresh managers for profile `args[0]`: load `setup["profiles"][profile]["social"]`
+  through `SocialManager.load_state`, recruit each `setup["crew"]` entry with
+  `setup["crew_slots"]` and apply its `loyalty_delta`, load the profile's `flags`, start
+  `setup["tree_id"]` with `setup["npc_id"]`, move the current node to `args[1]` (Python
+  writes `DialogueManager._current_node_id`, which has no public setter), and select
+  `args[2]`. `ambient` and `chatter` run one manager on `SimRng.from_key(*setup["rng_key"])`
+  and pass the setup's fixed arguments to every call; an empty `player_flags` dict, unlike
+  `None`, turns the ambient flag filter on. `interjections` keeps one resolver per fight
+  label, seeded with `setup["seeds"][label]` over `setup["crew_aboard"]`: `evaluate_round`
+  reads a combat state built from `args[1]` (round number, player hull and max hull, and
+  each enemy's template, current hull and fled flag), `evaluate_outcome` reads no state,
+  and each `commit` step names the offered event by crew id and trigger. Seven skill checks
+  in six crew-quest trees name attribute ids (`acu`, `com`, `ing`, `res`, `syn`), which
+  `SocialManager.resolve_check` fails as `Unknown skill: <id>`; the goldens record that
+  failure for both profiles.
 
 ## Act II v1
 
