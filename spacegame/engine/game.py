@@ -4205,74 +4205,32 @@ class Game:
         if not outcome:
             return
 
-        self.player.encounters_survived += 1
+        from spacegame.models.encounter import apply_encounter_outcome, mark_unique_encounter_seen
 
-        for reward in outcome.rewards:
-            if reward.reward_type == "credits":
-                self.player.credits += reward.amount
-                logger.info(f"Encounter reward: +{reward.amount} credits")
-            elif reward.reward_type == "deduct_credits":
-                amount = reward.amount
-                if self.player.credits >= amount:
-                    self.player.credits -= amount
-                    logger.info(f"Encounter cost: -{amount} credits")
-                else:
-                    logger.info("Encounter: insufficient credits — waived")
-            elif reward.reward_type == "xp":
-                xp_msgs = self.player.progression.add_xp(reward.amount)
-                for msg in xp_msgs:
-                    self._mission_notifications.append(msg)
-                logger.info(f"Encounter reward: +{reward.amount} XP")
-            elif reward.reward_type == "set_flag":
-                if reward.target_id:
-                    self.player.dialogue_flags[reward.target_id] = True
-                    if self.dialogue_manager:
-                        self.dialogue_manager.set_flag(reward.target_id)
-                    logger.info(f"Encounter flag set: {reward.target_id}")
-            elif reward.reward_type == "add_criminal_heat":
-                self.player.add_criminal_heat(reward.amount)
-                self.player.times_caught_smuggling += 1
-                logger.info(f"Encounter: +{reward.amount} criminal heat")
-                self._after_player_action("smuggling_caught")
-            elif reward.reward_type == "modify_reputation":
-                if reward.target_id:
-                    if self.politics_manager:
-                        self.politics_manager.apply_reputation_with_spillover(
-                            self.player, reward.target_id, reward.amount
-                        )
-                    else:
-                        self.player.modify_reputation(reward.target_id, reward.amount)
-                    logger.info(f"Encounter: {reward.amount} reputation with {reward.target_id}")
-            elif reward.reward_type == "confiscate_cargo":
-                if reward.target_id:
-                    qty = self.player.ship.get_cargo_quantity(reward.target_id)
-                    remove_qty = min(qty, reward.amount)
-                    if remove_qty > 0:
-                        self.player.ship.remove_cargo(reward.target_id, remove_qty)
-                        logger.info(f"Encounter: confiscated {remove_qty} {reward.target_id}")
-            elif reward.reward_type == "reduce_criminal_heat":
-                self.player.decay_criminal_heat(reward.amount)
-                logger.info(f"Encounter: -{reward.amount} criminal heat")
-            elif reward.reward_type == "bounty_immunity":
-                self._bounty_immunity_until = self.player.game_day + reward.amount
-                logger.info(f"Encounter: bounty immunity for {reward.amount} days")
-            elif reward.reward_type == "start_bounty_combat":
-                # Transition to combat with bounty hunter enemies
-                self._pending_bounty_combat_ids = (
-                    reward.target_id.split(",") if reward.target_id else []
+        def _rep(faction_id: str, amount: int) -> object:
+            if self.politics_manager:
+                return self.politics_manager.apply_reputation_with_spillover(
+                    self.player, faction_id, amount
                 )
-                logger.info("Encounter: starting bounty hunter combat")
+            return self.player.modify_reputation(faction_id, amount)
 
-        # Mark unique encounters as seen so they don't repeat
-        enc_def = getattr(self.encounter_view, "encounter_def", None)
-        if enc_def and getattr(enc_def, "unique", False):
-            from spacegame.constants.flags import encounter_seen
-
-            flag = encounter_seen(enc_def.id)
-            self.player.dialogue_flags[flag] = True
+        effects = apply_encounter_outcome(self.player, outcome, apply_reputation=_rep)
+        self._mission_notifications.extend(effects.xp_messages)
+        for flag in effects.flags_set:
             if self.dialogue_manager:
                 self.dialogue_manager.set_flag(flag)
-            logger.info(f"Unique encounter seen: {flag}")
+        if effects.smuggling_caught:
+            self._after_player_action("smuggling_caught")
+        if effects.bounty_immunity_days is not None:
+            self._bounty_immunity_until = self.player.game_day + effects.bounty_immunity_days
+        if effects.bounty_combat_ids is not None:
+            self._pending_bounty_combat_ids = effects.bounty_combat_ids
+        seen = mark_unique_encounter_seen(
+            self.player, getattr(self.encounter_view, "encounter_def", None)
+        )
+        if seen and self.dialogue_manager:
+            self.dialogue_manager.set_flag(seen)
+        logger.info(f"Encounter applied: {len(outcome.rewards)} rewards")
 
     def _get_crew_combat_moves(self) -> dict:
         """Build crew_template_id -> list[CombatMove] mapping from active crew.
