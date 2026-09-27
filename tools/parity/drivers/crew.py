@@ -63,6 +63,14 @@ def _leadership() -> Case:
     rec.call("adjust_loyalty", "elena_reeves", 70)
     rec.call("apply_leadership", 0, False)
     rec.call("adjust_loyalty", "elena_reeves", 10)
+    # The floor and the flag offset both reset on this call: the drop below
+    # proves the floor is back at 0, and the later crossings prove the flag
+    # offset is only active while legendary is True.
+    rec.call("adjust_loyalty", "elena_reeves", -100)
+    rec.call("apply_leadership", 0, True)
+    rec.call("adjust_loyalty", "elena_reeves", 45)
+    rec.call("apply_leadership", 0, False)
+    rec.call("adjust_loyalty", "elena_reeves", 10)
     return case
 
 
@@ -74,6 +82,8 @@ def _triggers() -> Case:
     rec.call("on_trades", 3, 2, 1)
     rec.call("on_jumps", 4, 2)
     rec.call("on_trades", 1, 0, 0)
+    rec.call("on_trades", 10, 0, 1)
+    rec.call("on_jumps", 20, 0)
     return case
 
 

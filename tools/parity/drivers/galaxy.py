@@ -8,6 +8,7 @@ from tools.parity.driver import Case
 
 RUN_DAYS = range(1, 201)
 CHAIN_DAYS = range(2, 31)
+CAP_DAYS = range(39, 53)
 
 
 def _generator() -> GalaxyEventGenerator:
@@ -41,6 +42,9 @@ def _run() -> Case:
 
 def _chain() -> Case:
     gen = _generator()
+    # The private _build_event_from_template is used on purpose: the built event is
+    # recorded in setup, so the Godot adapter rebuilds it from that dict rather than
+    # from a roll (plan line 2337).
     head = gen._build_event_from_template(gen._template_by_id["breakstone_strike"], 1)
     case = Case("galaxy", "strike_chain", {"head": head.to_dict()})
     active = {head.system_id: [head]}
@@ -49,6 +53,22 @@ def _chain() -> Case:
     return case
 
 
+def _cap() -> Case:
+    gen = _generator()
+    # The private _build_event_from_template is used on purpose: the built events are
+    # recorded in setup, so the Godot adapter rebuilds them from that dict rather than
+    # from a roll (plan line 2337).
+    a = gen._build_event_from_template(gen._template_by_id["guild_embargo_ore"], 38)
+    b = gen._build_event_from_template(gen._template_by_id["collective_embargo_tech"], 38)
+    case = Case("galaxy", "cap_blocks_roll", {"active": [a.to_dict(), b.to_dict()]})
+    active: dict[str, list[GalaxyEvent]] = {}
+    active.setdefault(a.system_id, []).append(a)
+    active.setdefault(b.system_id, []).append(b)
+    for day in CAP_DAYS:
+        _advance(case, gen, active, day)
+    return case
+
+
 def build_cases() -> list[Case]:
     """Every galaxy-event case."""
-    return [_run(), _chain()]
+    return [_run(), _chain(), _cap()]

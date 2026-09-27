@@ -64,13 +64,16 @@ def _xp_curve() -> Case:
 
 
 def _attributes() -> Case:
-    case = Case("skills", "attributes", {"points": 6})
+    case = Case("skills", "attributes", {})
     sheet = AttributeSheet()
     sheet.add_points(6)
     case.record("add_points", [6], None, sheet.to_dict())
     for attr_id in ("com", "acu", "res", "ing", "syn", "syn"):
         case.record("allocate_point", [attr_id], sheet.allocate_point(attr_id), sheet.to_dict())
     case.record("deallocate_point", ["com"], sheet.deallocate_point("com"), sheet.to_dict())
+    # The private _BONUS_RATES table is read on purpose so every bonus type the sheet
+    # grants gets a step; the bonus types travel in the step args, so the adapter never
+    # needs the table.
     for bonus_type in sorted(attributes._BONUS_RATES):
         case.record("get_bonus", [bonus_type], sheet.get_bonus(bonus_type), sheet.to_dict())
     for milestone_id in ("first_trade", "first_trade", "not_a_milestone"):
@@ -80,7 +83,10 @@ def _attributes() -> Case:
 
 
 def _social(profile: str) -> Case:
-    case = Case("skills", f"social_checks_{profile}", {"profile": profile})
+    setup: dict[str, object] = {"profile": profile}
+    if profile == "expert":
+        setup["all_skills"] = "max_level"
+    case = Case("skills", f"social_checks_{profile}", setup)
     manager = SocialManager()
     if profile == "expert":
         prog = PlayerProgression()
