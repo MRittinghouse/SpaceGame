@@ -227,6 +227,9 @@ def _galaxy_event_cases() -> list[Case]:
         if event_type in seen or event_type == "pirate_surge":
             continue
         seen.add(event_type)
+        # The private _build_event_from_template is used on purpose: the built event is
+        # recorded as event.to_dict() in the add_galaxy_event step's args, so the Godot
+        # adapter rebuilds it from that dict and never re-rolls it.
         event = gen._build_event_from_template(template, 1)
         system_id = event.system_id
         case = Case("market", f"galaxy_{event_type}", {"system_id": system_id, "day": 1})

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from typing import Any
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.crew import CrewRoster
@@ -23,11 +23,16 @@ from tools.parity.snapshots import fresh_player
 
 SYSTEMS = ("nexus_prime", "forgeworks", "crimson_reach")
 PERKS = (0.0, 0.05)
-
-
-def _assign_factions(player: Player) -> None:
-    for system_id, system in get_data_loader().systems.items():
-        player.faction_assignments[system_id] = system.faction
+_BONUS_TYPES = (
+    "buy_price_reduction",
+    "sell_price_bonus",
+    "tariff_reduction",
+    "black_market_sell_bonus",
+    "reputation_gain_bonus",
+    "faction_rep_multiplier",
+)
+_CREW_RECRUIT_ORDER = ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter")
+_CREW_SLOTS = 4
 
 
 def _max_skill(player: Player, bonus_type: str) -> None:
@@ -36,69 +41,91 @@ def _max_skill(player: Player, bonus_type: str) -> None:
             node.current_level = node.max_level
 
 
-def _plain() -> Player:
-    player = fresh_player()
-    _assign_factions(player)
-    return player
+def _faction_assignments() -> dict[str, str]:
+    return {system_id: system.faction for system_id, system in get_data_loader().systems.items()}
 
 
-def _skilled() -> Player:
-    player = _plain()
-    for bonus_type in (
-        "buy_price_reduction",
-        "sell_price_bonus",
-        "tariff_reduction",
-        "black_market_sell_bonus",
-        "reputation_gain_bonus",
-        "faction_rep_multiplier",
-    ):
-        _max_skill(player, bonus_type)
-    return player
+def _all_factions() -> list[str]:
+    return sorted({system.faction for system in get_data_loader().systems.values()})
 
 
-def _crewed() -> Player:
-    player = _plain()
-    roster = CrewRoster(get_data_loader().crew_templates)
-    for crew_id in ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter"):
-        roster.recruit(crew_id, 4)
-        roster.adjust_loyalty(crew_id, 60)
-    player.ship.set_crew_roster(roster)
-    return player
+def _profile_setup(profile: str) -> dict[str, Any]:
+    """One profile's setup dict: initial state no step records (progress.md:233)."""
+    skilled = profile in ("skilled", "hostile", "allied")
+    reputation = {"hostile": -80, "allied": 80}.get(profile)
+    return {
+        "player": {
+            "name": "ParityPilot",
+            "credits": 10000,
+            "system_id": "nexus_prime",
+            "ship_type": "shuttle",
+            "fuel": 40,
+        },
+        "faction_assignments": _faction_assignments(),
+        "max_level_bonus_types": list(_BONUS_TYPES) if skilled else [],
+        "faction_reputation": (
+            dict.fromkeys(_all_factions(), reputation) if reputation is not None else {}
+        ),
+        "crew_slots": _CREW_SLOTS,
+        "crew": (
+            [{"crew_id": crew_id, "loyalty_delta": 60} for crew_id in _CREW_RECRUIT_ORDER]
+            if profile == "crewed"
+            else []
+        ),
+        "previous_system_id": "verdant" if profile == "route" else "",
+        "route_trips": (
+            [{"origin": "verdant", "destination": "nexus_prime", "count": 10}]
+            if profile == "route"
+            else []
+        ),
+    }
 
 
-def _route() -> Player:
-    player = _plain()
-    player.previous_system_id = "verdant"
-    for _ in range(10):
-        player.trade_route_tracker.record_trip("verdant", "nexus_prime")
-    return player
-
-
-def _reputation(rep: int) -> Callable[[], Player]:
-    def build() -> Player:
-        player = _skilled()
-        for faction_id in {s.faction for s in get_data_loader().systems.values()}:
-            player.faction_reputation[faction_id] = rep
-        return player
-
-    return build
-
-
-PROFILES: dict[str, Callable[[], Player]] = {
-    "plain": _plain,
-    "skilled": _skilled,
-    "crewed": _crewed,
-    "route": _route,
-    "hostile": _reputation(-80),
-    "allied": _reputation(80),
+PROFILES: dict[str, dict[str, Any]] = {
+    name: _profile_setup(name)
+    for name in ("plain", "skilled", "crewed", "route", "hostile", "allied")
 }
+
+
+def _build_player(setup: dict[str, Any]) -> Player:
+    """Construct a Player from a setup dict plus synced data only."""
+    fields = setup["player"]
+    player = fresh_player(
+        name=fields["name"],
+        credits=fields["credits"],
+        system_id=fields["system_id"],
+        ship_type_id=fields["ship_type"],
+        fuel=fields["fuel"],
+    )
+    for system_id, faction in setup["faction_assignments"].items():
+        player.faction_assignments[system_id] = faction
+    for bonus_type in setup["max_level_bonus_types"]:
+        _max_skill(player, bonus_type)
+    for faction_id, rep in setup["faction_reputation"].items():
+        player.faction_reputation[faction_id] = rep
+    crew = setup["crew"]
+    if crew:
+        roster = CrewRoster(get_data_loader().crew_templates)
+        for entry in crew:
+            roster.recruit(entry["crew_id"], setup["crew_slots"])
+            roster.adjust_loyalty(entry["crew_id"], entry["loyalty_delta"])
+        player.ship.set_crew_roster(roster)
+    player.previous_system_id = setup["previous_system_id"]
+    for trip in setup["route_trips"]:
+        for _ in range(trip["count"]):
+            player.trade_route_tracker.record_trip(trip["origin"], trip["destination"])
+    return player
 
 
 def _profile_case(profile: str) -> Case:
     dl = get_data_loader()
-    case = Case("trade", f"prices_{profile}", {"profile": profile, "day": 3})
+    setup = PROFILES[profile]
+    case_setup: dict[str, Any] = dict(setup)
+    case_setup["profile"] = profile
+    case_setup["day"] = 3
+    case = Case("trade", f"prices_{profile}", case_setup)
     for system_id in SYSTEMS:
-        player = PROFILES[profile]()
+        player = _build_player(setup)
         player.current_system_id = system_id
         market = Market(dl.systems[system_id], list(dl.commodities.values()), game_day=3)
         state: dict[str, object] = {
