@@ -2,9 +2,28 @@
   "case": "ambient",
   "format": 1,
   "setup": {
-    "loyalty": 60
+    "action_type": "sold_cargo",
+    "faction_id": "commerce_guild",
+    "loyalty": 60,
+    "loyalty_map": {
+      "dr_priya_osei": 60,
+      "elena_reeves": 60,
+      "marcus_jin": 60,
+      "tomas_drifter": 60
+    },
+    "player_flags": {},
+    "recruited_ids": [
+      "elena_reeves",
+      "marcus_jin",
+      "dr_priya_osei",
+      "tomas_drifter"
+    ],
+    "rng_key": [
+      "parity_ambient"
+    ],
+    "system_id": "nexus_prime"
   },
-  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "source_commit": "b42225cd044e279e4937cf0358bbf726182377bc",
   "steps": [
     {
       "args": [

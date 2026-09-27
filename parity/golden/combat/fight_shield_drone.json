@@ -96,7 +96,7 @@
     "seed": 1245848744,
     "ship_type_id": "war_frigate"
   },
-  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "source_commit": "b42225cd044e279e4937cf0358bbf726182377bc",
   "steps": [
     {
       "args": [

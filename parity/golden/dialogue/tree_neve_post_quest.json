@@ -2,10 +2,85 @@
   "case": "tree_neve_post_quest",
   "format": 1,
   "setup": {
-    "loyalty": 60,
-    "npc_id": null
+    "crew": [
+      {
+        "crew_id": "elena_reeves",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "marcus_jin",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "dr_priya_osei",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "tomas_drifter",
+        "loyalty_delta": 30
+      }
+    ],
+    "crew_slots": 4,
+    "npc_id": "neve_osei",
+    "profiles": {
+      "expert": {
+        "flags": {},
+        "social": {
+          "disposition": {},
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      },
+      "novice": {
+        "flags": {},
+        "social": {}
+      }
+    },
+    "tree_id": "neve_post_quest"
   },
-  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "source_commit": "b42225cd044e279e4937cf0358bbf726182377bc",
   "steps": [
     {
       "args": [
@@ -108,7 +183,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -189,7 +266,9 @@
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -216,7 +295,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 52
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -243,7 +324,9 @@
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -354,7 +437,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -435,7 +520,9 @@
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -462,7 +549,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 52
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -489,7 +578,9 @@
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "neve_osei": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
