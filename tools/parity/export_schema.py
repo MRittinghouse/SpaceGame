@@ -48,7 +48,12 @@ def type_name(tp: object) -> str:
     if isinstance(tp, type) and issubclass(tp, IntEnum):
         return "intenum"
     if isinstance(tp, type) and issubclass(tp, Enum):
-        return "enum"
+        if all(isinstance(member.value, str) for member in tp):
+            return "enum"
+        raise TypeError(
+            f"schema cannot express {tp!r}: enum values must all be str unless the "
+            "class is an IntEnum"
+        )
     if isinstance(tp, type) and dataclasses.is_dataclass(tp):
         return tp.__name__
     raise TypeError(f"schema cannot express {tp!r}")
