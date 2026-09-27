@@ -6031,9 +6031,10 @@ class Game:
         """Push leadership skill bonuses into the crew roster."""
         if self._player is None or not self.crew_roster:
             return
-        self.crew_roster.loyalty_floor = int(self.player.progression.get_bonus("loyalty_floor"))
-        legendary = self.player.progression.get_bonus("legendary_captain")
-        self.crew_roster.loyalty_flag_offset = 10 if legendary > 0 else 0
+        self.crew_roster.apply_leadership(
+            int(self.player.progression.get_bonus("loyalty_floor")),
+            self.player.progression.get_bonus("legendary_captain") > 0,
+        )
 
     def check_crew_xp(self) -> None:
         """Award crew XP when trades or jumps occur."""
@@ -6052,8 +6053,9 @@ class Game:
         if current_trades > self._crew_last_trades:
             new_trades = current_trades - self._crew_last_trades
             self._crew_last_trades = current_trades
-            levelup_msgs = self.crew_roster.add_xp_to_all((5 + xp_bonus) * new_trades)
-            loyalty_flags = self.crew_roster.adjust_loyalty_all((1 + loyalty_bonus) * new_trades)
+            levelup_msgs, loyalty_flags = self.crew_roster.on_trades(
+                new_trades, xp_bonus, loyalty_bonus
+            )
             for flag in loyalty_flags:
                 self.dialogue_manager.set_flag(flag)
             for msg in levelup_msgs:
@@ -6067,7 +6069,7 @@ class Game:
         if current_jumps > self._crew_last_jumps:
             new_jumps = current_jumps - self._crew_last_jumps
             self._crew_last_jumps = current_jumps
-            levelup_msgs = self.crew_roster.add_xp_to_all((3 + xp_bonus) * new_jumps)
+            levelup_msgs = self.crew_roster.on_jumps(new_jumps, xp_bonus)
             for msg in levelup_msgs:
                 self._mission_notifications.append(msg)
 
