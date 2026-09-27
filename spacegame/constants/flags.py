@@ -53,16 +53,18 @@ def extract_tutorial_bought_part_id(flag_name: str) -> Optional[str]:
 # ---------------------------------------------------------------------------
 #
 # SI-3 Pass 3.3 (see requirements/si3_flag_registry_cookbook.md).
-# Set in ``engine/game.py``'s mission-completion handler when the
-# player crosses N total campaign-mission completions (N ∈ {5, 10,
-# 15, 20}). Read by ``data/encounters/campaign.json`` via
-# ``requires_flags`` to gate Act One milestone encounters.
+# Set in ``models/mission.MissionManager.complete_mission``, called from
+# ``engine/game.py``'s ``check_missions``, when the player crosses N total
+# campaign-mission completions (N ∈ {5, 10, 15, 20}). Read by
+# ``data/encounters/campaign.json`` via ``requires_flags`` to gate Act One
+# milestone encounters.
 
 
 def campaign_mission_milestone(n: int) -> str:
     """Flag set when the player crosses ``n`` total campaign completions.
 
-    Producer: ``engine/game.py`` mission-completion handler.
+    Producer: ``models/mission.MissionManager.complete_mission``, called from
+    ``engine/game.py``'s ``check_missions``.
     Consumers: ``data/encounters/campaign.json`` (multiple gates).
     Valid milestones today: 5, 10, 15, 20.
     """

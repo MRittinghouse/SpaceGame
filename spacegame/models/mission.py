@@ -5,6 +5,7 @@ Defines mission objectives, rewards, and the MissionManager state machine
 that tracks mission lifecycle: available -> active -> completed.
 """
 
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
@@ -20,6 +21,7 @@ def _parse_soft_deadline(data: dict[str, Any]):
 
 
 if TYPE_CHECKING:
+    from spacegame.models.crew import CrewRoster
     from spacegame.models.player import Player
     from spacegame.models.soft_deadline import SoftDeadline
 
@@ -321,6 +323,29 @@ class Mission:
         if self.timeliness_comments:
             d["timeliness_comments"] = dict(self.timeliness_comments)
         return d
+
+
+CREW_XP_PER_MISSION = 20
+CREW_LOYALTY_PER_MISSION = 5
+# Campaign completion counts that set a milestone flag. The flags gate a number of
+# campaign encounters; see qa_pass_2_findings.md.
+CAMPAIGN_MILESTONES = (5, 10, 15, 20)
+
+
+@dataclass
+class MissionCompletion:
+    """Everything completing one mission changed, for the caller to announce."""
+
+    mission_id: str
+    reward_messages: list[str]
+    crew_joined: list[str] = field(default_factory=list)
+    crew_pending: list[str] = field(default_factory=list)
+    permits: list[str] = field(default_factory=list)
+    reputation_changes: list[tuple[str, int]] = field(default_factory=list)
+    milestone_flags: list[str] = field(default_factory=list)
+    bonus_xp: int = 0
+    crew_levelups: list[str] = field(default_factory=list)
+    loyalty_flags: list[str] = field(default_factory=list)
 
 
 class MissionManager:
@@ -732,6 +757,87 @@ class MissionManager:
                     player.okafor_research_state.bump_relationship(reward.amount)
                 messages.append(f"Kweon trust +{reward.amount}")
         return messages
+
+    def complete_mission(
+        self,
+        mission_id: str,
+        player: "Player",
+        *,
+        crew_roster: Optional["CrewRoster"] = None,
+        faction_ids: Sequence[str] = (),
+        apply_reputation: Optional[Callable[[str, int], list[tuple[str, int]]]] = None,
+    ) -> MissionCompletion:
+        """Pay out a completed mission, in the order game.check_missions used.
+
+        Args:
+            mission_id: A mission ``check_objectives`` just completed.
+            player: The player.
+            crew_roster: The roster for crew rewards and the per-mission crew XP.
+            faction_ids: Every faction id, for a universal (``"all"``) trade permit.
+            apply_reputation: Spillover-aware hook returning the changes it made;
+                None applies the reward to the named faction only.
+
+        Returns:
+            The completion record.
+        """
+        from spacegame.constants.flags import campaign_mission_milestone
+
+        done = MissionCompletion(mission_id, self.apply_rewards(mission_id, player))
+        mission = self._missions.get(mission_id)
+        if mission is None:
+            return done
+        if mission.mission_type == "side":
+            player.side_missions_completed += 1
+        if mission.mission_type == "campaign":
+            campaign_completed = sum(
+                1
+                for mid in self.get_completed_ids()
+                if (m := self.get_mission(mid)) is not None and m.mission_type == "campaign"
+            )
+            for milestone in CAMPAIGN_MILESTONES:
+                flag = campaign_mission_milestone(milestone)
+                if campaign_completed >= milestone and not player.dialogue_flags.get(flag):
+                    player.dialogue_flags[flag] = True
+                    done.milestone_flags.append(flag)
+        if mission.crew_member_id:
+            player.crew_quests_completed += 1
+            xp_mult = player.progression.get_bonus("crew_quest_xp_bonus")
+            if xp_mult > 0:
+                base_xp = sum(r.amount for r in mission.rewards if r.reward_type == "xp")
+                bonus_xp = int(base_xp * xp_mult)
+                if bonus_xp > 0:
+                    player.progression.add_xp(bonus_xp)
+                    done.bonus_xp = bonus_xp
+        for reward in mission.rewards:
+            if reward.reward_type == "crew" and reward.target_id and crew_roster is not None:
+                crew_slots = player.ship.ship_type.crew_slots + int(
+                    player.progression.get_bonus("crew_slot_bonus")
+                )
+                success, crew_msg = crew_roster.recruit(reward.target_id, crew_slots)
+                if success:
+                    done.crew_joined.append(crew_msg)
+                else:
+                    template = crew_roster.get_template(reward.target_id)
+                    if template and template.is_companion:
+                        crew_roster.add_pending_companion(reward.target_id)
+                        done.crew_pending.append(reward.target_id)
+            if reward.reward_type == "trade_permit" and reward.target_id:
+                targets = list(faction_ids) if reward.target_id == "all" else [reward.target_id]
+                for faction_id in targets:
+                    player.grant_trade_permit(faction_id)
+                done.permits.append(reward.target_id)
+            if reward.reward_type in ("reputation", "modify_reputation") and reward.target_id:
+                if apply_reputation is not None:
+                    done.reputation_changes.extend(
+                        apply_reputation(reward.target_id, reward.amount)
+                    )
+                else:
+                    player.modify_reputation(reward.target_id, reward.amount)
+                    done.reputation_changes.append((reward.target_id, reward.amount))
+        if crew_roster is not None:
+            done.crew_levelups = crew_roster.add_xp_to_all(CREW_XP_PER_MISSION)
+            done.loyalty_flags = crew_roster.adjust_loyalty_all(CREW_LOYALTY_PER_MISSION)
+        return done
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:
         """Get a mission definition by ID."""

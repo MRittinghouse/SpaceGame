@@ -31,6 +31,7 @@ to the game state diagram. Both are kept in this file because they access
 import random
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -6125,6 +6126,13 @@ class Game:
                 for mission in extra:
                     self.mission_manager.add_mission(mission)
 
+    def _spillover_hook(self) -> Optional[Callable[[str, int], list[tuple[str, int]]]]:
+        """The politics manager's spillover reputation call, or None without one."""
+        if not self.politics_manager:
+            return None
+        manager = self.politics_manager
+        return lambda fid, amount: manager.apply_reputation_with_spillover(self.player, fid, amount)
+
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""
         if self._player is None or not self.mission_manager:
@@ -6164,7 +6172,14 @@ class Game:
             timeliness_comment = self.mission_manager.get_timeliness_comment(
                 mission_id, self.player
             )
-            reward_msgs = self.mission_manager.apply_rewards(mission_id, self.player)
+            done = self.mission_manager.complete_mission(
+                mission_id,
+                self.player,
+                crew_roster=self.crew_roster,
+                faction_ids=list(self.data_loader.factions),
+                apply_reputation=self._spillover_hook(),
+            )
+            reward_msgs = done.reward_messages
             mission = self.mission_manager.get_mission(mission_id)
             name = mission.name if mission else mission_id
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
@@ -6195,120 +6210,48 @@ class Game:
                 logger.info(f"Emotional peak: {mission_id} complete")
             logger.info(f"Mission completed: {name}")
 
-            # Track mission completion stats
-            if mission and mission.mission_type == "side":
-                self.player.side_missions_completed += 1
-            # Campaign milestone flags — set when count crosses 5/10/15/20.
-            # Gate a number of campaign encounters; see qa_pass_2_findings.md.
-            if mission and mission.mission_type == "campaign":
-                campaign_completed = sum(
-                    1
-                    for mid in self.mission_manager.get_completed_ids()
-                    if (m := self.mission_manager.get_mission(mid)) is not None
-                    and m.mission_type == "campaign"
+            # complete_mission already applied the payout; announce it in the order
+            # players have always seen it.
+            for flag in done.milestone_flags:
+                logger.info(f"Campaign milestone reached: {flag}")
+            if done.bonus_xp:
+                self._mission_notifications.append(f"+{done.bonus_xp} Bonus XP (Shared Experience)")
+            for msg in done.crew_joined:
+                self._mission_notifications.append(f"Crew Joined: {msg}")
+                # Emotional staging: crew recruitment is significant
+                self.audio_manager.play_sfx("crew_recruit")
+                self.screen_shake.trigger(intensity=3.0, duration=0.2)
+            for crew_id in done.crew_pending:
+                template = self.crew_roster.get_template(crew_id) if self.crew_roster else None
+                if template is None:
+                    continue
+                system = self.data_loader.get_system(template.home_system_id)
+                system_name = system.name if system else template.home_system_id
+                self._mission_notifications.append(
+                    f"Crew Full: {template.name} is waiting at "
+                    f"{system_name}. Dismiss a crew member and "
+                    f"visit the cantina to recruit them."
                 )
-                from spacegame.constants.flags import campaign_mission_milestone
-
-                for milestone in (5, 10, 15, 20):
-                    if campaign_completed >= milestone:
-                        flag = campaign_mission_milestone(milestone)
-                        if not self.player.dialogue_flags.get(flag):
-                            self.player.dialogue_flags[flag] = True
-                            logger.info(f"Campaign milestone reached: {flag}")
-            if mission and mission.crew_member_id:
-                self.player.crew_quests_completed += 1
-                # Crew quest XP bonus (Leadership: Shared Experience)
-                xp_mult = self.player.progression.get_bonus("crew_quest_xp_bonus")
-                if xp_mult > 0:
-                    base_xp = sum(r.amount for r in mission.rewards if r.reward_type == "xp")
-                    bonus_xp = int(base_xp * xp_mult)
-                    if bonus_xp > 0:
-                        self.player.progression.add_xp(bonus_xp)
-                        self._mission_notifications.append(
-                            f"+{bonus_xp} Bonus XP (Shared Experience)"
-                        )
-
-            # Handle special reward types (not processed in apply_rewards)
-            if mission:
-                for reward in mission.rewards:
-                    # Crew recruitment
-                    if reward.reward_type == "crew" and reward.target_id and self.crew_roster:
-                        crew_slots = self.player.ship.ship_type.crew_slots + int(
-                            self.player.progression.get_bonus("crew_slot_bonus")
-                        )
-                        success, crew_msg = self.crew_roster.recruit(reward.target_id, crew_slots)
-                        if success:
-                            self._mission_notifications.append(f"Crew Joined: {crew_msg}")
-                            # Emotional staging: crew recruitment is significant
-                            self.audio_manager.play_sfx("crew_recruit")
-                            self.screen_shake.trigger(intensity=3.0, duration=0.2)
-                        else:
-                            # Crew full — mark companion as pending for cantina recruitment
-                            template = self.crew_roster.get_template(reward.target_id)
-                            if template and template.is_companion:
-                                self.crew_roster.add_pending_companion(reward.target_id)
-                                system = self.data_loader.get_system(template.home_system_id)
-                                system_name = system.name if system else template.home_system_id
-                                self._mission_notifications.append(
-                                    f"Crew Full: {template.name} is waiting at "
-                                    f"{system_name}. Dismiss a crew member and "
-                                    f"visit the cantina to recruit them."
-                                )
-                                logger.info(
-                                    f"Crew full — {template.name} marked as pending "
-                                    f"at {template.home_system_id}"
-                                )
-
-                    # Trade permit
-                    if reward.reward_type == "trade_permit" and reward.target_id:
-                        dl = get_data_loader()
-                        if reward.target_id == "all":
-                            # Universal permit — grant for all factions
-                            for fid in dl.factions:
-                                self.player.grant_trade_permit(fid)
-                            self._mission_notifications.append(
-                                "Trade Permit Acquired: Universal Bill of Landing"
-                            )
-                        else:
-                            faction_id = reward.target_id
-                            self.player.grant_trade_permit(faction_id)
-                            faction = dl.get_faction(faction_id)
-                            fname = faction.name if faction else faction_id
-                            self._mission_notifications.append(f"Trade Permit Acquired: {fname}")
-
-                    # Reputation reward (routed through centralized spillover)
-                    if (
-                        reward.reward_type in ("reputation", "modify_reputation")
-                        and reward.target_id
-                    ):
-                        if self.politics_manager:
-                            changes = self.politics_manager.apply_reputation_with_spillover(
-                                self.player, reward.target_id, reward.amount
-                            )
-                            dl = get_data_loader()
-                            for fid, amt in changes:
-                                faction = dl.get_faction(fid)
-                                fname = faction.name if faction else fid
-                                sign = "+" if amt >= 0 else ""
-                                self._mission_notifications.append(f"{sign}{amt} Rep: {fname}")
-                        else:
-                            self.player.modify_reputation(reward.target_id, reward.amount)
-                            dl = get_data_loader()
-                            faction = dl.get_faction(reward.target_id)
-                            fname = faction.name if faction else reward.target_id
-                            sign = "+" if reward.amount >= 0 else ""
-                            self._mission_notifications.append(
-                                f"{sign}{reward.amount} Rep: {fname}"
-                            )
-
-            # Grant crew XP and loyalty on mission completion
-            if self.crew_roster:
-                levelup_msgs = self.crew_roster.add_xp_to_all(20)
-                loyalty_flags = self.crew_roster.adjust_loyalty_all(5)
-                for flag in loyalty_flags:
-                    self.dialogue_manager.set_flag(flag)
-                for msg in levelup_msgs:
-                    self._mission_notifications.append(msg)
+                logger.info(
+                    f"Crew full — {template.name} marked as pending at {template.home_system_id}"
+                )
+            for target in done.permits:
+                if target == "all":
+                    self._mission_notifications.append(
+                        "Trade Permit Acquired: Universal Bill of Landing"
+                    )
+                else:
+                    faction = self.data_loader.get_faction(target)
+                    fname = faction.name if faction else target
+                    self._mission_notifications.append(f"Trade Permit Acquired: {fname}")
+            for fid, amt in done.reputation_changes:
+                faction = self.data_loader.get_faction(fid)
+                fname = faction.name if faction else fid
+                sign = "+" if amt >= 0 else ""
+                self._mission_notifications.append(f"{sign}{amt} Rep: {fname}")
+            for flag in done.loyalty_flags:
+                self.dialogue_manager.set_flag(flag)
+            self._mission_notifications.extend(done.crew_levelups)
 
         # Crew reaction to mission completion
         if completed_ids:
