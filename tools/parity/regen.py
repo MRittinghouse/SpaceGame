@@ -22,11 +22,13 @@ from pathlib import Path
 from tools.parity import rng_vectors
 from tools.parity.driver import REPO_ROOT, Case, dirty_paths_outside, source_commit, write_cases
 from tools.parity.drivers import crew as crew_driver
+from tools.parity.drivers import encounters as encounters_driver
 from tools.parity.drivers import galaxy as galaxy_driver
 from tools.parity.drivers import market as market_driver
 from tools.parity.drivers import player as player_driver
 from tools.parity.drivers import skills as skills_driver
 from tools.parity.drivers import trade as trade_driver
+from tools.parity.drivers import travel as travel_driver
 from tools.parity.export_schema import write_schema
 
 DRIVERS: list[Callable[[], list[Case]]] = [
@@ -37,6 +39,8 @@ DRIVERS: list[Callable[[], list[Case]]] = [
     crew_driver.build_cases,
     trade_driver.build_cases,
     player_driver.build_cases,
+    travel_driver.build_cases,
+    encounters_driver.build_cases,
 ]
 
 
