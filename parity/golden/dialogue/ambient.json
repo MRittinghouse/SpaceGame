@@ -1,0 +1,1465 @@
+{
+  "case": "ambient",
+  "format": 1,
+  "setup": {
+    "loyalty": 60
+  },
+  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "steps": [
+    {
+      "args": [
+        "combat_after",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": "Hull stress report from that engagement: four panel seams need re-welding, and the port thruster ran 11 percent over rated load for 40 seconds. I have logged it.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          300
+        ]
+      }
+    },
+    {
+      "args": [
+        "combat_after",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": "Good fight. Check the coupling on the dorsal gun mount before the next jump. I heard it rattle during the engagement.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          300,
+          301
+        ]
+      }
+    },
+    {
+      "args": [
+        "combat_after",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": "I have documented the engagement parameters. The data on ship response time under sustained fire will inform my next set of recommendations.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          300,
+          301,
+          302
+        ]
+      }
+    },
+    {
+      "args": [
+        "combat_after",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": "We walked out. That is the only metric I care about when combat is over. Everything else is salvage.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "faction_territory",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": "Guild territory. Say what you will about the bureaucracy. Their docking procedures are impeccable.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "faction_territory",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "faction_territory",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": "The Guild requires inspection documentation at every transfer point. The forms are thorough. The inspectors are not.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "faction_territory",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "flag_triggered",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "flag_triggered",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "flag_triggered",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "flag_triggered",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "home_system",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "home_system",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "home_system",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "home_system",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": null,
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "idle",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": "I left Stellaris because I stopped trusting my own calculations. They were right. I was the variable I could not account for.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          161,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "idle",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": "Engine's running clean. Whoever built this ship knew what they were doing. Mostly.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          161,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "idle",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": "I keep a pressed sample from every system we visit. Dust, pollen, metal shavings. My collection fills a drawer now.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          77,
+          161,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "idle",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": "People look at me and see a charmer. I look at me and see someone who learned that smiling is cheaper than fighting.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          77,
+          80,
+          161,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "inter_crew",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": "Doctor, I appreciate the research, but when you reroute processing power to your analysis without asking, we all feel it in the response lag.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          77,
+          80,
+          161,
+          182,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "inter_crew",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": "Reeves, those departure calculations you sent. Good work. Saved us twenty minutes on the approach.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          77,
+          80,
+          161,
+          182,
+          265,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "inter_crew",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": "Marcus, I appreciate the re-securing. I was not aware bay three ran a different pressure cycle. That is useful operational data.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          77,
+          80,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "inter_crew",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": "Doc, you ever think about selling those mineral analyses? Some traders would pay good credits for that data.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "player_action",
+        "elena_reeves"
+      ],
+      "call": "get_line",
+      "result": "That margin was razor-thin. I hope you factored in docking fees.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          115,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "player_action",
+        "marcus_jin"
+      ],
+      "call": "get_line",
+      "result": "Credits are credits. Just keep the fuel tank funded.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          115,
+          125,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "player_action",
+        "dr_priya_osei"
+      ],
+      "call": "get_line",
+      "result": "Profitable. I assume the provenance of that cargo was legitimate.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          115,
+          125,
+          135,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [
+        "player_action",
+        "tomas_drifter"
+      ],
+      "call": "get_line",
+      "result": "Sold at the right moment. I taught you that, you know.",
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [],
+      "call": "get_random_idle",
+      "result": [
+        "tomas_drifter",
+        "Every port I have ever docked at, I left someone behind. This is the first ship where I stopped counting the exits."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [],
+      "call": "get_random_idle",
+      "result": [
+        "tomas_drifter",
+        "I've been in cantinas on eleven stations. They all smell the same. Recycled air, cheap synth-alcohol, and desperation."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303
+        ]
+      }
+    },
+    {
+      "args": [],
+      "call": "get_random_idle",
+      "result": [
+        "marcus_jin",
+        "Drive coupling on the starboard side is showing micro-fatigue. I checked the maintenance contract. It is within tolerance, but I am watching it."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          310
+        ]
+      }
+    },
+    {
+      "args": [],
+      "call": "get_random_idle",
+      "result": [
+        "tomas_drifter",
+        "Way I see it, the best route is not always the fastest one. Sometimes it is the one with the best cantina at the midpoint."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [],
+      "call": "get_random_idle",
+      "result": [
+        "elena_reeves",
+        "The navigation charts for this region haven't been updated in three years. I'll draft corrections when we dock."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "bought_cargo"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "That is a lot of cargo for our hold. I assume you have a buyer lined up."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "combat_retreat"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "Running. Again."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          135,
+          143,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "combat_victory"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "tomas_drifter",
+        "We won. Could have talked our way out, but winning works too."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "ground_mission_fail"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "That went sideways fast. We need to debrief before the next drop."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "ground_mission_success"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "Everyone walked out. That is the only metric that counts."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "mining_break"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "Good vein. Keep the drill steady, the iron runs deep here."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "mining_depth"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "New depth, new composition. I will recalibrate the drill heads."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "mission_completed"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "Contract fulfilled. I have already logged the payout."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "mission_expired"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "That deadline was always unrealistic. I should have said something sooner."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "refine_complete"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "Processing complete. I have updated the manifest. We should talk about margins when you have a moment."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "salvage_extract"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "Hull integrity on this deck is marginal. Extract what we need and get out."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          218,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "salvage_scan"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "dr_priya_osei",
+        "Careful with that panel. The corrosion pattern suggests structural compromise."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          216,
+          218,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "smuggling_caught"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "I told you the inspection schedules are posted publicly. You chose not to check."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          124,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          216,
+          218,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "smuggling_success"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "dr_priya_osei",
+        "I have concerns about what we just transported. I would like to discuss them when you have a moment."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          124,
+          125,
+          129,
+          133,
+          134,
+          135,
+          141,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          216,
+          218,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    },
+    {
+      "args": [
+        "sold_cargo"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "elena_reeves",
+        "We could have held that inventory another cycle and cleared twenty percent more."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          116,
+          118,
+          121,
+          122,
+          124,
+          125,
+          129,
+          133,
+          134,
+          135,
+          141,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          216,
+          218,
+          223,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310
+        ]
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

@@ -1,0 +1,1680 @@
+{
+  "case": "tree_merchant_delivery",
+  "format": 1,
+  "setup": {
+    "loyalty": 60,
+    "npc_id": "odom_broker"
+  },
+  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        "greet",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          3,
+          5
+        ],
+        "check": null,
+        "next_node": "teach_intro",
+        "response": 3
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "greet",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          3,
+          5
+        ],
+        "check": null,
+        "next_node": "offer",
+        "response": 5
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "teach_intro",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "teach_routes",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_taught_intro"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "teach_intro",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_taught_intro"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "teach_routes",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "offer",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "details",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "offer",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "details",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "details",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "thanks",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "betrayal_rant",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal_rant",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal_rant",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal_end",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_delivery_failed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "odom_arna_branch_a",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_spoke_of_arna"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "odom_arna_branch_b",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_spoke_of_arna"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "odom_arna_branch_c",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_spoke_of_arna"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "ongoing_greet",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "investment_intro",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "investment_intro",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "investment_intro_venues",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_explained_investment"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "investment_intro",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_explained_investment"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "investment_intro_venues",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "graduation_pointer",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "odom_arna_branch_a",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "odom_arna_branch_b",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "odom_arna_branch_c",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "teach_routes",
+        "response": 4
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        4
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "thanks",
+        "response": 7
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        5
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "betrayal",
+        "response": 8
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        6
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "ongoing_greet",
+        "response": 9
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "teach_intro",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "teach_routes",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "teach_intro",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "teach_routes",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "offer",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "details",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "offer",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "details",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "details",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "thanks",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "betrayal_rant",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal_rant",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal_rant",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal_end",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_delivery_failed",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "odom_arna_branch_a",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_spoke_of_arna",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "odom_arna_branch_b",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_spoke_of_arna",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "odom_arna_branch_c",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_spoke_of_arna",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "ongoing_greet",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          1
+        ],
+        "check": null,
+        "next_node": "graduation_pointer",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "investment_intro",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "investment_intro_venues",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_explained_investment",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "investment_intro",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_explained_investment",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "investment_intro_venues",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "graduation_pointer",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "broker_ore_sold",
+          "investment_introduced",
+          "iron_ore_delivered",
+          "odom_taught_intro",
+          "talked_to_cargo_broker"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

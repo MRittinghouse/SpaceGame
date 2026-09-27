@@ -1,0 +1,492 @@
+{
+  "case": "interjections",
+  "format": 1,
+  "setup": {
+    "crew": [
+      "elena_reeves",
+      "marcus_jin",
+      "dr_priya_osei",
+      "tomas_drifter"
+    ]
+  },
+  "source_commit": "d99d50c8d9e633405ab13ce9969f0864c2026bbe",
+  "steps": [
+    {
+      "args": [
+        "pirate_raider",
+        1
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Captain. Hostile signature confirmed. I have a vector.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Enemy on scope. Steady hands.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "I am tracking shield harmonics. The data will be useful regardless of outcome.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Captain. Smile. They cannot tell when you are scared.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        2
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        3
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        4
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        5
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        6
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        7
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        8
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        9
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        10
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        11
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        12
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Their hull is failing. Press the advantage.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Their hull's done. One more pass.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Statistically, one more well-placed hit ends this.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Done deal. Close it before he closes it for us.",
+          "trigger": "enemy_low_hp"
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "pirate_raider",
+        "victory"
+      ],
+      "call": "evaluate_outcome",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Engagement closed. Adding 'survived' to the after-action report.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Done. Patch list comes after.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Engagement concluded. I will compile the data when my hands stop shaking.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, that was a good day's work. Drinks on me when we dock.",
+          "trigger": "combat_outcome"
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        1
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Engagement window opens. Standard rules of evasion apply, sir. Sorry. Captain.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Enemy on scope. Steady hands.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Hostile contact. Engagement parameters are within tolerance.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, this is just business. They came for a fight and we are the fight.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        2
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        3
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        4
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        5
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        6
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        7
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        8
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        9
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        10
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        11
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        12
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "guild_dreadnought",
+        "in_progress"
+      ],
+      "call": "evaluate_outcome",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        1
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Captain. Hostile signature confirmed. I have a vector.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "They want a fight. Give them one.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "I am tracking shield harmonics. The data will be useful regardless of outcome.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, this is just business. They came for a fight and we are the fight.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        2
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        3
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        4
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        5
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        6
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        7
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        8
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        9
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        10
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        11
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        12
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {}
+    },
+    {
+      "args": [
+        "corsair_king",
+        "in_progress"
+      ],
+      "call": "evaluate_outcome",
+      "result": [],
+      "state": {}
+    }
+  ],
+  "subsystem": "dialogue"
+}
