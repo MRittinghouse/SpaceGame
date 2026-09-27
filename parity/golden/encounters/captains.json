@@ -2,6 +2,15 @@
   "case": "captains",
   "format": 1,
   "setup": {
+    "days": [
+      3,
+      9,
+      15
+    ],
+    "memory_reset_per": [
+      "captain_id",
+      "outcome"
+    ],
     "outcomes": [
       "victory",
       "defeat",
@@ -10,7 +19,7 @@
       "fled"
     ]
   },
-  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "source_commit": "7a1883b643195076a65611f88ebb1cd0c5d5fc82",
   "steps": [
     {
       "args": [

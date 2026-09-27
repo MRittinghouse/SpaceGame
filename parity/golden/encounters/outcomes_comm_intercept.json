@@ -2,9 +2,25 @@
   "case": "outcomes_comm_intercept",
   "format": 1,
   "setup": {
+    "cargo": [
+      {
+        "commodity_id": "food",
+        "price": 20,
+        "quantity": 10
+      }
+    ],
+    "fresh_player_per_step": true,
+    "player": {
+      "credits": 500,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "source_commit": "7a1883b643195076a65611f88ebb1cd0c5d5fc82",
   "steps": [
     {
       "args": [

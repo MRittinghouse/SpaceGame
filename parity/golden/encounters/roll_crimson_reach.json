@@ -31,9 +31,26 @@
       "reach_bulwark",
       "reach_void_dancer",
       "mercenary_ace"
-    ]
+    ],
+    "profiles": {
+      "novice": {
+        "anomaly_chance_bonus": "f:0.0:0",
+        "anomaly_sense": "f:0.0:0",
+        "defensive_identity": "",
+        "encounter_reduction": "f:0.0:0",
+        "player_level": 1
+      },
+      "veteran": {
+        "anomaly_chance_bonus": "f:0.1:4591870180066957722",
+        "anomaly_sense": "f:0.1:4591870180066957722",
+        "defensive_identity": "ghost",
+        "encounter_reduction": "f:0.2:4596373779694328218",
+        "player_level": 5
+      }
+    },
+    "system_id": "crimson_reach"
   },
-  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "source_commit": "7a1883b643195076a65611f88ebb1cd0c5d5fc82",
   "steps": [
     {
       "args": [

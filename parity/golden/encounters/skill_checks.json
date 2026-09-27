@@ -1,8 +1,69 @@
 {
   "case": "skill_checks",
   "format": 1,
-  "setup": {},
-  "source_commit": "6e3b45819170cb655196d2d7ab75109413e97a53",
+  "setup": {
+    "fresh_per_step": true,
+    "manager_attribute_sheet": null,
+    "manager_progression": null,
+    "player": {
+      "credits": 10000,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "social_profiles": {
+      "boosted": {
+        "disposition": {},
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 5,
+            "name": "Deception",
+            "xp": 100
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 5,
+            "name": "Intimidation",
+            "xp": 100
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 5,
+            "name": "Leadership",
+            "xp": 100
+          },
+          "observation": {
+            "id": "observation",
+            "level": 5,
+            "name": "Observation",
+            "xp": 100
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 5,
+            "name": "Persuasion",
+            "xp": 100
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 5,
+            "name": "Piloting",
+            "xp": 100
+          },
+          "technical": {
+            "id": "technical",
+            "level": 5,
+            "name": "Technical",
+            "xp": 100
+          }
+        }
+      },
+      "default": {}
+    }
+  },
+  "source_commit": "7a1883b643195076a65611f88ebb1cd0c5d5fc82",
   "steps": [
     {
       "args": [
@@ -1474,45 +1535,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 2
+              "xp": 102
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1539,45 +1600,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 2
+              "xp": 102
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1604,45 +1665,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 2
+              "xp": 102
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1667,45 +1728,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 2
+              "xp": 102
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1732,45 +1793,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 2
+              "xp": 102
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1797,45 +1858,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1862,45 +1923,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1927,45 +1988,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -1992,45 +2053,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2057,45 +2118,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2122,45 +2183,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2187,45 +2248,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 2
+              "xp": 102
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2252,45 +2313,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2317,45 +2378,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2382,45 +2443,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2447,45 +2508,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2512,45 +2573,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2577,45 +2638,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2642,45 +2703,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 2
+              "xp": 102
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 0
+              "xp": 100
             }
           }
         }
@@ -2707,45 +2768,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 2
+              "xp": 102
             }
           }
         }
@@ -2772,45 +2833,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 2
+              "xp": 102
             }
           }
         }
@@ -2837,45 +2898,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 2
+              "xp": 102
             }
           }
         }
@@ -2902,45 +2963,45 @@
           "skills": {
             "deception": {
               "id": "deception",
-              "level": 10,
+              "level": 5,
               "name": "Deception",
-              "xp": 0
+              "xp": 100
             },
             "intimidation": {
               "id": "intimidation",
-              "level": 10,
+              "level": 5,
               "name": "Intimidation",
-              "xp": 0
+              "xp": 100
             },
             "leadership": {
               "id": "leadership",
-              "level": 10,
+              "level": 5,
               "name": "Leadership",
-              "xp": 0
+              "xp": 100
             },
             "observation": {
               "id": "observation",
-              "level": 10,
+              "level": 5,
               "name": "Observation",
-              "xp": 0
+              "xp": 100
             },
             "persuasion": {
               "id": "persuasion",
-              "level": 10,
+              "level": 5,
               "name": "Persuasion",
-              "xp": 0
+              "xp": 100
             },
             "piloting": {
               "id": "piloting",
-              "level": 10,
+              "level": 5,
               "name": "Piloting",
-              "xp": 0
+              "xp": 100
             },
             "technical": {
               "id": "technical",
-              "level": 10,
+              "level": 5,
               "name": "Technical",
-              "xp": 2
+              "xp": 102
             }
           }
         }
