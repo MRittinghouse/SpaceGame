@@ -707,6 +707,6 @@ def mark_unique_encounter_seen(
     """Set the seen flag for a unique encounter; returns the flag or None."""
     if definition is None or not definition.unique:
         return None
-    flag = encounter_seen(definition.id)  # already imported at the top of encounter.py
+    flag = encounter_seen(definition.id)
     player.dialogue_flags[flag] = True
     return flag

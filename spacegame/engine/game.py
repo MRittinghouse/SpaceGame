@@ -4219,6 +4219,8 @@ class Game:
         for flag in effects.flags_set:
             if self.dialogue_manager:
                 self.dialogue_manager.set_flag(flag)
+        # Once per outcome, after every reward lands (the port applies the bundle,
+        # then emits events).
         if effects.smuggling_caught:
             self._after_player_action("smuggling_caught")
         if effects.bounty_immunity_days is not None:

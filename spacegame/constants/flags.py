@@ -207,7 +207,8 @@ def seen_faction_tip(layout_key: str) -> str:
 def encounter_seen(encounter_id: str) -> str:
     """Flag set after a unique encounter resolves.
 
-    Producer: ``engine/game.py._apply_encounter_result`` (unique branch).
+    Producer: ``models/encounter.mark_unique_encounter_seen`` (called from
+    ``engine/game.py._apply_encounter_result``).
     Consumer: ``models/encounter._is_eligible`` (drops the encounter
     from the weighted-random pool once the flag is present).
     """
