@@ -9,7 +9,8 @@ from spacegame.models.combat import (
     EnemyBehavior,
     EnemyShipTemplate,
 )
-from spacegame.views.combat_view import _roll_loot
+from spacegame.models.combat_rewards import loot_rng, roll_loot
+from spacegame.sim_rng import SimRng
 
 
 def _make_template(
@@ -184,11 +185,11 @@ class TestRareLootRolling:
     """Tests for rolling rare loot drops."""
 
     def test_roll_loot_includes_rare_items(self) -> None:
-        """_roll_loot should work with rare_loot entries (same format)."""
+        """roll_loot should work with rare_loot entries (same format)."""
         rare_table = [
             {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 2, "chance": 1.0},
         ]
-        result = _roll_loot(rare_table, seed=42)
+        result = roll_loot(rare_table, SimRng.from_key("t", 42))
         assert "exotic_goods" in result, "Chance 1.0 should always drop"
 
     def test_guaranteed_rare_drop_always_drops(self) -> None:
@@ -198,7 +199,7 @@ class TestRareLootRolling:
         ]
         # Test across multiple seeds
         for seed in range(100):
-            result = _roll_loot(rare_table, seed=seed)
+            result = roll_loot(rare_table, SimRng.from_key("t", seed))
             assert "precious_metals" in result, f"Guaranteed drop missed at seed {seed}"
             assert result["precious_metals"] == 1
 
@@ -208,7 +209,7 @@ class TestRareLootRolling:
             {"commodity_id": "restricted_tech", "min_qty": 1, "max_qty": 3, "chance": 0.0},
         ]
         for seed in range(100):
-            result = _roll_loot(rare_table, seed=seed)
+            result = roll_loot(rare_table, SimRng.from_key("t", seed))
             assert "restricted_tech" not in result, f"Zero-chance drop appeared at seed {seed}"
 
     def test_rare_loot_quantities_in_range(self) -> None:
@@ -217,7 +218,7 @@ class TestRareLootRolling:
             {"commodity_id": "crystal_ore", "min_qty": 1, "max_qty": 3, "chance": 1.0},
         ]
         for seed in range(200):
-            result = _roll_loot(rare_table, seed=seed)
+            result = roll_loot(rare_table, SimRng.from_key("t", seed))
             qty = result["crystal_ore"]
             assert 1 <= qty <= 3, f"Quantity {qty} out of range [1, 3] at seed {seed}"
 
@@ -229,8 +230,8 @@ class TestRareLootRolling:
         rare = [
             {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 1, "chance": 1.0},
         ]
-        regular_result = _roll_loot(regular, seed=42)
-        rare_result = _roll_loot(rare, seed=42)
+        regular_result = roll_loot(regular, SimRng.from_key("t", 42))
+        rare_result = roll_loot(rare, SimRng.from_key("t", 42))
 
         # Combine like the game does
         combined: dict[str, int] = {}
@@ -243,17 +244,17 @@ class TestRareLootRolling:
         assert "exotic_goods" in combined
 
     def test_roll_loot_deterministic_for_same_seed(self) -> None:
-        """_roll_loot should return identical results for the same seed."""
+        """roll_loot should return identical results for the same seed."""
         table = [
             {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 10, "chance": 0.5},
             {"commodity_id": "rare_ore", "min_qty": 1, "max_qty": 5, "chance": 0.5},
         ]
-        result_a = _roll_loot(table, seed=12345)
-        result_b = _roll_loot(table, seed=12345)
+        result_a = roll_loot(table, SimRng.from_key("t", 12345))
+        result_b = roll_loot(table, SimRng.from_key("t", 12345))
         assert result_a == result_b, "Same seed should produce identical loot results"
 
     def test_roll_loot_different_seeds_produce_different_results(self) -> None:
-        """_roll_loot should produce variation across different seeds."""
+        """roll_loot should produce variation across different seeds."""
         table = [
             {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 10, "chance": 0.5},
             {"commodity_id": "rare_ore", "min_qty": 1, "max_qty": 10, "chance": 0.5},
@@ -261,29 +262,28 @@ class TestRareLootRolling:
         ]
         results = set()
         for seed in range(50):
-            result = _roll_loot(table, seed=seed)
+            result = roll_loot(table, SimRng.from_key("t", seed))
             results.add(frozenset(result.items()))
         assert len(results) > 1, "Different seeds should produce at least some variation in loot"
 
     def test_empty_loot_table_returns_empty_dict(self) -> None:
-        """_roll_loot with an empty table should return an empty dict."""
-        result = _roll_loot([], seed=42)
+        """roll_loot with an empty table should return an empty dict."""
+        result = roll_loot([], SimRng.from_key("t", 42))
         assert result == {}, "Empty loot table should return empty dict"
 
     def test_rare_loot_seed_offset_differs_from_normal_loot(self) -> None:
-        """Rare loot uses encounter_seed + hash(id) + 7919, producing different results."""
+        """Rare loot rolls on its own "rare_loot" key, so it differs from the "loot" stream."""
         table = [
             {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 10, "chance": 0.5},
             {"commodity_id": "rare_ore", "min_qty": 1, "max_qty": 10, "chance": 0.5},
         ]
         found_difference = False
-        for trial_seed in range(100):
-            base = trial_seed + hash("test_enemy")
-            r1 = _roll_loot(table, seed=base)
-            r2 = _roll_loot(table, seed=base + 7919)
+        for encounter_seed in range(100):
+            r1 = roll_loot(table, loot_rng(encounter_seed, "test_enemy", rare=False))
+            r2 = roll_loot(table, loot_rng(encounter_seed, "test_enemy", rare=True))
             if r1 != r2:
                 found_difference = True
                 break
         assert found_difference, (
-            "Rare loot seed offset (7919) should produce different results than normal loot seed"
+            "The rare_loot stream should produce different results than the loot stream"
         )

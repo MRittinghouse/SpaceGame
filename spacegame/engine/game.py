@@ -4267,7 +4267,6 @@ class Game:
             return
 
         from spacegame.models.combat import CombatResult
-        from spacegame.views.combat_view import _roll_loot
 
         state = self.combat_view.engine.get_state()
         result = state.result
@@ -4281,45 +4280,19 @@ class Game:
             self.ambient_dialogue.mark_combat(self.player.game_day)
 
         if result == CombatResult.VICTORY:
-            self.player.combats_won += 1
-            total_xp = sum(e.template.xp_reward for e in state.enemies)
-            xp_msgs = self.player.progression.add_xp(total_xp)
-            self._process_xp_messages(xp_msgs)
+            victory = self.player.apply_combat_victory(
+                state.enemies, state.encounter.encounter_seed
+            )
+            self._process_xp_messages(victory.xp_messages)
             # NV-6.5: grant Piloting XP so the skill keeps growing when
             # dialogue Piloting checks are sparse. Only on true victory —
             # negotiated outcomes don't prove piloting.
             self._grant_piloting_xp_on_combat_win()
-
-            # Distribute loot to player cargo
-            for enemy in state.enemies:
-                if not enemy.is_alive and enemy.template.loot_table:
-                    loot = _roll_loot(
-                        enemy.template.loot_table,
-                        seed=state.encounter.encounter_seed
-                        + stable_seed("enemy", enemy.template.id),
-                    )
-                    for commodity_id, qty in loot.items():
-                        self.player.ship.add_cargo(commodity_id, qty)
-                        logger.info(f"Combat loot: +{qty} {commodity_id}")
-                # Distribute rare loot
-                if not enemy.is_alive and enemy.template.rare_loot:
-                    rare_loot = _roll_loot(
-                        enemy.template.rare_loot,
-                        seed=state.encounter.encounter_seed
-                        + stable_seed("enemy", enemy.template.id)
-                        + 7919,
-                    )
-                    for commodity_id, qty in rare_loot.items():
-                        self.player.ship.add_cargo(commodity_id, qty)
-                        logger.info(f"Combat rare loot: +{qty} {commodity_id}")
-
-            # Award credit rewards from defeated enemies
-            total_credits = sum(e.template.credit_reward for e in state.enemies if not e.is_alive)
-            if total_credits > 0:
-                self.player.add_credits(total_credits)
-                logger.info(f"Combat loot: +{total_credits} credits")
-
-            logger.info(f"Combat victory: +{total_xp} XP")
+            for commodity_id, qty in victory.loot.items():
+                logger.info(f"Combat loot: +{qty} {commodity_id}")
+            if victory.credits > 0:
+                logger.info(f"Combat loot: +{victory.credits} credits")
+            logger.info(f"Combat victory: +{victory.xp} XP")
             self._after_player_action("combat_victory")
 
         elif result == CombatResult.DEFEAT:
@@ -4333,22 +4306,12 @@ class Game:
             self._after_player_action("combat_retreat")
 
         elif result == CombatResult.NEGOTIATED:
-            self.player.combats_won += 1
-            self.player.combats_negotiated += 1
-
             # Enhanced negotiate: partial loot (50% of normal loot)
-            if state.negotiate_partial_loot:
-                for enemy in state.enemies:
-                    if enemy.template.loot_table:
-                        loot = _roll_loot(
-                            enemy.template.loot_table,
-                            seed=state.encounter.encounter_seed
-                            + stable_seed("enemy", enemy.template.id),
-                        )
-                        for commodity_id, qty in loot.items():
-                            half_qty = max(1, qty // 2)
-                            self.player.ship.add_cargo(commodity_id, half_qty)
-                            logger.info(f"Negotiated partial loot: +{half_qty} {commodity_id}")
+            loot = self.player.apply_combat_negotiated(
+                state.enemies, state.encounter.encounter_seed, state.negotiate_partial_loot
+            )
+            for commodity_id, qty in loot.items():
+                logger.info(f"Negotiated partial loot: +{qty} {commodity_id}")
 
             # Enhanced negotiate: rival faction rep from intimidation
             if state.negotiate_rival_rep and self.politics_manager:

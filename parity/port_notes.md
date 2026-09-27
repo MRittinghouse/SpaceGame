@@ -40,6 +40,10 @@ Seeds computed from stream keys that later feed other streams. A port must build
   so the overlap is harmless, but the port's key registry must keep both uses.
 - Travel protection roll: `SimRng.from_key("protection", game_day, system_id).randint(0, 99) < protection_chance`
   (`travel.post_process_encounter`). Replaced an md5 of `f"{day}_{system}_protection"` in SP3-a.
+- Combat loot: `SimRng.from_key("loot", encounter_seed, template_id)` and
+  `SimRng.from_key("rare_loot", encounter_seed, template_id)` (`combat_rewards.loot_rng`), drawn by
+  `roll_loot` (`random()` against `chance`, then `randint(min_qty, max_qty)` per entry). Replaced
+  `random.Random(encounter_seed + stable_seed("enemy", id) [+ 7919])` in SP3-a.
 
 ## Procedural mission IDs
 
