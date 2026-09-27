@@ -40,6 +40,7 @@ class TestVictory:
         assert victory.credits == dead.template.credit_reward
         assert player.credits == dead.template.credit_reward
         assert player.combats_won == 1
+        assert victory.loot, "the dead scout must roll loot at seed 9"
         for cid, qty in victory.loot.items():
             assert player.ship.get_cargo_quantity(cid) == qty
 
@@ -48,7 +49,24 @@ class TestVictory:
         enemy = real_enemy("pirate_raider")
         loot = player.apply_combat_negotiated([enemy], encounter_seed=9, partial_loot=True)
         full = roll_loot(enemy.template.loot_table, loot_rng(9, enemy.template.id, rare=False))
+        assert full, "seed 9 must roll pirate_raider loot, or the halving check proves nothing"
         assert loot == {cid: max(1, qty // 2) for cid, qty in full.items()}
+        for cid, qty in loot.items():
+            assert player.ship.get_cargo_quantity(cid) == qty, (
+                f"negotiated {cid} must reach the hold"
+            )
+        assert (player.combats_won, player.combats_negotiated) == (1, 1)
+
+    def test_plain_negotiation_counts_but_pays_no_loot(self) -> None:
+        player = fresh_player()
+        enemy = real_enemy("pirate_raider")
+        # The same fight with partial loot would pay out, so an empty result here is the
+        # partial_loot guard and not an empty roll.
+        assert roll_loot(enemy.template.loot_table, loot_rng(9, enemy.template.id, rare=False))
+        loot = player.apply_combat_negotiated([enemy], encounter_seed=9, partial_loot=False)
+        assert loot == {}
+        for entry in enemy.template.loot_table:
+            assert player.ship.get_cargo_quantity(entry["commodity_id"]) == 0
         assert (player.combats_won, player.combats_negotiated) == (1, 1)
 
     def test_preview_and_payout_draw_the_same_loot(self) -> None:
