@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import Enum, IntEnum
 from typing import Optional
 
 import pytest
@@ -32,3 +33,23 @@ class TestSchema:
 
     def test_optional_form(self) -> None:
         assert type_name(Optional[int]) == "optional<int>"
+
+
+class _Tier(IntEnum):
+    LOW = 1
+    HIGH = 2
+
+
+class _Colour(Enum):
+    RED = "red"
+
+
+class TestEnumKinds:
+    def test_intenum_is_its_own_kind(self) -> None:
+        assert type_name(_Tier) == "intenum"
+
+    def test_string_enum_stays_enum(self) -> None:
+        assert type_name(_Colour) == "enum"
+
+    def test_commodity_category_is_still_enum(self) -> None:
+        assert build_schema()["types"]["Commodity"]["category"] == "enum"  # type: ignore[index]

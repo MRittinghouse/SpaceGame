@@ -9,7 +9,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import types
-from enum import Enum
+from enum import Enum, IntEnum
 from pathlib import Path
 from typing import Union, get_args, get_origin, get_type_hints
 
@@ -45,6 +45,8 @@ def type_name(tp: object) -> str:
         members = [a for a in args if a is not type(None)]
         if len(members) == 1 and len(args) == 2:
             return f"optional<{type_name(members[0])}>"
+    if isinstance(tp, type) and issubclass(tp, IntEnum):
+        return "intenum"
     if isinstance(tp, type) and issubclass(tp, Enum):
         return "enum"
     if isinstance(tp, type) and dataclasses.is_dataclass(tp):
