@@ -1,0 +1,5949 @@
+{
+  "case": "resolve_negotiate",
+  "format": 1,
+  "setup": {
+    "complication_ids": [],
+    "crew_loyalty": 0,
+    "enemy_ids": [
+      "pirate_raider"
+    ],
+    "hull": 0,
+    "loadout": [
+      "slug_thrower",
+      "armor_plating"
+    ],
+    "player": {
+      "accuracy": 65,
+      "active_effects": [],
+      "armor": 0,
+      "armor_pierce_active": false,
+      "cooldowns": {},
+      "counterstrike_stacks": 0,
+      "crew_moves": [],
+      "crew_sync_used": false,
+      "critical_hp_surge_fired": false,
+      "daring_gambit_turns": 0,
+      "defensive_identity": "",
+      "dialogue_flags": {},
+      "dual_tech_moves": [],
+      "energy": 8,
+      "energy_regen": 3,
+      "equipment_moves": [
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "Reliable kinetic rounds.",
+          "effects": [
+            {
+              "duration": 0,
+              "target": "enemy",
+              "type": "damage",
+              "value": "f:13.0:4623507967449235456"
+            }
+          ],
+          "element": "kinetic",
+          "energy_cost": 2,
+          "id": "slug_thrower",
+          "name": "Slug Thrower"
+        },
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "+15% damage reduction for 2 turns.",
+          "effects": [
+            {
+              "duration": 2,
+              "target": "self",
+              "type": "damage_reduction",
+              "value": "f:0.15:4594572339843380019"
+            }
+          ],
+          "element": "kinetic",
+          "energy_cost": 2,
+          "id": "armor_plating",
+          "name": "Reinforce Armor"
+        }
+      ],
+      "evasion": 25,
+      "evasion_decay": 0,
+      "fire_at_will_active": false,
+      "flee_bonus": 0,
+      "hull": 60,
+      "max_energy": 8,
+      "max_hull": 60,
+      "max_shields": 20,
+      "momentum": "f:0.0:0",
+      "shield_break_vulnerable": false,
+      "shield_regen": 0,
+      "shields": 20,
+      "ship_class_category": "starter",
+      "speed": 12,
+      "total_commitment_armor_gained": 0,
+      "total_commitment_hits_remaining": 0
+    },
+    "seed": 1457669425,
+    "ship_type_id": "shuttle"
+  },
+  "source_commit": "6d56bf2bc1d82712e496420b80377db03122317b",
+  "steps": [
+    {
+      "args": [
+        "persuasion"
+      ],
+      "call": "attempt_negotiate",
+      "result": [
+        false,
+        "Persuasion check failed (difficulty 3)",
+        [
+          [
+            1,
+            "player",
+            "Negotiate (persuasion)",
+            false
+          ]
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 7,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 22,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 8,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.0:0",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 20,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          1,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          1,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 7,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.07:4589708452245819884",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 20,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          1,
+          "enemy:0",
+          "Concussion Missile",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {
+              "raider_missile": 2
+            },
+            "current_energy": 2,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.12000000000000001:4593311331947716281",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {
+              "raider_missile": 1
+            },
+            "current_energy": 4,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 7,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.12000000000000001:4593311331947716281",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          2,
+          "player",
+          "Slug Thrower",
+          false
+        ],
+        [
+          2,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {
+              "raider_missile": 1
+            },
+            "current_energy": 4,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.19:4596013491724138578",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          2,
+          "enemy:0",
+          "Raider Cannon",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {
+              "raider_missile": 1
+            },
+            "current_energy": 1,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.19:4596013491724138578",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          2,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 6,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.19:4596013491724138578",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          3,
+          "player",
+          "Slug Thrower",
+          false
+        ],
+        [
+          3,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 2,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.19:4596013491724138578",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 2,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          3,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 2,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          3,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 5,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          4,
+          "player",
+          "Slug Thrower",
+          false
+        ],
+        [
+          4,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          4,
+          "enemy:0",
+          "No Action",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          4,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          5,
+          "player",
+          "Slug Thrower",
+          false
+        ],
+        [
+          5,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 54,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.24:4597814931575086776",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          5,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 46,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.29:4598895795485655695",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          5,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 46,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.29:4598895795485655695",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          6,
+          "player",
+          "Slug Thrower",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 46,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.29:4598895795485655695",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          6,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.33999999999999997:4599796515411129794",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          6,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 10,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.33999999999999997:4599796515411129794",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          7,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          7,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.41:4601057523306793533",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          7,
+          "enemy:0",
+          "No Action",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.41:4601057523306793533",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.41:4601057523306793533",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          8,
+          "player",
+          "Slug Thrower",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 36,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.41:4601057523306793533",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          8,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.45999999999999996:4601958243232267632",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          8,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 66,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.45999999999999996:4601958243232267632",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          9,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          9,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          9,
+          "enemy:0",
+          "Raider Cannon",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          10,
+          "player",
+          "Slug Thrower",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          10,
+          "enemy:0",
+          "No Action",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          10,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 55,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.53:4602949035150289142",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          11,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          11,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 44,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 26,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.6000000000000001:4603579539098121012",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          11,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 44,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 0,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 16,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.6500000000000001:4604029899060858062",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 44,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 16,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.6500000000000001:4604029899060858062",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          12,
+          "player",
+          "Slug Thrower",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 1,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 16,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.7200000000000002:4604660403008689932",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          12,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.9700000000000002:4606912202822375180",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          12,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 8,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.9700000000000002:4606912202822375180",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 13,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          13,
+          "player",
+          "Slug Thrower",
+          false
+        ],
+        [
+          13,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.9700000000000002:4606912202822375180",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 13,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          13,
+          "enemy:0",
+          "No Action",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.9700000000000002:4606912202822375180",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 13,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          13,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 33,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 8,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:0.9700000000000002:4606912202822375180",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 14,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          14,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          14,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 22,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:1.0:4607182418800017408",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 14,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          14,
+          "enemy:0",
+          "Raider Cannon",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 22,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 4,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:1.0:4607182418800017408",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 14,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          14,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 22,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 7,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:1.0:4607182418800017408",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 15,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "slug_thrower",
+          "armor_plating"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          15,
+          "player",
+          "Slug Thrower",
+          true
+        ],
+        [
+          15,
+          "player",
+          "Reinforce Armor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 11,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 6,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:1.0:4607182418800017408",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 15,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          15,
+          "enemy:0",
+          "Raider Cannon",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 11,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": true,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 1
+            },
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "damage_reduction",
+                "value": "f:0.15:4594572339843380019"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": true,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 3,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 0,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": "f:1.0:4607182418800017408",
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 0,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "defeat",
+        "revealed_bribe_cost": -1,
+        "round_number": 15,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    }
+  ],
+  "subsystem": "combat"
+}
