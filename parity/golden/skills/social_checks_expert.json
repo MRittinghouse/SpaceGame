@@ -1,0 +1,2573 @@
+{
+  "case": "social_checks_expert",
+  "format": 1,
+  "setup": {
+    "profile": "expert"
+  },
+  "source_commit": "f32e45944248de30916de69bcc10727a5499957f",
+  "steps": [
+    {
+      "args": [
+        "persuasion",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 53
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 1,
+            "name": "Persuasion",
+            "xp": 2
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "persuasion",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 56
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 1,
+            "name": "Persuasion",
+            "xp": 4
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "persuasion",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 59
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 1,
+            "name": "Persuasion",
+            "xp": 6
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "persuasion",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 62
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 8
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "persuasion",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 65
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 10
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "persuasion",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Persuasion check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 68
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 0
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 71
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 2
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 74
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 4
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 77
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 1,
+            "name": "Intimidation",
+            "xp": 6
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 80
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 8
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 83
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 10
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "intimidation",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Intimidation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 86
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 0
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 89
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 2
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 92
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 4
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 95
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 1,
+            "name": "Observation",
+            "xp": 6
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 98
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 8
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 10
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "observation",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Observation check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 0
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 2
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 4
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 1,
+            "name": "Deception",
+            "xp": 6
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 8
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 10
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "deception",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Deception check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 0
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Technical check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 2
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Technical check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 4
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Technical check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 6
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Technical check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 98
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 1,
+            "name": "Technical",
+            "xp": 7
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Technical check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 96
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 8
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "technical",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Technical check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 94
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 0
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Piloting check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 97
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 2
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Piloting check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 4
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Piloting check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 6
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Piloting check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 98
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 1,
+            "name": "Piloting",
+            "xp": 7
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Piloting check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 96
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 8
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "piloting",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        false,
+        "Piloting check failed."
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 94
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 0
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        1,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 97
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 2
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        2,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 4
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        3,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 1,
+            "name": "Leadership",
+            "xp": 6
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        4,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 2,
+            "name": "Leadership",
+            "xp": 8
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        5,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 2,
+            "name": "Leadership",
+            "xp": 10
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "leadership",
+        6,
+        "npc_parity"
+      ],
+      "call": "resolve_check",
+      "result": [
+        true,
+        "Leadership check passed!"
+      ],
+      "state": {
+        "disposition": {
+          "npc_parity": 100
+        },
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 2,
+            "name": "Deception",
+            "xp": 12
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 2,
+            "name": "Intimidation",
+            "xp": 12
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 2,
+            "name": "Leadership",
+            "xp": 12
+          },
+          "observation": {
+            "id": "observation",
+            "level": 2,
+            "name": "Observation",
+            "xp": 12
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 2,
+            "name": "Persuasion",
+            "xp": 12
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 2,
+            "name": "Piloting",
+            "xp": 9
+          },
+          "technical": {
+            "id": "technical",
+            "level": 2,
+            "name": "Technical",
+            "xp": 9
+          }
+        }
+      }
+    }
+  ],
+  "subsystem": "skills"
+}

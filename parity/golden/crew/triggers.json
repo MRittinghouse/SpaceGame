@@ -1,0 +1,466 @@
+{
+  "case": "triggers",
+  "format": 1,
+  "setup": {
+    "crew_slots": 4
+  },
+  "source_commit": "f32e45944248de30916de69bcc10727a5499957f",
+  "steps": [
+    {
+      "args": [
+        "elena_reeves",
+        4
+      ],
+      "call": "recruit",
+      "result": [
+        true,
+        "Elena Reeves"
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:2.0:4611686018427387904",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "elena_reeves": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 3,
+                "com": 2,
+                "ing": 1,
+                "res": 1,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 30,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "elena_reeves"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        "marcus_jin",
+        4
+      ],
+      "call": "recruit",
+      "result": [
+        true,
+        "Marcus Jin"
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:15.0:4624633867356078080",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:2.0:4611686018427387904",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "elena_reeves": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 3,
+                "com": 2,
+                "ing": 1,
+                "res": 1,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 30,
+              "xp": 0
+            },
+            "marcus_jin": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 1,
+                "ing": 3,
+                "res": 2,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 30,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "elena_reeves",
+            "marcus_jin"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        3,
+        2,
+        1
+      ],
+      "call": "on_trades",
+      "result": [
+        [],
+        []
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:15.0:4624633867356078080",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:2.0:4611686018427387904",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "elena_reeves": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 3,
+                "com": 2,
+                "ing": 1,
+                "res": 1,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 36,
+              "xp": 21
+            },
+            "marcus_jin": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 1,
+                "ing": 3,
+                "res": 2,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 36,
+              "xp": 21
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "elena_reeves",
+            "marcus_jin"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        4,
+        2
+      ],
+      "call": "on_jumps",
+      "result": [],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:15.0:4624633867356078080",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:2.0:4611686018427387904",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "elena_reeves": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 3,
+                "com": 2,
+                "ing": 1,
+                "res": 1,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 36,
+              "xp": 41
+            },
+            "marcus_jin": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 1,
+                "ing": 3,
+                "res": 2,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 36,
+              "xp": 41
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "elena_reeves",
+            "marcus_jin"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        1,
+        0,
+        0
+      ],
+      "call": "on_trades",
+      "result": [
+        [],
+        []
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:15.0:4624633867356078080",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:2.0:4611686018427387904",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "elena_reeves": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 3,
+                "com": 2,
+                "ing": 1,
+                "res": 1,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 37,
+              "xp": 46
+            },
+            "marcus_jin": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 1,
+                "ing": 3,
+                "res": 2,
+                "syn": 1
+              },
+              "level": 1,
+              "loyalty": 37,
+              "xp": 46
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "elena_reeves",
+            "marcus_jin"
+          ]
+        }
+      }
+    }
+  ],
+  "subsystem": "crew"
+}
