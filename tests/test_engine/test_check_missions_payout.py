@@ -12,6 +12,7 @@ prove the rewire kept the behavior.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from unittest.mock import MagicMock, call, patch
 
 from spacegame.data_loader import get_data_loader
@@ -50,7 +51,18 @@ def _mission(
     )
 
 
-def _make_game(mission: Mission, roster: CrewRoster) -> Game:
+@dataclass
+class _Rig:
+    """The game under test plus the collaborators the assertions read."""
+
+    game: Game
+    manager: MissionManager
+    audio: MagicMock
+    shake: MagicMock
+    dialogue: MagicMock
+
+
+def _rig(mission: Mission, roster: CrewRoster) -> _Rig:
     """A ``Game`` with just enough wiring for ``check_missions`` to complete ``mission``."""
     dl = get_data_loader()
     dl.load_all()
@@ -60,20 +72,21 @@ def _make_game(mission: Mission, roster: CrewRoster) -> Game:
     game._player.progression.skills["shared_experience"].current_level = 1
     manager = MissionManager([])
     manager.add_mission(mission, initial_status=MissionStatus.ACTIVE)
+    rig = _Rig(game, manager, MagicMock(), MagicMock(), MagicMock())
     game.mission_manager = manager
     game.crew_roster = roster
     game.data_loader = dl
     game.politics_manager = None
-    game.audio_manager = MagicMock()
-    game.screen_shake = MagicMock()
-    game.dialogue_manager = MagicMock()
+    game.audio_manager = rig.audio
+    game.screen_shake = rig.shake
+    game.dialogue_manager = rig.dialogue
     game.journal = None
     game.galaxy_map_view = None
     game._mission_notifications = []
     game._after_player_action = MagicMock()  # type: ignore[method-assign]
     game._check_journal_triggers = MagicMock()  # type: ignore[method-assign]
     game._log_mission_audit = MagicMock()  # type: ignore[method-assign]
-    return game
+    return rig
 
 
 def _roster_with(*crew_ids: str) -> CrewRoster:
@@ -106,30 +119,31 @@ class TestCheckMissionsPayout:
             mission_type="side",
             crew_member_id="elena_reeves",
         )
-        game = _make_game(mission, roster)
-        assert not game.player.trade_permits
+        rig = _rig(mission, roster)
+        player = rig.game.player
+        assert not player.trade_permits
 
-        game.check_missions()
+        rig.game.check_missions()
 
-        assert game._mission_notifications == [
+        assert rig.game._mission_notifications == [
             "Mission Complete: Elena's Errand! +100 XP",
             "+10 Bonus XP (Shared Experience)",
             "Trade Permit Acquired: Universal Bill of Landing",
             "+5 Rep: Commerce Guild",
             "Elena Reeves reached level 2!",
         ]
-        assert all(fid in game.player.trade_permits for fid in dl.factions)
+        assert all(fid in player.trade_permits for fid in dl.factions)
         assert state["loyalty"] == 45 + 5
-        game.dialogue_manager.set_flag.assert_called_once_with("crew_loyalty_elena_reeves_50")
-        assert game.player.faction_reputation["commerce_guild"] == 5
-        assert game.player.side_missions_completed == 1
-        assert game.player.crew_quests_completed == 1
-        assert game.mission_manager.get_status("elena_errand") == MissionStatus.COMPLETED
+        rig.dialogue.set_flag.assert_called_once_with("crew_loyalty_elena_reeves_50")
+        assert player.faction_reputation["commerce_guild"] == 5
+        assert player.side_missions_completed == 1
+        assert player.crew_quests_completed == 1
+        assert rig.manager.get_status("elena_errand") == MissionStatus.COMPLETED
 
     def test_full_roster_announces_the_waiting_companion(self) -> None:
         dl = get_data_loader()
         roster = _roster_with("elena_reeves")
-        game = _make_game(
+        rig = _rig(
             _mission(
                 "marcus_signs_on",
                 "Marcus Signs On",
@@ -137,25 +151,25 @@ class TestCheckMissionsPayout:
             ),
             roster,
         )
-        assert game.player.ship.ship_type.crew_slots == len(roster.recruited_ids)
+        assert rig.game.player.ship.ship_type.crew_slots == len(roster.recruited_ids)
         template = dl.crew_templates["marcus_jin"]
         system = dl.get_system(template.home_system_id)
         assert system is not None and system.name != template.home_system_id
 
-        game.check_missions()
+        rig.game.check_missions()
 
-        assert game._mission_notifications == [
+        assert rig.game._mission_notifications == [
             "Mission Complete: Marcus Signs On! +100 Credits",
             f"Crew Full: {template.name} is waiting at {system.name}. Dismiss a crew "
             f"member and visit the cantina to recruit them.",
         ]
         assert "marcus_jin" in roster.pending_companion_ids
         assert not roster.is_recruited("marcus_jin")
-        assert call("crew_recruit") not in game.audio_manager.play_sfx.call_args_list
+        assert call("crew_recruit") not in rig.audio.play_sfx.call_args_list
 
     def test_crew_joined_plays_its_cue(self) -> None:
         roster = _roster_with()
-        game = _make_game(
+        rig = _rig(
             _mission(
                 "elena_signs_on",
                 "Elena Signs On",
@@ -164,22 +178,19 @@ class TestCheckMissionsPayout:
             roster,
         )
 
-        game.check_missions()
+        rig.game.check_missions()
 
-        assert game._mission_notifications == [
+        assert rig.game._mission_notifications == [
             "Mission Complete: Elena Signs On! +100 Credits",
             "Crew Joined: Elena Reeves",
         ]
         assert roster.is_recruited("elena_reeves")
-        assert game.audio_manager.play_sfx.call_args_list == [
-            call("quest_complete"),
-            call("crew_recruit"),
-        ]
-        game.screen_shake.trigger.assert_called_once_with(intensity=3.0, duration=0.2)
+        assert rig.audio.play_sfx.call_args_list == [call("quest_complete"), call("crew_recruit")]
+        rig.shake.trigger.assert_called_once_with(intensity=3.0, duration=0.2)
 
     def test_politics_manager_spills_reputation_over(self) -> None:
         roster = _roster_with()
-        game = _make_game(
+        rig = _rig(
             _mission(
                 "guild_favor",
                 "Guild Favor",
@@ -192,18 +203,18 @@ class TestCheckMissionsPayout:
             ("commerce_guild", 5),
             ("crimson_reach", -2),
         ]
-        game.politics_manager = politics
+        rig.game.politics_manager = politics
 
-        game.check_missions()
+        rig.game.check_missions()
 
         politics.apply_reputation_with_spillover.assert_called_once_with(
-            game.player, "commerce_guild", 5
+            rig.game.player, "commerce_guild", 5
         )
         crimson = get_data_loader().get_faction("crimson_reach")
         assert crimson is not None
-        assert game._mission_notifications == [
+        assert rig.game._mission_notifications == [
             "Mission Complete: Guild Favor! ",
             "+5 Rep: Commerce Guild",
             f"-2 Rep: {crimson.name}",
         ]
-        assert game.player.faction_reputation == {}, "The politics manager applies the change"
+        assert rig.game.player.faction_reputation == {}, "The politics manager applies the change"
