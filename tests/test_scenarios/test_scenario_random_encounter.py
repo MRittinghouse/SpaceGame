@@ -51,8 +51,9 @@ from spacegame.models.social import SocialManager
 from tests.test_scenarios._helpers import fresh_player
 
 # ---------------------------------------------------------------------------
-# Reward-dispatch helper — mirrors Game._apply_encounter_result (game.py:2921).
-# Kept inline so a regression in any reward primitive surfaces here.
+# Reward-dispatch helper. The code under test is apply_encounter_outcome
+# (spacegame/models/encounter.py), the model function Game._apply_encounter_result
+# calls to apply an outcome's rewards to the player.
 # ---------------------------------------------------------------------------
 
 
@@ -61,9 +62,10 @@ def _apply_outcome_rewards(player, outcome: EncounterOutcome) -> None:
 
     Skips the politics/dialogue-manager/crew-reaction side channels that
     only Game has access to; those are covered in
-    ``test_qa_ce_encounter_pipeline.py``. This helper covers the player-
-    state mutations every encounter reward type triggers, by exercising
-    the same model function ``Game._apply_encounter_result`` calls.
+    ``test_qa_ce_encounter_pipeline.py`` and, for ``Game._apply_encounter_result``
+    itself, ``tests/test_engine/test_apply_encounter_result.py``. This helper
+    covers the player-state mutations every encounter reward type triggers, by
+    exercising the same model function ``Game._apply_encounter_result`` calls.
     """
     apply_encounter_outcome(player, outcome)
 
@@ -353,8 +355,10 @@ class TestRewardDispatch:
         assert player.credits == 300
 
     def test_deduct_credits_insufficient_funds_waived(self) -> None:
-        """Per game.py:2942: insufficient credits 'waives' the cost — no
-        crash, no negative balance."""
+        """apply_encounter_outcome waives a deduct_credits the player cannot afford.
+
+        The balance stays at 50 instead of going negative, and the call does not raise.
+        """
         player = fresh_player(credits=50)
         outcome = EncounterOutcome(
             description="bribe attempt",
