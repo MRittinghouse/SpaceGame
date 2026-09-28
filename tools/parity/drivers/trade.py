@@ -150,4 +150,5 @@ def _profile_case(profile: str) -> Case:
 
 def build_cases() -> list[Case]:
     """One case per player profile."""
+    get_data_loader().load_all()
     return [_profile_case(name) for name in PROFILES]

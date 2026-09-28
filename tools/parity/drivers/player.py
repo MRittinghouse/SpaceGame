@@ -156,4 +156,5 @@ def _payouts() -> Case:
 
 def build_cases() -> list[Case]:
     """Every player case."""
+    get_data_loader().load_all()
     return [_trading(), _defeat(False), _defeat(True), _payouts()]

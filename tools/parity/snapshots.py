@@ -145,7 +145,6 @@ def fresh_player(
 ) -> Player:
     """A starting Player on the ship-type path (twin of tests/test_scenarios/_helpers)."""
     dl = get_data_loader()
-    dl.load_all()
     ship = Ship(ship_type=dl.ship_types[ship_type_id], current_fuel=fuel)
     return Player(name=name, credits=credits, current_system_id=system_id, ship=ship)
 

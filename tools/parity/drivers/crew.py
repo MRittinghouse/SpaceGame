@@ -11,7 +11,6 @@ COMPANIONS = ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter")
 
 def _roster() -> CrewRoster:
     dl = get_data_loader()
-    dl.load_all()
     return CrewRoster(dl.crew_templates)
 
 
@@ -100,4 +99,5 @@ def _departures() -> Case:
 
 def build_cases() -> list[Case]:
     """Every crew case."""
+    get_data_loader().load_all()
     return [_companions(), _leadership(), _triggers(), _departures()]

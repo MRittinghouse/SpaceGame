@@ -239,7 +239,6 @@ def build_fight(
         The fight.
     """
     dl = get_data_loader()
-    dl.load_all()
     player = fresh_player(ship_type_id=ship_type_id)
     upgrades = ShipUpgradeManager()
     for upgrade_id in loadout:
@@ -493,6 +492,7 @@ def _resolution_fights() -> list[Case]:
 
 def build_cases() -> list[Case]:
     """Every combat case."""
+    get_data_loader().load_all()
     return [
         *_template_fights(),
         *_complication_fights(),

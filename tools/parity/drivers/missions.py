@@ -29,7 +29,6 @@ PLAYER_NAME = "ParityPilot"
 
 def _manager() -> MissionManager:
     dl = get_data_loader()
-    dl.load_all()
     return MissionManager(copy.deepcopy(dl.missions))
 
 

@@ -13,7 +13,6 @@ CAP_DAYS = range(39, 53)
 
 def _generator() -> GalaxyEventGenerator:
     dl = get_data_loader()
-    dl.load_all()
     return GalaxyEventGenerator(dl.galaxy_event_templates, chains=dl.galaxy_event_chains)
 
 
@@ -71,4 +70,5 @@ def _cap() -> Case:
 
 def build_cases() -> list[Case]:
     """Every galaxy-event case."""
+    get_data_loader().load_all()
     return [_run(), _chain(), _cap()]
