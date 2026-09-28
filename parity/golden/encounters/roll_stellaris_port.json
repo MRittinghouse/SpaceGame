@@ -29,7 +29,7 @@
     },
     "system_id": "stellaris_port"
   },
-  "source_commit": "b42225cd044e279e4937cf0358bbf726182377bc",
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
   "steps": [
     {
       "args": [
@@ -303,6 +303,132 @@
     },
     {
       "args": [
+        "novice",
+        31
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        32
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        33
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        34
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        35
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        36
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        37
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        38
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        39
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        40
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        41
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        42
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        43
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "novice",
+        44
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
         "veteran",
         1
       ],
@@ -566,6 +692,132 @@
       "args": [
         "veteran",
         30
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        31
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        32
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        33
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        34
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        35
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        36
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        37
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        38
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        39
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        40
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        41
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        42
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        43
+      ],
+      "call": "check_travel_encounter",
+      "result": null,
+      "state": {}
+    },
+    {
+      "args": [
+        "veteran",
+        44
       ],
       "call": "check_travel_encounter",
       "result": null,
