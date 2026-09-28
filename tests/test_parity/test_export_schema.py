@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import Enum, IntEnum, IntFlag, StrEnum
 from typing import Optional
 
 import pytest
@@ -32,3 +33,71 @@ class TestSchema:
 
     def test_optional_form(self) -> None:
         assert type_name(Optional[int]) == "optional<int>"
+
+
+class _Tier(IntEnum):
+    LOW = 1
+    HIGH = 2
+
+
+class _Colour(Enum):
+    RED = "red"
+
+
+class _IntValued(Enum):
+    LOW = 1
+    HIGH = 2
+
+
+class _Mixed(int, Enum):
+    LOW = 1
+    HIGH = 2
+
+
+class _Flags(IntFlag):
+    READ = 1
+    WRITE = 2
+
+
+class _StrMixed(str, Enum):
+    RED = "red"
+
+
+class _StrTier(StrEnum):
+    RED = "red"
+
+
+class TestEnumKinds:
+    def test_intenum_is_its_own_kind(self) -> None:
+        assert type_name(_Tier) == "intenum"
+
+    def test_string_enum_stays_enum(self) -> None:
+        assert type_name(_Colour) == "enum"
+
+    def test_commodity_category_is_still_enum(self) -> None:
+        assert build_schema()["types"]["Commodity"]["category"] == "enum"  # type: ignore[index]
+
+    def test_commodity_legality_is_still_enum(self) -> None:
+        assert build_schema()["types"]["Commodity"]["legality"] == "enum"  # type: ignore[index]
+
+    def test_plain_enum_with_int_values_raises(self) -> None:
+        with pytest.raises(TypeError):
+            type_name(_IntValued)
+
+    def test_int_enum_mixin_that_is_not_intenum_raises(self) -> None:
+        with pytest.raises(TypeError):
+            type_name(_Mixed)
+
+    def test_intflag_raises(self) -> None:
+        # In Python 3.11+, IntFlag does not subclass IntEnum, so it falls through
+        # to the generic Enum branch; its int-valued members must raise, not
+        # silently become "enum" or "intenum".
+        assert not issubclass(_Flags, IntEnum)
+        with pytest.raises(TypeError):
+            type_name(_Flags)
+
+    def test_str_enum_mixin_stays_enum(self) -> None:
+        assert type_name(_StrMixed) == "enum"
+
+    def test_strenum_stays_enum(self) -> None:
+        assert type_name(_StrTier) == "enum"

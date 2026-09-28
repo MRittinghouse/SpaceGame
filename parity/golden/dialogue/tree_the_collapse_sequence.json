@@ -1,0 +1,1004 @@
+{
+  "case": "tree_the_collapse_sequence",
+  "format": 1,
+  "setup": {
+    "crew": [
+      {
+        "crew_id": "elena_reeves",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "marcus_jin",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "dr_priya_osei",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "tomas_drifter",
+        "loyalty_delta": 30
+      }
+    ],
+    "crew_slots": 4,
+    "npc_id": "collapse_witness",
+    "profiles": {
+      "expert": {
+        "flags": {
+          "convergence_data_verified": true,
+          "tomas_friendship": true
+        },
+        "social": {
+          "disposition": {},
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      },
+      "novice": {
+        "flags": {},
+        "social": {}
+      }
+    },
+    "tree_id": "the_collapse_sequence"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        "alarm",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "timeline",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "alarm",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "warp_prep",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "timeline",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "warp_prep",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "warp_prep",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "calibration_check",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "warp_prep",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "calibration_check",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          1
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "priya_calibrates",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_calibrated_jump"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "gate_activation",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          1
+        ],
+        "check": null,
+        "next_node": "the_jump",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "alliance_escort",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "the_jump",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "alliance_followed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "the_jump",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "looking_back",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "looking_back",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "crew_silence",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "crew_silence",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "new_horizon",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "new_horizon",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "act_one_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "expanse_collapsed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "new_horizon",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "act_one_end",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "expanse_collapsed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "act_one_end",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "act_one_complete"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "alarm",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "timeline",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "alarm",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "warp_prep",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "timeline",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "warp_prep",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "warp_prep",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "calibration_check",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "warp_prep",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "calibration_check",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "priya_calibrates",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "calibration_check",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "priya_calibrates",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "gate_activation",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "priya_calibrated_jump",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "gate_activation",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "alliance_escort",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "gate_activation",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "the_jump",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "alliance_escort",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "the_jump",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "alliance_followed",
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "the_jump",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "looking_back",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "looking_back",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "crew_silence",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "crew_silence",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "new_horizon",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "new_horizon",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "act_one_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "expanse_collapsed",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "new_horizon",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "act_one_end",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "convergence_data_verified",
+          "expanse_collapsed",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "act_one_end",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "act_one_complete",
+          "convergence_data_verified",
+          "tomas_friendship"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

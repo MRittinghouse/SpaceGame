@@ -1,0 +1,738 @@
+{
+  "case": "tree_rook_honor_thieves",
+  "format": 1,
+  "setup": {
+    "crew": [
+      {
+        "crew_id": "elena_reeves",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "marcus_jin",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "dr_priya_osei",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "tomas_drifter",
+        "loyalty_delta": 30
+      }
+    ],
+    "crew_slots": 4,
+    "npc_id": "pirate_captain",
+    "profiles": {
+      "expert": {
+        "flags": {
+          "thieves_job_accepted": true
+        },
+        "social": {
+          "disposition": {},
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      },
+      "novice": {
+        "flags": {},
+        "social": {}
+      }
+    },
+    "tree_id": "rook_honor_thieves"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        "start",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "evasive",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "start",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": [
+          false,
+          "Intimidation check failed."
+        ],
+        "next_node": "evasive",
+        "response": 1
+      },
+      "state": {
+        "disposition": {
+          "pirate_captain": 48
+        },
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "start",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "payment",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "start",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "decline",
+        "response": 3
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "in_progress",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "evasive",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "honor",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "evasive",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "payment",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "honor",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "payment",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "honor",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "decline",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "payment",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "accept",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "payment",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "decline",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "accept",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "decline",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "start",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          4
+        ],
+        "check": null,
+        "next_node": "in_progress",
+        "response": 4
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "in_progress",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "evasive",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "honor",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "evasive",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "payment",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "honor",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "payment",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "honor",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "decline",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "payment",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "accept",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "payment",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "decline",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "accept",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "decline",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "thieves_job_accepted"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

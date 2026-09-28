@@ -7,6 +7,7 @@ long journeys through dangerous space are riskier.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
@@ -16,6 +17,8 @@ from spacegame.sim_rng import SimRng, stable_seed
 if TYPE_CHECKING:
     from spacegame.models.combat import EnemyShipTemplate
     from spacegame.models.mission import MissionReward
+    from spacegame.models.player import Player
+    from spacegame.models.social import SocialManager
 
 
 # Base encounter chances by danger level (percentage, 0-100)
@@ -573,3 +576,137 @@ def select_encounter_definition(
 
     candidates = [d for d in definitions if _is_eligible(d, ctx)]
     return _weighted_select(candidates, ctx.seed)
+
+
+# ============================================================================
+# Choice Resolution and Outcome Application (SP3 spec 6.1)
+# ============================================================================
+
+
+def resolve_encounter_skill_check(
+    check: EncounterSkillCheck,
+    social_manager: Optional["SocialManager"],
+    player: Optional["Player"],
+) -> bool:
+    """Resolve a CE-4 choice skill check and write its flag.
+
+    Returns False without a social manager, so authored failure outcomes still play.
+    """
+    if social_manager is None:
+        return False
+    success, _msg = social_manager.resolve_check(check.skill, check.difficulty, "")
+    if player is not None:
+        flag = check.set_flag_on_success if success else check.set_flag_on_failure
+        if flag:
+            player.dialogue_flags[flag] = True
+    return success
+
+
+def resolve_choice_outcome(
+    choice: EncounterChoice, shakedown_demand: int, skill_check_passed: bool
+) -> EncounterOutcome:
+    """The outcome a choice produces, with sentinels resolved.
+
+    Args:
+        choice: The picked choice.
+        shakedown_demand: The encounter's demand, replacing a ``deduct_credits -1`` sentinel.
+        skill_check_passed: The choice's check result (ignored without a check).
+
+    Returns:
+        A new outcome: rewards resolved, ``requires_credits`` turned into a leading
+        deduction when the outcome has none, enemy ids carried for combat outcomes.
+    """
+    from spacegame.models.mission import MissionReward
+
+    outcome = choice.outcome
+    if choice.skill_check is not None and not skill_check_passed:
+        if choice.failure_outcome is not None:
+            outcome = choice.failure_outcome
+    rewards: list[MissionReward] = []
+    for reward in outcome.rewards:
+        if reward.reward_type == "deduct_credits" and reward.amount == -1:
+            rewards.append(MissionReward("deduct_credits", shakedown_demand))
+        else:
+            rewards.append(reward)
+    if choice.requires_credits and not any(r.reward_type == "deduct_credits" for r in rewards):
+        rewards.insert(0, MissionReward("deduct_credits", choice.requires_credits))
+    return EncounterOutcome(
+        description=outcome.description,
+        rewards=rewards,
+        leads_to_combat=outcome.leads_to_combat,
+        enemy_template_ids=list(outcome.enemy_template_ids),
+    )
+
+
+@dataclass
+class EncounterEffects:
+    """What an applied outcome asks the orchestration layer to do next."""
+
+    xp_messages: list[str] = field(default_factory=list)
+    flags_set: list[str] = field(default_factory=list)
+    bounty_immunity_days: Optional[int] = None
+    bounty_combat_ids: Optional[list[str]] = None
+    smuggling_caught: bool = False
+
+
+def apply_encounter_outcome(
+    player: "Player",
+    outcome: EncounterOutcome,
+    apply_reputation: Optional[Callable[[str, int], object]] = None,
+) -> EncounterEffects:
+    """Apply an outcome's rewards to the player, in order.
+
+    Args:
+        player: The player.
+        outcome: A resolved outcome (see ``resolve_choice_outcome``).
+        apply_reputation: Spillover-aware reputation hook; None applies directly.
+
+    Returns:
+        The follow-ups for the caller: XP messages, flags written, bounty immunity
+        length, bounty combat enemy ids, and whether smuggling was caught.
+    """
+    effects = EncounterEffects()
+    player.encounters_survived += 1
+    for reward in outcome.rewards:
+        kind = reward.reward_type
+        if kind == "credits":
+            player.add_credits(reward.amount)
+        elif kind == "deduct_credits":
+            player.deduct_credits(reward.amount)
+        elif kind == "xp":
+            effects.xp_messages.extend(player.progression.add_xp(reward.amount))
+        elif kind == "set_flag" and reward.target_id:
+            player.dialogue_flags[reward.target_id] = True
+            effects.flags_set.append(reward.target_id)
+        elif kind == "add_criminal_heat":
+            player.add_criminal_heat(reward.amount)
+            player.times_caught_smuggling += 1
+            effects.smuggling_caught = True
+        elif kind == "modify_reputation" and reward.target_id:
+            if apply_reputation is not None:
+                apply_reputation(reward.target_id, reward.amount)
+            else:
+                player.modify_reputation(reward.target_id, reward.amount)
+        elif kind == "confiscate_cargo" and reward.target_id:
+            qty = player.ship.get_cargo_quantity(reward.target_id)
+            remove_qty = min(qty, reward.amount)
+            if remove_qty > 0:
+                player.ship.remove_cargo(reward.target_id, remove_qty)
+        elif kind == "reduce_criminal_heat":
+            player.decay_criminal_heat(reward.amount)
+        elif kind == "bounty_immunity":
+            effects.bounty_immunity_days = reward.amount
+        elif kind == "start_bounty_combat":
+            effects.bounty_combat_ids = reward.target_id.split(",") if reward.target_id else []
+    return effects
+
+
+def mark_unique_encounter_seen(
+    player: "Player", definition: Optional[EncounterDefinition]
+) -> Optional[str]:
+    """Set the seen flag for a unique encounter; returns the flag or None."""
+    if definition is None or not definition.unique:
+        return None
+    flag = encounter_seen(definition.id)
+    player.dialogue_flags[flag] = True
+    return flag

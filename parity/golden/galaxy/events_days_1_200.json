@@ -1,0 +1,3398 @@
+{
+  "case": "events_days_1_200",
+  "format": 1,
+  "setup": {
+    "days": [
+      1,
+      200
+    ]
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        1
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        9
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        10
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        11
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        12
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        13
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        14
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        15
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        16
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        17
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        18
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        19
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        20
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        21
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        22
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        23
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        24
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        25
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        26
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        27
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        28
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        29
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        30
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        31
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        32
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        33
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        34
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        35
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        36
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        37
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        38
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        39
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        40
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 40,
+        "description": "Manufacturing halt at Forgeworks as workers demand fair profit-sharing",
+        "duration_days": 3,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "labor_strike",
+        "faction_id": "miners_union",
+        "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+        "id": "forgeworks_strike_40",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [
+          "manufacturing",
+          "industrial"
+        ],
+        "skill_opportunity": "persuasion_bonus",
+        "system_id": "forgeworks"
+      },
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 40,
+              "description": "Manufacturing halt at Forgeworks as workers demand fair profit-sharing",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_40",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        41
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 40,
+              "description": "Manufacturing halt at Forgeworks as workers demand fair profit-sharing",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_40",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        42
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 40,
+              "description": "Manufacturing halt at Forgeworks as workers demand fair profit-sharing",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_40",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        43
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        44
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        45
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        46
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        47
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        48
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        49
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        50
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        51
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        52
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 52,
+        "description": "Okafor Institute opens its doors for the Biennial Knowledge Exchange",
+        "duration_days": 2,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "festival",
+        "faction_id": "science_collective",
+        "flavor_text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming.",
+        "id": "collective_symposium_52",
+        "price_modifiers": {
+          "electronics": "f:0.8:4605380978949069210",
+          "medical": "f:0.7:4604480259023595110"
+        },
+        "rep_bonus_amount": 2,
+        "rep_bonus_faction": "science_collective",
+        "shutdown_tags": [],
+        "skill_opportunity": "observation_bonus",
+        "system_id": "nova_research"
+      },
+      "state": {
+        "active": {
+          "nova_research": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 52,
+              "description": "Okafor Institute opens its doors for the Biennial Knowledge Exchange",
+              "duration_days": 2,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming.",
+              "id": "collective_symposium_52",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "nova_research"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        53
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "nova_research": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 52,
+              "description": "Okafor Institute opens its doors for the Biennial Knowledge Exchange",
+              "duration_days": 2,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Poster sessions line the atrium. The smell of synthesized coffee is overwhelming.",
+              "id": "collective_symposium_52",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "nova_research"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        54
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        55
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        56
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        57
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        58
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        59
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        60
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        61
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        62
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        63
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        64
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        65
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        66
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        67
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        68
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        69
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        70
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        71
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        72
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        73
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        74
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 74,
+        "description": "Collective publishes open-source reactor improvement specs",
+        "duration_days": 4,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "research_breakthrough",
+        "faction_id": "science_collective",
+        "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
+        "id": "energy_breakthrough_74",
+        "price_modifiers": {
+          "fuel_cells": "f:0.4:4600877379321698714"
+        },
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "fuel_reduction",
+        "system_id": "axiom_labs"
+      },
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 74,
+              "description": "Collective publishes open-source reactor improvement specs",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "research_breakthrough",
+              "faction_id": "science_collective",
+              "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
+              "id": "energy_breakthrough_74",
+              "price_modifiers": {
+                "fuel_cells": "f:0.4:4600877379321698714"
+              },
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "fuel_reduction",
+              "system_id": "axiom_labs"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        75
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 74,
+              "description": "Collective publishes open-source reactor improvement specs",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "research_breakthrough",
+              "faction_id": "science_collective",
+              "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
+              "id": "energy_breakthrough_74",
+              "price_modifiers": {
+                "fuel_cells": "f:0.4:4600877379321698714"
+              },
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "fuel_reduction",
+              "system_id": "axiom_labs"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        76
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 74,
+              "description": "Collective publishes open-source reactor improvement specs",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "research_breakthrough",
+              "faction_id": "science_collective",
+              "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
+              "id": "energy_breakthrough_74",
+              "price_modifiers": {
+                "fuel_cells": "f:0.4:4600877379321698714"
+              },
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "fuel_reduction",
+              "system_id": "axiom_labs"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        77
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 74,
+              "description": "Collective publishes open-source reactor improvement specs",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "research_breakthrough",
+              "faction_id": "science_collective",
+              "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
+              "id": "energy_breakthrough_74",
+              "price_modifiers": {
+                "fuel_cells": "f:0.4:4600877379321698714"
+              },
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "fuel_reduction",
+              "system_id": "axiom_labs"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        78
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        79
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        80
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        81
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        82
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        83
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        84
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        85
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        86
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        87
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        88
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        89
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        90
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        91
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 1,
+        "day_started": 91,
+        "description": "Armed raiders spotted in increasing numbers along Alliance shipping lanes",
+        "duration_days": 4,
+        "encounter_chance_modifier": "f:1.5:4609434218613702656",
+        "event_type": "pirate_surge",
+        "faction_id": "",
+        "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+        "id": "frontier_pirate_surge_91",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "weapon_damage",
+        "system_id": "havens_rest"
+      },
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 91,
+              "description": "Armed raiders spotted in increasing numbers along Alliance shipping lanes",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_91",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        92
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 91,
+              "description": "Armed raiders spotted in increasing numbers along Alliance shipping lanes",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_91",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        93
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 93,
+        "description": "Deep-core extraction halts as miners refuse to enter contested shafts",
+        "duration_days": 4,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "labor_strike",
+        "faction_id": "miners_union",
+        "flavor_text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+        "id": "iron_depths_strike_93",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [
+          "rare_mining",
+          "deep_core"
+        ],
+        "skill_opportunity": "persuasion_bonus",
+        "system_id": "iron_depths"
+      },
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 91,
+              "description": "Armed raiders spotted in increasing numbers along Alliance shipping lanes",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_91",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ],
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 93,
+              "description": "Deep-core extraction halts as miners refuse to enter contested shafts",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+              "id": "iron_depths_strike_93",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "rare_mining",
+                "deep_core"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        94
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 91,
+              "description": "Armed raiders spotted in increasing numbers along Alliance shipping lanes",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_91",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ],
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 93,
+              "description": "Deep-core extraction halts as miners refuse to enter contested shafts",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+              "id": "iron_depths_strike_93",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "rare_mining",
+                "deep_core"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        95
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 93,
+              "description": "Deep-core extraction halts as miners refuse to enter contested shafts",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+              "id": "iron_depths_strike_93",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "rare_mining",
+                "deep_core"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        96
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 93,
+              "description": "Deep-core extraction halts as miners refuse to enter contested shafts",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Core Station's normally busy corridors feel abandoned. Even the corporate managers look nervous.",
+              "id": "iron_depths_strike_93",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "rare_mining",
+                "deep_core"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        97
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        98
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        99
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        100
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        101
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        102
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        103
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        104
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        105
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        106
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        107
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        108
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 108,
+        "description": "Founders' Day celebrations fill Breakstone with song and firelight",
+        "duration_days": 3,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "festival",
+        "faction_id": "miners_union",
+        "flavor_text": "Someone has painted fresh murals in Cargo Bay 7. The old stories, retold in new colors.",
+        "id": "union_founders_day_108",
+        "price_modifiers": {
+          "art": "f:2.0:4611686018427387904",
+          "food": "f:1.4:4608983858650965606",
+          "textiles": "f:1.8:4610785298501913805"
+        },
+        "rep_bonus_amount": 2,
+        "rep_bonus_faction": "miners_union",
+        "shutdown_tags": [],
+        "skill_opportunity": "persuasion_bonus",
+        "system_id": "breakstone"
+      },
+      "state": {
+        "active": {
+          "breakstone": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 108,
+              "description": "Founders' Day celebrations fill Breakstone with song and firelight",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "miners_union",
+              "flavor_text": "Someone has painted fresh murals in Cargo Bay 7. The old stories, retold in new colors.",
+              "id": "union_founders_day_108",
+              "price_modifiers": {
+                "art": "f:2.0:4611686018427387904",
+                "food": "f:1.4:4608983858650965606",
+                "textiles": "f:1.8:4610785298501913805"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "miners_union",
+              "shutdown_tags": [],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "breakstone"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        109
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "breakstone": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 108,
+              "description": "Founders' Day celebrations fill Breakstone with song and firelight",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "miners_union",
+              "flavor_text": "Someone has painted fresh murals in Cargo Bay 7. The old stories, retold in new colors.",
+              "id": "union_founders_day_108",
+              "price_modifiers": {
+                "art": "f:2.0:4611686018427387904",
+                "food": "f:1.4:4608983858650965606",
+                "textiles": "f:1.8:4610785298501913805"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "miners_union",
+              "shutdown_tags": [],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "breakstone"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        110
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "breakstone": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 108,
+              "description": "Founders' Day celebrations fill Breakstone with song and firelight",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "miners_union",
+              "flavor_text": "Someone has painted fresh murals in Cargo Bay 7. The old stories, retold in new colors.",
+              "id": "union_founders_day_108",
+              "price_modifiers": {
+                "art": "f:2.0:4611686018427387904",
+                "food": "f:1.4:4608983858650965606",
+                "textiles": "f:1.8:4610785298501913805"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "miners_union",
+              "shutdown_tags": [],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "breakstone"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        111
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        112
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        113
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        114
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        115
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [
+          "raw_ore",
+          "iron_ore",
+          "common_metals"
+        ],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 115,
+        "description": "Commerce Guild imposes trade embargo on Union raw materials",
+        "duration_days": 4,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "embargo",
+        "faction_id": "commerce_guild",
+        "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+        "id": "guild_embargo_ore_115",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "scan_evasion",
+        "system_id": "nexus_prime"
+      },
+      "state": {
+        "active": {
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 115,
+              "description": "Commerce Guild imposes trade embargo on Union raw materials",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_115",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        116
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 116,
+        "description": "Science Collective hosts annual research symposium at axiom_labs",
+        "duration_days": 3,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "festival",
+        "faction_id": "science_collective",
+        "flavor_text": "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand.",
+        "id": "collective_symposium_116",
+        "price_modifiers": {
+          "electronics": "f:0.8:4605380978949069210",
+          "medical": "f:0.7:4604480259023595110"
+        },
+        "rep_bonus_amount": 2,
+        "rep_bonus_faction": "science_collective",
+        "shutdown_tags": [],
+        "skill_opportunity": "observation_bonus",
+        "system_id": "axiom_labs"
+      },
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 116,
+              "description": "Science Collective hosts annual research symposium at axiom_labs",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand.",
+              "id": "collective_symposium_116",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 115,
+              "description": "Commerce Guild imposes trade embargo on Union raw materials",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_115",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        117
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 116,
+              "description": "Science Collective hosts annual research symposium at axiom_labs",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand.",
+              "id": "collective_symposium_116",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 115,
+              "description": "Commerce Guild imposes trade embargo on Union raw materials",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_115",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        118
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "axiom_labs": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 116,
+              "description": "Science Collective hosts annual research symposium at axiom_labs",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "festival",
+              "faction_id": "science_collective",
+              "flavor_text": "Researchers in color-coded lab coats crowd every corridor, debating in technical shorthand.",
+              "id": "collective_symposium_116",
+              "price_modifiers": {
+                "electronics": "f:0.8:4605380978949069210",
+                "medical": "f:0.7:4604480259023595110"
+              },
+              "rep_bonus_amount": 2,
+              "rep_bonus_faction": "science_collective",
+              "shutdown_tags": [],
+              "skill_opportunity": "observation_bonus",
+              "system_id": "axiom_labs"
+            }
+          ],
+          "nexus_prime": [
+            {
+              "blocked_commodities": [
+                "raw_ore",
+                "iron_ore",
+                "common_metals"
+              ],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 115,
+              "description": "Commerce Guild imposes trade embargo on Union raw materials",
+              "duration_days": 4,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "embargo",
+              "faction_id": "commerce_guild",
+              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "id": "guild_embargo_ore_115",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "scan_evasion",
+              "system_id": "nexus_prime"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        119
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        120
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        121
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        122
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        123
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        124
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        125
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        126
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        127
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        128
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        129
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        130
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        131
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        132
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        133
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        134
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        135
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        136
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        137
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        138
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        139
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        140
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        141
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        142
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        143
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        144
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        145
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        146
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        147
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        148
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        149
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        150
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        151
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        152
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        153
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        154
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        155
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        156
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        157
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        158
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        159
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        160
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        161
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        162
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        163
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 1,
+        "day_started": 163,
+        "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+        "duration_days": 5,
+        "encounter_chance_modifier": "f:1.5:4609434218613702656",
+        "event_type": "pirate_surge",
+        "faction_id": "",
+        "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+        "id": "frontier_pirate_surge_163",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "weapon_damage",
+        "system_id": "havens_rest"
+      },
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 163,
+              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "duration_days": 5,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_163",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        164
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 163,
+              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "duration_days": 5,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_163",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        165
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 163,
+              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "duration_days": 5,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_163",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        166
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 163,
+              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "duration_days": 5,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_163",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        167
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "havens_rest": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 163,
+              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "duration_days": 5,
+              "encounter_chance_modifier": "f:1.5:4609434218613702656",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Captains swap stories at the bar. Nobody's laughing.",
+              "id": "frontier_pirate_surge_163",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "weapon_damage",
+              "system_id": "havens_rest"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        168
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        169
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        170
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 0,
+        "day_started": 170,
+        "description": "Forgeworks fabricators down tools over working conditions",
+        "duration_days": 3,
+        "encounter_chance_modifier": "f:1.0:4607182418800017408",
+        "event_type": "labor_strike",
+        "faction_id": "miners_union",
+        "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+        "id": "forgeworks_strike_170",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [
+          "manufacturing",
+          "industrial"
+        ],
+        "skill_opportunity": "persuasion_bonus",
+        "system_id": "forgeworks"
+      },
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 170,
+              "description": "Forgeworks fabricators down tools over working conditions",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_170",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        171
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 170,
+              "description": "Forgeworks fabricators down tools over working conditions",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_170",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        172
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "forgeworks": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 0,
+              "day_started": 170,
+              "description": "Forgeworks fabricators down tools over working conditions",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:1.0:4607182418800017408",
+              "event_type": "labor_strike",
+              "faction_id": "miners_union",
+              "flavor_text": "Work crews gather in the mess, comparing notes on Guild executive compensation. The mood is grim.",
+              "id": "forgeworks_strike_170",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [
+                "manufacturing",
+                "industrial"
+              ],
+              "skill_opportunity": "persuasion_bonus",
+              "system_id": "forgeworks"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        173
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        174
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        175
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        176
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        177
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        178
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        179
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        180
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        181
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        182
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        183
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        184
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        185
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        186
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        187
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        188
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        189
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        190
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        191
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        192
+      ],
+      "call": "advance_day",
+      "result": {
+        "blocked_commodities": [],
+        "chain_id": "",
+        "chain_step": 0,
+        "danger_modifier": 1,
+        "day_started": 192,
+        "description": "Remote systems report unprecedented pirate coordination",
+        "duration_days": 3,
+        "encounter_chance_modifier": "f:2.0:4611686018427387904",
+        "event_type": "pirate_surge",
+        "faction_id": "",
+        "flavor_text": "Nova's already-tight security has gone to lockdown. Visitors get three IDs checked and a pat-down.",
+        "id": "deep_space_raiders_192",
+        "price_modifiers": {},
+        "rep_bonus_amount": 0,
+        "rep_bonus_faction": "",
+        "shutdown_tags": [],
+        "skill_opportunity": "shield_bonus",
+        "system_id": "iron_depths"
+      },
+      "state": {
+        "active": {
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 192,
+              "description": "Remote systems report unprecedented pirate coordination",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:2.0:4611686018427387904",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Nova's already-tight security has gone to lockdown. Visitors get three IDs checked and a pat-down.",
+              "id": "deep_space_raiders_192",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "shield_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        193
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 192,
+              "description": "Remote systems report unprecedented pirate coordination",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:2.0:4611686018427387904",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Nova's already-tight security has gone to lockdown. Visitors get three IDs checked and a pat-down.",
+              "id": "deep_space_raiders_192",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "shield_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        194
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {
+          "iron_depths": [
+            {
+              "blocked_commodities": [],
+              "chain_id": "",
+              "chain_step": 0,
+              "danger_modifier": 1,
+              "day_started": 192,
+              "description": "Remote systems report unprecedented pirate coordination",
+              "duration_days": 3,
+              "encounter_chance_modifier": "f:2.0:4611686018427387904",
+              "event_type": "pirate_surge",
+              "faction_id": "",
+              "flavor_text": "Nova's already-tight security has gone to lockdown. Visitors get three IDs checked and a pat-down.",
+              "id": "deep_space_raiders_192",
+              "price_modifiers": {},
+              "rep_bonus_amount": 0,
+              "rep_bonus_faction": "",
+              "shutdown_tags": [],
+              "skill_opportunity": "shield_bonus",
+              "system_id": "iron_depths"
+            }
+          ]
+        },
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        195
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        196
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        197
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        198
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        199
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    },
+    {
+      "args": [
+        200
+      ],
+      "call": "advance_day",
+      "result": null,
+      "state": {
+        "active": {},
+        "pending_chains": []
+      }
+    }
+  ],
+  "subsystem": "galaxy"
+}

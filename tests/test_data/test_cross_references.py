@@ -6,6 +6,7 @@ tests run against real game data and would catch data integrity bugs before
 they reach playtesters.
 """
 
+import ast
 from collections import defaultdict
 from pathlib import Path
 
@@ -683,6 +684,61 @@ class TestEnemySubsystemTags:
 # ---------------------------------------------------------------------------
 
 
+def _without_skill_migration_map(source: str) -> str:
+    """Drop the ``_SKILL_MIGRATION_MAP`` literal from ``progression.py``'s source.
+
+    The map's values are skill ids for old saves. Two of them (``battle_awareness``
+    and ``route_planner``) equal their skill's bonus_type, so leaving the map in
+    would count a save migration as a consumer of those bonuses.
+    """
+    for node in ast.parse(source).body:
+        target = node.target if isinstance(node, ast.AnnAssign) else None
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target = node.targets[0]
+        if isinstance(target, ast.Name) and target.id == "_SKILL_MIGRATION_MAP":
+            lines = source.splitlines(keepends=True)
+            assert node.end_lineno is not None
+            return "".join(lines[: node.lineno - 1] + lines[node.end_lineno :])
+    raise AssertionError("progression.py no longer defines _SKILL_MIGRATION_MAP")
+
+
+def _spacegame_source_text() -> str:
+    """Concatenate every ``spacegame/**/*.py`` file's text, cached for reuse.
+
+    Skill bonus_type declarations live only in ``data/progression/skills.json``
+    (SP3-a Task 1). ``progression.py`` holds no bonus_type declarations, so it is
+    scanned like any other module, except for its ``_SKILL_MIGRATION_MAP``
+    literal (see ``_without_skill_migration_map``).
+    """
+    global _source_text_cache
+    if _source_text_cache is None:
+        project_root = Path(__file__).parent.parent.parent
+        progression = project_root / "spacegame" / "models" / "progression.py"
+        text = ""
+        for py_file in (project_root / "spacegame").rglob("*.py"):
+            source = py_file.read_text(encoding="utf-8", errors="ignore")
+            if py_file == progression:
+                source = _without_skill_migration_map(source)
+            text += source
+        _source_text_cache = text
+    return _source_text_cache
+
+
+def _declared_bonus_types() -> dict[str, set[str]]:
+    """Map each bonus_type declared in ``data/progression/skills.json`` to its skill ids."""
+    from spacegame.models.progression import create_default_skills
+
+    declared: dict[str, set[str]] = defaultdict(set)
+    for sid, skill in create_default_skills().items():
+        bt = getattr(skill, "bonus_type", "") or ""
+        if bt:
+            declared[bt].add(sid)
+    return declared
+
+
+_source_text_cache: str | None = None
+
+
 class TestSkillBonusConsumers:
     """Every bonus_type defined on a SkillNode must have at least one consumer.
 
@@ -691,47 +747,103 @@ class TestSkillBonusConsumers:
     bonuses, ``crew_roster.get_bonus("name")``. Dialogue-skill checks call
     ``has_skill`` instead of get_bonus, so those skill IDs (not bonus_types)
     are exempt.
+
+    Declared bonus types come from ``create_default_skills()`` (which loads
+    ``data/progression/skills.json``); consumers are searched for as string
+    literals across ``spacegame/**/*.py`` only. The JSON itself is never
+    read as a "consumer" source, since every bonus_type it declares would
+    trivially match its own declaration there.
     """
 
+    # bonus_type -> why the literal scan below can't find a consumer for it.
+    # Either the read is dynamic (an f-string the scan can't see: cite the
+    # exact site) or it is a genuine gap (a numbered finding for later work).
+    # No quiet exemptions: every entry needs one of these two justifications.
+    UNCONSUMED_SKILL_BONUS_TYPES: set[str] = {
+        # social.get_effective_level reads f"{skill_id}_bonus" for the 7 core
+        # social/expertise skill ids (persuasion, intimidation, observation,
+        # deception, technical, piloting, leadership). That is a dynamic read
+        # the literal scan cannot see.
+        "deception_bonus",  # dynamic: spacegame/models/social.py:279
+        "intimidation_bonus",  # dynamic: spacegame/models/social.py:279
+        "leadership_bonus",  # dynamic: spacegame/models/social.py:279
+        "observation_bonus",  # dynamic: spacegame/models/social.py:279
+        "persuasion_bonus",  # dynamic: spacegame/models/social.py:279
+        "piloting_bonus",  # dynamic: spacegame/models/social.py:279
+        "technical_bonus",  # dynamic: spacegame/models/social.py:279
+        # Genuinely unwired: no reader anywhere, dynamic or literal.
+        "battle_awareness",  # never read (finding F-13)
+        "deception_contraband_bonus",  # never read (finding F-13)
+        "drone_slot",  # never read (finding F-13) -- drone.py reads
+        # the drone_fleet skill's current_level directly, not this bonus_type
+        "leadership_crew_bonus",  # never read (finding F-13)
+        "route_planner",  # never read (finding F-13)
+        "technical_refining_bonus",  # never read (finding F-13)
+    }
+
     def test_every_skill_bonus_type_has_a_consumer(self) -> None:
-        from spacegame.models.progression import create_default_skills
-
-        skills = create_default_skills()
-        # bonus_type → set of skill_ids declaring it (for diagnostic clarity)
-        declared: dict[str, set[str]] = defaultdict(set)
-        for sid, skill in skills.items():
-            bt = getattr(skill, "bonus_type", "") or ""
-            if bt:
-                declared[bt].add(sid)
-
-        project_root = Path(__file__).parent.parent.parent
-        all_source = ""
-        for py_file in (project_root / "spacegame").rglob("*.py"):
-            all_source += py_file.read_text(encoding="utf-8", errors="ignore")
+        declared = _declared_bonus_types()
+        all_source = _spacegame_source_text()
 
         # A bonus_type counts as consumed if it appears as a literal
         # somewhere in source — this is intentionally permissive (avoids
         # false positives from wrappers and indirection layers).
         orphans: list[str] = []
         for bt, owners in declared.items():
+            if bt in self.UNCONSUMED_SKILL_BONUS_TYPES:
+                continue
             if f'"{bt}"' not in all_source and f"'{bt}'" not in all_source:
                 orphans.append(f"{bt} (declared by: {sorted(owners)})")
 
-        # Known-deferred bonuses with documented reasons live here so the
-        # test stays green while we hold the line on net new orphans. Each
-        # entry MUST have a justification — no quiet exemptions.
-        #
-        # QA Pass 5 Tier 3.F (2026-04-21): price_memory was the last entry
-        # and is now wired — PriceMemory model + galaxy map reader shipped.
-        # Set intentionally empty: net-new orphans fail the test loudly.
-        ALLOWED_ORPHANS: set[str] = set()
-
-        unjustified = sorted(o for o in orphans if o.split(" ")[0] not in ALLOWED_ORPHANS)
-        assert not unjustified, (
+        assert not orphans, (
             "These skill bonus_types are declared but not read anywhere in "
             "source. Either wire them, remove the skill, or add to "
-            "ALLOWED_ORPHANS with a justification:\n  " + "\n  ".join(unjustified)
+            "UNCONSUMED_SKILL_BONUS_TYPES with a dynamic: <file:line> or "
+            "never read (finding ...) justification:\n  " + "\n  ".join(orphans)
         )
+
+    def test_unconsumed_allowlist_has_no_literal_consumer(self) -> None:
+        """The allowlist shrinks the moment a listed bonus_type is wired.
+
+        If code later reads one of these bonus_types as a literal (rather
+        than only dynamically, or not at all), it now passes the main scan
+        on its own merits and must be dropped from the allowlist.
+        """
+        all_source = _spacegame_source_text()
+        newly_consumed = sorted(
+            bt
+            for bt in self.UNCONSUMED_SKILL_BONUS_TYPES
+            if f'"{bt}"' in all_source or f"'{bt}'" in all_source
+        )
+        assert not newly_consumed, (
+            "These bonus_types now have a literal consumer and no longer "
+            "belong in UNCONSUMED_SKILL_BONUS_TYPES: " + ", ".join(newly_consumed)
+        )
+
+    def test_unconsumed_allowlist_entries_are_still_declared(self) -> None:
+        """An entry whose skill is cut must leave the allowlist with it.
+
+        A stale entry would silently exempt a later skill that reuses the same
+        bonus_type, so every entry must still be declared in skills.json.
+        """
+        declared = _declared_bonus_types()
+        stale = sorted(bt for bt in self.UNCONSUMED_SKILL_BONUS_TYPES if bt not in declared)
+        assert not stale, (
+            "No skill in data/progression/skills.json declares these bonus_types any "
+            "more; drop them from UNCONSUMED_SKILL_BONUS_TYPES: " + ", ".join(stale)
+        )
+
+    def test_skill_migration_map_is_not_scanned_as_a_consumer(self) -> None:
+        """Save-migration skill ids do not count as reads of a same-named bonus_type."""
+        from spacegame.models.progression import _SKILL_MIGRATION_MAP
+
+        all_source = _spacegame_source_text()
+        survivors = [
+            f'"{old}": "{new}"'
+            for old, new in _SKILL_MIGRATION_MAP.items()
+            if f'"{old}": "{new}"' in all_source
+        ]
+        assert not survivors, f"migration-map entries still in the scanned source: {survivors}"
 
 
 class TestFactionPerks:

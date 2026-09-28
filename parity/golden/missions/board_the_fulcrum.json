@@ -1,0 +1,697 @@
+{
+  "case": "board_the_fulcrum",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "the_fulcrum",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Transport 3 units of Weapons Components to Verdant. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_the_fulcrum_1_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Weapons Components to Verdant",
+          "objectives": [
+            {
+              "description": "Acquire 3 Weapons Components",
+              "target_id": "weapons_components",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1350,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 45,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "weapons_components"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Local authorities in The Fulcrum are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_the_fulcrum_1_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to The Fulcrum to collect bounty",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1592,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A research consortium in The Fulcrum needs market and navigational data from Haven's Rest, Stellaris Port. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_the_fulcrum_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum with survey data",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Transport 10 units of Fuel Cells to Haven's Rest. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_the_fulcrum_2_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Fuel Cells to Haven's Rest",
+          "objectives": [
+            {
+              "description": "Acquire 10 Fuel Cells",
+              "target_id": "fuel",
+              "target_quantity": 10,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 10,
+              "reward_type": "remove_cargo",
+              "target_id": "fuel"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Local authorities in The Fulcrum are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_the_fulcrum_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to The Fulcrum to collect bounty",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2316,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A contact in The Fulcrum needs 2 units of Diverted Medicine moved to Nova Research — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_the_fulcrum_2_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Nova Research",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 960,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Sensors have detected a derelict vessel near Forgeworks. Travel there to claim salvage rights, then return to The Fulcrum for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_the_fulcrum_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Forgeworks",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Transport 8 units of Stolen Data to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_the_fulcrum_3_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Stolen Data to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 8 Stolen Data",
+              "target_id": "stolen_data",
+              "target_quantity": 8,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 4800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 8,
+              "reward_type": "remove_cargo",
+              "target_id": "stolen_data"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A research consortium in The Fulcrum needs market and navigational data from Nexus Prime, Heron's Mark, Haven's Rest. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_the_fulcrum_3_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum with survey data",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Local authorities in The Fulcrum are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_the_fulcrum_4_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to The Fulcrum to collect bounty",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3348,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Transport 6 units of Food & Water to Verdant. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_the_fulcrum_4_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Food & Water to Verdant",
+          "objectives": [
+            {
+              "description": "Acquire 6 Food & Water",
+              "target_id": "food",
+              "target_quantity": 6,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 300,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 6,
+              "reward_type": "remove_cargo",
+              "target_id": "food"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A contact in The Fulcrum needs 4 units of Combat Stimulants moved to Nexus Prime — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_the_fulcrum_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 4
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3360,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 90,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A research consortium in The Fulcrum needs market and navigational data from Iron Depths, Stellaris Port, Forgeworks. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_the_fulcrum_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum with survey data",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Local authorities in The Fulcrum are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_the_fulcrum_5_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to The Fulcrum to collect bounty",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2228,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "Sensors have detected a derelict vessel near Axiom Labs. Travel there to claim salvage rights, then return to The Fulcrum for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_the_fulcrum_6_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Axiom Labs",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "the_fulcrum"
+          ],
+          "description": "A research consortium in The Fulcrum needs market and navigational data from Iron Depths, Heron's Mark. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_the_fulcrum_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to The Fulcrum with survey data",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

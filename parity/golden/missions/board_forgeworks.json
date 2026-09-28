@@ -1,0 +1,658 @@
+{
+  "case": "board_forgeworks",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "forgeworks",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Local authorities in Forgeworks are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_forgeworks_1_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Forgeworks to collect bounty",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1014,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A research consortium in Forgeworks needs market and navigational data from The Fulcrum, Nova Research. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_forgeworks_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks with survey data",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Transport 4 units of Rare Metals to Verdant. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_forgeworks_2_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Rare Metals to Verdant",
+          "objectives": [
+            {
+              "description": "Acquire 4 Rare Metals",
+              "target_id": "rare_metals",
+              "target_quantity": 4,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 750,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "rare_metals"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A research consortium in Forgeworks needs market and navigational data from Stellaris Port, Verdant, Haven's Rest. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_forgeworks_2_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks with survey data",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 900,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Sensors have detected a derelict vessel near Axiom Labs. Travel there to claim salvage rights, then return to Forgeworks for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_forgeworks_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Axiom Labs",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A contact in Forgeworks needs 2 units of Diverted Medicine moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_forgeworks_3_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Stellaris Port",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 720,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Local authorities in Forgeworks are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_forgeworks_3_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Forgeworks to collect bounty",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1617,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Sensors have detected a derelict vessel near Heron's Mark. Travel there to claim salvage rights, then return to Forgeworks for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_forgeworks_4_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Heron's Mark",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Transport 9 units of Rare Metals to Stellaris Port. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_forgeworks_4_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Rare Metals to Stellaris Port",
+          "objectives": [
+            {
+              "description": "Acquire 9 Rare Metals",
+              "target_id": "rare_metals",
+              "target_quantity": 9,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1687,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 9,
+              "reward_type": "remove_cargo",
+              "target_id": "rare_metals"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A research consortium in Forgeworks needs market and navigational data from Nexus Prime, Heron's Mark. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_forgeworks_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks with survey data",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A research consortium in Forgeworks needs market and navigational data from Axiom Labs, Nova Research, Heron's Mark. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_forgeworks_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks with survey data",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 900,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Forgeworks for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_forgeworks_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A research consortium in Forgeworks needs market and navigational data from Stellaris Port, Breakstone. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_forgeworks_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks with survey data",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "A contact in Forgeworks needs 4 units of Combat Stimulants moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_forgeworks_6_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Stellaris Port",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 4
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2520,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 90,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "forgeworks"
+          ],
+          "description": "Sensors have detected a derelict vessel near Breakstone. Travel there to claim salvage rights, then return to Forgeworks for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_forgeworks_6_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Breakstone",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

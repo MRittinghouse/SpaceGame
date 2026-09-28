@@ -1,0 +1,333 @@
+{
+  "case": "attributes",
+  "format": 1,
+  "setup": {},
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        6
+      ],
+      "call": "add_points",
+      "result": null,
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 6,
+        "values": {
+          "acu": 1,
+          "com": 1,
+          "ing": 1,
+          "res": 1,
+          "syn": 1
+        }
+      }
+    },
+    {
+      "args": [
+        "com"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Commerce increased to 2"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 5,
+        "values": {
+          "acu": 1,
+          "com": 2,
+          "ing": 1,
+          "res": 1,
+          "syn": 1
+        }
+      }
+    },
+    {
+      "args": [
+        "acu"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Acuity increased to 2"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 4,
+        "values": {
+          "acu": 2,
+          "com": 2,
+          "ing": 1,
+          "res": 1,
+          "syn": 1
+        }
+      }
+    },
+    {
+      "args": [
+        "res"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Resolve increased to 2"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 3,
+        "values": {
+          "acu": 2,
+          "com": 2,
+          "ing": 1,
+          "res": 2,
+          "syn": 1
+        }
+      }
+    },
+    {
+      "args": [
+        "ing"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Ingenuity increased to 2"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 2,
+        "values": {
+          "acu": 2,
+          "com": 2,
+          "ing": 2,
+          "res": 2,
+          "syn": 1
+        }
+      }
+    },
+    {
+      "args": [
+        "syn"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Synergy increased to 2"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 2,
+          "ing": 2,
+          "res": 2,
+          "syn": 2
+        }
+      }
+    },
+    {
+      "args": [
+        "syn"
+      ],
+      "call": "allocate_point",
+      "result": [
+        true,
+        "Synergy increased to 3"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 0,
+        "values": {
+          "acu": 2,
+          "com": 2,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "com"
+      ],
+      "call": "deallocate_point",
+      "result": [
+        true,
+        "Commerce decreased to 1"
+      ],
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "buy_price_attr_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.0:0",
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "crew_efficiency_attr"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.05:4587366580439587226",
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "mining_power_attr"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.05:4587366580439587226",
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "scan_efficiency_attr"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.05:4587366580439587226",
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "sell_price_attr_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.0:0",
+      "state": {
+        "awarded_milestones": [],
+        "unspent_points": 1,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "first_trade"
+      ],
+      "call": "award_milestone",
+      "result": [
+        true,
+        "Milestone: Complete your first trade — +1 attribute point!"
+      ],
+      "state": {
+        "awarded_milestones": [
+          "first_trade"
+        ],
+        "unspent_points": 2,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "first_trade"
+      ],
+      "call": "award_milestone",
+      "result": [
+        false,
+        "Milestone already awarded"
+      ],
+      "state": {
+        "awarded_milestones": [
+          "first_trade"
+        ],
+        "unspent_points": 2,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    },
+    {
+      "args": [
+        "not_a_milestone"
+      ],
+      "call": "award_milestone",
+      "result": [
+        false,
+        "Unknown milestone: not_a_milestone"
+      ],
+      "state": {
+        "awarded_milestones": [
+          "first_trade"
+        ],
+        "unspent_points": 2,
+        "values": {
+          "acu": 2,
+          "com": 1,
+          "ing": 2,
+          "res": 2,
+          "syn": 3
+        }
+      }
+    }
+  ],
+  "subsystem": "skills"
+}

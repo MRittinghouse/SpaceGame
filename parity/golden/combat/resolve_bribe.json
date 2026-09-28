@@ -1,0 +1,229 @@
+{
+  "case": "resolve_bribe",
+  "format": 1,
+  "setup": {
+    "complication_ids": [],
+    "crew_loyalty": 0,
+    "enemy_ids": [
+      "pirate_raider"
+    ],
+    "hull": 0,
+    "loadout": [
+      "slug_thrower",
+      "armor_plating"
+    ],
+    "payout_player": {
+      "credits": 0,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "player": {
+      "accuracy": 65,
+      "active_effects": [],
+      "armor": 0,
+      "armor_pierce_active": false,
+      "cooldowns": {},
+      "counterstrike_stacks": 0,
+      "crew_moves": [],
+      "crew_sync_used": false,
+      "critical_hp_surge_fired": false,
+      "daring_gambit_turns": 0,
+      "defensive_identity": "",
+      "dialogue_flags": {},
+      "dual_tech_moves": [],
+      "energy": 8,
+      "energy_regen": 3,
+      "equipment_moves": [
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "Reliable kinetic rounds.",
+          "effects": [
+            {
+              "duration": 0,
+              "target": "enemy",
+              "type": "damage",
+              "value": "f:13.0:4623507967449235456"
+            }
+          ],
+          "element": "kinetic",
+          "energy_cost": 2,
+          "id": "slug_thrower",
+          "name": "Slug Thrower"
+        },
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "+15% damage reduction for 2 turns.",
+          "effects": [
+            {
+              "duration": 2,
+              "target": "self",
+              "type": "damage_reduction",
+              "value": "f:0.15:4594572339843380019"
+            }
+          ],
+          "element": "kinetic",
+          "energy_cost": 2,
+          "id": "armor_plating",
+          "name": "Reinforce Armor"
+        }
+      ],
+      "evasion": 25,
+      "evasion_decay": 0,
+      "fire_at_will_active": false,
+      "flee_bonus": 0,
+      "hull": 60,
+      "max_energy": 8,
+      "max_hull": 60,
+      "max_shields": 20,
+      "momentum": {
+        "current": "f:0.0:0",
+        "overclock_triggered": false,
+        "overdriven_available": false,
+        "thresholds_crossed": []
+      },
+      "shield_break_vulnerable": false,
+      "shield_regen": 0,
+      "shields": 20,
+      "ship_class_category": "starter",
+      "speed": 12,
+      "total_commitment_armor_gained": 0,
+      "total_commitment_hits_remaining": 0
+    },
+    "seed": 2563695468,
+    "ship_type_id": "shuttle"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        10000
+      ],
+      "call": "attempt_bribe",
+      "result": [
+        true,
+        150,
+        [
+          [
+            1,
+            "player",
+            "Bribe",
+            true
+          ]
+        ]
+      ],
+      "state": {
+        "bribe_used": true,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [],
+            "cooldowns": {},
+            "current_energy": 7,
+            "current_hull": 67,
+            "current_phase_idx": 0,
+            "current_shields": 22,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 16,
+              "weapon_array": 16
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "pirate_raider"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 65,
+          "active_effects": [],
+          "armor": 0,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 8,
+          "energy_regen": 3,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Reliable kinetic rounds.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:13.0:4623507967449235456"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "slug_thrower",
+              "name": "Slug Thrower"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "+15% damage reduction for 2 turns.",
+              "effects": [
+                {
+                  "duration": 2,
+                  "target": "self",
+                  "type": "damage_reduction",
+                  "value": "f:0.15:4594572339843380019"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "armor_plating",
+              "name": "Reinforce Armor"
+            }
+          ],
+          "evasion": 25,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 60,
+          "max_energy": 8,
+          "max_hull": 60,
+          "max_shields": 20,
+          "momentum": {
+            "current": "f:0.0:0",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 20,
+          "ship_class_category": "starter",
+          "speed": 12,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "bribed",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    }
+  ],
+  "subsystem": "combat"
+}

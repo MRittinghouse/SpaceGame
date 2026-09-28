@@ -157,9 +157,17 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 - `ACT_TWO_V1_ENABLED = False` in `spacegame/config.py` keeps the Act II v1 lens arc (tag `act2-v1-archive`) off, so the Python reference behaves as Act I only. The Godot port does not carry it. Read it as `sg_config.ACT_TWO_V1_ENABLED` so the fixture's monkeypatch takes effect.
 - Tests that exercise Act II content carry the `act_two_v1` marker (`pytestmark = pytest.mark.act_two_v1` for a whole module). Without it, the flag stays off and the lens, dilemma, and capstone registries are not loaded for the test. The fixture never unloads them, so after a marked test they stay loaded on that worker's singleton; a test that needs them empty builds a fresh `DataLoader()`.
 
-### Parity goldens (SP2)
+### Parity goldens (SP2, SP3)
 - `parity/golden/` holds golden traces the Godot port replays; `tools/parity/` builds them. `tests/test_parity/test_goldens_current.py` fails when a committed golden or `parity/schema.json` no longer matches the code.
-- After touching `spacegame/sim_rng.py`, `spacegame/models/market.py`, or anything under `tools/parity/`: commit the code, run `python -m tools.parity.regen` from the clean tree, review the diff of `parity/`, and commit the goldens and schema on their own. regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
+- After touching `spacegame/sim_rng.py`, `spacegame/data_loader.py`, the player serializer in
+  `spacegame/save_manager.py`, any wave A model (player, ship, upgrades, market, commodity, trade
+  pricing, travel, event, galaxy, crew, progression, attributes, social, combat, combat rewards,
+  encounter, captains, mission, procedural missions, dialogue, ambient lines, chatter,
+  interjections), `data/`, or anything under `tools/parity/`: commit the code, run
+  `python -m tools.parity.regen` from the clean tree, review the diff of `parity/`, and commit the
+  goldens and schema on their own. The list is not exhaustive, since a driver reaches other modules
+  through the models; `tests/test_parity/test_goldens_current.py` has the final word.
+- regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
 - `python -m tools.parity.check_determinism` proves the goldens do not depend on `PYTHONHASHSEED` (the suite runs it too).
 
 ### Test-Driven Development
@@ -195,7 +203,7 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 
 ## Skill System (6 Trees)
 
-The progression uses 6 skill trees with 75 total skills. Skills are defined in Python code (`create_default_skills()` in `progression.py`), NOT in JSON. The old `data/progression/skill_trees.json` was removed.
+The progression uses 6 skill trees with 89 skills and 88 bonus types. Skills are defined in `data/progression/skills.json`; `create_default_skills()` in `progression.py` builds fresh nodes from it, and the Godot port receives the same file through its `tools/sync_data.py`. `ghost_protocol` (bonus type `deception_contraband_bonus`) was designed to stack with the base `deception_bonus` only while the `contraband_present` flag is active, but nothing in `spacegame/` reads that bonus yet (finding F-13, owner SP3-c); the rule belongs in the consumer, not the skill data.
 
 - **Trees**: Commerce, Combat, Exploration, Leadership, Social, Industry
 - **Point economy**: 1 skill point per level, no cap, no milestones
@@ -203,7 +211,7 @@ The progression uses 6 skill trees with 75 total skills. Skills are defined in P
 - **Prerequisites**: Tier 1 (roots) → Tier 2 (specialization) → Tier 3 (capstones)
 - **Capstones**: Identity-defining skills (Juggernaut, Sentinel, Ghost, Peacemaker, etc.)
 
-When modifying any gameplay system, check if a skill bonus should apply. Search `create_default_skills()` for existing bonus_types before adding new ones.
+When modifying any gameplay system, check if a skill bonus should apply. Search `data/progression/skills.json` for existing bonus_types before adding new ones.
 
 ## Save Migration
 
@@ -251,7 +259,7 @@ When modifying a gameplay system, check these secondary impacts:
 | If you change... | Also update... |
 |-----------------|----------------|
 | Model fields | `to_dict()`, `from_dict()`, relevant tests |
-| Skill bonus_types | `create_default_skills()`, the system that reads it, integration test |
+| Skill bonus_types | `data/progression/skills.json`, the system that reads it, integration test |
 | GameState enum | `game.py` transition router, `_ensure_*_view()` factory, cockpit_hud context map |
 | Commodity/system data | `test_cross_references.py` data validation tests |
 | Dialogue flags | Use `spacegame/constants/flags.py` helpers for cross-module flags (cookbook: `requirements/si3_flag_registry_cookbook.md`); check all `dialogue_flags.get(...)` consumers |
@@ -259,7 +267,8 @@ When modifying a gameplay system, check these secondary impacts:
 | Ship stats | Both build-derived path AND legacy ShipType path in `build_player_combat_state()` |
 | Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
 | Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |
-| Simulation randomness or the market model | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
+| Simulation randomness, the market model, or another module in the Parity goldens regen list | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
+| A formula in game.py or a view | Lift it into a model function the caller uses, and cover it with a golden driver (see `parity/port_notes.md`, SP3-a extractions) |
 
 ## Common Pitfalls
 

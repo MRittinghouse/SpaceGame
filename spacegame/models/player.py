@@ -45,6 +45,8 @@ from spacegame.models.wreck_upgrade import WreckUpgradeState
 from spacegame.models.wreckers_guild import WreckersGuildState
 
 if TYPE_CHECKING:
+    from spacegame.models.combat import EnemyShip
+    from spacegame.models.combat_rewards import CombatVictory
     from spacegame.models.smuggling import HiddenCompartment
 
 
@@ -763,6 +765,74 @@ class Player:
 
         # Move to safe system
         self.current_system_id = safe_system_id
+
+    def apply_combat_victory(
+        self, enemies: list["EnemyShip"], encounter_seed: int
+    ) -> "CombatVictory":
+        """Pay out a won fight: XP for every enemy, credits and loot for the destroyed.
+
+        Args:
+            enemies: The fight's enemies after the last round.
+            encounter_seed: The fight's seed (keys the loot streams).
+
+        Returns:
+            The XP, credits, loot, and level-up messages awarded.
+        """
+        from spacegame.models.combat_rewards import CombatVictory, loot_rng, roll_loot
+
+        self.combats_won += 1
+        total_xp = sum(e.template.xp_reward for e in enemies)
+        xp_messages = self.progression.add_xp(total_xp)
+        loot: dict[str, int] = {}
+        for enemy in enemies:
+            if enemy.is_alive:
+                continue
+            for table, rare in (
+                (enemy.template.loot_table, False),
+                (enemy.template.rare_loot, True),
+            ):
+                if not table:
+                    continue
+                rolled = roll_loot(table, loot_rng(encounter_seed, enemy.template.id, rare))
+                for commodity_id, qty in rolled.items():
+                    self.ship.add_cargo(commodity_id, qty)
+                    loot[commodity_id] = loot.get(commodity_id, 0) + qty
+        total_credits = sum(e.template.credit_reward for e in enemies if not e.is_alive)
+        if total_credits > 0:
+            self.add_credits(total_credits)
+        return CombatVictory(total_xp, total_credits, loot, xp_messages)
+
+    def apply_combat_negotiated(
+        self, enemies: list["EnemyShip"], encounter_seed: int, partial_loot: bool
+    ) -> dict[str, int]:
+        """Record a negotiated end; with enhanced negotiation, take half of each loot roll.
+
+        Args:
+            enemies: The fight's enemies after the last round.
+            encounter_seed: The fight's seed (keys the loot streams).
+            partial_loot: Whether enhanced negotiation earned a share of the loot.
+
+        Returns:
+            Commodity id to quantity added.
+        """
+        from spacegame.models.combat_rewards import loot_rng, roll_loot
+
+        self.combats_won += 1
+        self.combats_negotiated += 1
+        loot: dict[str, int] = {}
+        if not partial_loot:
+            return loot
+        for enemy in enemies:
+            if not enemy.template.loot_table:
+                continue
+            rolled = roll_loot(
+                enemy.template.loot_table, loot_rng(encounter_seed, enemy.template.id, False)
+            )
+            for commodity_id, qty in rolled.items():
+                half_qty = max(1, qty // 2)
+                self.ship.add_cargo(commodity_id, half_qty)
+                loot[commodity_id] = loot.get(commodity_id, 0) + half_qty
+        return loot
 
     def get_net_worth(self) -> int:
         """

@@ -1,0 +1,715 @@
+{
+  "case": "all_bonuses_maxed",
+  "format": 1,
+  "setup": {
+    "all_skills": "max_level"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "advanced_recipes"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "afterburner_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:15.0:4624633867356078080",
+      "state": {}
+    },
+    {
+      "args": [
+        "anomaly_chance"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "anomaly_sense"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.15:4594572339843380019",
+      "state": {}
+    },
+    {
+      "args": [
+        "arbitration_neutrality_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "armor_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:3.0:4613937818241073152",
+      "state": {}
+    },
+    {
+      "args": [
+        "auction_lot_appraisal_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "battle_awareness"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "black_market_sell_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "buy_price_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "cargo_capacity_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.30000000000000004:4599075939470750516",
+      "state": {}
+    },
+    {
+      "args": [
+        "chain_break_chance"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "click_drill_power"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.75:4604930618986332160",
+      "state": {}
+    },
+    {
+      "args": [
+        "coalition_size_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "coalition_sway_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "contraband_slots"
+      ],
+      "call": "get_bonus",
+      "result": "f:4.0:4616189618054758400",
+      "state": {}
+    },
+    {
+      "args": [
+        "counterstrike_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_combat_damage"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_loyalty_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_quest_xp_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_slot_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_whisperer"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.5:4602678819172646912",
+      "state": {}
+    },
+    {
+      "args": [
+        "crew_xp_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:4.0:4616189618054758400",
+      "state": {}
+    },
+    {
+      "args": [
+        "crit_chance"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "deception_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "deception_contraband_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "dock_rep_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "dodge_chance"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.15000000000000002:4594572339843380020",
+      "state": {}
+    },
+    {
+      "args": [
+        "drone_slot"
+      ],
+      "call": "get_bonus",
+      "result": "f:3.0:4613937818241073152",
+      "state": {}
+    },
+    {
+      "args": [
+        "elemental_duration_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "emergency_reserves"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "encounter_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "extra_combat_action"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "faction_rep_multiplier"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "faction_social_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "flee_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "frontier_rep_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:10.0:4621819117588971520",
+      "state": {}
+    },
+    {
+      "args": [
+        "fuel_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.30000000000000004:4599075939470750516",
+      "state": {}
+    },
+    {
+      "args": [
+        "ghost_capstone"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "ground_hp_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "ground_loot_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "ground_reroll"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "guaranteed_rare"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "hull_hp_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.15000000000000002:4594572339843380020",
+      "state": {}
+    },
+    {
+      "args": [
+        "insurance"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "intimidation_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "juggernaut_capstone"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "jump_hull_restore"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "leadership_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "leadership_crew_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "legendary_captain"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "light_foot"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "loyalty_floor"
+      ],
+      "call": "get_bonus",
+      "result": "f:30.0:4629137466983448576",
+      "state": {}
+    },
+    {
+      "args": [
+        "npc_disposition_visible"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "observation_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "passive_drill_speed"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "peaceful_resolution"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "persuasion_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "piloting_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "price_memory"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "rare_ore_chance"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.5:4602678819172646912",
+      "state": {}
+    },
+    {
+      "args": [
+        "read_the_room"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "refining_speed"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "refining_yield_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "remote_prices"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "reputation_gain_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "research_risk_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "research_yield_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "route_planner"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "salvage_extra_charges"
+      ],
+      "call": "get_bonus",
+      "result": "f:4.0:4616189618054758400",
+      "state": {}
+    },
+    {
+      "args": [
+        "salvage_yield"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.3:4599075939470750515",
+      "state": {}
+    },
+    {
+      "args": [
+        "sell_price_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "sentinel_capstone"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "shield_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.30000000000000004:4599075939470750516",
+      "state": {}
+    },
+    {
+      "args": [
+        "shield_energy_discount"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "shield_regen_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:4.0:4616189618054758400",
+      "state": {}
+    },
+    {
+      "args": [
+        "smugglers_eye"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "special_dialogue"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "speculator_premium_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.1:4591870180066957722",
+      "state": {}
+    },
+    {
+      "args": [
+        "starting_momentum"
+      ],
+      "call": "get_bonus",
+      "result": "f:20.0:4626322717216342016",
+      "state": {}
+    },
+    {
+      "args": [
+        "system_intel"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "tariff_reduction"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.2:4596373779694328218",
+      "state": {}
+    },
+    {
+      "args": [
+        "technical_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "technical_refining_bonus"
+      ],
+      "call": "get_bonus",
+      "result": "f:2.0:4611686018427387904",
+      "state": {}
+    },
+    {
+      "args": [
+        "trade_instinct"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "trend_visibility"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "underworld_contacts"
+      ],
+      "call": "get_bonus",
+      "result": "f:1.0:4607182418800017408",
+      "state": {}
+    },
+    {
+      "args": [
+        "weapon_damage"
+      ],
+      "call": "get_bonus",
+      "result": "f:0.30000000000000004:4599075939470750516",
+      "state": {}
+    }
+  ],
+  "subsystem": "skills"
+}

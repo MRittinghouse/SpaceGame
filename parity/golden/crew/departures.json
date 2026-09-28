@@ -1,0 +1,397 @@
+{
+  "case": "departures",
+  "format": 1,
+  "setup": {
+    "crew_slots": 4
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "tomas_drifter",
+        4
+      ],
+      "call": "recruit",
+      "result": [
+        true,
+        "Tomas Drifter"
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.03:4584304132692975288",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:0.0:0",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "tomas_drifter": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 3,
+                "ing": 1,
+                "res": 1,
+                "syn": 2
+              },
+              "level": 1,
+              "loyalty": 30,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "tomas_drifter"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        "tomas_drifter",
+        -25
+      ],
+      "call": "adjust_loyalty",
+      "result": [],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.03:4584304132692975288",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:0.0:0",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "tomas_drifter": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 3,
+                "ing": 1,
+                "res": 1,
+                "syn": 2
+              },
+              "level": 1,
+              "loyalty": 5,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "tomas_drifter"
+          ]
+        }
+      }
+    },
+    {
+      "args": [],
+      "call": "check_departure_warnings",
+      "result": [
+        "Tomas Drifter is considering leaving the crew"
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.03:4584304132692975288",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:0.0:0",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "tomas_drifter": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 3,
+                "ing": 1,
+                "res": 1,
+                "syn": 2
+              },
+              "level": 1,
+              "loyalty": 5,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "tomas_drifter"
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        "tomas_drifter",
+        -10
+      ],
+      "call": "adjust_loyalty",
+      "result": [],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.03:4584304132692975288",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:0.0:0",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {},
+          "members": {
+            "tomas_drifter": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 3,
+                "ing": 1,
+                "res": 1,
+                "syn": 2
+              },
+              "level": 1,
+              "loyalty": 0,
+              "xp": 0
+            }
+          },
+          "pending_companions": [],
+          "recruited": [
+            "tomas_drifter"
+          ]
+        }
+      }
+    },
+    {
+      "args": [],
+      "call": "process_departures",
+      "result": [
+        "Tomas Drifter has left the crew"
+      ],
+      "state": {
+        "bonuses": {
+          "anomaly_chance": "f:0.0:0",
+          "arbitration_dispute_intel": "f:0.0:0",
+          "arbitration_neutrality_bonus": "f:0.0:0",
+          "auction_bid_visibility": "f:0.0:0",
+          "auction_lot_appraisal_bonus": "f:0.0:0",
+          "bulk_discount": "f:0.0:0",
+          "buy_price_reduction": "f:0.0:0",
+          "cargo_bonus": "f:0.0:0",
+          "click_drill_power": "f:0.0:0",
+          "coalition_size_bonus": "f:0.0:0",
+          "coalition_sway_bonus": "f:0.0:0",
+          "contraband_slots": "f:0.0:0",
+          "crit_chance": "f:0.0:0",
+          "diplomatic_rep_bonus": "f:0.0:0",
+          "drill_speed": "f:0.0:0",
+          "extra_scan_charges": "f:0.0:0",
+          "extract_speed": "f:0.0:0",
+          "fuel_bonus": "f:0.0:0",
+          "fuel_efficiency_bonus": "f:0.0:0",
+          "fuel_reduction": "f:0.0:0",
+          "futures_intel": "f:0.0:0",
+          "ground_attack_bonus": "f:0.0:0",
+          "ground_hp_bonus": "f:0.0:0",
+          "heat_reduction": "f:0.0:0",
+          "hull_damage_reduction": "f:0.0:0",
+          "manifest_forgery": "f:0.0:0",
+          "map_reveal": "f:0.0:0",
+          "mining_rare_chance": "f:0.0:0",
+          "observation_bonus": "f:0.0:0",
+          "price_variance_reduction": "f:0.0:0",
+          "rare_ore_chance": "f:0.0:0",
+          "reputation_gain_bonus": "f:0.0:0",
+          "research_risk_reduction": "f:0.0:0",
+          "research_yield_bonus": "f:0.0:0",
+          "salvage_yield": "f:0.0:0",
+          "scan_evasion": "f:0.0:0",
+          "scan_range": "f:0.0:0",
+          "sell_price_bonus": "f:0.0:0",
+          "shield_bonus": "f:0.0:0",
+          "speculator_premium_reduction": "f:0.0:0",
+          "travel_danger_reduction": "f:0.0:0",
+          "trend_visibility": "f:0.0:0",
+          "weapon_damage": "f:0.0:0"
+        },
+        "roster": {
+          "dismissed": {
+            "tomas_drifter": {
+              "attribute_points": 0,
+              "attributes": {
+                "acu": 1,
+                "com": 3,
+                "ing": 1,
+                "res": 1,
+                "syn": 2
+              },
+              "departed": true,
+              "level": 1,
+              "location": "havens_rest",
+              "loyalty": 0,
+              "xp": 0
+            }
+          },
+          "members": {},
+          "pending_companions": [],
+          "recruited": []
+        }
+      }
+    }
+  ],
+  "subsystem": "crew"
+}

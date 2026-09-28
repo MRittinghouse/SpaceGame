@@ -9,6 +9,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Optional
 
+# Crew payouts per trade and per jump before Leadership skill bonuses, and how far
+# Legend of the Expanse lowers the loyalty flag thresholds.
+CREW_XP_PER_TRADE = 5
+CREW_LOYALTY_PER_TRADE = 1
+CREW_XP_PER_JUMP = 3
+LEGENDARY_FLAG_OFFSET = 10
+
 
 class LoyaltyTier(Enum):
     """Loyalty tier that determines gameplay effects."""
@@ -128,7 +135,7 @@ class CrewRoster:
         self._state: dict[str, dict[str, Any]] = {}
         self._dismissed: dict[str, dict[str, Any]] = {}
         self._pending_companions: set[str] = set()
-        # Leadership skill bonuses (set by game engine when progression changes)
+        # Leadership skill bonuses (set through apply_leadership)
         self.loyalty_floor: int = 0  # Minimum loyalty value (Unbreakable Bonds)
         self.loyalty_flag_offset: int = 0  # Lower threshold for crew quest flags (Legend)
 
@@ -461,6 +468,46 @@ class CrewRoster:
             flags = self.adjust_loyalty(tid, amount, player=player)
             all_flags.extend(flags)
         return all_flags
+
+    def apply_leadership(self, loyalty_floor: int, legendary: bool) -> None:
+        """Push the Leadership skill effects into the roster.
+
+        Args:
+            loyalty_floor: Unbreakable Bonds floor (0 without the skill).
+            legendary: Whether Legend of the Expanse (the legendary_captain bonus) lowers
+                the loyalty flag thresholds.
+        """
+        self.loyalty_floor = loyalty_floor
+        self.loyalty_flag_offset = LEGENDARY_FLAG_OFFSET if legendary else 0
+
+    def on_trades(
+        self, new_trades: int, xp_bonus: int, loyalty_bonus: int
+    ) -> tuple[list[str], list[str]]:
+        """Crew XP and loyalty for trades completed since the last check.
+
+        Args:
+            new_trades: Trades completed since the last check.
+            xp_bonus: Extra crew XP per trade (the crew_xp_bonus skill bonus).
+            loyalty_bonus: Extra crew loyalty per trade (the crew_loyalty_bonus skill bonus).
+
+        Returns:
+            Level-up messages, then newly crossed loyalty flags.
+        """
+        levelups = self.add_xp_to_all((CREW_XP_PER_TRADE + xp_bonus) * new_trades)
+        flags = self.adjust_loyalty_all((CREW_LOYALTY_PER_TRADE + loyalty_bonus) * new_trades)
+        return levelups, flags
+
+    def on_jumps(self, new_jumps: int, xp_bonus: int) -> list[str]:
+        """Crew XP for jumps made since the last check.
+
+        Args:
+            new_jumps: Jumps made since the last check.
+            xp_bonus: Extra crew XP per jump (the crew_xp_bonus skill bonus).
+
+        Returns:
+            Level-up messages.
+        """
+        return self.add_xp_to_all((CREW_XP_PER_JUMP + xp_bonus) * new_jumps)
 
     def adjust_loyalty_for_faction(
         self,

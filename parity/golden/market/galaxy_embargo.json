@@ -1,0 +1,291 @@
+{
+  "case": "galaxy_embargo",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "stellaris_port"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        {
+          "blocked_commodities": [
+            "raw_ore",
+            "iron_ore",
+            "common_metals"
+          ],
+          "chain_id": "",
+          "chain_step": 0,
+          "danger_modifier": 0,
+          "day_started": 1,
+          "description": "Commerce Guild imposes trade embargo on Union raw materials",
+          "duration_days": 6,
+          "encounter_chance_modifier": "f:1.0:4607182418800017408",
+          "event_type": "embargo",
+          "faction_id": "commerce_guild",
+          "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+          "id": "guild_embargo_ore_1",
+          "price_modifiers": {},
+          "rep_bonus_amount": 0,
+          "rep_bonus_faction": "",
+          "shutdown_tags": [],
+          "skill_opportunity": "scan_evasion",
+          "system_id": "stellaris_port"
+        }
+      ],
+      "call": "add_galaxy_event",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 214,
+          "art": 345,
+          "common_metals": 0,
+          "electronics": 198,
+          "exotic_goods": 318,
+          "food": 52,
+          "fuel": 9,
+          "machinery": 125,
+          "manufactured_goods": 88,
+          "medical": 332,
+          "neural_weave": 946,
+          "precious_metals": 250,
+          "purified_crystal": 307,
+          "rare_metals": 283,
+          "refined_propellant": 166,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 182,
+          "art": 346,
+          "common_metals": 0,
+          "electronics": 208,
+          "exotic_goods": 400,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 100,
+          "manufactured_goods": 84,
+          "medical": 358,
+          "neural_weave": 977,
+          "precious_metals": 204,
+          "purified_crystal": 291,
+          "rare_metals": 268,
+          "refined_propellant": 163,
+          "textiles": 36
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 234,
+          "art": 291,
+          "common_metals": 0,
+          "electronics": 200,
+          "exotic_goods": 385,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 112,
+          "manufactured_goods": 101,
+          "medical": 354,
+          "neural_weave": 1024,
+          "precious_metals": 267,
+          "purified_crystal": 334,
+          "rare_metals": 288,
+          "refined_propellant": 184,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 221,
+          "art": 283,
+          "common_metals": 0,
+          "electronics": 190,
+          "exotic_goods": 375,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 125,
+          "manufactured_goods": 82,
+          "medical": 355,
+          "neural_weave": 1155,
+          "precious_metals": 249,
+          "purified_crystal": 310,
+          "rare_metals": 271,
+          "refined_propellant": 163,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        5
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 5,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 212,
+          "art": 300,
+          "common_metals": 0,
+          "electronics": 195,
+          "exotic_goods": 314,
+          "food": 51,
+          "fuel": 10,
+          "machinery": 122,
+          "manufactured_goods": 94,
+          "medical": 366,
+          "neural_weave": 1104,
+          "precious_metals": 231,
+          "purified_crystal": 300,
+          "rare_metals": 277,
+          "refined_propellant": 164,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        6
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 6,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 202,
+          "art": 302,
+          "common_metals": 0,
+          "electronics": 216,
+          "exotic_goods": 377,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 110,
+          "manufactured_goods": 81,
+          "medical": 358,
+          "neural_weave": 941,
+          "precious_metals": 245,
+          "purified_crystal": 289,
+          "rare_metals": 305,
+          "refined_propellant": 165,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        7
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 7,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 228,
+          "art": 291,
+          "common_metals": 66,
+          "electronics": 180,
+          "exotic_goods": 318,
+          "food": 50,
+          "fuel": 10,
+          "machinery": 110,
+          "manufactured_goods": 94,
+          "medical": 359,
+          "neural_weave": 1059,
+          "precious_metals": 234,
+          "purified_crystal": 338,
+          "rare_metals": 306,
+          "refined_propellant": 166,
+          "textiles": 37
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        8
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 8,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 196,
+          "art": 277,
+          "common_metals": 68,
+          "electronics": 186,
+          "exotic_goods": 312,
+          "food": 53,
+          "fuel": 9,
+          "machinery": 120,
+          "manufactured_goods": 98,
+          "medical": 363,
+          "neural_weave": 933,
+          "precious_metals": 210,
+          "purified_crystal": 295,
+          "rare_metals": 310,
+          "refined_propellant": 163,
+          "textiles": 41
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

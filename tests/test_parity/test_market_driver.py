@@ -47,3 +47,10 @@ class TestMarketCases:
 
     def test_cases_are_stable(self) -> None:
         assert [c.to_json("x") for c in build_cases()] == [c.to_json("x") for c in build_cases()]
+
+    def test_every_pricing_branch_has_cases(self) -> None:
+        names = set(_cases())
+        for event_type in ("shortage", "surplus", "disaster", "boom"):
+            assert f"event_{event_type}" in names
+        assert "politics_shifts" in names
+        assert {"galaxy_embargo", "galaxy_festival", "galaxy_labor_strike"} <= names

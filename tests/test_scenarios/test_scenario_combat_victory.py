@@ -10,17 +10,13 @@ Two halves under test:
      ``state.result = CombatResult.VICTORY`` and ``is_combat_over()``
      returns True.
 
-  2. **Reward dispatch** — game.py mirrors the
-     ``CombatResult.VICTORY`` branch in ``Game._on_combat_complete``
-     (see ``spacegame/engine/game.py:3039``): credits the
-     ``combats_won`` counter, awards summed ``xp_reward`` via
+  2. **Reward dispatch**: the ``CombatResult.VICTORY`` branch of
+     ``Game._apply_combat_result`` calls ``Player.apply_combat_victory``,
+     which counts ``combats_won``, awards summed ``xp_reward`` via
      ``progression.add_xp``, rolls ``loot_table`` + ``rare_loot`` into
-     cargo, and adds ``credit_reward`` to credits. This scenario inlines
-     the same block so a regression in any reward primitive surfaces
-     here. **If you refactor the game.py block (e.g. into a
-     ``Player.apply_combat_victory`` method, mirroring
-     ``apply_combat_defeat``), update the inlined block in
-     ``_apply_victory_rewards`` below to call it instead.**
+     cargo, and adds ``credit_reward`` to credits. This scenario calls
+     the same method, so a regression in any reward primitive surfaces
+     here.
 
 A defeat-path crash class shipped to a playtester before
 ``test_scenario_death_respawn`` existed (the ``add_reputation`` →
@@ -45,7 +41,6 @@ from spacegame.models.combat import (
 )
 from spacegame.models.combat_engine import CombatEngine
 from spacegame.models.upgrades import ShipUpgradeManager
-from spacegame.views.combat_view import _roll_loot
 from tests.test_scenarios._helpers import fresh_player, real_enemy
 
 # ---------------------------------------------------------------------------
@@ -80,41 +75,13 @@ def _make_engine(player, enemies, *, seed: int = 42):
 
 
 def _apply_victory_rewards(player, state: CombatState) -> dict[str, int]:
-    """Mirror ``Game._on_combat_complete`` VICTORY branch (game.py:3039).
+    """Pay out through ``Player.apply_combat_victory``, as ``Game._apply_combat_result`` does.
 
-    Kept inline so a regression in any reward primitive surfaces in this
-    test. Returns a totals dict for assertions.
+    Returns a totals dict for assertions.
     """
     assert state.result == CombatResult.VICTORY, "rewards only valid post-victory"
-
-    player.combats_won += 1
-    total_xp = sum(e.template.xp_reward for e in state.enemies)
-    player.progression.add_xp(total_xp)
-
-    loot_added: dict[str, int] = {}
-    for enemy in state.enemies:
-        if enemy.is_alive:
-            continue
-        if enemy.template.loot_table:
-            for cid, qty in _roll_loot(
-                enemy.template.loot_table,
-                seed=state.encounter.encounter_seed + hash(enemy.template.id),
-            ).items():
-                player.ship.add_cargo(cid, qty)
-                loot_added[cid] = loot_added.get(cid, 0) + qty
-        if enemy.template.rare_loot:
-            for cid, qty in _roll_loot(
-                enemy.template.rare_loot,
-                seed=state.encounter.encounter_seed + hash(enemy.template.id) + 7919,
-            ).items():
-                player.ship.add_cargo(cid, qty)
-                loot_added[cid] = loot_added.get(cid, 0) + qty
-
-    total_credits = sum(e.template.credit_reward for e in state.enemies if not e.is_alive)
-    if total_credits > 0:
-        player.add_credits(total_credits)
-
-    return {"xp": total_xp, "credits": total_credits, "loot_units": sum(loot_added.values())}
+    v = player.apply_combat_victory(state.enemies, state.encounter.encounter_seed)
+    return {"xp": v.xp, "credits": v.credits, "loot_units": sum(v.loot.values())}
 
 
 # ---------------------------------------------------------------------------
@@ -170,7 +137,7 @@ class TestEngineRecognizesVictory:
 
 
 # ---------------------------------------------------------------------------
-# 2. Reward dispatch (mirrors game.py:3039)
+# 2. Reward dispatch (Player.apply_combat_victory)
 # ---------------------------------------------------------------------------
 
 
@@ -215,8 +182,8 @@ class TestVictoryRewardsApply:
         assert player.progression.xp == starting_xp + 30
 
     def test_fled_enemies_grant_xp_but_no_credits_or_loot(self) -> None:
-        """An enemy that fled is not 'defeated' — credits/loot only roll on
-        truly dead enemies (game.py checks ``not enemy.is_alive``)."""
+        """An enemy that fled is not 'defeated': credits and loot only roll on
+        truly dead enemies (``Player.apply_combat_victory`` checks ``not enemy.is_alive``)."""
         player = fresh_player()
         starting_credits = player.credits
         enemy = real_enemy("pirate_scout")
@@ -227,7 +194,7 @@ class TestVictoryRewardsApply:
         rewards = _apply_victory_rewards(player, engine.get_state())
 
         # XP awards for every enemy in the encounter regardless of state
-        # (matches game.py: ``sum(e.template.xp_reward for e in state.enemies)``)
+        # (matches Player.apply_combat_victory: ``sum(e.template.xp_reward for e in enemies)``)
         assert rewards["xp"] == 15
         # Credits guard on ``not enemy.is_alive`` — fled scout is still alive
         assert player.credits == starting_credits

@@ -1,0 +1,5638 @@
+{
+  "case": "fight_guild_dreadnought",
+  "format": 1,
+  "setup": {
+    "complication_ids": [],
+    "crew_loyalty": 0,
+    "enemy_ids": [
+      "guild_dreadnought"
+    ],
+    "hull": 0,
+    "loadout": [
+      "plasma_caster",
+      "basic_shield_gen"
+    ],
+    "payout_player": {
+      "credits": 0,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "player": {
+      "accuracy": 78,
+      "active_effects": [],
+      "armor": 4,
+      "armor_pierce_active": false,
+      "cooldowns": {},
+      "counterstrike_stacks": 0,
+      "crew_moves": [],
+      "crew_sync_used": false,
+      "critical_hp_surge_fired": false,
+      "daring_gambit_turns": 0,
+      "defensive_identity": "juggernaut",
+      "dialogue_flags": {},
+      "dual_tech_moves": [],
+      "energy": 15,
+      "energy_regen": 6,
+      "equipment_moves": [
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "Superheated plasma that burns on contact.",
+          "effects": [
+            {
+              "duration": 0,
+              "target": "enemy",
+              "type": "damage",
+              "value": "f:14.0:4624070917402656768"
+            }
+          ],
+          "element": "plasma",
+          "energy_cost": 2,
+          "id": "plasma_caster",
+          "name": "Plasma Caster"
+        },
+        {
+          "accuracy_modifier": 0,
+          "cooldown": 0,
+          "description": "Restores 20 shield points.",
+          "effects": [
+            {
+              "duration": 0,
+              "target": "self",
+              "type": "shield_restore",
+              "value": "f:20.0:4626322717216342016"
+            }
+          ],
+          "element": "kinetic",
+          "energy_cost": 2,
+          "id": "basic_shield_gen",
+          "name": "Shield Restore"
+        }
+      ],
+      "evasion": 10,
+      "evasion_decay": 0,
+      "fire_at_will_active": false,
+      "flee_bonus": 0,
+      "hull": 280,
+      "max_energy": 15,
+      "max_hull": 280,
+      "max_shields": 120,
+      "momentum": {
+        "current": "f:0.0:0",
+        "overclock_triggered": false,
+        "overdriven_available": false,
+        "thresholds_crossed": []
+      },
+      "shield_break_vulnerable": false,
+      "shield_regen": 0,
+      "shields": 120,
+      "ship_class_category": "heavy_combat",
+      "speed": 8,
+      "total_commitment_armor_gained": 0,
+      "total_commitment_hits_remaining": 0
+    },
+    "seed": 2937562868,
+    "ship_type_id": "war_frigate"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          1,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          1,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 10,
+            "current_hull": 150,
+            "current_phase_idx": 0,
+            "current_shields": 40,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.1:4591870180066957722",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          1,
+          "enemy:0",
+          "Trade Battery",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 6,
+            "current_hull": 150,
+            "current_phase_idx": 0,
+            "current_shields": 40,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.1:4591870180066957722",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 1,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          1,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 9,
+            "current_hull": 145,
+            "current_phase_idx": 0,
+            "current_shields": 40,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.1:4591870180066957722",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          2,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          2,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 9,
+            "current_hull": 145,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.2:4596373779694328218",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          2,
+          "enemy:0",
+          "Trade Battery",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 5,
+            "current_hull": 145,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.2:4596373779694328218",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 2,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          2,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 8,
+            "current_hull": 135,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.2:4596373779694328218",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          3,
+          "player",
+          "Plasma Caster",
+          false
+        ],
+        [
+          3,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 8,
+            "current_hull": 135,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.2:4596373779694328218",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": []
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          3,
+          "enemy:0",
+          "Trade Battery",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 135,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.25:4598175219545276416",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 3,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          3,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 7,
+            "current_hull": 125,
+            "current_phase_idx": 0,
+            "current_shields": 35,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.25:4598175219545276416",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          4,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          4,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 7,
+            "current_hull": 125,
+            "current_phase_idx": 0,
+            "current_shields": 30,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.35000000000000003:4599976659396224615",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          4,
+          "enemy:0",
+          "Trade Battery",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 125,
+            "current_phase_idx": 0,
+            "current_shields": 30,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.4:4600877379321698714",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 4,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          4,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 6,
+            "current_hull": 115,
+            "current_phase_idx": 0,
+            "current_shields": 30,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.4:4600877379321698714",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          5,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          5,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 6,
+            "current_hull": 115,
+            "current_phase_idx": 0,
+            "current_shields": 25,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.5:4602678819172646912",
+            "overclock_triggered": false,
+            "overdriven_available": true,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          5,
+          "enemy:0",
+          "Trade Battery",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 115,
+            "current_phase_idx": 0,
+            "current_shields": 25,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.55:4603129179135383962",
+            "overclock_triggered": false,
+            "overdriven_available": true,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 5,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          5,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 5,
+            "current_hull": 105,
+            "current_phase_idx": 0,
+            "current_shields": 25,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.55:4603129179135383962",
+            "overclock_triggered": false,
+            "overdriven_available": true,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          6,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          6,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 5,
+            "current_hull": 105,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.6500000000000001:4604029899060858062",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          6,
+          "enemy:0",
+          "Trade Battery",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 105,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.6500000000000001:4604029899060858062",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 6,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          6,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 85,
+            "current_phase_idx": 0,
+            "current_shields": 11,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.6500000000000001:4604029899060858062",
+            "overclock_triggered": false,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          7,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          7,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 85,
+            "current_phase_idx": 0,
+            "current_shields": 6,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 13,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.7500000000000002:4604930618986332162",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          7,
+          "enemy:0",
+          "Trade Battery",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 85,
+            "current_phase_idx": 0,
+            "current_shields": 6,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 2
+            }
+          ],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 13,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.7500000000000002:4604930618986332162",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 7,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          7,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 65,
+            "current_phase_idx": 0,
+            "current_shields": 6,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.7500000000000002:4604930618986332162",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          8,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          8,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 65,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.8500000000000003:4605831338911806262",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          8,
+          "enemy:0",
+          "System Disruptor",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:10.948:4622352794144814924"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {
+              "dreadnought_drain": 2
+            },
+            "current_energy": 0,
+            "current_hull": 65,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [
+            {
+              "effect": {
+                "duration": 2,
+                "target": "self",
+                "type": "energy_restore",
+                "value": "f:3.0:4613937818241073152"
+              },
+              "remaining": 1
+            }
+          ],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 7,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.9000000000000004:4606281698874543312",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 118,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 8,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          8,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {
+              "dreadnought_drain": 1
+            },
+            "current_energy": 3,
+            "current_hull": 45,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.9000000000000004:4606281698874543312",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 118,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          9,
+          "player",
+          "Plasma Caster",
+          false
+        ],
+        [
+          9,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {
+              "dreadnought_drain": 1
+            },
+            "current_energy": 3,
+            "current_hull": 45,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.9000000000000004:4606281698874543312",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          9,
+          "enemy:0",
+          "No Action",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {
+              "dreadnought_drain": 1
+            },
+            "current_energy": 3,
+            "current_hull": 45,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.9000000000000004:4606281698874543312",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 9,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          9,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 6,
+            "current_hull": 35,
+            "current_phase_idx": 0,
+            "current_shields": 1,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:0.9000000000000004:4606281698874543312",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          10,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          10,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 6,
+            "current_hull": 31,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          10,
+          "enemy:0",
+          "Trade Battery",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 2,
+            "current_hull": 31,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 10,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          10,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 5,
+            "current_hull": 21,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          11,
+          "player",
+          "Plasma Caster",
+          true
+        ],
+        [
+          11,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 5,
+            "current_hull": 16,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          11,
+          "enemy:0",
+          "Trade Battery",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 1,
+            "current_hull": 16,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 11,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          11,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 6,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 107,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          "plasma_caster",
+          "basic_shield_gen"
+        ],
+        0
+      ],
+      "call": "player_turn",
+      "result": [
+        [
+          12,
+          "player",
+          "Plasma Caster",
+          false
+        ],
+        [
+          12,
+          "player",
+          "Shield Restore",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:1.6422:4610074630480714741"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 4,
+            "current_hull": 5,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 120,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "enemy_turns",
+      "result": [
+        [
+          12,
+          "enemy:0",
+          "Trade Battery",
+          false
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 2
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:1.6422:4610074630480714741"
+                },
+                "remaining": 3
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 0,
+            "current_hull": 5,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 11,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 5,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 119,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "in_progress",
+        "revealed_bribe_cost": -1,
+        "round_number": 12,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [],
+      "call": "end_round",
+      "result": [
+        [
+          12,
+          "system",
+          "End of Round",
+          true
+        ]
+      ],
+      "state": {
+        "bribe_used": false,
+        "complication_flags": [],
+        "enemies": [
+          {
+            "active_effects": [
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:5.474:4617849194517444428"
+                },
+                "remaining": 1
+              },
+              {
+                "effect": {
+                  "duration": 3,
+                  "target": "enemy",
+                  "type": "burn",
+                  "value": "f:1.6422:4610074630480714741"
+                },
+                "remaining": 2
+              }
+            ],
+            "cooldowns": {},
+            "current_energy": 3,
+            "current_hull": 0,
+            "current_phase_idx": 0,
+            "current_shields": 0,
+            "engines_just_destroyed": false,
+            "focused_subsystem": null,
+            "is_fled": false,
+            "subsystem_hp": {
+              "engine": 37,
+              "reactor": 37,
+              "weapon_array": 37
+            },
+            "subsystems_destroyed": [],
+            "telegraphed_move": null,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        "enemy_accuracy_multiplier": "f:1.0:4607182418800017408",
+        "fired_complication_ids": [],
+        "negotiate_partial_loot": false,
+        "negotiate_rival_rep": false,
+        "negotiate_used": false,
+        "player": {
+          "accuracy": 78,
+          "active_effects": [],
+          "armor": 4,
+          "armor_pierce_active": false,
+          "cooldowns": {},
+          "counterstrike_stacks": 0,
+          "crew_moves": [],
+          "crew_sync_used": false,
+          "critical_hp_surge_fired": false,
+          "daring_gambit_turns": 0,
+          "defensive_identity": "juggernaut",
+          "dialogue_flags": {},
+          "dual_tech_moves": [],
+          "energy": 15,
+          "energy_regen": 6,
+          "equipment_moves": [
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Superheated plasma that burns on contact.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "enemy",
+                  "type": "damage",
+                  "value": "f:14.0:4624070917402656768"
+                }
+              ],
+              "element": "plasma",
+              "energy_cost": 2,
+              "id": "plasma_caster",
+              "name": "Plasma Caster"
+            },
+            {
+              "accuracy_modifier": 0,
+              "cooldown": 0,
+              "description": "Restores 20 shield points.",
+              "effects": [
+                {
+                  "duration": 0,
+                  "target": "self",
+                  "type": "shield_restore",
+                  "value": "f:20.0:4626322717216342016"
+                }
+              ],
+              "element": "kinetic",
+              "energy_cost": 2,
+              "id": "basic_shield_gen",
+              "name": "Shield Restore"
+            }
+          ],
+          "evasion": 10,
+          "evasion_decay": 0,
+          "fire_at_will_active": false,
+          "flee_bonus": 0,
+          "hull": 280,
+          "max_energy": 15,
+          "max_hull": 280,
+          "max_shields": 120,
+          "momentum": {
+            "current": "f:1.0:4607182418800017408",
+            "overclock_triggered": true,
+            "overdriven_available": false,
+            "thresholds_crossed": [
+              "charged",
+              "overload",
+              "surging",
+              "ultimate"
+            ]
+          },
+          "shield_break_vulnerable": false,
+          "shield_regen": 0,
+          "shields": 119,
+          "ship_class_category": "heavy_combat",
+          "speed": 8,
+          "total_commitment_armor_gained": 0,
+          "total_commitment_hits_remaining": 0
+        },
+        "player_evasion_modifier": 0,
+        "result": "victory",
+        "revealed_bribe_cost": -1,
+        "round_number": 13,
+        "shield_regen_multiplier": "f:1.0:4607182418800017408"
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "dead": true,
+            "fled": false,
+            "template_id": "guild_dreadnought"
+          }
+        ],
+        2937562868
+      ],
+      "call": "apply_combat_victory",
+      "result": {
+        "credits": 150,
+        "loot": {
+          "electronics": 6,
+          "exotic_goods": 2,
+          "rare_metals": 1,
+          "restricted_tech": 1
+        },
+        "xp": 50
+      },
+      "state": {
+        "black_market_access": [],
+        "captain_memory": {},
+        "combats_bribed": 0,
+        "combats_fled": 0,
+        "combats_negotiated": 0,
+        "combats_won": 1,
+        "credits": 150,
+        "credits_earned_lifetime": 0,
+        "credits_spent_lifetime": 0,
+        "crew_quests_completed": 0,
+        "criminal_heat": 0,
+        "current_system_id": "nexus_prime",
+        "dialogue_flags": {},
+        "encounters_survived": 0,
+        "faction_assignments": {},
+        "faction_reputation": {},
+        "fuel_consumed": 0,
+        "game_day": 1,
+        "jumps_traveled": 0,
+        "largest_single_profit": 0,
+        "max_credits_held": 150,
+        "name": "ParityPilot",
+        "previous_system_id": "",
+        "price_memory": {
+          "snapshots": {}
+        },
+        "progression": {
+          "level": 1,
+          "skill_points": 0,
+          "skill_points_spent": 0,
+          "skills": {
+            "afterburner": 0,
+            "anomaly_detector": 0,
+            "anomaly_sense": 0,
+            "armor_expertise": 0,
+            "battle_awareness": 0,
+            "battle_commander": 0,
+            "battle_hardened": 0,
+            "black_market_connections": 0,
+            "captains_presence": 0,
+            "cargo_mastery": 0,
+            "click_power": 0,
+            "coalition_sway": 0,
+            "combat_scavenger": 0,
+            "command_presence": 0,
+            "commanding_presence": 0,
+            "counterstrike": 0,
+            "crew_manager": 0,
+            "crew_mentor": 0,
+            "crew_whisperer": 0,
+            "cultural_savant": 0,
+            "delegate_reach": 0,
+            "diplomatic_relations": 0,
+            "drone_fleet": 0,
+            "efficient_refining": 0,
+            "elemental_affinity": 0,
+            "emergency_reserves": 0,
+            "empathic_read": 0,
+            "energy_shields": 0,
+            "engineer_insight": 0,
+            "evasive_maneuvers": 0,
+            "faction_ambassador": 0,
+            "field_repairs": 0,
+            "forge_mastery": 0,
+            "frontier_reputation": 0,
+            "fuel_efficiency": 0,
+            "ghost_capstone": 0,
+            "ghost_protocol": 0,
+            "give_the_word": 0,
+            "ground_veteran": 0,
+            "hidden_compartments": 0,
+            "hull_reinforcement": 0,
+            "inspiring_leader": 0,
+            "insurance": 0,
+            "juggernaut_capstone": 0,
+            "keen_insight": 0,
+            "legend_of_the_expanse": 0,
+            "light_foot": 0,
+            "lot_appraiser": 0,
+            "market_eye": 0,
+            "market_insider": 0,
+            "master_negotiator": 0,
+            "material_science": 0,
+            "mediation_instinct": 0,
+            "momentum_surge": 0,
+            "negotiator": 0,
+            "ore_sense": 0,
+            "passive_drill": 0,
+            "peacemaker": 0,
+            "poker_face": 0,
+            "precision_strike": 0,
+            "price_memory": 0,
+            "read_the_room": 0,
+            "research_oversight": 0,
+            "research_yield": 0,
+            "rich_veins": 0,
+            "route_planner": 0,
+            "safe_passage": 0,
+            "salvage_efficiency": 0,
+            "salvage_efficiency_industry": 0,
+            "salvage_instinct": 0,
+            "seismic_charge": 0,
+            "sentinel_capstone": 0,
+            "shared_experience": 0,
+            "shield_mastery": 0,
+            "shield_regen": 0,
+            "silver_tongue": 0,
+            "smugglers_eye": 0,
+            "spread_trader": 0,
+            "steady_stick": 0,
+            "system_intel": 0,
+            "tactical_retreat": 0,
+            "tariff_negotiation": 0,
+            "tool_sense": 0,
+            "trade_instinct": 0,
+            "trade_network": 0,
+            "unbreakable_bonds": 0,
+            "underworld_contacts": 0,
+            "volley_commander": 0,
+            "weapon_specialization": 0
+          },
+          "xp": 50
+        },
+        "ship": {
+          "cargo_purchase_prices": {},
+          "current_cargo": {
+            "electronics": 6,
+            "exotic_goods": 2,
+            "rare_metals": 1,
+            "restricted_tech": 1
+          },
+          "current_fuel": 40,
+          "current_hull": 60,
+          "current_shields": 20,
+          "ship_type_id": "shuttle"
+        },
+        "ship_name": "",
+        "side_missions_completed": 0,
+        "systems_visited": [
+          "nexus_prime"
+        ],
+        "times_caught_smuggling": 0,
+        "total_profit": 0,
+        "trade_permits": [],
+        "trade_profit_total": 0,
+        "trades_completed": 0,
+        "upgrades": {
+          "installed": [],
+          "installed_ids": []
+        }
+      }
+    }
+  ],
+  "subsystem": "combat"
+}

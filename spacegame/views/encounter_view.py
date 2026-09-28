@@ -22,8 +22,9 @@ from spacegame.models.encounter import (
     EncounterDefinition,
     EncounterOutcome,
     EncounterRef,
+    resolve_choice_outcome,
+    resolve_encounter_skill_check,
 )
-from spacegame.models.mission import MissionReward
 from spacegame.models.player import Player
 from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
@@ -32,6 +33,7 @@ from spacegame.views.first_time_tip import FirstTimeTipOverlay
 
 if TYPE_CHECKING:
     from spacegame.models.journal import Journal
+    from spacegame.models.mission import MissionReward
 
 
 class EncounterPhase(str, Enum):
@@ -481,45 +483,20 @@ class EncounterView(BaseView):
         """
         choice = self.display_choices[index]
 
-        # CE-4: resolve skill_check first; outcome selection follows.
-        outcome = choice.outcome
         skill_check_succeeded = False
         if choice.skill_check is not None:
             skill_check_succeeded = self._resolve_choice_skill_check(choice)
-            if not skill_check_succeeded and choice.failure_outcome is not None:
-                outcome = choice.failure_outcome
-
-        # Resolve shakedown sentinel: deduct_credits with amount=-1
-        resolved_rewards = []
-        for reward in outcome.rewards:
-            if reward.reward_type == "deduct_credits" and reward.amount == -1:
-                resolved_rewards.append(
-                    MissionReward("deduct_credits", self.encounter_ref.shakedown_demand)
-                )
-            else:
-                resolved_rewards.append(reward)
-
-        # CE-4: convert requires_credits into an automatic deduct_credits
-        # reward so the existing reward pipeline handles the spend.
-        if choice.requires_credits and not any(
-            r.reward_type == "deduct_credits" for r in resolved_rewards
-        ):
-            resolved_rewards.insert(0, MissionReward("deduct_credits", choice.requires_credits))
-
-        self.chosen_outcome = EncounterOutcome(
-            description=outcome.description,
-            rewards=resolved_rewards,
-            leads_to_combat=outcome.leads_to_combat,
+        resolved = resolve_choice_outcome(
+            choice, self.encounter_ref.shakedown_demand, skill_check_succeeded
         )
-        self.pending_combat = outcome.leads_to_combat
-
-        # Boss / encounter-spawn enemies: outcome may name the templates.
-        if (
-            outcome.leads_to_combat
-            and hasattr(outcome, "enemy_template_ids")
-            and outcome.enemy_template_ids
-        ):
-            self.encounter_ref.enemy_template_ids = list(outcome.enemy_template_ids)
+        self.chosen_outcome = EncounterOutcome(
+            description=resolved.description,
+            rewards=resolved.rewards,
+            leads_to_combat=resolved.leads_to_combat,
+        )
+        self.pending_combat = resolved.leads_to_combat
+        if resolved.leads_to_combat and resolved.enemy_template_ids:
+            self.encounter_ref.enemy_template_ids = list(resolved.enemy_template_ids)
 
         # RC-6: record the captain encounter for non-combat resolutions.
         # Combat-bound outcomes are recorded by CombatView at COMBAT_OVER
@@ -639,16 +616,8 @@ class EncounterView(BaseView):
         play — the flag side-effects are skipped because there's no XP /
         disposition system to update in that path.
         """
-        sc = choice.skill_check
-        assert sc is not None
-        if self.social_manager is None:
-            return False
-        success, _msg = self.social_manager.resolve_check(sc.skill, sc.difficulty, "")
-        if self.player is not None:
-            flag = sc.set_flag_on_success if success else sc.set_flag_on_failure
-            if flag:
-                self.player.dialogue_flags[flag] = True
-        return success
+        assert choice.skill_check is not None
+        return resolve_encounter_skill_check(choice.skill_check, self.social_manager, self.player)
 
     def _finish(self) -> None:
         """Transition from OUTCOME to DONE."""

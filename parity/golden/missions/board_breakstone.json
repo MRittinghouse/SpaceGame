@@ -1,0 +1,714 @@
+{
+  "case": "board_breakstone",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "breakstone",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A contact in Breakstone needs 2 units of Restricted Tech moved to Axiom Labs — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_breakstone_1_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to Axiom Labs",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3840,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Breakstone for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_breakstone_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Local authorities in Breakstone are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_breakstone_1_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Breakstone to collect bounty",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 670,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Breakstone for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_breakstone_2_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Local authorities in Breakstone are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_breakstone_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Breakstone to collect bounty",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1476,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A research consortium in Breakstone needs market and navigational data from Nexus Prime, Haven's Rest. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_breakstone_2_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone with survey data",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Breakstone for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_breakstone_3_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A contact in Breakstone needs 4 units of Diverted Medicine moved to Heron's Mark — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_breakstone_3_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Heron's Mark",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 4
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1920,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 90,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Transport 4 units of Electronics to Nexus Prime. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_breakstone_3_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Electronics to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Acquire 4 Electronics",
+              "target_id": "electronics",
+              "target_quantity": 4,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "electronics"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Transport 8 units of Electronics to The Fulcrum. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_breakstone_4_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Electronics to The Fulcrum",
+          "objectives": [
+            {
+              "description": "Acquire 8 Electronics",
+              "target_id": "electronics",
+              "target_quantity": 8,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 8,
+              "reward_type": "remove_cargo",
+              "target_id": "electronics"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Sensors have detected a derelict vessel near Axiom Labs. Travel there to claim salvage rights, then return to Breakstone for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_breakstone_4_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Axiom Labs",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A contact in Breakstone needs 5 units of Restricted Tech moved to Nova Research — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_breakstone_4_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to Nova Research",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 9600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Local authorities in Breakstone are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_breakstone_5_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Breakstone to collect bounty",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 932,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Sensors have detected a derelict vessel near The Fulcrum. Travel there to claim salvage rights, then return to Breakstone for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_breakstone_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near The Fulcrum",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A research consortium in Breakstone needs market and navigational data from Nexus Prime, Nova Research, The Fulcrum. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_breakstone_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Breakstone with survey data",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "A contact in Breakstone needs 3 units of Diverted Medicine moved to Heron's Mark — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_breakstone_6_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Heron's Mark",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1440,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "breakstone"
+          ],
+          "description": "Local authorities in Breakstone are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_breakstone_6_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Breakstone to collect bounty",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 850,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

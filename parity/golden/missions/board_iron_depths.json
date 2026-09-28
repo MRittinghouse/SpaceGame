@@ -1,0 +1,698 @@
+{
+  "case": "board_iron_depths",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "iron_depths",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A contact in Iron Depths needs 5 units of Restricted Tech moved to The Fulcrum — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_iron_depths_1_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to The Fulcrum",
+          "objectives": [
+            {
+              "description": "Deliver contraband to The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 5
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 9600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 100,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 5,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Sensors have detected a derelict vessel near Forgeworks. Travel there to claim salvage rights, then return to Iron Depths for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_iron_depths_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Forgeworks",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A research consortium in Iron Depths needs market and navigational data from Verdant, Crimson Reach. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_iron_depths_1_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths with survey data",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A research consortium in Iron Depths needs market and navigational data from Nexus Prime, Axiom Labs. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_iron_depths_2_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths with survey data",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Iron Depths for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_iron_depths_2_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Local authorities in Iron Depths are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_iron_depths_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Iron Depths to collect bounty",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3312,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A research consortium in Iron Depths needs market and navigational data from Crimson Reach, Heron's Mark, Stellaris Port. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_iron_depths_3_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths with survey data",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Transport 7 units of Machinery to Axiom Labs. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_iron_depths_3_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Machinery to Axiom Labs",
+          "objectives": [
+            {
+              "description": "Acquire 7 Machinery",
+              "target_id": "machinery",
+              "target_quantity": 7,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1050,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 65,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 7,
+              "reward_type": "remove_cargo",
+              "target_id": "machinery"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A contact in Iron Depths needs 2 units of Diverted Medicine moved to Nexus Prime — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_iron_depths_3_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Diverted Medicine to Nexus Prime",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "contraband_medicine",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 960,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "contraband_medicine"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Iron Depths for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_iron_depths_4_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Local authorities in Iron Depths are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_iron_depths_4_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Iron Depths to collect bounty",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2328,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A research consortium in Iron Depths needs market and navigational data from Axiom Labs, Forgeworks, Stellaris Port. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_iron_depths_5_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Stellaris Port",
+              "target_id": "stellaris_port",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths with survey data",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1200,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A contact in Iron Depths needs 2 units of Combat Stimulants moved to Crimson Reach — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_iron_depths_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Combat Stimulants to Crimson Reach",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "combat_stims",
+              "quantity": 2
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1680,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 2,
+              "reward_type": "remove_cargo",
+              "target_id": "combat_stims"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "A research consortium in Iron Depths needs market and navigational data from Breakstone, Verdant. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_iron_depths_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Breakstone",
+              "target_id": "breakstone",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Verdant",
+              "target_id": "verdant",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Iron Depths with survey data",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 800,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Transport 3 units of Crystal Ore to Axiom Labs. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_iron_depths_6_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Crystal Ore to Axiom Labs",
+          "objectives": [
+            {
+              "description": "Acquire 3 Crystal Ore",
+              "target_id": "crystal_ore",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 150,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 45,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "crystal_ore"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "iron_depths"
+          ],
+          "description": "Local authorities in Iron Depths are offering a bounty for eliminating 2 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_iron_depths_6_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 2 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 2 combat encounters",
+              "target_id": "",
+              "target_quantity": 2,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Iron Depths to collect bounty",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1680,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

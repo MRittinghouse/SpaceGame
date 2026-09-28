@@ -694,8 +694,9 @@ def _helper_access_patterns() -> list[tuple[str, str, "re.Pattern[str]", "re.Pat
 # ---------------------------------------------------------------------------
 
 KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
-    # Note: completed_mission_* flags are set at runtime by game.py's
-    # mission-completion handler (Tier 1.1 fix), not by static data. The
+    # Note: completed_mission_* flags are set at runtime by
+    # MissionManager.complete_mission, called from game.py's check_missions
+    # (Tier 1.1 fix), not by static data. The
     # detector only sees static producers, so these stay listed. If someone
     # adds a reward_type mechanism that sets them declaratively, the
     # stay-meaningful test will catch it and we can clean up.

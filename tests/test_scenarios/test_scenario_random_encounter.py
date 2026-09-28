@@ -11,17 +11,18 @@ travel:
   2. **Selection** — ``select_encounter_definition`` filters by
      eligibility (type, danger, required flags, level, unique-once,
      resolved captains) and weighted-picks among survivors.
-  3. **Choice** — player picks an EncounterChoice. If the choice has a
+  3. **Choice**: player picks an EncounterChoice. If the choice has a
      ``skill_check``, success returns ``outcome``; failure returns
      ``failure_outcome`` (or ``outcome`` if no failure path is authored).
-  4. **Apply** — ``Game._apply_encounter_result`` (game.py:2921) walks
+  4. **Apply**: ``apply_encounter_outcome`` (models/encounter.py) walks
      ``outcome.rewards`` and dispatches each ``MissionReward`` to the
      right player primitive (credits, XP, dialogue_flags, reputation,
      cargo confiscation, criminal heat, etc.).
 
-The reward-dispatch block is mirrored inline in ``_apply_outcome_rewards``
-below. **If you refactor game.py:2921 into a method on Player or an
-``EncounterResolver`` model class, update the inlined helper to delegate.**
+The helpers below delegate to the model functions that own this logic
+(``resolve_encounter_skill_check``, ``resolve_choice_outcome`` and
+``apply_encounter_outcome``, all in ``spacegame.models.encounter``), so a
+regression in any reward primitive or skill-check branch surfaces here too.
 
 Coverage in this scenario stops short of the leads_to_combat path —
 combat itself is covered by ``test_scenario_combat_victory`` and
@@ -38,7 +39,11 @@ from spacegame.models.encounter import (
     EncounterDefinition,
     EncounterOutcome,
     EncounterSkillCheck,
+    apply_encounter_outcome,
     check_travel_encounter,
+    mark_unique_encounter_seen,
+    resolve_choice_outcome,
+    resolve_encounter_skill_check,
     select_encounter_definition,
 )
 from spacegame.models.mission import MissionReward
@@ -46,66 +51,40 @@ from spacegame.models.social import SocialManager
 from tests.test_scenarios._helpers import fresh_player
 
 # ---------------------------------------------------------------------------
-# Reward-dispatch helper — mirrors Game._apply_encounter_result (game.py:2921).
-# Kept inline so a regression in any reward primitive surfaces here.
+# Reward-dispatch helper. The code under test is apply_encounter_outcome
+# (spacegame/models/encounter.py), the model function Game._apply_encounter_result
+# calls to apply an outcome's rewards to the player.
 # ---------------------------------------------------------------------------
 
 
 def _apply_outcome_rewards(player, outcome: EncounterOutcome) -> None:
-    """Mirror the per-reward dispatch in ``Game._apply_encounter_result``.
+    """Delegate reward application to ``apply_encounter_outcome``.
 
     Skips the politics/dialogue-manager/crew-reaction side channels that
-    only Game has access to — those are covered in
-    ``test_qa_ce_encounter_pipeline.py``. This helper covers the player-
-    state mutations every encounter reward type triggers.
+    only Game has access to; those are covered in
+    ``test_qa_ce_encounter_pipeline.py`` and, for ``Game._apply_encounter_result``
+    itself, ``tests/test_engine/test_apply_encounter_result.py``. This helper
+    covers the player-state mutations every encounter reward type triggers, by
+    exercising the same model function ``Game._apply_encounter_result`` calls.
     """
-    player.encounters_survived += 1
-    for reward in outcome.rewards:
-        rt = reward.reward_type
-        if rt == "credits":
-            player.credits += reward.amount
-        elif rt == "deduct_credits":
-            if player.credits >= reward.amount:
-                player.credits -= reward.amount
-        elif rt == "xp":
-            player.progression.add_xp(reward.amount)
-        elif rt == "set_flag" and reward.target_id:
-            player.dialogue_flags[reward.target_id] = True
-        elif rt == "modify_reputation" and reward.target_id:
-            player.modify_reputation(reward.target_id, reward.amount)
-        elif rt == "confiscate_cargo" and reward.target_id:
-            qty = player.ship.get_cargo_quantity(reward.target_id)
-            remove_qty = min(qty, reward.amount)
-            if remove_qty > 0:
-                player.ship.remove_cargo(reward.target_id, remove_qty)
-        elif rt == "add_criminal_heat":
-            player.add_criminal_heat(reward.amount)
-            player.times_caught_smuggling += 1
-        elif rt == "reduce_criminal_heat":
-            player.decay_criminal_heat(reward.amount)
+    apply_encounter_outcome(player, outcome)
 
 
 def _resolve_choice(player, choice: EncounterChoice, social: SocialManager) -> EncounterOutcome:
-    """Mirror EncounterView._select_choice (encounter_view.py:476).
+    """Delegate skill-check resolution and outcome selection to the model.
 
-    Resolves the skill_check (if present), routes to outcome or
-    failure_outcome, and sets any check-specific flags. Returns the
-    outcome that should be applied.
+    Resolves the skill_check (if present) through
+    ``resolve_encounter_skill_check``, which writes the success or
+    failure flag, then returns the resolved outcome (main or failure
+    branch) through ``resolve_choice_outcome``. This scenario never
+    exercises a shakedown demand, so it always passes 0.
     """
-    if choice.skill_check is None:
-        return choice.outcome
-
-    success, _msg = social.resolve_check(
-        choice.skill_check.skill, choice.skill_check.difficulty, ""
+    passed = (
+        resolve_encounter_skill_check(choice.skill_check, social, player)
+        if choice.skill_check is not None
+        else True
     )
-    if success:
-        if choice.skill_check.set_flag_on_success:
-            player.dialogue_flags[choice.skill_check.set_flag_on_success] = True
-        return choice.outcome
-
-    if choice.skill_check.set_flag_on_failure:
-        player.dialogue_flags[choice.skill_check.set_flag_on_failure] = True
-    return choice.failure_outcome or choice.outcome
+    return resolve_choice_outcome(choice, 0, passed)
 
 
 # ---------------------------------------------------------------------------
@@ -243,12 +222,17 @@ class TestSelectionEligibility:
         first = select_encounter_definition([unique_enc], ctx)
         assert first is unique_enc
 
+        # Producer: mark_unique_encounter_seen writes the flag consumed below.
+        player = fresh_player()
+        flag = mark_unique_encounter_seen(player, unique_enc)
+        assert flag == "encounter_seen_once_only"
+
         # After marking seen, drops out
         ctx_seen = EncounterContext(
             encounter_type="diplomatic",
             danger_level="moderate",
             seed=1,
-            dialogue_flags={"encounter_seen_once_only": True},
+            dialogue_flags=player.dialogue_flags,
         )
         second = select_encounter_definition([unique_enc], ctx_seen)
         assert second is None
@@ -371,8 +355,10 @@ class TestRewardDispatch:
         assert player.credits == 300
 
     def test_deduct_credits_insufficient_funds_waived(self) -> None:
-        """Per game.py:2942: insufficient credits 'waives' the cost — no
-        crash, no negative balance."""
+        """apply_encounter_outcome waives a deduct_credits the player cannot afford.
+
+        The balance stays at 50 instead of going negative, and the call does not raise.
+        """
         player = fresh_player(credits=50)
         outcome = EncounterOutcome(
             description="bribe attempt",
@@ -486,7 +472,7 @@ class TestFullEncounterChain:
         player = fresh_player(credits=1000)
         social = SocialManager()
         outcome = _resolve_choice(player, choice, social)
-        assert outcome is choice.outcome
+        assert outcome == choice.outcome
 
         before_credits = player.credits
         _apply_outcome_rewards(player, outcome)

@@ -1,0 +1,716 @@
+{
+  "case": "board_nexus_prime",
+  "format": 1,
+  "setup": {
+    "seed": 3022172595
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "nexus_prime",
+        1
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A contact in Nexus Prime needs 3 units of Weapons Components moved to Haven's Rest — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_nexus_prime_1_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Weapons Components to Haven's Rest",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "weapons_components",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1620,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "weapons_components"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Transport 8 units of Manufactured Goods to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "discovery_method": "station_board",
+          "id": "proc_delivery_nexus_prime_1_3022172595",
+          "mission_type": "side",
+          "name": "Delivery: Manufactured Goods to Nova Research",
+          "objectives": [
+            {
+              "description": "Acquire 8 Manufactured Goods",
+              "target_id": "manufactured_goods",
+              "target_quantity": 8,
+              "type": "collect_cargo"
+            },
+            {
+              "description": "Deliver to Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 480,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 70,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 8,
+              "reward_type": "remove_cargo",
+              "target_id": "manufactured_goods"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Sensors have detected a derelict vessel near The Fulcrum. Travel there to claim salvage rights, then return to Nexus Prime for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_nexus_prime_1_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near The Fulcrum",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        2
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Local authorities in Nexus Prime are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_nexus_prime_2_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Nexus Prime to collect bounty",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1347,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Sensors have detected a derelict vessel near Crimson Reach. Travel there to claim salvage rights, then return to Nexus Prime for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_nexus_prime_2_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Crimson Reach",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        3
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Local authorities in Nexus Prime are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_nexus_prime_3_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Nexus Prime to collect bounty",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 583,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A research consortium in Nexus Prime needs market and navigational data from Forgeworks, Crimson Reach. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_nexus_prime_3_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 2 Systems",
+          "objectives": [
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Crimson Reach",
+              "target_id": "crimson_reach",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime with survey data",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 50,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A contact in Nexus Prime needs 3 units of Restricted Tech moved to Forgeworks — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_nexus_prime_3_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to Forgeworks",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 3
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 2880,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 80,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 3,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        4
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Sensors have detected a derelict vessel near The Fulcrum. Travel there to claim salvage rights, then return to Nexus Prime for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_nexus_prime_4_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near The Fulcrum",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near The Fulcrum",
+              "target_id": "the_fulcrum",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Local authorities in Nexus Prime are offering a bounty for eliminating 3 hostiles in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_nexus_prime_4_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 3 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 3 combat encounters",
+              "target_id": "",
+              "target_quantity": 3,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Nexus Prime to collect bounty",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 1698,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 120,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A research consortium in Nexus Prime needs market and navigational data from Iron Depths, Nova Research, Axiom Labs. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_nexus_prime_4_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Nova Research",
+              "target_id": "nova_research",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime with survey data",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        5
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A contact in Nexus Prime needs 4 units of Restricted Tech moved to Heron's Mark — no questions asked. The cargo will be loaded when you accept.",
+          "discovery_method": "station_board",
+          "id": "proc_smuggling_nexus_prime_5_3022172595",
+          "mission_type": "side",
+          "name": "Smuggling: Restricted Tech to Heron's Mark",
+          "objectives": [
+            {
+              "description": "Deliver contraband to Heron's Mark",
+              "target_id": "herons_mark",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "on_accept_cargo": [
+            {
+              "commodity_id": "restricted_tech",
+              "quantity": 4
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 3840,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 90,
+              "reward_type": "xp"
+            },
+            {
+              "amount": 4,
+              "reward_type": "remove_cargo",
+              "target_id": "restricted_tech"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Sensors have detected a derelict vessel near Forgeworks. Travel there to claim salvage rights, then return to Nexus Prime for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_nexus_prime_5_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Forgeworks",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Local authorities in Nexus Prime are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_nexus_prime_5_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Nexus Prime to collect bounty",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 442,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        6
+      ],
+      "call": "generate_for_system",
+      "result": [
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Sensors have detected a derelict vessel near Iron Depths. Travel there to claim salvage rights, then return to Nexus Prime for your finder's fee.",
+          "discovery_method": "station_board",
+          "id": "proc_salvage_nexus_prime_6_3022172595",
+          "mission_type": "side",
+          "name": "Salvage: Wreckage near Iron Depths",
+          "objectives": [
+            {
+              "description": "Investigate wreckage near Iron Depths",
+              "target_id": "iron_depths",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 400,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 60,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "A research consortium in Nexus Prime needs market and navigational data from Axiom Labs, Forgeworks, Haven's Rest. Visit each system and return with the data.",
+          "discovery_method": "station_board",
+          "id": "proc_survey_nexus_prime_6_3022172595",
+          "mission_type": "side",
+          "name": "Survey: 3 Systems",
+          "objectives": [
+            {
+              "description": "Survey Axiom Labs",
+              "target_id": "axiom_labs",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Forgeworks",
+              "target_id": "forgeworks",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Survey Haven's Rest",
+              "target_id": "havens_rest",
+              "target_quantity": 1,
+              "type": "reach_system"
+            },
+            {
+              "description": "Return to Nexus Prime with survey data",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 600,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 75,
+              "reward_type": "xp"
+            }
+          ]
+        },
+        {
+          "available_at": [
+            "nexus_prime"
+          ],
+          "description": "Local authorities in Nexus Prime are offering a bounty for eliminating 1 hostile in the region. Return here after completing the contract.",
+          "discovery_method": "station_board",
+          "id": "proc_bounty_nexus_prime_6_3022172595",
+          "mission_type": "side",
+          "name": "Bounty: Clear 1 Hostiles",
+          "objectives": [
+            {
+              "description": "Win 1 combat encounter",
+              "target_id": "",
+              "target_quantity": 1,
+              "type": "win_combat"
+            },
+            {
+              "description": "Return to Nexus Prime to collect bounty",
+              "target_id": "nexus_prime",
+              "target_quantity": 1,
+              "type": "reach_system"
+            }
+          ],
+          "prerequisites": [],
+          "rewards": [
+            {
+              "amount": 429,
+              "reward_type": "credits"
+            },
+            {
+              "amount": 40,
+              "reward_type": "xp"
+            }
+          ]
+        }
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "missions"
+}

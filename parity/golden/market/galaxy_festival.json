@@ -1,0 +1,163 @@
+{
+  "case": "galaxy_festival",
+  "format": 1,
+  "setup": {
+    "day": 1,
+    "system_id": "stellaris_port"
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        {
+          "blocked_commodities": [],
+          "chain_id": "",
+          "chain_step": 0,
+          "danger_modifier": 0,
+          "day_started": 1,
+          "description": "Commerce Guild Annual Trade Fair opens at stellaris_port",
+          "duration_days": 2,
+          "encounter_chance_modifier": "f:1.0:4607182418800017408",
+          "event_type": "festival",
+          "faction_id": "commerce_guild",
+          "flavor_text": "Bid paddles flash as rare antiquities cross the block. Credits flow like water.",
+          "id": "guild_trade_fair_1",
+          "price_modifiers": {
+            "art": "f:2.0:4611686018427387904",
+            "exotic_goods": "f:1.8:4610785298501913805",
+            "precious_metals": "f:1.5:4609434218613702656"
+          },
+          "rep_bonus_amount": 2,
+          "rep_bonus_faction": "commerce_guild",
+          "shutdown_tags": [],
+          "skill_opportunity": "sell_price_bonus",
+          "system_id": "stellaris_port"
+        }
+      ],
+      "call": "add_galaxy_event",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 1,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 214,
+          "art": 690,
+          "common_metals": 72,
+          "electronics": 198,
+          "exotic_goods": 572,
+          "food": 52,
+          "fuel": 9,
+          "machinery": 125,
+          "manufactured_goods": 88,
+          "medical": 332,
+          "neural_weave": 946,
+          "precious_metals": 375,
+          "purified_crystal": 307,
+          "rare_metals": 283,
+          "refined_propellant": 166,
+          "textiles": 39
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        2
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 2,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 182,
+          "art": 692,
+          "common_metals": 71,
+          "electronics": 208,
+          "exotic_goods": 720,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 100,
+          "manufactured_goods": 84,
+          "medical": 358,
+          "neural_weave": 977,
+          "precious_metals": 306,
+          "purified_crystal": 291,
+          "rare_metals": 268,
+          "refined_propellant": 163,
+          "textiles": 36
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        3
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 3,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 234,
+          "art": 291,
+          "common_metals": 67,
+          "electronics": 200,
+          "exotic_goods": 385,
+          "food": 49,
+          "fuel": 10,
+          "machinery": 112,
+          "manufactured_goods": 101,
+          "medical": 354,
+          "neural_weave": 1024,
+          "precious_metals": 267,
+          "purified_crystal": 334,
+          "rare_metals": 288,
+          "refined_propellant": 184,
+          "textiles": 38
+        },
+        "stock": {}
+      }
+    },
+    {
+      "args": [
+        4
+      ],
+      "call": "update_day",
+      "result": null,
+      "state": {
+        "base_stock": {},
+        "game_day": 4,
+        "player_supply_demand": {},
+        "politics_shifts": [],
+        "prices": {
+          "alloy_composite": 221,
+          "art": 283,
+          "common_metals": 72,
+          "electronics": 190,
+          "exotic_goods": 375,
+          "food": 47,
+          "fuel": 10,
+          "machinery": 125,
+          "manufactured_goods": 82,
+          "medical": 355,
+          "neural_weave": 1155,
+          "precious_metals": 249,
+          "purified_crystal": 310,
+          "rare_metals": 271,
+          "refined_propellant": 163,
+          "textiles": 40
+        },
+        "stock": {}
+      }
+    }
+  ],
+  "subsystem": "market"
+}

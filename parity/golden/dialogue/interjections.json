@@ -1,0 +1,2320 @@
+{
+  "case": "interjections",
+  "format": 1,
+  "setup": {
+    "crew_aboard": [
+      [
+        "elena_reeves",
+        "Elena Reeves"
+      ],
+      [
+        "marcus_jin",
+        "Marcus Jin"
+      ],
+      [
+        "dr_priya_osei",
+        "Dr. Priya Osei"
+      ],
+      [
+        "tomas_drifter",
+        "Tomas Drifter"
+      ]
+    ],
+    "seeds": {
+      "defeat": 1496861154,
+      "nemesis": 3396144551,
+      "raider": 3649653311
+    }
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 1
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Captain. Hostile signature confirmed. I have a vector.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "They want a fight. Give them one.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Hostile contact. Engagement parameters are within tolerance.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, this is just business. They came for a fight and we are the fight.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {
+        "fired": []
+      }
+    },
+    {
+      "args": [
+        "raider",
+        "elena_reeves",
+        "first_turn"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 2
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 3
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 4
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 5
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 67,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 6
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 56,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 7
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 56,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 8
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 45,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 9
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 34,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 10
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        {
+          "enemies": [
+            {
+              "current_hull": 10,
+              "is_fled": false,
+              "template_id": "pirate_raider"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 11
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Final approach. They cannot weather another pass.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "He's leaking. Finish him.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Statistically, one more well-placed hit ends this.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "He is on the ropes. Way I see it, that is when most folk get desperate. Watch him.",
+          "trigger": "enemy_low_hp"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        "elena_reeves",
+        "enemy_low_hp"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        "victory"
+      ],
+      "call": "evaluate_outcome",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Engagement closed. Adding 'survived' to the after-action report.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Done. Patch list comes after.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Engagement concluded. I will compile the data when my hands stop shaking.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, that was a good day's work. Drinks on me when we dock.",
+          "trigger": "combat_outcome"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "raider",
+        "elena_reeves",
+        "combat_outcome"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "combat_outcome"
+          ],
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 82,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 1
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Engagement window opens. Standard rules of evasion apply, sir. Sorry. Captain.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "They want a fight. Give them one.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Union hull. I've welded those plates. I know where they're thin.",
+          "trigger": "enemy_type_match"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Hostile contact. Engagement parameters are within tolerance.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, this is just business. They came for a fight and we are the fight.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {
+        "fired": []
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "elena_reeves",
+        "first_turn"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 82,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 2
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Union pickets. They know me. That's worse.",
+          "trigger": "enemy_type_match"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "marcus_jin",
+        "enemy_type_match"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 82,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 3
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 82,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 4
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 71,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 5
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 59,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 6
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 47,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 7
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 47,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 8
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 35,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 9
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 23,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 10
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 11,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 11
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Their hull is failing. Press the advantage.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "He's leaking. Finish him.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Their hull is approaching catastrophic failure. The next strike is likely terminal.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "He is on the ropes. Way I see it, that is when most folk get desperate. Watch him.",
+          "trigger": "enemy_low_hp"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "elena_reeves",
+        "enemy_low_hp"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        {
+          "enemies": [
+            {
+              "current_hull": 2,
+              "is_fled": false,
+              "template_id": "union_brawler"
+            }
+          ],
+          "player": {
+            "hull": 900,
+            "max_hull": 900
+          },
+          "round_number": 12
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Their hull's done. One more pass.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Statistically, one more well-placed hit ends this.",
+          "trigger": "enemy_low_hp"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Done deal. Close it before he closes it for us.",
+          "trigger": "enemy_low_hp"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "marcus_jin",
+        "enemy_low_hp"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_low_hp"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "victory"
+      ],
+      "call": "evaluate_outcome",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Engagement closed. Adding 'survived' to the after-action report.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "Done. Patch list comes after.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Engagement concluded. I will compile the data when my hands stop shaking.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Way I see it, that was a good day's work. Drinks on me when we dock.",
+          "trigger": "combat_outcome"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_low_hp"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "nemesis",
+        "elena_reeves",
+        "combat_outcome"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "combat_outcome"
+          ],
+          [
+            "elena_reeves",
+            "enemy_low_hp"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "marcus_jin",
+            "enemy_low_hp"
+          ],
+          [
+            "marcus_jin",
+            "enemy_type_match"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 1
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Captain. Hostile signature confirmed. I have a vector.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "They want a fight. Give them one.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "I am tracking shield harmonics. The data will be useful regardless of outcome.",
+          "trigger": "first_turn"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Captain. Smile. They cannot tell when you are scared.",
+          "trigger": "first_turn"
+        }
+      ],
+      "state": {
+        "fired": []
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        "elena_reeves",
+        "first_turn"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 2
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 3
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 4
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 5
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 6
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 7
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 300,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 8
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 299,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 9
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 286,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 10
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 273,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 11
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 260,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 12
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 247,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 13
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 234,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 14
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 234,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 15
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 221,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 16
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 208,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 17
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 195,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 18
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 195,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 19
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 182,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 20
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 169,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 21
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 169,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 22
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 168,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 23
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 167,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 24
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 167,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 25
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 166,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 26
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 163,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 27
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 162,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 28
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 149,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 29
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 149,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 30
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 148,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 31
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 148,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 32
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 135,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 40,
+            "max_hull": 40
+          },
+          "round_number": 33
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 135,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 31,
+            "max_hull": 40
+          },
+          "round_number": 34
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        {
+          "enemies": [
+            {
+              "current_hull": 122,
+              "is_fled": false,
+              "template_id": "corsair_king"
+            }
+          ],
+          "player": {
+            "hull": 1,
+            "max_hull": 40
+          },
+          "round_number": 35
+        }
+      ],
+      "call": "evaluate_round",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Hull integrity at thirty. Captain, I would recommend a course correction or a miracle.",
+          "trigger": "player_low_hp"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "We are not in good shape. Decide quick.",
+          "trigger": "player_low_hp"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Captain. My estimate of our survival probability has dropped substantially. Please adjust.",
+          "trigger": "player_low_hp"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "This is a bad trade, Captain. Fold or raise. Either is better than this.",
+          "trigger": "player_low_hp"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        "elena_reeves",
+        "player_low_hp"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "elena_reeves",
+            "player_low_hp"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        "defeat"
+      ],
+      "call": "evaluate_outcome",
+      "result": [
+        {
+          "crew_id": "elena_reeves",
+          "crew_name": "Elena Reeves",
+          "line": "Captain. We did what we could. I am sorry.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "marcus_jin",
+          "crew_name": "Marcus Jin",
+          "line": "I'm sorry, Captain. We'll fix what's left.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "dr_priya_osei",
+          "crew_name": "Dr. Priya Osei",
+          "line": "Captain. I do not have words for this. I am sorry.",
+          "trigger": "combat_outcome"
+        },
+        {
+          "crew_id": "tomas_drifter",
+          "crew_name": "Tomas Drifter",
+          "line": "Captain. I am sorry. I really am.",
+          "trigger": "combat_outcome"
+        }
+      ],
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "elena_reeves",
+            "player_low_hp"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        "defeat",
+        "elena_reeves",
+        "combat_outcome"
+      ],
+      "call": "commit",
+      "result": null,
+      "state": {
+        "fired": [
+          [
+            "elena_reeves",
+            "combat_outcome"
+          ],
+          [
+            "elena_reeves",
+            "first_turn"
+          ],
+          [
+            "elena_reeves",
+            "player_low_hp"
+          ]
+        ]
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

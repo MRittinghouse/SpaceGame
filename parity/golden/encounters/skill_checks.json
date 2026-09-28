@@ -1,0 +1,3012 @@
+{
+  "case": "skill_checks",
+  "format": 1,
+  "setup": {
+    "fresh_per_step": true,
+    "manager_attribute_sheet": null,
+    "manager_progression": null,
+    "player": {
+      "credits": 10000,
+      "fuel": 40,
+      "name": "ParityPilot",
+      "ship_type": "shuttle",
+      "system_id": "nexus_prime"
+    },
+    "social_profiles": {
+      "boosted": {
+        "disposition": {},
+        "skills": {
+          "deception": {
+            "id": "deception",
+            "level": 5,
+            "name": "Deception",
+            "xp": 100
+          },
+          "intimidation": {
+            "id": "intimidation",
+            "level": 5,
+            "name": "Intimidation",
+            "xp": 100
+          },
+          "leadership": {
+            "id": "leadership",
+            "level": 5,
+            "name": "Leadership",
+            "xp": 100
+          },
+          "observation": {
+            "id": "observation",
+            "level": 5,
+            "name": "Observation",
+            "xp": 100
+          },
+          "persuasion": {
+            "id": "persuasion",
+            "level": 5,
+            "name": "Persuasion",
+            "xp": 100
+          },
+          "piloting": {
+            "id": "piloting",
+            "level": 5,
+            "name": "Piloting",
+            "xp": 100
+          },
+          "technical": {
+            "id": "technical",
+            "level": 5,
+            "name": "Technical",
+            "xp": 100
+          }
+        }
+      },
+      "default": {}
+    }
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "default",
+        "deception",
+        3,
+        "ce4_guild_called_out",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 1
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "deception",
+        4,
+        "ce4_smuggler_fooled",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 1
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "intimidation",
+        3,
+        "ce4_smuggler_warned_off",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 1
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "intimidation",
+        4,
+        "",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 1
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "intimidation",
+        4,
+        "ce4_union_backed_off",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 1
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        3,
+        "ce4_read_frontier_truth",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        3,
+        "ce4_spotted_civilian_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        4,
+        "ce4_contraband_verified",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        4,
+        "ce4_dealer_settled",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        4,
+        "ce4_found_smuggler_traps",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        4,
+        "ce4_spotted_fake_officer",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "observation",
+        4,
+        "ce4_spotted_hulk_drones",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 1
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_frontier_friendly",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_haggled_antique",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_haggled_spice",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_ransom_talked_down",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_reach_negotiated",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_redirected_hungry",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "persuasion",
+        3,
+        "ce4_union_appealed",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 1
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "technical",
+        3,
+        "ce4_read_civilian_logs",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "technical",
+        3,
+        "ce4_spotted_mining_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "technical",
+        4,
+        "ce4_spoofed_collective_security",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "default",
+        "technical",
+        4,
+        "ce4_spotted_relay_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": false,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 48
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 1,
+              "name": "Deception",
+              "xp": 0
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 1,
+              "name": "Intimidation",
+              "xp": 0
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 1,
+              "name": "Leadership",
+              "xp": 0
+            },
+            "observation": {
+              "id": "observation",
+              "level": 1,
+              "name": "Observation",
+              "xp": 0
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 1,
+              "name": "Persuasion",
+              "xp": 0
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 1,
+              "name": "Piloting",
+              "xp": 0
+            },
+            "technical": {
+              "id": "technical",
+              "level": 1,
+              "name": "Technical",
+              "xp": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "deception",
+        3,
+        "ce4_guild_called_out",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_guild_called_out"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 102
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "deception",
+        4,
+        "ce4_smuggler_fooled",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_smuggler_fooled"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 102
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "intimidation",
+        3,
+        "ce4_smuggler_warned_off",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_smuggler_warned_off"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 102
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "intimidation",
+        4,
+        "",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 102
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "intimidation",
+        4,
+        "ce4_union_backed_off",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_union_backed_off"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 102
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        3,
+        "ce4_read_frontier_truth",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_read_frontier_truth"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        3,
+        "ce4_spotted_civilian_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spotted_civilian_bait"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        4,
+        "ce4_contraband_verified",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_contraband_verified"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        4,
+        "ce4_dealer_settled",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_dealer_settled"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        4,
+        "ce4_found_smuggler_traps",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_found_smuggler_traps"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        4,
+        "ce4_spotted_fake_officer",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spotted_fake_officer"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "observation",
+        4,
+        "ce4_spotted_hulk_drones",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spotted_hulk_drones"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 102
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_frontier_friendly",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_frontier_friendly"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_haggled_antique",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_haggled_antique"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_haggled_spice",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_haggled_spice"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_ransom_talked_down",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_ransom_talked_down"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_reach_negotiated",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_reach_negotiated"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_redirected_hungry",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_redirected_hungry"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "persuasion",
+        3,
+        "ce4_union_appealed",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_union_appealed"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 102
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "technical",
+        3,
+        "ce4_read_civilian_logs",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_read_civilian_logs"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 102
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "technical",
+        3,
+        "ce4_spotted_mining_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spotted_mining_bait"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 102
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "technical",
+        4,
+        "ce4_spoofed_collective_security",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spoofed_collective_security"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 102
+            }
+          }
+        }
+      }
+    },
+    {
+      "args": [
+        "boosted",
+        "technical",
+        4,
+        "ce4_spotted_relay_bait",
+        ""
+      ],
+      "call": "skill_check",
+      "result": true,
+      "state": {
+        "flags": [
+          "ce4_spotted_relay_bait"
+        ],
+        "social": {
+          "disposition": {
+            "": 53
+          },
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 102
+            }
+          }
+        }
+      }
+    }
+  ],
+  "subsystem": "encounters"
+}

@@ -1,0 +1,5826 @@
+{
+  "case": "fuel",
+  "format": 1,
+  "setup": {
+    "efficiencies": [
+      10,
+      6
+    ],
+    "reductions": [
+      "f:0.0:0",
+      "f:0.25:4598175219545276416"
+    ]
+  },
+  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "steps": [
+    {
+      "args": [
+        "nexus_prime",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 35,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "nexus_prime",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 55,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 65,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 8,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 6,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 58,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 35,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "verdant",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 62,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 46,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 13,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 5,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 64,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "forgeworks",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 11,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 53,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 64,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 68,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 51,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 8,
+      "state": {}
+    },
+    {
+      "args": [
+        "breakstone",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 6,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 55,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 61,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 52,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 55,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "axiom_labs",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 62,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 46,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 11,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 66,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 49,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 61,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 5,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "havens_rest",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 35,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 65,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 13,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 66,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 49,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 66,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 49,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 52,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "crimson_reach",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 8,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 6,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 53,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 61,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 29,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 66,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 49,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 13,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 67,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "stellaris_port",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 64,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 61,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 52,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 13,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 75,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "iron_depths",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 58,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 5,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 68,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 51,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 52,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 39,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 31,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 84,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 63,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 76,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 57,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "nova_research",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 19,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 35,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 26,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 15,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 55,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 41,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 9,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 7,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 5,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 44,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 22,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 73,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 54,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 43,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 32,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 84,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 63,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 37,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "herons_mark",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "herons_mark",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "herons_mark",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "the_fulcrum",
+        "herons_mark",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nexus_prime",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nexus_prime",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nexus_prime",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nexus_prime",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "verdant",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "verdant",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 42,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "verdant",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 34,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "verdant",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 25,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "forgeworks",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 64,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "forgeworks",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "forgeworks",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "forgeworks",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "breakstone",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 14,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "breakstone",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 10,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "breakstone",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 8,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "breakstone",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 6,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "axiom_labs",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 27,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "axiom_labs",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 20,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "axiom_labs",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 16,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "axiom_labs",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 12,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "havens_rest",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "havens_rest",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "havens_rest",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 24,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "havens_rest",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 18,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "crimson_reach",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 48,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "crimson_reach",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 36,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "crimson_reach",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "crimson_reach",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 21,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "stellaris_port",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 67,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "stellaris_port",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 50,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "stellaris_port",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 40,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "stellaris_port",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 30,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "iron_depths",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 75,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "iron_depths",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 56,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "iron_depths",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "iron_depths",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nova_research",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 76,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nova_research",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 57,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nova_research",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 45,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "nova_research",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 33,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "the_fulcrum",
+        10,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 38,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "the_fulcrum",
+        10,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 28,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "the_fulcrum",
+        6,
+        "f:0.0:0"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 23,
+      "state": {}
+    },
+    {
+      "args": [
+        "herons_mark",
+        "the_fulcrum",
+        6,
+        "f:0.25:4598175219545276416"
+      ],
+      "call": "jump_fuel_cost",
+      "result": 17,
+      "state": {}
+    }
+  ],
+  "subsystem": "travel"
+}

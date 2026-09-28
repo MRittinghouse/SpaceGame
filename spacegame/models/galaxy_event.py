@@ -287,3 +287,40 @@ class GalaxyEventGenerator:
 
         # Override the RNG in _build_event_from_template by using this seed
         return self._build_event_from_template(template, current_day)
+
+    def advance_day(
+        self,
+        current_day: int,
+        active_events: dict[str, list[GalaxyEvent]],
+        identity_lens_weights: Optional[dict[str, float]] = None,
+    ) -> Optional[GalaxyEvent]:
+        """Run one day: maybe start an event, then expire old ones and queue chains.
+
+        Args:
+            current_day: The new day.
+            active_events: System id to active events; updated in place.
+            identity_lens_weights: Act II capstone bias (None in Act I).
+
+        Returns:
+            The event that started today, or None.
+        """
+        new_event = self.try_generate_event(
+            current_day, active_events, identity_lens_weights=identity_lens_weights
+        )
+        if new_event is not None:
+            active_events.setdefault(new_event.system_id, []).append(new_event)
+        for system_id in list(active_events.keys()):
+            still_active: list[GalaxyEvent] = []
+            for event in active_events[system_id]:
+                if event.is_active(current_day):
+                    still_active.append(event)
+                else:
+                    self.check_chain_triggers(event, current_day)
+            active_events[system_id] = still_active
+            if not active_events[system_id]:
+                del active_events[system_id]
+        return new_event
+
+    def pending_chains(self) -> list[tuple[int, str]]:
+        """Chain follow-ups waiting to fire, as (fire_day, template_id)."""
+        return list(self._pending_chain_events)

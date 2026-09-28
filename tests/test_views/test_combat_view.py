@@ -1320,31 +1320,34 @@ class TestLootGeneration:
 
     def test_roll_loot_from_enemies(self) -> None:
         """Rolling loot from enemy loot tables produces valid items."""
-        from spacegame.views.combat_view import _roll_loot
+        from spacegame.models.combat_rewards import roll_loot
+        from spacegame.sim_rng import SimRng
 
         loot_table = [
             {"commodity_id": "metals", "min_qty": 2, "max_qty": 5, "chance": 1.0},
             {"commodity_id": "electronics", "min_qty": 1, "max_qty": 3, "chance": 1.0},
         ]
-        result = _roll_loot(loot_table, seed=42)
+        result = roll_loot(loot_table, SimRng.from_key("t", 42))
         assert "metals" in result
         assert 2 <= result["metals"] <= 5
         assert "electronics" in result
         assert 1 <= result["electronics"] <= 3
 
     def test_roll_loot_zero_chance_gives_nothing(self) -> None:
-        from spacegame.views.combat_view import _roll_loot
+        from spacegame.models.combat_rewards import roll_loot
+        from spacegame.sim_rng import SimRng
 
         loot_table = [
             {"commodity_id": "gold", "min_qty": 1, "max_qty": 10, "chance": 0.0},
         ]
-        result = _roll_loot(loot_table, seed=42)
+        result = roll_loot(loot_table, SimRng.from_key("t", 42))
         assert "gold" not in result
 
     def test_roll_loot_empty_table(self) -> None:
-        from spacegame.views.combat_view import _roll_loot
+        from spacegame.models.combat_rewards import roll_loot
+        from spacegame.sim_rng import SimRng
 
-        result = _roll_loot([], seed=42)
+        result = roll_loot([], SimRng.from_key("t", 42))
         assert result == {}
 
     def test_outcome_summary_includes_loot(self) -> None:
@@ -1361,6 +1364,36 @@ class TestLootGeneration:
         summary = view._get_outcome_summary()
         assert "loot" in summary
         assert "metals" in summary["loot"]
+        view.on_exit()
+
+    def test_outcome_summary_matches_the_payout(self) -> None:
+        """The victory screen previews exactly the loot the payout adds, stream by stream."""
+        from tests.test_scenarios._helpers import fresh_player
+
+        view = _make_view()
+        view.on_enter()
+        state = view.engine.get_state()
+        state.result = CombatResult.VICTORY
+        enemy = state.enemies[0]
+        enemy.current_hull = 0
+        # Distinct commodities and wide ranges, so a common/rare stream mix-up shows.
+        enemy.template.loot_table = [
+            {"commodity_id": "common_metals", "min_qty": 1, "max_qty": 1000, "chance": 1.0}
+        ]
+        enemy.template.rare_loot = [
+            {"commodity_id": "exotic_goods", "min_qty": 1, "max_qty": 1000, "chance": 1.0}
+        ]
+        summary = view._get_outcome_summary()
+
+        player = fresh_player()
+        victory = player.apply_combat_victory(state.enemies, state.encounter.encounter_seed)
+
+        assert summary["loot"] == {"common_metals": victory.loot["common_metals"]}, (
+            "The preview's common loot must match the payout"
+        )
+        assert summary["rare_loot"] == {"exotic_goods": victory.loot["exotic_goods"]}, (
+            "The preview's rare loot must match the payout"
+        )
         view.on_exit()
 
 

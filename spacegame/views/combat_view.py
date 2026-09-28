@@ -80,6 +80,7 @@ from spacegame.models.combat_engine import (
     FLEE_SPEED_FACTOR,
     CombatEngine,
 )
+from spacegame.models.combat_rewards import loot_rng, roll_loot
 from spacegame.models.player import Player
 from spacegame.sim_rng import stable_seed
 from spacegame.utils.logger import logger
@@ -349,30 +350,6 @@ ENEMY_STACK_SPACING = scale_y(100)
 # Idle ship bob animation
 IDLE_BOB_AMPLITUDE = scale_y(3)  # Pixels of vertical oscillation
 IDLE_BOB_PERIOD = 2.5  # Seconds per full cycle
-
-
-def _roll_loot(loot_table: list[dict], seed: int = 0) -> dict[str, int]:
-    """Roll loot drops from an enemy's loot table.
-
-    Args:
-        loot_table: List of {commodity_id, min_qty, max_qty, chance} dicts.
-        seed: RNG seed for deterministic results.
-
-    Returns:
-        Dict of commodity_id -> quantity for items that dropped.
-    """
-    import random as _rng
-
-    rng = _rng.Random(seed)
-    result: dict[str, int] = {}
-
-    for entry in loot_table:
-        if rng.random() < entry["chance"]:
-            qty = rng.randint(entry["min_qty"], entry["max_qty"])
-            commodity = entry["commodity_id"]
-            result[commodity] = result.get(commodity, 0) + qty
-
-    return result
 
 
 # ============================================================================
@@ -2868,20 +2845,17 @@ class CombatView(BaseView):
             # Roll loot from all defeated enemies
             for enemy in state.enemies:
                 if not enemy.is_alive and enemy.template.loot_table:
-                    enemy_loot = _roll_loot(
+                    enemy_loot = roll_loot(
                         enemy.template.loot_table,
-                        seed=state.encounter.encounter_seed
-                        + stable_seed("enemy", enemy.template.id),
+                        loot_rng(state.encounter.encounter_seed, enemy.template.id, rare=False),
                     )
                     for cid, qty in enemy_loot.items():
                         loot[cid] = loot.get(cid, 0) + qty
                 # Roll rare loot separately
                 if not enemy.is_alive and enemy.template.rare_loot:
-                    enemy_rare = _roll_loot(
+                    enemy_rare = roll_loot(
                         enemy.template.rare_loot,
-                        seed=state.encounter.encounter_seed
-                        + stable_seed("enemy", enemy.template.id)
-                        + 7919,
+                        loot_rng(state.encounter.encounter_seed, enemy.template.id, rare=True),
                     )
                     for cid, qty in enemy_rare.items():
                         rare_loot[cid] = rare_loot.get(cid, 0) + qty
