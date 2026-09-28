@@ -18,6 +18,19 @@ from spacegame.sim_rng import SimRng
 from tools.parity.driver import Case
 from tools.parity.drivers import dialogue
 
+# Neither profile can pick these: novice lacks required flags; expert's flags trip excluded ones.
+UNSELECTED_RESPONSES: frozenset[tuple[str, str, int]] = frozenset(
+    {
+        ("merchant_delivery", "greet", 6),
+        ("reva_distress", "greet", 0),
+        ("reva_distress", "greet", 1),
+        ("reva_distress", "greet", 3),
+        ("cassiel_maren_forgery", "start", 3),
+        ("dead_ledger_investigation", "greet", 2),
+        ("dead_ledger_investigation", "greet", 3),
+    }
+)
+
 
 def _named() -> dict:
     return {case.name: case for case in dialogue.build_cases()}
@@ -29,6 +42,26 @@ def test_every_node_of_every_tree_is_visited() -> None:
         visited = {s["args"][1] for s in cases[f"tree_{tree_id}"].steps}
         with_responses = {nid for nid, node in tree.nodes.items() if node.responses}
         assert with_responses <= visited, tree_id
+
+
+def test_every_response_is_selected_or_named() -> None:
+    """Every response is selected by some step, or is named in UNSELECTED_RESPONSES."""
+    cases = _named()
+    missing: set[tuple[str, str, int]] = set()
+    for tree_id, tree in get_data_loader().dialogue_trees.items():
+        selected = {(s["args"][1], s["result"]["response"]) for s in cases[f"tree_{tree_id}"].steps}
+        for node_id, node in tree.nodes.items():
+            for index in range(len(node.responses)):
+                if (node_id, index) not in selected:
+                    missing.add((tree_id, node_id, index))
+    assert missing == UNSELECTED_RESPONSES
+    for tree_id, node_id, index in UNSELECTED_RESPONSES:
+        response = get_data_loader().dialogue_trees[tree_id].nodes[node_id].responses[index]
+        assert response.set_flag is None
+        assert response.skill_check is None
+        assert response.disposition_change == 0
+        assert not response.faction_reputation_changes
+        assert not response.crew_loyalty_changes
 
 
 def test_skill_checks_pass_and_fail() -> None:

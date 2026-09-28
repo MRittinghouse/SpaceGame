@@ -101,7 +101,13 @@ counter or any other per-process part to the ID.
   and each `commit` step names the offered event by crew id and trigger. Seven skill checks
   in six crew-quest trees name attribute ids (`acu`, `com`, `ing`, `res`, `syn`), which
   `SocialManager.resolve_check` fails as `Unknown skill: <id>`; the goldens record that
-  failure for both profiles.
+  failure for both profiles. Seven responses are recorded only as filtered out of available
+  and are never selected: `merchant_delivery` greet #6, `reva_distress` greet #0, #1 and #3,
+  `cassiel_maren_forgery` start #3, and `dead_ledger_investigation` greet #2 and #3. Novice
+  lacks their required flags, and a flag expert loads trips their excluded flags. Each only
+  moves to its `next_node_id` (none sets a flag, runs a check, or changes disposition,
+  reputation, or loyalty), so a port checking those seven moves needs a golden case with a
+  per-response flag set.
 
 ## Act II v1
 

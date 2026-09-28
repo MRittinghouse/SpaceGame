@@ -1,4 +1,5 @@
-"""Dialogue goldens: every response of every node, and the ambient line pickers.
+"""Dialogue goldens: every node of every tree, the ambient and chatter line pickers, and
+crew interjections.
 
 Each response is selected from a fresh manager positioned on its node, so steps are
 independent. Every case builds its managers from its own setup, so the Godot adapter
@@ -7,6 +8,11 @@ profiles: "novice" (default social skills, no flags) and "expert" (every social 
 MAX_SOCIAL_LEVEL, every flag the tree's responses require). Reputation changes need a
 PoliticsManager (wave B), so they are skipped here, as Python skips them without one
 (ruling P5).
+
+A response that neither profile can pick (novice lacks its required flags, and a flag
+expert loads trips its excluded flags) is recorded only as filtered out of a step's
+available list. test_dialogue_driver.UNSELECTED_RESPONSES names each one, and
+parity/port_notes.md lists them.
 """
 
 from __future__ import annotations
