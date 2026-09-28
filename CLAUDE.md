@@ -159,11 +159,14 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 
 ### Parity goldens (SP2, SP3)
 - `parity/golden/` holds golden traces the Godot port replays; `tools/parity/` builds them. `tests/test_parity/test_goldens_current.py` fails when a committed golden or `parity/schema.json` no longer matches the code.
-- After touching `spacegame/sim_rng.py`, any wave A model (player, ship, upgrades, market,
-  commodity, event, galaxy, crew, progression, attributes, social, combat, encounter, captains,
-  mission, procedural missions, dialogue, ambient lines, chatter, interjections), `data/`, or
-  anything under `tools/parity/`: commit the code, run `python -m tools.parity.regen` from the
-  clean tree, review the diff of `parity/`, and commit the goldens and schema on their own.
+- After touching `spacegame/sim_rng.py`, `spacegame/data_loader.py`, the player serializer in
+  `spacegame/save_manager.py`, any wave A model (player, ship, upgrades, market, commodity, trade
+  pricing, travel, event, galaxy, crew, progression, attributes, social, combat, combat rewards,
+  encounter, captains, mission, procedural missions, dialogue, ambient lines, chatter,
+  interjections), `data/`, or anything under `tools/parity/`: commit the code, run
+  `python -m tools.parity.regen` from the clean tree, review the diff of `parity/`, and commit the
+  goldens and schema on their own. The list is not exhaustive, since a driver reaches other modules
+  through the models; `tests/test_parity/test_goldens_current.py` has the final word.
 - regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
 - `python -m tools.parity.check_determinism` proves the goldens do not depend on `PYTHONHASHSEED` (the suite runs it too).
 
@@ -264,7 +267,7 @@ When modifying a gameplay system, check these secondary impacts:
 | Ship stats | Both build-derived path AND legacy ShipType path in `build_player_combat_state()` |
 | Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
 | Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |
-| Simulation randomness or the market model | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
+| Simulation randomness, the market model, or another module in the Parity goldens regen list | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
 | A formula in game.py or a view | Lift it into a model function the caller uses, and cover it with a golden driver (see `parity/port_notes.md`, SP3-a extractions) |
 
 ## Common Pitfalls

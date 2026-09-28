@@ -111,9 +111,11 @@ counter or any other per-process part to the ID.
 Rules lifted out of game.py and the views, each now a model function the game calls:
 `trade_pricing` (buy, sell, black-market, refuel, trade reputation), `travel` (fuel, reserve
 floor, encounter post-processing, hull restore), `encounter` (choice resolution, skill check,
-outcome application, unique-encounter flag), `Player.apply_combat_victory` and
-`apply_combat_negotiated`, `MissionManager.complete_mission`, `CrewRoster.on_trades`,
-`on_jumps`, `apply_leadership`, and `GalaxyEventGenerator.advance_day`.
+outcome application, unique-encounter flag), `combat_rewards.loot_rng` and `roll_loot` (the loot
+roll that replaced `combat_view._roll_loot`; the view's preview and both payouts call it, see
+Derived seeds), `Player.apply_combat_victory` and `apply_combat_negotiated`,
+`MissionManager.complete_mission`, `CrewRoster.on_trades`, `on_jumps`, `apply_leadership`, and
+`GalaxyEventGenerator.advance_day`.
 
 - Encounter credits go through `add_credits`, so `max_credits_held` tracks them (SP3-a ruling P3).
 - Dialogue reputation changes need a PoliticsManager (wave B); the dialogue goldens run without
@@ -122,9 +124,9 @@ outcome application, unique-encounter flag), `Player.apply_combat_victory` and
 - Golden-only key namespaces (never used by the game): `parity_fight`, `parity_complication`,
   `parity_ultimate`, `parity_dual_tech`, `parity_resolve`, `parity_ambient`, `parity_chatter`,
   `parity_interjection`.
-- Player goldens compare `tools/parity/snapshots.WAVE_A_PLAYER_KEYS` of the save manager's
-  serializer; manager-owned state (missions, crew, social, attributes) is compared by those
-  managers' goldens.
+- Player goldens compare the save manager's serializer output on the keys in `WAVE_A_PLAYER_KEYS`
+  (`tools/parity/snapshots.py`); manager-owned state (missions, crew, social, attributes) is
+  compared by those managers' goldens.
 - Content numbers: every float literal in `data/` fits the exact decimal fast path (mantissa at
   most 2^53, decimal exponent within 22), so a literal-preserving JSON reader loads content with
   Python's types exactly (SP3 spec amendment A1).
