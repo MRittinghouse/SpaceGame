@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from spacegame.data_loader import get_data_loader
+from spacegame.models.encounter import _NON_HOSTILE_WEIGHTS
 from tools.parity.drivers import encounters, travel
 
 
@@ -30,7 +31,12 @@ def test_a_roll_case_per_system_with_every_encounter_kind() -> None:
         for s in c.steps
         if s["result"] is not None
     }
-    assert {"hostile", "shakedown"} <= kinds
+    expected = {
+        "hostile",
+        *_NON_HOSTILE_WEIGHTS["moderate"],
+        *_NON_HOSTILE_WEIGHTS["dangerous"],
+    }
+    assert expected <= kinds, f"roll goldens never draw {sorted(expected - kinds)}"
 
 
 def test_every_definition_choice_is_resolved() -> None:

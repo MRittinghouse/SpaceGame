@@ -38,7 +38,9 @@ from spacegame.models.social import (
 from tools.parity.driver import Case
 from tools.parity.snapshots import fresh_player, player_snapshot
 
-ROLL_DAYS = range(1, 31)
+# Days 1 to 44 draw every travel encounter type: cargo_shakedown first appears on day 34
+# and wandering_trader on day 44.
+ROLL_DAYS = range(1, 45)
 PROFILES: dict[str, dict[str, object]] = {
     "novice": {
         "player_level": 1,
