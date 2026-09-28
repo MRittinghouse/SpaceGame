@@ -190,6 +190,16 @@ class TestApplyEncounterOutcomeMore:
         apply_encounter_outcome(player, outcome)
         assert player.ship.get_cargo_quantity("contraband_chems") == 0
 
+    def test_confiscate_cargo_takes_only_the_amount_when_more_is_held(self) -> None:
+        """No golden covers confiscate_cargo, so this pins the amount < held branch."""
+        player = fresh_player()
+        player.ship.add_cargo("contraband_chems", 10)
+        outcome = EncounterOutcome("x", [MissionReward("confiscate_cargo", 3, "contraband_chems")])
+        apply_encounter_outcome(player, outcome)
+        assert player.ship.get_cargo_quantity("contraband_chems") == 7, (
+            "a confiscation of 3 from a hold of 10 must leave 7"
+        )
+
     def test_confiscate_cargo_does_nothing_when_commodity_absent(self) -> None:
         player = fresh_player()
         outcome = EncounterOutcome("x", [MissionReward("confiscate_cargo", 5, "not_carried")])
