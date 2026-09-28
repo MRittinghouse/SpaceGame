@@ -157,9 +157,14 @@ def buy_commodity(self, commodity_id: str, quantity: int,
 - `ACT_TWO_V1_ENABLED = False` in `spacegame/config.py` keeps the Act II v1 lens arc (tag `act2-v1-archive`) off, so the Python reference behaves as Act I only. The Godot port does not carry it. Read it as `sg_config.ACT_TWO_V1_ENABLED` so the fixture's monkeypatch takes effect.
 - Tests that exercise Act II content carry the `act_two_v1` marker (`pytestmark = pytest.mark.act_two_v1` for a whole module). Without it, the flag stays off and the lens, dilemma, and capstone registries are not loaded for the test. The fixture never unloads them, so after a marked test they stay loaded on that worker's singleton; a test that needs them empty builds a fresh `DataLoader()`.
 
-### Parity goldens (SP2)
+### Parity goldens (SP2, SP3)
 - `parity/golden/` holds golden traces the Godot port replays; `tools/parity/` builds them. `tests/test_parity/test_goldens_current.py` fails when a committed golden or `parity/schema.json` no longer matches the code.
-- After touching `spacegame/sim_rng.py`, `spacegame/models/market.py`, or anything under `tools/parity/`: commit the code, run `python -m tools.parity.regen` from the clean tree, review the diff of `parity/`, and commit the goldens and schema on their own. regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
+- After touching `spacegame/sim_rng.py`, any wave A model (player, ship, upgrades, market,
+  commodity, event, galaxy, crew, progression, attributes, social, combat, encounter, captains,
+  mission, procedural missions, dialogue, ambient lines, chatter, interjections), `data/`, or
+  anything under `tools/parity/`: commit the code, run `python -m tools.parity.regen` from the
+  clean tree, review the diff of `parity/`, and commit the goldens and schema on their own.
+- regen refuses a dirty tree; `--allow-dirty` stamps `<sha>-dirty`, which the freshness test rejects.
 - `python -m tools.parity.check_determinism` proves the goldens do not depend on `PYTHONHASHSEED` (the suite runs it too).
 
 ### Test-Driven Development
@@ -260,6 +265,7 @@ When modifying a gameplay system, check these secondary impacts:
 | Crew abilities | `crew.py` template, `game.py` crew bonus application, combat engine crew moves |
 | Tutorial flow | Shop → builder → station hub chain; check narration, completion flags, view lifecycle |
 | Simulation randomness or the market model | SimRng keys (`SimRng.from_key` parts are part of the port contract), parity goldens (`python -m tools.parity.regen` from a clean tree, committed on their own), `parity/port_notes.md` |
+| A formula in game.py or a view | Lift it into a model function the caller uses, and cover it with a golden driver (see `parity/port_notes.md`, SP3-a extractions) |
 
 ## Common Pitfalls
 

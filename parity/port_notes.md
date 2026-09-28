@@ -55,14 +55,11 @@ counter or any other per-process part to the ID.
 
 ## SP3 must cover
 
-- A combat golden that exercises the engine's module-hit path: `resolve_module_hit` and
-  `process_overkill_chain` in `CombatEngine` (`combat_engine.py`, about lines 2134-2232),
-  both drawing from `rng=self._rng`. No SP2 golden reaches it, so "combat reproduces from
-  its seed" is untested there.
-- The `except Exception: pass` around that block (`combat_engine.py`, about line 2231)
-  hides runtime failures: an exception anywhere in the module hit silently abandons the
-  rest of it while the hull damage still lands. Decide whether the port keeps the guard
-  before recording the golden.
+- The module-hit path (`resolve_module_hit`, `process_overkill_chain`) reads the target's pixel
+  `ShipBuild` and cannot run without the retired builder. It moves to SP4 with the parts model
+  (SP3 spec R1). SP3's combat goldens run on the ship-type path.
+- The engine's `except Exception: pass` guards are not ported (SP3 spec R2). The combat driver
+  test proves no guarded dual-tech helper raises during a recorded fight.
 - COMPLETED runtime missions stay in `MissionManager._runtime_ids` (`remove_mission`
   refuses ACTIVE and COMPLETED), and `get_state` saves each in full, so saves grow over a
   long career. The Godot save format should prune or compact them.
@@ -108,6 +105,29 @@ counter or any other per-process part to the ID.
   moves to its `next_node_id` (none sets a flag, runs a check, or changes disposition,
   reputation, or loyalty), so a port checking those seven moves needs a golden case with a
   per-response flag set.
+
+## SP3-a extractions
+
+Rules lifted out of game.py and the views, each now a model function the game calls:
+`trade_pricing` (buy, sell, black-market, refuel, trade reputation), `travel` (fuel, reserve
+floor, encounter post-processing, hull restore), `encounter` (choice resolution, skill check,
+outcome application, unique-encounter flag), `Player.apply_combat_victory` and
+`apply_combat_negotiated`, `MissionManager.complete_mission`, `CrewRoster.on_trades`,
+`on_jumps`, `apply_leadership`, and `GalaxyEventGenerator.advance_day`.
+
+- Encounter credits go through `add_credits`, so `max_credits_held` tracks them (SP3-a ruling P3).
+- Dialogue reputation changes need a PoliticsManager (wave B); the dialogue goldens run without
+  one and record none (P5). SimRoot applies them directly until politics is ported.
+- Encounter-definition selection goldens run with empty flags and no resolved captains.
+- Golden-only key namespaces (never used by the game): `parity_fight`, `parity_complication`,
+  `parity_ultimate`, `parity_dual_tech`, `parity_resolve`, `parity_ambient`, `parity_chatter`,
+  `parity_interjection`.
+- Player goldens compare `tools/parity/snapshots.WAVE_A_PLAYER_KEYS` of the save manager's
+  serializer; manager-owned state (missions, crew, social, attributes) is compared by those
+  managers' goldens.
+- Content numbers: every float literal in `data/` fits the exact decimal fast path (mantissa at
+  most 2^53, decimal exponent within 22), so a literal-preserving JSON reader loads content with
+  Python's types exactly (SP3 spec amendment A1).
 
 ## Act II v1
 
