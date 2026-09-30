@@ -179,7 +179,7 @@
             "rewards": [
               {
                 "reward_type": "deduct_credits",
-                "amount": -100
+                "amount": 100
               },
               {
                 "reward_type": "modify_reputation",
@@ -411,7 +411,7 @@
             "rewards": [
               {
                 "reward_type": "deduct_credits",
-                "amount": -75
+                "amount": 75
               },
               {
                 "reward_type": "credits",
@@ -569,7 +569,7 @@
             "rewards": [
               {
                 "reward_type": "deduct_credits",
-                "amount": -80
+                "amount": 80
               },
               {
                 "reward_type": "xp",
