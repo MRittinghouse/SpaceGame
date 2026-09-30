@@ -217,6 +217,25 @@ class TestEncounterDataLoading:
                             f"sentinel amount=-1, got {reward.amount}"
                         )
 
+    def test_deduct_credits_amounts_are_positive_prices(self) -> None:
+        """A deduct_credits amount is the price the player pays, so it is positive.
+
+        Player.deduct_credits subtracts its amount, so a negative one pays the player
+        (findings F-42: three Commerce Guild prices did). The only exception is the
+        shakedown's -1 sentinel, which resolve_choice_outcome replaces with the demand.
+        """
+        definitions = self._load()
+        wrong = [
+            f"{defn.id}/{choice.id}: {reward.amount}"
+            for defn in definitions
+            for choice in defn.choices
+            for reward in choice.outcome.rewards
+            if reward.reward_type == "deduct_credits"
+            and reward.amount <= 0
+            and not (defn.encounter_type == "shakedown" and reward.amount == -1)
+        ]
+        assert wrong == [], f"deduct_credits amounts must be positive prices: {wrong}"
+
     def test_tone_values_valid(self) -> None:
         """All tone values are from the known set."""
         definitions = self._load()

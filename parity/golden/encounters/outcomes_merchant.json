@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "64845db1a11190cb33ae533b7a2481170c58d9e8",
+  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
   "steps": [
     {
       "args": [
@@ -1177,7 +1177,7 @@
           "leads_to_combat": false,
           "rewards": [
             {
-              "amount": -75,
+              "amount": 75,
               "reward_type": "deduct_credits",
               "target_id": ""
             },
@@ -1201,7 +1201,7 @@
         "combats_fled": 0,
         "combats_negotiated": 0,
         "combats_won": 0,
-        "credits": 750,
+        "credits": 600,
         "credits_earned_lifetime": 0,
         "credits_spent_lifetime": 0,
         "crew_quests_completed": 0,
@@ -1215,7 +1215,7 @@
         "game_day": 1,
         "jumps_traveled": 0,
         "largest_single_profit": 0,
-        "max_credits_held": 750,
+        "max_credits_held": 600,
         "name": "ParityPilot",
         "previous_system_id": "",
         "price_memory": {
