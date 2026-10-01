@@ -307,6 +307,7 @@ class TestCB2WarpArrivalBanterWiring:
         # Null all views so _handle_state_transitions skips their blocks
         for view_attr in self._ALL_VIEWS:
             setattr(game, view_attr, None)
+        game.mission_manager = None  # BB-4: the landing's iron clock reads it
 
         # Real AmbientDialogueManager with one combat_after line
         ca_line = AmbientLine(

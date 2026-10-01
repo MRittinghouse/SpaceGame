@@ -1278,6 +1278,17 @@ class Game:
                 self._mission_notifications.append(arrival_message)
                 self.galaxy_map_view.arrival_message = None
 
+                # Bug bash BB-4: a landing runs the iron job's clock, before the
+                # auto-triggers read the flag it sets (Elena's)
+                if self.mission_manager and self._player is not None:
+                    from spacegame.constants.flags import iron_delivery_moved_on
+                    from spacegame.models.iron_consignment import on_clock
+
+                    if on_clock(
+                        self.mission_manager, self.player.dialogue_flags, self.player.game_day
+                    ):
+                        self.dialogue_manager.set_flag(iron_delivery_moved_on())
+
                 # Travel log: first visit entry
                 if self.travel_log and self.journal and self._player is not None:
                     system_id = self.player.current_system_id
@@ -1704,19 +1715,16 @@ class Game:
                         for mission_id in accepted:
                             self._load_auto_accept_cargo(mission_id)
 
-                    # Handle mission failures triggered by dialogue
-                    if (
-                        self.player.dialogue_flags.get("iron_delivery_failed")
-                        and self.mission_manager
-                    ):
-                        from spacegame.models.mission import MissionStatus
+                    # Bug bash BB-4: the betrayal fails an open iron job and lets the
+                    # campaign move on (iron_consignment.close_on_exit)
+                    if self.mission_manager:
+                        from spacegame.constants.flags import iron_delivery_moved_on
+                        from spacegame.models.iron_consignment import close_on_exit
 
-                        if self.mission_manager.get_status("iron_delivery") == MissionStatus.ACTIVE:
-                            self.mission_manager.fail_mission("iron_delivery")
+                        if close_on_exit(self.mission_manager, self.player.dialogue_flags):
                             self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
-                            logger.info(
-                                "Iron delivery mission failed — player sold consigned cargo"
-                            )
+                            logger.info("Iron delivery mission failed: Odom's ore was sold")
+                            self.dialogue_manager.set_flag(iron_delivery_moved_on())
 
                 target = next_state
 
@@ -2538,6 +2546,7 @@ class Game:
             price_history=self.price_history,
             smuggling_contract_manager=self.smuggling_contract_manager,
             politics_manager=self.politics_manager,
+            mission_manager=self.mission_manager,
         )
 
         self.state_manager.register_state(GameState.GALAXY_MAP, self.galaxy_map_view)

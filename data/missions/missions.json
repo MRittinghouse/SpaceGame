@@ -108,6 +108,11 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "iron_ore_delivered"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "iron_delivery_moved_on"
         }
       ]
     },
@@ -115,11 +120,12 @@
       "id": "footing_the_bill",
       "name": "Footing the Bill",
       "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice like she was doing you a favor, and she probably was. But nobody gives something for nothing out here.",
-      "hint": "Elena Reeves will appear at Nexus Prime after completing the iron delivery. Listen to her trading advice.",
+      "hint": "Elena Reeves will appear at Nexus Prime once the iron delivery is settled or overdue. Listen to her trading advice.",
       "prerequisites": [
-        "iron_delivery"
+        "bill_of_landing"
       ],
       "required_flags": [
+        "iron_delivery_moved_on",
         "talked_to_elena_cantina"
       ],
       "auto_accept": true,

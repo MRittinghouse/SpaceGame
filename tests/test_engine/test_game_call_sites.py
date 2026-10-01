@@ -108,3 +108,43 @@ def test_a_save_lays_the_players_flags_over_the_dialogue_copy() -> None:
 def test_a_new_game_reloads_the_dialogue_copy() -> None:
     """F-C09: a save before the first conversation keeps none of the last game's flags."""
     assert _calls(_function("initialize_new_game"), "load_flags")
+
+
+def _any_calls(node: ast.AST, name: str) -> list[ast.Call]:
+    """Calls of ``name`` as a bare function or as a method."""
+    return [
+        n
+        for n in ast.walk(node)
+        if isinstance(n, ast.Call)
+        and (
+            (isinstance(n.func, ast.Name) and n.func.id == name)
+            or (isinstance(n.func, ast.Attribute) and n.func.attr == name)
+        )
+    ]
+
+
+def test_a_landing_runs_the_iron_clock_before_the_auto_triggers() -> None:
+    """BB-4: Elena's trigger reads the flag the clock sets."""
+    route = _function("_route_from_galaxy_map")
+    clocks = _any_calls(route, "on_clock")
+    triggers = _any_calls(route, "_check_auto_triggers")
+    assert clocks and triggers
+    assert min(c.lineno for c in clocks) < min(c.lineno for c in triggers)
+
+
+def test_a_dialogue_exit_closes_the_iron_job_through_the_model() -> None:
+    route = _function("_route_from_dialogue")
+    assert _any_calls(route, "close_on_exit")
+    literals = [n.value for n in ast.walk(route) if isinstance(n, ast.Constant)]
+    assert "iron_delivery_failed" not in literals
+
+
+def test_the_trading_view_gets_the_mission_manager() -> None:
+    views = _function("_create_gameplay_views")
+    built = [
+        c
+        for c in ast.walk(views)
+        if isinstance(c, ast.Call) and getattr(c.func, "id", "") == "TradingView"
+    ]
+    assert built
+    assert any(k.arg == "mission_manager" for k in built[0].keywords)

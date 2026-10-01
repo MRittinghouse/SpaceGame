@@ -39,6 +39,7 @@ def _make_trading_view_with_real_player(
     starting_cargo: dict[str, int] | None = None,
     starting_credits: int = 1000,
     has_permit: bool = True,
+    mission_manager: object = None,
 ):
     """Build a minimal TradingView wired to a real Player + Ship.
 
@@ -67,6 +68,7 @@ def _make_trading_view_with_real_player(
     view.player = player
     view.commodities = loader.commodities
     view.systems = loader.systems
+    view.mission_manager = mission_manager
 
     # Stubbed market: every commodity sells for 50.
     # QF-8: TradingView.market is now a raising @property; set raw storage.
@@ -241,3 +243,28 @@ class TestSellMaxAsksForTheTradePermit:
         assert player.ship.get_cargo_quantity("food") == 0
         assert player.credits == 1000 + 150
         view._apply_trade_reputation.assert_called_once()
+
+
+class TestRestRunsTheIronClock:
+    """Bug bash BB-4: a rest runs the iron job's clock, as a landing does."""
+
+    def test_the_rest_that_reaches_the_late_tier_moves_the_campaign_on(self) -> None:
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.mission import MissionManager
+
+        dl = get_data_loader()
+        dl.load_all()
+        manager = MissionManager(dl.missions)
+        manager.load_state(
+            {
+                "status": {"bill_of_landing": "completed", "iron_delivery": "active"},
+                "accepted_day": {"iron_delivery": 1},
+            }
+        )
+        view, player = _make_trading_view_with_real_player(mission_manager=manager)
+        player.game_day = 18
+        view._execute_rest()
+        assert "iron_delivery_moved_on" not in player.dialogue_flags
+        view._execute_rest()
+        assert player.game_day == 20
+        assert player.dialogue_flags["iron_delivery_moved_on"] is True

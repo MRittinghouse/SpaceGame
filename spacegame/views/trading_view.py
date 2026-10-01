@@ -5,7 +5,7 @@ Buy and sell commodities at the current system's market.
 Features dimmed animated background, panel glow borders, and transaction particles.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -34,6 +34,9 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
+
+if TYPE_CHECKING:
+    from spacegame.models.mission import MissionManager
 
 # BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
 # the Union's, so the refusal names the permit rather than the bill.
@@ -89,6 +92,7 @@ class TradingView(BaseView):
         black_market_name: Optional[str] = None,
         smuggling_contract_manager=None,
         politics_manager=None,
+        mission_manager: Optional["MissionManager"] = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -104,6 +108,7 @@ class TradingView(BaseView):
         self.price_history = price_history
         self.smuggling_contracts = smuggling_contract_manager
         self.politics_manager = politics_manager
+        self.mission_manager = mission_manager
 
         # Black market mode — resolved dynamically in on_enter()
         self._black_market_name: Optional[str] = black_market_name
@@ -1307,6 +1312,11 @@ class TradingView(BaseView):
         if success:
             self.market.update_day(self.player.game_day)
             self.market.regenerate_stock()
+            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does
+            if self.mission_manager is not None:
+                from spacegame.models.iron_consignment import on_clock
+
+                on_clock(self.mission_manager, self.player.dialogue_flags, self.player.game_day)
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:
