@@ -11,8 +11,10 @@ with older saves (ShipType-only ships) will silently lose their skill power.
 
 from __future__ import annotations
 
+from spacegame.data_loader import get_data_loader
 from spacegame.models.combat import build_player_combat_state
 from spacegame.models.player import Player
+from spacegame.models.progression import PlayerProgression
 from spacegame.models.ship import Ship
 from spacegame.models.ship_build import ComputedShipStats, PlacedPixel, ShipBuild
 from spacegame.models.upgrades import ShipUpgradeManager
@@ -177,6 +179,58 @@ class TestHullHPBonusAppliesToBothPaths:
 
         baseline = player.ship.computed_stats.hull
         assert state.max_hull > baseline, "Build-derived path must apply hull_hp_bonus"
+
+
+class TestShieldMasteryAppliesToBothPaths:
+    """shield_mastery (bonus_type=shield_bonus): +10% of the hull's shields per level (BB-75).
+
+    Before the bug bash only the upgrades' shield_bonus reached max shields, so the root of
+    the defensive branch did nothing. Level 3 on the shuttle's 20 shields adds
+    int(20 * 0.30000000000000004) = 6, to the maximum and to the opening shields.
+    """
+
+    def test_shield_mastery_applies_in_legacy_path(self) -> None:
+        player = _player_with_skill_level("shield_mastery", target_level=3)
+        state = _build_state_for_player(player)
+        assert (state.shields, state.max_shields) == (26, 26)
+
+    def test_shield_mastery_applies_in_build_path(self) -> None:
+        player = _player_with_skill_level("shield_mastery", target_level=3)
+        _attach_minimal_build(player)
+        assert player.ship.computed_stats.shields == 20
+        state = _build_state_for_player(player)
+        assert (state.shields, state.max_shields) == (26, 26)
+
+    def test_a_fight_never_opens_above_the_maximum(self) -> None:
+        # A fight writes its shields back to the ship, so a ship can carry the bonus into
+        # the next fight until it docks.
+        player = _player_with_skill_level("shield_mastery", target_level=3)
+        player.ship.current_shields = 26
+        state = _build_state_for_player(player)
+        assert (state.shields, state.max_shields) == (26, 26)
+
+    def test_the_share_counts_the_hull_s_shields_only(self) -> None:
+        # The Auxiliary Shield Battery adds 10 to the maximum beside the skill's share.
+        dl = get_data_loader()
+        dl.load_all()
+        player = _player_with_skill_level("shield_mastery", target_level=3)
+        upgrades = ShipUpgradeManager()
+        ok, msg = upgrades.install(dl.upgrades["shield_battery"])
+        assert ok, msg
+        state = build_player_combat_state(
+            ship=player.ship,
+            upgrade_manager=upgrades,
+            crew_roster=None,
+            crew_combat_moves={},
+            player_level=5,
+            progression=player.progression,
+            dialogue_flags=player.dialogue_flags,
+        )
+        assert (state.shields, state.max_shields) == (26, 36)
+
+    def test_the_text_says_what_it_does(self) -> None:
+        skill = PlayerProgression().skills["shield_mastery"]
+        assert skill.description == "+10% max shields per level"
 
 
 class TestFleeBonusAppliesToBothPaths:

@@ -179,7 +179,7 @@
     {
       "id": "shield_mastery",
       "name": "Shield Mastery",
-      "description": "+10% shield effectiveness per level",
+      "description": "+10% max shields per level",
       "tree": "combat",
       "max_level": 3,
       "cost_per_level": 1,
