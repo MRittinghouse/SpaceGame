@@ -503,7 +503,7 @@
       "id": "sys_haven_newcomer_01",
       "encounter_type": "refugee",
       "name": "Family From the Outer Rings",
-      "description": "A tiny civilian shuttle, barely rated for interstellar travel, drifts near Haven's Rest's outer beacon. Its transponder reads 'Kaur Family: Settlers.' A young voice comes over the comms, halting and uncertain: \"Excuse me, we were told Haven's Rest accepts newcomers? We've come from Breakstone. My father was a shaft miner, but the conditions.. We just need to know where to register. The beacon directory is confusing.\"",
+      "description": "A tiny civilian shuttle, barely rated for interstellar travel, drifts near Haven's Rest's outer beacon. Its transponder reads 'Kaur Family: Settlers.' A young voice comes over the comms, halting and uncertain: \"Excuse me, we were told Haven's Rest accepts newcomers? We've come from Breakstone. My father was a shaft miner, but the conditions... We just need to know where to register. The beacon directory is confusing.\"",
       "icon_color": [
         100,
         200,
@@ -1463,7 +1463,7 @@
       "id": "sys_crimson_outlaw_offer_01",
       "encounter_type": "shakedown",
       "name": "Protection Racket",
-      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well.. the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
+      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
       "icon_color": [
         220,
         80,
@@ -1535,7 +1535,7 @@
       "id": "sys_crimson_ghost_ship_01",
       "encounter_type": "derelict",
       "name": "The Ship That Came Back",
-      "description": "Your sensors register a vessel at extreme range: transponder code matches the FTV Margrave, a Frontier Alliance survey ship that vanished in the Crimson Reach three years ago. All hands presumed lost. No wreckage was ever recovered. But there it is on your sensors: intact, powered, drifting on a heading that leads nowhere. No response to hails. The hull shows no visible damage. Life support is running, but you're reading zero life signs.",
+      "description": "Your sensors register a vessel at extreme range: transponder code matches the FTV Margrave, a Frontier Alliance survey ship that vanished in the Crimson Reach three years ago. All hands presumed lost. No wreckage was ever recovered. But there it is on your sensors: intact, powered, drifting on a heading that leads nowhere. No response to hails. No visible damage. Life support is running, but you're reading zero life signs.",
       "icon_color": [
         160,
         80,

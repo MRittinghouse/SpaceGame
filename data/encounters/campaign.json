@@ -90,7 +90,7 @@
       "id": "campaign_sato_ghost_01",
       "encounter_type": "debris",
       "name": "The Heron's Shadow",
-      "description": "Your sensors register a contact: a ship signature that matches the Guild escort Heron, Captain Sato's vessel. The one you left drifting when you ignored her distress call. The contact holds position for three seconds, then vanishes from your display. No debris field or ion trail. Just empty space where a dead ship shouldn't be.",
+      "description": "Your sensors register a contact: a ship signature that matches the Guild escort Heron, Captain Sato's vessel. The one you left drifting when you ignored her distress call. The contact holds position for three seconds, then vanishes from your display. No debris field. No ion trail. Just empty space where a dead ship shouldn't be.",
       "icon_color": [
         140,
         140,

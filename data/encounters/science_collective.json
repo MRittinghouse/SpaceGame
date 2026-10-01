@@ -100,7 +100,7 @@
           "label": "Approach the Probe",
           "description": "Get close and record detailed sensor data on the malfunctioning probe.",
           "outcome": {
-            "description": "As you close range, your instruments record a cascade of data: the probe appears to be reacting to something your sensors cannot detect. Researcher Okonkwo's voice drops to a whisper: 'These readings are.. inconsistent with any known phenomenon. This will require a full review board. Your data is invaluable, Captain. We are transmitting payment and flagging your contribution as Priority One.'",
+            "description": "As you close range, your instruments record a cascade of data: the probe appears to be reacting to something your sensors cannot detect. Researcher Okonkwo's voice drops to a whisper: 'These readings are... inconsistent with any known phenomenon. This will require a full review board. Your data is invaluable, Captain. We are transmitting payment and flagging your contribution as Priority One.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -352,7 +352,7 @@
           "label": "Sell Back to Nova",
           "description": "Contact Nova and let them know their comms leaked. They will pay for discretion.",
           "outcome": {
-            "description": "A Nova representative responds within minutes, unusually fast. 'We appreciate your.. discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
+            "description": "A Nova representative responds within minutes, unusually fast. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -781,7 +781,7 @@
           "label": "Ask for More",
           "description": "The stipend seems low for use of your sensor array.",
           "outcome": {
-            "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But.. I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+            "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -804,7 +804,7 @@
           "label": "Decline",
           "description": "You prefer to keep your sensor array clean.",
           "outcome": {
-            "description": "Ibanez deflates slightly. 'Fair enough. Unknown software on your array. I understand the hesitation. Security-conscious thinking. I will find another willing captain. They are.. not as common as you might think.'",
+            "description": "Ibanez deflates slightly. 'Fair enough. Unknown software on your array. I understand the hesitation. Security-conscious thinking. I will find another willing captain. They are... not as common as you might think.'",
             "rewards": []
           }
         }
@@ -871,7 +871,7 @@
           "label": "Hard Pass",
           "description": "Six percent chance of lethality is six percent too many.",
           "outcome": {
-            "description": "Strand waves dismissively. 'Conservative risk assessment. Noted.' As you pull away, you overhear Strand on an open mic: 'Log it. Another declination. That brings our volunteer rate to.. twelve percent. Adjust the compensation package upward.'",
+            "description": "Strand waves dismissively. 'Conservative risk assessment. Noted.' As you pull away, you overhear Strand on an open mic: 'Log it. Another declination. That brings our volunteer rate to... twelve percent. Adjust the compensation package upward.'",
             "rewards": []
           }
         }

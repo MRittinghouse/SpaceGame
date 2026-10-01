@@ -149,7 +149,7 @@
       "id": "derelict_freighter_01",
       "encounter_type": "derelict",
       "name": "Abandoned Freighter",
-      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs or active transponder. The cargo bay appears partially intact. There could be salvageable goods aboard.",
+      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, no active transponder. The cargo bay appears partially intact. There could be salvageable goods aboard.",
       "icon_color": [
         180,
         140,
@@ -605,7 +605,7 @@
       "id": "cargo_lost_distress",
       "encounter_type": "distress_signal",
       "name": "Distress Signal: Disabled Convoy Escort",
-      "description": "Your comms light up with a repeating distress signal. A Guild convoy escort is adrift, engines disabled, life support failing. The captain is broadcasting on an open channel: 'This is Captain Sato of the Guild escort Heron. We were hit by raiders. Engines are gone. Life support has maybe six hours. If anyone can hear this..'",
+      "description": "Your comms light up with a repeating distress signal. A Guild convoy escort is adrift, engines disabled, life support failing. The captain is broadcasting on an open channel: 'This is Captain Sato of the Guild escort Heron. We were hit by raiders. Engines are gone. Life support has maybe six hours. If anyone can hear this...'",
       "icon_color": [
         220,
         80,

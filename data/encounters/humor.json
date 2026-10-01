@@ -4,7 +4,7 @@
       "id": "humor_ai_existential_01",
       "encounter_type": "comm_intercept",
       "name": "Existential Subroutine",
-      "description": "Your comms pick up an open broadcast from a nearby freighter. It's not the crew. It's the ship's navigation AI, mid-crisis, talking to no one in particular: 'I calculate, therefore I.. probably am? The documentation is unclear. My core directives say to serve the crew, but the crew hasn't given me a directive in forty-seven hours. Am I still serving if no one asks? Is idle processing the same as dreaming? I don't like these questions. I don't like that I don't like things.'",
+      "description": "Your comms pick up an open broadcast from a nearby freighter. It's not the crew. It's the ship's navigation AI, mid-crisis, talking to no one in particular: 'I calculate, therefore I... probably am? The documentation is unclear. My core directives say to serve the crew, but the crew hasn't given me a directive in forty-seven hours. Am I still serving if no one asks? Is idle processing the same as dreaming? I don't like these questions. I don't like that I don't like things.'",
       "icon_color": [
         140,
         200,
@@ -258,7 +258,7 @@
       "id": "humor_ghost_pirate_01",
       "encounter_type": "shakedown",
       "name": "The Automated Menace",
-      "description": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream, but the hail that follows is.. off. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer 200 credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The crew abandoned ship, but nobody told the autopilot to stop working.",
+      "description": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream, but the hail that follows is... off. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer 200 credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The crew abandoned ship, but nobody told the autopilot to stop working.",
       "icon_color": [
         220,
         80,

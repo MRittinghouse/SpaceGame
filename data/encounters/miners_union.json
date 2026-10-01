@@ -667,7 +667,7 @@
       "id": "union_lost_miner_01",
       "encounter_type": "distress_signal",
       "name": "Lost Prospector's Beacon",
-      "description": "Deep in the asteroid field, your sensors catch a faint emergency beacon, the low-power kind solo prospectors use when they don't want to broadcast their claim. A man's voice, calm but thin: 'This is Nils. Independent prospector, license number BWC-4471. My nav's shot and I've been drifting for.. I think three days. Oxygen's getting creative with the recycling. If anyone's out there, I could use a hand.'",
+      "description": "Deep in the asteroid field, your sensors catch a faint emergency beacon, the low-power kind solo prospectors use when they don't want to broadcast their claim. A man's voice, calm but thin: 'This is Nils. Independent prospector, license number BWC-4471. My nav's shot and I've been drifting for... I think three days. Oxygen's getting creative with the recycling. If anyone's out there, I could use a hand.'",
       "icon_color": [
         200,
         180,

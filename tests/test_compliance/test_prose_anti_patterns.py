@@ -50,6 +50,9 @@ _NO_X_NO_Y = re.compile(r"[Nn]o \w+,\s*no \w+")
 # BB-35: " . " where a sentence break or a dash should be. A broken em-dash rewrite
 # (SpaceGame 9252fc2) kept the space before each dash and turned the dash into a period.
 _SPLICE = re.compile(r"\S \. \S")
+# BB-35: the same rewrite (9252fc2) cut a "..." ellipsis down to ".." in the strings it
+# touched. Two dots, then a space or a quote; the dots in the ship pixel masks never are.
+_CLIPPED_ELLIPSIS = re.compile(r"(?<!\.)\.\.(?=[\s'\"])")
 
 
 def _strings(obj: object, path: str = "") -> Iterator[tuple[str, str]]:
@@ -105,6 +108,12 @@ def test_no_spliced_sentence_breaks_in_data() -> None:
     """No " . " splice (a word, a space, a lone period, a space, a word)."""
     errors = _violations(lambda s: bool(_SPLICE.search(s)))
     assert not errors, 'spliced " . " found in authored data:\n' + "\n".join(errors)
+
+
+def test_no_clipped_ellipses_in_data() -> None:
+    """No ".." where a "..." ellipsis was cut short (two dots, then a space or a quote)."""
+    errors = _violations(lambda s: bool(_CLIPPED_ELLIPSIS.search(s)))
+    assert not errors, 'clipped ".." ellipsis found in authored data:\n' + "\n".join(errors)
 
 
 def test_no_no_x_no_y_constructions() -> None:
