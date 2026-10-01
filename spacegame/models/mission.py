@@ -977,8 +977,12 @@ class MissionManager:
         TW follow-up: when the mission has a ``soft_deadline`` and the
         player's current game_day vs recorded accept day puts it past a
         deadline threshold, credit rewards are scaled by the multiplier.
-        Non-credit rewards (XP, flags, cargo, access grants) are never
-        scaled — those express narrative progress and shouldn't decay.
+
+        A ``deliver_cargo`` reward takes the mission's own accept cargo and the
+        captain's units, up to its amount, and when it takes fewer it scales
+        every credit reward by the share delivered (bug bash BB-1, BB-11). XP,
+        flags and access grants are never scaled, since they express narrative
+        progress and shouldn't decay.
 
         Args:
             mission_id: The mission whose rewards to apply.

@@ -467,6 +467,9 @@ class TestMissionManagerObjectives:
         assert "m2" not in completed
         assert len(mgr.get_missions_by_status(MissionStatus.COMPLETED)) == 1
         assert len(mgr.get_missions_by_status(MissionStatus.ACTIVE)) == 1
+        assert mgr.check_objectives(player) == [], (
+            "m2 holds 2000 of 5000 credits and must stay active"
+        )
 
 
 # ============================================================================
