@@ -424,7 +424,7 @@ class ProceduralMissionGenerator:
         )
 
     def generate_for_system(self, system_id: str, game_day: int) -> list[Mission]:
-        """Generate 2-3 varied missions for a system's station board.
+        """Draw 2-3 varied mission types for a system's station board.
 
         Picks from all 5 template types, weighted by system characteristics.
 
@@ -433,7 +433,8 @@ class ProceduralMissionGenerator:
             game_day: Current game day.
 
         Returns:
-            List of 2-3 generated missions.
+            The generated missions, one fewer when a delivery is drawn at an origin that
+            exports nothing legal (BB-11).
         """
         rng = self._make_rng(system_id, game_day, "board")
         system = self._systems.get(system_id)

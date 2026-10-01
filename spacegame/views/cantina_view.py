@@ -457,6 +457,29 @@ class CantinaView(BaseView):
             self._tooltip.clear()
         self._tooltip.update(dt)
 
+    @staticmethod
+    def _contract_reward_lines(mission: "Mission") -> list[tuple[str, tuple[int, int, int]]]:
+        """The board detail's reward lines, leaving out a contract's cargo hand-over (BB-11).
+
+        `deliver_cargo` and `remove_cargo` take the goods the objectives name, so the detail
+        omits them, as the mission log does.
+        """
+        lines: list[tuple[str, tuple[int, int, int]]] = []
+        for r in mission.rewards:
+            if r.reward_type == "credits":
+                lines.append((f"  {r.amount:,} Credits", (200, 200, 100)))
+            elif r.reward_type == "xp":
+                lines.append((f"  {r.amount:,} XP", (100, 200, 255)))
+            elif r.reward_type == "reputation":
+                lines.append((f"  {r.amount:+d} Reputation ({r.target_id})", (100, 200, 100)))
+            elif r.reward_type == "route_fuel":
+                lines.append((f"  {r.amount:,} Credits (route fuel)", (200, 200, 100)))
+            elif r.reward_type in ("deliver_cargo", "remove_cargo"):
+                continue
+            else:
+                lines.append((f"  {r.reward_type}: {r.amount}", Colors.TEXT))
+        return lines
+
     def _render_contract_tooltip(self, screen: pygame.Surface) -> None:
         """Render tooltip with mission details when hovering a contract."""
         if not self._tooltip.visible or self._tooltip.content is None:
@@ -490,17 +513,7 @@ class CantinaView(BaseView):
         if mission.rewards:
             lines.append(("", Colors.TEXT))  # spacer
             lines.append(("Rewards:", Colors.TEXT_HIGHLIGHT))
-            for r in mission.rewards:
-                if r.reward_type == "credits":
-                    lines.append((f"  {r.amount:,} Credits", (200, 200, 100)))
-                elif r.reward_type == "xp":
-                    lines.append((f"  {r.amount:,} XP", (100, 200, 255)))
-                elif r.reward_type == "reputation":
-                    lines.append((f"  {r.amount:+d} Reputation ({r.target_id})", (100, 200, 100)))
-                elif r.reward_type == "route_fuel":
-                    lines.append((f"  {r.amount:,} Credits (route fuel)", (200, 200, 100)))
-                else:
-                    lines.append((f"  {r.reward_type}: {r.amount}", Colors.TEXT))
+            lines.extend(self._contract_reward_lines(mission))
 
         # Calculate tooltip dimensions
         tooltip_w = max_w
