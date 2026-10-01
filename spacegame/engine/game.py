@@ -6057,6 +6057,9 @@ class Game:
                 new_trades, xp_bonus, loyalty_bonus
             )
             for flag in loyalty_flags:
+                # F-C09: written outside a conversation, so the player's store too; the next
+                # conversation reloads the copy from it
+                self.player.dialogue_flags[flag] = True
                 self.dialogue_manager.set_flag(flag)
             for msg in levelup_msgs:
                 self._mission_notifications.append(msg)
@@ -6291,6 +6294,9 @@ class Game:
                 sign = "+" if amt >= 0 else ""
                 self._mission_notifications.append(f"{sign}{amt} Rep: {fname}")
             for flag in done.loyalty_flags:
+                # F-C09: written outside a conversation, so the player's store too; the next
+                # conversation reloads the copy from it
+                self.player.dialogue_flags[flag] = True
                 self.dialogue_manager.set_flag(flag)
             self._mission_notifications.extend(done.crew_levelups)
 

@@ -86,6 +86,8 @@ class TestCheckCrewXp:
         assert rig.state["loyalty"] == 50
         assert rig.game._mission_notifications == ["Elena Reeves reached level 2!"]
         assert rig.dialogue.set_flag.call_args_list == [call("crew_loyalty_elena_reeves_50")]
+        # F-C09: the player's store too, or the next conversation's reload of the copy drops it
+        assert rig.game.player.dialogue_flags.get("crew_loyalty_elena_reeves_50") is True
         assert rig.after_action.call_args_list == [call("sold_cargo")]
 
     def test_jumps_pay_xp_only(self) -> None:

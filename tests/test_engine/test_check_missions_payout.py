@@ -135,6 +135,8 @@ class TestCheckMissionsPayout:
         assert all(fid in player.trade_permits for fid in dl.factions)
         assert state["loyalty"] == 45 + 5
         rig.dialogue.set_flag.assert_called_once_with("crew_loyalty_elena_reeves_50")
+        # F-C09: the player's store too, or the next conversation's reload of the copy drops it
+        assert player.dialogue_flags.get("crew_loyalty_elena_reeves_50") is True
         assert player.faction_reputation["commerce_guild"] == 5
         assert player.side_missions_completed == 1
         assert player.crew_quests_completed == 1
