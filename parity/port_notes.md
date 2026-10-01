@@ -591,9 +591,15 @@ gate and Tomas's two missions included (polish design 6.3, in the author's scope
   auto-accept, the delivery's objectives are `collect_cargo textiles 5` then
   `reach_system stellaris_port`, and `tomas_friendship` moves from the delivery to
   `recruit_trader`; Reva waits for `cargo_lost_accepted`, Dex for `cargo_lost_complete`,
-  Hanna for `elena_gave_trading_tips`; `iron_delivery` sets `iron_delivery_moved_on`;
-  `merchant_delivery`'s "About that iron ore..." excludes `iron_ore_delivered`, so a
-  finished delivery never offers the betrayal (design 2.9) now that the sale sensor's
+  Hanna for `elena_gave_trading_tips`; `iron_delivery` sets `iron_delivery_moved_on`, and
+  three gates wait on that flag in place of the job (BB-4): Elena's
+  `auto_trigger_prerequisites` (was `iron_ore_delivered`), Footing the Bill's
+  (prerequisite `bill_of_landing`, was `iron_delivery`, plus the flag in
+  `required_flags`) and The Dead Ledger's (`available_after` `bill_of_landing`, was
+  `iron_delivery`, plus the flag in `required_flags`); the availability golden shows only
+  the flag joining its all-flags profile, so these gates reach the port with the data
+  sync; `merchant_delivery`'s "About that iron ore..." excludes `iron_ore_delivered`, so
+  a finished delivery never offers the betrayal (design 2.9) now that the sale sensor's
   `broker_ore_sold` outlives a sale the captain covers; neither golden profile selects
   it, so it joins the unselected responses as `merchant_delivery` greet #8 (golden
   `dialogue/tree_merchant_delivery`: the expert profile's greet steps go from seven to
@@ -680,20 +686,21 @@ D-20, F-74 and A12 (polish design 8.1).
   Oren's fail-forward (F-76); F-4's closure note (the Talk list now has one filter).
 - The writing pass, each a line this branch wrote or moved (N new, F a false fact
   repaired): "That cargo is sealed under your contract." (N); "+420 Credits (7 of 10
-  delivered)" and its late form (N); "+<n> Credits (route fuel)" in the notice, the
-  mission log and the cantina's board (N); Footing the Bill's hint (F); Drifter's
-  Delivery's hint and its objective "Keep Tomas's textiles aboard: 5 Textiles" (F, N; its
-  description's "Sell the goods" now reads loosely); Emergency Reserves' description (F);
-  the ten first-sale lines (N, choice 17; Crimson Reach's orients only, its lore waits).
-  Existing lines in new places: "No cargo to sell" from Sell Max and Sell All over
-  consigned cargo, and from Sell All over a hold of quest goods alone, where the press
-  was silent before; refining's "Missing: ..." and "Need ..., have ..." and the auction's
-  "You do not have 1 of '<id>' in inventory." over free units; "Delivered <n> <id>" from
-  `deliver_cargo`; "Progress: iron_delivery_moved_on" in the iron delivery's Mission
-  Complete notice (the set_flag reward's existing "Progress: <flag>" form, which shows
-  the player a raw flag id beside "Progress: iron_ore_delivered"); "Progress:
-  tomas_friendship" moved from Drifter's Delivery's Mission Complete notice to Recruit
-  Trader's (the set_flag reward's existing "Progress: <flag>" form).
+  delivered)" and its late form (N); "+<n> Credits (route fuel)" in the notice and the
+  mission log, and "<n> Credits (route fuel)" in the cantina's board detail (N); Footing
+  the Bill's hint (F); Drifter's Delivery's hint and its objective "Keep Tomas's textiles
+  aboard: 5 Textiles" (F, N; its description's "Sell the goods" now reads loosely);
+  Emergency Reserves' description (F); the ten first-sale lines (N, choice 17; Crimson
+  Reach's orients only, its lore waits). Existing lines in new places: "No cargo to sell"
+  from Sell Max and Sell All over consigned cargo, and from Sell All over a hold of quest
+  goods alone, where the press was silent before; refining's "Missing: ..." and "Need
+  ..., have ..." and the auction's "You do not have 1 of '<id>' in inventory." over free
+  units; "Delivered <n> <id>" from `deliver_cargo`; "Progress: iron_delivery_moved_on" in
+  the iron delivery's Mission Complete notice (the set_flag reward's existing "Progress:
+  <flag>" form, which shows the player a raw flag id beside "Progress:
+  iron_ore_delivered"); "Progress: tomas_friendship" moved from Drifter's Delivery's
+  Mission Complete notice to Recruit Trader's (the set_flag reward's existing "Progress:
+  <flag>" form).
 - Content left for the writing session: the return scenes (`AWAITING_RETURN_SCENES` in
   `tests/test_data/test_one_shot_scenes.py`: Dex, Elena, Oren; `CHECK_GATED_RETURNS`:
   Oren; A1's `PENDING_CHECK_GATED_FLAGS` keeps `oren_intel_received`); the iron scenes,
