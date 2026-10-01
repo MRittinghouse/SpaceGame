@@ -96,3 +96,15 @@ def test_every_availability_pass_loads_the_cargo_it_accepts() -> None:
         function = _function(name)
         assert _calls(function, "update_availability"), name
         assert _calls(function, "_load_auto_accept_cargo"), name
+
+
+def test_a_save_lays_the_players_flags_over_the_dialogue_copy() -> None:
+    """F-C09: a flag written outside a conversation survives the save."""
+    save = _function("_save_game")
+    assert _calls(save, "merged_flags")
+    assert not _calls(save, "get_flags")
+
+
+def test_a_new_game_reloads_the_dialogue_copy() -> None:
+    """F-C09: a save before the first conversation keeps none of the last game's flags."""
+    assert _calls(_function("initialize_new_game"), "load_flags")

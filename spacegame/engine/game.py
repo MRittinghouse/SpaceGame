@@ -791,6 +791,10 @@ class Game:
         # Track starting day for event generation
         self._last_known_day = self.player.game_day
 
+        # F-C09: the dialogue manager outlives a main-menu New Game, and a save lays the player's
+        # store over its copy, so a stale copy would carry the last game's flags into this one
+        self.dialogue_manager.load_flags(self.player.dialogue_flags)
+
     @staticmethod
     def _build_scaled_theme(base_path: Path) -> Optional[Path]:
         """Build a resolution-scaled theme JSON for pygame_gui.
@@ -5143,8 +5147,9 @@ class Game:
             logger.warning("No active game to save")
             return
 
-        # Sync dialogue flags to player before saving
-        self.player.dialogue_flags = self.dialogue_manager.get_flags()
+        # Sync dialogue flags to player before saving. F-C09: the player's store wins, since
+        # code outside a conversation writes it alone (accepts, reward flags, the sensors)
+        self.player.dialogue_flags = self.dialogue_manager.merged_flags(self.player.dialogue_flags)
 
         # Sync mission state to player before saving
         if self.mission_manager:

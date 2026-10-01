@@ -7,6 +7,7 @@ Supports skill checks and NPC disposition tracking via SocialManager integration
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
@@ -342,3 +343,19 @@ class DialogueManager:
     def load_flags(self, flags: dict[str, bool]) -> None:
         """Load flags from deserialized data."""
         self._flags = dict(flags)
+
+    def merged_flags(self, player_flags: Mapping[str, bool]) -> dict[str, bool]:
+        """The flags a save writes: this copy with the player's store laid over it.
+
+        Python keeps two flag stores. Code outside a conversation (a mission's accept, a
+        reward's set_flag, the iron job's clock and sale sensor, the first sale's clear)
+        writes the player's store alone, and this copy is loaded only when a conversation
+        opens or a game loads, so the player's store wins (SpaceGame register F-C09).
+
+        Args:
+            player_flags: The player's dialogue flags.
+
+        Returns:
+            A new dict holding both stores' flags.
+        """
+        return {**self._flags, **player_flags}
