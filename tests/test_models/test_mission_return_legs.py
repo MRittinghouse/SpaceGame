@@ -80,6 +80,16 @@ class TestAuthoredReturnLegs:
         assert _land(manager, player, "nexus_prime") == []
         assert _land(manager, player, "breakstone") == ["miners_plight"]
 
+    def test_a_return_leg_met_at_the_accept_waits_for_a_departure(self) -> None:
+        manager, player = _authored("miners_plight"), _player("breakstone")
+        player.dialogue_flags[talked_to_npc("britt_vasara")] = True
+        player.ship.add_cargo("medical", 5, 0)
+        manager.accept_mission("miners_plight", game_day=1, player=player)
+        assert _land(manager, player, "breakstone") == []
+        assert manager.get_objective_progress("miners_plight")[2] is False
+        assert _land(manager, player, "nexus_prime") == []
+        assert _land(manager, player, "breakstone") == ["miners_plight"]
+
     def test_the_ten_return_legs_are_marked(self) -> None:
         marked = {
             (m.id, i)
@@ -126,6 +136,18 @@ class TestCountersSinceTheAccept:
         player.combats_won += 1
         assert manager.check_objectives(player) == ["test_contract"]
 
+    def test_lifetime_trades_before_the_accept_do_not_count(self) -> None:
+        mission = _synthetic(
+            [MissionObjective(type=ObjectiveType.COMPLETE_TRADE, target_id="", target_quantity=1)]
+        )
+        manager, player = MissionManager([mission]), _player("nexus_prime")
+        manager.update_availability()
+        player.trades_completed = 3
+        manager.accept_mission("test_contract", game_day=1, player=player)
+        assert manager.check_objectives(player) == []
+        player.trades_completed += 1
+        assert manager.check_objectives(player) == ["test_contract"]
+
     def test_an_accept_without_a_player_reads_lifetime_counts(self) -> None:
         mission = _synthetic(
             [MissionObjective(type=ObjectiveType.COMPLETE_TRADE, target_id="", target_quantity=2)]
@@ -154,6 +176,7 @@ class TestOrderedFinalLeg:
         manager.update_availability()
         manager.accept_mission("test_contract", game_day=1, player=player)
         assert _land(manager, player, "verdant") == []
+        assert manager.get_objective_progress("test_contract") == [False, False]
         player.ship.add_cargo("food", 3, 0)
         assert _land(manager, player, "nexus_prime") == []
         assert _land(manager, player, "verdant") == ["test_contract"]
