@@ -368,6 +368,31 @@ class TestConsignedCargo:
         assert player.ship.get_cargo_quantity("weapons_components") == 3
         assert view.transaction_message == SEALED_CARGO
 
+    def test_sell_all_with_only_consigned_cargo_says_so(self) -> None:
+        view, player = self._view({"iron_ore": 10})
+        view._execute_sell_all()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert view.transaction_message == "No cargo to sell"
+
+    def test_the_seal_holds_at_the_black_market(self) -> None:
+        from spacegame.views.trading_view import SEALED_CARGO
+
+        view, player = self._view({"weapons_components": 5}, board=True)
+        view._black_market_mode = True
+        view._get_black_market_sell_price = MagicMock(return_value=14)
+        self._sell(view, "weapons_components", 2)
+        assert player.ship.get_cargo_quantity("weapons_components") == 3
+        self._sell(view, "weapons_components", 1)
+        assert player.ship.get_cargo_quantity("weapons_components") == 3
+        assert view.transaction_message == SEALED_CARGO
+
+    def test_a_failed_sale_records_nothing(self) -> None:
+        view, player = self._view({"iron_ore": 10})
+        self._sell(view, "iron_ore", 11)
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert view.transaction_message == "Insufficient quantity in cargo"
+        assert "broker_ore_sold" not in player.dialogue_flags
+
     def test_hidden_ore_still_counts_as_aboard(self) -> None:
         """Five of Odom's ten hidden, five more bought: selling five is the captain's own."""
         view, player = self._view({"iron_ore": 10}, hidden={"iron_ore": 5})

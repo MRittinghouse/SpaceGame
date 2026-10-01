@@ -1097,6 +1097,9 @@
               "next_node_id": "betrayal",
               "required_flags": [
                 "broker_ore_sold"
+              ],
+              "excluded_flags": [
+                "iron_ore_delivered"
               ]
             },
             {

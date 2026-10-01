@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from spacegame.constants.flags import iron_delivery_moved_on
 from spacegame.data_loader import DataLoader, get_data_loader
+from spacegame.models.dialogue import DialogueManager
 from spacegame.models.iron_consignment import on_clock
 from spacegame.models.mission import Mission, MissionManager, MissionStatus
 from spacegame.models.player import Player
@@ -83,3 +84,19 @@ def test_a_job_left_open_moves_the_campaign_on_and_still_pays() -> None:
     player.ship.add_cargo("iron_ore", 10, 0)
     manager.apply_rewards("iron_delivery", player)
     assert player.credits == 5000 + 300
+
+
+def _greet_targets(flags: dict[str, bool]) -> set[str]:
+    manager = DialogueManager()
+    manager.load_flags(flags)
+    manager.start_dialogue(_dl().dialogue_trees["merchant_delivery"], "odom_broker")
+    return {r.next_node_id for r in manager.get_available_responses()}
+
+
+def test_a_finished_delivery_never_offers_the_betrayal() -> None:
+    open_job = {"talked_to_cargo_broker": True, "broker_ore_sold": True}
+    assert "betrayal" in _greet_targets(open_job)
+    finished = {**open_job, "iron_ore_delivered": True, FLAG: True}
+    targets = _greet_targets(finished)
+    assert "thanks" in targets
+    assert "betrayal" not in targets

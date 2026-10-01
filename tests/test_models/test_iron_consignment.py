@@ -18,7 +18,14 @@ from spacegame.models.iron_consignment import (
     note_sale,
     on_clock,
 )
-from spacegame.models.mission import MissionManager, MissionStatus
+from spacegame.models.mission import (
+    AcceptCargo,
+    Mission,
+    MissionManager,
+    MissionObjective,
+    MissionStatus,
+    ObjectiveType,
+)
 
 
 def _manager(accepted_day: int | None = None, **statuses: str) -> MissionManager:
@@ -110,6 +117,25 @@ class TestTheSaleSensor:
         for status in ("completed", "failed", "available"):
             manager = _manager(iron_delivery=status)
             assert not note_sale(manager, {}, "iron_ore", 10, 10), status
+
+    def test_a_closed_job_ignores_another_missions_ore(self) -> None:
+        """Another mission reserves five ore; the count alone would call the sale Odom's."""
+        manager = _manager(iron_delivery="completed")
+        manager.add_mission(
+            Mission(
+                id="proc_other_ore",
+                name="test",
+                description="A test contract.",
+                objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")],
+                rewards=[],
+                on_accept_cargo=[AcceptCargo(commodity_id="iron_ore", quantity=5)],
+            ),
+            MissionStatus.ACTIVE,
+        )
+        assert manager.reserved_units("iron_ore") == 5
+        flags: dict[str, bool] = {}
+        assert not note_sale(manager, flags, "iron_ore", 5, 1)
+        assert flags == {}
 
     def test_other_goods_are_never_odoms(self) -> None:
         manager = _manager(accepted_day=1, iron_delivery="active")

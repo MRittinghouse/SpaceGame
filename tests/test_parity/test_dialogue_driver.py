@@ -22,6 +22,7 @@ from tools.parity.drivers import dialogue
 UNSELECTED_RESPONSES: frozenset[tuple[str, str, int]] = frozenset(
     {
         ("merchant_delivery", "greet", 6),
+        ("merchant_delivery", "greet", 8),
         ("reva_distress", "greet", 0),
         ("reva_distress", "greet", 1),
         ("reva_distress", "greet", 3),
