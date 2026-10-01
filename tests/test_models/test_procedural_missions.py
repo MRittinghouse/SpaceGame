@@ -166,7 +166,7 @@ class TestProceduralMissionGenerator:
         assert (collect.target_id, collect.target_quantity) == (cargo.commodity_id, cargo.quantity)
         assert reach.type == ObjectiveType.REACH_SYSTEM
         assert mission.ordered_final
-        assert "—" not in mission.description
+        assert "\u2014" not in mission.description
 
     def test_return_legs_wait_for_departure(self) -> None:
         gen = self._make_generator()

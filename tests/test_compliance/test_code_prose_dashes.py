@@ -13,7 +13,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCANNED = ("spacegame/models", "spacegame/engine")
-EM_DASH = "—"
+EM_DASH = "\u2014"
 _LOG_METHODS = frozenset({"debug", "info", "warning", "error", "exception", "critical", "log"})
 
 
@@ -50,11 +50,11 @@ def violations(source: str, label: str) -> list[str]:
 
 
 def test_the_scanner_sees_escapes_and_skips_logs_and_docstrings() -> None:
-    assert violations('x = "a \u2014 b"', "t")
-    assert violations('x = f"{y} \u2014 z"', "t")
-    assert not violations('logger.info("a \u2014 b")', "t")
-    assert not violations('_combat_log.warning(f"a \u2014 {b}")', "t")
-    assert not violations('def f():\n    """A \u2014 docstring."""\n', "t")
+    assert violations('x = "a \\u2014 b"', "t")
+    assert violations('x = f"{y} \\u2014 z"', "t")
+    assert not violations('logger.info("a \\u2014 b")', "t")
+    assert not violations('_combat_log.warning(f"a \\u2014 {b}")', "t")
+    assert not violations('def f():\n    """A \\u2014 docstring."""\n', "t")
 
 
 def test_no_em_dash_in_code_built_text() -> None:
