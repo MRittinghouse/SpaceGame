@@ -676,6 +676,89 @@ class MissionManager:
         self._forget_run(mission_id)
         return (True, f"Abandoned: {mission.name}")
 
+    def _accept_units(self, mission_id: str, commodity_id: str) -> int:
+        """Units of a good one mission's accept cargo holds."""
+        return sum(
+            cargo.quantity
+            for cargo in self._missions[mission_id].on_accept_cargo
+            if cargo.commodity_id == commodity_id
+        )
+
+    def reserved_units(self, commodity_id: str, except_mission: str = "") -> int:
+        """Units of a good the active missions' accept cargo holds (bug bash BB-1, BB-11).
+
+        A mission's ``on_accept_cargo`` belongs to it while it is active: another mission's
+        collect leg and hand-over, Sell All, Sell Max, refining, the auction house and the
+        Wreckers' Guild leave those units aboard. Python keeps counts, so the reserved
+        count stands in for the port's owned cargo lots.
+
+        Args:
+            commodity_id: The good.
+            except_mission: A mission whose own accept cargo is not counted.
+
+        Returns:
+            The reserved units, which can exceed what is aboard after a loss.
+        """
+        return sum(
+            self._accept_units(mid, commodity_id)
+            for mid, status in self._status.items()
+            if status == MissionStatus.ACTIVE and mid != except_mission
+        )
+
+    def sealed_units(self, commodity_id: str) -> int:
+        """Units of a good an active board contract's accept cargo holds (bug bash BB-11).
+
+        A board contract (a runtime mission) seals its own cargo while it runs: a sale that
+        would draw it is refused, where a campaign or authored mission's cargo may be sold
+        when the captain names it.
+
+        Args:
+            commodity_id: The good.
+
+        Returns:
+            The sealed units.
+        """
+        return sum(
+            self._accept_units(mid, commodity_id)
+            for mid in self._runtime_ids
+            if self._status.get(mid) == MissionStatus.ACTIVE
+        )
+
+    def free_units(self, player: "Player", commodity_id: str, except_mission: str = "") -> int:
+        """Units of a good in the main hold that no active mission's accept cargo holds.
+
+        The hidden compartment counts as aboard (``held_units``) and the captain's own
+        units go first, so a reserved unit hidden there leaves one of the captain's own
+        free in the main hold, where every disposal draws.
+
+        Args:
+            player: The player whose hold is read.
+            commodity_id: The good.
+            except_mission: A mission whose own accept cargo counts as free.
+
+        Returns:
+            The free units in the main hold, never below 0.
+        """
+        main = player.ship.get_cargo_quantity(commodity_id)
+        own = held_units(player, commodity_id) - self.reserved_units(commodity_id, except_mission)
+        return max(0, min(main, own))
+
+    def free_cargo(self, player: "Player") -> dict[str, int]:
+        """The main hold with every reserved unit held back, goods with nothing free left out.
+
+        Args:
+            player: The player whose hold is read.
+
+        Returns:
+            Commodity id to free units, in the hold's order.
+        """
+        free: dict[str, int] = {}
+        for commodity_id in player.ship.current_cargo:
+            units = self.free_units(player, commodity_id)
+            if units > 0:
+                free[commodity_id] = units
+        return free
+
     def check_objectives(
         self,
         player: "Player",
@@ -846,7 +929,9 @@ class MissionManager:
         elif obj.type == ObjectiveType.HAVE_CREDITS:
             return player.credits >= obj.target_quantity
         elif obj.type == ObjectiveType.COLLECT_CARGO:
-            return player.ship.get_cargo_quantity(obj.target_id) >= obj.target_quantity
+            # BB-1: another active mission's accept cargo never fills this leg
+            free = self.free_units(player, obj.target_id, except_mission=mission_id)
+            return free >= obj.target_quantity
         elif obj.type == ObjectiveType.HAS_FLAG:
             return player.dialogue_flags.get(obj.target_id, False)
         elif obj.type == ObjectiveType.COMPLETE_TRADE:
@@ -1298,3 +1383,22 @@ class MissionManager:
             str(mid): {str(npc) for npc in npcs}
             for mid, npcs in data.get("talked_since_accept", {}).items()
         }
+
+
+def held_units(player: "Player", commodity_id: str) -> int:
+    """Units of a good aboard, the hidden compartment's included (bug bash BB-1, BB-11).
+
+    Hiding moves units between the ship's two holds, so a reserved unit in the hidden
+    compartment is still aboard: the reserved count, a board contract's seal and the iron
+    job's sale sensor read both holds.
+
+    Args:
+        player: The player whose holds are read.
+        commodity_id: The good.
+
+    Returns:
+        The main hold's units plus the hidden compartment's.
+    """
+    compartment = player.hidden_compartment
+    hidden = compartment.hidden_cargo.get(commodity_id, 0) if compartment else 0
+    return player.ship.get_cargo_quantity(commodity_id) + hidden
