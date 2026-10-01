@@ -791,6 +791,10 @@ class Game:
         # Track starting day for event generation
         self._last_known_day = self.player.game_day
 
+        # F-C09: the dialogue manager outlives a main-menu New Game, and a save lays the player's
+        # store over its copy, so a stale copy would carry the last game's flags into this one
+        self.dialogue_manager.load_flags(self.player.dialogue_flags)
+
     @staticmethod
     def _build_scaled_theme(base_path: Path) -> Optional[Path]:
         """Build a resolution-scaled theme JSON for pygame_gui.
@@ -1274,6 +1278,17 @@ class Game:
                 self._mission_notifications.append(arrival_message)
                 self.galaxy_map_view.arrival_message = None
 
+                # Bug bash BB-4: a landing runs the iron job's clock, before the
+                # auto-triggers read the flag it sets (Elena's)
+                if self.mission_manager and self._player is not None:
+                    from spacegame.constants.flags import iron_delivery_moved_on
+                    from spacegame.models.iron_consignment import on_clock
+
+                    if on_clock(
+                        self.mission_manager, self.player.dialogue_flags, self.player.game_day
+                    ):
+                        self.dialogue_manager.set_flag(iron_delivery_moved_on())
+
                 # Travel log: first visit entry
                 if self.travel_log and self.journal and self._player is not None:
                     system_id = self.player.current_system_id
@@ -1700,19 +1715,16 @@ class Game:
                         for mission_id in accepted:
                             self._load_auto_accept_cargo(mission_id)
 
-                    # Handle mission failures triggered by dialogue
-                    if (
-                        self.player.dialogue_flags.get("iron_delivery_failed")
-                        and self.mission_manager
-                    ):
-                        from spacegame.models.mission import MissionStatus
+                    # Bug bash BB-4: the betrayal fails an open iron job and lets the
+                    # campaign move on (iron_consignment.close_on_exit)
+                    if self.mission_manager:
+                        from spacegame.constants.flags import iron_delivery_moved_on
+                        from spacegame.models.iron_consignment import close_on_exit
 
-                        if self.mission_manager.get_status("iron_delivery") == MissionStatus.ACTIVE:
-                            self.mission_manager.fail_mission("iron_delivery")
+                        if close_on_exit(self.mission_manager, self.player.dialogue_flags):
                             self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
-                            logger.info(
-                                "Iron delivery mission failed — player sold consigned cargo"
-                            )
+                            logger.info("Iron delivery mission failed: Odom's ore was sold")
+                            self.dialogue_manager.set_flag(iron_delivery_moved_on())
 
                 target = next_state
 
@@ -2534,6 +2546,7 @@ class Game:
             price_history=self.price_history,
             smuggling_contract_manager=self.smuggling_contract_manager,
             politics_manager=self.politics_manager,
+            mission_manager=self.mission_manager,
         )
 
         self.state_manager.register_state(GameState.GALAXY_MAP, self.galaxy_map_view)
@@ -2704,6 +2717,7 @@ class Game:
         sell_lot_view = SellLotView(
             ui_manager=self.ui_manager,
             player=self.player,
+            mission_manager=self.mission_manager,
         )
         self.sell_lot_view = sell_lot_view
         # Voice templates for the empty-state line.
@@ -3456,6 +3470,7 @@ class Game:
             system_id=self.player.current_system_id,
             progression=self.player.progression,
             social_manager=self.social_manager,
+            mission_manager=self.mission_manager,
         )
         self.refining_view = refining_view
         refining_view._get_crew_line = self._make_crew_commentary_fn()
@@ -3585,6 +3600,13 @@ class Game:
             logger.warning(f"NPC not found: {npc_id}")
             return
 
+        # Bug bash BB-38: the scene is the scene whoever opens it. Opening an NPC whose
+        # gate flag is unset sets it first, as the auto-trigger does, so the next
+        # departure does not play the scene again.
+        gate = npc.auto_trigger_gate_flag
+        if gate and self._player is not None and not self.player.dialogue_flags.get(gate, False):
+            self.player.dialogue_flags[gate] = True
+
         # Resolve active dialogue tree from NPC state machine
         active_dialogue_id = npc.get_active_dialogue_id(
             self.player.dialogue_flags if self._player is not None else {}
@@ -3612,20 +3634,6 @@ class Game:
                 self.dialogue_manager.set_flag("empathic_read_active")
             if self.player.progression.get_bonus("special_dialogue") > 0:
                 self.dialogue_manager.set_flag("has_special_dialogue")
-
-        # Detect if player sold the cargo broker's iron ore
-        if npc_id == "odom_broker" and self.mission_manager:
-            from spacegame.models.mission import MissionStatus
-
-            iron_status = self.mission_manager.get_status("iron_delivery")
-            has_ore = self.player.ship.get_cargo_quantity("iron_ore") >= 10
-            if (
-                iron_status == MissionStatus.ACTIVE
-                and not has_ore
-                and not self.player.dialogue_flags.get("iron_ore_delivered", False)
-            ):
-                self.player.dialogue_flags["broker_ore_sold"] = True
-                self.dialogue_manager.set_flag("broker_ore_sold")
 
         # Apply faction-based disposition modifier to NPC
         if self.politics_manager and npc.faction_id:
@@ -5143,8 +5151,13 @@ class Game:
             logger.warning("No active game to save")
             return
 
-        # Sync dialogue flags to player before saving
-        self.player.dialogue_flags = self.dialogue_manager.get_flags()
+        # Sync dialogue flags to player before saving. F-C09: the player's store wins, since
+        # code outside a conversation writes it alone (accepts, reward flags, the sensors).
+        # In place: a running combat holds this dict for its dual-tech reveal flags
+        flags = self.player.dialogue_flags
+        merged = self.dialogue_manager.merged_flags(flags)
+        flags.clear()
+        flags.update(merged)
 
         # Sync mission state to player before saving
         if self.mission_manager:
@@ -6052,6 +6065,9 @@ class Game:
                 new_trades, xp_bonus, loyalty_bonus
             )
             for flag in loyalty_flags:
+                # F-C09: written outside a conversation, so the player's store too; the next
+                # conversation reloads the copy from it
+                self.player.dialogue_flags[flag] = True
                 self.dialogue_manager.set_flag(flag)
             for msg in levelup_msgs:
                 self._mission_notifications.append(msg)
@@ -6286,6 +6302,9 @@ class Game:
                 sign = "+" if amt >= 0 else ""
                 self._mission_notifications.append(f"{sign}{amt} Rep: {fname}")
             for flag in done.loyalty_flags:
+                # F-C09: written outside a conversation, so the player's store too; the next
+                # conversation reloads the copy from it
+                self.player.dialogue_flags[flag] = True
                 self.dialogue_manager.set_flag(flag)
             self._mission_notifications.extend(done.crew_levelups)
 

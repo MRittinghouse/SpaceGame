@@ -327,3 +327,42 @@ class RefiningSession:
             if recipe.can_craft(inventory):
                 craftable.append(recipe)
         return craftable
+
+
+def start_on_free_cargo(
+    session: RefiningSession,
+    recipe: Recipe,
+    cargo: dict[str, int],
+    free: dict[str, int],
+    count: int,
+) -> tuple[bool, str]:
+    """Queue a recipe on the free hold, then take what it used from the real hold.
+
+    ``free`` is the hold with every mission's accept cargo held back
+    (``MissionManager.free_cargo``, bug bash BB-1), so a recipe never draws a consigned
+    unit, and the session's own messages report a shortfall against it. ``cargo`` loses
+    exactly the units the session consumed, by the same arithmetic the session uses.
+
+    Args:
+        session: The refining session.
+        recipe: The recipe to queue.
+        cargo: The ship's hold, modified on success.
+        free: The free hold, consumed by the session.
+        count: Copies to queue; one runs ``start_job``, more run ``start_batch``.
+
+    Returns:
+        The session's (success, message).
+    """
+    before = dict(free)
+    if count > 1:
+        ok, msg = session.start_batch(recipe, free, count)
+    else:
+        ok, msg = session.start_job(recipe, free)
+    if ok:
+        for commodity_id, units in before.items():
+            used = units - free.get(commodity_id, 0)
+            if used > 0:
+                cargo[commodity_id] = cargo.get(commodity_id, 0) - used
+                if cargo[commodity_id] <= 0:
+                    del cargo[commodity_id]
+    return ok, msg

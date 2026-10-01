@@ -37,6 +37,14 @@
     "stock_regen_rate": 0.30,
     "player_price_impact_per_unit": 0.02,
     "player_price_impact_cap": 0.30,
-    "player_price_decay_rate": 0.30
+    "player_price_decay_rate": 0.30,
+    "new_market_premium": {
+      "base_percent": 8,
+      "percent_per_commerce_level": 2,
+      "percent_per_commerce_point": 1,
+      "max_percent": 50,
+      "cap_per_level": 500,
+      "min_margin_percent": 10
+    }
   }
 }

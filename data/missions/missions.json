@@ -96,7 +96,7 @@
           "amount": 600
         },
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 10,
           "target_id": "iron_ore"
         },
@@ -108,6 +108,11 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "iron_ore_delivered"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "iron_delivery_moved_on"
         }
       ]
     },
@@ -115,11 +120,12 @@
       "id": "footing_the_bill",
       "name": "Footing the Bill",
       "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice like she was doing you a favor, and she probably was. But nobody gives something for nothing out here.",
-      "hint": "Elena Reeves will appear at Nexus Prime after completing the iron delivery. Listen to her trading advice.",
+      "hint": "Elena Reeves will appear at Nexus Prime once the iron delivery is settled or overdue. Listen to her trading advice.",
       "prerequisites": [
-        "iron_delivery"
+        "bill_of_landing"
       ],
       "required_flags": [
+        "iron_delivery_moved_on",
         "talked_to_elena_cantina"
       ],
       "auto_accept": true,
@@ -289,6 +295,7 @@
       "required_flags": [
         "met_tomas_drifter"
       ],
+      "auto_accept": true,
       "objectives": [
         {
           "type": "has_flag",
@@ -316,13 +323,14 @@
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
       "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods, split the take, and try not to think too hard about the tariff codes.",
-      "hint": "Travel to Stellaris Port and sell Tomas's textiles at the market.",
+      "hint": "Travel to Stellaris Port with Tomas's textiles.",
       "prerequisites": [
         "the_drifters_deal"
       ],
       "required_flags": [
         "accepted_drifter_deal"
       ],
+      "auto_accept": true,
       "on_accept_cargo": [
         {
           "commodity_id": "textiles",
@@ -331,37 +339,27 @@
       ],
       "objectives": [
         {
+          "type": "collect_cargo",
+          "target_id": "textiles",
+          "target_quantity": 5,
+          "description": "Keep Tomas's textiles aboard: 5 Textiles"
+        },
+        {
           "type": "reach_system",
           "target_id": "stellaris_port",
           "target_quantity": 1,
           "description": "Travel to Stellaris Port"
-        },
-        {
-          "type": "complete_trade",
-          "target_id": "",
-          "target_quantity": 1,
-          "description": "Sell the textiles"
         }
       ],
       "rewards": [
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 5,
           "target_id": "textiles"
         },
         {
           "reward_type": "credits",
           "amount": 300
-        },
-        {
-          "reward_type": "set_flag",
-          "amount": 0,
-          "target_id": "tomas_friendship"
-        },
-        {
-          "reward_type": "set_flag",
-          "amount": 0,
-          "target_id": "drifter_deal_resolved"
         },
         {
           "reward_type": "xp",
@@ -490,6 +488,11 @@
         {
           "reward_type": "xp",
           "amount": 50
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "tomas_friendship"
         }
       ]
     },
@@ -537,7 +540,7 @@
           "amount": 600
         },
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 5,
           "target_id": "electronics"
         },

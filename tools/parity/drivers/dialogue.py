@@ -1,5 +1,5 @@
-"""Dialogue goldens: every node of every tree, the ambient and chatter line pickers, and
-crew interjections.
+"""Dialogue goldens: every node of every tree, the ambient and chatter line pickers, crew
+interjections, and the Talk list.
 
 Each response is selected from a fresh manager positioned on its node, so steps are
 independent. Every case builds its managers from its own setup, so the Godot adapter
@@ -17,6 +17,7 @@ parity/port_notes.md lists them.
 
 from __future__ import annotations
 
+import copy
 import dataclasses
 from typing import Any
 
@@ -26,6 +27,8 @@ from spacegame.models.combat import CombatResult, CombatState
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
 from spacegame.models.dialogue import DialogueManager, DialogueTree
+from spacegame.models.mission import MissionManager
+from spacegame.models.npc_availability import npcs_here, settable_index
 from spacegame.models.social import (
     MAX_SOCIAL_LEVEL,
     SOCIAL_SKILL_DEFINITIONS,
@@ -327,6 +330,131 @@ def _interjections() -> Case:
     return case
 
 
+@dataclasses.dataclass(frozen=True)
+class _TalkStep:
+    """One story state the Talk list golden lists people for (bug bash BB-38)."""
+
+    label: str
+    system_id: str
+    flags: tuple[str, ...] = ()
+    statuses: tuple[tuple[str, str], ...] = ()
+    recruited: tuple[str, ...] = ()
+    progress: tuple[tuple[str, tuple[bool, ...]], ...] = ()
+
+
+_ELENA_AWAY = ("iron_delivery_moved_on", "larsen_permit_complete", "talked_to_elena_cantina")
+_ELENA_OPEN = (
+    ("bill_of_landing", "completed"),
+    ("iron_delivery", "completed"),
+    ("footing_the_bill", "active"),
+)
+# Each clause of npc_availability.is_listed, after every station's day one: a one-shot scene
+# not yet played, the keep rule after each kept exit and its release once the awaited flag is
+# set, a companion aboard, a lesson learned, a hide flag, a prerequisite, and a talk objective
+# that keeps someone only while its mission is active and the talk unmet. Python lists the twelve
+# Act II v1 NPCs, and so does this golden; leaving them out is the port's clause alone (D-21).
+TALK_STEPS: tuple[_TalkStep, ...] = (
+    _TalkStep("elena_first_open", "nexus_prime", _ELENA_AWAY[:2], _ELENA_OPEN[:2]),
+    _TalkStep("elena_walked_away", "nexus_prime", _ELENA_AWAY, _ELENA_OPEN),
+    _TalkStep("elena_aboard", "nexus_prime", _ELENA_AWAY, _ELENA_OPEN, ("elena_reeves",)),
+    _TalkStep(
+        "elena_taught",
+        "nexus_prime",
+        (*_ELENA_AWAY, "elena_gave_trading_tips"),
+        (*_ELENA_OPEN[:2], ("footing_the_bill", "completed")),
+    ),
+    _TalkStep(
+        "elena_lesson_landed",
+        "nexus_prime",
+        (*_ELENA_AWAY, "elena_gave_trading_tips"),
+        _ELENA_OPEN,
+    ),
+    _TalkStep(
+        "dex_declined",
+        "nexus_prime",
+        ("cargo_lost_complete", "larsen_permit_complete", "met_dex_halloran"),
+        (("cargo_lost", "completed"), ("whispers_at_the_bar", "active")),
+    ),
+    # Synthetic: since BB-71's repair every exit of Tomas's scene resolves his deal, which
+    # auto-accepts, so play never leaves it available with his scene spent. It stays as the
+    # one step where an available mission keeps a spent NPC (the keep rule's 'available' half).
+    _TalkStep(
+        "tomas_unresolved",
+        "havens_rest",
+        ("breakstone_permit_earned", "met_tomas_drifter"),
+        (("union_territory", "completed"), ("the_drifters_deal", "available")),
+    ),
+    _TalkStep(
+        "oren_kept",
+        "breakstone",
+        ("favor_ground_complete", "met_oren_tak"),
+        (("the_favor_returned", "active"),),
+    ),
+    _TalkStep("reva_waits", "nova_research"),
+    _TalkStep(
+        "reva_reached", "nova_research", ("cargo_lost_accepted",), (("cargo_lost", "active"),)
+    ),
+    _TalkStep(
+        "wren_offered",
+        "forgeworks",
+        ("talked_to_cargo_broker",),
+        (("iron_delivery", "available"),),
+    ),
+    _TalkStep(
+        "wren_awaited", "forgeworks", ("talked_to_cargo_broker",), (("iron_delivery", "active"),)
+    ),
+    _TalkStep(
+        "odom_gone",
+        "nexus_prime",
+        ("iron_delivery_failed", "larsen_permit_complete"),
+        (("iron_delivery", "failed"),),
+    ),
+    _TalkStep(
+        "larsen_met",
+        "nexus_prime",
+        statuses=(("bill_of_landing", "active"),),
+        progress=(("bill_of_landing", (True,)),),
+    ),
+)
+
+
+def _talk_step(step: _TalkStep) -> dict[str, Any]:
+    return {
+        "label": step.label,
+        "system_id": step.system_id,
+        "flags": dict.fromkeys(sorted(step.flags), True),
+        "mission_state": {
+            "status": dict(step.statuses),
+            "progress": {mission_id: list(done) for mission_id, done in step.progress},
+        },
+        "recruited": list(step.recruited),
+    }
+
+
+def _npcs_here() -> Case:
+    dl = get_data_loader()
+    day_one = [
+        _TalkStep(f"day_one_{system_id}", system_id, (), (("bill_of_landing", "active"),))
+        for system_id in dl.systems
+    ]
+    setup: dict[str, Any] = {"steps": [_talk_step(s) for s in (*day_one, *TALK_STEPS)]}
+    case = Case("dialogue", "npcs_here", setup)
+    index = settable_index(dl.npcs.values(), dl.dialogue_trees)
+    for step in setup["steps"]:
+        manager = MissionManager(copy.deepcopy(dl.missions))
+        manager.load_state(step["mission_state"])
+        listed = npcs_here(
+            dl.npcs.values(),
+            step["system_id"],
+            dict(step["flags"]),
+            manager,
+            set(step["recruited"]),
+            index,
+        )
+        case.record("npcs_here", [step["label"]], [list(pair) for pair in listed], {})
+    return case
+
+
 def build_cases() -> list[Case]:
     """Every dialogue case."""
     dl = get_data_loader()
@@ -336,4 +464,5 @@ def build_cases() -> list[Case]:
         _ambient(),
         _chatter(),
         _interjections(),
+        _npcs_here(),
     ]

@@ -38,6 +38,7 @@ from spacegame.engine.fonts import (
 )
 from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.location import Location
+from spacegame.models.npc_availability import is_listed, settable_flags
 from spacegame.models.player import Player
 from spacegame.models.station_salience import (
     RecommendationSource,
@@ -1568,12 +1569,7 @@ class StationHubView(BaseView):
             self._create_npc_buttons()
 
     def _get_cantina_npcs(self) -> list:
-        """Get NPCs available at the current system.
-
-        Filters NPCs based on story progression:
-        - hide_after_flag set → hidden (e.g., Officer Larsen after permit)
-        - auto_trigger_gate_flag set → hidden (dialogue already happened)
-        - auto_trigger_prerequisites not met → hidden (story not reached)
+        """Get NPCs available at the current system, by the rules in ``npc_availability``.
 
         Returns:
             List of NPC objects at this system.
@@ -1584,26 +1580,17 @@ class StationHubView(BaseView):
         return [npc for npc in all_npcs if self._is_npc_available(npc)]
 
     def _is_npc_available(self, npc: "NPC") -> bool:
-        """Check if an NPC should appear in the cantina.
-
-        Args:
-            npc: NPC object with dialogue flag fields.
-
-        Returns:
-            True if the NPC should be visible.
-        """
-        flags = self.player.dialogue_flags
-        # Hide if hide_after_flag is set
-        if npc.hide_after_flag and flags.get(npc.hide_after_flag, False):
-            return False
-        # Hide if gate flag already triggered (dialogue already happened)
-        if npc.auto_trigger_gate_flag and flags.get(npc.auto_trigger_gate_flag, False):
-            return False
-        # Hide if prerequisites not yet met
-        if npc.auto_trigger_prerequisites:
-            if not all(flags.get(f, False) for f in npc.auto_trigger_prerequisites):
-                return False
-        return True
+        """Whether the NPC is in the Talk list here (npc_availability.is_listed, bug bash BB-38)."""
+        recruited = self.crew_roster.recruited_ids if self.crew_roster else set()
+        settable = settable_flags(npc, self.data_loader.dialogue_trees)
+        return is_listed(
+            npc,
+            self.system.id,
+            self.player.dialogue_flags,
+            self.mission_manager,
+            recruited,
+            settable,
+        )
 
     def get_next_state(self) -> Optional[GameState]:
         """Return pending state transition."""

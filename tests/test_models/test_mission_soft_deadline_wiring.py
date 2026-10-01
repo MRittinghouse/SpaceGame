@@ -259,6 +259,8 @@ class TestEndToEndWithAuthoredDeadlines:
 
         # Full reward: day 110 (10 days elapsed)
         player_full = _make_player(game_day=110, credits=0)
+        # BB-11: a hand-over pays on the units it takes, so each captain carries Odom's ten
+        player_full.ship.add_cargo("iron_ore", 10, 0)
         mgr.apply_rewards("iron_delivery", player_full)
         assert player_full.credits == credit_amount
 
@@ -268,6 +270,7 @@ class TestEndToEndWithAuthoredDeadlines:
         mgr2.accept_mission("iron_delivery", game_day=100)
         # Day 116 = 16 elapsed (past full=14, within partial=18)
         player_partial = _make_player(game_day=116, credits=0)
+        player_partial.ship.add_cargo("iron_ore", 10, 0)
         mgr2.apply_rewards("iron_delivery", player_partial)
         assert player_partial.credits == int(credit_amount * 0.75)
 
@@ -276,6 +279,7 @@ class TestEndToEndWithAuthoredDeadlines:
         mgr3._status["iron_delivery"] = MissionStatus.AVAILABLE
         mgr3.accept_mission("iron_delivery", game_day=100)
         player_late = _make_player(game_day=200, credits=0)
+        player_late.ship.add_cargo("iron_ore", 10, 0)
         mgr3.apply_rewards("iron_delivery", player_late)
         assert player_late.credits == int(credit_amount * 0.5)
         # Still > 0 (drift, not fail)

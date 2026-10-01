@@ -89,7 +89,7 @@
     },
     "tree_id": "merchant_delivery"
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -735,7 +735,6 @@
           2,
           4,
           7,
-          8,
           9
         ],
         "check": null,
@@ -776,7 +775,6 @@
           2,
           4,
           7,
-          8,
           9
         ],
         "check": null,
@@ -817,7 +815,6 @@
           2,
           4,
           7,
-          8,
           9
         ],
         "check": null,
@@ -858,7 +855,6 @@
           2,
           4,
           7,
-          8,
           9
         ],
         "check": null,
@@ -899,7 +895,6 @@
           2,
           4,
           7,
-          8,
           9
         ],
         "check": null,
@@ -940,48 +935,6 @@
           2,
           4,
           7,
-          8,
-          9
-        ],
-        "check": null,
-        "next_node": "betrayal",
-        "response": 8
-      },
-      "state": {
-        "disposition": {},
-        "flags": [
-          "arna_branch_a_complete",
-          "arna_branch_b_complete",
-          "arna_branch_c_complete",
-          "broker_ore_sold",
-          "investment_introduced",
-          "iron_ore_delivered",
-          "odom_taught_intro",
-          "talked_to_cargo_broker"
-        ],
-        "loyalty": {
-          "dr_priya_osei": 60,
-          "elena_reeves": 60,
-          "marcus_jin": 60,
-          "tomas_drifter": 60
-        }
-      }
-    },
-    {
-      "args": [
-        "expert",
-        "greet",
-        6
-      ],
-      "call": "select",
-      "result": {
-        "available": [
-          0,
-          1,
-          2,
-          4,
-          7,
-          8,
           9
         ],
         "check": null,

@@ -5,7 +5,7 @@ Buy and sell commodities at the current system's market.
 Features dimmed animated background, panel glow borders, and transaction particles.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import pygame
 import pygame_gui
@@ -19,6 +19,7 @@ from spacegame.engine.particles import COLLECT_SPARKLE, ParticleConfig, Particle
 from spacegame.engine.sprites import get_sprite_manager, res_scale
 from spacegame.models.commodity import Commodity, CommodityCategory
 from spacegame.models.market import Market
+from spacegame.models.mission import held_units
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.models.trade_pricing import (
@@ -35,9 +36,14 @@ from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
 
+if TYPE_CHECKING:
+    from spacegame.models.mission import MissionManager
+
 # BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
 # the Union's, so the refusal names the permit rather than the bill.
 NO_PERMIT = "You need a trade permit to trade here"
+# Bug bash BB-11: a board contract's own cargo is sealed while the contract runs.
+SEALED_CARGO = "That cargo is sealed under your contract."
 
 # Red flash for failed transactions
 FAIL_FLASH = ParticleConfig(
@@ -89,6 +95,7 @@ class TradingView(BaseView):
         black_market_name: Optional[str] = None,
         smuggling_contract_manager=None,
         politics_manager=None,
+        mission_manager: Optional["MissionManager"] = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -104,6 +111,7 @@ class TradingView(BaseView):
         self.price_history = price_history
         self.smuggling_contracts = smuggling_contract_manager
         self.politics_manager = politics_manager
+        self.mission_manager = mission_manager
 
         # Black market mode — resolved dynamically in on_enter()
         self._black_market_name: Optional[str] = black_market_name
@@ -1074,6 +1082,16 @@ class TradingView(BaseView):
             self._show_message("Enter a valid quantity to sell")
             return
 
+        # Bug bash BB-11: a board contract's own cargo is sealed while it runs; a campaign
+        # or authored mission's may be sold when the captain names the units (plan B1's
+        # ruling: no confirm). Hidden units count as held, and the captain's own go first.
+        if self.mission_manager is not None and self.mission_manager.sale_draws_sealed(
+            self.player, commodity_id, quantity
+        ):
+            self._show_message(SEALED_CARGO)
+            return
+        held_before = held_units(self.player, commodity_id)
+
         if self._black_market_mode:
             price_per_unit = self._get_black_market_sell_price(commodity_id)
         else:
@@ -1109,6 +1127,17 @@ class TradingView(BaseView):
                 # A2-4B: accrue crime investment on black market sales
                 self.player.record_lens_action("black_market_sale", 3)
             self.market.record_sell(commodity_id, quantity)
+            # Bug bash BB-1: a sale that draws Odom's consigned ore is on the floor log
+            if self.mission_manager is not None:
+                from spacegame.models.iron_consignment import note_sale
+
+                note_sale(
+                    self.mission_manager,
+                    self.player.dialogue_flags,
+                    commodity_id,
+                    held_before,
+                    quantity,
+                )
             self._refresh_tables()
         else:
             get_audio_manager().play_sfx("trade_fail")
@@ -1205,6 +1234,9 @@ class TradingView(BaseView):
             return
 
         quantity = self.player.ship.get_cargo_quantity(commodity_id)
+        # Bug bash BB-1: Sell Max leaves every mission's accept cargo aboard
+        if self.mission_manager is not None:
+            quantity = self.mission_manager.free_units(self.player, commodity_id)
         if quantity <= 0:
             self._show_message("No cargo to sell")
             return
@@ -1265,6 +1297,9 @@ class TradingView(BaseView):
         total_credits = 0
         total_items = 0
         for commodity_id, quantity in cargo.items():
+            # Bug bash BB-1: Sell All leaves every mission's accept cargo aboard
+            if self.mission_manager is not None:
+                quantity = self.mission_manager.free_units(self.player, commodity_id)
             if quantity <= 0 or self._is_quest_good(commodity_id):
                 continue
             if self._black_market_mode:
@@ -1289,6 +1324,8 @@ class TradingView(BaseView):
             for m in xp_msgs:
                 self._show_message(m)
             self._refresh_tables()
+        else:
+            self._show_message("No cargo to sell")
 
     def _execute_rest(self) -> None:
         current_system = self.systems[self.player.current_system_id]
@@ -1307,6 +1344,11 @@ class TradingView(BaseView):
         if success:
             self.market.update_day(self.player.game_day)
             self.market.regenerate_stock()
+            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does
+            if self.mission_manager is not None:
+                from spacegame.models.iron_consignment import on_clock
+
+                on_clock(self.mission_manager, self.player.dialogue_flags, self.player.game_day)
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:

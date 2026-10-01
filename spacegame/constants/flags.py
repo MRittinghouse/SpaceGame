@@ -608,6 +608,45 @@ def marcus_uprising_inheritance_seen() -> str:
 
 
 # ---------------------------------------------------------------------------
+# The iron ore delivery (bug bash BB-1, BB-4)
+# ---------------------------------------------------------------------------
+#
+# Odom's first errand. The campaign never waits on it: Elena's trigger, Footing the
+# Bill and The Dead Ledger read iron_delivery_moved_on, which every ending of the job
+# and the job's clock set (models/iron_consignment.py).
+
+
+def iron_delivery_moved_on() -> str:
+    """Flag set when the campaign stops waiting on Odom's iron delivery.
+
+    Producers: ``iron_delivery``'s reward; ``iron_consignment.close_on_exit`` at a
+    dialogue's exit after the betrayal; ``iron_consignment.on_clock`` at a landing or a
+    rest from the late tier's first day.
+    Consumers: ``elena_reeves.auto_trigger_prerequisites``; ``footing_the_bill`` and
+    ``the_dead_ledger`` required flags.
+    """
+    return "iron_delivery_moved_on"
+
+
+def iron_delivery_failed() -> str:
+    """Flag set by Odom's betrayal reply (``merchant_delivery``, ``betrayal_end``).
+
+    Consumers: ``iron_consignment.close_on_exit``, which fails the open job;
+    ``odom_broker.hide_after_flag``.
+    """
+    return "iron_delivery_failed"
+
+
+def broker_ore_sold() -> str:
+    """Flag set when a sale draws Odom's consigned ore while the job is open.
+
+    Producer: ``iron_consignment.note_sale``, called by the trading view's Sell.
+    Consumer: ``merchant_delivery``'s "About that iron ore..." reply.
+    """
+    return "broker_ore_sold"
+
+
+# ---------------------------------------------------------------------------
 # Politics venue (SA-P2)
 # ---------------------------------------------------------------------------
 #

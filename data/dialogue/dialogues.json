@@ -745,12 +745,18 @@
             {
               "text": "Fair point. I'll do it.",
               "next_node_id": "accept",
-              "set_flag": "accepted_drifter_deal"
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
             },
             {
               "text": "I appreciate the honesty, but no.",
               "next_node_id": "decline",
-              "set_flag": "declined_drifter_deal"
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
             }
           ],
           "expression": "confident"
@@ -763,12 +769,18 @@
             {
               "text": "Good enough. Let's do it.",
               "next_node_id": "accept",
-              "set_flag": "accepted_drifter_deal"
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
             },
             {
               "text": "I need to think about it. Not right now.",
               "next_node_id": "decline",
-              "set_flag": "declined_drifter_deal"
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
             }
           ],
           "expression": "neutral"
@@ -781,12 +793,18 @@
             {
               "text": "Alright. I'm in.",
               "next_node_id": "accept",
-              "set_flag": "accepted_drifter_deal"
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
             },
             {
               "text": "I'm not comfortable with this.",
               "next_node_id": "decline",
-              "set_flag": "declined_drifter_deal"
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
             }
           ],
           "expression": "confident"
@@ -798,7 +816,8 @@
           "responses": [
             {
               "text": "I'll get it done.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved"
             }
           ],
           "expression": "happy"
@@ -1097,6 +1116,9 @@
               "next_node_id": "betrayal",
               "required_flags": [
                 "broker_ore_sold"
+              ],
+              "excluded_flags": [
+                "iron_ore_delivered"
               ]
             },
             {

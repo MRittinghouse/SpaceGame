@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -135,6 +135,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1150,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -240,6 +244,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1990,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -329,15 +337,15 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "Transport 3 units of Crystal Ore to Verdant. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 3 units of Medical Supplies to Verdant. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_nova_research_3_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Crystal Ore to Verdant",
+          "name": "Delivery: Medical Supplies to Verdant",
           "objectives": [
             {
-              "description": "Acquire 3 Crystal Ore",
-              "target_id": "crystal_ore",
+              "description": "Acquire 3 Medical Supplies",
+              "target_id": "medical",
               "target_quantity": 3,
               "type": "collect_cargo"
             },
@@ -352,7 +360,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 1575,
               "reward_type": "credits"
             },
             {
@@ -361,8 +369,8 @@
             },
             {
               "amount": 3,
-              "reward_type": "remove_cargo",
-              "target_id": "crystal_ore"
+              "reward_type": "deliver_cargo",
+              "target_id": "medical"
             }
           ]
         }
@@ -445,6 +453,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1040,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -452,15 +464,15 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "Transport 4 units of Rare Metals to The Fulcrum. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 4 units of Electronics to The Fulcrum. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_nova_research_4_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Rare Metals to The Fulcrum",
+          "name": "Delivery: Electronics to The Fulcrum",
           "objectives": [
             {
-              "description": "Acquire 4 Rare Metals",
-              "target_id": "rare_metals",
+              "description": "Acquire 4 Electronics",
+              "target_id": "electronics",
               "target_quantity": 4,
               "type": "collect_cargo"
             },
@@ -475,7 +487,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 750,
+              "amount": 1200,
               "reward_type": "credits"
             },
             {
@@ -484,8 +496,8 @@
             },
             {
               "amount": 4,
-              "reward_type": "remove_cargo",
-              "target_id": "rare_metals"
+              "reward_type": "deliver_cargo",
+              "target_id": "electronics"
             }
           ]
         }
@@ -503,15 +515,15 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "Transport 10 units of Rare Metals to Nexus Prime. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 10 units of Electronics to Nexus Prime. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_nova_research_5_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Rare Metals to Nexus Prime",
+          "name": "Delivery: Electronics to Nexus Prime",
           "objectives": [
             {
-              "description": "Acquire 10 Rare Metals",
-              "target_id": "rare_metals",
+              "description": "Acquire 10 Electronics",
+              "target_id": "electronics",
               "target_quantity": 10,
               "type": "collect_cargo"
             },
@@ -526,7 +538,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 1875,
+              "amount": 3000,
               "reward_type": "credits"
             },
             {
@@ -535,8 +547,8 @@
             },
             {
               "amount": 10,
-              "reward_type": "remove_cargo",
-              "target_id": "rare_metals"
+              "reward_type": "deliver_cargo",
+              "target_id": "electronics"
             }
           ]
         },
@@ -573,6 +585,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1520,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -655,6 +671,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 240,
+              "reward_type": "route_fuel"
             }
           ]
         },

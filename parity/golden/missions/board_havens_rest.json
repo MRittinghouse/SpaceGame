@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -94,6 +94,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1840,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -140,6 +144,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1240,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -179,7 +187,7 @@
             },
             {
               "amount": 3,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "textiles"
             }
           ]
@@ -245,15 +253,15 @@
           "available_at": [
             "havens_rest"
           ],
-          "description": "Transport 5 units of Medical Supplies to Crimson Reach. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 5 units of Textiles to Crimson Reach. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_havens_rest_3_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Medical Supplies to Crimson Reach",
+          "name": "Delivery: Textiles to Crimson Reach",
           "objectives": [
             {
-              "description": "Acquire 5 Medical Supplies",
-              "target_id": "medical",
+              "description": "Acquire 5 Textiles",
+              "target_id": "textiles",
               "target_quantity": 5,
               "type": "collect_cargo"
             },
@@ -268,7 +276,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 875,
+              "amount": 200,
               "reward_type": "credits"
             },
             {
@@ -277,8 +285,8 @@
             },
             {
               "amount": 5,
-              "reward_type": "remove_cargo",
-              "target_id": "medical"
+              "reward_type": "deliver_cargo",
+              "target_id": "textiles"
             }
           ]
         },
@@ -361,6 +369,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1320,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -427,7 +439,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 180,
+              "amount": 360,
               "reward_type": "credits"
             },
             {
@@ -436,7 +448,7 @@
             },
             {
               "amount": 9,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "textiles"
             }
           ]
@@ -478,7 +490,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 225,
+              "amount": 450,
               "reward_type": "credits"
             },
             {
@@ -487,7 +499,7 @@
             },
             {
               "amount": 9,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "food"
             }
           ]
@@ -612,7 +624,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 180,
+              "amount": 360,
               "reward_type": "credits"
             },
             {
@@ -621,7 +633,7 @@
             },
             {
               "amount": 9,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "textiles"
             }
           ]

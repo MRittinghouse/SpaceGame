@@ -14,7 +14,7 @@
       "faction_id": "commerce_guild",
       "auto_trigger_gate_flag": "talked_to_elena_cantina",
       "auto_trigger_prerequisites": [
-        "iron_ore_delivered"
+        "iron_delivery_moved_on"
       ],
       "dialogue_music": "dialogue_intimate",
       "dialogue_states": [
@@ -102,7 +102,7 @@
       "faction_id": "miners_union",
       "auto_trigger_gate_flag": "met_hanna_voss",
       "auto_trigger_prerequisites": [
-        "talked_to_elena_cantina"
+        "elena_gave_trading_tips"
       ]
     },
     {
@@ -145,6 +145,9 @@
       "home_system_id": "nova_research",
       "dialogue_id": "reva_distress",
       "faction_id": "commerce_guild",
+      "auto_trigger_prerequisites": [
+        "cargo_lost_accepted"
+      ],
       "dialogue_music": "dialogue_intimate"
     },
     {
@@ -161,7 +164,7 @@
       "faction_id": "",
       "auto_trigger_gate_flag": "met_dex_halloran",
       "auto_trigger_prerequisites": [
-        "cargo_lost_resolved"
+        "cargo_lost_complete"
       ],
       "dialogue_music": "dialogue_intimate"
     },

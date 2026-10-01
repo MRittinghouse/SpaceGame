@@ -468,6 +468,26 @@ class TestCreateListingValidation:
         assert listing.item_kind == "part"
         assert player.parts_inventory["mining_laser_mk2"] == 1
 
+    def test_reserved_units_cannot_be_listed(self) -> None:
+        """Bug bash BB-1: a mission's accept cargo stays aboard."""
+        player = _make_player()
+        state = player.auction_state
+        kwargs = {
+            "player": player,
+            "item_kind": "commodity",
+            "item_id": "axiom_circuit",
+            "quantity": 1,
+            "declared_appraisal": 8000,
+            "reserve_pct": 0.70,
+            "current_day": 1,
+        }
+        ok, msg, _listing = state.create_listing(**kwargs, reserved=4)
+        assert not ok
+        assert msg == "You do not have 1 of 'axiom_circuit' in inventory."
+        ok, _msg, _listing = state.create_listing(**kwargs, reserved=3)
+        assert ok
+        assert player.ship.get_cargo_quantity("axiom_circuit") == 3
+
 
 class TestCancelListing:
     def test_cancel_returns_item_no_refund(self) -> None:

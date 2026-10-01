@@ -254,11 +254,15 @@ class TestEndToEndCompletion:
 
         # Complete on day 116 — 16 elapsed, past full=14, within partial=18
         player = _make_player(game_day=116)
+        # deliver_cargo pays on the units it hands over (BB-11), so carry Odom's ten
+        player.ship.add_cargo("iron_ore", 10, 0)
         comment = mgr.get_timeliness_comment("iron_delivery", player)
-        mgr.apply_rewards("iron_delivery", player)
+        messages = mgr.apply_rewards("iron_delivery", player)
 
         mission = dl.get_mission("iron_delivery")
         assert comment == mission.timeliness_comments["late"]
-        # Player got ~75% (whatever the base credits were)
+        # Player got 75% of the 600 credits
+        assert player.credits == 450, f"Late pay should be int(600 * 0.75): {messages}"
+        assert "+450 Credits (late, 75% of 600)" in messages, messages
         # Verify the multiplier resolution matches the tier
         assert mission.soft_deadline.resolve_tier(16) == "late"

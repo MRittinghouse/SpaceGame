@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -93,6 +93,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 960,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -175,6 +179,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 960,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -253,6 +261,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 890,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -299,6 +311,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 960,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -353,15 +369,15 @@
           "available_at": [
             "breakstone"
           ],
-          "description": "Transport 4 units of Electronics to Nexus Prime. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 4 units of Common Metals to Nexus Prime. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_breakstone_3_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Electronics to Nexus Prime",
+          "name": "Delivery: Common Metals to Nexus Prime",
           "objectives": [
             {
-              "description": "Acquire 4 Electronics",
-              "target_id": "electronics",
+              "description": "Acquire 4 Common Metals",
+              "target_id": "common_metals",
               "target_quantity": 4,
               "type": "collect_cargo"
             },
@@ -376,7 +392,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 800,
+              "amount": 480,
               "reward_type": "credits"
             },
             {
@@ -385,8 +401,8 @@
             },
             {
               "amount": 4,
-              "reward_type": "remove_cargo",
-              "target_id": "electronics"
+              "reward_type": "deliver_cargo",
+              "target_id": "common_metals"
             }
           ]
         }
@@ -404,15 +420,15 @@
           "available_at": [
             "breakstone"
           ],
-          "description": "Transport 8 units of Electronics to The Fulcrum. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 8 units of Common Metals to The Fulcrum. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_breakstone_4_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Electronics to The Fulcrum",
+          "name": "Delivery: Common Metals to The Fulcrum",
           "objectives": [
             {
-              "description": "Acquire 8 Electronics",
-              "target_id": "electronics",
+              "description": "Acquire 8 Common Metals",
+              "target_id": "common_metals",
               "target_quantity": 8,
               "type": "collect_cargo"
             },
@@ -427,7 +443,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 1600,
+              "amount": 960,
               "reward_type": "credits"
             },
             {
@@ -436,8 +452,8 @@
             },
             {
               "amount": 8,
-              "reward_type": "remove_cargo",
-              "target_id": "electronics"
+              "reward_type": "deliver_cargo",
+              "target_id": "common_metals"
             }
           ]
         },
@@ -474,6 +490,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 560,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -603,6 +623,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 540,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -651,6 +675,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1790,
+              "reward_type": "route_fuel"
             }
           ]
         }

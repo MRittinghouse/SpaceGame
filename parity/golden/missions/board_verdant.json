@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -52,6 +52,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1450,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -59,15 +63,15 @@
           "available_at": [
             "verdant"
           ],
-          "description": "Transport 5 units of Food & Water to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 5 units of Fresh Water to Nova Research. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_verdant_1_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Food & Water to Nova Research",
+          "name": "Delivery: Fresh Water to Nova Research",
           "objectives": [
             {
-              "description": "Acquire 5 Food & Water",
-              "target_id": "food",
+              "description": "Acquire 5 Fresh Water",
+              "target_id": "fresh_water",
               "target_quantity": 5,
               "type": "collect_cargo"
             },
@@ -91,8 +95,8 @@
             },
             {
               "amount": 5,
-              "reward_type": "remove_cargo",
-              "target_id": "food"
+              "reward_type": "deliver_cargo",
+              "target_id": "fresh_water"
             }
           ]
         },
@@ -129,6 +133,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1160,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -175,6 +183,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1100,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -182,15 +194,15 @@
           "available_at": [
             "verdant"
           ],
-          "description": "Transport 4 units of Machinery to Nova Research. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 4 units of Food & Water to Nova Research. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_verdant_2_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Machinery to Nova Research",
+          "name": "Delivery: Food & Water to Nova Research",
           "objectives": [
             {
-              "description": "Acquire 4 Machinery",
-              "target_id": "machinery",
+              "description": "Acquire 4 Food & Water",
+              "target_id": "food",
               "target_quantity": 4,
               "type": "collect_cargo"
             },
@@ -205,7 +217,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 300,
+              "amount": 200,
               "reward_type": "credits"
             },
             {
@@ -214,8 +226,8 @@
             },
             {
               "amount": 4,
-              "reward_type": "remove_cargo",
-              "target_id": "machinery"
+              "reward_type": "deliver_cargo",
+              "target_id": "food"
             }
           ]
         }
@@ -274,6 +286,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1830,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -310,6 +326,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1160,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -398,6 +418,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1000,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -434,6 +458,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 700,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -521,7 +549,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 300,
               "reward_type": "credits"
             },
             {
@@ -530,7 +558,7 @@
             },
             {
               "amount": 6,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "food"
             }
           ]
@@ -578,6 +606,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1000,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -608,7 +640,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 200,
               "reward_type": "credits"
             },
             {
@@ -617,7 +649,7 @@
             },
             {
               "amount": 4,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "food"
             }
           ]

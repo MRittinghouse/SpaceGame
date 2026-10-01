@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -46,6 +46,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 540,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -94,6 +98,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1780,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -233,6 +241,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 800,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -275,6 +287,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1190,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -369,6 +385,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1910,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -451,6 +471,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 560,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -550,6 +574,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 690,
+              "reward_type": "route_fuel"
             }
           ]
         },

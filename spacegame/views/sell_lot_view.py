@@ -14,7 +14,7 @@ that the listing fee is non-refundable and that the reserve is the
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import pygame
 import pygame_gui
@@ -57,6 +57,9 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.first_time_tip import FirstTimeTipOverlay
 
+if TYPE_CHECKING:
+    from spacegame.models.mission import MissionManager
+
 # --- Tutorial overlay copy (decision §B5.11) -------------------------
 TIP_TITLE = "Consign a Lot"
 TIP_BODY = "Listing fee is charged whether the lot sells or not. Set a reserve to refuse low bids."
@@ -81,16 +84,19 @@ class SellLotView(BaseView):
         self,
         ui_manager: pygame_gui.UIManager,
         player: Player,
+        mission_manager: Optional["MissionManager"] = None,
     ) -> None:
         """Initialize the SellLotView.
 
         Args:
             ui_manager: Active pygame_gui UIManager.
             player: Player whose auction_state we mutate on confirm.
+            mission_manager: Reads the units a mission's accept cargo holds back.
         """
         super().__init__()
         self.ui_manager = ui_manager
         self.player = player
+        self.mission_manager = mission_manager
         self.next_state: Optional[GameState] = None
 
         # Fonts
@@ -186,9 +192,14 @@ class SellLotView(BaseView):
         per locked decision §B5.1).
         """
         rows: list[dict[str, Any]] = []
-        # Cargo commodities (quest goods stay aboard, BB-7).
+        # Cargo commodities: free units only (quest goods stay aboard, BB-7).
         commodities = get_data_loader().commodities
-        for cid, qty in self.player.ship.current_cargo.items():
+        cargo = (
+            self.mission_manager.free_cargo(self.player)
+            if self.mission_manager is not None
+            else self.player.ship.current_cargo
+        )
+        for cid, qty in cargo.items():
             if qty <= 0:
                 continue
             commodity = commodities.get(cid)
@@ -292,6 +303,14 @@ class SellLotView(BaseView):
         if self.selected_item is None:
             self.error_message = "Pick an item to consign first."
             return (False, self.error_message)
+        # Bug bash BB-1: a mission's accept cargo cannot be consigned to the floor. The
+        # reserved units in the main hold are those free_units holds back there (a reserved
+        # unit in the hidden compartment leaves one of the captain's own free).
+        reserved = 0
+        if self.mission_manager is not None and self.selected_item["item_kind"] == "commodity":
+            item_id = self.selected_item["item_id"]
+            in_hold = self.player.ship.get_cargo_quantity(item_id)
+            reserved = in_hold - self.mission_manager.free_units(self.player, item_id)
         ok, msg, _listing = self.player.auction_state.create_listing(
             player=self.player,
             item_kind=self.selected_item["item_kind"],
@@ -301,6 +320,7 @@ class SellLotView(BaseView):
             reserve_pct=self.reserve_pct,
             current_day=self.player.game_day,
             category=LOT_CATEGORY_FACTION_COMMODITY,
+            reserved=reserved,
         )
         if not ok:
             self.error_message = msg

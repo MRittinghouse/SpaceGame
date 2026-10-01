@@ -398,6 +398,9 @@ class MissionManager:
         self._accept_system: dict[str, str] = {}
         self._departed: set[str] = set()
         self._baselines: dict[str, dict[str, int]] = {}
+        # BB-11: the landing (game day, system) that last paid a survey's or salvage's
+        # route fuel; a second contract finishing there pays its fee alone.
+        self._route_fuel_landing: Optional[tuple[int, str]] = None
         # BB-19: flags some content can set, which the auto-resolve leaves to their scenes.
         # None keeps the auto-resolve setting every flag, for callers that pass no content.
         self._produced_flags: Optional[frozenset[str]] = None
@@ -676,6 +679,134 @@ class MissionManager:
         self._forget_run(mission_id)
         return (True, f"Abandoned: {mission.name}")
 
+    def _accept_units(self, mission_id: str, commodity_id: str) -> int:
+        """Units of a good one mission's accept cargo holds."""
+        return sum(
+            cargo.quantity
+            for cargo in self._missions[mission_id].on_accept_cargo
+            if cargo.commodity_id == commodity_id
+        )
+
+    def reserved_units(self, commodity_id: str, except_mission: str = "") -> int:
+        """Units of a good the active missions' accept cargo holds (bug bash BB-1, BB-11).
+
+        A mission's ``on_accept_cargo`` belongs to it while it is active: another mission's
+        collect leg and hand-over, Sell All, Sell Max, refining, the auction house and the
+        Wreckers' Guild leave those units aboard. Python keeps counts, so the reserved
+        count stands in for the port's owned cargo lots.
+
+        Args:
+            commodity_id: The good.
+            except_mission: A mission whose own accept cargo is not counted.
+
+        Returns:
+            The reserved units, which can exceed what is aboard after a loss.
+        """
+        return sum(
+            self._accept_units(mid, commodity_id)
+            for mid, status in self._status.items()
+            if status == MissionStatus.ACTIVE and mid != except_mission
+        )
+
+    def sealed_units(self, commodity_id: str) -> int:
+        """Units of a good an active board contract's accept cargo holds (bug bash BB-11).
+
+        A board contract (a runtime mission) seals its own cargo while it runs: a sale that
+        would draw it is refused, where a campaign or authored mission's cargo may be sold
+        when the captain names it.
+
+        Args:
+            commodity_id: The good.
+
+        Returns:
+            The sealed units.
+        """
+        return sum(
+            self._accept_units(mid, commodity_id)
+            for mid in self._runtime_ids
+            if self._status.get(mid) == MissionStatus.ACTIVE
+        )
+
+    def free_units(self, player: "Player", commodity_id: str, except_mission: str = "") -> int:
+        """Units of a good in the main hold that no active mission's accept cargo holds.
+
+        The hidden compartment counts as aboard (``held_units``) and the captain's own
+        units go first, so a reserved unit hidden there leaves one of the captain's own
+        free in the main hold, where every disposal draws.
+
+        Args:
+            player: The player whose hold is read.
+            commodity_id: The good.
+            except_mission: A mission whose own accept cargo counts as free.
+
+        Returns:
+            The free units in the main hold, never below 0.
+        """
+        main = player.ship.get_cargo_quantity(commodity_id)
+        own = held_units(player, commodity_id) - self.reserved_units(commodity_id, except_mission)
+        return max(0, min(main, own))
+
+    def sale_draws_sealed(self, player: "Player", commodity_id: str, quantity: int) -> bool:
+        """Whether selling units would draw an active board contract's sealed cargo (BB-11).
+
+        The captain's own units go first and the hidden compartment counts as aboard, so a
+        sale draws the seal only when it sells more than the held units above the sealed
+        count. A sale larger than the main hold is the sell path's own refusal, not a seal.
+
+        Args:
+            player: The player whose holds are read.
+            commodity_id: The good.
+            quantity: The units the captain names.
+
+        Returns:
+            True when the sale is refused for sealed cargo.
+        """
+        aboard = player.ship.get_cargo_quantity(commodity_id)
+        held = held_units(player, commodity_id)
+        return aboard >= quantity > held - self.sealed_units(commodity_id)
+
+    def free_cargo(self, player: "Player") -> dict[str, int]:
+        """The main hold with every reserved unit held back, goods with nothing free left out.
+
+        Args:
+            player: The player whose hold is read.
+
+        Returns:
+            Commodity id to free units, in the hold's order.
+        """
+        free: dict[str, int] = {}
+        for commodity_id in player.ship.current_cargo:
+            units = self.free_units(player, commodity_id)
+            if units > 0:
+                free[commodity_id] = units
+        return free
+
+    def _delivery_share(self, mission: Mission, player: "Player") -> Optional[tuple[int, int]]:
+        """The units the mission's deliver_cargo will hand over, and the units it names.
+
+        None when the mission has no deliver_cargo reward. The mission's own accept cargo
+        counts with the captain's units; another active mission's does not (BB-1).
+        """
+        for reward in mission.rewards:
+            if reward.reward_type == "deliver_cargo":
+                mine = self.free_units(player, reward.target_id, except_mission=mission.id)
+                return min(mine, reward.amount), reward.amount
+        return None
+
+    @staticmethod
+    def _credit_line(
+        scaled: int, amount: int, credit_mult: float, short: Optional[tuple[int, int]]
+    ) -> str:
+        """A credits reward's notice: the late clause first, then the delivered fraction."""
+        clauses: list[str] = []
+        if credit_mult < 1.0:
+            clauses.append(f"late, {int(credit_mult * 100)}% of {amount:,}")
+        if short is not None:
+            clauses.append(f"{short[0]} of {short[1]} delivered")
+        if not clauses:
+            return f"+{scaled:,} Credits"
+        return f"+{scaled:,} Credits ({', '.join(clauses)})"
+
     def check_objectives(
         self,
         player: "Player",
@@ -695,9 +826,10 @@ class MissionManager:
                 Crew quests whose crew_member_id is not in this set are skipped.
 
         Returns:
-            List of mission IDs that just completed (all objectives met).
+            The id of the one mission this check completed, in a list, or an empty list. A
+            mission completes per call, the first in content order; the caller pays it before
+            the next call reads the hold (bug bash BB-11).
         """
-        newly_completed: list[str] = []
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.ACTIVE:
                 continue
@@ -752,9 +884,11 @@ class MissionManager:
             if all(self._progress[mid]):
                 self._status[mid] = MissionStatus.COMPLETED
                 self._forget_run(mid)
-                newly_completed.append(mid)
+                # BB-11: one mission completes per check, in content order, so the next check
+                # reads the hold after this one's hand-over
+                return [mid]
 
-        return newly_completed
+        return []
 
     def _forget_run(self, mission_id: str) -> None:
         """Drop what one run of a mission recorded: accept system, departure, counters."""
@@ -846,7 +980,9 @@ class MissionManager:
         elif obj.type == ObjectiveType.HAVE_CREDITS:
             return player.credits >= obj.target_quantity
         elif obj.type == ObjectiveType.COLLECT_CARGO:
-            return player.ship.get_cargo_quantity(obj.target_id) >= obj.target_quantity
+            # BB-1: another active mission's accept cargo never fills this leg
+            free = self.free_units(player, obj.target_id, except_mission=mission_id)
+            return free >= obj.target_quantity
         elif obj.type == ObjectiveType.HAS_FLAG:
             return player.dialogue_flags.get(obj.target_id, False)
         elif obj.type == ObjectiveType.COMPLETE_TRADE:
@@ -863,8 +999,12 @@ class MissionManager:
         TW follow-up: when the mission has a ``soft_deadline`` and the
         player's current game_day vs recorded accept day puts it past a
         deadline threshold, credit rewards are scaled by the multiplier.
-        Non-credit rewards (XP, flags, cargo, access grants) are never
-        scaled — those express narrative progress and shouldn't decay.
+
+        A ``deliver_cargo`` reward takes the mission's own accept cargo and the
+        captain's units, up to its amount, and when it takes fewer it scales
+        every credit reward by the share delivered (bug bash BB-1, BB-11). XP,
+        flags and access grants are never scaled, since they express narrative
+        progress and shouldn't decay.
 
         Args:
             mission_id: The mission whose rewards to apply.
@@ -884,18 +1024,21 @@ class MissionManager:
             days_elapsed = max(0, player.game_day - accepted)
             credit_mult = mission.get_reward_multiplier(days_elapsed)
 
+        # BB-1, BB-11: a hand-over pays on the units it takes. Every credits reward scales by
+        # delivered over named, multiplying before dividing, and only when short, so a full
+        # load pays exactly what it always paid. XP and flags never scale.
+        share = self._delivery_share(mission, player)
+        short = share if share is not None and share[0] < share[1] else None
+
         messages: list[str] = []
         for reward in mission.rewards:
             if reward.reward_type == "credits":
-                scaled = int(reward.amount * credit_mult)
-                player.add_credits(scaled)
-                if credit_mult < 1.0:
-                    messages.append(
-                        f"+{scaled:,} Credits "
-                        f"(late, {int(credit_mult * 100)}% of {reward.amount:,})"
-                    )
+                if short is not None:
+                    scaled = int(reward.amount * credit_mult * short[0] / short[1])
                 else:
-                    messages.append(f"+{scaled:,} Credits")
+                    scaled = int(reward.amount * credit_mult)
+                player.add_credits(scaled)
+                messages.append(self._credit_line(scaled, reward.amount, credit_mult, short))
             elif reward.reward_type == "xp":
                 player.progression.add_xp(reward.amount)
                 messages.append(f"+{reward.amount} XP")
@@ -905,6 +1048,17 @@ class MissionManager:
             elif reward.reward_type == "remove_cargo":
                 player.ship.remove_cargo(reward.target_id, reward.amount)
                 messages.append(f"Delivered {reward.amount} {reward.target_id}")
+            elif reward.reward_type == "deliver_cargo":
+                delivered = share[0] if share is not None else 0
+                if delivered > 0:
+                    player.ship.remove_cargo(reward.target_id, delivered)
+                messages.append(f"Delivered {delivered} {reward.target_id}")
+            elif reward.reward_type == "route_fuel":
+                landing = (player.game_day, player.current_system_id)
+                if self._route_fuel_landing != landing:
+                    self._route_fuel_landing = landing
+                    player.add_credits(reward.amount)
+                    messages.append(f"+{reward.amount:,} Credits (route fuel)")
             elif reward.reward_type == "set_flag":
                 player.dialogue_flags[reward.target_id] = True
                 messages.append(f"Progress: {reward.target_id}")
@@ -1006,6 +1160,14 @@ class MissionManager:
     def get_missions_by_status(self, status: MissionStatus) -> list[Mission]:
         """Get all missions with a given status."""
         return [self._missions[mid] for mid, s in self._status.items() if s == status]
+
+    def open_missions(self) -> list[Mission]:
+        """Missions available or active, in content order (bug bash BB-38's keep rule)."""
+        return [
+            self._missions[mid]
+            for mid, status in self._status.items()
+            if status in (MissionStatus.AVAILABLE, MissionStatus.ACTIVE)
+        ]
 
     def get_objective_progress(self, mission_id: str) -> list[bool]:
         """Get objective completion flags for a mission."""
@@ -1258,6 +1420,9 @@ class MissionManager:
                 mid: sorted(npcs) for mid, npcs in self._talked_since_accept.items() if npcs
             },
             "runtime_missions": [self._missions[mid].to_dict() for mid in self._runtime_ids],
+            "route_fuel_landing": list(self._route_fuel_landing)
+            if self._route_fuel_landing
+            else [],
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -1298,3 +1463,25 @@ class MissionManager:
             str(mid): {str(npc) for npc in npcs}
             for mid, npcs in data.get("talked_since_accept", {}).items()
         }
+        # BB-11; older saves hold none
+        landing = data.get("route_fuel_landing", [])
+        self._route_fuel_landing = (int(landing[0]), str(landing[1])) if len(landing) == 2 else None
+
+
+def held_units(player: "Player", commodity_id: str) -> int:
+    """Units of a good aboard, the hidden compartment's included (bug bash BB-1, BB-11).
+
+    Hiding moves units between the ship's two holds, so a reserved unit in the hidden
+    compartment is still aboard: the reserved count, a board contract's seal and the iron
+    job's sale sensor read both holds.
+
+    Args:
+        player: The player whose holds are read.
+        commodity_id: The good.
+
+    Returns:
+        The main hold's units plus the hidden compartment's.
+    """
+    compartment = player.hidden_compartment
+    hidden = compartment.hidden_cargo.get(commodity_id, 0) if compartment else 0
+    return player.ship.get_cargo_quantity(commodity_id) + hidden

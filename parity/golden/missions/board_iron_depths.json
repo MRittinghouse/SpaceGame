@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -93,6 +93,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 420,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -135,6 +139,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1580,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -187,6 +195,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1170,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -223,6 +235,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1040,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -317,6 +333,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1970,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -324,15 +344,15 @@
           "available_at": [
             "iron_depths"
           ],
-          "description": "Transport 7 units of Machinery to Axiom Labs. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 7 units of Rare Ore to Axiom Labs. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_iron_depths_3_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Machinery to Axiom Labs",
+          "name": "Delivery: Rare Ore to Axiom Labs",
           "objectives": [
             {
-              "description": "Acquire 7 Machinery",
-              "target_id": "machinery",
+              "description": "Acquire 7 Rare Ore",
+              "target_id": "rare_ore",
               "target_quantity": 7,
               "type": "collect_cargo"
             },
@@ -347,7 +367,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 1050,
+              "amount": 1120,
               "reward_type": "credits"
             },
             {
@@ -356,8 +376,8 @@
             },
             {
               "amount": 7,
-              "reward_type": "remove_cargo",
-              "target_id": "machinery"
+              "reward_type": "deliver_cargo",
+              "target_id": "rare_ore"
             }
           ]
         },
@@ -451,6 +471,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1040,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -545,6 +569,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1520,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -644,6 +672,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1470,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -674,7 +706,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 270,
               "reward_type": "credits"
             },
             {
@@ -683,7 +715,7 @@
             },
             {
               "amount": 3,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "crystal_ore"
             }
           ]

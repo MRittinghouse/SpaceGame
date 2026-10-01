@@ -81,12 +81,14 @@
       "available_at": [
         "nexus_prime"
       ],
-      "available_after": "iron_delivery",
+      "available_after": "bill_of_landing",
       "available_before": "",
       "discovery_method": "station_board",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
+      "required_flags": [
+        "iron_delivery_moved_on"
+      ],
       "auto_accept": false,
       "on_accept_cargo": [],
       "objectives": [
@@ -1392,7 +1394,7 @@
       ],
       "rewards": [
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 4,
           "target_id": "machinery"
         },

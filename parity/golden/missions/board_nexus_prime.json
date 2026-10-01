@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -87,7 +87,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 480,
+              "amount": 960,
               "reward_type": "credits"
             },
             {
@@ -96,7 +96,7 @@
             },
             {
               "amount": 8,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "manufactured_goods"
             }
           ]
@@ -134,6 +134,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 880,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -216,6 +220,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 700,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -304,6 +312,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 940,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -397,6 +409,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 880,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -481,6 +497,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1340,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -574,6 +594,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 560,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -656,6 +680,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 680,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -704,6 +732,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1520,
+              "reward_type": "route_fuel"
             }
           ]
         },

@@ -731,7 +731,11 @@ class WreckersGuildView(BaseView):
             return False
         for obj in mission.objectives:
             if obj.type == ObjectiveType.COLLECT_CARGO:
-                if self.player.ship.get_cargo_quantity(obj.target_id) < obj.target_quantity:
+                # Bug bash BB-1: another mission's accept cargo never fills a contract
+                free = self.mission_manager.free_units(
+                    self.player, obj.target_id, except_mission=mission_id
+                )
+                if free < obj.target_quantity:
                     return False
         return True
 

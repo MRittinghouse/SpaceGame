@@ -27,7 +27,15 @@ from spacegame.constants.flags import (
     wreckers_promoted_tier,
 )
 from spacegame.data_loader import get_data_loader
-from spacegame.models.mission import MissionManager, MissionStatus, ObjectiveType
+from spacegame.models.mission import (
+    AcceptCargo,
+    Mission,
+    MissionManager,
+    MissionObjective,
+    MissionReward,
+    MissionStatus,
+    ObjectiveType,
+)
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
 from spacegame.models.sub_reputation import SubReputationDelta, get_tier_for_rep
@@ -272,10 +280,41 @@ class TestTurnInFlow:
         assert player.credits == starting_credits + expected
         view.on_exit()
 
+    # ---------------------------------------------------------------------------
+    # Lockout + make-up (acceptance #5)
+    # ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# Lockout + make-up (acceptance #5)
-# ---------------------------------------------------------------------------
+    def test_turn_in_counts_only_free_units(self) -> None:
+        """Bug bash BB-1: another mission's accept cargo never fills a Wreckers' contract."""
+        manager, player, mm = _make_view_env(enrolled=True, sub_rep=1, game_day=10)
+        view = _make_view(player, manager, mm)
+        view.on_enter()
+        template_id = view.get_offered_template_ids()[0]
+        view._accept_contract(template_id)
+        tpl = get_template(template_id)
+        assert tpl is not None
+        mm.add_mission(
+            Mission(
+                id="consignment_test",
+                name="consignment_test",
+                description="A test consignment.",
+                objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")],
+                rewards=[MissionReward(reward_type="xp", amount=10)],
+                on_accept_cargo=[
+                    AcceptCargo(commodity_id=tpl.target_commodity_id, quantity=tpl.target_quantity)
+                ],
+            ),
+            MissionStatus.ACTIVE,
+        )
+        player.ship.add_cargo(tpl.target_commodity_id, tpl.target_quantity)
+        success, _msg = view._turn_in_active_contract()
+        assert not success
+        assert player.ship.get_cargo_quantity(tpl.target_commodity_id) == tpl.target_quantity
+        player.ship.add_cargo(tpl.target_commodity_id, tpl.target_quantity)
+        success, _msg = view._turn_in_active_contract()
+        assert success
+        assert player.ship.get_cargo_quantity(tpl.target_commodity_id) == tpl.target_quantity
+        view.on_exit()
 
 
 class TestLockoutAndMakeUp:

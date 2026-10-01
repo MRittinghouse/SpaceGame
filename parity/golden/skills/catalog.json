@@ -2,7 +2,7 @@
   "case": "catalog",
   "format": 1,
   "setup": {},
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [],
@@ -565,7 +565,7 @@
           "bonus_type": "emergency_reserves",
           "cost_per_level": 1,
           "current_level": 0,
-          "description": "Can never be fully stranded; minimum 1 fuel after any jump",
+          "description": "A sealed reserve cell covers the jump out when stranded; the next refuel pays for it",
           "id": "emergency_reserves",
           "max_level": 1,
           "name": "Emergency Reserves",

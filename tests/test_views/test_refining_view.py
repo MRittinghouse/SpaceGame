@@ -6,6 +6,15 @@ pygame = pytest.importorskip("pygame", reason="pygame required for view tests")
 pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT  # noqa: E402
+from spacegame.models.mission import (  # noqa: E402
+    AcceptCargo,
+    Mission,
+    MissionManager,
+    MissionObjective,
+    MissionReward,
+    MissionStatus,
+    ObjectiveType,
+)
 from spacegame.models.player import Player  # noqa: E402
 from spacegame.models.ship import Ship, ShipType  # noqa: E402
 from spacegame.models.commodity import Commodity, CommodityCategory, Legality  # noqa: E402
@@ -86,7 +95,9 @@ def _make_player() -> Player:
     )
 
 
-def _make_view(player: Player = None, recipes: list = None) -> RefiningView:
+def _make_view(
+    player: Player = None, recipes: list = None, mission_manager: MissionManager = None
+) -> RefiningView:
     if player is None:
         player = _make_player()
     if recipes is None:
@@ -108,9 +119,25 @@ def _make_view(player: Player = None, recipes: list = None) -> RefiningView:
         _make_commodities(),
         recipes=recipes,
         system_id="forgeworks",
+        mission_manager=mission_manager,
     )
     view.on_enter()
     return view
+
+
+def _consign(manager: MissionManager, commodity_id: str, quantity: int) -> None:
+    """Add an ACTIVE mission whose accept cargo reserves units of a good."""
+    manager.add_mission(
+        Mission(
+            id="consignment_test",
+            name="consignment_test",
+            description="A test consignment.",
+            objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")],
+            rewards=[MissionReward(reward_type="xp", amount=10)],
+            on_accept_cargo=[AcceptCargo(commodity_id=commodity_id, quantity=quantity)],
+        ),
+        MissionStatus.ACTIVE,
+    )
 
 
 class TestRefiningSpritWiring:
@@ -457,4 +484,42 @@ class TestRefiningBufferIntegration:
         transferred = view._transfer_buffer_to_cargo()
         assert transferred == 5
         assert player.ship.current_cargo.get("common_metals", 0) == 5
+        view.on_exit()
+
+
+class TestRefiningLeavesConsignedCargoAboard:
+    """Bug bash BB-1: a recipe draws free units only, and the list offers the same hold."""
+
+    def test_a_recipe_leaves_consigned_ore_aboard(self) -> None:
+        player = _make_player()
+        player.ship.add_cargo("iron_ore", 10, price_per_unit=0)
+        manager = MissionManager(missions=[])
+        _consign(manager, "iron_ore", 8)
+        view = _make_view(player, mission_manager=manager)
+        view._start_selected_recipe()
+        assert not view.session.job_queue
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        player.ship.add_cargo("iron_ore", 1, price_per_unit=0)
+        view._start_selected_recipe()
+        assert len(view.session.job_queue) == 1
+        assert player.ship.get_cargo_quantity("iron_ore") == 8
+        view.on_exit()
+
+    def test_the_recipe_list_offers_only_the_free_hold(self, monkeypatch) -> None:
+        player = _make_player()
+        player.ship.add_cargo("iron_ore", 10, price_per_unit=0)
+        manager = MissionManager(missions=[])
+        _consign(manager, "iron_ore", 8)
+        view = _make_view(player, mission_manager=manager)
+        seen: list[dict[str, int]] = []
+        real = Recipe.can_craft
+
+        def spy(recipe: Recipe, inventory: dict[str, int]) -> bool:
+            seen.append(dict(inventory))
+            return real(recipe, inventory)
+
+        monkeypatch.setattr(Recipe, "can_craft", spy)
+        view.render(pygame.display.get_surface())
+        assert seen
+        assert all(inventory.get("iron_ore") == 2 for inventory in seen)
         view.on_exit()

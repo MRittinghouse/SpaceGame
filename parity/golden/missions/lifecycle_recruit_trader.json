@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -382,7 +382,8 @@
         "permits": [],
         "reputation_changes": [],
         "reward_messages": [
-          "+50 XP"
+          "+50 XP",
+          "Progress: tomas_friendship"
         ]
       },
       "state": {
@@ -422,7 +423,8 @@
           "criminal_heat": 0,
           "current_system_id": "havens_rest",
           "dialogue_flags": {
-            "recruit_trader_accepted": true
+            "recruit_trader_accepted": true,
+            "tomas_friendship": true
           },
           "encounters_survived": 0,
           "faction_assignments": {},

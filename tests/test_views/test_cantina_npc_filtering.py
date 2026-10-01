@@ -4,8 +4,12 @@ Verifies that NPCs are properly filtered based on their auto_trigger_prerequisit
 and auto_trigger_gate_flag, preventing story-sequence-breaking dialogue options.
 """
 
+import ast
+from pathlib import Path
+
 from spacegame.constants.flags import met_npc
 from spacegame.models.dialogue import NPC
+from spacegame.models.npc_availability import is_listed
 
 
 def _make_npc(
@@ -34,18 +38,8 @@ class TestNpcAvailability:
     """Test _is_npc_available logic for cantina NPC display."""
 
     def _check_available(self, npc: NPC, dialogue_flags: dict[str, bool]) -> bool:
-        """Replicate the filtering logic from station_hub_view._is_npc_available."""
-        # Hide if hide_after_flag is set
-        if npc.hide_after_flag and dialogue_flags.get(npc.hide_after_flag, False):
-            return False
-        # Hide if gate flag already triggered (dialogue already happened)
-        if npc.auto_trigger_gate_flag and dialogue_flags.get(npc.auto_trigger_gate_flag, False):
-            return False
-        # Hide if prerequisites not yet met
-        if npc.auto_trigger_prerequisites:
-            if not all(dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites):
-                return False
-        return True
+        """The shared Talk filter, with no mission waiting on anyone."""
+        return is_listed(npc, npc.home_system_id, dialogue_flags, None, set(), frozenset())
 
     def test_npc_without_auto_trigger_always_visible(self) -> None:
         """NPCs without auto_trigger fields appear regardless of flags."""
@@ -130,7 +124,9 @@ class TestNpcAvailability:
         # After first Dex dialogue, before second prereqs
         flags = {"cargo_lost_resolved": True, met_npc("dex_halloran"): True}
         visible = [n for n in all_dex if self._check_available(n, flags)]
-        assert len(visible) == 0, "No Dex should be visible between story beats"
+        assert len(visible) == 0, (
+            "No Dex is listed between story beats while no mission waits on one"
+        )
 
         # Second Dex prereqs met
         flags["guild_hardware_discovered"] = True
@@ -168,3 +164,27 @@ class TestNpcAvailability:
         assert not self._check_available(npc, {"flag_a": True})
         assert not self._check_available(npc, {"flag_b": True})
         assert self._check_available(npc, {"flag_a": True, "flag_b": True})
+
+
+class TestBothViewsShareTheFilter:
+    """BB-38: the station hub, the cantina and the quest marker read one module."""
+
+    def _function(self, path: str, name: str) -> ast.FunctionDef:
+        root = Path(__file__).resolve().parents[2]
+        tree = ast.parse((root / path).read_text(encoding="utf-8"))
+        return next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == name)
+
+    def _calls(self, node: ast.AST) -> set[str]:
+        return {
+            c.func.id
+            for c in ast.walk(node)
+            if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)
+        }
+
+    def test_both_lists_call_is_listed(self) -> None:
+        for path in ("spacegame/views/station_hub_view.py", "spacegame/views/cantina_view.py"):
+            assert "is_listed" in self._calls(self._function(path, "_is_npc_available")), path
+
+    def test_the_quest_marker_calls_needed_by(self) -> None:
+        marker = self._function("spacegame/views/cantina_view.py", "_npc_is_quest_receiver")
+        assert "needed_by" in self._calls(marker)

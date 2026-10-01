@@ -12,6 +12,8 @@ from spacegame.models.combat import EnemyShip
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
 from spacegame.models.dialogue import DialogueManager
+from spacegame.models.mission import MissionManager
+from spacegame.models.npc_availability import npcs_here, settable_index
 from spacegame.models.social import SocialManager
 from spacegame.models.station_chatter import StationChatterManager
 from spacegame.sim_rng import SimRng
@@ -22,6 +24,7 @@ from tools.parity.drivers import dialogue
 UNSELECTED_RESPONSES: frozenset[tuple[str, str, int]] = frozenset(
     {
         ("merchant_delivery", "greet", 6),
+        ("merchant_delivery", "greet", 8),
         ("reva_distress", "greet", 0),
         ("reva_distress", "greet", 1),
         ("reva_distress", "greet", 3),
@@ -239,6 +242,25 @@ def _replay_interjections(case: Case) -> Case:
     return replay
 
 
+def _replay_npcs_here(case: Case) -> Case:
+    dl = get_data_loader()
+    index = settable_index(dl.npcs.values(), dl.dialogue_trees)
+    replay = Case("dialogue", case.name, case.setup)
+    for step in case.setup["steps"]:
+        manager = MissionManager(dl.missions)
+        manager.load_state(step["mission_state"])
+        listed = npcs_here(
+            dl.npcs.values(),
+            step["system_id"],
+            dict(step["flags"]),
+            manager,
+            set(step["recruited"]),
+            index,
+        )
+        replay.record("npcs_here", [step["label"]], [list(pair) for pair in listed], {})
+    return replay
+
+
 def test_cases_replay_from_setup() -> None:
     for name, case in _named().items():
         if name.startswith("tree_"):
@@ -247,6 +269,8 @@ def test_cases_replay_from_setup() -> None:
             replay = _replay_ambient(case)
         elif name == "chatter":
             replay = _replay_chatter(case)
+        elif name == "npcs_here":
+            replay = _replay_npcs_here(case)
         else:
             assert name == "interjections", name
             replay = _replay_interjections(case)
@@ -268,3 +292,23 @@ def test_tree_npc_follows_dialogue_states() -> None:
     for npc_id, npc in get_data_loader().npcs.items():
         for tree_id in [npc.dialogue_id, *(state.dialogue_id for state in npc.dialogue_states)]:
             assert cases[f"tree_{tree_id}"].setup["npc_id"] == npc_id, tree_id
+
+
+def test_the_talk_list_case_covers_every_clause() -> None:
+    steps = {s["args"][0]: dict(s["result"]) for s in _named()["npcs_here"].steps}
+    assert {f"day_one_{sid}" for sid in get_data_loader().systems} <= set(steps)
+    assert steps["day_one_nexus_prime"]["officer_larsen"] == "bill_of_landing"
+    assert steps["elena_walked_away"]["elena_reeves"] == "footing_the_bill"
+    assert "elena_reeves" not in steps["elena_aboard"]
+    assert "elena_reeves" not in steps["elena_taught"]
+    assert steps["dex_declined"]["dex_halloran"] == "whispers_at_the_bar"
+    assert steps["tomas_unresolved"]["tomas_drifter"] == "the_drifters_deal"
+    assert steps["oren_kept"]["oren_tak"] == "the_favor_returned"
+    assert "reva_sato" not in steps["reva_waits"]
+    assert steps["reva_reached"]["reva_sato"] == "cargo_lost"
+    assert steps["wren_awaited"]["forgeworks_clerk"] == "iron_delivery"
+    assert "odom_broker" not in steps["odom_gone"]
+    assert steps["elena_first_open"]["elena_reeves"] == ""
+    assert "elena_reeves" not in steps["elena_lesson_landed"]
+    assert steps["larsen_met"]["officer_larsen"] == ""
+    assert steps["wren_offered"]["forgeworks_clerk"] == ""

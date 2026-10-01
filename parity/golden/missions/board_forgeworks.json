@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -88,6 +88,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1690,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -105,15 +109,15 @@
           "available_at": [
             "forgeworks"
           ],
-          "description": "Transport 4 units of Rare Metals to Verdant. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 4 units of Alloy Composite to Verdant. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_forgeworks_2_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Rare Metals to Verdant",
+          "name": "Delivery: Alloy Composite to Verdant",
           "objectives": [
             {
-              "description": "Acquire 4 Rare Metals",
-              "target_id": "rare_metals",
+              "description": "Acquire 4 Alloy Composite",
+              "target_id": "alloy_composite",
               "target_quantity": 4,
               "type": "collect_cargo"
             },
@@ -128,7 +132,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 750,
+              "amount": 1680,
               "reward_type": "credits"
             },
             {
@@ -137,8 +141,8 @@
             },
             {
               "amount": 4,
-              "reward_type": "remove_cargo",
-              "target_id": "rare_metals"
+              "reward_type": "deliver_cargo",
+              "target_id": "alloy_composite"
             }
           ]
         },
@@ -187,6 +191,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1440,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -233,6 +241,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 800,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -362,6 +374,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1280,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -369,16 +385,16 @@
           "available_at": [
             "forgeworks"
           ],
-          "description": "Transport 9 units of Rare Metals to Stellaris Port. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 8 units of Manufactured Goods to Stellaris Port. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_forgeworks_4_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Rare Metals to Stellaris Port",
+          "name": "Delivery: Manufactured Goods to Stellaris Port",
           "objectives": [
             {
-              "description": "Acquire 9 Rare Metals",
-              "target_id": "rare_metals",
-              "target_quantity": 9,
+              "description": "Acquire 8 Manufactured Goods",
+              "target_id": "manufactured_goods",
+              "target_quantity": 8,
               "type": "collect_cargo"
             },
             {
@@ -392,17 +408,17 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 1687,
+              "amount": 1440,
               "reward_type": "credits"
             },
             {
-              "amount": 75,
+              "amount": 70,
               "reward_type": "xp"
             },
             {
-              "amount": 9,
-              "reward_type": "remove_cargo",
-              "target_id": "rare_metals"
+              "amount": 8,
+              "reward_type": "deliver_cargo",
+              "target_id": "manufactured_goods"
             }
           ]
         },
@@ -445,6 +461,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1320,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -503,6 +523,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1550,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -539,6 +563,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 620,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -591,6 +619,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1530,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -674,6 +706,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1120,
+              "reward_type": "route_fuel"
             }
           ]
         }
