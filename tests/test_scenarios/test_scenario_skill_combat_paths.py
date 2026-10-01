@@ -209,6 +209,17 @@ class TestShieldMasteryAppliesToBothPaths:
         state = _build_state_for_player(player)
         assert (state.shields, state.max_shields) == (26, 26)
 
+    def test_a_built_ship_never_opens_above_the_maximum(self) -> None:
+        # The build path is the one a new game and every load take; a fight's write-back can
+        # leave its shields above the hull's.
+        player = _player_with_skill_level("shield_mastery", target_level=3)
+        _attach_minimal_build(player)
+        player.ship.current_shields = 26
+        assert player.ship.computed_stats.shields == 20
+        assert player.ship.current_shields == 26
+        state = _build_state_for_player(player)
+        assert (state.shields, state.max_shields) == (26, 26)
+
     def test_the_share_counts_the_hull_s_shields_only(self) -> None:
         # The Auxiliary Shield Battery adds 10 to the maximum beside the skill's share.
         dl = get_data_loader()

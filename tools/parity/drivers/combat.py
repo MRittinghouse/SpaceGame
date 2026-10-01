@@ -235,7 +235,8 @@ def build_fight(
         crew_loyalty: When positive, all four companions aboard at this loyalty.
         hull: When positive, overrides hull and max hull (bosses).
         complication_ids: Complications resolved from the data loader.
-        skill_levels: Skills the player has learned, by id and level; recorded in the setup only when given.
+        skill_levels: Skills the player has learned, by id and level; recorded in the setup
+            only when given.
 
     Returns:
         The fight.
