@@ -653,11 +653,12 @@ class Game:
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")
         logger.info(f"Starting credits: {self.player.credits} CR")
 
-        # Generate random faction assignments
+        # The faction map is content (BB-74): each system's faction_id, the same every game
         faction_ids = [f.id for f in self.data_loader.get_all_factions()]
-        system_ids = [s.id for s in self.data_loader.get_all_systems()]
         if faction_ids:
-            self.player.faction_assignments = generate_faction_assignments(system_ids, faction_ids)
+            self.player.faction_assignments = generate_faction_assignments(
+                self.data_loader.get_all_systems()
+            )
             self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
             self._apply_faction_assignments()
 
@@ -5245,13 +5246,12 @@ class Game:
             # For now, just store the serialized data
             pass
 
-        # Apply faction assignments (generate if missing from old save)
+        # Apply faction assignments (the content's map when the save has none, BB-74)
         if not self.player.faction_assignments:
             faction_ids = [f.id for f in self.data_loader.get_all_factions()]
-            system_ids = [s.id for s in self.data_loader.get_all_systems()]
             if faction_ids:
                 self.player.faction_assignments = generate_faction_assignments(
-                    system_ids, faction_ids
+                    self.data_loader.get_all_systems()
                 )
                 self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
         self._apply_faction_assignments()

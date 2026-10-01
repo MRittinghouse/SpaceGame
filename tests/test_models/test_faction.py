@@ -1,5 +1,7 @@
 """Tests for faction reputation system."""
 
+from types import SimpleNamespace
+
 from spacegame.models.faction import (
     Faction,
     ReputationTier,
@@ -93,69 +95,26 @@ class TestFaction:
 
 
 class TestGenerateFactionAssignments:
-    """Tests for random faction assignment to systems."""
+    """The assignment reads each system's faction_id; it no longer deals (BB-74)."""
 
-    def _system_ids(self) -> list[str]:
-        return [
-            "nexus_prime",
-            "verdant",
-            "forgeworks",
-            "breakstone",
-            "axiom_labs",
-            "havens_rest",
-            "crimson_reach",
-            "stellaris_port",
-            "iron_depths",
-            "nova_research",
+    def test_each_held_system_keeps_its_faction(self) -> None:
+        systems = [
+            SimpleNamespace(id="a", faction_id="commerce_guild"),
+            SimpleNamespace(id="b", faction_id="miners_union"),
         ]
+        assert generate_faction_assignments(systems) == {
+            "a": "commerce_guild",
+            "b": "miners_union",
+        }
 
-    def _faction_ids(self) -> list[str]:
-        return ["commerce_guild", "miners_union", "science_collective", "frontier_alliance"]
+    def test_an_unheld_system_is_left_out(self) -> None:
+        systems = [
+            SimpleNamespace(id="a", faction_id="commerce_guild"),
+            SimpleNamespace(id="mark", faction_id=""),
+        ]
+        assert generate_faction_assignments(systems) == {"a": "commerce_guild"}
 
-    def test_covers_all_systems(self) -> None:
-        assignments = generate_faction_assignments(self._system_ids(), self._faction_ids())
-        assert set(assignments.keys()) == set(self._system_ids())
-
-    def test_uses_only_valid_factions(self) -> None:
-        assignments = generate_faction_assignments(self._system_ids(), self._faction_ids())
-        for faction_id in assignments.values():
-            assert faction_id in self._faction_ids(), f"Unexpected faction: {faction_id}"
-
-    def test_balanced_distribution(self) -> None:
-        """Each faction should get 2-3 systems for 10 systems / 4 factions."""
-        assignments = generate_faction_assignments(self._system_ids(), self._faction_ids())
-        counts: dict[str, int] = {}
-        for faction_id in assignments.values():
-            counts[faction_id] = counts.get(faction_id, 0) + 1
-        for faction_id, count in counts.items():
-            assert 2 <= count <= 3, f"{faction_id} got {count} systems, expected 2-3"
-
-    def test_all_factions_represented(self) -> None:
-        assignments = generate_faction_assignments(self._system_ids(), self._faction_ids())
-        assigned_factions = set(assignments.values())
-        assert assigned_factions == set(self._faction_ids())
-
-    def test_different_calls_can_produce_different_results(self) -> None:
-        """Multiple calls should eventually produce different assignments."""
-        results = set()
-        for _ in range(20):
-            assignments = generate_faction_assignments(self._system_ids(), self._faction_ids())
-            # Create a hashable representation
-            result_tuple = tuple(sorted(assignments.items()))
-            results.add(result_tuple)
-        assert len(results) > 1, "20 calls should produce at least 2 different assignments"
-
-    def test_fewer_systems_than_factions(self) -> None:
-        """Edge case: fewer systems than factions."""
-        assignments = generate_faction_assignments(["sys_a", "sys_b"], self._faction_ids())
-        assert len(assignments) == 2
-        for fid in assignments.values():
-            assert fid in self._faction_ids()
-
-    def test_equal_systems_and_factions(self) -> None:
-        """Edge case: same number of systems as factions."""
-        systems = ["sys_a", "sys_b", "sys_c", "sys_d"]
-        assignments = generate_faction_assignments(systems, self._faction_ids())
-        assert len(assignments) == 4
-        # Each faction should get exactly 1
-        assert set(assignments.values()) == set(self._faction_ids())
+    def test_every_call_gives_the_same_map(self) -> None:
+        systems = [SimpleNamespace(id=f"s{i}", faction_id="frontier_alliance") for i in range(12)]
+        first = generate_faction_assignments(systems)
+        assert all(generate_faction_assignments(systems) == first for _ in range(20))

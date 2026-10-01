@@ -1,13 +1,14 @@
 """
 Faction reputation system models.
 
-Defines factions, reputation tiers, tariff modifiers, and random faction assignment.
+Defines factions, reputation tiers, tariff modifiers, and the faction map's assignment.
 """
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
 
-from spacegame.sim_rng import SimRng
+from spacegame.models.system import StarSystem
 
 
 class ReputationTier(Enum):
@@ -118,25 +119,17 @@ class Faction:
     rivalry: str
 
 
-def generate_faction_assignments(
-    system_ids: list[str], faction_ids: list[str], rng: SimRng | None = None
-) -> dict[str, str]:
-    """Randomly assign systems to factions in a balanced distribution.
+def generate_faction_assignments(systems: Iterable[StarSystem]) -> dict[str, str]:
+    """Each held system's faction, from the content's faction map (BB-74).
 
-    Shuffles systems and deals them round-robin to factions, ensuring each
-    faction gets a roughly equal number of systems.
+    The map is the cultural guide's, the same in every game. A system whose
+    ``faction_id`` is empty (Heron's Mark) is held by nobody and left out, so
+    ``Player.get_faction_for_system`` returns None for it.
 
     Args:
-        system_ids: List of system IDs to assign.
-        faction_ids: List of faction IDs to assign to.
-        rng: Random stream; defaults to ``SimRng.from_entropy()``.
+        systems: Every star system, in content order.
 
     Returns:
-        Dict mapping system_id -> faction_id.
+        Dict mapping system_id -> faction_id, in content order.
     """
-    shuffled = list(system_ids)
-    (rng if rng is not None else SimRng.from_entropy()).shuffle(shuffled)
-    assignments: dict[str, str] = {}
-    for i, system_id in enumerate(shuffled):
-        assignments[system_id] = faction_ids[i % len(faction_ids)]
-    return assignments
+    return {system.id: system.faction_id for system in systems if system.faction_id}

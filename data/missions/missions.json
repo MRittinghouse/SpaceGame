@@ -28,7 +28,17 @@
         {
           "reward_type": "trade_permit",
           "amount": 0,
-          "target_id": "all"
+          "target_id": "commerce_guild"
+        },
+        {
+          "reward_type": "trade_permit",
+          "amount": 0,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "trade_permit",
+          "amount": 0,
+          "target_id": "frontier_alliance"
         },
         {
           "reward_type": "xp",

@@ -429,6 +429,7 @@ class DataLoader:
             stations=stations,
             economy=economy,
             rest_cost=data["rest_cost"],
+            faction_id=data["faction_id"],
         )
 
     def load_commodities(self) -> Dict[str, Commodity]:

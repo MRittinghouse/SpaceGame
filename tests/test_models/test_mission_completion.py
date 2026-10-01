@@ -31,7 +31,7 @@ def _complete(manager: MissionManager, mission_id: str) -> None:
 
 
 class TestCompleteMission:
-    def test_universal_permit_and_crew_recruit(self) -> None:
+    def test_the_bills_permits_and_crew_recruit(self) -> None:
         dl = get_data_loader()
         manager = _manager()
         player = fresh_player(credits=1000)
@@ -40,8 +40,8 @@ class TestCompleteMission:
         done = manager.complete_mission(
             "bill_of_landing", player, crew_roster=roster, faction_ids=list(dl.factions)
         )
-        assert done.permits == ["all"]
-        assert all(fid in player.trade_permits for fid in dl.factions)
+        assert done.permits == ["commerce_guild", "science_collective", "frontier_alliance"]
+        assert player.trade_permits == {"commerce_guild", "science_collective", "frontier_alliance"}
         assert player.credits == 750
         _complete(manager, "recruit_navigator")
         done = manager.complete_mission("recruit_navigator", player, crew_roster=roster)

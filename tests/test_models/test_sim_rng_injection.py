@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.event import EventGenerator
-from spacegame.models.faction import generate_faction_assignments
 from spacegame.models.legendary_effects import process_chain_fire
 from spacegame.sim_rng import SimRng, seed_entropy
 from tests.sim_rng_helpers import ScriptedRng
@@ -18,15 +17,6 @@ class TestEventGenerator:
     def test_roll_above_chance_skips(self) -> None:
         gen = EventGenerator(["food"], ["nexus_prime"], rng=ScriptedRng([1.0]))
         assert gen.try_generate_event(5, {"food": "Food"}) is None
-
-
-class TestFactionAssignments:
-    def test_same_stream_same_assignment(self) -> None:
-        systems = [f"s{i}" for i in range(12)]
-        factions = ["guild", "union", "collective"]
-        a = generate_faction_assignments(systems, factions, rng=SimRng.from_key("factions", 1))
-        b = generate_faction_assignments(systems, factions, rng=SimRng.from_key("factions", 1))
-        assert a == b
 
 
 class TestChainFire:

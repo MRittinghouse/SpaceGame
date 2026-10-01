@@ -35,6 +35,10 @@ from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
 
+# BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
+# the Union's, so the refusal names the permit rather than the bill.
+NO_PERMIT = "You need a trade permit to trade here"
+
 # Red flash for failed transactions
 FAIL_FLASH = ParticleConfig(
     count=8,
@@ -992,7 +996,7 @@ class TradingView(BaseView):
 
     def _execute_buy(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_market_commodity()
@@ -1054,7 +1058,7 @@ class TradingView(BaseView):
 
     def _execute_sell(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_cargo_commodity()
@@ -1114,7 +1118,7 @@ class TradingView(BaseView):
 
     def _execute_buy_max(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_market_commodity()
@@ -1248,7 +1252,7 @@ class TradingView(BaseView):
     def _execute_sell_all(self) -> None:
         """Sell all cargo at current market prices."""
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
         cargo = dict(self.player.ship.current_cargo)
         if not cargo:
