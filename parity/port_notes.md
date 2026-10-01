@@ -247,6 +247,16 @@ hand-offs; none is a model rule to port.
   ambush arms again) and the striker pinning flee at the 10% floor, those fights become
   fight-or-flee for whatever ship SP8 brings: the ship needs SP4's weapons or an SP8 retune
   before those missions are reachable (D-17's reason, and an SP4 and SP8 hand-off).
+- BB-28: with Hull Brace on cooldown 2, the armored transport's cannon fires again after
+  round 4, but a brace that leaves it 2 energy after the round's regen (+2) against the
+  3-energy cannon makes it idle ("No Action") the next round. In a fight where the player
+  never fires (TestArmoredTransportKeepsFiring's setup), it settles from round 5 into Hull
+  Brace, No Action, Transport Cannon, Transport Cannon, so SP4's retune starts from a
+  transport that sits out about one round in four. The golden
+  `combat/fight_armored_transport` reads Transport Cannon four times, Hull Brace, No Action,
+  Transport Cannon, Hull Brace, Transport Cannon: its second brace is made at 3 energy and
+  leaves 3 after regen, so the cannon fires the round after. Those No Action rounds are the
+  new pattern, not a regression.
 - BB-17: the hold-back flag is `held_back_until_sp10`. Holding back The Silent Shaft leaves
   `attended_silent_shaft` unset until SP10, which also silences the three ambient lines
   gated on it (two of Marcus Jin's, one of Tomas Drifter's) (F-60).
@@ -396,8 +406,8 @@ hand-offs; none is a model rule to port.
     `arna_post_completion.ore_pitch` and `catch_unread` (new); `elena_cantina`
     `about_elena_deflect` (new); `cassiel_maren_forgery.caught` (replies 1 and 2) and
     `blackmail`; `priya_stranded.decline` and `agree_transport`; `larsen_customs.advice`;
-    `merchant_delivery.teach_routes`; `callum_rhee_informant` (`start`, two replies,
-    `deflect_smooth`).
+    `merchant_delivery.teach_routes`; `callum_rhee_informant` (`start` and its reply 3,
+    `deflect_destination`'s reply 0, and `deflect_smooth`).
   - `data/dialogue/crew_quest_dialogues.json`: `priya_peer_review_dialogue` (`start`, the
     Communication reply, `witness_fail`); `marcus_inspector_dialogue.bribe_accept` (the
     line and its reply).
