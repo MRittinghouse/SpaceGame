@@ -78,11 +78,14 @@ counter or any other per-process part to the ID.
   `system_id`, set flags, a seen flag, or resolved captains.
 - `parity/golden/missions/lifecycle_*.json` and `soft_deadline_*.json` (SP3-a) replay from
   `setup` alone: build the player from `setup["player"]`, recruit `setup["crew"]` with
-  `setup["crew_slots"]`, load `setup["mission_state"]` through `MissionManager.load_state`,
+  `setup["crew_slots"]`, load `setup["mission_state"]` through `MissionManager.load_state`
+  into a manager built with `produced_flags=content_flag_producers(<dialogue trees>,
+  <encounter definitions>, <NPCs>)` (the missions driver's `_manager`, since the bug bash),
   and replay `accept_mission`. Then set `player.game_day` to `setup["complete_on_day"]`
   before the first `check_objectives` step. Before each `check_objectives` step, apply
   `objectives[args[0]]` by these seven rules: `reach_system` sets `current_system_id` to
-  the target; `talk_to_npc` sets the `talked_to_npc(target)` flag True; `have_credits`
+  the target; `talk_to_npc` sets the `talked_to_npc(target)` flag True and calls
+  `MissionManager.record_conversation(target)`; `have_credits`
   raises credits to at least the quantity; `collect_cargo` adds the quantity of the target
   at price 0; `has_flag` sets the target flag True; `complete_trade` raises
   `trades_completed` to at least the quantity; `win_combat` raises `combats_won` to at
@@ -206,9 +209,15 @@ each one; the missions' run state is not in any golden, so its unit tests are th
   `outcome_line`; `CombatEngine.was_fought`.
 - Templates: `random_pool` (filtered from random pools) and `bribable` (content marker).
 - Player: `get_crew_slots` (Legend of the Expanse adds 2), `get_effective_reputations`;
-  `apply_combat_defeat` takes nothing from a stack whose commodity category is `quest`
-  (the port's `CombatRewards.apply_defeat` mirrors it), and the golden
-  `player/defeat_quest_cargo` pins it, so a lost fight cannot strand a chip delivery.
+  `apply_combat_defeat` takes nothing from a stack whose commodity category is `quest`,
+  and the golden `player/defeat_quest_cargo` pins it, so a lost fight cannot strand a chip
+  delivery. The port must add the skip: its `CombatRewards.apply_defeat` (aurelia
+  `core/combat/combat_rewards.gd:154-156`) takes cargo from every stack today, so it must
+  pass over a stack whose `Commodity.category` is `quest`, and plan A2's BB-53 rewrite of
+  `apply_defeat` (its Task 5 Step 4) must keep that skip. `player/defeat_quest_cargo` is
+  the sixth new golden, which A2's Task 1 sync list does not name: Step 2 should expect it,
+  the player parity suite belongs among Step 3's expected failures, and aurelia's
+  `test/parity/player_parity_test.gd` `PLAYER_CASES` goes from 4 to 5.
 - Progression: `add_xp` loops only while `1 <= level < LEVEL_CAP` (10,000).
 - Galaxy (`system.py`, `faction.py`, `game.py`): `StarSystem.faction_id` (content key
   `faction_id`, now in `parity/schema.json`) is the cultural guide's map. The Guild holds
@@ -260,10 +269,12 @@ hand-offs; none is a model rule to port.
 - BB-17: the hold-back flag is `held_back_until_sp10`. Holding back The Silent Shaft leaves
   `attended_silent_shaft` unset until SP10, which also silences the three ambient lines
   gated on it (two of Marcus Jin's, one of Tomas Drifter's) (F-60).
-- BB-82: the four availability passes mirror (`Player.get_effective_reputations`); the
-  station hub's chatter does not (Python reads a display name, D-12 and F-38), so the
-  port's `_hub` change to the holder's effective standing needs a record (D-12's Godot
-  cell).
+- BB-82: the four availability passes mirror (`Player.get_effective_reputations`), and
+  Python's hub reputation teaser (`get_reputation_locked_teaser`, which the port does not
+  have) passes the same effective standing. The station hub's chatter does not: Python
+  reads a display name (D-12 and F-38), and the port's `ArrivalActions._hub` reads the
+  holder's stored standing, so the hub's chatter counts Frontier Reputation in neither
+  build while the four availability passes do. D-12's Godot cell records it.
 - F-37: every availability pass now loads an auto-accepted mission's cargo, so D-8's cargo
   clause matches Python; plan A2 trims that clause (the announcements stay port-only).
 - Python's `DataLoader._parse_mission` never reads `discovery_text`, so every mission-discovery
@@ -289,7 +300,16 @@ hand-offs; none is a model rule to port.
   delivery's destination counted before the goods. Under the alpha stance neither is
   migrated; a release-time migration would reset each `after_departure` leg of an active
   mission with no saved run state, and re-mark or drop active board contracts with no run
-  state.
+  state. BB-19 has the same seam: a save made before this branch whose Arna talk leg the
+  old sticky rule locked True keeps it (`load_state` keeps a met leg met), so arna_02 saved
+  as [F,F,T] completes at Breakstone once the ore is aboard, and arna_03 saved as
+  [F,F,F,T] completes at Forgeworks once `tev_refining_complete` is set, each once and
+  with no Arna conversation. arna_04, arna_05a, and arna_05b also hold their Nexus Prime
+  return leg, which the same check locked at the accept, so they pay early as above
+  (arna_04 after Keren at Heron's Mark, arna_05a on landing at Heron's Mark, arna_05b at
+  Haven's Rest once the scrap is aboard). A release-time migration would also reset every
+  met `talk_to_npc` leg after index 0 of an active mission when `talked_since_accept` is
+  absent.
 - BB-7: a collect leg tests at least N aboard per contract, so two board contracts
   (smuggling or delivery) with the same commodity and destination share one load. One
   landing pays both while the overlap is sold, and the second `remove_cargo` fails
@@ -308,6 +328,17 @@ hand-offs; none is a model rule to port.
   while the first copy stays queued, so the repeat cannot move to another weapon, and
   undoing past the first copy spends the skill for the turn, in both builds. SP6's screen
   should restore the extra action and keep the keys when another copy of the slot remains.
+- BB-88: a repeat of a once-per-combat move with cooldown 0 (Crew Sync) passes the queue
+  and spends Volley Commander's extra action, then the engine refuses it ("Crew Sync
+  already used this combat"), in both builds; SP6's queue should refuse it too.
+- BB-86: `attempt_flee` draws a fresh enemy move for each parting shot and ignores
+  `telegraphed_move`, so a flee can be hit by a move other than the one shown, in both
+  builds (SP4).
+- BB-91: Python's ghost passive readout (`spacegame/views/combat_view.py:3192`,
+  "Counterstrike: +{stacks*10}%") disagrees with the engine's applied percent, 12% plus 5%
+  per Counterstrike level, per stack, which the combat log and the repaired skill text both
+  state: at Counterstrike 1 with four stacks the panel reads +40% and the log +68%. SP6's
+  fight HUD should read the engine's per-stack value.
 - BB-87: `captain_ship_fled` takes any fled enemy on the captain's `signature_ship_template`
   for the captain's ship, so a roster with a second ship on that template (an escort, or a
   reinforcement on it) would play the retreat line and record `fled_captain` after the
@@ -335,6 +366,20 @@ hand-offs; none is a model rule to port.
 - BB-19: the conversation that completes arna_02, arna_05a, or arna_05b opens that job's
   pending tree (its line reads true before and after the errand), and the full return
   scene plays on the next conversation. The two-talk seam goes to SP7's paired pass.
+- BB-19: Python's talk-receiver hints flag any incomplete talk objective
+  (`CantinaView._npc_is_quest_receiver` at `spacegame/views/cantina_view.py:599`,
+  `station_salience._has_talk_to_npc_objective_at`, and
+  `MissionManager.get_active_target_systems`). So right after arna_02, arna_03, arna_04,
+  arna_05a, or arna_05b is accepted, Arna shows "(Active Quest)", the hub marks her cantina
+  as a mission objective, and Nexus Prime is a target, although the talk rule drops that
+  conversation (her pending line reads true, so the harm is cosmetic). A port of these
+  queries for SP5's and SP6's screens should flag a talk receiver only once every earlier
+  leg that is not has_flag is met.
+- BB-19: `record_conversation` notes an NPC only for an active mission with a talk
+  objective after index 0 targeting it, where plan A2's draft `MissionManager.note_talk`
+  notes the conversation for every active mission. The missions play the same, since only
+  such an objective reads the note, but the saved `talked_since_accept` differs, so A2
+  should narrow `note_talk` to Python's rule.
 - BB-15: Rhea's `[Hand over the pallet.]` sets `arna_delivery_resolved` and thanks the
   captain for a clean pallet whether or not one is aboard; the mission waits for the
   pallet, the scene does not (SP10).
@@ -378,8 +423,13 @@ hand-offs; none is a model rule to port.
   few credits to refuel, and less fuel than the cheapest jump out cannot sell the cargo to
   get away, which the universal bill allowed. It is BB-3's dead end with a new entrance,
   for BB-3's later plan and SP6's Guild credit. Elena's cantina lesson ("Buy here, sell
-  there", food to Breakstone) now runs ahead of Hanna's permit; it is left as written, true
-  once the permit is held, for SP7's paired pass.
+  there", food to Breakstone) and Python's trading-view tutorial narration ("Five units of
+  food. ... Buy it here, bring it to Breakstone.", `spacegame/views/trading_view.py:1617`)
+  now run ahead of Hanna's permit. The narration shows on every trade screen while
+  `trading_tutorial_buy_pending` is set, so at Breakstone and Iron Depths it asks for a
+  purchase that the bill now refuses with "You need a trade permit to trade here". Both are
+  left as written under the voice guard, true once the permit is held, for SP6's trade
+  screen and SP7's paired pass.
 - BB-75: Shield Mastery is wired, so its row of the 44-row table closes (43 stay open), and
   shield_regen, armor_expertise, and hull_reinforcement lose their dead prerequisite. A
   fight can end with shields above the hull's base, which the write-back keeps until
