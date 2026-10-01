@@ -192,9 +192,14 @@ class SellLotView(BaseView):
         per locked decision §B5.1).
         """
         rows: list[dict[str, Any]] = []
-        # Cargo commodities (quest goods stay aboard, BB-7).
+        # Cargo commodities: free units only (quest goods stay aboard, BB-7).
         commodities = get_data_loader().commodities
-        for cid, qty in self.player.ship.current_cargo.items():
+        cargo = (
+            self.mission_manager.free_cargo(self.player)
+            if self.mission_manager is not None
+            else self.player.ship.current_cargo
+        )
+        for cid, qty in cargo.items():
             if qty <= 0:
                 continue
             commodity = commodities.get(cid)

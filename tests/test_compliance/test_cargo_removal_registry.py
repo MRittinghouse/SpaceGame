@@ -6,7 +6,8 @@ are sealed, and Sell All, Sell Max, refining, the auction house and the Wreckers
 leave every reserved unit aboard. This scan finds every call of a named removal
 (``LOWERING_CALLS``). A new one fails until it is reviewed here: name the guard it
 references, or "" and why it needs none. A guard that lives in a helper is pinned in
-``HELPER_GUARDS``. The scan cannot see a direct write to a hold dictionary; the two that
+``HELPER_GUARDS``. The hidden compartment's retrieve (``remove_from_hidden``) is a scanned
+removal too. The scan cannot see a direct write to a hold dictionary; the three that
 exist are reviewed by hand in ``OUTSIDE_THE_SCAN``. The Godot port's
 ``cargo_removal_registry_test.gd`` is its twin (plan B2).
 """
@@ -26,6 +27,7 @@ LOWERING_CALLS = frozenset(
         "start_job",
         "start_batch",
         "start_on_free_cargo",
+        "remove_from_hidden",
     }
 )
 
@@ -45,7 +47,10 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ),
     ("spacegame/models/mission.py", "MissionManager.apply_rewards"): (
         "_delivery_share",
-        "a hand-over takes its own mission's units and the captain's",
+        "a hand-over takes its own mission's units and the captain's; a remove_cargo reward "
+        "takes only what its mission's collect leg counted on free units in the same check "
+        "(pinned by test_each_remove_cargo_reward_has_its_collect_leg; the board, smuggling "
+        "and post-capstone generators build the same pair)",
     ),
     ("spacegame/models/player.py", "Player.apply_combat_defeat"): (
         "",
@@ -60,8 +65,8 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "runs the session on the free hold its caller passes",
     ),
     ("spacegame/views/refining_view.py", "RefiningView._start_selected_recipe"): (
-        "free_cargo",
-        "a recipe draws only free units",
+        "_free_hold",
+        "a recipe draws only free units (HELPER_GUARDS)",
     ),
     ("spacegame/views/sell_lot_view.py", "SellLotView.confirm_listing"): (
         "free_units",
@@ -71,6 +76,12 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "",
         "hiding moves units between the ship's two holds; held_units reads both, so the "
         "reserved count, the seal and the sale sensor still see a hidden unit (plan B1 ruling)",
+    ),
+    ("spacegame/views/trading_view.py", "TradingView._execute_retrieve_cargo"): (
+        "",
+        "retrieving moves units from the hidden compartment back to the main hold; held_units "
+        "reads both holds, so the reserved count, the seal and the sale sensor see no change "
+        "(mirrors _execute_hide_cargo)",
     ),
     ("spacegame/views/trading_view.py", "TradingView._execute_sell"): (
         "sale_draws_sealed",
@@ -92,6 +103,7 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
 
 # A reviewed site's guard that lives in a helper: (file, helper) -> the name it references.
 HELPER_GUARDS: dict[tuple[str, str], str] = {
+    ("spacegame/views/refining_view.py", "RefiningView._free_hold"): "free_cargo",
     ("spacegame/views/wreckers_guild_view.py", "WreckersGuildView._cargo_satisfies_mission"): (
         "free_units"
     ),
@@ -101,6 +113,10 @@ HELPER_GUARDS: dict[tuple[str, str], str] = {
 OUTSIDE_THE_SCAN: dict[tuple[str, str], str] = {
     ("spacegame/views/refining_view.py", "RefiningView._handle_schematic_click"): (
         "it spends schematic_data, which no mission loads as accept cargo"
+    ),
+    ("spacegame/views/shipyard_view.py", "ShipyardView._uninstall_hidden_compartment"): (
+        "the uninstall moves every hidden unit into the main hold before it drops the "
+        "compartment, so nothing aboard changes"
     ),
     ("spacegame/models/player.py", "Player.swap_ship"): (
         "a ship swap drops only what the new hold cannot fit, a loss the shipyard warns of; "
@@ -159,8 +175,6 @@ def _names(node: ast.AST) -> set[str]:
             found.add(child.id)
         elif isinstance(child, ast.Attribute):
             found.add(child.attr)
-        elif isinstance(child, ast.arg):
-            found.add(child.arg)
     return found
 
 

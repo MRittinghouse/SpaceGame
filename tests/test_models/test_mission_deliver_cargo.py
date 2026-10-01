@@ -136,7 +136,42 @@ class TestOneContractAtATime:
         assert manager.check_objectives(player) == []
 
 
+def _unpaired_remove_rewards(missions: list[Mission]) -> tuple[list[str], set[str]]:
+    """Missions with a remove_cargo reward and no collect leg for it, and the ones checked."""
+    checked: set[str] = set()
+    unpaired: list[str] = []
+    for mission in missions:
+        for reward in mission.rewards:
+            if reward.reward_type != "remove_cargo":
+                continue
+            checked.add(mission.id)
+            if not any(
+                o.type == ObjectiveType.COLLECT_CARGO
+                and o.target_id == reward.target_id
+                and o.target_quantity >= reward.amount
+                for o in mission.objectives
+            ):
+                unpaired.append(mission.id)
+    return unpaired, checked
+
+
 class TestDeliverCargoContent:
+    def test_each_remove_cargo_reward_has_its_collect_leg(self) -> None:
+        """A remove_cargo reward draws only what its collect leg counted on free units.
+
+        The completing check rechecks that leg on free units (bug bash BB-1), so the
+        reward never takes a consigned unit; the cargo-removal registry relies on it.
+        """
+        unpaired, checked = _unpaired_remove_rewards(_dl().missions)
+        assert unpaired == []
+        assert {
+            "union_territory",
+            "the_crimson_run",
+            "the_price_of_information",
+            "miners_plight",
+            "wrenchs_request",
+        } <= checked
+
     def test_each_hand_over_names_the_accept_cargo(self) -> None:
         """At most one deliver_cargo a mission, its amount the cargo the mission loads."""
         for mission in _dl().missions:

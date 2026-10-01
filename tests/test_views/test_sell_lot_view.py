@@ -24,8 +24,18 @@ from spacegame.constants.flags import (
 )
 from spacegame.data_loader import get_data_loader
 from spacegame.models.bidding import compute_listing_fee
+from spacegame.models.mission import (
+    AcceptCargo,
+    Mission,
+    MissionManager,
+    MissionObjective,
+    MissionReward,
+    MissionStatus,
+    ObjectiveType,
+)
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
+from spacegame.models.smuggling import HiddenCompartment
 from spacegame.views.sell_lot_view import SellLotView
 
 
@@ -271,3 +281,57 @@ class TestNavigation:
         view.on_enter()
         view.go_back()
         assert view.next_state == GameState.AUCTION
+
+
+def _consign(manager: MissionManager, commodity_id: str, quantity: int) -> None:
+    """Add an ACTIVE mission whose accept cargo reserves units of a good."""
+    manager.add_mission(
+        Mission(
+            id="consignment_test",
+            name="consignment_test",
+            description="A test consignment.",
+            objectives=[MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")],
+            rewards=[MissionReward(reward_type="xp", amount=10)],
+            on_accept_cargo=[AcceptCargo(commodity_id=commodity_id, quantity=quantity)],
+        ),
+        MissionStatus.ACTIVE,
+    )
+
+
+class TestConsignedCargoStaysAboard:
+    """Bug bash BB-1: a mission's accept cargo is neither offered nor listed."""
+
+    def test_a_listing_leaves_consigned_units_aboard(self) -> None:
+        ui, player = _make_view_env()
+        missions = MissionManager(missions=[])
+        view = SellLotView(ui_manager=ui, player=player, mission_manager=missions)
+        view.on_enter()
+        # Select first, so the test holds once the picker drops fully reserved goods.
+        view.select_item("commodity", "axiom_circuit")
+        view.set_declared_appraisal(8000)
+        view.set_reserve_pct(0.70)
+        _consign(missions, "axiom_circuit", 4)
+        ok, msg = view.confirm_listing()
+        assert (ok, msg) == (False, "You do not have 1 of 'axiom_circuit' in inventory.")
+        assert player.ship.get_cargo_quantity("axiom_circuit") == 4
+        # Two of the captain's own in the hidden hold: 6 held, 4 reserved, 2 free in main.
+        player.hidden_compartment = HiddenCompartment(
+            total_cargo_capacity=player.ship.ship_type.cargo_capacity,
+            hidden_cargo={"axiom_circuit": 2},
+        )
+        ok, msg = view.confirm_listing()
+        assert ok, msg
+        assert player.ship.get_cargo_quantity("axiom_circuit") == 3
+
+    def test_the_picker_offers_only_free_units(self) -> None:
+        ui, player = _make_view_env()
+        missions = MissionManager(missions=[])
+        _consign(missions, "axiom_circuit", 4)
+        view = SellLotView(ui_manager=ui, player=player, mission_manager=missions)
+        view.on_enter()
+        assert not [r for r in view.get_eligible_items() if r["item_id"] == "axiom_circuit"]
+        player.ship.add_cargo("axiom_circuit", 2, price_per_unit=1500)
+        rows = [r for r in view.get_eligible_items() if r["item_id"] == "axiom_circuit"]
+        assert len(rows) == 1
+        assert rows[0]["quantity"] == 2
+        assert rows[0]["label"].endswith("(cargo, 2)")

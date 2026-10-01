@@ -647,10 +647,7 @@ class RefiningView(BaseView):
 
         inventory = self.player.ship.current_cargo
         # Bug bash BB-1: a mission's accept cargo is never a refining input
-        if self.mission_manager is not None:
-            free = self.mission_manager.free_cargo(self.player)
-        else:
-            free = dict(inventory)
+        free = self._free_hold()
         success, msg = start_on_free_cargo(self.session, recipe, inventory, free, self.batch_count)
         self._show_message(msg)
         if success:
@@ -662,6 +659,12 @@ class RefiningView(BaseView):
                 self.player.batch_jobs_queued += self.batch_count
             self.batch_count = 1
             self._update_craft_button_text()
+
+    def _free_hold(self) -> dict[str, int]:
+        """The hold a recipe draws from: every unit no active mission's accept cargo holds."""
+        if self.mission_manager is not None:
+            return self.mission_manager.free_cargo(self.player)
+        return dict(self.player.ship.current_cargo)
 
     def _update_craft_button_text(self) -> None:
         """Update craft button to show current batch count."""
@@ -1131,7 +1134,7 @@ class RefiningView(BaseView):
         self._render_category_tabs(screen, tab_y=92)
 
         filtered = self._get_filtered_recipes()
-        inventory = self.player.ship.current_cargo
+        inventory = self._free_hold()
         # Clip rendering to scroll panel area
         old_clip = screen.get_clip()
         screen.set_clip(self._recipe_scroll.rect)

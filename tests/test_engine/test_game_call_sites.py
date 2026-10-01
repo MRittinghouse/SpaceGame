@@ -150,6 +150,32 @@ def test_the_trading_view_gets_the_mission_manager() -> None:
     assert any(k.arg == "mission_manager" for k in built[0].keywords)
 
 
+def _the_one_construction(function: str, view: str) -> ast.Call:
+    built = [
+        c
+        for c in ast.walk(_function(function))
+        if isinstance(c, ast.Call) and getattr(c.func, "id", "") == view
+    ]
+    assert len(built) == 1, f"{function} builds {view} {len(built)} times"
+    return built[0]
+
+
+def _mission_manager_value(call: ast.Call) -> str:
+    values = [ast.unparse(k.value) for k in call.keywords if k.arg == "mission_manager"]
+    assert len(values) == 1, ast.dump(call)
+    return values[0]
+
+
+def test_the_refining_view_gets_the_mission_manager() -> None:
+    call = _the_one_construction("_ensure_refining_view", "RefiningView")
+    assert _mission_manager_value(call) == "self.mission_manager"
+
+
+def test_the_sell_lot_view_gets_the_mission_manager() -> None:
+    call = _the_one_construction("_ensure_sell_lot_view", "SellLotView")
+    assert _mission_manager_value(call) == "self.mission_manager"
+
+
 def test_odoms_opening_no_longer_counts_the_ore() -> None:
     """BB-1: the sale sensor replaces the count test, which accused a fight's loser."""
     start = _function("start_dialogue")
