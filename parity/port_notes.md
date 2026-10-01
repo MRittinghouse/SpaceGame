@@ -146,11 +146,12 @@ Derived seeds), `Player.apply_combat_victory` and `apply_combat_negotiated`,
   `deduct_credits`, `xp`, `set_flag`, `add_criminal_heat`, `modify_reputation`,
   `confiscate_cargo`, `reduce_criminal_heat`, `bounty_immunity`, `start_bounty_combat`.
   Mission completion (`MissionManager.apply_rewards` and `complete_mission`): `credits`,
-  `xp`, `deduct_credits`, `remove_cargo`, `set_flag`, `black_market_access`,
-  `kweon_relationship`, `crew`, `trade_permit`, `reputation`, `modify_reputation`. Combat
-  victory (`Player.apply_combat_victory`): XP, credits, and loot cargo; a negotiated end
-  (`Player.apply_combat_negotiated`) adds loot cargo only, when enhanced negotiation earned
-  it: half of each common-table roll, rounded down, at least 1.
+  `xp`, `deduct_credits`, `remove_cargo`, `deliver_cargo`, `route_fuel`, `set_flag`,
+  `black_market_access`, `kweon_relationship`, `crew`, `trade_permit`, `reputation`,
+  `modify_reputation`. Combat victory (`Player.apply_combat_victory`): XP, credits, and
+  loot cargo; a negotiated end (`Player.apply_combat_negotiated`) adds loot cargo only,
+  when enhanced negotiation earned it: half of each common-table roll, rounded down, at
+  least 1.
 - Encounter-definition selection goldens run with empty flags and no resolved captains.
 - Golden-only key namespaces (never used by the game): `parity_fight`, `parity_complication`,
   `parity_ultimate`, `parity_dual_tech`, `parity_resolve`, `parity_ambient`, `parity_chatter`,
@@ -310,11 +311,11 @@ hand-offs; none is a model rule to port.
   Haven's Rest once the scrap is aboard). A release-time migration would also reset every
   met `talk_to_npc` leg after index 0 of an active mission when `talked_since_accept` is
   absent.
-- BB-7: a collect leg tests at least N aboard per contract, so two board contracts
-  (smuggling or delivery) with the same commodity and destination share one load. One
-  landing pays both while the overlap is sold, and the second `remove_cargo` fails
-  silently. Closing it needs per-contract cargo reservation in both builds, with BB-7's SP8
-  and SP9 hand-off.
+- BB-7 (closed by bug bash B1; see its Records for plan B2): a collect leg tests at least N
+  aboard per contract, so two board contracts (smuggling or delivery) with the same
+  commodity and destination share one load. One landing pays both while the overlap is
+  sold, and the second `remove_cargo` fails silently. Closing it needs per-contract cargo
+  reservation in both builds, with BB-7's SP8 and SP9 hand-off.
 - BB-7: the port has no trade screen yet, and its `TradeActions.sell` sells any held good at
   `sell_price`'s floor of 1 CR, quest goods included. SP6's trade screen must leave
   quest-category goods out of its sell list and Sell All, as Python's trade view does, or
@@ -684,6 +685,15 @@ D-20, F-74 and A12 (polish design 8.1).
 - Register: BB-4 closes (F-75); BB-1's false accusation and Sell All close, its scenes
   stay open (F-75); BB-38, BB-67, BB-68, BB-71, BB-72 close and BB-69 stays open for
   Oren's fail-forward (F-76); F-4's closure note (the Talk list now has one filter).
+- Hand-offs: BB-7's shared-load hand-off (aurelia `docs/handoffs.md`, "A collect leg
+  tests at least N aboard per contract ... Closing it needs per-contract cargo
+  reservation in both builds", from plan A1's port notes) closes: Python reserves each
+  mission's accept cargo, rechecks collect legs on free units, hands over through
+  `deliver_cargo` and completes one mission a check, so one load pays one contract
+  (`test_mission_deliver_cargo.py` `test_one_load_pays_one_contract`;
+  `test_mission_consignment.py`
+  `test_another_missions_accept_cargo_does_not_fill_a_collect_leg`), and the port's
+  `CargoLots` does the same; plan B2 deletes that hand-off bullet.
 - The writing pass, each a line this branch wrote or moved (N new, F a false fact
   repaired): "That cargo is sealed under your contract." (N); "+420 Credits (7 of 10
   delivered)" and its late form (N); "+<n> Credits (route fuel)" in the notice and the
@@ -695,12 +705,16 @@ D-20, F-74 and A12 (polish design 8.1).
   from Sell Max and Sell All over consigned cargo, and from Sell All over a hold of quest
   goods alone, where the press was silent before; refining's "Missing: ..." and "Need
   ..., have ..." and the auction's "You do not have 1 of '<id>' in inventory." over free
-  units; "Delivered <n> <id>" from `deliver_cargo`; "Progress: iron_delivery_moved_on" in
-  the iron delivery's Mission Complete notice (the set_flag reward's existing "Progress:
-  <flag>" form, which shows the player a raw flag id beside "Progress:
-  iron_ore_delivered"); "Progress: tomas_friendship" moved from Drifter's Delivery's
-  Mission Complete notice to Recruit Trader's (the set_flag reward's existing "Progress:
-  <flag>" form).
+  units; the mission log's collect hint "→ <n>/<m> in cargo"
+  (`MissionLogView._get_objective_detail`) and the auction picker's "<Name> (cargo, <n>)"
+  row (`SellLotView.get_eligible_items`) over free units, so "cargo" can understate the
+  hold (7 food aboard with The Heirloom Seeds' 3 reserved: "→ 4/5 in cargo" for Union
+  Territory); "Delivered <n> <id>" from `deliver_cargo`; "Progress:
+  iron_delivery_moved_on" in the iron delivery's Mission Complete notice (the set_flag
+  reward's existing "Progress: <flag>" form, which shows the player a raw flag id beside
+  "Progress: iron_ore_delivered"); "Progress: tomas_friendship" moved from Drifter's
+  Delivery's Mission Complete notice to Recruit Trader's (the set_flag reward's existing
+  "Progress: <flag>" form).
 - Content left for the writing session: the return scenes (`AWAITING_RETURN_SCENES` in
   `tests/test_data/test_one_shot_scenes.py`: Dex, Elena, Oren; `CHECK_GATED_RETURNS`:
   Oren; A1's `PENDING_CHECK_GATED_FLAGS` keeps `oren_intel_received`); the iron scenes,
