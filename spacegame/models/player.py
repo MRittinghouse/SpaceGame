@@ -745,7 +745,7 @@ class Player:
         has_insurance = self.progression.get_bonus("insurance") > 0
         cargo_loss_pct = COMBAT_DEFEAT_CARGO_LOSS_PERCENT
         if has_insurance:
-            cargo_loss_pct = cargo_loss_pct / 2  # Keep 50% more cargo
+            cargo_loss_pct = cargo_loss_pct / 2  # Insurance halves the loss, 30% to 15%
         for commodity_id, quantity in list(self.ship.current_cargo.items()):
             commodity = commodities.get(commodity_id)
             if commodity is not None and commodity.category == CommodityCategory.QUEST:

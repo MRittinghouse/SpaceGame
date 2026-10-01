@@ -264,7 +264,7 @@ class TradingView(BaseView):
         system_id = self.player.current_system_id
         market_name = get_black_market_name(system_id)
         self._black_market_exists = market_name is not None
-        # Underworld Contacts skill grants black market access at all stations
+        # Underworld Contacts grants black market access only where a black market exists
         has_contacts = self.player.progression.get_bonus("underworld_contacts") > 0
         player_has_access = has_contacts or self.player.has_black_market_access(system_id)
         if player_has_access and market_name is not None:

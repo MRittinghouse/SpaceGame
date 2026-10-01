@@ -281,8 +281,8 @@ class SocialManager:
         tree_bonus = 0
         if self._progression is not None:
             tree_bonus = int(self._progression.get_bonus(f"{skill_id}_bonus"))
-            # Cultural Savant: +1 per level in faction-aligned systems — only
-            # relevant to social-interaction skills.
+            # Cultural Savant: +1 per level in every system, to the
+            # social-interaction skills only.
             if skill_id in SKILLS_USING_DISPOSITION:
                 tree_bonus += int(self._progression.get_bonus("faction_social_bonus"))
 
