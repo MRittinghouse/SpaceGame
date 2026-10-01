@@ -23,6 +23,7 @@ from spacegame.engine.draw_utils import draw_panel
 from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_MD, get_font
 from spacegame.engine.tooltip import TooltipState
 from spacegame.models.location import Location
+from spacegame.models.npc_availability import is_listed, needed_by, settable_flags
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
 from spacegame.sim_rng import stable_seed
@@ -597,44 +598,33 @@ class CantinaView(BaseView):
         return [npc for npc in all_npcs if self._is_npc_available(npc)]
 
     def _npc_is_quest_receiver(self, npc_id: str) -> bool:
-        """PT-016: does any active mission need the player to talk to this NPC?
+        """PT-016, widened by bug bash BB-38: does an open mission need this person?
 
-        Walks all ACTIVE missions and their talk_to_npc objectives. Returns
-        True if any incomplete objective targets npc_id — that means clicking
-        this NPC will advance or complete a quest, not start a new one.
+        True when ``npc_availability.needed_by`` names a mission: an active talk objective
+        that targets the NPC, or an open mission waiting on a flag one of the NPC's trees
+        can set. Clicking such an NPC moves a quest rather than starting one.
         """
-        if not self.mission_manager:
-            return False
-        from spacegame.models.mission import MissionStatus, ObjectiveType
-
+        npc = self.data_loader.npcs.get(npc_id)
+        trees = self.data_loader.dialogue_trees
+        settable = settable_flags(npc, trees) if npc is not None else frozenset()
+        flags = self.player.dialogue_flags
         try:
-            active = self.mission_manager.get_missions_by_status(MissionStatus.ACTIVE)
+            return needed_by(npc_id, settable, self.mission_manager, flags) != ""
         except Exception:
             return False
-        for mission in active:
-            progress = self.mission_manager.get_objective_progress(mission.id) or []
-            for i, obj in enumerate(mission.objectives):
-                if obj.type != ObjectiveType.TALK_TO_NPC:
-                    continue
-                if obj.target_id != npc_id:
-                    continue
-                # Completed objectives don't need advancing anymore
-                if i < len(progress) and progress[i]:
-                    continue
-                return True
-        return False
 
     def _is_npc_available(self, npc: "NPC") -> bool:
-        """Check if an NPC should appear in the cantina."""
-        flags = self.player.dialogue_flags
-        if npc.hide_after_flag and flags.get(npc.hide_after_flag, False):
-            return False
-        if npc.auto_trigger_gate_flag and flags.get(npc.auto_trigger_gate_flag, False):
-            return False
-        if npc.auto_trigger_prerequisites:
-            if not all(flags.get(f, False) for f in npc.auto_trigger_prerequisites):
-                return False
-        return True
+        """Whether the NPC is in the Talk list here (npc_availability.is_listed, bug bash BB-38)."""
+        recruited = self.crew_roster.recruited_ids if self.crew_roster else set()
+        settable = settable_flags(npc, self.data_loader.dialogue_trees)
+        return is_listed(
+            npc,
+            self.system.id,
+            self.player.dialogue_flags,
+            self.mission_manager,
+            recruited,
+            settable,
+        )
 
     # === Crew helpers ===
 

@@ -182,3 +182,16 @@ def test_odoms_opening_no_longer_counts_the_ore() -> None:
     assert not _calls(start, "get_cargo_quantity")
     literals = [n.value for n in ast.walk(start) if isinstance(n, ast.Constant)]
     assert "broker_ore_sold" not in literals
+
+
+def test_opening_an_npc_sets_its_gate_before_its_tree_is_chosen() -> None:
+    """BB-38: the scene is the scene whoever opens it, so the departure does not replay it."""
+    start = _function("start_dialogue")
+    gate_reads = [
+        n.lineno
+        for n in ast.walk(start)
+        if isinstance(n, ast.Attribute) and n.attr == "auto_trigger_gate_flag"
+    ]
+    tree_picks = [c.lineno for c in _calls(start, "get_active_dialogue_id")]
+    assert gate_reads and tree_picks
+    assert min(gate_reads) < min(tree_picks)

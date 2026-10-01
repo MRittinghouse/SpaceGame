@@ -3600,6 +3600,13 @@ class Game:
             logger.warning(f"NPC not found: {npc_id}")
             return
 
+        # Bug bash BB-38: the scene is the scene whoever opens it. Opening an NPC whose
+        # gate flag is unset sets it first, as the auto-trigger does, so the next
+        # departure does not play the scene again.
+        gate = npc.auto_trigger_gate_flag
+        if gate and self._player is not None and not self.player.dialogue_flags.get(gate, False):
+            self.player.dialogue_flags[gate] = True
+
         # Resolve active dialogue tree from NPC state machine
         active_dialogue_id = npc.get_active_dialogue_id(
             self.player.dialogue_flags if self._player is not None else {}

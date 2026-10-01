@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from types import SimpleNamespace
 
 from spacegame.constants.flags import talked_to_npc
 from spacegame.models.mission import MissionStatus
-from spacegame.views.station_hub_view import StationHubView
+from spacegame.models.npc_availability import is_listed
 from tests.test_models.test_mission_return_legs import _dl, _player
 from tests.test_models.test_mission_talk_rules import _manager
 
@@ -16,9 +15,8 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 
 def _listed(npc_id: str, flags: dict[str, bool]) -> bool:
-    view = StationHubView.__new__(StationHubView)
-    view.player = SimpleNamespace(dialogue_flags=flags)
-    return view._is_npc_available(_dl().npcs[npc_id])
+    npc = _dl().npcs[npc_id]
+    return is_listed(npc, npc.home_system_id, flags, None, set(), frozenset())
 
 
 def _texts(tree_id: str) -> list[str]:

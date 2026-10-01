@@ -1152,6 +1152,14 @@ class MissionManager:
         """Get all missions with a given status."""
         return [self._missions[mid] for mid, s in self._status.items() if s == status]
 
+    def open_missions(self) -> list[Mission]:
+        """Missions available or active, in content order (bug bash BB-38's keep rule)."""
+        return [
+            self._missions[mid]
+            for mid, status in self._status.items()
+            if status in (MissionStatus.AVAILABLE, MissionStatus.ACTIVE)
+        ]
+
     def get_objective_progress(self, mission_id: str) -> list[bool]:
         """Get objective completion flags for a mission."""
         return list(self._progress.get(mission_id, []))

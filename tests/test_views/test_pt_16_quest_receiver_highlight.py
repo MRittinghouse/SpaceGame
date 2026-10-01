@@ -11,6 +11,7 @@ sprint adds:
 from __future__ import annotations
 
 import os
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
@@ -70,6 +71,8 @@ def _make_cantina_view(mission_manager: MissionManager):
 
     view = CantinaView.__new__(CantinaView)
     view.mission_manager = mission_manager
+    view.data_loader = SimpleNamespace(npcs={}, dialogue_trees={})
+    view.player = SimpleNamespace(dialogue_flags={})
     return view
 
 
@@ -154,7 +157,7 @@ class TestNpcIsQuestReceiver:
         """Defensive: if the mission manager call raises, helper must not
         crash the UI."""
         mgr = MagicMock()
-        mgr.get_missions_by_status.side_effect = RuntimeError("boom")
+        mgr.open_missions.side_effect = RuntimeError("boom")
         view = _make_cantina_view(mgr)
         assert view._npc_is_quest_receiver("rhea") is False
 

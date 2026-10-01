@@ -25,6 +25,28 @@ def _outcome_flags(outcome: Optional["EncounterOutcome"]) -> set[str]:
     }
 
 
+def tree_flags(tree: "DialogueTree") -> frozenset[str]:
+    """Every flag one dialogue tree can set: replies' set_flags and their checks' flags.
+
+    The Talk list's keep rule asks which flags an NPC's trees can set (bug bash BB-38).
+
+    Args:
+        tree: A dialogue tree.
+
+    Returns:
+        The flags.
+    """
+    flags: set[str] = set()
+    for node in tree.nodes.values():
+        for response in node.responses:
+            if response.set_flag:
+                flags.add(response.set_flag)
+            check = response.skill_check
+            if check is not None:
+                flags |= {f for f in (check.set_flag_on_success, check.set_flag_on_failure) if f}
+    return frozenset(flags)
+
+
 def content_flag_producers(
     dialogue_trees: Iterable["DialogueTree"],
     encounter_definitions: Iterable["EncounterDefinition"],
@@ -46,15 +68,7 @@ def content_flag_producers(
     """
     flags: set[str] = set()
     for tree in dialogue_trees:
-        for node in tree.nodes.values():
-            for response in node.responses:
-                if response.set_flag:
-                    flags.add(response.set_flag)
-                check = response.skill_check
-                if check is not None:
-                    flags |= {
-                        f for f in (check.set_flag_on_success, check.set_flag_on_failure) if f
-                    }
+        flags |= tree_flags(tree)
     for definition in encounter_definitions:
         for choice in definition.choices:
             flags |= _outcome_flags(choice.outcome) | _outcome_flags(choice.failure_outcome)
