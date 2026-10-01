@@ -8,6 +8,8 @@ generated missions into the lifecycle.
 import random
 
 from spacegame.data_loader import get_data_loader
+from spacegame.models.commodity import Legality
+from spacegame.models.market import Market
 from spacegame.models.mission import (
     Mission,
     MissionManager,
@@ -182,6 +184,7 @@ class TestProceduralMissionGenerator:
 
     def test_a_delivery_orders_its_destination_after_the_goods(self) -> None:
         mission = self._make_generator().generate_delivery("nexus_prime", game_day=3)
+        assert mission is not None
         assert mission.ordered_final
         assert not any(o.after_departure for o in mission.objectives)
 
@@ -194,20 +197,121 @@ class TestProceduralMissionGenerator:
         assert names[1] == "Bounty: Clear 1 Hostile"
         assert names[2] == "Bounty: Clear 2 Hostiles"
 
-    def test_herons_mark_deliveries_name_goods_a_market_sells(self) -> None:
-        dl = get_data_loader()
-        dl.load_all()
-        listed = {
-            cid
-            for system in dl.systems.values()
-            for cid in (system.economy.available_commodities or [])
-        }
+    def _deliveries(self):
         gen = self._make_generator()
-        for day in range(1, 61):
-            delivery = gen.generate_delivery("herons_mark", game_day=day)
-            commodity_id = delivery.objectives[0].target_id
-            assert commodity_id in listed, (day, commodity_id)
-            assert dl.commodities[commodity_id].base_price > 0, (day, commodity_id)
+        for system_id in get_data_loader().systems:
+            for day in range(1, 31):
+                mission = gen.generate_delivery(system_id, game_day=day)
+                if mission is not None:
+                    yield system_id, day, mission
+
+    def test_a_delivery_carries_a_legal_export_of_its_origin(self) -> None:
+        dl = get_data_loader()
+        for system_id, _day, mission in self._deliveries():
+            good = mission.objectives[0].target_id
+            assert good in (dl.systems[system_id].economy.specialty_exports or []), mission.id
+            assert dl.commodities[good].legality == Legality.LEGAL, mission.id
+
+    def test_an_origin_without_a_legal_export_posts_no_delivery(self) -> None:
+        gen = self._make_generator()
+        for system_id in ("the_fulcrum", "herons_mark"):
+            for day in range(1, 61):
+                assert gen.generate_delivery(system_id, game_day=day) is None
+                board = gen.generate_for_system(system_id, game_day=day)
+                assert not [m for m in board if m.id.startswith("proc_delivery_")]
+
+    def test_a_delivery_fits_a_starting_hold_and_pays_the_goods_base_value(self) -> None:
+        dl = get_data_loader()
+        mults = {"safe": 1.0, "moderate": 1.5, "dangerous": 2.0}
+        for system_id, _day, mission in self._deliveries():
+            good = dl.commodities[mission.objectives[0].target_id]
+            qty = mission.objectives[0].target_quantity
+            assert qty * good.volume_per_unit <= 50, mission.id
+            pay = int(int(good.base_price * qty * 1.0) * mults[dl.systems[system_id].danger_level])
+            credits = next(r.amount for r in mission.rewards if r.reward_type == "credits")
+            assert credits == max(pay, 150), mission.id
+            hand_over = next(r for r in mission.rewards if r.reward_type == "deliver_cargo")
+            assert (hand_over.target_id, hand_over.amount) == (good.id, qty)
+
+    def test_no_delivery_pays_less_than_its_goods_cost_at_the_origin(self) -> None:
+        dl = get_data_loader()
+        commodities = list(dl.commodities.values())
+        for system_id, day, mission in self._deliveries():
+            market = Market(dl.systems[system_id], commodities, game_day=day)
+            good, qty = mission.objectives[0].target_id, mission.objectives[0].target_quantity
+            credits = next(r.amount for r in mission.rewards if r.reward_type == "credits")
+            assert credits >= market.get_price(good) * qty, mission.id
+
+    def test_nexus_primes_first_contract_keeps_its_good_and_quantity(self) -> None:
+        """Unchanged draw order: the old contract now pays 120 x 3 (polish design 5.5)."""
+        from spacegame.sim_rng import stable_seed
+
+        dl = get_data_loader()
+        gen = ProceduralMissionGenerator(
+            dl.systems,
+            dl.commodities,
+            dl.enemy_templates,
+            seed=stable_seed("player", "Tavi Okonkwo"),
+        )
+        delivery = gen.generate_delivery("nexus_prime", game_day=1)
+        assert delivery is not None
+        assert (delivery.objectives[0].target_id, delivery.objectives[0].target_quantity) == (
+            "manufactured_goods",
+            3,
+        )
+        assert next(r.amount for r in delivery.rewards if r.reward_type == "credits") == 360
+
+    def test_surveys_and_salvage_pay_their_route_fuel(self) -> None:
+        gen = self._make_generator()
+        assert gen._route_fuel("nexus_prime", ["axiom_labs"]) == 540
+        # The shortest order: Verdant, Forgeworks, Crimson Reach is 145 units; Forgeworks
+        # first would be 178.
+        assert gen._route_fuel("nexus_prime", ["forgeworks", "verdant", "crimson_reach"]) == 1450
+        survey = gen.generate_survey("nexus_prime", game_day=10)
+        stops = [o.target_id for o in survey.objectives[:-1]]
+        fuel = [r for r in survey.rewards if r.reward_type == "route_fuel"]
+        assert [r.amount for r in fuel] == [gen._route_fuel("nexus_prime", stops)]
+        salvage = gen.generate_salvage("nexus_prime", game_day=10)
+        target = salvage.objectives[0].target_id
+        fuel = [r for r in salvage.rewards if r.reward_type == "route_fuel"]
+        assert [r.amount for r in fuel] == [gen._route_fuel("nexus_prime", [target])]
+
+    def test_route_fuel_pays_once_a_landing(self) -> None:
+        def contract(mission_id: str) -> Mission:
+            return Mission(
+                id=mission_id,
+                name=mission_id,
+                description="A test salvage.",
+                objectives=[
+                    MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="nexus_prime")
+                ],
+                rewards=[
+                    MissionReward(reward_type="credits", amount=400),
+                    MissionReward(reward_type="route_fuel", amount=540),
+                ],
+            )
+
+        manager = MissionManager([])
+        for mission_id in ("proc_salvage_a", "proc_salvage_b", "proc_salvage_c"):
+            manager.add_mission(contract(mission_id), MissionStatus.ACTIVE)
+        player = Player(
+            "TestPilot",
+            0,
+            "nexus_prime",
+            Ship(ship_type=get_data_loader().ship_types["shuttle"], current_fuel=40),
+        )
+        player.game_day = 9
+        assert "+540 Credits (route fuel)" in manager.apply_rewards("proc_salvage_a", player)
+        assert manager.apply_rewards("proc_salvage_b", player) == ["+400 Credits"]
+        assert player.credits == 400 + 540 + 400
+        state = manager.get_state()
+        assert state["route_fuel_landing"] == [9, "nexus_prime"]
+        restored = MissionManager([])
+        restored.load_state(state)
+        assert restored.get_state()["route_fuel_landing"] == [9, "nexus_prime"]
+        player.game_day = 11
+        manager.apply_rewards("proc_salvage_c", player)
+        assert player.credits == 400 + 540 + 400 + 400 + 540
 
     def test_the_new_fields_survive_a_save(self) -> None:
         gen = self._make_generator()

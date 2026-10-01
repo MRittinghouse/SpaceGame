@@ -398,6 +398,9 @@ class MissionManager:
         self._accept_system: dict[str, str] = {}
         self._departed: set[str] = set()
         self._baselines: dict[str, dict[str, int]] = {}
+        # BB-11: the landing (game day, system) that last paid a survey's or salvage's
+        # route fuel; a second contract finishing there pays its fee alone.
+        self._route_fuel_landing: Optional[tuple[int, str]] = None
         # BB-19: flags some content can set, which the auto-resolve leaves to their scenes.
         # None keeps the auto-resolve setting every flag, for callers that pass no content.
         self._produced_flags: Optional[frozenset[str]] = None
@@ -1050,6 +1053,12 @@ class MissionManager:
                 if delivered > 0:
                     player.ship.remove_cargo(reward.target_id, delivered)
                 messages.append(f"Delivered {delivered} {reward.target_id}")
+            elif reward.reward_type == "route_fuel":
+                landing = (player.game_day, player.current_system_id)
+                if self._route_fuel_landing != landing:
+                    self._route_fuel_landing = landing
+                    player.add_credits(reward.amount)
+                    messages.append(f"+{reward.amount:,} Credits (route fuel)")
             elif reward.reward_type == "set_flag":
                 player.dialogue_flags[reward.target_id] = True
                 messages.append(f"Progress: {reward.target_id}")
@@ -1411,6 +1420,9 @@ class MissionManager:
                 mid: sorted(npcs) for mid, npcs in self._talked_since_accept.items() if npcs
             },
             "runtime_missions": [self._missions[mid].to_dict() for mid in self._runtime_ids],
+            "route_fuel_landing": list(self._route_fuel_landing)
+            if self._route_fuel_landing
+            else [],
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -1451,6 +1463,9 @@ class MissionManager:
             str(mid): {str(npc) for npc in npcs}
             for mid, npcs in data.get("talked_since_accept", {}).items()
         }
+        # BB-11; older saves hold none
+        landing = data.get("route_fuel_landing", [])
+        self._route_fuel_landing = (int(landing[0]), str(landing[1])) if len(landing) == 2 else None
 
 
 def held_units(player: "Player", commodity_id: str) -> int:

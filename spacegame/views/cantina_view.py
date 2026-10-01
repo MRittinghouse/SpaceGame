@@ -497,6 +497,8 @@ class CantinaView(BaseView):
                     lines.append((f"  {r.amount:,} XP", (100, 200, 255)))
                 elif r.reward_type == "reputation":
                     lines.append((f"  {r.amount:+d} Reputation ({r.target_id})", (100, 200, 100)))
+                elif r.reward_type == "route_fuel":
+                    lines.append((f"  {r.amount:,} Credits (route fuel)", (200, 200, 100)))
                 else:
                     lines.append((f"  {r.reward_type}: {r.amount}", Colors.TEXT))
 

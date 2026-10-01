@@ -5,7 +5,9 @@ survey, and salvage. Missions are generated per-system on each station visit
 and rotate with the game day.
 """
 
-from typing import Any
+import itertools
+from collections.abc import Callable
+from typing import Any, Optional
 
 from spacegame.models.commodity import Commodity, Legality
 from spacegame.models.mission import (
@@ -16,6 +18,7 @@ from spacegame.models.mission import (
     ObjectiveType,
 )
 from spacegame.models.system import StarSystem
+from spacegame.models.travel import jump_fuel_cost
 from spacegame.sim_rng import SimRng
 
 # Credit reward multipliers by system danger level
@@ -29,6 +32,11 @@ _SMUGGLING_COMMODITIES = [
     "combat_stims",
     "contraband_medicine",
 ]
+
+# Bug bash BB-11: a delivery fits a starting shuttle's hold, and route fuel is priced for a
+# shuttle's efficiency with no skill.
+_CONTRACT_HOLD = 50
+_ROUTE_FUEL_EFFICIENCY = 10
 
 
 class ProceduralMissionGenerator:
@@ -86,32 +94,38 @@ class ProceduralMissionGenerator:
         candidates = [sid for sid in self._systems if sid != exclude]
         return rng.choice(candidates)
 
-    def _pick_trade_commodity(self, rng: SimRng, system_id: str) -> str:
-        """Pick a commodity relevant to the system's economy."""
-        system = self._systems.get(system_id)
-        if system and system.economy:
-            exports = system.economy.specialty_exports or []
-            imports = system.economy.specialty_imports or []
-            candidates = [c for c in exports + imports if c in self._commodities]
-            if candidates:
-                return rng.choice(candidates)
-        # Fallback (BB-34): a legal good some market sells at a price
-        return rng.choice(self._sold_legal_goods())
+    def _pick_trade_commodity(self, rng: SimRng, system_id: str) -> Optional[str]:
+        """One of the origin's legal specialty exports, or None when it has none (BB-11).
 
-    def _sold_legal_goods(self) -> list[str]:
-        """Legal goods with a base price that at least one market lists, in content order.
-
-        A system whose available_commodities is None lists every commodity.
+        A delivery is carriage of what the origin makes; contraband stays off the lawful
+        board, and an origin that exports nothing legal (the Fulcrum, Heron's Mark) posts
+        no delivery.
         """
-        listed: set[str] = set()
-        for system in self._systems.values():
-            available = system.economy.available_commodities if system.economy else []
-            listed.update(self._commodities if available is None else available)
-        return [
-            cid
-            for cid, c in self._commodities.items()
-            if c.legality == Legality.LEGAL and c.base_price > 0 and cid in listed
+        system = self._systems.get(system_id)
+        exports = (system.economy.specialty_exports or []) if system and system.economy else []
+        candidates = [
+            c
+            for c in exports
+            if c in self._commodities and self._commodities[c].legality == Legality.LEGAL
         ]
+        return rng.choice(candidates) if candidates else None
+
+    def _route_fuel(self, origin_id: str, stops: list[str]) -> int:
+        """Credits for the fuel of the shortest round trip from the origin through the stops.
+
+        Fuel at its base price, for a shuttle's efficiency and no skill (bug bash BB-11).
+        Surveys and salvage carry no goods, so their fuel is their whole cost.
+        """
+        best: Optional[int] = None
+        for order in itertools.permutations(stops):
+            legs = [origin_id, *order, origin_id]
+            units = sum(
+                jump_fuel_cost(self._systems[a], self._systems[b], _ROUTE_FUEL_EFFICIENCY, 0.0)
+                for a, b in itertools.pairwise(legs)
+            )
+            if best is None or units < best:
+                best = units
+        return (best or 0) * self._commodities["fuel"].base_price
 
     def generate_bounty(self, system_id: str, game_day: int) -> Mission:
         """Generate a bounty hunting contract.
@@ -164,26 +178,29 @@ class ProceduralMissionGenerator:
             ],
         )
 
-    def generate_delivery(self, system_id: str, game_day: int) -> Mission:
+    def generate_delivery(self, system_id: str, game_day: int) -> Optional[Mission]:
         """Generate a cargo delivery contract.
 
-        Collect a commodity and deliver it to another system.
+        Collect a legal specialty export of the origin and deliver it to another system. The
+        quantity fits a starting hold, and the pay is the goods' base value (BB-11).
 
         Args:
             system_id: System offering the contract.
             game_day: Current game day for seeding.
 
         Returns:
-            A delivery Mission.
+            A delivery Mission, or None when the origin exports nothing legal.
         """
         rng = self._make_rng(system_id, game_day, "delivery")
         mid = self._mission_id("delivery", system_id, game_day)
         dest_id = self._pick_other_system(rng, system_id)
         dest = self._systems[dest_id]
         commodity_id = self._pick_trade_commodity(rng, system_id)
+        if commodity_id is None:
+            return None
         commodity = self._commodities[commodity_id]
-        qty = rng.randint(3, 10)
-        base_reward = int(commodity.base_price * qty * 0.5)
+        qty = min(rng.randint(3, 10), _CONTRACT_HOLD // max(1, commodity.volume_per_unit))
+        base_reward = int(commodity.base_price * qty * 1.0)
         reward = int(base_reward * self._danger_mult(system_id))
         xp = 30 + qty * 5
 
@@ -214,7 +231,7 @@ class ProceduralMissionGenerator:
                 MissionReward(reward_type="credits", amount=max(reward, 150)),
                 MissionReward(reward_type="xp", amount=xp),
                 MissionReward(
-                    reward_type="remove_cargo",
+                    reward_type="deliver_cargo",
                     amount=qty,
                     target_id=commodity_id,
                 ),
@@ -339,6 +356,9 @@ class ProceduralMissionGenerator:
             rewards=[
                 MissionReward(reward_type="credits", amount=max(reward, 250)),
                 MissionReward(reward_type="xp", amount=xp),
+                MissionReward(
+                    reward_type="route_fuel", amount=self._route_fuel(system_id, targets)
+                ),
             ],
         )
 
@@ -397,6 +417,9 @@ class ProceduralMissionGenerator:
             rewards=[
                 MissionReward(reward_type="credits", amount=max(reward, 300)),
                 MissionReward(reward_type="xp", amount=xp),
+                MissionReward(
+                    reward_type="route_fuel", amount=self._route_fuel(system_id, [dest_id])
+                ),
             ],
         )
 
@@ -418,7 +441,7 @@ class ProceduralMissionGenerator:
             return []
 
         # Weight templates by system type
-        generators = [
+        generators: list[tuple[str, Callable[[str, int], Optional[Mission]]]] = [
             ("bounty", self.generate_bounty),
             ("delivery", self.generate_delivery),
             ("survey", self.generate_survey),
@@ -432,5 +455,7 @@ class ProceduralMissionGenerator:
 
         missions: list[Mission] = []
         for _name, gen_func in selected:
-            missions.append(gen_func(system_id, game_day))
+            mission = gen_func(system_id, game_day)
+            if mission is not None:
+                missions.append(mission)
         return missions

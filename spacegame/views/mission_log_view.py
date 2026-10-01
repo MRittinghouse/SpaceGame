@@ -751,6 +751,9 @@ class MissionLogView(BaseView):
                 sign = "+" if reward.amount > 0 else ""
                 rew_text = f"{sign}{reward.amount} {reward.target_id} rep"
                 color = Colors.GREEN if reward.amount > 0 else Colors.RED
+            elif reward.reward_type == "route_fuel":
+                rew_text = f"+{reward.amount:,} Credits (route fuel)"
+                color = Colors.YELLOW
             elif reward.reward_type in (
                 "set_flag",
                 "remove_cargo",
