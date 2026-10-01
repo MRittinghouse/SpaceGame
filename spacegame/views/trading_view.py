@@ -17,7 +17,7 @@ from spacegame.engine.draw_utils import draw_bar
 from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_LG, FONT_MD, get_font
 from spacegame.engine.particles import COLLECT_SPARKLE, ParticleConfig, ParticlePool
 from spacegame.engine.sprites import get_sprite_manager, res_scale
-from spacegame.models.commodity import Commodity
+from spacegame.models.commodity import Commodity, CommodityCategory
 from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
@@ -577,12 +577,19 @@ class TradingView(BaseView):
 
         return rows, ids
 
+    def _is_quest_good(self, commodity_id: str) -> bool:
+        """True for a quest-category good, which is never offered for sale (BB-7)."""
+        commodity = self.commodities.get(commodity_id)
+        return commodity is not None and commodity.category == CommodityCategory.QUEST
+
     def _build_cargo_rows(self) -> tuple[list[list[str | tuple[str, tuple]]], list[str]]:
         """Build cargo table rows and parallel commodity ID list."""
         rows: list[list[str | tuple[str, tuple]]] = []
         ids: list[str] = []
 
         for commodity_id, quantity in self.player.ship.current_cargo.items():
+            if self._is_quest_good(commodity_id):
+                continue
             commodity = self.commodities[commodity_id]
             avg_cost = self.player.ship.get_average_purchase_price(commodity_id)
 
@@ -739,7 +746,7 @@ class TradingView(BaseView):
         if not self._has_trade_permit():
             return "No trade permit here."
         cargo = self.player.ship.current_cargo
-        if not any(qty > 0 for qty in cargo.values()):
+        if not any(qty > 0 and not self._is_quest_good(cid) for cid, qty in cargo.items()):
             return "Nothing to sell."
         return None
 
@@ -1250,7 +1257,7 @@ class TradingView(BaseView):
         total_credits = 0
         total_items = 0
         for commodity_id, quantity in cargo.items():
-            if quantity <= 0:
+            if quantity <= 0 or self._is_quest_good(commodity_id):
                 continue
             if self._black_market_mode:
                 sell_price = self._get_black_market_sell_price(commodity_id)

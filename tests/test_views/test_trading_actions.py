@@ -86,6 +86,35 @@ def _make_trading_view_with_real_player(
     return view, player
 
 
+class TestQuestGoodsStayOffTheTradeScreen:
+    """BB-7: a sale must not strand the chip deliveries."""
+
+    def test_cargo_rows_list_market_goods_and_not_quest_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        _rows, ids = view._build_cargo_rows()
+        assert ids == ["food"]
+
+    def test_sell_all_sells_market_goods_and_leaves_quest_goods(self) -> None:
+        view, player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        view._execute_sell_all()
+        assert player.ship.get_cargo_quantity("food") == 0
+        assert player.ship.get_cargo_quantity("data_chip") == 1
+
+    def test_sell_all_is_disabled_with_only_quest_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(starting_cargo={"data_chip": 1})
+        assert view._why_cannot_sell_all() == "Nothing to sell."
+
+    def test_sell_all_is_enabled_with_market_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        assert view._why_cannot_sell_all() is None
+
+
 class TestExecuteSellAll:
     """Sell-all flow exercised against a real Player + Ship.
 
