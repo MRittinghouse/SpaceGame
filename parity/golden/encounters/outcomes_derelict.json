@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts . Hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild naval facility. Pirates don't have access to Guild calibration protocols. Someone handed them these weapons, ready to fire.",
+          "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild naval facility. Pirates don't have access to Guild calibration protocols. Someone handed them these weapons, ready to fire.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -234,7 +234,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. They'll fetch a good price at any station, no questions asked. As you load the last piece, your scanner catches something etched into the capacitor housing . A Guild logistics stamp, half-scraped away. Someone tried to remove the markings. They missed one.",
+          "description": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. They'll fetch a good price at any station, no questions asked. As you load the last piece, your scanner catches something etched into the capacitor housing: a Guild logistics stamp, half-scraped away. Someone tried to remove the markings. They missed one.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -426,7 +426,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. It's the safe play . But as you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers. Evidence doesn't last long in space.",
+          "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. It's the safe play. But as you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers. Evidence doesn't last long in space.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -606,7 +606,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Brannick grumbles but backs off . Wrecker's Guild rules are clear on unmarked salvage. Tomoko splits a finder's fee with you. 'Appreciate the honesty. My old man always said the best judge is the one passing through.'",
+          "description": "Brannick grumbles but backs off: Wrecker's Guild rules are clear on unmarked salvage. Tomoko splits a finder's fee with you. 'Appreciate the honesty. My old man always said the best judge is the one passing through.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1182,7 +1182,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Haddek tips an imaginary hat. 'Appreciate that, Captain. Lot of folks don't bother with Wrecker's rules anymore. Tell you what . I pulled some nav data off her computers. Trade routes, fuel cache locations. Take a copy. One good turn deserves another.' He transmits the data with a weathered smile.",
+          "description": "Haddek tips an imaginary hat. 'Appreciate that, Captain. Lot of folks don't bother with Wrecker's rules anymore. Tell you what, I pulled some nav data off her computers. Trade routes, fuel cache locations. Take a copy. One good turn deserves another.' He transmits the data with a weathered smile.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1369,7 +1369,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in . Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
+          "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in. Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1551,7 +1551,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone . You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' The work is hard but the payout is honest.",
+          "description": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone. You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' The work is hard but the payout is honest.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2282,7 +2282,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this . Today is your lucky day.",
+          "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this. Today is your lucky day.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2647,7 +2647,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The station's corridors are silent and cold. You find the main control room still partially functional . Its databanks contain century-old star charts and communication logs. Historians would pay well for this.",
+          "description": "The station's corridors are silent and cold. You find the main control room still partially functional: its databanks contain century-old star charts and communication logs. Historians would pay well for this.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2832,7 +2832,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your scan reveals the station's architecture in detail . Pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
+          "description": "Your scan reveals the station's architecture in detail: pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3191,7 +3191,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The pilot is still in the chair. Natural causes, the med-scanner says . Heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
+          "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3725,7 +3725,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction . Toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
+          "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction: toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4271,7 +4271,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving . Every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' It is unsigned and undated. Just the words and the void they were meant to survive.",
+          "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving: every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' It is unsigned and undated. Just the words and the void they were meant to survive.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4465,7 +4465,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. This was done by someone from the first generation . Someone who lived through the landing and felt the Charter's promise slipping away even then. You store the scans and release the hull fragment back into its slow tumble through the dark.",
+          "description": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. This was done by someone from the first generation, someone who lived through the landing and felt the Charter's promise slipping away even then. You store the scans and release the hull fragment back into its slow tumble through the dark.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4843,7 +4843,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The airlock responds to manual override. Inside, the corridors are pristine . The walls are clean, the floors undisturbed, nothing to suggest the ending was violent. The ship simply stopped. In the command center, the passenger manifest glows faintly on a backup display: 4,217 names. Families, specialists, children. The final log entry is dated 2194, nine years before Earth's abandonment. The captain's voice, digitized and flat: 'Drive failure is total. No repair possible. We are committing all remaining power to cryo-preservation and broadcasting our position. If anyone hears this, we are here. We are waiting.' The cryo-bays are dark. The power ran out long ago.",
+          "description": "The airlock responds to manual override. Inside, the corridors are pristine: the walls are clean, the floors undisturbed, nothing to suggest the ending was violent. The ship simply stopped. In the command center, the passenger manifest glows faintly on a backup display: 4,217 names. Families, specialists, children. The final log entry is dated 2194, nine years before Earth's abandonment. The captain's voice, digitized and flat: 'Drive failure is total. No repair possible. We are committing all remaining power to cryo-preservation and broadcasting our position. If anyone hears this, we are here. We are waiting.' The cryo-bays are dark. The power ran out long ago.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5032,7 +5032,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered . Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
+          "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5410,7 +5410,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere . On walls, doors, support beams . Graffiti. Not vandalism. History. 'Ines Kato, born here, Year Three.' 'Water ration increased . We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
+          "description": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere, on walls, doors, support beams: graffiti. Not vandalism. History. 'Ines Kato, born here, Year Three.' 'Water ration increased. We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5604,7 +5604,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your scans reveal construction techniques that haven't been used in a century . Hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. This station was built by people who had nothing except determination and whatever they could salvage. The engineering is crude by modern standards and astonishing by any other measure. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
+          "description": "Your scans reveal construction techniques that haven't been used in a century: hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. This station was built by people who had nothing except determination and whatever they could salvage. The engineering is crude by modern standards and astonishing by any other measure. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5791,7 +5791,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The rig's interior is eerie . Lunch trays still on the mess table, a mural of Breakstone's founding half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips. These'll fetch good money at any Union station.",
+          "description": "The rig's interior is eerie: lunch trays still on the mess table, a mural of Breakstone's founding half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips. These'll fetch good money at any Union station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6342,7 +6342,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You punch your engines and dock with the derelict while Rook and Juno are still screaming at each other. By the time they notice, you've already cracked the cargo bay and started loading. The comms erupt with outrage, but neither Wrecker is willing to fire on a docked ship . Bad form, even in the Reach. You leave with a full hold and two new enemies.",
+          "description": "You punch your engines and dock with the derelict while Rook and Juno are still screaming at each other. By the time they notice, you've already cracked the cargo bay and started loading. The comms erupt with outrage, but neither Wrecker is willing to fire on a docked ship: bad form, even in the Reach. You leave with a full hold and two new enemies.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6527,7 +6527,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You broker a three-way split. Rook and Juno grumble but agree . Three shares of something beats zero shares of a firefight. The cargo turns out to be pre-Expansion machine parts worth decent money. Rook raises a flask on the comms: \"Not bad for a peacemaker. You're alright.\"",
+          "description": "You broker a three-way split. Rook and Juno grumble but agree: three shares of something beats zero shares of a firefight. The cargo turns out to be pre-Expansion machine parts worth decent money. Rook raises a flask on the comms: \"Not bad for a peacemaker. You're alright.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6712,7 +6712,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You settle in at a safe distance and watch the drama unfold. Juno eventually rams Rook's ship . Gently, by Crimson Reach standards . And the argument devolves into a slow-speed hull-bumping contest. The derelict drifts away while they're distracted. Nobody wins.",
+          "description": "You settle in at a safe distance and watch the drama unfold. Juno eventually rams Rook's ship (gently, by Crimson Reach standards) and the argument devolves into a slow-speed hull-bumping contest. The derelict drifts away while they're distracted. Nobody wins.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6894,7 +6894,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The Margrave's interior is pristine . Too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
+          "description": "The Margrave's interior is pristine. Too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7086,7 +7086,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit the Margrave's coordinates and transponder confirmation to the nearest Alliance relay. The response is immediate and tense . They're dispatching a recovery team. An Alliance officer asks you to maintain visual contact until they arrive, then thanks you with the careful formality of someone who just received very complicated news.",
+          "description": "You transmit the Margrave's coordinates and transponder confirmation to the nearest Alliance relay. The response is immediate and tense: they're dispatching a recovery team. An Alliance officer asks you to maintain visual contact until they arrive, then thanks you with the careful formality of someone who just received very complicated news.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

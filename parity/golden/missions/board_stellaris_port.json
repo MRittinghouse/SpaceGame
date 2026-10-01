@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -36,6 +36,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port with survey data",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -71,6 +72,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -116,6 +118,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -142,7 +145,7 @@
           "discovery_method": "station_board",
           "id": "proc_bounty_stellaris_port_2_3022172595",
           "mission_type": "side",
-          "name": "Bounty: Clear 1 Hostiles",
+          "name": "Bounty: Clear 1 Hostile",
           "objectives": [
             {
               "description": "Win 1 combat encounter",
@@ -151,6 +154,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port to collect bounty",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -196,6 +200,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -218,12 +223,18 @@
           "available_at": [
             "stellaris_port"
           ],
-          "description": "A contact in Stellaris Port needs 5 units of Stolen Data moved to Breakstone — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Stellaris Port needs 5 units of Stolen Data moved to Breakstone, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_stellaris_port_3_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Stolen Data to Breakstone",
           "objectives": [
+            {
+              "description": "Keep the 5 Stolen Data aboard",
+              "target_id": "stolen_data",
+              "target_quantity": 5,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Breakstone",
               "target_id": "breakstone",
@@ -237,6 +248,7 @@
               "quantity": 5
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -262,7 +274,7 @@
           "discovery_method": "station_board",
           "id": "proc_bounty_stellaris_port_3_3022172595",
           "mission_type": "side",
-          "name": "Bounty: Clear 1 Hostiles",
+          "name": "Bounty: Clear 1 Hostile",
           "objectives": [
             {
               "description": "Win 1 combat encounter",
@@ -271,6 +283,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port to collect bounty",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -316,6 +329,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port to collect bounty",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -357,6 +371,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -407,6 +422,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port with survey data",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -429,12 +445,18 @@
           "available_at": [
             "stellaris_port"
           ],
-          "description": "A contact in Stellaris Port needs 3 units of Weapons Components moved to Haven's Rest — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Stellaris Port needs 3 units of Weapons Components moved to Haven's Rest, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_stellaris_port_5_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Weapons Components to Haven's Rest",
           "objectives": [
+            {
+              "description": "Keep the 3 Weapons Components aboard",
+              "target_id": "weapons_components",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Haven's Rest",
               "target_id": "havens_rest",
@@ -448,6 +470,7 @@
               "quantity": 3
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -498,6 +521,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -532,6 +556,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port",
               "target_id": "stellaris_port",
               "target_quantity": 1,
@@ -567,6 +592,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Stellaris Port to collect bounty",
               "target_id": "stellaris_port",
               "target_quantity": 1,

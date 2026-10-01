@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -379,7 +379,9 @@
         "milestone_flags": [],
         "mission_id": "bill_of_landing",
         "permits": [
-          "all"
+          "commerce_guild",
+          "science_collective",
+          "frontier_alliance"
         ],
         "reputation_changes": [],
         "reward_messages": [
@@ -538,9 +540,7 @@
           "total_profit": 0,
           "trade_permits": [
             "commerce_guild",
-            "crimson_reach",
             "frontier_alliance",
-            "miners_union",
             "science_collective"
           ],
           "trade_profit_total": 0,

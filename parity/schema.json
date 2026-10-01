@@ -32,6 +32,7 @@
       "description": "str",
       "economy": "Economy",
       "faction": "str",
+      "faction_id": "str",
       "id": "str",
       "name": "str",
       "rest_cost": "int",

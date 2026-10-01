@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Sato transmits a data packet . Weapons serial numbers traced to a Guild depot on Kessler Station, signed out under a name that doesn't appear in any personnel roster. 'Ghost requisitions,' she calls them. 'Whoever is running this operation has access to the highest clearance levels. Watch your back, Captain. I'll keep digging from my end.'",
+          "description": "Sato transmits a data packet: weapons serial numbers traced to a Guild depot on Kessler Station, signed out under a name that doesn't appear in any personnel roster. 'Ghost requisitions,' she calls them. 'Whoever is running this operation has access to the highest clearance levels. Watch your back, Captain. I'll keep digging from my end.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -234,7 +234,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Sato laughs, but there's an edge to it. 'I survived the wreck. I'll survive the politics.' She sends you a set of comm frequencies used by the raider ships . Scavenged from her Heron's damaged flight recorder. 'Keep your ears open. These frequencies are still active.'",
+          "description": "Sato laughs, but there's an edge to it. 'I survived the wreck. I'll survive the politics.' She sends you a set of comm frequencies used by the raider ships, scavenged from her Heron's damaged flight recorder. 'Keep your ears open. These frequencies are still active.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -428,7 +428,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it . Not everyone wants to poke the hive.' The channel closes. You fly on with the uncomfortable feeling that staying out of it might not be an option much longer.",
+          "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it. Not everyone wants to poke the hive.' The channel closes. You fly on with the uncomfortable feeling that staying out of it might not be an option much longer.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -804,7 +804,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate, but you know how slow the bureaucracy moves. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.' You're left wondering who in the Alliance is compromised . Or whether the leak is closer to home.",
+          "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate, but you know how slow the bureaucracy moves. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.' You're left wondering who in the Alliance is compromised. Or whether the leak is closer to home.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -998,7 +998,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wipe the decryption key and purge the comm logs. Whatever Torres found, it's not your fight. But as you clear the buffers, you notice the message was flagged with a secondary header . Someone else intercepted it before it reached you. Torres may already be in danger, and you've just thrown away the evidence.",
+          "description": "You wipe the decryption key and purge the comm logs. Whatever Torres found, it's not your fight. But as you clear the buffers, you notice the message was flagged with a secondary header: someone else intercepted it before it reached you. Torres may already be in danger, and you've just thrown away the evidence.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1180,7 +1180,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey, but Larsen has never struck you as the paranoid type. Over the next few days, you notice Guild patrol ships lingering in systems you would have passed through on your old routes. Larsen wasn't guessing . Someone is actively hunting for you.",
+          "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey, but Larsen has never struck you as the paranoid type. Over the next few days, you notice Guild patrol ships lingering in systems you would have passed through on your old routes. Larsen wasn't guessing. Someone is actively hunting for you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1369,7 +1369,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend hours digging through publicly accessible Guild customs databases, cross-referencing your ship's ID against inspection logs. The pattern is clear: every station you've docked at in the last month has queued an 'enhanced review' of your cargo within hours of your departure. The authorization codes all route back to a single internal department . Commerce Oversight Division, Section Nine. A department with no public charter and no listed personnel.",
+          "description": "You spend hours digging through publicly accessible Guild customs databases, cross-referencing your ship's ID against inspection logs. The pattern is clear: every station you've docked at in the last month has queued an 'enhanced review' of your cargo within hours of your departure. The authorization codes all route back to a single internal department: Commerce Oversight Division, Section Nine. A department with no public charter and no listed personnel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1937,7 +1937,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You let the intrusion code run while your secondary systems map its communication pathway. The trace leads through fourteen relay points before terminating at a Guild communications satellite in high orbit above Kessler Station . The same station linked to the ghost weapons requisitions. The satellite's access logs show it's been used for hundreds of similar untraceable transmissions over the past two years. You've found The Ledger's comm backbone.",
+          "description": "You let the intrusion code run while your secondary systems map its communication pathway. The trace leads through fourteen relay points before terminating at a Guild communications satellite in high orbit above Kessler Station, the same station linked to the ghost weapons requisitions. The satellite's access logs show it's been used for hundreds of similar untraceable transmissions over the past two years. You've found The Ledger's comm backbone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2306,7 +2306,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department . It's a parallel power structure that has been steering the Commerce Guild for over a decade. And now, for the first time, someone has the complete picture. The channel goes quiet as the weight of it settles. Then a voice . You're not sure whose . Says simply: 'So. How do we tear it down?'",
+          "description": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department. It's a parallel power structure that has been steering the Commerce Guild for over a decade. And now, for the first time, someone has the complete picture. The channel goes quiet as the weight of it settles. Then a voice, you're not sure whose, says simply: 'So. How do we tear it down?'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2500,7 +2500,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable . Which is exactly the point. They can't silence everyone.",
+          "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable, which is exactly the point. They can't silence everyone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2707,7 +2707,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready . A weapon that grows more dangerous the longer The Ledger doesn't know exactly what you have. It's a gamble: every day you wait is another day they might find a way to discredit or destroy what you've built. But it's also another day to gather more, to identify the people at the very top. The channel signs off with a shared understanding: when the time comes, you move together. Not before.",
+          "description": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready: a weapon that grows more dangerous the longer The Ledger doesn't know exactly what you have. It's a gamble: every day you wait is another day they might find a way to discredit or destroy what you've built. But it's also another day to gather more, to identify the people at the very top. The channel signs off with a shared understanding: when the time comes, you move together. Not before.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3643,7 +3643,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend . Or a dangerous enemy.",
+          "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend. Or a dangerous enemy.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4015,7 +4015,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments . Shipping manifests, personnel codes, a reference to \"controlled market correction\" . But the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
+          "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments: shipping manifests, personnel codes, a reference to \"controlled market correction\". But the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4572,7 +4572,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Oksana's story is long, meandering, and absolutely riveting. The warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. You laugh until your sides hurt. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.' You feel sharper somehow . Good stories do that.",
+          "description": "Oksana's story is long, meandering, and absolutely riveting. The warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. You laugh until your sides hurt. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.' You feel sharper somehow. Good stories do that.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4759,7 +4759,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You trade stories back and forth for an hour, each one taller than the last. Oksana declares yours 'not bad for a youngster' and transmits a set of nav shortcuts she has collected over forty years of frontier flying. 'Knowledge should flow like brandy . Freely and often.'",
+          "description": "You trade stories back and forth for an hour, each one taller than the last. Oksana declares yours 'not bad for a youngster' and transmits a set of nav shortcuts she has collected over forty years of frontier flying. 'Knowledge should flow like brandy, freely and often.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5125,7 +5125,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your systems crack the outer layer of encryption. It's a supply drop schedule . Someone is running unauthorized cargo through this sector. The coordinates alone are worth something to the right buyer.",
+          "description": "Your systems crack the outer layer of encryption. It's a supply drop schedule. Someone is running unauthorized cargo through this sector. The coordinates alone are worth something to the right buyer.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5490,7 +5490,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You trace the signal through three dead relays to a fourth that shouldn't exist . A tiny automated station, jury-rigged to keep broadcasting. Someone went to great trouble to keep this music alive. You archive the broadcast and log the station's coordinates.",
+          "description": "You trace the signal through three dead relays to a fourth that shouldn't exist: a tiny automated station, jury-rigged to keep broadcasting. Someone went to great trouble to keep this music alive. You archive the broadcast and log the station's coordinates.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5855,7 +5855,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The signal bounced through seven relay buoys . A route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
+          "description": "The signal bounced through seven relay buoys: a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6748,7 +6748,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse . The algae wraps at Korvath, the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce and denial.",
+          "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse: the algae wraps at Korvath, the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce and denial.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7113,7 +7113,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing . Remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character'). It's the best entertainment you've had in weeks.",
+          "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing. Remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character'). It's the best entertainment you've had in weeks.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7293,7 +7293,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "'That's EXACTLY what Rodriguez would say!' Francine spends fifteen minutes telling you . Who she insists is Rodriguez . About everything wrong with you, including but not limited to: your cooking, your navigation, your taste in music, and the incident with the crate of live poultry on Meridian Station. Eventually she runs out of steam and says, 'Wait. Rodriguez doesn't fly a ship like that. Oh. Oh no. I'm so sorry.' She cuts the channel. Ten seconds later, you receive a small credit transfer labeled 'SORRY NOT RODRIGUEZ.'",
+          "description": "'That's EXACTLY what Rodriguez would say!' Francine spends fifteen minutes telling you, who she insists is Rodriguez, about everything wrong with you, including but not limited to: your cooking, your navigation, your taste in music, and the incident with the crate of live poultry on Meridian Station. Eventually she runs out of steam and says, 'Wait. Rodriguez doesn't fly a ship like that. Oh. Oh no. I'm so sorry.' She cuts the channel. Ten seconds later, you receive a small credit transfer labeled 'SORRY NOT RODRIGUEZ.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7478,7 +7478,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You lean into it. 'Francine! It's been too long!' What follows is a deeply confusing twenty-minute conversation in which you learn that Rodriguez owes Francine money, borrowed her compression coils, never returned her favorite data pad, and may have accidentally sold her cargo to a fence on Korvath. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you . Rodriguez . A care package of homemade ration supplements. They're actually quite good.",
+          "description": "You lean into it. 'Francine! It's been too long!' What follows is a deeply confusing twenty-minute conversation in which you learn that Rodriguez owes Francine money, borrowed her compression coils, never returned her favorite data pad, and may have accidentally sold her cargo to a fence on Korvath. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you (Rodriguez) a care package of homemade ration supplements. They're actually quite good.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7839,7 +7839,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date . March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise. You sit in the silence that follows and realize your hands are shaking.",
+          "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date: March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise. You sit in the silence that follows and realize your hands are shaking.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8028,7 +8028,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your ship's memory banks capture the fragment in full fidelity . Fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this, but it feels wrong to sell it. You file it under personal records instead. Some things aren't cargo.",
+          "description": "Your ship's memory banks capture the fragment in full fidelity: fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this, but it feels wrong to sell it. You file it under personal records instead. Some things aren't cargo.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8411,7 +8411,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The pilot sings three songs. The first is mournful . Something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark. You sit with the silence for a long time after.",
+          "description": "The pilot sings three songs. The first is mournful: something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark. You sit with the silence for a long time after.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9714,7 +9714,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "A Nova representative responds within minutes . Unusually fast. 'We appreciate your.. discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
+          "description": "A Nova representative responds within minutes, unusually fast. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10265,7 +10265,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You weigh in on Christensen's behalf. Dr. Christensen beams: 'Thank you, Captain. Bayesian inference is perfectly valid with small samples given proper priors . As my colleague would know if they kept current with the literature.' Dr. Farouk goes silent. Christensen transfers a tip 'for restoring my faith in informed discourse.'",
+          "description": "You weigh in on Christensen's behalf. Dr. Christensen beams: 'Thank you, Captain. Bayesian inference is perfectly valid with small samples given proper priors, as my colleague would know if they kept current with the literature.' Dr. Farouk goes silent. Christensen transfers a tip 'for restoring my faith in informed discourse.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11756,7 +11756,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them . And the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis. This could be valuable to the right people.",
+          "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them. And the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis. This could be valuable to the right people.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11943,7 +11943,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\" Whether anything actually happens is anyone's guess. The Collective protects its own . But at least it's on record.",
+          "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\" Whether anything actually happens is anyone's guess. The Collective protects its own. But at least it's on record.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -12306,7 +12306,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names . Only numbers . And a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
+          "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names (only numbers), and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

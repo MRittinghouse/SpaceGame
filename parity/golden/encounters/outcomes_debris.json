@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -227,7 +227,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your diagnostics come back clean . Every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up. The ghost of the Heron lingers in your mind longer than it should.",
+          "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up. The ghost of the Heron lingers in your mind longer than it should.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1126,7 +1126,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings' . A list that grows longer every week.",
+          "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings', a list that grows longer every week.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -2030,7 +2030,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "No survivors. You find cargo containers stamped with Commerce Guild seals . All empty, contents transferred to whoever did this. One hull fragment still has a name visible: Patience of Kaur. A registered Guild freighter. The attack was recent enough that the metal is still warm in places. You take what you can and leave fast.",
+          "description": "No survivors. You find cargo containers stamped with Commerce Guild seals. All empty, contents transferred to whoever did this. One hull fragment still has a name visible: Patience of Kaur. A registered Guild freighter. The attack was recent enough that the metal is still warm in places. You take what you can and leave fast.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2215,7 +2215,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run a fast sweep . Three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
+          "description": "You run a fast sweep: three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2754,7 +2754,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories . A children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone. T.W.' You emerge on the other side feeling like you've been somewhere important.",
+          "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories: a children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone. T.W.' You emerge on the other side feeling like you've been somewhere important.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2934,7 +2934,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run a materials scan. Technically, there's a decent haul of recyclable alloys in there. Your hand hovers over the cargo grapple controls. Then you look at the sculpture again . At the way the light catches a child's drawing etched into a fuel cell casing . And you close the scan window. Some things are worth more intact. You mark the coordinates in your nav log instead. Maybe you'll come back someday.",
+          "description": "You run a materials scan. Technically, there's a decent haul of recyclable alloys in there. Your hand hovers over the cargo grapple controls. Then you look at the sculpture again, at the way the light catches a child's drawing etched into a fuel cell casing, and you close the scan window. Some things are worth more intact. You mark the coordinates in your nav log instead. Maybe you'll come back someday.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3116,7 +3116,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Forty-seven names. Engineers, geologists, demolitions experts, medics. The youngest was nineteen. The oldest, sixty-three. Eleven of them share the same surname . Vasquez . A family that came to the Expanse together and went into the rock together. A note at the bottom reads: 'They built the floor we stand on.' You copy the manifest to your personal log.",
+          "description": "Forty-seven names. Engineers, geologists, demolitions experts, medics. The youngest was nineteen. The oldest, sixty-three. Eleven of them share the same surname: Vasquez. A family that came to the Expanse together and went into the rock together. A note at the bottom reads: 'They built the floor we stand on.' You copy the manifest to your personal log.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3499,7 +3499,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dip your running lights as you pass . The spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
+          "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3688,7 +3688,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The seal breaks with a hiss of preserved atmosphere . Air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, catches your eye: 'We are sending you everything we couldn't carry. Not cargo . Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
+          "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, catches your eye: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3882,7 +3882,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You secure the capsule in your cargo bay without breaking the seal. It belongs to the Expanse, not to you. The nearest settlement archive will know what to do with it . Preserve it, share it, let the words reach the audience they were meant for. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
+          "description": "You secure the capsule in your cargo bay without breaking the seal. It belongs to the Expanse, not to you. The nearest settlement archive will know what to do with it: preserve it, share it, let the words reach the audience they were meant for. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4076,7 +4076,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit . Words from the dead, waiting for readers who may never come. There's a strange peace in that. Some messages don't need to arrive to mean something.",
+          "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit: words from the dead, waiting for readers who may never come. There's a strange peace in that. Some messages don't need to arrive to mean something.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4263,7 +4263,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here . Take a share. Fair's fair.' She splits the salvage evenly.",
+          "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4455,7 +4455,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You grab what's drifted beyond Britt's recovery range. Technically it's debris. She watches on sensors but doesn't say anything . The silence speaks volumes. Union haulers will remember your transponder ID.",
+          "description": "You grab what's drifted beyond Britt's recovery range. Technically it's debris. She watches on sensors but doesn't say anything. The silence speaks volumes. Union haulers will remember your transponder ID.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5211,7 +5211,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away. Breakstone's lanes are dangerous for a reason . And discretion keeps you alive to fly another day.",
+          "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away. Breakstone's lanes are dangerous for a reason, and discretion keeps you alive to fly another day.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

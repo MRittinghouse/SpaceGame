@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -218,7 +218,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You power up weapons and angle your shields. The pirate grins . They were hoping you'd say that.",
+          "description": "You power up weapons and angle your shields. The pirate grins. They were hoping you'd say that.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -392,7 +392,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The enforcer accepts payment without ceremony. They mark your transponder as 'cleared' . Whatever that means out here.",
+          "description": "The enforcer accepts payment without ceremony. They mark your transponder as 'cleared'. Whatever that means out here.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -572,7 +572,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You hold course and charge weapons. The enforcer's professional demeanor cracks . They expected compliance, not resistance.",
+          "description": "You hold course and charge weapons. The enforcer's professional demeanor cracks. They expected compliance, not resistance.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -746,7 +746,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit a confident-sounding string of authorization codes. The enforcer hesitates, then backs off . They can't risk tangling with someone who might have real backing.",
+          "description": "You transmit a confident-sounding string of authorization codes. The enforcer hesitates, then backs off. They can't risk tangling with someone who might have real backing.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3576,7 +3576,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer the credits. Vex is surprisingly professional . They escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\" Extortion with a smile. The Crimson Reach way.",
+          "description": "You transfer the credits. Vex is surprisingly professional: they escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\" Extortion with a smile. The Crimson Reach way.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3941,7 +3941,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused . And a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
+          "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused, and a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -38,7 +38,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You find the cargo bay half-stripped and three boarding drones still active. Their lights come on as you step in.",
+          "description": "You find the cargo bay half-stripped and two boarding drones still active. Their lights come on as you step in.",
           "enemy_template_ids": [
             "shield_drone",
             "shield_drone"

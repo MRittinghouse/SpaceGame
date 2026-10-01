@@ -177,7 +177,7 @@
           ],
           "element": "kinetic",
           "energy_cost": 3,
-          "id": "emergency_repair",
+          "id": "repair_kit_patch",
           "name": "Emergency Repair"
         },
         {
@@ -240,7 +240,7 @@
     "seed": 3271627068,
     "ship_type_id": "war_frigate"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -509,7 +509,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -796,7 +796,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -1074,7 +1074,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -1389,7 +1389,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -1687,7 +1687,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -1976,7 +1976,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -2293,7 +2293,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -2591,7 +2591,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -2871,7 +2871,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -3179,7 +3179,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -3468,7 +3468,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -3738,7 +3738,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -4046,7 +4046,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -4336,7 +4336,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -4617,7 +4617,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -4944,7 +4944,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -5253,7 +5253,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -5553,7 +5553,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -5911,7 +5911,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -6230,7 +6230,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -6522,7 +6522,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -6858,7 +6858,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -7168,7 +7168,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -7460,7 +7460,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -7789,7 +7789,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -8099,7 +8099,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -8391,7 +8391,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -8720,7 +8720,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -9030,7 +9030,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -9322,7 +9322,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -9651,7 +9651,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -9961,7 +9961,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -10253,7 +10253,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -10573,7 +10573,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -10874,7 +10874,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -11157,7 +11157,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -11477,7 +11477,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -11778,7 +11778,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -12061,7 +12061,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -12381,7 +12381,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -12682,7 +12682,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -12974,7 +12974,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -13294,7 +13294,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -13595,7 +13595,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -13878,7 +13878,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -14189,7 +14189,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -14481,7 +14481,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -14754,7 +14754,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -15065,7 +15065,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -15357,7 +15357,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -15640,7 +15640,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -15960,7 +15960,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -16261,7 +16261,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -16553,7 +16553,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -16873,7 +16873,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -17174,7 +17174,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -17457,7 +17457,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -17774,7 +17774,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -18068,7 +18068,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -18343,7 +18343,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -18656,7 +18656,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -18950,7 +18950,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -19233,7 +19233,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -19553,7 +19553,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -19856,7 +19856,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -20150,7 +20150,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -20472,7 +20472,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -20775,7 +20775,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -21058,7 +21058,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -21378,7 +21378,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -21681,7 +21681,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -21966,7 +21966,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -22288,7 +22288,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -22591,7 +22591,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -22883,7 +22883,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -23203,7 +23203,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -23506,7 +23506,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -23791,7 +23791,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -24104,7 +24104,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -24398,7 +24398,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -24671,7 +24671,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -24972,7 +24972,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -25256,7 +25256,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -25531,7 +25531,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -25844,7 +25844,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -26138,7 +26138,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -26421,7 +26421,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -26732,7 +26732,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -27026,7 +27026,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -27311,7 +27311,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -27633,7 +27633,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -27936,7 +27936,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -28219,7 +28219,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -28530,7 +28530,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -28824,7 +28824,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -29109,7 +29109,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -29422,7 +29422,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -29716,7 +29716,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -29989,7 +29989,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -30290,7 +30290,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -30574,7 +30574,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -30849,7 +30849,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -31162,7 +31162,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -31456,7 +31456,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -31739,7 +31739,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -32050,7 +32050,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -32344,7 +32344,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -32629,7 +32629,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -32951,7 +32951,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -33254,7 +33254,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -33537,7 +33537,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -33857,7 +33857,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -34160,7 +34160,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -34454,7 +34454,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -34785,7 +34785,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -35097,7 +35097,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -35389,7 +35389,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -35718,7 +35718,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -36030,7 +36030,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -36324,7 +36324,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -36646,7 +36646,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -36949,7 +36949,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -37232,7 +37232,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -37543,7 +37543,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -37837,7 +37837,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -38112,7 +38112,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -38425,7 +38425,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -38719,7 +38719,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -39002,7 +39002,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -39322,7 +39322,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -39625,7 +39625,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -39919,7 +39919,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {
@@ -40232,7 +40232,7 @@
               ],
               "element": "kinetic",
               "energy_cost": 3,
-              "id": "emergency_repair",
+              "id": "repair_kit_patch",
               "name": "Emergency Repair"
             },
             {

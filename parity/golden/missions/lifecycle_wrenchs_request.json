@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -741,6 +741,7 @@
           ]
         ],
         "reward_messages": [
+          "Delivered 3 rare_parts",
           "+300 Credits",
           "+100 XP",
           "Progress: wrench_request_complete"
@@ -886,9 +887,7 @@
           },
           "ship": {
             "cargo_purchase_prices": {},
-            "current_cargo": {
-              "rare_parts": 3
-            },
+            "current_cargo": {},
             "current_fuel": 40,
             "current_hull": 60,
             "current_shields": 20,

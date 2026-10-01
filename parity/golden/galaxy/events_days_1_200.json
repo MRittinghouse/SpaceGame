@@ -7,7 +7,7 @@
       200
     ]
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -1005,7 +1005,7 @@
         "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
         "id": "energy_breakthrough_74",
         "price_modifiers": {
-          "fuel_cells": "f:0.4:4600877379321698714"
+          "fuel": "f:0.4:4600877379321698714"
         },
         "rep_bonus_amount": 0,
         "rep_bonus_faction": "",
@@ -1030,7 +1030,7 @@
               "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
               "id": "energy_breakthrough_74",
               "price_modifiers": {
-                "fuel_cells": "f:0.4:4600877379321698714"
+                "fuel": "f:0.4:4600877379321698714"
               },
               "rep_bonus_amount": 0,
               "rep_bonus_faction": "",
@@ -1066,7 +1066,7 @@
               "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
               "id": "energy_breakthrough_74",
               "price_modifiers": {
-                "fuel_cells": "f:0.4:4600877379321698714"
+                "fuel": "f:0.4:4600877379321698714"
               },
               "rep_bonus_amount": 0,
               "rep_bonus_faction": "",
@@ -1102,7 +1102,7 @@
               "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
               "id": "energy_breakthrough_74",
               "price_modifiers": {
-                "fuel_cells": "f:0.4:4600877379321698714"
+                "fuel": "f:0.4:4600877379321698714"
               },
               "rep_bonus_amount": 0,
               "rep_bonus_faction": "",
@@ -1138,7 +1138,7 @@
               "flavor_text": "For once, the Collective shares freely. The Engineering department is suspicious but grateful.",
               "id": "energy_breakthrough_74",
               "price_modifiers": {
-                "fuel_cells": "f:0.4:4600877379321698714"
+                "fuel": "f:0.4:4600877379321698714"
               },
               "rep_bonus_amount": 0,
               "rep_bonus_faction": "",
@@ -1917,7 +1917,7 @@
         "encounter_chance_modifier": "f:1.0:4607182418800017408",
         "event_type": "embargo",
         "faction_id": "commerce_guild",
-        "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+        "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
         "id": "guild_embargo_ore_115",
         "price_modifiers": {},
         "rep_bonus_amount": 0,
@@ -1944,7 +1944,7 @@
               "encounter_chance_modifier": "f:1.0:4607182418800017408",
               "event_type": "embargo",
               "faction_id": "commerce_guild",
-              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
               "id": "guild_embargo_ore_115",
               "price_modifiers": {},
               "rep_bonus_amount": 0,
@@ -2029,7 +2029,7 @@
               "encounter_chance_modifier": "f:1.0:4607182418800017408",
               "event_type": "embargo",
               "faction_id": "commerce_guild",
-              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
               "id": "guild_embargo_ore_115",
               "price_modifiers": {},
               "rep_bonus_amount": 0,
@@ -2092,7 +2092,7 @@
               "encounter_chance_modifier": "f:1.0:4607182418800017408",
               "event_type": "embargo",
               "faction_id": "commerce_guild",
-              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
               "id": "guild_embargo_ore_115",
               "price_modifiers": {},
               "rep_bonus_amount": 0,
@@ -2155,7 +2155,7 @@
               "encounter_chance_modifier": "f:1.0:4607182418800017408",
               "event_type": "embargo",
               "faction_id": "commerce_guild",
-              "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+              "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
               "id": "guild_embargo_ore_115",
               "price_modifiers": {},
               "rep_bonus_amount": 0,
@@ -2664,7 +2664,7 @@
         "chain_step": 0,
         "danger_modifier": 1,
         "day_started": 163,
-        "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+        "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
         "duration_days": 5,
         "encounter_chance_modifier": "f:1.5:4609434218613702656",
         "event_type": "pirate_surge",
@@ -2687,7 +2687,7 @@
               "chain_step": 0,
               "danger_modifier": 1,
               "day_started": 163,
-              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
               "duration_days": 5,
               "encounter_chance_modifier": "f:1.5:4609434218613702656",
               "event_type": "pirate_surge",
@@ -2721,7 +2721,7 @@
               "chain_step": 0,
               "danger_modifier": 1,
               "day_started": 163,
-              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
               "duration_days": 5,
               "encounter_chance_modifier": "f:1.5:4609434218613702656",
               "event_type": "pirate_surge",
@@ -2755,7 +2755,7 @@
               "chain_step": 0,
               "danger_modifier": 1,
               "day_started": 163,
-              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
               "duration_days": 5,
               "encounter_chance_modifier": "f:1.5:4609434218613702656",
               "event_type": "pirate_surge",
@@ -2789,7 +2789,7 @@
               "chain_step": 0,
               "danger_modifier": 1,
               "day_started": 163,
-              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
               "duration_days": 5,
               "encounter_chance_modifier": "f:1.5:4609434218613702656",
               "event_type": "pirate_surge",
@@ -2823,7 +2823,7 @@
               "chain_step": 0,
               "danger_modifier": 1,
               "day_started": 163,
-              "description": "Pirate activity surges near the Frontier  -- convoy losses mounting",
+              "description": "Pirate activity surges near the Frontier, and convoy losses are mounting",
               "duration_days": 5,
               "encounter_chance_modifier": "f:1.5:4609434218613702656",
               "event_type": "pirate_surge",

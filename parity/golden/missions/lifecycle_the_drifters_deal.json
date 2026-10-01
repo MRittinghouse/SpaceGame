@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -382,7 +382,8 @@
         "reputation_changes": [],
         "reward_messages": [
           "+100 Credits",
-          "+50 XP"
+          "+50 XP",
+          "Progress: drifters_deal_complete"
         ]
       },
       "state": {
@@ -407,6 +408,7 @@
           "current_system_id": "nexus_prime",
           "dialogue_flags": {
             "drifter_deal_resolved": true,
+            "drifters_deal_complete": true,
             "the_drifters_deal_accepted": true
           },
           "encounters_survived": 0,

@@ -5,7 +5,7 @@
     "all_skills": "max_level",
     "profile": "expert"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -19,6 +19,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 53
         },
@@ -80,6 +81,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 56
         },
@@ -141,6 +143,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 59
         },
@@ -202,6 +205,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 62
         },
@@ -263,6 +267,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 65
         },
@@ -324,6 +329,7 @@
         "Persuasion check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 68
         },
@@ -385,6 +391,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 71
         },
@@ -446,6 +453,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 74
         },
@@ -507,6 +515,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 77
         },
@@ -568,6 +577,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 80
         },
@@ -629,6 +639,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 83
         },
@@ -690,6 +701,7 @@
         "Intimidation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 86
         },
@@ -751,6 +763,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 89
         },
@@ -812,6 +825,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 92
         },
@@ -873,6 +887,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 95
         },
@@ -934,6 +949,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 98
         },
@@ -995,6 +1011,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1056,6 +1073,7 @@
         "Observation check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1117,6 +1135,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1178,6 +1197,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1239,6 +1259,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1300,6 +1321,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1361,6 +1383,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1422,6 +1445,7 @@
         "Deception check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1483,6 +1507,7 @@
         "Technical check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1544,6 +1569,7 @@
         "Technical check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1605,6 +1631,7 @@
         "Technical check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1666,6 +1693,7 @@
         "Technical check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 98
         },
@@ -1727,6 +1755,7 @@
         "Technical check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 96
         },
@@ -1788,6 +1817,7 @@
         "Technical check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 94
         },
@@ -1849,6 +1879,7 @@
         "Piloting check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 97
         },
@@ -1910,6 +1941,7 @@
         "Piloting check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -1971,6 +2003,7 @@
         "Piloting check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -2032,6 +2065,7 @@
         "Piloting check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 98
         },
@@ -2093,6 +2127,7 @@
         "Piloting check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 96
         },
@@ -2154,6 +2189,7 @@
         "Piloting check failed."
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 94
         },
@@ -2215,6 +2251,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 97
         },
@@ -2276,6 +2313,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -2337,6 +2375,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -2398,6 +2437,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -2459,6 +2499,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },
@@ -2520,6 +2561,7 @@
         "Leadership check passed!"
       ],
       "state": {
+        "check_xp_days": {},
         "disposition": {
           "npc_parity": 100
         },

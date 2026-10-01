@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The docking sequence takes forty seconds. The courier's hands shake as they transfer a sealed data chip. The manifest lists weapons shipments across eight systems . Quantities, dates, and authorization codes that trace back to a Guild department that officially doesn't exist. 'They call themselves The Ledger,' the courier whispers. 'That's all I know. Please . Don't let this disappear.' The freighter undocks and jumps before you can respond.",
+          "description": "The docking sequence takes forty seconds. The courier's hands shake as they transfer a sealed data chip. The manifest lists weapons shipments across eight systems: quantities, dates, and authorization codes that trace back to a Guild department that officially doesn't exist. 'They call themselves The Ledger,' the courier whispers. 'That's all I know. Please. Don't let this disappear.' The freighter undocks and jumps before you can respond.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -235,7 +235,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The courier transmits a sample . Three entries from the manifest with verifiable details. You cross-reference against public shipping records. The official logs show agricultural supplies. The manifest shows pulse rifles and shield generators. The discrepancy is undeniable. You accept the full data chip, but the delay costs precious minutes. The courier's ship departs at maximum burn, and you catch a brief sensor flash . Another vessel was watching from the debris field nearby.",
+          "description": "The courier transmits a sample: three entries from the manifest with verifiable details. You cross-reference against public shipping records. The official logs show agricultural supplies. The manifest shows pulse rifles and shield generators. The discrepancy is undeniable. You accept the full data chip, but the delay costs precious minutes. The courier's ship departs at maximum burn, and you catch a brief sensor flash: another vessel was watching from the debris field nearby.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2490,7 +2490,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You propose they split the delivery route at the midpoint . Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
+          "description": "You propose they split the delivery route at the midpoint: Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2874,7 +2874,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier . You got the better deal, but it may cost you later.",
+          "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier. You got the better deal, but it may cost you later.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3240,7 +3240,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices . Generous to a fault. By the time you undock, your spirits are high and your hold has a few new treasures picked up for cheap.",
+          "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices, generous to a fault. By the time you undock, your spirits are high and your hold has a few new treasures picked up for cheap.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3432,7 +3432,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You stick to the trading ships on the ring's edge. Festival pricing is real . These folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
+          "description": "You stick to the trading ships on the ring's edge. Festival pricing is real: these folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3624,7 +3624,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying. No judgment . Just a little sadness.",
+          "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying. No judgment. Just a little sadness.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5425,7 +5425,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired . Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots . Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
+          "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired. Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots. Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5610,7 +5610,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser filtered through regret. He tells you stories . The time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, you're both laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
+          "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser filtered through regret. He tells you stories: the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, you're both laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5795,7 +5795,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks . You never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy. Retirement speed.",
+          "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks, you never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy. Retirement speed.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5975,7 +5975,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Pia's eyebrows go up when she sees the transfer amount. 'Well now. That's real solidarity, Captain. I'll make sure your name gets on the mural.' She hands you a Union solidarity pin . The kind miners wear on their work suits. It opens doors in Breakstone.",
+          "description": "Pia's eyebrows go up when she sees the transfer amount. 'Well now. That's real solidarity, Captain. I'll make sure your name gets on the mural.' She hands you a Union solidarity pin, the kind miners wear on their work suits. It opens doors in Breakstone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6167,7 +6167,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Pia nods, businesslike. 'Every bit counts. We've been through worse . We'll get through this too.' She logs your contribution and sends you a receipted thank-you on official Union letterhead.",
+          "description": "Pia nods, businesslike. 'Every bit counts. We've been through worse. We'll get through this too.' She logs your contribution and sends you a receipted thank-you on official Union letterhead.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6359,7 +6359,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' No hard feelings . She's heard every excuse in the belt. The shuttle peels off to flag down the next ship.",
+          "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' No hard feelings: she's heard every excuse in the belt. The shuttle peels off to flag down the next ship.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -6533,7 +6533,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore . Premium grade, already sorted. Union miners don't cheat on weight.",
+          "description": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted. Union miners don't cheat on weight.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6725,7 +6725,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Suki sells you ore at co-op rates . Well below what station merchants charge. 'We'd rather sell direct than let some broker clip twenty percent off the top,' she says, loading crates with practiced efficiency.",
+          "description": "Suki sells you ore at co-op rates, well below what station merchants charge. 'We'd rather sell direct than let some broker clip twenty percent off the top,' she says, loading crates with practiced efficiency.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7084,7 +7084,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Professor Tanaka reviews your logs with the quiet satisfaction of someone who has just found a missing dataset. 'Comprehensive. Your route through the Pell Drift is particularly useful . Few captains transit that corridor. Payment has been authorized. You have my thanks, and a citation in my next publication.'",
+          "description": "Professor Tanaka reviews your logs with the quiet satisfaction of someone who has just found a missing dataset. 'Comprehensive. Your route through the Pell Drift is particularly useful. Few captains transit that corridor. Payment has been authorized. You have my thanks, and a citation in my next publication.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7468,7 +7468,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Tanaka nods curtly. 'Your prerogative. Navigation data is a competitive advantage . I understand the reluctance. Safe travels, Captain.' The survey ship peels away and resumes its meticulous charting.",
+          "description": "Tanaka nods curtly. 'Your prerogative. Navigation data is a competitive advantage. I understand the reluctance. Safe travels, Captain.' The survey ship peels away and resumes its meticulous charting.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -7834,7 +7834,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Pellegrini sighs audibly. 'I suppose thirty seconds of your trajectory does have an opportunity cost. Fine . I will file for the enhanced consultation rate.' The payment is slightly better. Pellegrini mutters something about 'budget allocation for non-academic personnel' before cutting the channel.",
+          "description": "Pellegrini sighs audibly. 'I suppose thirty seconds of your trajectory does have an opportunity cost. Fine. I will file for the enhanced consultation rate.' The payment is slightly better. Pellegrini mutters something about 'budget allocation for non-academic personnel' before cutting the channel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8385,7 +8385,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Okoro hesitates, then relents: 'Preliminary analysis suggests it is a data storage medium of unknown design. We cannot read it . Yet. The materials are unlike any alloy in our database. That is all I can share before peer review.' The information is fascinating, but Okoro needs an answer. You pass on the job, filing away the details.",
+          "description": "Okoro hesitates, then relents: 'Preliminary analysis suggests it is a data storage medium of unknown design. We cannot read it. Yet. The materials are unlike any alloy in our database. That is all I can share before peer review.' The information is fascinating, but Okoro needs an answer. You pass on the job, filing away the details.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8739,7 +8739,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The sensor package uploads seamlessly. Professor Ibanez is visibly pleased: 'Excellent. The package will collect gravitational variance data along your route and transmit it to my lab automatically. You are now a contributing researcher in the Ibanez Lensing Survey . Admittedly in an unpaid capacity, but the stipend should cover the inconvenience. If you pass through any high-mass systems, the data will be particularly valuable.'",
+          "description": "The sensor package uploads seamlessly. Professor Ibanez is visibly pleased: 'Excellent. The package will collect gravitational variance data along your route and transmit it to my lab automatically. You are now a contributing researcher in the Ibanez Lensing Survey, admittedly in an unpaid capacity, but the stipend should cover the inconvenience. If you pass through any high-mass systems, the data will be particularly valuable.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8931,7 +8931,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But.. I can add a data-sharing clause. You will receive a copy of the processed survey results . Gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+          "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9123,7 +9123,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ibanez deflates slightly. 'Fair enough. Unknown software on your array . I understand the hesitation. Security-conscious thinking. I will find another willing captain. They are.. not as common as you might think.'",
+          "description": "Ibanez deflates slightly. 'Fair enough. Unknown software on your array. I understand the hesitation. Security-conscious thinking. I will find another willing captain. They are... not as common as you might think.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -9297,7 +9297,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pick up the crates for a fraction of their value. The broker transfers the goods so fast you barely have time to verify the manifest. An hour later, the Guild Board issues a correction . The supply chain rumor was overblown. Prices stabilize. You're sitting on a tidy profit.",
+          "description": "You pick up the crates for a fraction of their value. The broker transfers the goods so fast you barely have time to verify the manifest. An hour later, the Guild Board issues a correction: the supply chain rumor was overblown. Prices stabilize. You're sitting on a tidy profit.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9676,7 +9676,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You thread through the gridlocked exit lanes and leave the chaos behind. Nexus Prime's market will sort itself out . It always does.",
+          "description": "You thread through the gridlocked exit lanes and leave the chaos behind. Nexus Prime's market will sort itself out. It always does.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -9850,7 +9850,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Tariq . A man in a velvet jacket who smells like sandalwood and money . Spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. You're not sure if he's joking, but his credits are real.",
+          "description": "Tariq, a man in a velvet jacket who smells like sandalwood and money, spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. You're not sure if he's joking, but his credits are real.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10586,7 +10586,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The straggling hauler is happy to offload a few crates at below-market prices . Less cargo means less strain on their engines. You get fresh produce at a bargain, and they get a fighting chance at making the spoilage window.",
+          "description": "The straggling hauler is happy to offload a few crates at below-market prices: less cargo means less strain on their engines. You get fresh produce at a bargain, and they get a fighting chance at making the spoilage window.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10951,7 +10951,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run the requested sensor sweep while the ARI team records. The lead researcher . Dr. Soren Mak . Reviews your data with visible satisfaction. \"Excellent baseline variance. This will strengthen our confidence interval considerably.\" They transfer research credits to your account and flag your ship as a 'cooperative independent' in the ARI registry.",
+          "description": "You run the requested sensor sweep while the ARI team records. The lead researcher, Dr. Soren Mak, reviews your data with visible satisfaction. \"Excellent baseline variance. This will strengthen our confidence interval considerably.\" They transfer research credits to your account and flag your ship as a 'cooperative independent' in the ARI registry.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11143,7 +11143,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables . Genuinely useful nav data. Science and commerce find their equilibrium.",
+          "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables, genuinely useful nav data. Science and commerce find their equilibrium.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

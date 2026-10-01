@@ -5,7 +5,7 @@
     "day": 1,
     "system_id": "breakstone"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -15,7 +15,7 @@
           "chain_step": 0,
           "danger_modifier": 0,
           "day_started": 1,
-          "description": "Workers walk off the job at Breakstone  -- Union leadership calls for solidarity",
+          "description": "Workers walk off the job at Breakstone as Union leadership calls for solidarity",
           "duration_days": 5,
           "encounter_chance_modifier": "f:1.0:4607182418800017408",
           "event_type": "labor_strike",

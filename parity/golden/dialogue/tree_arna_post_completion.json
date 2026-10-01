@@ -80,7 +80,7 @@
     },
     "tree_id": "arna_post_completion"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -265,14 +265,16 @@
           false,
           "Observation check failed."
         ],
-        "next_node": "catch",
+        "next_node": "catch_unread",
         "response": 1
       },
       "state": {
         "disposition": {
           "arna": 48
         },
-        "flags": [],
+        "flags": [
+          "arna_catch_check_failed"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -297,6 +299,60 @@
         "check": null,
         "next_node": "think",
         "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "catch_unread",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "accepted",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "catch_unread",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "think",
+        "response": 1
       },
       "state": {
         "disposition": {},
@@ -662,6 +718,60 @@
         "check": null,
         "next_node": "think",
         "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "catch_unread",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "accepted",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "catch_unread",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "think",
+        "response": 1
       },
       "state": {
         "disposition": {},

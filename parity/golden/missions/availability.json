@@ -5,7 +5,7 @@
     "player": null,
     "player_reputation": {}
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -88,6 +88,7 @@
       "args": [
         [
           "accepted_drifter_deal",
+          "adrift_survivor_found",
           "arna_accepted_ore_tip",
           "arna_arranging_buyer",
           "arna_branch_betray",
@@ -116,6 +117,7 @@
           "elena_quest_stage2_complete",
           "forgery_job_accepted",
           "heirloom_seeds_accepted",
+          "held_back_until_sp10",
           "hidden_facility_discovered",
           "informant_passenger_accepted",
           "iron_ore_delivered",
@@ -139,6 +141,7 @@
           "scholar_data_received",
           "signal_mission_accepted",
           "singularity_weapon_discovered",
+          "stowaway_discovered",
           "talked_to_cargo_broker",
           "talked_to_elena_cantina",
           "thieves_job_accepted",
@@ -244,6 +247,7 @@
       "args": [
         [
           "accepted_drifter_deal",
+          "adrift_survivor_found",
           "arna_accepted_ore_tip",
           "arna_arranging_buyer",
           "arna_branch_betray",
@@ -272,6 +276,7 @@
           "elena_quest_stage2_complete",
           "forgery_job_accepted",
           "heirloom_seeds_accepted",
+          "held_back_until_sp10",
           "hidden_facility_discovered",
           "informant_passenger_accepted",
           "iron_ore_delivered",
@@ -295,6 +300,7 @@
           "scholar_data_received",
           "signal_mission_accepted",
           "singularity_weapon_discovered",
+          "stowaway_discovered",
           "talked_to_cargo_broker",
           "talked_to_elena_cantina",
           "thieves_job_accepted",

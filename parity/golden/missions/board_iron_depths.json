@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -17,12 +17,18 @@
           "available_at": [
             "iron_depths"
           ],
-          "description": "A contact in Iron Depths needs 5 units of Restricted Tech moved to The Fulcrum — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Iron Depths needs 5 units of Restricted Tech moved to The Fulcrum, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_iron_depths_1_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Restricted Tech to The Fulcrum",
           "objectives": [
+            {
+              "description": "Keep the 5 Restricted Tech aboard",
+              "target_id": "restricted_tech",
+              "target_quantity": 5,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to The Fulcrum",
               "target_id": "the_fulcrum",
@@ -36,6 +42,7 @@
               "quantity": 5
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -70,6 +77,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -111,6 +119,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths with survey data",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -162,6 +171,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths with survey data",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -197,6 +207,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -232,6 +243,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths to collect bounty",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -289,6 +301,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths with survey data",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -330,6 +343,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -351,12 +365,18 @@
           "available_at": [
             "iron_depths"
           ],
-          "description": "A contact in Iron Depths needs 2 units of Diverted Medicine moved to Nexus Prime — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Iron Depths needs 2 units of Diverted Medicine moved to Nexus Prime, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_iron_depths_3_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Diverted Medicine to Nexus Prime",
           "objectives": [
+            {
+              "description": "Keep the 2 Diverted Medicine aboard",
+              "target_id": "contraband_medicine",
+              "target_quantity": 2,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Nexus Prime",
               "target_id": "nexus_prime",
@@ -370,6 +390,7 @@
               "quantity": 2
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -414,6 +435,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -449,6 +471,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths to collect bounty",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -506,6 +529,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths with survey data",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -528,12 +552,18 @@
           "available_at": [
             "iron_depths"
           ],
-          "description": "A contact in Iron Depths needs 2 units of Combat Stimulants moved to Crimson Reach — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Iron Depths needs 2 units of Combat Stimulants moved to Crimson Reach, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_iron_depths_5_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Combat Stimulants to Crimson Reach",
           "objectives": [
+            {
+              "description": "Keep the 2 Combat Stimulants aboard",
+              "target_id": "combat_stims",
+              "target_quantity": 2,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Crimson Reach",
               "target_id": "crimson_reach",
@@ -547,6 +577,7 @@
               "quantity": 2
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -597,6 +628,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths with survey data",
               "target_id": "iron_depths",
               "target_quantity": 1,
@@ -638,6 +670,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -672,6 +705,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Iron Depths to collect bounty",
               "target_id": "iron_depths",
               "target_quantity": 1,

@@ -73,7 +73,7 @@
         {
           "accuracy_modifier": 20,
           "cooldown": 5,
-          "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+          "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
           "effects": [
             {
               "duration": 0,
@@ -202,7 +202,7 @@
     "seed": 3124881584,
     "ship_type_id": "war_frigate"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -336,7 +336,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -588,7 +588,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -833,7 +833,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -1106,7 +1106,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -1367,7 +1367,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -1607,7 +1607,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -1868,7 +1868,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -2117,7 +2117,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -2357,7 +2357,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -2618,7 +2618,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -2869,7 +2869,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -3111,7 +3111,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -3374,7 +3374,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -3625,7 +3625,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -3865,7 +3865,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -4126,7 +4126,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -4375,7 +4375,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -4615,7 +4615,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -4876,7 +4876,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -5125,7 +5125,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -5365,7 +5365,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -5626,7 +5626,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -5875,7 +5875,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -6115,7 +6115,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -6376,7 +6376,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -6638,7 +6638,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -6891,7 +6891,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -7165,7 +7165,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -7427,7 +7427,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -7668,7 +7668,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -7930,7 +7930,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -8192,7 +8192,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -8445,7 +8445,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -8719,7 +8719,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -8981,7 +8981,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -9222,7 +9222,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -9493,7 +9493,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -9753,7 +9753,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -10004,7 +10004,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -10276,7 +10276,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -10536,7 +10536,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -10778,7 +10778,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -11041,7 +11041,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -11304,7 +11304,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -11558,7 +11558,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -11833,7 +11833,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -12096,7 +12096,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -12338,7 +12338,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -12601,7 +12601,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -12853,7 +12853,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -13096,7 +13096,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -13360,7 +13360,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -13612,7 +13612,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -13855,7 +13855,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -14119,7 +14119,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -14371,7 +14371,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -14614,7 +14614,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -14878,7 +14878,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -15130,7 +15130,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -15373,7 +15373,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -15637,7 +15637,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -15901,7 +15901,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -16156,7 +16156,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -16432,7 +16432,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -16696,7 +16696,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -16939,7 +16939,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -17203,7 +17203,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -17455,7 +17455,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -17698,7 +17698,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -17962,7 +17962,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -18214,7 +18214,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -18457,7 +18457,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -18721,7 +18721,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -18973,7 +18973,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -19216,7 +19216,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -19480,7 +19480,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -19732,7 +19732,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -19975,7 +19975,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -20239,7 +20239,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -20503,7 +20503,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -20758,7 +20758,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -21034,7 +21034,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -21298,7 +21298,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -21541,7 +21541,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -21805,7 +21805,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -22057,7 +22057,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -22300,7 +22300,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -22564,7 +22564,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -22816,7 +22816,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -23059,7 +23059,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -23323,7 +23323,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -23587,7 +23587,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -23842,7 +23842,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -24118,7 +24118,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -24382,7 +24382,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -24625,7 +24625,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -24889,7 +24889,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -25153,7 +25153,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -25408,7 +25408,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -25684,7 +25684,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -25948,7 +25948,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -26191,7 +26191,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -26455,7 +26455,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -26719,7 +26719,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -26974,7 +26974,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -27250,7 +27250,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -27514,7 +27514,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -27757,7 +27757,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -28021,7 +28021,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -28285,7 +28285,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -28540,7 +28540,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -28816,7 +28816,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -29080,7 +29080,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -29323,7 +29323,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -29587,7 +29587,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -29851,7 +29851,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -30106,7 +30106,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -30382,7 +30382,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -30646,7 +30646,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -30889,7 +30889,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -31153,7 +31153,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -31417,7 +31417,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,
@@ -31672,7 +31672,7 @@
             {
               "accuracy_modifier": 20,
               "cooldown": 5,
-              "description": "Marcus opens a single mount's safeties, Priya overcharges the capacitor. One weapon fires at double damage, ignores all armor, +25% crit chance.",
+              "description": "Marcus opens a single mount's safeties and Priya overcharges the capacitor. A single charged shot: 55 damage, +20 accuracy.",
               "effects": [
                 {
                   "duration": 0,

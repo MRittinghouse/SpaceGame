@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -30,6 +30,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks to collect bounty",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -71,6 +72,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks with survey data",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -122,6 +124,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -168,6 +171,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks with survey data",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -213,6 +217,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -235,12 +240,18 @@
           "available_at": [
             "forgeworks"
           ],
-          "description": "A contact in Forgeworks needs 2 units of Diverted Medicine moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Forgeworks needs 2 units of Diverted Medicine moved to Stellaris Port, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_forgeworks_3_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Diverted Medicine to Stellaris Port",
           "objectives": [
+            {
+              "description": "Keep the 2 Diverted Medicine aboard",
+              "target_id": "contraband_medicine",
+              "target_quantity": 2,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Stellaris Port",
               "target_id": "stellaris_port",
@@ -254,6 +265,7 @@
               "quantity": 2
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -288,6 +300,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks to collect bounty",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -333,6 +346,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -374,6 +388,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -414,6 +429,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks with survey data",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -471,6 +487,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks with survey data",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -506,6 +523,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -557,6 +575,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks with survey data",
               "target_id": "forgeworks",
               "target_quantity": 1,
@@ -579,12 +598,18 @@
           "available_at": [
             "forgeworks"
           ],
-          "description": "A contact in Forgeworks needs 4 units of Combat Stimulants moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Forgeworks needs 4 units of Combat Stimulants moved to Stellaris Port, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_forgeworks_6_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Combat Stimulants to Stellaris Port",
           "objectives": [
+            {
+              "description": "Keep the 4 Combat Stimulants aboard",
+              "target_id": "combat_stims",
+              "target_quantity": 4,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Stellaris Port",
               "target_id": "stellaris_port",
@@ -598,6 +623,7 @@
               "quantity": 4
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -632,6 +658,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Forgeworks",
               "target_id": "forgeworks",
               "target_quantity": 1,
