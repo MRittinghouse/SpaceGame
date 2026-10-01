@@ -13,6 +13,7 @@ from spacegame.models.mission import (
     ObjectiveType,
 )
 from spacegame.models.player import Player
+from spacegame.models.procedural_missions import ProceduralMissionGenerator
 from spacegame.models.ship import Ship, ShipType
 
 
@@ -218,3 +219,62 @@ class TestRunStateIsSaved:
         state = manager.get_state()
         assert "blight_season" not in state["accept_system"]
         assert "blight_season" not in state["departed"]
+
+
+def _generator() -> ProceduralMissionGenerator:
+    dl = _dl()
+    return ProceduralMissionGenerator(dl.systems, dl.commodities, dl.enemy_templates, seed=7)
+
+
+def _accept_contract(mission: Mission, player: Player) -> MissionManager:
+    manager = MissionManager([])
+    manager.add_mission(mission)
+    manager.accept_mission(mission.id, game_day=1, player=player)
+    for cargo in mission.on_accept_cargo:
+        player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
+    return manager
+
+
+class TestBoardContracts:
+    def test_a_bounty_pays_only_for_wins_after_the_accept_and_on_the_return(self) -> None:
+        bounty = _generator().generate_bounty("nexus_prime", game_day=1)
+        kills = bounty.objectives[0].target_quantity
+        player = _player("nexus_prime")
+        player.combats_won = 3
+        manager = _accept_contract(bounty, player)
+        assert manager.check_objectives(player) == []
+        player.combats_won += kills
+        assert _land(manager, player, "forgeworks") == []
+        assert _land(manager, player, "nexus_prime") == [bounty.id]
+
+    def test_a_survey_return_counts_only_after_every_target(self) -> None:
+        survey = _generator().generate_survey("nexus_prime", game_day=1)
+        *targets, _back = survey.objectives
+        player = _player("nexus_prime")
+        manager = _accept_contract(survey, player)
+        assert _land(manager, player, targets[0].target_id) == []
+        assert _land(manager, player, "nexus_prime") == []
+        for target in targets[1:]:
+            assert _land(manager, player, target.target_id) == []
+        assert _land(manager, player, "nexus_prime") == [survey.id]
+
+    def test_sold_smuggling_cargo_pays_nothing_at_the_destination(self) -> None:
+        run = _generator().generate_smuggling("nexus_prime", game_day=1)
+        player = _player("nexus_prime")
+        manager = _accept_contract(run, player)
+        cargo = run.on_accept_cargo[0]
+        player.ship.remove_cargo(cargo.commodity_id, cargo.quantity)
+        destination = run.objectives[-1].target_id
+        assert _land(manager, player, destination) == []
+        assert manager.get_status(run.id) == MissionStatus.ACTIVE
+
+    def test_smuggling_with_part_of_the_cargo_stays_active_at_the_destination(self) -> None:
+        run = _generator().generate_smuggling("nexus_prime", game_day=1)
+        player = _player("nexus_prime")
+        manager = _accept_contract(run, player)
+        cargo = run.on_accept_cargo[0]
+        player.ship.remove_cargo(cargo.commodity_id, 1)
+        destination = run.objectives[-1].target_id
+        assert _land(manager, player, destination) == []
+        player.ship.add_cargo(cargo.commodity_id, 1, 0)
+        assert manager.check_objectives(player) == [run.id]
