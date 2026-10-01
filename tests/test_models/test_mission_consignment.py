@@ -7,6 +7,8 @@ units left over. A board contract's accept cargo is also sealed against a sale.
 
 from __future__ import annotations
 
+import pytest
+
 from spacegame.data_loader import DataLoader, get_data_loader
 from spacegame.models.mission import (
     AcceptCargo,
@@ -115,6 +117,31 @@ class TestReservedUnits:
         # a campaign mission's cargo is never sealed: naming it sells it
         player.ship.add_cargo("iron_ore", 10, 0)
         assert not manager.sale_draws_sealed(player, "iron_ore", 10)
+
+    @pytest.mark.parametrize("end", ["completed", "failed"])
+    def test_the_seal_lifts_when_a_board_contract_stops_running(self, end: str) -> None:
+        """Design 5.1, choice 19: a contract's own cargo is sealed while the contract runs.
+
+        A finished contract stays a runtime mission (``remove_mission`` refuses a COMPLETED
+        one), so the seal's own ACTIVE filter is what makes its good sellable again.
+        """
+        manager, player = _manager(), _player()
+        manager.add_mission(
+            _contract("proc_smuggling_test", "weapons_components", 3), MissionStatus.ACTIVE
+        )
+        player.ship.add_cargo("weapons_components", 3, 0)
+        assert manager.sale_draws_sealed(player, "weapons_components", 3)
+        if end == "failed":
+            ok, msg = manager.fail_mission("proc_smuggling_test")
+            assert ok, f"Failing the contract should succeed: {msg}"
+        else:
+            manager.load_state({"status": {"proc_smuggling_test": "completed"}})
+        assert manager.get_status("proc_smuggling_test") == MissionStatus(end)
+        assert manager.get_mission("proc_smuggling_test") is not None, "still a runtime mission"
+        assert manager.sealed_units("weapons_components") == 0, f"a {end} contract seals nothing"
+        assert not manager.sale_draws_sealed(player, "weapons_components", 3), (
+            f"a {end} contract's cargo should sell"
+        )
 
 
 class TestCollectLegsCountFreeUnits:
