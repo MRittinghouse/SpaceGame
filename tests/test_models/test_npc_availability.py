@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from spacegame.data_loader import DataLoader, get_data_loader
-from spacegame.models.dialogue import NPC
+from spacegame.models.dialogue import (
+    NPC,
+    DialogueNode,
+    DialogueResponse,
+    DialogueState,
+    DialogueTree,
+)
 from spacegame.models.mission import (
     Mission,
     MissionManager,
@@ -91,11 +97,71 @@ class TestClauses:
             manager = _waiting(status)
             assert is_listed(npc, "nexus_prime", flags, manager, set(), {"awaited"}), status
             assert needed_by(npc.id, {"awaited"}, manager, flags) == "waits"
+        for status in (
+            MissionStatus.UNAVAILABLE,
+            MissionStatus.COMPLETED,
+            MissionStatus.FAILED,
+            MissionStatus.ABANDONED,
+        ):
+            manager = _waiting(status)
+            assert manager.open_missions() == [], status
+            assert not is_listed(npc, "nexus_prime", flags, manager, set(), {"awaited"}), status
+            assert needed_by(npc.id, {"awaited"}, manager, flags) == "", status
         manager = _waiting(MissionStatus.ACTIVE)
         assert not is_listed(
             npc, "nexus_prime", {**flags, "awaited": True}, manager, set(), {"awaited"}
         )
         assert not is_listed(npc, "nexus_prime", flags, manager, set(), {"other"})
+
+    def test_a_dialogue_states_tree_feeds_the_keep_index(self) -> None:
+        npc = _npc(gate="met_test")
+        npc.dialogue_states = [
+            DialogueState(
+                state_id="return",
+                dialogue_id="test_npc_return",
+                required_flags=["talked_to_test_npc"],
+                excluded_flags=["awaited"],
+            )
+        ]
+        trees = {
+            "test_npc_dialogue": DialogueTree(
+                id="test_npc_dialogue",
+                start_node_id="start",
+                nodes={
+                    "start": DialogueNode(
+                        id="start",
+                        speaker_id="test_npc",
+                        text="Hello.",
+                        responses=[DialogueResponse(text="Leave.", next_node_id=None)],
+                    )
+                },
+            ),
+            "test_npc_return": DialogueTree(
+                id="test_npc_return",
+                start_node_id="start",
+                nodes={
+                    "start": DialogueNode(
+                        id="start",
+                        speaker_id="test_npc",
+                        text="Welcome back.",
+                        responses=[
+                            DialogueResponse(text="Done.", next_node_id=None, set_flag="awaited")
+                        ],
+                    )
+                },
+            ),
+        }
+        assert "awaited" not in settable_flags(_npc(gate="met_test"), trees)
+        assert "awaited" in settable_flags(npc, trees)
+        assert "awaited" in settable_index([npc], trees)["test_npc"]
+        assert is_listed(
+            npc,
+            "nexus_prime",
+            {"met_test": True},
+            _waiting(MissionStatus.ACTIVE),
+            set(),
+            settable_flags(npc, trees),
+        )
 
     def test_a_hide_flag_beats_the_keep_rule(self) -> None:
         npc = _npc(gate="met_test", hide="gone")
