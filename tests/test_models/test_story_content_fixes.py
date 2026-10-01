@@ -53,6 +53,26 @@ class TestContractCargoStaysAboard:
         player.ship.add_cargo("sealed_audit_chip", 1, 0)
         assert manager.check_objectives(player) == ["the_price_of_information"]
 
+    def test_a_lost_fight_does_not_strand_the_crimson_run(self) -> None:
+        manager, player = _manager(the_crimson_run="available"), _player("nexus_prime")
+        manager.accept_mission("the_crimson_run", game_day=1, player=player)
+        player.ship.add_cargo("data_chip", 1, 0)
+        player.apply_combat_defeat("crimson_reach")
+        player.dialogue_flags.update(
+            {"crimson_run_ground_complete": True, "met_malia_torres": True}
+        )
+        assert player.ship.get_cargo_quantity("data_chip") == 1
+        assert manager.check_objectives(player) == ["the_crimson_run"]
+
+    def test_a_lost_fight_does_not_strand_the_price_of_information(self) -> None:
+        manager, player = _manager(the_price_of_information="available"), _player("nexus_prime")
+        player.dialogue_flags[talked_to_npc("neve_osei")] = True
+        manager.accept_mission("the_price_of_information", game_day=1, player=player)
+        player.ship.add_cargo("sealed_audit_chip", 1, 0)
+        player.apply_combat_defeat("stellaris_port")
+        assert player.ship.get_cargo_quantity("sealed_audit_chip") == 1
+        assert manager.check_objectives(player) == ["the_price_of_information"]
+
 
 class TestCoolantRun:
     """BB-15: the pallet fits the shuttle, and Rhea signs only for a pallet that is aboard."""

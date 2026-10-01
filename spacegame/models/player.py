@@ -722,7 +722,7 @@ class Player:
     def apply_combat_defeat(self, safe_system_id: str) -> None:
         """Apply consequences of losing combat.
 
-        Consequences: cargo loss, credit loss, hull/shield damage,
+        Consequences: cargo loss (quest goods are kept), credit loss, hull/shield damage,
         fuel reduction, faction reputation hit, and retreat to safety.
         Painful but not permadeath — the player keeps their ship and parts.
 
@@ -736,13 +736,19 @@ class Player:
             COMBAT_DEFEAT_HULL_REMAINING_PERCENT,
             COMBAT_DEFEAT_REPUTATION_PENALTY,
         )
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.commodity import CommodityCategory
 
-        # Lose cargo (30% of each type, halved with insurance skill)
+        commodities = get_data_loader().commodities
+        # Lose cargo (30% of each type, halved with insurance skill); quest goods are kept
         has_insurance = self.progression.get_bonus("insurance") > 0
         cargo_loss_pct = COMBAT_DEFEAT_CARGO_LOSS_PERCENT
         if has_insurance:
             cargo_loss_pct = cargo_loss_pct / 2  # Keep 50% more cargo
         for commodity_id, quantity in list(self.ship.current_cargo.items()):
+            commodity = commodities.get(commodity_id)
+            if commodity is not None and commodity.category == CommodityCategory.QUEST:
+                continue
             loss = max(1, int(quantity * cargo_loss_pct / 100))
             self.ship.remove_cargo(commodity_id, loss)
 

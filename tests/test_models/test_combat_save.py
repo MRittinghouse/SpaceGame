@@ -125,6 +125,14 @@ class TestPlayerCombatDefeat:
         assert player.ship.get_cargo_quantity("metals") == 14  # 20 - 6
         assert player.ship.get_cargo_quantity("electronics") == 7  # 10 - 3
 
+    def test_defeat_keeps_quest_goods(self) -> None:
+        player = _make_player()
+        player.ship.add_cargo("data_chip", 1)
+        player.ship.add_cargo("metals", 20)
+        player.apply_combat_defeat("safe_system")
+        assert player.ship.get_cargo_quantity("data_chip") == 1
+        assert player.ship.get_cargo_quantity("metals") == 14
+
     def test_defeat_cargo_loss_minimum_1(self) -> None:
         player = _make_player()
         player.ship.add_cargo("metals", 2)
