@@ -57,15 +57,22 @@ class MissionObjective:
     target_id: str
     target_quantity: int = 1
     description: str = ""
+    # BB-6: a "Return to X" leg. It counts only after the ship has left the system where
+    # the mission was accepted, and only once every earlier objective that is not a
+    # has_flag objective is met.
+    after_departure: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict."""
-        return {
+        d: dict[str, Any] = {
             "type": self.type.value,
             "target_id": self.target_id,
             "target_quantity": self.target_quantity,
             "description": self.description,
         }
+        if self.after_departure:
+            d["after_departure"] = True
+        return d
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "MissionObjective":
@@ -75,6 +82,7 @@ class MissionObjective:
             target_id=data["target_id"],
             target_quantity=data.get("target_quantity", 1),
             description=data.get("description", ""),
+            after_departure=bool(data.get("after_departure", False)),
         )
 
 
@@ -189,6 +197,9 @@ class Mission:
     # Authored per-mission so the delivering NPC reacts in voice to how
     # long the player took. Empty/None = no commentary.
     timeliness_comments: dict[str, str] = field(default_factory=dict)
+    # BB-6: the last objective counts only when every earlier objective is met in the same
+    # check, and never locks (a delivery's destination comes after its goods).
+    ordered_final: bool = False
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Mission":
@@ -234,6 +245,7 @@ class Mission:
                 _parse_soft_deadline(data["soft_deadline"]) if "soft_deadline" in data else None
             ),
             timeliness_comments=dict(data.get("timeliness_comments", {})),
+            ordered_final=bool(data.get("ordered_final", False)),
         )
 
     def get_target_system_ids(self) -> list[str]:
@@ -322,6 +334,8 @@ class Mission:
             d["soft_deadline"] = self.soft_deadline.to_dict()
         if self.timeliness_comments:
             d["timeliness_comments"] = dict(self.timeliness_comments)
+        if self.ordered_final:
+            d["ordered_final"] = True
         return d
 
 
@@ -374,6 +388,11 @@ class MissionManager:
         # Missions added at runtime (procedural contracts). Their definitions
         # are not in the data files, so get_state saves them in full.
         self._runtime_ids: list[str] = []
+        # BB-6: for each active mission, the system where it was accepted, whether the ship
+        # has left that system since, and the lifetime counters at the accept.
+        self._accept_system: dict[str, str] = {}
+        self._departed: set[str] = set()
+        self._baselines: dict[str, dict[str, int]] = {}
 
     def add_mission(
         self,
@@ -525,6 +544,13 @@ class MissionManager:
         self._status[mission_id] = MissionStatus.ACTIVE
         if game_day is not None:
             self._accepted_day[mission_id] = game_day
+        self._forget_run(mission_id)
+        if player is not None:
+            self._accept_system[mission_id] = player.current_system_id
+            self._baselines[mission_id] = {
+                "combats_won": player.combats_won,
+                "trades_completed": player.trades_completed,
+            }
         # QA-F-1 / QA-F-3: centralize accepted-flag + TW interaction
         # recording here so every accept path (game auto-accept, cantina,
         # station hub, mission log) behaves identically. Callers no
@@ -581,6 +607,7 @@ class MissionManager:
         if self._status[mission_id] != MissionStatus.ACTIVE:
             return (False, f"Mission is {self._status[mission_id].value}, not active")
         self._status[mission_id] = MissionStatus.FAILED
+        self._forget_run(mission_id)
         return (True, f"Failed: {self._missions[mission_id].name}")
 
     def abandon_mission(self, mission_id: str) -> tuple[bool, str]:
@@ -604,6 +631,7 @@ class MissionManager:
         if mission.mission_type != "side":
             return (False, "Only side missions can be abandoned")
         self._status[mission_id] = MissionStatus.ABANDONED
+        self._forget_run(mission_id)
         return (True, f"Abandoned: {mission.name}")
 
     def check_objectives(
@@ -612,6 +640,12 @@ class MissionManager:
         recruited_crew_ids: Optional[set[str]] = None,
     ) -> list[str]:
         """Check all active mission objectives against current player state.
+
+        Three rules order the legs (BB-6). An ``after_departure`` leg counts only after the
+        ship has left the system where the mission was accepted, and only once every earlier
+        non-flag objective is met. An ``ordered_final`` mission's last leg counts only when
+        every earlier leg is met, and is evaluated again on every check. Combat and trade
+        counters count only what happened since the accept.
 
         Args:
             player: Current player state.
@@ -634,10 +668,11 @@ class MissionManager:
             ):
                 continue
 
-            for i, obj in enumerate(mission.objectives):
-                if self._progress[mid][i] and obj.type != ObjectiveType.COLLECT_CARGO:
-                    continue  # Skip completed (except cargo — must re-evaluate)
-                self._progress[mid][i] = self._check_single_objective(obj, player)
+            self._note_position(mid, player)
+            for i in range(len(mission.objectives)):
+                if self._progress[mid][i] and not self._rechecked(mission, i):
+                    continue  # Skip met objectives (cargo and an ordered final leg re-evaluate)
+                self._progress[mid][i] = self._objective_met(mid, mission, i, player)
 
             # Auto-resolve for side missions: if every objective except HAS_FLAG
             # ones are complete, set the missing flags so the mission can finish.
@@ -671,11 +706,70 @@ class MissionManager:
 
             if all(self._progress[mid]):
                 self._status[mid] = MissionStatus.COMPLETED
+                self._forget_run(mid)
                 newly_completed.append(mid)
 
         return newly_completed
 
-    def _check_single_objective(self, obj: MissionObjective, player: "Player") -> bool:
+    def _forget_run(self, mission_id: str) -> None:
+        """Drop what one run of a mission recorded: accept system, departure, counters."""
+        self._accept_system.pop(mission_id, None)
+        self._departed.discard(mission_id)
+        self._baselines.pop(mission_id, None)
+
+    def _note_position(self, mission_id: str, player: "Player") -> None:
+        """Record the accept system late, or note that the ship has left it (BB-6).
+
+        An accept without a player (``game.check_missions``) records no system, so the first
+        check after it records where the ship stands.
+        """
+        accepted_at = self._accept_system.get(mission_id)
+        if accepted_at is None:
+            self._accept_system[mission_id] = player.current_system_id
+        elif player.current_system_id != accepted_at:
+            self._departed.add(mission_id)
+
+    @staticmethod
+    def _rechecked(mission: Mission, index: int) -> bool:
+        """Whether a met objective is evaluated again on every check.
+
+        Cargo can leave the hold, and an ordered final leg never locks (BB-6).
+        """
+        if mission.objectives[index].type == ObjectiveType.COLLECT_CARGO:
+            return True
+        return mission.ordered_final and index == len(mission.objectives) - 1
+
+    def _earlier_legs_met(self, mission_id: str, mission: Mission, index: int) -> bool:
+        """Whether every objective before ``index`` that is not has_flag is met this check."""
+        progress = self._progress[mission_id]
+        return all(
+            progress[j]
+            for j in range(index)
+            if mission.objectives[j].type != ObjectiveType.HAS_FLAG
+        )
+
+    def _objective_met(
+        self, mission_id: str, mission: Mission, index: int, player: "Player"
+    ) -> bool:
+        """Evaluate one objective under the ordering rules (BB-6)."""
+        obj = mission.objectives[index]
+        if mission.ordered_final and index == len(mission.objectives) - 1:
+            if not all(self._progress[mission_id][:index]):
+                return False
+        if obj.after_departure:
+            if mission_id not in self._departed:
+                return False
+            if not self._earlier_legs_met(mission_id, mission, index):
+                return False
+        return self._check_single_objective(mission_id, index, obj, player)
+
+    def _since_accept(self, mission_id: str, counter: str, value: int) -> int:
+        """A lifetime counter minus its value at the accept (0 when no accept recorded it)."""
+        return value - self._baselines.get(mission_id, {}).get(counter, 0)
+
+    def _check_single_objective(
+        self, mission_id: str, index: int, obj: MissionObjective, player: "Player"
+    ) -> bool:
         """Evaluate a single objective against player state."""
         if obj.type == ObjectiveType.REACH_SYSTEM:
             return player.current_system_id == obj.target_id
@@ -690,9 +784,11 @@ class MissionManager:
         elif obj.type == ObjectiveType.HAS_FLAG:
             return player.dialogue_flags.get(obj.target_id, False)
         elif obj.type == ObjectiveType.COMPLETE_TRADE:
-            return player.trades_completed >= obj.target_quantity
+            done = self._since_accept(mission_id, "trades_completed", player.trades_completed)
+            return done >= obj.target_quantity
         elif obj.type == ObjectiveType.WIN_COMBAT:
-            return player.combats_won >= obj.target_quantity
+            won = self._since_accept(mission_id, "combats_won", player.combats_won)
+            return won >= obj.target_quantity
         return False
 
     def apply_rewards(self, mission_id: str, player: "Player") -> list[str]:
@@ -1089,6 +1185,9 @@ class MissionManager:
             "status": {mid: s.value for mid, s in self._status.items()},
             "progress": {mid: list(p) for mid, p in self._progress.items()},
             "accepted_day": dict(self._accepted_day),
+            "accept_system": dict(self._accept_system),
+            "departed": sorted(self._departed),
+            "baselines": {mid: dict(counters) for mid, counters in self._baselines.items()},
             "runtime_missions": [self._missions[mid].to_dict() for mid in self._runtime_ids],
         }
 
@@ -1117,3 +1216,12 @@ class MissionManager:
                     self._progress[mid][i] = saved_progress[i]
         # Restore accept days (TW follow-up). Empty for legacy saves.
         self._accepted_day = {mid: int(day) for mid, day in data.get("accepted_day", {}).items()}
+        # BB-6 run state; older saves have none, and the first check records the system.
+        self._accept_system = {
+            str(mid): str(system_id) for mid, system_id in data.get("accept_system", {}).items()
+        }
+        self._departed = {str(mid) for mid in data.get("departed", [])}
+        self._baselines = {
+            str(mid): {str(name): int(value) for name, value in counters.items()}
+            for mid, counters in data.get("baselines", {}).items()
+        }

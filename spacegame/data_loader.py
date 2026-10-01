@@ -1608,6 +1608,7 @@ class DataLoader:
                 target_id=obj["target_id"],
                 target_quantity=obj.get("target_quantity", 1),
                 description=obj.get("description", ""),
+                after_departure=bool(obj.get("after_departure", False)),
             )
             for obj in data.get("objectives", [])
         ]

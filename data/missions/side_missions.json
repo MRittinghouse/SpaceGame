@@ -149,7 +149,8 @@
           "type": "reach_system",
           "target_id": "verdant",
           "target_quantity": 1,
-          "description": "Return the pesticide to Verdant"
+          "description": "Return the pesticide to Verdant",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -409,7 +410,8 @@
           "type": "reach_system",
           "target_id": "breakstone",
           "target_quantity": 1,
-          "description": "Deliver medicine to Breakstone"
+          "description": "Deliver medicine to Breakstone",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -608,7 +610,8 @@
           "type": "reach_system",
           "target_id": "axiom_labs",
           "target_quantity": 1,
-          "description": "Return to Axiom Labs with the data"
+          "description": "Return to Axiom Labs with the data",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -727,7 +730,8 @@
           "type": "reach_system",
           "target_id": "havens_rest",
           "target_quantity": 1,
-          "description": "Return to Haven's Rest with the news"
+          "description": "Return to Haven's Rest with the news",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -852,7 +856,8 @@
           "type": "reach_system",
           "target_id": "stellaris_port",
           "target_quantity": 1,
-          "description": "Return to Stellaris Port with findings"
+          "description": "Return to Stellaris Port with findings",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -925,7 +930,8 @@
           "type": "reach_system",
           "target_id": "crimson_reach",
           "target_quantity": 1,
-          "description": "Return to Crimson Reach"
+          "description": "Return to Crimson Reach",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -997,7 +1003,8 @@
           "type": "reach_system",
           "target_id": "crimson_reach",
           "target_quantity": 1,
-          "description": "Return to Crimson Reach"
+          "description": "Return to Crimson Reach",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -1421,7 +1428,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Nexus Prime with the contraband"
+          "description": "Return to Nexus Prime with the contraband",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
@@ -1498,7 +1506,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Arna at Nexus Prime"
+          "description": "Return to Arna at Nexus Prime",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
@@ -1635,7 +1644,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Nexus Prime"
+          "description": "Return to Nexus Prime",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
