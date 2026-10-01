@@ -814,7 +814,7 @@
       "id": "collective_nova_test_01",
       "encounter_type": "anomaly",
       "name": "Nova Shield Harmonics Test",
-      "description": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand speaks with the enthusiasm of someone spending someone else's money: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising .94 percent confidence interval on non-lethality.'",
+      "description": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand speaks with the enthusiasm of someone spending someone else's money: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising: 94 percent confidence interval on non-lethality.'",
       "icon_color": [
         180,
         120,

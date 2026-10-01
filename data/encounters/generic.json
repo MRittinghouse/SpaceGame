@@ -958,7 +958,7 @@
           "label": "Hard-Dock and Cycle Your Atmosphere",
           "description": "Two hours of air from your reserves could mean the difference. You can smell recycled air for a while.",
           "outcome": {
-            "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits .'Won't need them if I'm dead.'",
+            "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits: 'Won't need them if I'm dead.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1284,7 +1284,7 @@
       "id": "distress_pirate_attack_01",
       "encounter_type": "distress_signal",
       "name": "Ship Under Attack",
-      "description": "Weapons fire flashes in the distance. A freighter is taking hits from two raider skiffs, its shields flickering. The captain's voice cuts through the static. \"Mayday! Any vessel. We're under attack! They're cutting through our.\" The transmission dissolves into noise.",
+      "description": "Weapons fire flashes in the distance. A freighter is taking hits from two raider skiffs, its shields flickering. The captain's voice cuts through the static. \"Mayday! Any vessel. We're under attack! They're cutting through our...\" The transmission dissolves into noise.",
       "icon_color": [
         100,
         200,
