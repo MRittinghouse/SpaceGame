@@ -26,6 +26,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Optional
 
 from spacegame.models.captain_memory import (
+    OUTCOME_DEFEAT,
+    OUTCOME_FLED_CAPTAIN,
+    OUTCOME_NEGOTIATED,
+    OUTCOME_VICTORY,
     STATUS_ACTIVE,
     STATUS_BRIBED_OFF,
     STATUS_DEFEATED,
@@ -185,3 +189,21 @@ def get_effective_captain_dialogue(
         defeat_line=_override(captain.defeat_line, variant.defeat_line),
         meeting_state=state,
     )
+
+
+def outcome_line(dialogue: EffectiveCaptainDialogue, outcome: str) -> str:
+    """The line a captain speaks when a fight ends with ``outcome`` (CE-6, RC-3, BB-87).
+
+    A player victory is the captain's defeat line, a player defeat the captain's victory
+    line, a talk-down the surrender line, and a captain whose ship fled the retreat line. A
+    bribe or the player's own flight has no line.
+    """
+    if outcome == OUTCOME_VICTORY:
+        return dialogue.defeat_line
+    if outcome == OUTCOME_DEFEAT:
+        return dialogue.victory_line
+    if outcome == OUTCOME_NEGOTIATED:
+        return dialogue.surrender_line
+    if outcome == OUTCOME_FLED_CAPTAIN:
+        return dialogue.retreat_line
+    return ""
