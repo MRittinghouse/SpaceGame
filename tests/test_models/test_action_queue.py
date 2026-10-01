@@ -303,6 +303,20 @@ class TestVolleyCommanderRepeats:
         assert queue.add("missile_salvo", 0, missile)[0]
         assert queue.add("missile_salvo", 0, missile)[0]
 
+    def test_an_undone_fire_at_will_covers_no_repeat(self) -> None:
+        """An undone Fire at Will is not queued ahead, so the repeat would meet the cooldown."""
+        queue = ActionQueue(energy_available=20, extra_action=True)
+        missile = _weapon("missile_salvo", "Missile Salvo", cooldown=2, cost=4)
+        laser = _weapon("laser", "Laser", cooldown=0)
+        assert queue.add("fire_at_will", -1, _fire_at_will())[0]
+        assert queue.remove_last()
+        assert queue.add("missile_salvo", 0, missile)[0]
+        ok, msg = queue.add("missile_salvo", 0, missile)
+        assert not ok
+        assert msg == "Missile Salvo cannot fire twice (cooldown 2)"
+        assert queue.add("laser", 0, laser)[0]
+        assert queue.add("laser", 0, laser)[0], "the refusal kept the extra action"
+
     def test_a_repeat_needs_fire_at_will_before_its_first_copy(self) -> None:
         """The first missile fires outside Fire at Will and sets the cooldown."""
         queue = ActionQueue(energy_available=20, extra_action=True)

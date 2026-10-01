@@ -133,7 +133,8 @@ class ActionQueue:
 
         if repeat:
             self._extra_action_available = False  # Consumed only by a repeat that queues
-        elif self._fire_at_will_queued:
+        # Only a Fire at Will still queued covers the key; the discount sticks after undo (F-19).
+        elif any(a.move_id == "fire_at_will" for a in self._actions):
             self._fire_at_will_keys.add(queue_key)
 
         # Add to queue
@@ -200,12 +201,12 @@ class ActionQueue:
     ) -> tuple[bool, str]:
         """Check if a move can be added without actually adding it.
 
+        Note: it ignores Volley Commander's extra action (a screen gating on it hides the
+        skill; SP6).
+
         Args:
             move_id: The combat move ID.
             move: The CombatMove for cost reference.
-
-        Note: it ignores Volley Commander's extra action (a screen gating on it hides the
-        skill; SP6).
 
         Returns:
             (can_add, reason) tuple.
