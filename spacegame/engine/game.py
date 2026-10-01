@@ -3544,12 +3544,7 @@ class Game:
         """Create or recreate crew roster view."""
         from spacegame.views.crew_roster_view import CrewRosterView
 
-        crew_slots = (
-            self.player.ship.ship_type.crew_slots
-            + int(self.player.progression.get_bonus("crew_slot_bonus"))
-            if self._player is not None
-            else 1
-        )
+        crew_slots = self.player.get_crew_slots() if self._player is not None else 1
         from spacegame.models.mission import MissionStatus as _MS
 
         active_ids = (

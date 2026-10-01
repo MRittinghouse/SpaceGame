@@ -763,3 +763,14 @@ class TestSACArcSkills:
             assert rest_level == orig_level, (
                 f"{skill_id}: expected {orig_level}, got {rest_level} after round-trip"
             )
+
+
+class TestPriceMemoryPrerequisite:
+    """BB-90: Price Memory follows Market Eye, so a captain can hold it without Market Insider."""
+
+    def test_price_memory_is_learnable_without_market_insider(self) -> None:
+        prog = PlayerProgression(skill_points=10)
+        for skill_id in ("negotiator", "market_eye", "price_memory"):
+            ok, msg = prog.level_up_skill(skill_id)
+            assert ok, msg
+        assert prog.skills["market_insider"].current_level == 0

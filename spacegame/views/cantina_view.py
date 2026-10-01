@@ -640,9 +640,7 @@ class CantinaView(BaseView):
 
     def _get_crew_slots(self) -> int:
         """Get total crew slots including skill bonuses."""
-        return self.player.ship.ship_type.crew_slots + int(
-            self.player.progression.get_bonus("crew_slot_bonus")
-        )
+        return self.player.get_crew_slots()
 
     def _get_current_crew_count(self) -> int:
         """Get number of currently recruited crew members."""

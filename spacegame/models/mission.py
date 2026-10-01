@@ -810,9 +810,7 @@ class MissionManager:
                     done.bonus_xp = bonus_xp
         for reward in mission.rewards:
             if reward.reward_type == "crew" and reward.target_id and crew_roster is not None:
-                crew_slots = player.ship.ship_type.crew_slots + int(
-                    player.progression.get_bonus("crew_slot_bonus")
-                )
+                crew_slots = player.get_crew_slots()
                 success, crew_msg = crew_roster.recruit(reward.target_id, crew_slots)
                 if success:
                     done.crew_joined.append(crew_msg)

@@ -49,6 +49,9 @@ if TYPE_CHECKING:
     from spacegame.models.combat_rewards import CombatVictory
     from spacegame.models.smuggling import HiddenCompartment
 
+# BB-91: Legend of the Expanse's berths, on top of the hull's and Crew Manager's.
+LEGEND_CREW_SLOTS = 2
+
 
 @dataclass
 class Player:
@@ -1129,6 +1132,17 @@ class Player:
             self._pending_faction_deltas.append((faction_id, effective_delta))
         sign = "+" if amount >= 0 else ""
         return (True, f"{sign}{amount} reputation with {faction_id}")
+
+    def get_crew_slots(self) -> int:
+        """Crew berths: the hull's slots, Crew Manager's bonus, and Legend's two.
+
+        Returns:
+            How many crew members the ship can carry.
+        """
+        slots = self.ship.ship_type.crew_slots + int(self.progression.get_bonus("crew_slot_bonus"))
+        if self.progression.get_bonus("legendary_captain") > 0:
+            slots += LEGEND_CREW_SLOTS
+        return slots
 
     def get_reputation(self, faction_id: str) -> int:
         """Get current reputation value with a faction.
