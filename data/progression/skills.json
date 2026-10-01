@@ -509,7 +509,7 @@
     {
       "id": "emergency_reserves",
       "name": "Emergency Reserves",
-      "description": "Can never be fully stranded; minimum 1 fuel after any jump",
+      "description": "A sealed reserve cell covers the jump out when stranded; the next refuel pays for it",
       "tree": "exploration",
       "max_level": 1,
       "cost_per_level": 1,
