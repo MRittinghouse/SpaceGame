@@ -797,3 +797,14 @@ class TestLevelLoopIsBounded:
     def test_levels_still_rise_below_the_cap(self) -> None:
         prog = PlayerProgression()
         assert prog.add_xp(500) == ["Level up! Now level 2. +1 skill point!"]
+
+    def test_the_level_stops_at_ten_thousand(self) -> None:
+        # The port's cap is 10,000; the numbers are written out so that moving the cap fails.
+        below = PlayerProgression(level=9_999, xp=get_xp_threshold(10_001))
+        messages = below.add_xp(0)
+        assert below.level == 10_000, f"Level 9,999 should rise to 10,000, got {below.level}"
+        assert len(messages) == 1, f"One level-up message expected, got {messages}"
+
+        at_cap = PlayerProgression(level=10_000, xp=get_xp_threshold(10_001))
+        assert at_cap.add_xp(0) == [], "Level 10,000 should not rise"
+        assert at_cap.level == 10_000
