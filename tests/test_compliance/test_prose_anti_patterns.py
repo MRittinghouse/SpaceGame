@@ -47,6 +47,10 @@ EM_DASH = "—"
 
 _NO_X_NO_Y = re.compile(r"[Nn]o \w+,\s*no \w+")
 
+# BB-35: " . " where a sentence break or a dash should be. A broken em-dash rewrite
+# (SpaceGame 9252fc2) kept the space before each dash and turned the dash into a period.
+_SPLICE = re.compile(r"\S \. \S")
+
 
 def _strings(obj: object, path: str = "") -> Iterator[tuple[str, str]]:
     """Yield (json_path, value) for every string anywhere in a decoded document."""
@@ -95,6 +99,12 @@ def test_no_em_dashes_in_data() -> None:
     """No em-dash in any authored string. CLAUDE.md names it a GenAI tell."""
     errors = _violations(lambda s: EM_DASH in s)
     assert not errors, "em-dash (U+2014) found in authored data:\n" + "\n".join(errors)
+
+
+def test_no_spliced_sentence_breaks_in_data() -> None:
+    """No " . " splice (a word, a space, a lone period, a space, a word)."""
+    errors = _violations(lambda s: bool(_SPLICE.search(s)))
+    assert not errors, 'spliced " . " found in authored data:\n' + "\n".join(errors)
 
 
 def test_no_no_x_no_y_constructions() -> None:
