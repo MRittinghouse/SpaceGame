@@ -90,3 +90,48 @@ def test_a_reopened_scene_never_sets_both_deal_flags() -> None:
         for reply in node.responses:
             if reply.set_flag == "declined_drifter_deal":
                 assert any(accepted.get(f) for f in reply.excluded_flags), node_id
+
+
+def _accepted_run() -> tuple[MissionManager, Player]:
+    """The deal accepted at Tomas's table and completed, the delivery taken with its bales."""
+    manager, player = _deal_manager(), _player()
+    player.dialogue_flags.update(_walk(ACCEPT, _opening()))
+    manager.update_availability(player.dialogue_flags, game_day=30, player=player)
+    assert manager.get_status("the_drifters_deal") == MissionStatus.ACTIVE
+    assert "the_drifters_deal" in _settle(manager, player)
+    manager.complete_mission("the_drifters_deal", player)
+    accepted = manager.update_availability(player.dialogue_flags, game_day=30, player=player)
+    assert "drifters_delivery" in accepted
+    assert manager.get_status("drifters_delivery") == MissionStatus.ACTIVE
+    delivery = manager.get_mission("drifters_delivery")
+    assert delivery is not None
+    for cargo in delivery.on_accept_cargo:  # Game._load_auto_accept_cargo's part
+        player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
+    return manager, player
+
+
+def test_the_handshake_runs_both_missions() -> None:
+    manager, player = _accepted_run()
+    player.current_system_id = "stellaris_port"
+    assert "drifters_delivery" in _settle(manager, player)
+    done = manager.complete_mission("drifters_delivery", player)
+    assert player.ship.get_cargo_quantity("textiles") == 0
+    assert "+300 Credits" in done.reward_messages
+    assert "tomas_friendship" not in player.dialogue_flags
+
+
+def test_sold_bales_must_be_held_again_to_finish() -> None:
+    manager, player = _accepted_run()
+    player.ship.remove_cargo("textiles", 5)
+    player.current_system_id = "stellaris_port"
+    assert "drifters_delivery" not in _settle(manager, player)
+    player.ship.add_cargo("textiles", 5, 0)
+    assert "drifters_delivery" in _settle(manager, player)
+
+
+def test_friendship_comes_with_his_recruitment() -> None:
+    recruit = next(m for m in _dl().missions if m.id == "recruit_trader")
+    rewards = [(r.reward_type, r.target_id) for r in recruit.rewards]
+    assert ("set_flag", "tomas_friendship") in rewards
+    delivery = next(m for m in _dl().missions if m.id == "drifters_delivery")
+    assert not [r for r in delivery.rewards if r.reward_type == "set_flag"]

@@ -295,6 +295,7 @@
       "required_flags": [
         "met_tomas_drifter"
       ],
+      "auto_accept": true,
       "objectives": [
         {
           "type": "has_flag",
@@ -322,13 +323,14 @@
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
       "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods, split the take, and try not to think too hard about the tariff codes.",
-      "hint": "Travel to Stellaris Port and sell Tomas's textiles at the market.",
+      "hint": "Travel to Stellaris Port with Tomas's textiles.",
       "prerequisites": [
         "the_drifters_deal"
       ],
       "required_flags": [
         "accepted_drifter_deal"
       ],
+      "auto_accept": true,
       "on_accept_cargo": [
         {
           "commodity_id": "textiles",
@@ -337,16 +339,16 @@
       ],
       "objectives": [
         {
+          "type": "collect_cargo",
+          "target_id": "textiles",
+          "target_quantity": 5,
+          "description": "Keep Tomas's textiles aboard: 5 Textiles"
+        },
+        {
           "type": "reach_system",
           "target_id": "stellaris_port",
           "target_quantity": 1,
           "description": "Travel to Stellaris Port"
-        },
-        {
-          "type": "complete_trade",
-          "target_id": "",
-          "target_quantity": 1,
-          "description": "Sell the textiles"
         }
       ],
       "rewards": [
@@ -358,16 +360,6 @@
         {
           "reward_type": "credits",
           "amount": 300
-        },
-        {
-          "reward_type": "set_flag",
-          "amount": 0,
-          "target_id": "tomas_friendship"
-        },
-        {
-          "reward_type": "set_flag",
-          "amount": 0,
-          "target_id": "drifter_deal_resolved"
         },
         {
           "reward_type": "xp",
@@ -496,6 +488,11 @@
         {
           "reward_type": "xp",
           "amount": 50
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "tomas_friendship"
         }
       ]
     },
