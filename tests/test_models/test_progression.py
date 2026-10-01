@@ -778,3 +778,22 @@ class TestPriceMemoryPrerequisite:
         assert prog.skills["market_insider"].bonus_type == "remote_prices"
         assert prog.get_bonus("remote_prices") == 0, "a remote-price skill shadows the memory"
         assert prog.get_bonus("price_memory") > 0
+
+
+class TestLevelLoopIsBounded:
+    """BB-78: a damaged level cannot spin the level-up loop."""
+
+    @pytest.mark.timeout(10)
+    def test_a_huge_negative_level_does_not_loop(self) -> None:
+        prog = PlayerProgression(level=-(2**63))
+        assert prog.add_xp(5) == []
+        assert prog.level == -(2**63)
+
+    @pytest.mark.timeout(10)
+    def test_a_huge_level_does_not_loop(self) -> None:
+        prog = PlayerProgression(level=2**63 - 1)
+        assert prog.add_xp(5) == []
+
+    def test_levels_still_rise_below_the_cap(self) -> None:
+        prog = PlayerProgression()
+        assert prog.add_xp(500) == ["Level up! Now level 2. +1 skill point!"]

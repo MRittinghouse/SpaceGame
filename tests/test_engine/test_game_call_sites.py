@@ -54,3 +54,45 @@ def test_a_dialogue_starts_with_the_day() -> None:
     assert starts
     for call in starts:
         assert any(k.arg == "game_day" for k in call.keywords), ast.dump(call)
+
+
+def test_every_availability_pass_reads_effective_standing() -> None:
+    passes = _calls(_tree(), "update_availability")
+    assert len(passes) == 4
+    for call in passes:
+        standing = next(k.value for k in call.keywords if k.arg == "player_reputation")
+        assert isinstance(standing, ast.Call), ast.dump(standing)
+        assert isinstance(standing.func, ast.Attribute), ast.dump(standing)
+        assert standing.func.attr == "get_effective_reputations", ast.dump(standing)
+
+
+def test_arrival_crew_lines_pass_the_player_flags() -> None:
+    lines = [
+        call
+        for call in _calls(_tree(), "get_line")
+        if call.args
+        and isinstance(call.args[0], ast.Constant)
+        and call.args[0].value in ("home_system", "faction_territory")
+    ]
+    assert len(lines) == 2
+    for call in lines:
+        assert any(k.arg == "player_flags" for k in call.keywords), ast.dump(call)
+
+
+def test_after_fight_banter_needs_a_fought_fight() -> None:
+    apply_result = _function("_apply_combat_result")
+    guards = [
+        node
+        for node in ast.walk(apply_result)
+        if isinstance(node, ast.If) and _calls(node, "mark_combat")
+    ]
+    assert guards, "_apply_combat_result no longer guards mark_combat"
+    assert any(_calls(guard.test, "was_fought") for guard in guards)
+
+
+def test_every_availability_pass_loads_the_cargo_it_accepts() -> None:
+    """F-37: the new game, a dialogue exit, a load, and the check all load it."""
+    for name in ("initialize_new_game", "_route_from_dialogue", "_load_game", "check_missions"):
+        function = _function(name)
+        assert _calls(function, "update_availability"), name
+        assert _calls(function, "_load_auto_accept_cargo"), name

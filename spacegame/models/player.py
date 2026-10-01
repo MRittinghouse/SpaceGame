@@ -4,6 +4,7 @@ Player state and progression models.
 Tracks player credits, location, ship, and game progress.
 """
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
@@ -1165,6 +1166,18 @@ class Player:
             bonus = int(self.progression.get_bonus("frontier_rep_bonus"))
             base = min(100, base + bonus)
         return base
+
+    def get_effective_reputations(self, faction_ids: Iterable[str]) -> dict[str, int]:
+        """Every faction's standing as the game reads it, skill bonuses included (BB-82).
+
+        Args:
+            faction_ids: Every faction id; stored standings for other ids are kept too.
+
+        Returns:
+            Faction id to ``get_reputation`` value.
+        """
+        ids = list(dict.fromkeys([*faction_ids, *self.faction_reputation]))
+        return {faction_id: self.get_reputation(faction_id) for faction_id in ids}
 
     def get_reputation_tier(self, faction_id: str) -> ReputationTier:
         """Get the reputation tier with a faction.

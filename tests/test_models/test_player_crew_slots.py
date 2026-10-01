@@ -1,4 +1,4 @@
-"""BB-91: Legend of the Expanse's two crew slots, read in one place."""
+"""Player queries the bug bash added."""
 
 from __future__ import annotations
 
@@ -40,3 +40,27 @@ class TestCrewSlots:
             if '"crew_slot_bonus"' in path.read_text(encoding="utf-8")
         )
         assert readers == ["spacegame/models/player.py"]
+
+
+class TestEffectiveReputation:
+    """BB-82: Frontier Reputation counts toward the Frontier's mission gate."""
+
+    def test_the_skill_bonus_opens_the_lost_registry(self) -> None:
+        from spacegame.models.mission import MissionManager, MissionStatus
+
+        dl = get_data_loader()
+        dl.load_all()
+        player = _player()
+        player.faction_reputation["frontier_alliance"] = 5
+        player.progression.skills["frontier_reputation"].current_level = 2
+        flags = {"registry_search_started": True}
+        stored = MissionManager(dl.missions)
+        stored.load_state({"status": {"whispers_at_the_bar": "completed"}})
+        stored.update_availability(flags, player_reputation=dict(player.faction_reputation))
+        assert stored.get_status("the_lost_registry") == MissionStatus.UNAVAILABLE
+        effective = MissionManager(dl.missions)
+        effective.load_state({"status": {"whispers_at_the_bar": "completed"}})
+        effective.update_availability(
+            flags, player_reputation=player.get_effective_reputations(dl.factions)
+        )
+        assert effective.get_status("the_lost_registry") == MissionStatus.ACTIVE

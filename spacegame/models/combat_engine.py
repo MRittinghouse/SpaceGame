@@ -81,6 +81,26 @@ class CombatEngine:
         # and end of round) so ``turn_counter`` and ``hp_threshold`` triggers
         # both fire promptly.
         self._resolver = ComplicationResolver(complications or [])
+        # BB-100: each side's hull and shields when the fight began, so the game can tell a
+        # fight that was fought from one that ended with a bribe, a talk-down, or a clean exit.
+        self._start_marks = self._hull_and_shields()
+
+    def _hull_and_shields(self) -> tuple[int, ...]:
+        marks = [self._state.player.hull, self._state.player.shields]
+        for enemy in self._state.enemies:
+            marks.extend((enemy.current_hull, enemy.current_shields))
+        return tuple(marks)
+
+    def was_fought(self) -> bool:
+        """Whether the fight ended in a win or a loss, or either side's hull or shields moved.
+
+        A bribe, a talk-down, or a flee before a shot lands returns False, so crew
+        after-fight banter does not follow a fight that never happened (BB-100). A
+        reinforcement joining counts as a change.
+        """
+        if self._state.result in (CombatResult.VICTORY, CombatResult.DEFEAT):
+            return True
+        return self._hull_and_shields() != self._start_marks
 
     def _skill_bonus(self, bonus_type: str) -> float:
         """Get a skill bonus from progression, or 0.0 if not available."""

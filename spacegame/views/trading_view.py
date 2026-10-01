@@ -1221,7 +1221,7 @@ class TradingView(BaseView):
 
     def _execute_refuel(self) -> None:
         fuel_needed = self.player.ship.max_fuel - self.player.ship.current_fuel
-        if fuel_needed == 0:
+        if fuel_needed <= 0:
             self._show_message("Fuel tank is full")
             return
 

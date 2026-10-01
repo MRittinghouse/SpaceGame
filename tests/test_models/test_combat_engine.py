@@ -1378,3 +1378,25 @@ class TestCounterstrikeStacks:
                 effects.extend(entry.effects_applied)
         assert engine.get_state().player.counterstrike_stacks == 3
         assert "Counterstrike +36%" in effects
+
+
+class TestWasFought:
+    """BB-100: a bribe or a clean exit is not a fight the crew talks about afterwards."""
+
+    def test_a_round_one_bribe_was_not_fought(self) -> None:
+        engine = _make_engine()
+        engine.get_state().result = CombatResult.BRIBED
+        assert not engine.was_fought()
+
+    def test_a_flee_after_a_hit_was_fought(self) -> None:
+        engine = _make_engine()
+        state = engine.get_state()
+        state.player.hull -= 10
+        state.result = CombatResult.FLED
+        assert engine.was_fought()
+
+    def test_a_win_or_a_loss_was_fought(self) -> None:
+        for result in (CombatResult.VICTORY, CombatResult.DEFEAT):
+            engine = _make_engine()
+            engine.get_state().result = result
+            assert engine.was_fought(), result
