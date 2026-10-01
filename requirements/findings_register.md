@@ -50,7 +50,7 @@ quietly rot here instead of quietly rotting somewhere else.
 | F-002 | affordance | The hull screen is effectively unfindable. The designer had to explain its location ("top center, on the right ish") with a screenshot. | Playtest 2026-05-05 | Spec C |
 | F-003 | affordance | The tutorial exists but does not land — the player did not know it was there. | Playtest 2026-05-05 | Spec C |
 | F-004 | affordance | New-game onboarding is three-plus consecutive hand-drawn screens (confirm dialog → intro narration → name entry) with no pygame_gui affordances. A player's first five minutes are bespoke one-offs. | Crawler, 2026-08-23 | Spec C |
-| F-005 | balance | "A ton of ways to softlock if you spend poorly." Economy permits unrecoverable states. | Playtest 2026-05-05 (designer's own assessment) | Balance track |
+| F-005 | balance | "A ton of ways to softlock if you spend poorly." Economy permits unrecoverable states. The Godot port detects the dead end and ends the game (bug bash BB-3, aurelia plan B2); this build keeps the soft-lock. Since bug bash plan B1 a board contract's sealed cargo is one more way in: a broke captain whose only cargo belongs to a running board contract cannot sell it. | Playtest 2026-05-05 (designer's own assessment) | Balance track |
 | F-006 | infra | Crawler cannot pass the onboarding gauntlet, so cold-boot coverage stops at 3 of 41 states. Needs hit-rect registry entries per screen. | Crawler, 2026-08-23 | QF-6D |
 | F-007 | infra | xdist worker death at high worker counts; bounded but not understood. | SUITE-1, 2026-08-26 | SUITE-2 |
 | F-008 | infra | `tests/test_ralph/` is not isolated from the real project-root `STOP` file; 3 tests fail spuriously when one exists. | Observed 2026-08-26 during a graceful stop | SUITE-2 |
@@ -59,6 +59,7 @@ quietly rot here instead of quietly rotting somewhere else.
 | F-011 | hygiene | Legacy `tools/` scripts carry ~198 mypy errors and are ungated. `tools/crawler/` is gated at zero. | QF-2, 2026-08-23 | wontfix-for-now — build-time utilities, not shipped code |
 | F-012 | hygiene | `ralph/agents.py:181` RUF005 (list concatenation). `ralph/` is not in the lint gate. | 2026-08-26 | wontfix-for-now — pre-existing, harmless |
 | F-013 | content | `SA-F2 — Futures Core` is genuinely `blocked`, gating six Phase V sprints (SA-F3..SA-F7). Not a data defect; awaiting a human decision. | 2026-08-24 | needs decision — Matt |
+| F-014 | content | The reference build ships content only the Godot port reads (bug bash BB-27, BB-3): `data/economy/balance.json`'s `economy.new_market_premium` block and `data/economy/first_sale_lines.json`, which Python ignores (it keeps its first-sale 1.5x bonus), and Emergency Reserves' description, which names the port's sealed reserve cell while Python keeps its 1-fuel floor. `tests/test_data/test_port_only_content.py` pins all three. | Bug bash plan B1, 2026-09-30 | wontfix: Python is the goldens' reference build; the port's deviations D-23 and D-25 record the difference |
 
 ## Closed findings
 
@@ -72,3 +73,4 @@ quietly rot here instead of quietly rotting somewhere else.
 | F-C06 | infra | Crawler clicked the main menu's Exit button and quit its own session. | QF-6C — identity-based terminator registry |
 | F-C07 | infra | Crawl runs mutated committed save fixtures. | QF-6C — fixtures copied to a temp dir |
 | F-C08 | infra | Baseline capture returned `(0, 0)` silently on timeout; agents then ran with no regression baseline. | SUITE-1 — raises `BaselineCaptureError` |
+| F-C09 | softlock | A save dropped every flag written outside a conversation. `Game._save_game` replaced the player's flag store with the dialogue manager's copy, which loads only when a conversation opens or a game loads, so a mission's accept flag, a reward's `set_flag`, the iron clock's flag at a rest and the sale sensor's flag were lost at the next dock's auto-save unless a conversation opened first; Reva's and Dex's gates (`cargo_lost_accepted`, `cargo_lost_complete`) and plan A1's Mossa gate (`the_dead_ledger_accepted`) would strand, and the first sale's 1.5x re-armed after every save. Found planning bug bash B1. | Bug bash plan B1, 2026-09-30: a save lays the player's store over the copy (`DialogueManager.merged_flags`); `tests/test_engine/test_save_flag_stores.py` |
