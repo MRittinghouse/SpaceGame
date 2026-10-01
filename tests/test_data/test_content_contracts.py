@@ -25,6 +25,8 @@ DATA_DIR = PROJECT_ROOT / "data"
 
 # BB-17: a mission whose required flags hold this flag waits for SP10. Nothing sets it.
 HOLD_BACK_FLAG = "held_back_until_sp10"
+# BB-17: the two missions the author held back for SP10 (Task 7 adds the flag to both).
+HELD_BACK_MISSIONS: set[str] = {"two_calls", "the_silent_shaft"}
 # BB-15: every mission's accept cargo must fit the starting ship's hold.
 STARTING_SHIP_TYPE = "shuttle"
 # BB-15: the Nexus Prime jobs a new captain can hold together on day one, with no gate
@@ -171,8 +173,10 @@ def check_gated_flags(dl: DataLoader) -> set[str]:
     objective's flag is free when any producer is: a reply's set_flag or a check's failure
     flag on a node its tree reaches without a pass, or any producer outside dialogue (a
     mission reward, an encounter, an NPC gate, a forced encounter, a ground mission, code).
-    A check's success flag never frees it. A flag with no producer is producer_cycles'
-    business, so it is skipped here.
+    A check's success flag never frees it. The mission's own reward, or the reward of a
+    mission that needs this one completed, never frees the flag, the same rule
+    producer_cycles applies. A flag with no such producer is producer_cycles' business, so
+    it is skipped here.
     """
     free: set[str] = set()
     for tree in dl.dialogue_trees.values():
@@ -184,13 +188,21 @@ def check_gated_flags(dl: DataLoader) -> set[str]:
                 if check is not None and check.set_flag_on_failure:
                     free.add(check.set_flag_on_failure)
     real = _producers(dl)
+    dependents = _dependents(dl)
     gated: set[str] = set()
     for mission in dl.missions:
         for objective in mission.objectives:
-            flag = objective.target_id
-            if objective.type != ObjectiveType.HAS_FLAG or not real.get(flag):
+            if objective.type != ObjectiveType.HAS_FLAG:
                 continue
-            outside_dialogue = any(not source.startswith("dialogue:") for source in real[flag])
+            flag = objective.target_id
+            usable = [
+                source
+                for source in real.get(flag, set())
+                if not _is_own_cycle(source, mission.id, dependents)
+            ]
+            if not usable:
+                continue
+            outside_dialogue = any(not source.startswith("dialogue:") for source in usable)
             if not outside_dialogue and flag not in free:
                 gated.add(flag)
     return gated
@@ -223,7 +235,12 @@ def self_looping_checks(dl: DataLoader) -> set[str]:
 
 
 def unknown_forced_enemies(dl: DataLoader) -> set[str]:
-    """Forced-encounter enemy ids that name no template, so no fight is readied (BB-30)."""
+    """Forced-encounter enemy ids that name no template, so no fight is readied (BB-30).
+
+    A hostile forced encounter that names no enemy passes here: lab_rat and the_informant
+    name none, and their encounter definitions (lab_rat_malfunction, informant_pursuit) do
+    not exist. F-43 records both for SP10.
+    """
     return {
         f"{mission.id}:{enemy_id}"
         for mission in dl.missions
@@ -312,6 +329,36 @@ class TestContentContracts:
         assert len(dl.dialogue_trees) >= 100
         assert len(dl.npcs) >= 60
         assert len(_equipment_moves()) >= 60
+        # Floors for every input a check walks, so a renamed key cannot empty it and pass.
+        assert (
+            sum(o.type == ObjectiveType.HAS_FLAG for m in dl.missions for o in m.objectives) >= 60
+        )
+        checks = [
+            response
+            for tree in dl.dialogue_trees.values()
+            for node in tree.nodes.values()
+            for response in node.responses
+            if response.skill_check is not None
+        ]
+        assert len(checks) >= 40
+        assert sum(1 for npc in dl.npcs.values() if npc.hide_after_flag) >= 15
+        assert (
+            sum(
+                len(m.forced_encounter.enemy_template_ids)
+                for m in dl.missions
+                if m.forced_encounter is not None
+            )
+            >= 8
+        )
+        assert sum(1 for m in dl.missions if m.on_accept_cargo) >= 5
+        crew_moves = {
+            move["id"] for template in dl.crew_templates.values() for move in template.combat_moves
+        }
+        assert len(crew_moves) >= 12
+        events = json.loads((DATA_DIR / "economy" / "galaxy_events.json").read_text("utf-8"))
+        events = events["galaxy_events"]
+        assert sum(len(e.get("price_modifiers") or {}) for e in events) >= 12
+        assert sum(len(e.get("blocked_commodities") or []) for e in events) >= 6
 
     @pytest.mark.timeout(300)
     def test_has_flag_objectives_have_a_producer_outside_their_own_cycle(self) -> None:
@@ -345,3 +392,15 @@ class TestContentContracts:
 
     def test_each_equipment_move_id_belongs_to_one_item(self) -> None:
         assert move_ids_on_two_items() == PENDING_MOVE_IDS_ON_TWO_ITEMS
+
+    @pytest.mark.timeout(300)
+    def test_the_hold_back_flag_stays_unset_and_holds_back_two_missions(self) -> None:
+        dl = _loader()
+        assert not _producers(dl).get(HOLD_BACK_FLAG), (
+            f"something now sets {HOLD_BACK_FLAG}: producer_cycles must check the held-back "
+            "missions again"
+        )
+        carriers = {m.id for m in dl.missions if HOLD_BACK_FLAG in m.required_flags}
+        assert carriers <= HELD_BACK_MISSIONS, (
+            f"unexpected missions hold back on {HOLD_BACK_FLAG}: {carriers - HELD_BACK_MISSIONS}"
+        )
