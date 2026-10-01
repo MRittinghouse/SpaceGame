@@ -710,7 +710,7 @@ class MissionLogView(BaseView):
 
             # Show location hint for incomplete objectives
             if not completed:
-                detail = self._get_objective_detail(obj)
+                detail = self._get_objective_detail(obj, self._selected_mission_id)
                 if detail:
                     detail_surf = self._small_font.render(detail, True, (120, 140, 170))
                     screen.blit(detail_surf, (pad_x + 30, cur_y))
@@ -802,8 +802,19 @@ class MissionLogView(BaseView):
             )
             screen.blit(prereq_surf, (pad_x, cur_y))
 
-    def _get_objective_detail(self, obj: "MissionObjective") -> str:
-        """Get a location/quantity hint for an objective, or empty string."""
+    def _get_objective_detail(self, obj: "MissionObjective", mission_id: str) -> str:
+        """Get a location/quantity hint for an objective, or empty string.
+
+        A collect hint shows the count the leg tests: the main hold less every unit another
+        active mission's accept cargo holds, so it agrees with the mission manager.
+
+        Args:
+            obj: The objective to describe.
+            mission_id: The mission the objective belongs to; its own accept cargo counts.
+
+        Returns:
+            The hint text, or an empty string when the objective has none.
+        """
         if obj.type == ObjectiveType.REACH_SYSTEM and self._data_loader:
             system = self._data_loader.get_system(obj.target_id)
             if system:
@@ -815,7 +826,12 @@ class MissionLogView(BaseView):
                 loc = system.name if system else npc.home_system_id
                 return f"\u2192 {npc.name} at {loc}"
         if obj.type == ObjectiveType.COLLECT_CARGO and self._player:
-            current = self._player.ship.get_cargo_quantity(obj.target_id)
+            if self.mission_manager is not None:
+                current = self.mission_manager.free_units(
+                    self._player, obj.target_id, except_mission=mission_id
+                )
+            else:
+                current = self._player.ship.get_cargo_quantity(obj.target_id)
             return f"\u2192 {current}/{obj.target_quantity} in cargo"
         return ""
 
