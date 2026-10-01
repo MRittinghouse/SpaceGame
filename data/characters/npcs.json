@@ -935,6 +935,28 @@
           ]
         },
         {
+          "state_id": "arna_payback_pending",
+          "dialogue_id": "arna_payback_pending",
+          "required_flags": [
+            "arna_branch_payback"
+          ],
+          "excluded_flags": [
+            "arna_branch_a_complete",
+            "arna_retired"
+          ]
+        },
+        {
+          "state_id": "arna_walkaway_pending",
+          "dialogue_id": "arna_walkaway_pending",
+          "required_flags": [
+            "arna_branch_walkaway"
+          ],
+          "excluded_flags": [
+            "arna_branch_b_complete",
+            "arna_retired"
+          ]
+        },
+        {
           "state_id": "arna_post_refining",
           "dialogue_id": "arna_post_refining",
           "required_flags": [
@@ -947,6 +969,17 @@
           ]
         },
         {
+          "state_id": "arna_buyer_pending",
+          "dialogue_id": "arna_buyer_pending",
+          "required_flags": [
+            "arna_arranging_buyer"
+          ],
+          "excluded_flags": [
+            "keren_ambush_triggered",
+            "arna_retired"
+          ]
+        },
+        {
           "state_id": "arna_post_ore_tip",
           "dialogue_id": "arna_post_ore_tip",
           "required_flags": [
@@ -954,6 +987,17 @@
           ],
           "excluded_flags": [
             "arna_sent_to_tev",
+            "arna_retired"
+          ]
+        },
+        {
+          "state_id": "arna_refining_pending",
+          "dialogue_id": "arna_refining_pending",
+          "required_flags": [
+            "arna_sent_to_tev"
+          ],
+          "excluded_flags": [
+            "tev_refining_complete",
             "arna_retired"
           ]
         },

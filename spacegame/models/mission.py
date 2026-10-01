@@ -370,11 +370,16 @@ class MissionManager:
     for save/load persistence.
     """
 
-    def __init__(self, missions: list[Mission]) -> None:
+    def __init__(
+        self, missions: list[Mission], produced_flags: Optional[frozenset[str]] = None
+    ) -> None:
         """Initialize with mission definitions.
 
         Args:
             missions: All mission definitions from data loader.
+            produced_flags: The flags content sets outside missions, from
+                ``content_flag_producers``. None keeps the auto-resolve setting every
+                unmet flag.
         """
         self._missions: dict[str, Mission] = {m.id: m for m in missions}
         self._status: dict[str, MissionStatus] = {m.id: MissionStatus.UNAVAILABLE for m in missions}
@@ -393,6 +398,24 @@ class MissionManager:
         self._accept_system: dict[str, str] = {}
         self._departed: set[str] = set()
         self._baselines: dict[str, dict[str, int]] = {}
+        # BB-19: flags some content can set, which the auto-resolve leaves to their scenes.
+        # None keeps the auto-resolve setting every flag, for callers that pass no content.
+        self._produced_flags: Optional[frozenset[str]] = None
+        if produced_flags is not None:
+            triggers = {
+                m.forced_encounter.trigger_flag
+                for m in missions
+                if m.forced_encounter is not None and m.forced_encounter.trigger_flag
+            }
+            self._produced_flags = frozenset(produced_flags) | frozenset(triggers)
+        # Which missions set each flag as a reward (another mission's reward is a producer).
+        self._flag_rewarders: dict[str, set[str]] = {}
+        for m in missions:
+            for reward in m.rewards:
+                if reward.reward_type == "set_flag" and reward.target_id:
+                    self._flag_rewarders.setdefault(reward.target_id, set()).add(m.id)
+        # BB-19: NPCs spoken to since each active mission was accepted.
+        self._talked_since_accept: dict[str, set[str]] = {}
 
     def add_mission(
         self,
@@ -562,6 +585,25 @@ class MissionManager:
             player.record_interaction("any_mission_accepted", game_day=game_day)
         return (True, f"Accepted: {self._missions[mission_id].name}")
 
+    def record_conversation(self, npc_id: str) -> None:
+        """Note a finished conversation for each active mission that awaits it (BB-19).
+
+        A talk objective after a mission's first objective counts only a conversation
+        noted here after the mission was accepted, so the conversation that accepts a
+        mission never completes its later talk objectives. Only an active mission with
+        such an objective for this NPC notes it, which keeps the saved state small. Call
+        it when a dialogue ends, before the availability pass that may accept new missions.
+
+        Args:
+            npc_id: The NPC the conversation was with.
+        """
+        for mid, status in self._status.items():
+            if status != MissionStatus.ACTIVE:
+                continue
+            later = self._missions[mid].objectives[1:]
+            if any(o.type == ObjectiveType.TALK_TO_NPC and o.target_id == npc_id for o in later):
+                self._talked_since_accept.setdefault(mid, set()).add(npc_id)
+
     def get_accepted_day(self, mission_id: str) -> Optional[int]:
         """Return the game_day when the mission was accepted, or None."""
         return self._accepted_day.get(mission_id)
@@ -678,7 +720,8 @@ class MissionManager:
             # ones are complete, set the missing flags so the mission can finish.
             # This handles delivery/resolution flags that have no NPC dialogue yet.
             # Campaign missions are excluded — their flags are set by specific
-            # game events (dialogue, ground missions, encounters).
+            # game events (dialogue, ground missions, encounters). It sets only flags
+            # no content produces (BB-19); the rest wait for their scenes.
             if mission.mission_type == "side":
                 incomplete = [
                     (i, obj)
@@ -694,6 +737,8 @@ class MissionManager:
                     and all(obj.type == ObjectiveType.HAS_FLAG for _, obj in incomplete)
                 ):
                     for i, obj in incomplete:
+                        if not self._auto_resolvable(mid, obj.target_id):
+                            continue
                         player.dialogue_flags[obj.target_id] = True
                         self._progress[mid][i] = True
                         logger.warning(
@@ -716,6 +761,7 @@ class MissionManager:
         self._accept_system.pop(mission_id, None)
         self._departed.discard(mission_id)
         self._baselines.pop(mission_id, None)
+        self._talked_since_accept.pop(mission_id, None)
 
     def _note_position(self, mission_id: str, player: "Player") -> None:
         """Record the accept system late, or note that the ship has left it (BB-6).
@@ -761,11 +807,29 @@ class MissionManager:
                 return False
             if not self._earlier_legs_met(mission_id, mission, index):
                 return False
+        if obj.type == ObjectiveType.TALK_TO_NPC and index > 0:
+            # BB-19: a conversation counts only once the legs before it are done; one
+            # held while an earlier leg is open is dropped.
+            if not self._earlier_legs_met(mission_id, mission, index):
+                self._talked_since_accept.get(mission_id, set()).discard(obj.target_id)
+                return False
         return self._check_single_objective(mission_id, index, obj, player)
 
     def _since_accept(self, mission_id: str, counter: str, value: int) -> int:
         """A lifetime counter minus its value at the accept (0 when no accept recorded it)."""
         return value - self._baselines.get(mission_id, {}).get(counter, 0)
+
+    def _auto_resolvable(self, mission_id: str, flag: str) -> bool:
+        """Whether the side-mission auto-resolve may set this flag (BB-19).
+
+        It may unless some content produces the flag: a dialogue, an encounter, an NPC
+        gate, a forced encounter, or another mission's reward.
+        """
+        if self._produced_flags is None:
+            return True
+        if flag in self._produced_flags:
+            return False
+        return not (self._flag_rewarders.get(flag, set()) - {mission_id})
 
     def _check_single_objective(
         self, mission_id: str, index: int, obj: MissionObjective, player: "Player"
@@ -774,6 +838,8 @@ class MissionManager:
         if obj.type == ObjectiveType.REACH_SYSTEM:
             return player.current_system_id == obj.target_id
         elif obj.type == ObjectiveType.TALK_TO_NPC:
+            if index > 0:
+                return obj.target_id in self._talked_since_accept.get(mission_id, set())
             from spacegame.constants.flags import talked_to_npc
 
             return player.dialogue_flags.get(talked_to_npc(obj.target_id), False)
@@ -1188,6 +1254,9 @@ class MissionManager:
             "accept_system": dict(self._accept_system),
             "departed": sorted(self._departed),
             "baselines": {mid: dict(counters) for mid, counters in self._baselines.items()},
+            "talked_since_accept": {
+                mid: sorted(npcs) for mid, npcs in self._talked_since_accept.items() if npcs
+            },
             "runtime_missions": [self._missions[mid].to_dict() for mid in self._runtime_ids],
         }
 
@@ -1224,4 +1293,8 @@ class MissionManager:
         self._baselines = {
             str(mid): {str(name): int(value) for name, value in counters.items()}
             for mid, counters in data.get("baselines", {}).items()
+        }
+        self._talked_since_accept = {
+            str(mid): {str(npc) for npc in npcs}
+            for mid, npcs in data.get("talked_since_accept", {}).items()
         }

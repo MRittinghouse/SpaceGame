@@ -17,7 +17,8 @@ import pytest
 
 from spacegame.data_loader import DataLoader, get_data_loader
 from spacegame.models.dialogue import DialogueTree
-from spacegame.models.mission import ObjectiveType
+from spacegame.models.flag_producers import content_flag_producers
+from spacegame.models.mission import MissionManager, ObjectiveType
 from tests.test_data.test_dialogue_integrity import _collect_all_flag_uses
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -139,21 +140,30 @@ def producer_cycles(dl: DataLoader) -> set[str]:
     """has_flag objectives with no producer reachable while their mission is open (BB-2).
 
     A producer counts unless it is the mission's own reward, or the reward of a mission
-    that needs this one completed. A side mission with a non-flag objective passes, since
-    the side-mission auto-resolve sets any flag nothing else produces. A mission held
-    back behind HOLD_BACK_FLAG is skipped.
+    that needs this one completed. A side mission with a non-flag objective may await a
+    flag the side-mission auto-resolve still sets, one nothing outside the mission
+    produces (``MissionManager._auto_resolvable``, BB-19); any other flag it awaits needs
+    a usable producer like any mission's. A mission held back behind HOLD_BACK_FLAG is
+    skipped.
     """
     real = _producers(dl)
     dependents = _dependents(dl)
+    manager = MissionManager(
+        dl.missions,
+        produced_flags=content_flag_producers(
+            dl.dialogue_trees.values(), dl.encounter_definitions, dl.npcs.values()
+        ),
+    )
     broken: set[str] = set()
     for mission in dl.missions:
         if HOLD_BACK_FLAG in mission.required_flags:
             continue
         has_non_flag = any(o.type != ObjectiveType.HAS_FLAG for o in mission.objectives)
-        if mission.mission_type == "side" and has_non_flag:
-            continue
+        auto_resolved = mission.mission_type == "side" and has_non_flag
         for objective in mission.objectives:
             if objective.type != ObjectiveType.HAS_FLAG:
+                continue
+            if auto_resolved and manager._auto_resolvable(mission.id, objective.target_id):
                 continue
             usable = [
                 source

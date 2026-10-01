@@ -14,6 +14,7 @@ from typing import Any
 from spacegame.constants.flags import talked_to_npc
 from spacegame.data_loader import get_data_loader
 from spacegame.models.crew import CrewRoster
+from spacegame.models.flag_producers import content_flag_producers
 from spacegame.models.mission import MissionManager, MissionObjective, ObjectiveType
 from spacegame.models.player import Player
 from spacegame.models.procedural_missions import ProceduralMissionGenerator
@@ -29,7 +30,12 @@ PLAYER_NAME = "ParityPilot"
 
 def _manager() -> MissionManager:
     dl = get_data_loader()
-    return MissionManager(copy.deepcopy(dl.missions))
+    return MissionManager(
+        copy.deepcopy(dl.missions),
+        produced_flags=content_flag_producers(
+            dl.dialogue_trees.values(), dl.encounter_definitions, dl.npcs.values()
+        ),
+    )
 
 
 def _build_player(fields: dict[str, Any]) -> Player:
@@ -43,12 +49,13 @@ def _build_player(fields: dict[str, Any]) -> Player:
     )
 
 
-def _satisfy(player: Player, objective: MissionObjective) -> None:
+def _satisfy(manager: MissionManager, player: Player, objective: MissionObjective) -> None:
     kind, target, qty = objective.type, objective.target_id, objective.target_quantity
     if kind == ObjectiveType.REACH_SYSTEM:
         player.current_system_id = target
     elif kind == ObjectiveType.TALK_TO_NPC:
         player.dialogue_flags[talked_to_npc(target)] = True
+        manager.record_conversation(target)
     elif kind == ObjectiveType.HAVE_CREDITS:
         player.credits = max(player.credits, qty)
     elif kind == ObjectiveType.COLLECT_CARGO:
@@ -132,7 +139,7 @@ def _lifecycle(mission_id: str, name: str, *, complete_on_day: int = 1) -> Case:
     # before its last objective.
     completed: list[str] = []
     for index, objective in enumerate(mission.objectives):
-        _satisfy(player, objective)
+        _satisfy(manager, player, objective)
         completed = manager.check_objectives(player, recruited_crew_ids=roster.recruited_ids)
         case.record(
             "check_objectives",

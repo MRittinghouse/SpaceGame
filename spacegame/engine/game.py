@@ -88,6 +88,7 @@ if TYPE_CHECKING:
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
     from spacegame.models.lens import Lens
+    from spacegame.models.mission import MissionManager
     from spacegame.views.achievements_view import AchievementsView
     from spacegame.views.auction_view import AuctionView
     from spacegame.views.cantina_view import CantinaView
@@ -676,9 +677,7 @@ class Game:
         self.player.dialogue_flags["first_trade_bonus_available"] = True
 
         # Initialize mission system
-        from spacegame.models.mission import MissionManager
-
-        self.mission_manager = MissionManager(self.data_loader.missions)
+        self.mission_manager = self._build_mission_manager()
         self.mission_manager.update_availability(
             self.player.dialogue_flags,
             player_reputation=getattr(self.player, "faction_reputation", {}),
@@ -1672,6 +1671,10 @@ class Game:
                         # reset their drift clocks — not just on the first
                         # conversation ever.
                         self.player.record_interaction(flag_key)
+                        # BB-19: count this conversation for the missions already active,
+                        # before the availability pass accepts new ones.
+                        if self.mission_manager:
+                            self.mission_manager.record_conversation(self._last_dialogue_npc_id)
                         self._last_dialogue_npc_id = None
 
                     # Check for journal auto-entries triggered by new flags
@@ -5248,9 +5251,7 @@ class Game:
         self.social_manager.load_state(self.player.social_state)
 
         # Restore mission manager
-        from spacegame.models.mission import MissionManager
-
-        self.mission_manager = MissionManager(self.data_loader.missions)
+        self.mission_manager = self._build_mission_manager()
         if self.player.mission_state:
             self.mission_manager.load_state(self.player.mission_state)
         # Always run update_availability after load — flags may have been set
@@ -6112,6 +6113,19 @@ class Game:
             return None
         manager = self.politics_manager
         return lambda fid, amount: manager.apply_reputation_with_spillover(self.player, fid, amount)
+
+    def _build_mission_manager(self) -> "MissionManager":
+        """A mission manager whose auto-resolve knows which flags the content sets (BB-19)."""
+        from spacegame.models.flag_producers import content_flag_producers
+        from spacegame.models.mission import MissionManager
+
+        dl = self.data_loader
+        return MissionManager(
+            dl.missions,
+            produced_flags=content_flag_producers(
+                dl.dialogue_trees.values(), dl.encounter_definitions, dl.npcs.values()
+            ),
+        )
 
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""

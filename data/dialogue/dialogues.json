@@ -6778,7 +6778,79 @@
         {
           "id": "start",
           "speaker_id": "arna",
-          "text": "Still here? Breakstone is not moving. Get the ore, get back.",
+          "text": "Ore aboard? Set it on the counter. If not, Breakstone is not moving.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_refining_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Still here? Tev is waiting at Forgeworks. Tell him I sent you. He'll know what to do with the ore.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_buyer_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Bag's packed. The buyer is at Heron's Mark, and he pays for alloy nobody can trace, so keep it that way. We leave when you do.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_payback_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Rib's taped. If Keren paid what he owes, set it down and we'll talk. If not, his depot's still in your nav.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_walkaway_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "If the derelict gave up its scrap, set it on the desk. If not, it's still out at Haven's Rest.",
           "responses": [
             {
               "text": "[Leave]",

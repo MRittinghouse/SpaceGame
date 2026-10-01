@@ -83,7 +83,7 @@ def test_lifecycles_replay_from_setup() -> None:
                 )
                 player.game_day = case.setup["complete_on_day"]
             elif call == "check_objectives":
-                missions._satisfy(player, mission.objectives[args[0]])
+                missions._satisfy(manager, player, mission.objectives[args[0]])
                 completed = manager.check_objectives(
                     player, recruited_crew_ids=roster.recruited_ids
                 )
