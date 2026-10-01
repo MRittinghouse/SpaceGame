@@ -1,5 +1,5 @@
 {
-  "_comment": "A station's line the first time it buys any good from the captain, one per market system; the Fulcrum and Heron's Mark have none. The Godot port reads this file (bug bash BB-27); Python does not. Working text for the writing session.",
+  "_comment": "A station's line, played once a game before the premium notice, the first time that station pays the captain the new-market premium: a sale, at a real margin, of a legal good bought at another station (polish design 5.4). Loot, a mission's cargo and goods bought at that station open nothing. One per market system but the Fulcrum, whose premium notice plays alone; Heron's Mark has no market. The Godot port reads this file (bug bash BB-27); Python does not. Working text for the writing session.",
   "first_sale_lines": [
     {
       "system_id": "nexus_prime",
