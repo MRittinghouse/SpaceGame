@@ -268,3 +268,119 @@ class TestRestRunsTheIronClock:
         view._execute_rest()
         assert player.game_day == 20
         assert player.dialogue_flags["iron_delivery_moved_on"] is True
+
+
+class TestConsignedCargo:
+    """Bug bash BB-1 and BB-11: a mission's accept cargo stays aboard unless named."""
+
+    def _view(
+        self,
+        cargo: dict[str, int],
+        board: bool = False,
+        hidden: dict[str, int] | None = None,
+    ):
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.mission import (
+            AcceptCargo,
+            Mission,
+            MissionManager,
+            MissionObjective,
+            MissionStatus,
+            ObjectiveType,
+        )
+
+        dl = get_data_loader()
+        dl.load_all()
+        manager = MissionManager(dl.missions)
+        manager.load_state({"status": {"iron_delivery": "active"}})
+        if board:
+            manager.add_mission(
+                Mission(
+                    id="proc_smuggling_test",
+                    name="test",
+                    description="A test contract.",
+                    objectives=[
+                        MissionObjective(type=ObjectiveType.REACH_SYSTEM, target_id="verdant")
+                    ],
+                    rewards=[],
+                    on_accept_cargo=[AcceptCargo(commodity_id="weapons_components", quantity=3)],
+                ),
+                MissionStatus.ACTIVE,
+            )
+        view, player = _make_trading_view_with_real_player(
+            starting_cargo=cargo, mission_manager=manager
+        )
+        if hidden:
+            from spacegame.models.smuggling import HiddenCompartment
+
+            player.hidden_compartment = HiddenCompartment(
+                total_cargo_capacity=50, hidden_cargo=dict(hidden)
+            )
+        view._get_adjusted_sell_price = MagicMock(return_value=14)
+        view._apply_trade_reputation = MagicMock()
+        # QF-8: quantity_input is a read-only property over _quantity_input
+        view._quantity_input = MagicMock()
+        return view, player
+
+    def _sell(self, view, commodity_id: str, quantity: int) -> None:
+        view._get_selected_cargo_commodity = MagicMock(return_value=commodity_id)
+        view.quantity_input.get_text.return_value = str(quantity)
+        view._execute_sell()
+
+    def test_sell_all_sells_only_the_captains_own_ore(self) -> None:
+        view, player = self._view({"iron_ore": 15, "food": 4})
+        view._execute_sell_all()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert player.ship.get_cargo_quantity("food") == 0
+
+    def test_sell_max_sells_only_the_surplus(self) -> None:
+        view, player = self._view({"iron_ore": 13})
+        view._get_selected_cargo_commodity = MagicMock(return_value="iron_ore")
+        view._execute_sell_max()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+
+    def test_sell_max_with_only_consigned_ore_sells_nothing(self) -> None:
+        view, player = self._view({"iron_ore": 10})
+        view._get_selected_cargo_commodity = MagicMock(return_value="iron_ore")
+        view._execute_sell_max()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert view.transaction_message == "No cargo to sell"
+
+    def test_naming_odoms_ore_sells_it_and_records_the_sale(self) -> None:
+        view, player = self._view({"iron_ore": 10})
+        self._sell(view, "iron_ore", 1)
+        assert player.ship.get_cargo_quantity("iron_ore") == 9
+        assert player.dialogue_flags["broker_ore_sold"] is True
+
+    def test_selling_the_captains_own_ore_records_nothing(self) -> None:
+        view, player = self._view({"iron_ore": 15})
+        self._sell(view, "iron_ore", 5)
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert "broker_ore_sold" not in player.dialogue_flags
+
+    def test_a_board_contracts_cargo_is_sealed(self) -> None:
+        from spacegame.views.trading_view import SEALED_CARGO
+
+        view, player = self._view({"weapons_components": 5}, board=True)
+        self._sell(view, "weapons_components", 2)
+        assert player.ship.get_cargo_quantity("weapons_components") == 3
+        self._sell(view, "weapons_components", 1)
+        assert player.ship.get_cargo_quantity("weapons_components") == 3
+        assert view.transaction_message == SEALED_CARGO
+
+    def test_hidden_ore_still_counts_as_aboard(self) -> None:
+        """Five of Odom's ten hidden, five more bought: selling five is the captain's own."""
+        view, player = self._view({"iron_ore": 10}, hidden={"iron_ore": 5})
+        self._sell(view, "iron_ore", 5)
+        assert player.ship.get_cargo_quantity("iron_ore") == 5
+        assert "broker_ore_sold" not in player.dialogue_flags
+        self._sell(view, "iron_ore", 1)
+        assert player.dialogue_flags["broker_ore_sold"] is True
+
+    def test_hiding_a_contracts_cargo_leaves_the_captains_own_unsealed(self) -> None:
+        """The contract's three hidden, three of the captain's own in the main hold."""
+        view, player = self._view(
+            {"weapons_components": 3}, board=True, hidden={"weapons_components": 3}
+        )
+        self._sell(view, "weapons_components", 3)
+        assert player.ship.get_cargo_quantity("weapons_components") == 0

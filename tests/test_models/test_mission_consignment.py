@@ -101,6 +101,21 @@ class TestReservedUnits:
         player.ship.remove_cargo("iron_ore", 5)
         assert manager.free_units(player, "iron_ore") == 0
 
+    def test_a_sale_draws_sealed_cargo_only_past_the_captains_own(self) -> None:
+        """Three contract units aboard with two of the captain's own: two may be sold."""
+        manager, player = _manager(iron_delivery="active"), _player()
+        manager.add_mission(
+            _contract("proc_smuggling_test", "weapons_components", 3), MissionStatus.ACTIVE
+        )
+        player.ship.add_cargo("weapons_components", 5, 0)
+        assert not manager.sale_draws_sealed(player, "weapons_components", 2)
+        assert manager.sale_draws_sealed(player, "weapons_components", 3)
+        # a sale larger than the hold is the sell path's own "not enough cargo", not a seal
+        assert not manager.sale_draws_sealed(player, "weapons_components", 6)
+        # a campaign mission's cargo is never sealed: naming it sells it
+        player.ship.add_cargo("iron_ore", 10, 0)
+        assert not manager.sale_draws_sealed(player, "iron_ore", 10)
+
 
 class TestCollectLegsCountFreeUnits:
     def test_another_missions_accept_cargo_does_not_fill_a_collect_leg(self) -> None:

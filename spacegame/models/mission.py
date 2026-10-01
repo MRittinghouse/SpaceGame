@@ -743,6 +743,25 @@ class MissionManager:
         own = held_units(player, commodity_id) - self.reserved_units(commodity_id, except_mission)
         return max(0, min(main, own))
 
+    def sale_draws_sealed(self, player: "Player", commodity_id: str, quantity: int) -> bool:
+        """Whether selling units would draw an active board contract's sealed cargo (BB-11).
+
+        The captain's own units go first and the hidden compartment counts as aboard, so a
+        sale draws the seal only when it sells more than the held units above the sealed
+        count. A sale larger than the main hold is the sell path's own refusal, not a seal.
+
+        Args:
+            player: The player whose holds are read.
+            commodity_id: The good.
+            quantity: The units the captain names.
+
+        Returns:
+            True when the sale is refused for sealed cargo.
+        """
+        aboard = player.ship.get_cargo_quantity(commodity_id)
+        held = held_units(player, commodity_id)
+        return aboard >= quantity > held - self.sealed_units(commodity_id)
+
     def free_cargo(self, player: "Player") -> dict[str, int]:
         """The main hold with every reserved unit held back, goods with nothing free left out.
 

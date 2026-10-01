@@ -148,3 +148,11 @@ def test_the_trading_view_gets_the_mission_manager() -> None:
     ]
     assert built
     assert any(k.arg == "mission_manager" for k in built[0].keywords)
+
+
+def test_odoms_opening_no_longer_counts_the_ore() -> None:
+    """BB-1: the sale sensor replaces the count test, which accused a fight's loser."""
+    start = _function("start_dialogue")
+    assert not _calls(start, "get_cargo_quantity")
+    literals = [n.value for n in ast.walk(start) if isinstance(n, ast.Constant)]
+    assert "broker_ore_sold" not in literals

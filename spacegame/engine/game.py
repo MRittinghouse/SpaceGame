@@ -3626,20 +3626,6 @@ class Game:
             if self.player.progression.get_bonus("special_dialogue") > 0:
                 self.dialogue_manager.set_flag("has_special_dialogue")
 
-        # Detect if player sold the cargo broker's iron ore
-        if npc_id == "odom_broker" and self.mission_manager:
-            from spacegame.models.mission import MissionStatus
-
-            iron_status = self.mission_manager.get_status("iron_delivery")
-            has_ore = self.player.ship.get_cargo_quantity("iron_ore") >= 10
-            if (
-                iron_status == MissionStatus.ACTIVE
-                and not has_ore
-                and not self.player.dialogue_flags.get("iron_ore_delivered", False)
-            ):
-                self.player.dialogue_flags["broker_ore_sold"] = True
-                self.dialogue_manager.set_flag("broker_ore_sold")
-
         # Apply faction-based disposition modifier to NPC
         if self.politics_manager and npc.faction_id:
             disp_mod = self.politics_manager.get_npc_disposition_modifier(

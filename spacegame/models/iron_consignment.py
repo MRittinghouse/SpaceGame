@@ -7,6 +7,10 @@ the day the job's late tier begins (accept day + 19), or from day 20 for a capta
 holds the bill of landing and never took the job. The job itself stays open and payable;
 the clock fails nothing (the "drift, not fail" pillar, polish design choice 2).
 
+``note_sale`` records a sale that draws the consigned ore while the job is open, which
+Odom's betrayal reply reads; it replaces the count test at his opening, which accused a
+captain who lost ore in a fight.
+
 Python keeps counts, so Odom's ten units are the job's accept cargo reserved through
 ``MissionManager.reserved_units``. The Godot port mirrors these rules (plan B2).
 """
@@ -16,7 +20,11 @@ from __future__ import annotations
 from collections.abc import Mapping, MutableMapping
 from typing import TYPE_CHECKING, Optional
 
-from spacegame.constants.flags import iron_delivery_failed, iron_delivery_moved_on
+from spacegame.constants.flags import (
+    broker_ore_sold,
+    iron_delivery_failed,
+    iron_delivery_moved_on,
+)
 from spacegame.models.mission import MissionStatus
 
 if TYPE_CHECKING:
@@ -115,4 +123,38 @@ def close_on_exit(manager: "MissionManager", flags: MutableMapping[str, bool]) -
         return False
     manager.fail_mission(MISSION)
     flags[iron_delivery_moved_on()] = True
+    return True
+
+
+def note_sale(
+    manager: "MissionManager",
+    flags: MutableMapping[str, bool],
+    commodity_id: str,
+    held_before: int,
+    quantity: int,
+) -> bool:
+    """Record a sale that drew Odom's consigned ore while the job is open (BB-1).
+
+    The captain's own ore goes first, so a sale draws the consignment only when it sells
+    more than the units above the reserved count, which is a sale that leaves fewer than
+    ten held. Units in the hidden compartment are held (``held_units``), so hiding Odom's
+    ore and selling the captain's own is no sale of his. A fight's loss is not a sale and
+    records nothing.
+
+    Args:
+        manager: The mission manager.
+        flags: The player's dialogue flags, written in place.
+        commodity_id: The good sold.
+        held_before: The units held before the sale, the hidden compartment's included.
+        quantity: The units sold.
+
+    Returns:
+        Whether this sale drew the consignment.
+    """
+    if commodity_id != ORE or manager.get_status(MISSION) != MissionStatus.ACTIVE:
+        return False
+    if quantity <= held_before - manager.reserved_units(ORE):
+        return False
+    if not flags.get(broker_ore_sold(), False):
+        flags[broker_ore_sold()] = True
     return True
