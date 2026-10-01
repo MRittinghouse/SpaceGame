@@ -783,7 +783,8 @@ class StationHubView(BaseView):
 
             # Reputation-locked mission teaser (at most 1)
             if hasattr(self.mission_manager, "get_reputation_locked_teaser"):
-                rep = getattr(self.player, "faction_reputation", {})
+                # BB-82: the standing the availability passes gate on, skill bonuses included.
+                rep = self.player.get_effective_reputations(self.data_loader.factions)
                 teaser = self.mission_manager.get_reputation_locked_teaser(self.system.id, rep)
                 if teaser:
                     mission_name, faction_name, tier_name = teaser
