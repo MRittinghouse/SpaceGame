@@ -50,6 +50,11 @@ FLEE_MIN_CHANCE = 10
 FLEE_MAX_CHANCE = 90
 FLEE_ACCURACY_PENALTY = 20
 
+# Ghost Counterstrike (BB-91): stacks cap at 3 plus Counterstrike Mastery's level, and each
+# stack adds 12% plus the skill's 5% per level.
+COUNTERSTRIKE_BASE_STACKS = 3
+COUNTERSTRIKE_BASE_PER_STACK = 0.12
+
 # Tier 3.E: cap on simultaneous living enemies. Reinforcement spawns are
 # silently declined above this cap so a misconfigured move can't flood
 # the combat arena. Matches the combat view's tested-layout budget of up
@@ -83,6 +88,13 @@ class CombatEngine:
         if prog and hasattr(prog, "get_bonus"):
             return prog.get_bonus(bonus_type)
         return 0.0
+
+    def _skill_level(self, skill_id: str) -> int:
+        """A skill's learned level from the progression, or 0 when there is none."""
+        prog = self._state.progression
+        skills = getattr(prog, "skills", None) if prog else None
+        node = skills.get(skill_id) if skills else None
+        return int(node.current_level) if node is not None else 0
 
     # ------------------------------------------------------------------
     # Player actions
@@ -596,6 +608,8 @@ class CombatEngine:
         """Resolve a single enemy's turn based on AI behavior."""
         enemy = self._state.enemies[enemy_idx]
         actor = f"enemy:{enemy_idx}"
+        # BB-86: the move the telegraph showed, taken now so a stale one never plays later
+        told = self._take_telegraphed_move(enemy)
 
         # Check if frozen (Cryo 3-stack effect) — skip turn entirely
         for eff, _ in enemy.active_effects:
@@ -641,7 +655,7 @@ class CombatEngine:
             self._state.combat_log.append(entry)
             return [entry]
 
-        move = self._select_enemy_move(enemy)
+        move = told if told is not None else self._select_enemy_move(enemy)
         if move is None:
             entry = CombatLogEntry(
                 round_number=self._state.round_number,
@@ -817,6 +831,20 @@ class CombatEngine:
                 enemy.telegraphed_move = None
                 continue
             enemy.telegraphed_move = self._select_enemy_move(enemy)
+
+    def _take_telegraphed_move(self, enemy: EnemyShip) -> Optional[CombatMove]:
+        """The move the telegraph showed, if the enemy can still play it (BB-86).
+
+        Clears the telegraph either way. A frozen, crippled, or fleeing enemy returns before
+        its move is chosen, so a telegraph it cannot act on is dropped too.
+        """
+        told = enemy.telegraphed_move
+        enemy.telegraphed_move = None
+        if told is None:
+            return None
+        if told.id in enemy.cooldowns or enemy.current_energy < told.energy_cost:
+            return None
+        return told
 
     @staticmethod
     def _move_damage(move: CombatMove) -> float:
@@ -1383,11 +1411,13 @@ class CombatEngine:
                             and defender.defensive_identity == "ghost"
                         ):
                             prev_stacks = defender.counterstrike_stacks
-                            defender.counterstrike_stacks = min(
-                                defender.counterstrike_stacks + 1, 3
-                            )
+                            cap = COUNTERSTRIKE_BASE_STACKS + self._skill_level("counterstrike")
+                            defender.counterstrike_stacks = min(prev_stacks + 1, cap)
                             if defender.counterstrike_stacks > prev_stacks:
-                                pct = defender.counterstrike_stacks * 12
+                                per_stack = COUNTERSTRIKE_BASE_PER_STACK + self._skill_bonus(
+                                    "counterstrike_bonus"
+                                )
+                                pct = round(per_stack * defender.counterstrike_stacks * 100)
                                 effects_applied.append(f"Counterstrike +{pct}%")
 
                         # Daring Gambit (B8.3): counter-on-dodge.
@@ -1737,7 +1767,9 @@ class CombatEngine:
                     # Ghost Counterstrike: base +12% per stack
                     # counterstrike_bonus skill adds +5% per level per stack
                     if atk.defensive_identity == "ghost" and atk.counterstrike_stacks > 0:
-                        per_stack = 0.12 + self._skill_bonus("counterstrike_bonus")
+                        per_stack = COUNTERSTRIKE_BASE_PER_STACK + self._skill_bonus(
+                            "counterstrike_bonus"
+                        )
                         raw *= 1.0 + per_stack * atk.counterstrike_stacks
 
                 # Defender identity modifiers
@@ -2474,6 +2506,7 @@ class CombatEngine:
 
             elif effect_type == "guaranteed_flee":
                 self._state.result = CombatResult.FLED
+                messages.append("The burst breaks contact. You are clear.")
 
             elif effect_type == "hull_restore" and target == "self_percent":
                 restore = int(player.max_hull * value)

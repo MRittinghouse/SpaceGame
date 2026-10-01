@@ -263,3 +263,62 @@ class TestQueueEdgeCases:
         assert not ok_torpedo
         assert not ok_plasma
         assert ok_laser
+
+
+def _weapon(move_id: str, name: str, cooldown: int, cost: int = 2) -> CombatMove:
+    return CombatMove(
+        id=move_id,
+        name=name,
+        description="",
+        effects=[CombatEffect(type=EffectType.DAMAGE, value=10.0)],
+        energy_cost=cost,
+        cooldown=cooldown,
+    )
+
+
+def _fire_at_will() -> CombatMove:
+    return CombatMove(
+        id="fire_at_will", name="Fire at Will", description="", effects=[], energy_cost=6
+    )
+
+
+class TestVolleyCommanderRepeats:
+    """BB-88: the extra action cannot repeat a weapon its own cooldown would stop."""
+
+    def test_a_cooldown_weapon_cannot_fire_twice(self) -> None:
+        queue = ActionQueue(energy_available=20, extra_action=True)
+        missile = _weapon("missile_salvo", "Missile Salvo", cooldown=2, cost=4)
+        assert queue.add("missile_salvo", 0, missile)[0]
+        ok, msg = queue.add("missile_salvo", 0, missile)
+        assert not ok
+        assert msg == "Missile Salvo cannot fire twice (cooldown 2)"
+        laser = _weapon("laser", "Laser", cooldown=0)
+        assert queue.add("laser", 0, laser)[0]
+        assert queue.add("laser", 0, laser)[0], "the refusal kept the extra action"
+
+    def test_fire_at_will_lets_it_fire_twice(self) -> None:
+        queue = ActionQueue(energy_available=20, extra_action=True)
+        missile = _weapon("missile_salvo", "Missile Salvo", cooldown=2, cost=4)
+        assert queue.add("fire_at_will", -1, _fire_at_will())[0]
+        assert queue.add("missile_salvo", 0, missile)[0]
+        assert queue.add("missile_salvo", 0, missile)[0]
+
+    def test_a_repeat_needs_fire_at_will_before_its_first_copy(self) -> None:
+        """The first missile fires outside Fire at Will and sets the cooldown."""
+        queue = ActionQueue(energy_available=20, extra_action=True)
+        missile = _weapon("missile_salvo", "Missile Salvo", cooldown=2, cost=4)
+        assert queue.add("missile_salvo", 0, missile)[0]
+        assert queue.add("fire_at_will", -1, _fire_at_will())[0]
+        ok, msg = queue.add("missile_salvo", 0, missile)
+        assert not ok
+        assert msg == "Missile Salvo cannot fire twice (cooldown 2)"
+
+    def test_a_repeat_refused_for_energy_keeps_the_extra_action(self) -> None:
+        queue = ActionQueue(energy_available=10, extra_action=True)
+        heavy = _weapon("heavy_cannon", "Heavy Cannon", cooldown=0, cost=6)
+        laser = _weapon("laser", "Laser", cooldown=0, cost=2)
+        assert queue.add("heavy_cannon", 0, heavy)[0]
+        ok, msg = queue.add("heavy_cannon", 0, heavy)
+        assert not ok and msg.startswith("Not enough energy"), msg
+        assert queue.add("laser", 0, laser)[0]
+        assert queue.add("laser", 0, laser)[0], "the energy refusal kept the extra action"
