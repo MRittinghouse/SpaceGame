@@ -1,0 +1,1033 @@
+{
+  "case": "npcs_here",
+  "format": 1,
+  "setup": {
+    "steps": [
+      {
+        "flags": {},
+        "label": "day_one_nexus_prime",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {},
+        "label": "day_one_verdant",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "verdant"
+      },
+      {
+        "flags": {},
+        "label": "day_one_forgeworks",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "forgeworks"
+      },
+      {
+        "flags": {},
+        "label": "day_one_breakstone",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "breakstone"
+      },
+      {
+        "flags": {},
+        "label": "day_one_axiom_labs",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "axiom_labs"
+      },
+      {
+        "flags": {},
+        "label": "day_one_havens_rest",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "havens_rest"
+      },
+      {
+        "flags": {},
+        "label": "day_one_crimson_reach",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "crimson_reach"
+      },
+      {
+        "flags": {},
+        "label": "day_one_stellaris_port",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "stellaris_port"
+      },
+      {
+        "flags": {},
+        "label": "day_one_iron_depths",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "iron_depths"
+      },
+      {
+        "flags": {},
+        "label": "day_one_nova_research",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nova_research"
+      },
+      {
+        "flags": {},
+        "label": "day_one_the_fulcrum",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "the_fulcrum"
+      },
+      {
+        "flags": {},
+        "label": "day_one_herons_mark",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "herons_mark"
+      },
+      {
+        "flags": {
+          "iron_delivery_moved_on": true,
+          "larsen_permit_complete": true
+        },
+        "label": "elena_first_open",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "completed",
+            "iron_delivery": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "iron_delivery_moved_on": true,
+          "larsen_permit_complete": true,
+          "talked_to_elena_cantina": true
+        },
+        "label": "elena_walked_away",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "completed",
+            "footing_the_bill": "active",
+            "iron_delivery": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "iron_delivery_moved_on": true,
+          "larsen_permit_complete": true,
+          "talked_to_elena_cantina": true
+        },
+        "label": "elena_aboard",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "completed",
+            "footing_the_bill": "active",
+            "iron_delivery": "completed"
+          }
+        },
+        "recruited": [
+          "elena_reeves"
+        ],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "elena_gave_trading_tips": true,
+          "iron_delivery_moved_on": true,
+          "larsen_permit_complete": true,
+          "talked_to_elena_cantina": true
+        },
+        "label": "elena_taught",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "completed",
+            "footing_the_bill": "completed",
+            "iron_delivery": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "elena_gave_trading_tips": true,
+          "iron_delivery_moved_on": true,
+          "larsen_permit_complete": true,
+          "talked_to_elena_cantina": true
+        },
+        "label": "elena_lesson_landed",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "bill_of_landing": "completed",
+            "footing_the_bill": "active",
+            "iron_delivery": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "cargo_lost_complete": true,
+          "larsen_permit_complete": true,
+          "met_dex_halloran": true
+        },
+        "label": "dex_declined",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "cargo_lost": "completed",
+            "whispers_at_the_bar": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {
+          "breakstone_permit_earned": true,
+          "met_tomas_drifter": true
+        },
+        "label": "tomas_unresolved",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "the_drifters_deal": "available",
+            "union_territory": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "havens_rest"
+      },
+      {
+        "flags": {
+          "favor_ground_complete": true,
+          "met_oren_tak": true
+        },
+        "label": "oren_kept",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "the_favor_returned": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "breakstone"
+      },
+      {
+        "flags": {},
+        "label": "reva_waits",
+        "mission_state": {
+          "progress": {},
+          "status": {}
+        },
+        "recruited": [],
+        "system_id": "nova_research"
+      },
+      {
+        "flags": {
+          "cargo_lost_accepted": true
+        },
+        "label": "reva_reached",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "cargo_lost": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nova_research"
+      },
+      {
+        "flags": {
+          "talked_to_cargo_broker": true
+        },
+        "label": "wren_offered",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "iron_delivery": "available"
+          }
+        },
+        "recruited": [],
+        "system_id": "forgeworks"
+      },
+      {
+        "flags": {
+          "talked_to_cargo_broker": true
+        },
+        "label": "wren_awaited",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "iron_delivery": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "forgeworks"
+      },
+      {
+        "flags": {
+          "iron_delivery_failed": true,
+          "larsen_permit_complete": true
+        },
+        "label": "odom_gone",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "iron_delivery": "failed"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      },
+      {
+        "flags": {},
+        "label": "larsen_met",
+        "mission_state": {
+          "progress": {
+            "bill_of_landing": [
+              true
+            ]
+          },
+          "status": {
+            "bill_of_landing": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
+      }
+    ]
+  },
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
+  "steps": [
+    {
+      "args": [
+        "day_one_nexus_prime"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "officer_larsen",
+          "bill_of_landing"
+        ],
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_verdant"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "verdant_farmer",
+          ""
+        ],
+        [
+          "verdant_botanist",
+          ""
+        ],
+        [
+          "bren_solvay",
+          ""
+        ],
+        [
+          "chandra_osei",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_forgeworks"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "petra_vance",
+          ""
+        ],
+        [
+          "tomasz_brennan",
+          ""
+        ],
+        [
+          "lira_feng",
+          ""
+        ],
+        [
+          "forgeworks_clerk",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_breakstone"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "britt_vasara",
+          ""
+        ],
+        [
+          "sten_brygaard",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_axiom_labs"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "axiom_researcher",
+          ""
+        ],
+        [
+          "axiom_test_coordinator",
+          ""
+        ],
+        [
+          "kweon_director",
+          ""
+        ],
+        [
+          "dr_iris_navarro",
+          ""
+        ],
+        [
+          "theo_brandt",
+          ""
+        ],
+        [
+          "sana_dey",
+          ""
+        ],
+        [
+          "amrit_solheim",
+          ""
+        ],
+        [
+          "rasheeda_marchetti",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_havens_rest"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "haven_refugee",
+          ""
+        ],
+        [
+          "dimi_torr",
+          ""
+        ],
+        [
+          "issa_kadeer",
+          ""
+        ],
+        [
+          "thuy_kallio",
+          ""
+        ],
+        [
+          "magistrate_odusanya",
+          ""
+        ],
+        [
+          "emiko_owusu",
+          ""
+        ],
+        [
+          "sorcha_deng",
+          ""
+        ],
+        [
+          "imre_solano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_crimson_reach"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "paz_reina",
+          ""
+        ],
+        [
+          "daro_teck",
+          ""
+        ],
+        [
+          "ife_obi",
+          ""
+        ],
+        [
+          "reach_floor_manager",
+          ""
+        ],
+        [
+          "idris_halvorsen",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_stellaris_port"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "cassiel_maren",
+          ""
+        ],
+        [
+          "rudo_kamara",
+          ""
+        ],
+        [
+          "suki_tannenbaum",
+          ""
+        ],
+        [
+          "cassian_velo",
+          ""
+        ],
+        [
+          "wulan_doyle",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_iron_depths"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "jez_okafor",
+          ""
+        ],
+        [
+          "naveen_prakash",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_nova_research"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "amara_okonkwo",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_the_fulcrum"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "ren_castillo",
+          ""
+        ],
+        [
+          "aldric_senn",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "day_one_herons_mark"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "junho_virtanen",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "elena_first_open"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "elena_reeves",
+          ""
+        ],
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "elena_walked_away"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "elena_reeves",
+          "footing_the_bill"
+        ],
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "elena_aboard"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "elena_taught"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "elena_lesson_landed"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "dex_declined"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "dex_halloran",
+          "whispers_at_the_bar"
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "tomas_unresolved"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "tomas_drifter",
+          "the_drifters_deal"
+        ],
+        [
+          "haven_refugee",
+          ""
+        ],
+        [
+          "dimi_torr",
+          ""
+        ],
+        [
+          "issa_kadeer",
+          ""
+        ],
+        [
+          "thuy_kallio",
+          ""
+        ],
+        [
+          "magistrate_odusanya",
+          ""
+        ],
+        [
+          "emiko_owusu",
+          ""
+        ],
+        [
+          "sorcha_deng",
+          ""
+        ],
+        [
+          "imre_solano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "oren_kept"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "oren_tak",
+          "the_favor_returned"
+        ],
+        [
+          "britt_vasara",
+          ""
+        ],
+        [
+          "sten_brygaard",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "reva_waits"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "amara_okonkwo",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "reva_reached"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "reva_sato",
+          "cargo_lost"
+        ],
+        [
+          "amara_okonkwo",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "wren_offered"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "petra_vance",
+          ""
+        ],
+        [
+          "tomasz_brennan",
+          ""
+        ],
+        [
+          "lira_feng",
+          ""
+        ],
+        [
+          "forgeworks_clerk",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "wren_awaited"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "petra_vance",
+          ""
+        ],
+        [
+          "tomasz_brennan",
+          ""
+        ],
+        [
+          "lira_feng",
+          ""
+        ],
+        [
+          "forgeworks_clerk",
+          "iron_delivery"
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "odom_gone"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "larsen_met"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "officer_larsen",
+          ""
+        ],
+        [
+          "odom_broker",
+          ""
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
+        ]
+      ],
+      "state": {}
+    }
+  ],
+  "subsystem": "dialogue"
+}

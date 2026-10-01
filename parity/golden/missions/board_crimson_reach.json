@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -46,6 +46,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 800,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -53,15 +57,15 @@
           "available_at": [
             "crimson_reach"
           ],
-          "description": "Transport 8 units of Medical Supplies to Axiom Labs. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 8 units of Rare Parts to Axiom Labs. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_crimson_reach_1_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Medical Supplies to Axiom Labs",
+          "name": "Delivery: Rare Parts to Axiom Labs",
           "objectives": [
             {
-              "description": "Acquire 8 Medical Supplies",
-              "target_id": "medical",
+              "description": "Acquire 8 Rare Parts",
+              "target_id": "rare_parts",
               "target_quantity": 8,
               "type": "collect_cargo"
             },
@@ -76,7 +80,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 2800,
+              "amount": 1760,
               "reward_type": "credits"
             },
             {
@@ -85,8 +89,8 @@
             },
             {
               "amount": 8,
-              "reward_type": "remove_cargo",
-              "target_id": "medical"
+              "reward_type": "deliver_cargo",
+              "target_id": "rare_parts"
             }
           ]
         },
@@ -129,6 +133,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1470,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -193,15 +201,15 @@
           "available_at": [
             "crimson_reach"
           ],
-          "description": "Transport 7 units of Fuel Cells to Verdant. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 7 units of Salvaged Electronics to Verdant. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_crimson_reach_2_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Fuel Cells to Verdant",
+          "name": "Delivery: Salvaged Electronics to Verdant",
           "objectives": [
             {
-              "description": "Acquire 7 Fuel Cells",
-              "target_id": "fuel",
+              "description": "Acquire 7 Salvaged Electronics",
+              "target_id": "salvaged_electronics",
               "target_quantity": 7,
               "type": "collect_cargo"
             },
@@ -216,7 +224,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 700,
               "reward_type": "credits"
             },
             {
@@ -225,8 +233,8 @@
             },
             {
               "amount": 7,
-              "reward_type": "remove_cargo",
-              "target_id": "fuel"
+              "reward_type": "deliver_cargo",
+              "target_id": "salvaged_electronics"
             }
           ]
         }
@@ -291,15 +299,15 @@
           "available_at": [
             "crimson_reach"
           ],
-          "description": "Transport 7 units of Fuel Cells to Haven's Rest. Acquire the goods and deliver them to collect payment.",
+          "description": "Transport 7 units of Salvaged Electronics to Haven's Rest. Acquire the goods and deliver them to collect payment.",
           "discovery_method": "station_board",
           "id": "proc_delivery_crimson_reach_3_3022172595",
           "mission_type": "side",
-          "name": "Delivery: Fuel Cells to Haven's Rest",
+          "name": "Delivery: Salvaged Electronics to Haven's Rest",
           "objectives": [
             {
-              "description": "Acquire 7 Fuel Cells",
-              "target_id": "fuel",
+              "description": "Acquire 7 Salvaged Electronics",
+              "target_id": "salvaged_electronics",
               "target_quantity": 7,
               "type": "collect_cargo"
             },
@@ -314,7 +322,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 700,
               "reward_type": "credits"
             },
             {
@@ -323,8 +331,8 @@
             },
             {
               "amount": 7,
-              "reward_type": "remove_cargo",
-              "target_id": "fuel"
+              "reward_type": "deliver_cargo",
+              "target_id": "salvaged_electronics"
             }
           ]
         }
@@ -365,7 +373,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 250,
+              "amount": 500,
               "reward_type": "credits"
             },
             {
@@ -374,7 +382,7 @@
             },
             {
               "amount": 5,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "salvaged_electronics"
             }
           ]
@@ -424,6 +432,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1970,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -470,6 +482,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 960,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -518,6 +534,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1680,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -670,6 +690,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1540,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -700,7 +724,7 @@
           "prerequisites": [],
           "rewards": [
             {
-              "amount": 150,
+              "amount": 216,
               "reward_type": "credits"
             },
             {
@@ -709,7 +733,7 @@
             },
             {
               "amount": 9,
-              "reward_type": "remove_cargo",
+              "reward_type": "deliver_cargo",
               "target_id": "scrap_metal"
             }
           ]

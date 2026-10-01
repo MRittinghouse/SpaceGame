@@ -80,7 +80,7 @@
     },
     "tree_id": "tomas_havens"
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -656,7 +656,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "drifter_deal_resolved"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -1269,7 +1271,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "drifter_deal_resolved"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,

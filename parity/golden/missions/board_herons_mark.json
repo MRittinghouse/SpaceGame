@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -146,47 +146,6 @@
           "available_at": [
             "herons_mark"
           ],
-          "description": "Transport 10 units of Stellarium Ingot to The Fulcrum. Acquire the goods and deliver them to collect payment.",
-          "discovery_method": "station_board",
-          "id": "proc_delivery_herons_mark_2_3022172595",
-          "mission_type": "side",
-          "name": "Delivery: Stellarium Ingot to The Fulcrum",
-          "objectives": [
-            {
-              "description": "Acquire 10 Stellarium Ingot",
-              "target_id": "stellarium_ingot",
-              "target_quantity": 10,
-              "type": "collect_cargo"
-            },
-            {
-              "description": "Deliver to The Fulcrum",
-              "target_id": "the_fulcrum",
-              "target_quantity": 1,
-              "type": "reach_system"
-            }
-          ],
-          "ordered_final": true,
-          "prerequisites": [],
-          "rewards": [
-            {
-              "amount": 20000,
-              "reward_type": "credits"
-            },
-            {
-              "amount": 80,
-              "reward_type": "xp"
-            },
-            {
-              "amount": 10,
-              "reward_type": "remove_cargo",
-              "target_id": "stellarium_ingot"
-            }
-          ]
-        },
-        {
-          "available_at": [
-            "herons_mark"
-          ],
           "description": "A research consortium in Heron's Mark needs market and navigational data from Verdant, Axiom Labs. Visit each system and return with the data.",
           "discovery_method": "station_board",
           "id": "proc_survey_herons_mark_2_3022172595",
@@ -222,6 +181,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1380,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -268,47 +231,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
-            }
-          ]
-        },
-        {
-          "available_at": [
-            "herons_mark"
-          ],
-          "description": "Transport 6 units of Rare Metals to Breakstone. Acquire the goods and deliver them to collect payment.",
-          "discovery_method": "station_board",
-          "id": "proc_delivery_herons_mark_3_3022172595",
-          "mission_type": "side",
-          "name": "Delivery: Rare Metals to Breakstone",
-          "objectives": [
-            {
-              "description": "Acquire 6 Rare Metals",
-              "target_id": "rare_metals",
-              "target_quantity": 6,
-              "type": "collect_cargo"
             },
             {
-              "description": "Deliver to Breakstone",
-              "target_id": "breakstone",
-              "target_quantity": 1,
-              "type": "reach_system"
-            }
-          ],
-          "ordered_final": true,
-          "prerequisites": [],
-          "rewards": [
-            {
-              "amount": 1500,
-              "reward_type": "credits"
-            },
-            {
-              "amount": 60,
-              "reward_type": "xp"
-            },
-            {
-              "amount": 6,
-              "reward_type": "remove_cargo",
-              "target_id": "rare_metals"
+              "amount": 1520,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -373,47 +299,6 @@
           "available_at": [
             "herons_mark"
           ],
-          "description": "Transport 3 units of Electronics to Iron Depths. Acquire the goods and deliver them to collect payment.",
-          "discovery_method": "station_board",
-          "id": "proc_delivery_herons_mark_4_3022172595",
-          "mission_type": "side",
-          "name": "Delivery: Electronics to Iron Depths",
-          "objectives": [
-            {
-              "description": "Acquire 3 Electronics",
-              "target_id": "electronics",
-              "target_quantity": 3,
-              "type": "collect_cargo"
-            },
-            {
-              "description": "Deliver to Iron Depths",
-              "target_id": "iron_depths",
-              "target_quantity": 1,
-              "type": "reach_system"
-            }
-          ],
-          "ordered_final": true,
-          "prerequisites": [],
-          "rewards": [
-            {
-              "amount": 600,
-              "reward_type": "credits"
-            },
-            {
-              "amount": 45,
-              "reward_type": "xp"
-            },
-            {
-              "amount": 3,
-              "reward_type": "remove_cargo",
-              "target_id": "electronics"
-            }
-          ]
-        },
-        {
-          "available_at": [
-            "herons_mark"
-          ],
           "description": "A research consortium in Heron's Mark needs market and navigational data from Nexus Prime, Stellaris Port. Visit each system and return with the data.",
           "discovery_method": "station_board",
           "id": "proc_survey_herons_mark_4_3022172595",
@@ -449,6 +334,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1400,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -507,6 +396,10 @@
             {
               "amount": 75,
               "reward_type": "xp"
+            },
+            {
+              "amount": 1670,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -543,47 +436,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
-            }
-          ]
-        },
-        {
-          "available_at": [
-            "herons_mark"
-          ],
-          "description": "Transport 10 units of Fresh Water to Iron Depths. Acquire the goods and deliver them to collect payment.",
-          "discovery_method": "station_board",
-          "id": "proc_delivery_herons_mark_5_3022172595",
-          "mission_type": "side",
-          "name": "Delivery: Fresh Water to Iron Depths",
-          "objectives": [
-            {
-              "description": "Acquire 10 Fresh Water",
-              "target_id": "fresh_water",
-              "target_quantity": 10,
-              "type": "collect_cargo"
             },
             {
-              "description": "Deliver to Iron Depths",
-              "target_id": "iron_depths",
-              "target_quantity": 1,
-              "type": "reach_system"
-            }
-          ],
-          "ordered_final": true,
-          "prerequisites": [],
-          "rewards": [
-            {
-              "amount": 300,
-              "reward_type": "credits"
-            },
-            {
-              "amount": 80,
-              "reward_type": "xp"
-            },
-            {
-              "amount": 10,
-              "reward_type": "remove_cargo",
-              "target_id": "fresh_water"
+              "amount": 760,
+              "reward_type": "route_fuel"
             }
           ]
         }
@@ -630,6 +486,10 @@
             {
               "amount": 60,
               "reward_type": "xp"
+            },
+            {
+              "amount": 540,
+              "reward_type": "route_fuel"
             }
           ]
         },
@@ -708,6 +568,10 @@
             {
               "amount": 50,
               "reward_type": "xp"
+            },
+            {
+              "amount": 790,
+              "reward_type": "route_fuel"
             }
           ]
         }

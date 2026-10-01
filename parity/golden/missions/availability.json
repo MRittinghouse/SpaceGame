@@ -5,7 +5,7 @@
     "player": null,
     "player_reputation": {}
   },
-  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
+  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
   "steps": [
     {
       "args": [
@@ -120,6 +120,7 @@
           "held_back_until_sp10",
           "hidden_facility_discovered",
           "informant_passenger_accepted",
+          "iron_delivery_moved_on",
           "iron_ore_delivered",
           "lab_rat_accepted",
           "learned_father_story",
@@ -279,6 +280,7 @@
           "held_back_until_sp10",
           "hidden_facility_discovered",
           "informant_passenger_accepted",
+          "iron_delivery_moved_on",
           "iron_ore_delivered",
           "lab_rat_accepted",
           "learned_father_story",
