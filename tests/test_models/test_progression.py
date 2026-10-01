@@ -774,3 +774,7 @@ class TestPriceMemoryPrerequisite:
             ok, msg = prog.level_up_skill(skill_id)
             assert ok, msg
         assert prog.skills["market_insider"].current_level == 0
+        # The galaxy map shows the memory only when no remote_prices skill shadows it.
+        assert prog.skills["market_insider"].bonus_type == "remote_prices"
+        assert prog.get_bonus("remote_prices") == 0, "a remote-price skill shadows the memory"
+        assert prog.get_bonus("price_memory") > 0
