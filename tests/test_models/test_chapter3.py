@@ -86,13 +86,13 @@ class TestChapter3NPCs:
         assert npc.faction_id == "commerce_guild"
         assert npc.dialogue_id == "reva_distress"
 
-    def test_reva_sato_no_auto_trigger(self) -> None:
-        """Reva has no auto-trigger — encountered via distress signal + manual dialogue."""
+    def test_reva_sato_waits_for_cargo_lost(self) -> None:
+        """Reva has no auto-trigger scene; the Talk list lists her once Cargo Lost is accepted (bug bash BB-72)."""
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["reva_sato"]
         assert npc.auto_trigger_gate_flag == ""
-        assert npc.auto_trigger_prerequisites == []
+        assert npc.auto_trigger_prerequisites == ["cargo_lost_accepted"]
 
     def test_dex_halloran_exists(self) -> None:
         """Dex Halloran NPC should exist in loaded data."""
@@ -112,12 +112,12 @@ class TestChapter3NPCs:
         assert npc.faction_id == ""
 
     def test_dex_halloran_auto_trigger(self) -> None:
-        """Dex auto-triggers at Nexus Prime after cargo_lost is resolved."""
+        """Dex auto-triggers at Nexus Prime after Cargo Lost completes (bug bash BB-72)."""
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["dex_halloran"]
         assert npc.auto_trigger_gate_flag == "met_dex_halloran"
-        assert npc.auto_trigger_prerequisites == ["cargo_lost_resolved"]
+        assert npc.auto_trigger_prerequisites == ["cargo_lost_complete"]
 
     def test_malia_torres_exists(self) -> None:
         """Malia Torres NPC should exist in loaded data."""
@@ -374,7 +374,23 @@ class TestChapter3AutoTriggers:
     """Auto-trigger conditions for Dex and Torres NPCs."""
 
     def test_dex_triggers_at_nexus_after_cargo_lost(self) -> None:
-        """Dex auto-triggers at Nexus Prime after cargo_lost_resolved."""
+        """Dex auto-triggers at Nexus Prime after cargo_lost_complete."""
+        _load_data()
+        dl = get_data_loader()
+        npc = dl.npcs["dex_halloran"]
+        player = _make_player(current_system_id="nexus_prime")
+        player.dialogue_flags["cargo_lost_complete"] = True
+
+        should_trigger = (
+            npc.auto_trigger_gate_flag
+            and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
+            and player.current_system_id == npc.home_system_id
+            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
+        )
+        assert should_trigger, "Dex should auto-trigger at nexus_prime after cargo_lost_complete"
+
+    def test_dex_blocked_without_cargo_lost(self) -> None:
+        """Reva's flag alone no longer brings Dex (bug bash BB-72)."""
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["dex_halloran"]
@@ -387,22 +403,7 @@ class TestChapter3AutoTriggers:
             and player.current_system_id == npc.home_system_id
             and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
         )
-        assert should_trigger, "Dex should auto-trigger at nexus_prime after cargo_lost_resolved"
-
-    def test_dex_blocked_without_cargo_lost(self) -> None:
-        """Dex should not trigger without cargo_lost_resolved."""
-        _load_data()
-        dl = get_data_loader()
-        npc = dl.npcs["dex_halloran"]
-        player = _make_player(current_system_id="nexus_prime")
-
-        should_trigger = (
-            npc.auto_trigger_gate_flag
-            and not player.dialogue_flags.get(npc.auto_trigger_gate_flag, False)
-            and player.current_system_id == npc.home_system_id
-            and all(player.dialogue_flags.get(f, False) for f in npc.auto_trigger_prerequisites)
-        )
-        assert not should_trigger, "Dex should not trigger without cargo_lost_resolved"
+        assert not should_trigger, "Dex should not trigger before Cargo Lost completes"
 
     def test_torres_triggers_at_crimson_after_ground(self) -> None:
         """Torres auto-triggers at Crimson Reach after ground mission complete."""

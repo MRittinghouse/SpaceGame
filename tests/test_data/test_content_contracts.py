@@ -35,7 +35,7 @@ STARTING_SHIP_TYPE = "shuttle"
 DAY_ONE_JOBS = ("iron_delivery", "coolant_run", "the_price_of_information")
 
 PENDING_PRODUCER_CYCLES: set[str] = set()
-# The later plan (BB-69): Oren's refusal gains a partial-intel node that sets it.
+# The writing session (BB-69): Oren's fail-forward nodes set it. Plan B1 keeps him listed meanwhile.
 PENDING_CHECK_GATED_FLAGS: set[str] = {"oren_intel_received"}
 PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = set()
 PENDING_SELF_LOOPING_CHECKS: set[str] = set()
