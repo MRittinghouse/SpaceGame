@@ -1392,7 +1392,7 @@
       ],
       "rewards": [
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 4,
           "target_id": "machinery"
         },

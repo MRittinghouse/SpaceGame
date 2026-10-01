@@ -179,6 +179,10 @@ class TestRewardApplication:
         credit_rewards = sum(r.amount for r in target.rewards if r.reward_type == "credits")
         xp_rewards = sum(r.amount for r in target.rewards if r.reward_type == "xp")
 
+        # BB-11: a hand-over pays on the units it takes, so carry what the mission hands over
+        for reward in target.rewards:
+            if reward.reward_type == "deliver_cargo":
+                player.ship.add_cargo(reward.target_id, reward.amount, 0)
         messages = mgr.apply_rewards(target.id, player)
 
         assert player.credits == before_credits + credit_rewards, (

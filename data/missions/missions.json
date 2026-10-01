@@ -96,7 +96,7 @@
           "amount": 600
         },
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 10,
           "target_id": "iron_ore"
         },
@@ -345,7 +345,7 @@
       ],
       "rewards": [
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 5,
           "target_id": "textiles"
         },
@@ -537,7 +537,7 @@
           "amount": 600
         },
         {
-          "reward_type": "remove_cargo",
+          "reward_type": "deliver_cargo",
           "amount": 5,
           "target_id": "electronics"
         },

@@ -44,6 +44,7 @@ VALID_REWARD_TYPES = {
     "set_flag",
     "modify_reputation",
     "remove_cargo",
+    "deliver_cargo",
     "deduct_credits",
     "trade_permit",
     "crew",

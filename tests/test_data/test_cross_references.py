@@ -83,10 +83,10 @@ class TestCommodityReferences:
         errors = []
         for mission in loader.missions:
             for reward in mission.rewards:
-                if reward.reward_type == "remove_cargo":
+                if reward.reward_type in ("remove_cargo", "deliver_cargo"):
                     if reward.target_id not in commodity_ids:
                         errors.append(
-                            f"Mission '{mission.id}' remove_cargo reward "
+                            f"Mission '{mission.id}' {reward.reward_type} reward "
                             f"references commodity '{reward.target_id}' "
                             f"which does not exist"
                         )

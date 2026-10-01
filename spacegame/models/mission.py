@@ -759,6 +759,32 @@ class MissionManager:
                 free[commodity_id] = units
         return free
 
+    def _delivery_share(self, mission: Mission, player: "Player") -> Optional[tuple[int, int]]:
+        """The units the mission's deliver_cargo will hand over, and the units it names.
+
+        None when the mission has no deliver_cargo reward. The mission's own accept cargo
+        counts with the captain's units; another active mission's does not (BB-1).
+        """
+        for reward in mission.rewards:
+            if reward.reward_type == "deliver_cargo":
+                mine = self.free_units(player, reward.target_id, except_mission=mission.id)
+                return min(mine, reward.amount), reward.amount
+        return None
+
+    @staticmethod
+    def _credit_line(
+        scaled: int, amount: int, credit_mult: float, short: Optional[tuple[int, int]]
+    ) -> str:
+        """A credits reward's notice: the late clause first, then the delivered fraction."""
+        clauses: list[str] = []
+        if credit_mult < 1.0:
+            clauses.append(f"late, {int(credit_mult * 100)}% of {amount:,}")
+        if short is not None:
+            clauses.append(f"{short[0]} of {short[1]} delivered")
+        if not clauses:
+            return f"+{scaled:,} Credits"
+        return f"+{scaled:,} Credits ({', '.join(clauses)})"
+
     def check_objectives(
         self,
         player: "Player",
@@ -778,9 +804,10 @@ class MissionManager:
                 Crew quests whose crew_member_id is not in this set are skipped.
 
         Returns:
-            List of mission IDs that just completed (all objectives met).
+            The id of the one mission this check completed, in a list, or an empty list. A
+            mission completes per call, the first in content order; the caller pays it before
+            the next call reads the hold (bug bash BB-11).
         """
-        newly_completed: list[str] = []
         for mid, mission in self._missions.items():
             if self._status[mid] != MissionStatus.ACTIVE:
                 continue
@@ -835,9 +862,11 @@ class MissionManager:
             if all(self._progress[mid]):
                 self._status[mid] = MissionStatus.COMPLETED
                 self._forget_run(mid)
-                newly_completed.append(mid)
+                # BB-11: one mission completes per check, in content order, so the next check
+                # reads the hold after this one's hand-over
+                return [mid]
 
-        return newly_completed
+        return []
 
     def _forget_run(self, mission_id: str) -> None:
         """Drop what one run of a mission recorded: accept system, departure, counters."""
@@ -969,18 +998,21 @@ class MissionManager:
             days_elapsed = max(0, player.game_day - accepted)
             credit_mult = mission.get_reward_multiplier(days_elapsed)
 
+        # BB-1, BB-11: a hand-over pays on the units it takes. Every credits reward scales by
+        # delivered over named, multiplying before dividing, and only when short, so a full
+        # load pays exactly what it always paid. XP and flags never scale.
+        share = self._delivery_share(mission, player)
+        short = share if share is not None and share[0] < share[1] else None
+
         messages: list[str] = []
         for reward in mission.rewards:
             if reward.reward_type == "credits":
-                scaled = int(reward.amount * credit_mult)
-                player.add_credits(scaled)
-                if credit_mult < 1.0:
-                    messages.append(
-                        f"+{scaled:,} Credits "
-                        f"(late, {int(credit_mult * 100)}% of {reward.amount:,})"
-                    )
+                if short is not None:
+                    scaled = int(reward.amount * credit_mult * short[0] / short[1])
                 else:
-                    messages.append(f"+{scaled:,} Credits")
+                    scaled = int(reward.amount * credit_mult)
+                player.add_credits(scaled)
+                messages.append(self._credit_line(scaled, reward.amount, credit_mult, short))
             elif reward.reward_type == "xp":
                 player.progression.add_xp(reward.amount)
                 messages.append(f"+{reward.amount} XP")
@@ -990,6 +1022,11 @@ class MissionManager:
             elif reward.reward_type == "remove_cargo":
                 player.ship.remove_cargo(reward.target_id, reward.amount)
                 messages.append(f"Delivered {reward.amount} {reward.target_id}")
+            elif reward.reward_type == "deliver_cargo":
+                delivered = share[0] if share is not None else 0
+                if delivered > 0:
+                    player.ship.remove_cargo(reward.target_id, delivered)
+                messages.append(f"Delivered {delivered} {reward.target_id}")
             elif reward.reward_type == "set_flag":
                 player.dialogue_flags[reward.target_id] = True
                 messages.append(f"Progress: {reward.target_id}")

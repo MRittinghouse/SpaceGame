@@ -751,7 +751,12 @@ class MissionLogView(BaseView):
                 sign = "+" if reward.amount > 0 else ""
                 rew_text = f"{sign}{reward.amount} {reward.target_id} rep"
                 color = Colors.GREEN if reward.amount > 0 else Colors.RED
-            elif reward.reward_type in ("set_flag", "remove_cargo", "deduct_credits"):
+            elif reward.reward_type in (
+                "set_flag",
+                "remove_cargo",
+                "deliver_cargo",
+                "deduct_credits",
+            ):
                 continue  # Don't show internal flags or deductions in UI
             else:
                 rew_text = f"+{reward.amount} {reward.reward_type}"

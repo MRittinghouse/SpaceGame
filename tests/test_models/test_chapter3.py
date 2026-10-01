@@ -494,14 +494,15 @@ class TestCargoLostMission:
         assert any(o.target_id == "nova_research" for o in reach_objs)
 
     def test_rewards(self) -> None:
-        """cargo_lost rewards include credits, XP, set_flag."""
+        """cargo_lost rewards include credits, XP, the electronics hand-over and set_flag."""
         _load_data()
         dl = get_data_loader()
         m = next(m for m in dl.missions if m.id == "cargo_lost")
         reward_types = {r.reward_type for r in m.rewards}
         assert "credits" in reward_types
         assert "xp" in reward_types
-        assert "remove_cargo" in reward_types
+        assert "deliver_cargo" in reward_types
+        assert "remove_cargo" not in reward_types
         assert "set_flag" in reward_types
 
     def test_sets_cargo_lost_complete(self) -> None:
