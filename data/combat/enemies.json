@@ -1110,7 +1110,7 @@
     {
       "id": "guild_revenue_cutter",
       "name": "Guild Revenue Cutter",
-      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent  -- their job is to detain, not destroy.",
+      "description": "A light Commerce Guild patrol craft. Revenue Cutters enforce trade regulations and inspect cargo manifests. Lightly armed but persistent. Their job is to detain, not destroy.",
       "behavior": "defensive",
       "hull": 48,
       "shields": 18,
@@ -1258,7 +1258,7 @@
     {
       "id": "science_surveyor",
       "name": "Science Surveyor",
-      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade  -- but its analysis beam strips shields with clinical precision.",
+      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade, but its analysis beam strips shields with clinical precision.",
       "behavior": "evasive",
       "hull": 37,
       "shields": 34,
@@ -1485,7 +1485,7 @@
     {
       "id": "reach_wrecker",
       "name": "Reach Wrecker",
-      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow  -- Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow. Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
       "behavior": "aggressive",
       "hull": 82,
       "shields": 18,
@@ -1603,7 +1603,7 @@
         {
           "id": "dreadwreck_barrage",
           "name": "Scrapyard Barrage",
-          "description": "Fires every weapon simultaneously  -- a chaotic storm of mismatched ordnance.",
+          "description": "Fires every weapon simultaneously: a chaotic storm of mismatched ordnance.",
           "effects": [
             {
               "type": "damage",
@@ -1718,6 +1718,8 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 35,
       "moves": [
         {
@@ -1804,6 +1806,8 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 60,
       "moves": [
         {
@@ -1893,6 +1897,8 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 125,
       "moves": [
         {
@@ -1984,7 +1990,7 @@
     {
       "id": "bounty_ace",
       "name": "Bounty Ace",
-      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate  -- almost impossible to outrun.",
+      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate, and almost impossible to outrun.",
       "behavior": "evasive",
       "hull": 75,
       "shields": 40,
@@ -1999,6 +2005,8 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 175,
       "moves": [
         {
@@ -2118,6 +2126,8 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 200,
       "moves": [
         {
@@ -2247,6 +2257,8 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 250,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 65,
       "moves": [
         {
@@ -2316,7 +2328,7 @@
     {
       "id": "ledger_striker",
       "name": "Unmarked Striker",
-      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays  -- hardware that doesn't appear on any civilian market.",
+      "description": "A fast, evasive interceptor running unmarked. The engine signature matches military-spec thruster arrays, hardware that doesn't appear on any civilian market.",
       "behavior": "evasive",
       "hull": 45,
       "shields": 26,
@@ -2331,6 +2343,8 @@
       "faction_id": "",
       "danger_tier": "moderate",
       "bribe_cost": 200,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 50,
       "moves": [
         {
@@ -2412,6 +2426,8 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "random_pool": false,
+      "bribable": false,
       "credit_reward": 175,
       "moves": [
         {
@@ -2531,6 +2547,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 15000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -2681,6 +2698,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 20000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -2838,6 +2856,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 25000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -2979,6 +2998,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 30000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -3132,6 +3152,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 35000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -3280,6 +3301,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 40000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -3425,6 +3447,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 28000,
       "is_boss": true,
       "boss_hp_multiplier": 3,
@@ -3664,7 +3687,8 @@
               "target": "self"
             }
           ],
-          "energy_cost": 2
+          "energy_cost": 2,
+          "cooldown": 2
         }
       ],
       "loot_table": [
@@ -5414,6 +5438,7 @@
       "faction_id": "",
       "danger_tier": "dangerous",
       "bribe_cost": 0,
+      "bribable": false,
       "credit_reward": 1500,
       "combat_armor": 8,
       "is_boss": true,

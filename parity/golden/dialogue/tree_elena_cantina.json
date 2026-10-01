@@ -82,7 +82,7 @@
     },
     "tree_id": "elena_cantina"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -442,14 +442,16 @@
           false,
           "Persuasion check failed."
         ],
-        "next_node": "about_elena",
+        "next_node": "about_elena_deflect",
         "response": 1
       },
       "state": {
         "disposition": {
           "elena_reeves": 48
         },
-        "flags": [],
+        "flags": [
+          "elena_about_check_failed"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -474,6 +476,32 @@
         "check": null,
         "next_node": "farewell",
         "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "about_elena_deflect",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "farewell",
+        "response": 0
       },
       "state": {
         "disposition": {},
@@ -966,6 +994,34 @@
         "check": null,
         "next_node": "farewell",
         "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "has_special_dialogue"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "about_elena_deflect",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "farewell",
+        "response": 0
       },
       "state": {
         "disposition": {},

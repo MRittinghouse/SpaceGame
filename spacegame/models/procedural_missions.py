@@ -95,9 +95,23 @@ class ProceduralMissionGenerator:
             candidates = [c for c in exports + imports if c in self._commodities]
             if candidates:
                 return rng.choice(candidates)
-        # Fallback: any legal commodity
-        legal = [cid for cid, c in self._commodities.items() if c.legality == Legality.LEGAL]
-        return rng.choice(legal)
+        # Fallback (BB-34): a legal good some market sells at a price
+        return rng.choice(self._sold_legal_goods())
+
+    def _sold_legal_goods(self) -> list[str]:
+        """Legal goods with a base price that at least one market lists, in content order.
+
+        A system whose available_commodities is None lists every commodity.
+        """
+        listed: set[str] = set()
+        for system in self._systems.values():
+            available = system.economy.available_commodities if system.economy else []
+            listed.update(self._commodities if available is None else available)
+        return [
+            cid
+            for cid, c in self._commodities.items()
+            if c.legality == Legality.LEGAL and c.base_price > 0 and cid in listed
+        ]
 
     def generate_bounty(self, system_id: str, game_day: int) -> Mission:
         """Generate a bounty hunting contract.
@@ -121,7 +135,7 @@ class ProceduralMissionGenerator:
 
         return Mission(
             id=mid,
-            name=f"Bounty: Clear {kills} Hostiles",
+            name=f"Bounty: Clear {kills} Hostile{'s' if kills > 1 else ''}",
             description=(
                 f"Local authorities in {system.name} are offering a bounty for "
                 f"eliminating {kills} hostile{'s' if kills > 1 else ''} in the region. "
@@ -141,6 +155,7 @@ class ProceduralMissionGenerator:
                     type=ObjectiveType.REACH_SYSTEM,
                     target_id=system_id,
                     description=f"Return to {system.name} to collect bounty",
+                    after_departure=True,
                 ),
             ],
             rewards=[
@@ -204,6 +219,7 @@ class ProceduralMissionGenerator:
                     target_id=commodity_id,
                 ),
             ],
+            ordered_final=True,
         )
 
     def generate_smuggling(self, system_id: str, game_day: int) -> Mission:
@@ -237,7 +253,7 @@ class ProceduralMissionGenerator:
             name=f"Smuggling: {commodity.name} to {dest.name}",
             description=(
                 f"A contact in {system.name} needs {qty} units of {commodity.name} "
-                f"moved to {dest.name} — no questions asked. The cargo will be "
+                f"moved to {dest.name}, no questions asked. The cargo will be "
                 f"loaded when you accept."
             ),
             mission_type="side",
@@ -246,11 +262,18 @@ class ProceduralMissionGenerator:
             on_accept_cargo=[AcceptCargo(commodity_id=commodity_id, quantity=qty)],
             objectives=[
                 MissionObjective(
+                    type=ObjectiveType.COLLECT_CARGO,
+                    target_id=commodity_id,
+                    target_quantity=qty,
+                    description=f"Keep the {qty} {commodity.name} aboard",
+                ),
+                MissionObjective(
                     type=ObjectiveType.REACH_SYSTEM,
                     target_id=dest_id,
                     description=f"Deliver contraband to {dest.name}",
                 ),
             ],
+            ordered_final=True,
             rewards=[
                 MissionReward(reward_type="credits", amount=max(reward, 300)),
                 MissionReward(reward_type="xp", amount=xp),
@@ -296,6 +319,7 @@ class ProceduralMissionGenerator:
                 type=ObjectiveType.REACH_SYSTEM,
                 target_id=system_id,
                 description=f"Return to {system.name} with survey data",
+                after_departure=True,
             )
         )
 
@@ -367,6 +391,7 @@ class ProceduralMissionGenerator:
                     type=ObjectiveType.REACH_SYSTEM,
                     target_id=system_id,
                     description=f"Return to {system.name}",
+                    after_departure=True,
                 ),
             ],
             rewards=[

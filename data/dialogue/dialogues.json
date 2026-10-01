@@ -118,14 +118,28 @@
             {
               "text": "[Persuasion 2] \"Between contracts is a place people live for a week. You've been living here long enough to know everyone's first drink order.\"",
               "next_node_id": "press_further",
+              "excluded_flags": ["elena_about_check_failed"],
               "skill_check": {
                 "skill": "persuasion",
                 "difficulty": 2,
                 "success_node_id": "press_further",
-                "failure_node_id": "about_elena",
-                "set_flag_on_success": "read_elena_grounded"
+                "failure_node_id": "about_elena_deflect",
+                "set_flag_on_success": "read_elena_grounded",
+                "set_flag_on_failure": "elena_about_check_failed"
               }
             },
+            {
+              "text": "Fair enough. Thanks for the trading lesson.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "about_elena_deflect",
+          "speaker_id": "elena_reeves",
+          "text": "Nice try. One trading lesson doesn't buy my life story. Between contracts, Captain. Leave it there.",
+          "responses": [
             {
               "text": "Fair enough. Thanks for the trading lesson.",
               "next_node_id": "farewell"
@@ -499,14 +513,14 @@
         {
           "id": "decline",
           "speaker_id": "dr_priya_osei",
-          "text": "I... understand. If you reconsider, I will be here. For approximately another four hours, after which the samples become unusable.",
+          "text": "I... understand. If you reconsider, the offer will be on your board.",
           "responses": [],
           "expression": "surprised"
         },
         {
           "id": "agree_transport",
           "speaker_id": "dr_priya_osei",
-          "text": "Thank you. I can offer 200 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+          "text": "Thank you. I can offer 350 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
           "responses": [
             {
               "text": "What kind of questions?",
@@ -972,7 +986,7 @@
         {
           "id": "advice",
           "speaker_id": "officer_larsen",
-          "text": "Stick to the safe trade lanes for now. Nexus Prime, Forgeworks, places like that. Build up some credits trading, and visit the Shipyard when you can afford to outfit your shuttle properly. A basic weapon makes all the difference when trouble finds you.",
+          "text": "Stick to the safe trade lanes for now. Nexus Prime, Verdant, Stellaris Port, places like that. Build up some credits trading, and visit the Shipyard when you can afford to outfit your shuttle properly. A basic weapon makes all the difference when trouble finds you.",
           "responses": [
             {
               "text": "Understood. Thanks for the warning.",
@@ -1119,7 +1133,7 @@
         {
           "id": "teach_routes",
           "speaker_id": "odom_broker",
-          "text": "*He drums his fingers on the terminal.* Concord pays for coolant. Always. Union pays for grain, always. Fringe pays for weapons, never legally. You're green. Stick to Concord. Don't go Fringe. Don't ask about Union until you have papers. That's free. Next time, bring credits or cargo.",
+          "text": "*He drums his fingers on the terminal.* Verdant pays for machinery. Always. Union pays for food, always. Crimson Reach pays for fuel. You're green. Stick to Verdant. Don't go to Crimson Reach. Don't ask about Union until you have papers. That's free. Next time, bring credits or cargo.",
           "responses": [
             {
               "text": "Understood.",
@@ -3936,15 +3950,20 @@
             {
               "text": "The isotope dating was conclusive. These were made in the last decade, not the founding era. I'm reporting this to the Guild trade authority.",
               "next_node_id": "expose",
-              "set_flag": "forgery_exposed"
+              "set_flag": "forgery_exposed",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": 3
+                }
+              ]
             },
             {
-              "text": "Here's what's going to happen. You're going to pay me double, and I forget what the appraiser told me.",
+              "text": "Here's what's going to happen. You're going to pay my fee, and I forget what the appraiser told me.",
               "next_node_id": "blackmail",
               "set_flag": "forgery_blackmailed"
             },
             {
-              "text": "I don't want any part of this. Keep your credits. I'm walking away.",
+              "text": "I don't want any part of this. I'm walking away.",
               "next_node_id": "walk_away",
               "set_flag": "forgery_ignored"
             }
@@ -3967,7 +3986,7 @@
         {
           "id": "blackmail",
           "speaker_id": "cassiel_maren",
-          "text": "You're sharper than I gave you credit for. Fine. Double the fee. But this stays between us, Captain. Permanently.",
+          "text": "You're sharper than I gave you credit for. Fine. The fee is yours. But this stays between us, Captain. Permanently.",
           "responses": [
             {
               "text": "Pleasure doing business.",
@@ -3999,7 +4018,7 @@
         {
           "id": "start",
           "speaker_id": "callum_rhee",
-          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 200 credits up front and stay out of your way the entire trip. I travel light.",
+          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 350 credits when we dock and stay out of your way the entire trip. I travel light.",
           "responses": [
             {
               "text": "Why Haven's Rest?",
@@ -4030,7 +4049,7 @@
               ]
             },
             {
-              "text": "200 credits works. Welcome aboard.",
+              "text": "350 credits works. Welcome aboard.",
               "next_node_id": "accept",
               "excluded_flags": [
                 "informant_passenger_accepted"
@@ -4071,7 +4090,7 @@
           "text": "Family. My cousin runs a supply shop there. I've been meaning to visit for months, but scheduled transports keep getting rerouted. You know how it is, the big carriers don't prioritize the frontier stations.",
           "responses": [
             {
-              "text": "Fair enough. 200 credits and you've got a ride.",
+              "text": "Fair enough. 350 credits and you've got a ride.",
               "next_node_id": "accept"
             },
             {
@@ -4084,7 +4103,7 @@
         {
           "id": "deflect_smooth",
           "speaker_id": "callum_rhee",
-          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 200 credits seems fair for the convenience.",
+          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 350 credits seems fair for the convenience.",
           "responses": [
             {
               "text": "Alright. Grab your gear.",
@@ -6585,7 +6604,7 @@
           "id": "the_offer",
           "speaker_id": "arna",
           "text": "Board's a ledger. Not a source. Jobs come from people. I've got one. Verdant needs a pallet of machinery. Harvest tooling, mostly. Nobody local wants the run. Take it, make the jump, find the woman at their agri hub. Hand it off. She pays. Come back, we talk again.",
-          "subtext": "She taps the terminal. A manifest opens on a side screen. Eighteen units. Consigned to Verdant Agri Hub.",
+          "subtext": "She taps the terminal. A manifest opens on a side screen. Four units. Consigned to Verdant Agri Hub.",
           "responses": [
             {
               "text": "[Take the job.]",
@@ -6667,7 +6686,7 @@
         {
           "id": "ore_pitch",
           "speaker_id": "arna",
-          "text": "I have got a tip on a vein nobody is working. Breakstone outer belt, rare metals. Site is marginal. Enforcement is thin, the tax collectors forgot it exists. We pull a load, I get it refined cheap through a friend of mine, we sell it to a contact I have been cultivating. Split is fair. Cut that pays for more than coolant.",
+          "text": "I have got a tip on a vein nobody is working. Breakstone outer belt, rare metals. Site is marginal. Enforcement is thin, the tax collectors forgot it exists. We pull a load, I get it refined cheap through a friend of mine, we sell it to a contact I have been cultivating. Split is fair. Cut that pays for more than a pallet of machinery.",
           "subtext": "She is talking fast now. Excited in a way she was not before.",
           "responses": [
             {
@@ -6698,13 +6717,31 @@
             {
               "text": "[Observation 2] \"Your 'contact is solid' voice is the same voice you use for things you aren't sure about.\"",
               "next_node_id": "catch",
+              "excluded_flags": ["arna_catch_check_failed"],
               "skill_check": {
                 "skill": "observation",
                 "difficulty": 2,
                 "success_node_id": "catch_seen",
-                "failure_node_id": "catch",
-                "set_flag_on_success": "read_arna_contact_hedge"
+                "failure_node_id": "catch_unread",
+                "set_flag_on_success": "read_arna_contact_hedge",
+                "set_flag_on_failure": "arna_catch_check_failed"
               }
+            },
+            {
+              "text": "[I will think on it.]",
+              "next_node_id": "think"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "catch_unread",
+          "speaker_id": "arna",
+          "text": "What voice? That's my voice. You're reading tea leaves, kid. So. In or out?",
+          "responses": [
+            {
+              "text": "[Fine. I am in.]",
+              "next_node_id": "accepted"
             },
             {
               "text": "[I will think on it.]",
@@ -6778,7 +6815,79 @@
         {
           "id": "start",
           "speaker_id": "arna",
-          "text": "Still here? Breakstone is not moving. Get the ore, get back.",
+          "text": "Ore aboard? Set it on the counter. If not, Breakstone is not moving.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_refining_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Still here? Tev is waiting at Forgeworks. Tell him I sent you. He'll know what to do with the ore.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_buyer_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Bag's packed. The buyer is at Heron's Mark, and he pays for alloy nobody can trace, so keep it that way. We leave when you do.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_payback_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "Rib's taped. If Keren paid what he owes, set it down and we'll talk. If not, his depot's still in your nav.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "arna_walkaway_pending",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "arna",
+          "text": "If the derelict gave up its scrap, set it on the desk. If not, it's still out at Haven's Rest.",
           "responses": [
             {
               "text": "[Leave]",
@@ -7768,7 +7877,7 @@
         {
           "id": "start",
           "speaker_id": "rhea",
-          "text": "You came from Nexus? Good. I was expecting coolant yesterday.",
+          "text": "You came from Nexus? Good. I was expecting that machinery yesterday.",
           "subtext": "She glances at your hold reading on a dock terminal. Nods at the pallet marker.",
           "responses": [
             {

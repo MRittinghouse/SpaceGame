@@ -10,6 +10,7 @@ import pygame_gui
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
 from spacegame.data_loader import DataLoader
 from spacegame.engine.activity_registry import create_default_registry
+from spacegame.models.mission import MissionManager
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
 from spacegame.views.station_hub_view import StationHubView
@@ -603,3 +604,38 @@ class TestStationHubWreckersEnterButton:
         view.render(screen)
         assert view._detail_enter_button is None
         view.on_exit()
+
+
+class TestStationHubReputationTeaser:
+    """The hub's reputation teaser reads the standing the mission gate reads (BB-82)."""
+
+    def _teaser(self, skill_level: int) -> object:
+        manager, player, loader = _make_test_env("havens_rest")
+        # The Lost Registry asks for Frontier 15; Frontier Reputation adds 5 per level.
+        player.faction_reputation["frontier_alliance"] = 5
+        player.progression.skills["frontier_reputation"].current_level = skill_level
+        missions = MissionManager(loader.missions)
+        missions.load_state({"status": {"whispers_at_the_bar": "completed"}})
+        view = StationHubView(
+            ui_manager=manager,
+            player=player,
+            system=loader.get_system("havens_rest"),
+            locations=loader.get_locations_for_system("havens_rest"),
+            activity_registry=create_default_registry(),
+            data_loader=loader,
+            mission_manager=missions,
+        )
+        view.on_enter()
+        view._create_npc_buttons()
+        teaser = view._rep_teaser
+        view.on_exit()
+        return teaser
+
+    def test_a_standing_below_the_tier_shows_the_lock(self) -> None:
+        teaser = self._teaser(skill_level=0)
+        assert teaser is not None, "Frontier 5 is below The Lost Registry's 15"
+        assert "The Lost Registry" in teaser["text"]
+
+    def test_a_skill_that_lifts_the_standing_to_the_tier_shows_no_lock(self) -> None:
+        teaser = self._teaser(skill_level=2)
+        assert teaser is None, f"Frontier 5 plus the skill's 10 meets the gate: {teaser}"

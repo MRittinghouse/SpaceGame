@@ -306,6 +306,12 @@ class EnemyShipTemplate:
     # enemies get 1-2; bosses/elites get 3-4. Empty list = enemy has
     # no subsystem layer (legacy combat feel).
     targetable_subsystems: list[str] = field(default_factory=list)
+    # BB-14: False keeps a story ship or a hunter out of the random hostile pools; a
+    # forced encounter or a bounty still names it directly.
+    random_pool: bool = True
+    # BB-12: False marks a template that refuses any bribe. Python's attempt_bribe does not
+    # read it; the Godot port's fight actions refuse on it.
+    bribable: bool = True
 
 
 @dataclass
@@ -910,6 +916,7 @@ def build_player_combat_state(
         skill_shield_regen = 0
         skill_flee = 0
         hull_bonus_pct = 0.0
+        shield_bonus_pct = 0.0
         if progression and hasattr(progression, "get_bonus"):
             skill_armor = int(progression.get_bonus("armor_bonus"))
             skill_shield_regen = int(progression.get_bonus("shield_regen_bonus"))
@@ -917,13 +924,18 @@ def build_player_combat_state(
             skill_evasion += int(progression.get_bonus("dodge_chance") * 100)
             skill_flee = int(progression.get_bonus("flee_bonus") * 100)
             hull_bonus_pct = progression.get_bonus("hull_hp_bonus")
+            shield_bonus_pct = progression.get_bonus("shield_bonus")
         bonus_hull = int(cs.hull * hull_bonus_pct)
+        # BB-75: Shield Mastery adds its share of the hull's shields to the maximum and to
+        # the opening shields; a ship still carrying last fight's bonus opens at the maximum.
+        bonus_shields = int(cs.shields * shield_bonus_pct)
+        max_shields = cs.shields + bonus_shields
 
         _state_result = PlayerCombatState(
             hull=ship.current_hull + bonus_hull,
             max_hull=cs.hull + bonus_hull,
-            shields=ship.current_shields,
-            max_shields=cs.shields,
+            shields=min(ship.current_shields + bonus_shields, max_shields),
+            max_shields=max_shields,
             energy=cs.energy_pool,
             max_energy=cs.energy_pool,
             energy_regen=cs.energy_regen,
@@ -1025,18 +1037,23 @@ def build_player_combat_state(
     if st.defensive_identity == "ghost":
         flee_bonus += 20
 
-    # Hull HP bonus from skills (percentage increase)
+    # Hull HP bonus from skills (percentage increase), and Shield Mastery's share of the
+    # hull's own shields (BB-75; the upgrades' shield_bonus sits beside it, unscaled)
     hull_bonus_pct = 0.0
+    shield_bonus_pct = 0.0
     if progression and hasattr(progression, "get_bonus"):
         hull_bonus_pct = progression.get_bonus("hull_hp_bonus")
+        shield_bonus_pct = progression.get_bonus("shield_bonus")
     base_hull = st.combat_hull
     bonus_hull = int(base_hull * hull_bonus_pct)
+    bonus_shields = int(st.combat_shields * shield_bonus_pct)
+    max_shields = st.combat_shields + shield_max_from_upgrades + bonus_shields
 
     _legacy_state = PlayerCombatState(
         hull=ship.current_hull + bonus_hull,
         max_hull=base_hull + bonus_hull,
-        shields=ship.current_shields,
-        max_shields=st.combat_shields + shield_max_from_upgrades,
+        shields=min(ship.current_shields + bonus_shields, max_shields),
+        max_shields=max_shields,
         energy=st.combat_energy,
         max_energy=st.combat_energy,
         energy_regen=st.combat_energy_regen,

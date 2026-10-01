@@ -47,6 +47,16 @@ EM_DASH = "—"
 
 _NO_X_NO_Y = re.compile(r"[Nn]o \w+,\s*no \w+")
 
+# BB-35: " . " where a sentence break or a dash should be. A broken em-dash rewrite
+# (SpaceGame 9252fc2) kept the space before each dash and turned the dash into a period.
+_SPLICE = re.compile(r"\S \. \S")
+# BB-35: the same rewrite (9252fc2) cut a "..." ellipsis down to ".." in the strings it
+# touched. Two dots, then a space or a quote; the dots in the ship pixel masks never are.
+_CLIPPED_ELLIPSIS = re.compile(r"(?<!\.)\.\.(?=[\s'\"])")
+# BB-35, the same rewrite (9252fc2) turned a dash before a digit or a quote into a period
+# with no space after it.
+_UNSPACED_SPLICE = re.compile(r" \.[^\s.]")
+
 
 def _strings(obj: object, path: str = "") -> Iterator[tuple[str, str]]:
     """Yield (json_path, value) for every string anywhere in a decoded document."""
@@ -97,6 +107,24 @@ def test_no_em_dashes_in_data() -> None:
     assert not errors, "em-dash (U+2014) found in authored data:\n" + "\n".join(errors)
 
 
+def test_no_spliced_sentence_breaks_in_data() -> None:
+    """No " . " splice (a word, a space, a lone period, a space, a word)."""
+    errors = _violations(lambda s: bool(_SPLICE.search(s)))
+    assert not errors, 'spliced " . " found in authored data:\n' + "\n".join(errors)
+
+
+def test_no_clipped_ellipses_in_data() -> None:
+    """No ".." where a "..." ellipsis was cut short (two dots, then a space or a quote)."""
+    errors = _violations(lambda s: bool(_CLIPPED_ELLIPSIS.search(s)))
+    assert not errors, 'clipped ".." ellipsis found in authored data:\n' + "\n".join(errors)
+
+
+def test_no_unspaced_splices_in_data() -> None:
+    """No " ." followed directly by a character (a dash rewritten with no space after it)."""
+    errors = _violations(lambda s: bool(_UNSPACED_SPLICE.search(s)))
+    assert not errors, 'unspaced " ." splice found in authored data:\n' + "\n".join(errors)
+
+
 def test_no_no_x_no_y_constructions() -> None:
     """No "no X, no Y" constructions."""
     errors = _violations(lambda s: bool(_NO_X_NO_Y.search(s)))
@@ -142,3 +170,30 @@ def test_no_banned_npc_names_anywhere_in_data(banned: str) -> None:
     pattern = re.compile(rf"\b{banned}\b", re.IGNORECASE)
     errors = _violations(lambda s: bool(pattern.search(s)))
     assert not errors, f"banned NPC name '{banned}' found in data:\n" + "\n".join(errors)
+
+
+# BB-35: a spaced double hyphen stands in for an em dash. The wave B files below still
+# carry them (news, ground missions, the travel log, the archived Act II lenses). Each
+# file's count of strings is pinned, so the list can only shrink.
+DOUBLE_HYPHEN = " -- "
+WAVE_B_DOUBLE_HYPHEN_COUNTS: dict[str, int] = {
+    "data/economy/news_templates.json": 31,
+    "data/ground/campaign/mission_10_crimson_reach.json": 3,
+    "data/ground/campaign/mission_13_breakstone_tunnels.json": 3,
+    "data/ground/campaign/mission_14_iron_depths_facility.json": 7,
+    "data/ground/campaign/mission_16_pirate_base.json": 5,
+    "data/ground/campaign/mission_16_the_fulcrum.json": 5,
+    "data/journal/travel_log_templates.json": 9,
+    "data/narrative/lenses.json": 16,
+}
+
+
+def test_double_hyphens_left_only_in_wave_b_files() -> None:
+    """No " -- " outside the pinned wave B files, and no more inside them."""
+    counts: dict[str, int] = {}
+    for path in _data_files():
+        document = json.loads(path.read_text(encoding="utf-8"))
+        found = sum(1 for _json_path, value in _strings(document) if DOUBLE_HYPHEN in value)
+        if found:
+            counts[path.relative_to(PROJECT_ROOT).as_posix()] = found
+    assert counts == WAVE_B_DOUBLE_HYPHEN_COUNTS

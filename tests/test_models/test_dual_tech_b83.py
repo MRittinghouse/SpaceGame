@@ -338,3 +338,24 @@ class TestEndOfRoundCleanup:
         for _ in range(5):
             engine.end_round()
         assert player.daring_gambit_turns == 0
+
+
+def test_focused_barrage_promises_only_what_it_does() -> None:
+    """BB-102: one 55-damage shot at +20 accuracy; armor and crits are not wired."""
+    from spacegame.models.dual_tech import DUAL_TECH_PALETTE
+
+    description = DUAL_TECH_PALETTE["focused_barrage"].description
+    assert "55 damage" in description and "+20 accuracy" in description
+    assert "armor" not in description and "crit" not in description
+
+
+def test_the_shield_harmonic_slows_only_the_player() -> None:
+    """BB-102: only the player's passive regen is halved; enemies have none."""
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[2] / "data" / "combat" / "complications.json"
+    entries = json.loads(path.read_text(encoding="utf-8"))["complications"]
+    harmonic = next(c for c in entries if c["id"] == "shield_harmonic")
+    assert "both sides" not in harmonic["description"]
+    assert "Same for them" not in harmonic["narration"]

@@ -163,7 +163,7 @@
     },
     {
       "entry_id": "auto_arna_branch_b",
-      "text": "Clean pull at a derelict in Havens Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time. When I got back she called it a fair trade for a scar and a lesson. She is not going to save her brother this way. She said so. She is staying anyway.",
+      "text": "Clean pull at a derelict in Haven's Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time. When I got back she called it a fair trade for a scar and a lesson. She is not going to save her brother this way. She said so. She is staying anyway.",
       "trigger_flag": "arna_branch_b_complete",
       "system_id": "nexus_prime",
       "mission_id": "arna_05b_clean_pull"

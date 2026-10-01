@@ -10,6 +10,7 @@ from spacegame.models.captain_memory import (
     OUTCOME_BRIBED,
     OUTCOME_DEFEAT,
     OUTCOME_FLED,
+    OUTCOME_FLED_CAPTAIN,
     OUTCOME_NEGOTIATED,
     OUTCOME_VICTORY,
     CaptainMemory,
@@ -58,7 +59,14 @@ PROFILES: dict[str, dict[str, object]] = {
     },
 }
 SHAKEDOWN_DEMAND = 150
-OUTCOMES = (OUTCOME_VICTORY, OUTCOME_DEFEAT, OUTCOME_NEGOTIATED, OUTCOME_BRIBED, OUTCOME_FLED)
+OUTCOMES = (
+    OUTCOME_VICTORY,
+    OUTCOME_DEFEAT,
+    OUTCOME_NEGOTIATED,
+    OUTCOME_BRIBED,
+    OUTCOME_FLED,
+    OUTCOME_FLED_CAPTAIN,
+)
 
 # The player sub-dict every outcomes_<type> and skill_checks setup shares: the same
 # five fresh_player parameters trade.py and player.py record.

@@ -35,6 +35,7 @@ from spacegame.constants.flags import (
     auction_first_listing_created,
     seen_first_listing_tip,
 )
+from spacegame.data_loader import get_data_loader
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
 from spacegame.engine.fonts import (
@@ -50,6 +51,7 @@ from spacegame.models.bidding import (
     stellaris_tier_for_standing,
 )
 from spacegame.models.bidding_lot import LOT_CATEGORY_FACTION_COMMODITY
+from spacegame.models.commodity import CommodityCategory
 from spacegame.models.player import Player
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -184,9 +186,13 @@ class SellLotView(BaseView):
         per locked decision §B5.1).
         """
         rows: list[dict[str, Any]] = []
-        # Cargo commodities.
+        # Cargo commodities (quest goods stay aboard, BB-7).
+        commodities = get_data_loader().commodities
         for cid, qty in self.player.ship.current_cargo.items():
             if qty <= 0:
+                continue
+            commodity = commodities.get(cid)
+            if commodity is not None and commodity.category == CommodityCategory.QUEST:
                 continue
             label = f"{cid.replace('_', ' ').title()} (cargo, {qty})"
             rows.append(

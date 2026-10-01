@@ -13,14 +13,6 @@
       "reach_rustrunner",
       "reach_wrecker",
       "reach_dreadwreck",
-      "bounty_tracker",
-      "bounty_enforcer",
-      "bounty_vanguard",
-      "bounty_ace",
-      "faction_enforcer",
-      "ledger_raider",
-      "ledger_striker",
-      "ledger_vanguard",
       "armored_transport",
       "ghost_raider",
       "plasma_bomber",
@@ -50,7 +42,7 @@
     },
     "system_id": "crimson_reach"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -108,8 +100,8 @@
         "encounter_seed": 2782169950,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "bounty_enforcer",
-          "bounty_vanguard"
+          "support_frigate",
+          "armored_transport"
         ],
         "shakedown_demand": 0
       },
@@ -126,9 +118,9 @@
         "encounter_seed": 3165628159,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_striker",
-          "hulk_derelict",
-          "support_frigate"
+          "pirate_scout",
+          "reach_bulwark",
+          "reach_bulwark"
         ],
         "shakedown_demand": 0
       },
@@ -155,8 +147,8 @@
         "encounter_type": "hostile",
         "enemy_template_ids": [
           "patrol_vessel",
-          "bounty_tracker",
-          "ledger_striker"
+          "patrol_vessel",
+          "skiff_raider"
         ],
         "shakedown_demand": 0
       },
@@ -210,8 +202,8 @@
         "encounter_type": "hostile",
         "enemy_template_ids": [
           "hulk_derelict",
-          "mercenary_ace",
-          "ledger_vanguard"
+          "hulk_derelict",
+          "reach_bulwark"
         ],
         "shakedown_demand": 0
       },
@@ -270,7 +262,7 @@
         "encounter_seed": 933500598,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "reach_void_dancer"
+          "reach_scout_ace"
         ],
         "shakedown_demand": 0
       },
@@ -296,8 +288,8 @@
         "encounter_seed": 3757217791,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "reach_rustrunner",
-          "reach_rustrunner"
+          "pirate_raider",
+          "smuggler"
         ],
         "shakedown_demand": 0
       },
@@ -470,7 +462,7 @@
         "encounter_seed": 3933369983,
         "encounter_type": "ransom_demand",
         "enemy_template_ids": [
-          "reach_rustrunner"
+          "reach_dreadwreck"
         ],
         "shakedown_demand": 0
       },
@@ -613,9 +605,9 @@
         "encounter_seed": 3165628159,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_striker",
-          "hulk_derelict",
-          "support_frigate"
+          "pirate_scout",
+          "reach_bulwark",
+          "reach_bulwark"
         ],
         "shakedown_demand": 0
       },
@@ -749,8 +741,8 @@
         "encounter_seed": 3757217791,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "reach_rustrunner",
-          "reach_rustrunner"
+          "pirate_raider",
+          "smuggler"
         ],
         "shakedown_demand": 0
       },

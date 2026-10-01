@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend two hours conducting interviews across three ships. The stories are consistent and damning: Guild officials arriving with armed escorts, forty-eight-hour eviction notices, sealed habitation decks converted to . Something. The settlers don't know what. But one former dock worker describes cargo containers being loaded into the sealed sections: unmarked, heavy, and escorted by personnel wearing no insignia. You transmit fuel reserves and ration packs, and add twenty-seven sworn testimonies to your evidence file.",
+          "description": "You spend two hours conducting interviews across three ships. The stories are consistent and damning: Guild officials arriving with armed escorts, forty-eight-hour eviction notices, sealed habitation decks converted to something. The settlers don't know what. But one former dock worker describes cargo containers being loaded into the sealed sections: unmarked, heavy, and escorted by personnel wearing no insignia. You transmit fuel reserves and ration packs, and add twenty-seven sworn testimonies to your evidence file.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -241,7 +241,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock with the lead transport and transfer what you can spare . Fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, the former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book . A symbol you've seen before.",
+          "description": "You dock with the lead transport and transfer what you can spare: fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, the former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book, a symbol you've seen before.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -807,7 +807,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport . A man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+          "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport. A man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1179,7 +1179,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not . Some folks prefer quiet giving. Either way, deck seven thanks you.' You feel good about this one.",
+          "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not. Some folks prefer quiet giving. Either way, deck seven thanks you.' You feel good about this one.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1371,7 +1371,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it . And we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
+          "description": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1563,7 +1563,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way . No one keeps score out loud.",
+          "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way: no one keeps score out loud.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -3433,7 +3433,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dim your lights and slide into formation. At the remembrance site . A carved asteroid bearing forty-three names . The convoy stops. Someone reads the names aloud. Flowers and lanterns drift into the void. A Union elder sends you a quiet message afterward: 'Thank you for flying with us. It means more than you know.'",
+          "description": "You dim your lights and slide into formation. At the remembrance site, a carved asteroid bearing forty-three names, the convoy stops. Someone reads the names aloud. Flowers and lanterns drift into the void. A Union elder sends you a quiet message afterward: 'Thank you for flying with us. It means more than you know.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3987,7 +3987,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock with the Perseverance and hand over a crate of supplies. The captain . Her name tag reads 'Okonkwo' . Shakes your hand firmly. \"Ring Seven has three hundred people waiting on this shipment. You just made a difference.\" She transfers a small credit voucher and a heartfelt thanks.",
+          "description": "You dock with the Perseverance and hand over a crate of supplies. The captain (her name tag reads 'Okonkwo') shakes your hand firmly. \"Ring Seven has three hundred people waiting on this shipment. You just made a difference.\" She transfers a small credit voucher and a heartfelt thanks.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4366,7 +4366,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that . Doing too much with too little.",
+          "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that, doing too much with too little.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4546,7 +4546,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice . A teenager, you realize . Thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
+          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager, you realize) thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4733,7 +4733,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on . Rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\" You believe him.",
+          "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on: rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\" You believe him.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

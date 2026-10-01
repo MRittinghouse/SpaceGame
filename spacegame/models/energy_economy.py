@@ -192,14 +192,14 @@ def _derive_advisories(eco: EnergyEconomy) -> list[str]:
     advisories: list[str] = []
 
     if eco.total_weapons == 0:
-        advisories.append("No weapons equipped — build cannot deal direct damage")
+        advisories.append("No weapons equipped: the build cannot deal direct damage")
         return advisories
 
     if eco.sidearm_count == 0:
-        advisories.append("No sidearm equipped — no between-burst sustain")
+        advisories.append("No sidearm equipped: nothing sustains fire between bursts")
 
     if eco.burst_count == 0:
-        advisories.append("No burst weapon equipped — no alpha strike option")
+        advisories.append("No burst weapon equipped: the build has no alpha strike")
 
     if not eco.can_alpha_strike:
         advisories.append(
@@ -210,12 +210,12 @@ def _derive_advisories(eco: EnergyEconomy) -> list[str]:
     if eco.min_weapon_cost > 0 and eco.regen < eco.min_weapon_cost:
         advisories.append(
             f"Regen ({eco.regen}/turn) below cheapest weapon cost "
-            f"({eco.min_weapon_cost}) — sustain will drain"
+            f"({eco.min_weapon_cost}), so sustain will drain"
         )
 
     if eco.unknown_count > 0:
         advisories.append(
-            f"{eco.unknown_count} weapon(s) outside tier bands — balance tuning is uncertain"
+            f"{eco.unknown_count} weapon(s) outside tier bands: balance tuning is uncertain"
         )
 
     return advisories

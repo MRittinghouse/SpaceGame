@@ -13,14 +13,6 @@
       "reach_rustrunner",
       "reach_wrecker",
       "reach_dreadwreck",
-      "bounty_tracker",
-      "bounty_enforcer",
-      "bounty_vanguard",
-      "bounty_ace",
-      "faction_enforcer",
-      "ledger_raider",
-      "ledger_striker",
-      "ledger_vanguard",
       "armored_transport",
       "ghost_raider",
       "plasma_bomber",
@@ -50,7 +42,7 @@
     },
     "system_id": "breakstone"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -96,8 +88,8 @@
         "encounter_seed": 2207622014,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_striker",
-          "bounty_vanguard"
+          "pirate_heavy",
+          "pirate_scout"
         ],
         "shakedown_demand": 0
       },
@@ -183,9 +175,9 @@
         "encounter_seed": 3966615171,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "bounty_tracker",
-          "reach_void_dancer",
-          "hulk_derelict"
+          "armored_transport",
+          "pirate_heavy",
+          "ghost_raider"
         ],
         "shakedown_demand": 0
       },
@@ -220,7 +212,7 @@
         "encounter_seed": 3104360886,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "patrol_vessel",
+          "reach_scout_ace",
           "plasma_bomber"
         ],
         "shakedown_demand": 0
@@ -256,8 +248,8 @@
         "encounter_seed": 3827165731,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "faction_enforcer",
-          "bounty_enforcer"
+          "reach_void_dancer",
+          "reach_dreadwreck"
         ],
         "shakedown_demand": 0
       },
@@ -301,9 +293,9 @@
         "encounter_seed": 1038156128,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "skiff_raider",
-          "armored_transport",
-          "bounty_vanguard"
+          "pirate_scout",
+          "pirate_heavy",
+          "reach_wrecker"
         ],
         "shakedown_demand": 0
       },
@@ -335,7 +327,7 @@
         "encounter_seed": 2742993085,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ghost_raider"
+          "reach_dreadwreck"
         ],
         "shakedown_demand": 0
       },
@@ -391,7 +383,7 @@
         "encounter_seed": 3507109974,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "armored_transport"
+          "reach_wrecker"
         ],
         "shakedown_demand": 0
       },
@@ -426,9 +418,9 @@
         "encounter_seed": 1277565964,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_raider",
-          "bounty_vanguard",
-          "bounty_vanguard"
+          "reach_rustrunner",
+          "pirate_scout",
+          "pirate_heavy"
         ],
         "shakedown_demand": 0
       },
@@ -454,8 +446,8 @@
         "encounter_seed": 2748691718,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_striker",
-          "bounty_vanguard"
+          "plasma_bomber",
+          "reach_scout_ace"
         ],
         "shakedown_demand": 0
       },
@@ -547,7 +539,7 @@
         "encounter_seed": 2355217878,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "patrol_vessel"
+          "skiff_raider"
         ],
         "shakedown_demand": 0
       },
@@ -624,8 +616,8 @@
         "encounter_seed": 2207622014,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_striker",
-          "bounty_vanguard"
+          "pirate_heavy",
+          "pirate_scout"
         ],
         "shakedown_demand": 0
       },
@@ -732,7 +724,7 @@
         "encounter_seed": 3104360886,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "patrol_vessel",
+          "reach_scout_ace",
           "plasma_bomber"
         ],
         "shakedown_demand": 0
@@ -768,8 +760,8 @@
         "encounter_seed": 3827165731,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "faction_enforcer",
-          "bounty_enforcer"
+          "reach_void_dancer",
+          "reach_dreadwreck"
         ],
         "shakedown_demand": 0
       },
@@ -900,9 +892,9 @@
         "encounter_seed": 1277565964,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_raider",
-          "bounty_vanguard",
-          "bounty_vanguard"
+          "reach_rustrunner",
+          "pirate_scout",
+          "pirate_heavy"
         ],
         "shakedown_demand": 0
       },
@@ -1006,7 +998,7 @@
         "encounter_seed": 2355217878,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "patrol_vessel"
+          "skiff_raider"
         ],
         "shakedown_demand": 0
       },

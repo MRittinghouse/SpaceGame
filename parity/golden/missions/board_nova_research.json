@@ -4,7 +4,7 @@
   "setup": {
     "seed": 3022172595
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -17,12 +17,18 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "A contact in Nova Research needs 3 units of Stolen Data moved to Haven's Rest — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Nova Research needs 3 units of Stolen Data moved to Haven's Rest, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_nova_research_1_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Stolen Data to Haven's Rest",
           "objectives": [
+            {
+              "description": "Keep the 3 Stolen Data aboard",
+              "target_id": "stolen_data",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Haven's Rest",
               "target_id": "havens_rest",
@@ -36,6 +42,7 @@
               "quantity": 3
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -70,6 +77,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research to collect bounty",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -111,6 +119,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research with survey data",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -143,12 +152,18 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "A contact in Nova Research needs 3 units of Diverted Medicine moved to Stellaris Port — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Nova Research needs 3 units of Diverted Medicine moved to Stellaris Port, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_nova_research_2_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Diverted Medicine to Stellaris Port",
           "objectives": [
+            {
+              "description": "Keep the 3 Diverted Medicine aboard",
+              "target_id": "contraband_medicine",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Stellaris Port",
               "target_id": "stellaris_port",
@@ -162,6 +177,7 @@
               "quantity": 3
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -208,6 +224,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research with survey data",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -243,6 +260,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research to collect bounty",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -288,6 +306,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research to collect bounty",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -329,6 +348,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -364,7 +384,7 @@
           "discovery_method": "station_board",
           "id": "proc_bounty_nova_research_4_3022172595",
           "mission_type": "side",
-          "name": "Bounty: Clear 1 Hostiles",
+          "name": "Bounty: Clear 1 Hostile",
           "objectives": [
             {
               "description": "Win 1 combat encounter",
@@ -373,6 +393,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research to collect bounty",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -408,6 +429,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -449,6 +471,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -499,6 +522,7 @@
               "type": "reach_system"
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {
@@ -533,6 +557,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -578,6 +603,7 @@
               "type": "win_combat"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research to collect bounty",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -613,6 +639,7 @@
               "type": "reach_system"
             },
             {
+              "after_departure": true,
               "description": "Return to Nova Research",
               "target_id": "nova_research",
               "target_quantity": 1,
@@ -635,12 +662,18 @@
           "available_at": [
             "nova_research"
           ],
-          "description": "A contact in Nova Research needs 3 units of Combat Stimulants moved to Breakstone — no questions asked. The cargo will be loaded when you accept.",
+          "description": "A contact in Nova Research needs 3 units of Combat Stimulants moved to Breakstone, no questions asked. The cargo will be loaded when you accept.",
           "discovery_method": "station_board",
           "id": "proc_smuggling_nova_research_6_3022172595",
           "mission_type": "side",
           "name": "Smuggling: Combat Stimulants to Breakstone",
           "objectives": [
+            {
+              "description": "Keep the 3 Combat Stimulants aboard",
+              "target_id": "combat_stims",
+              "target_quantity": 3,
+              "type": "collect_cargo"
+            },
             {
               "description": "Deliver contraband to Breakstone",
               "target_id": "breakstone",
@@ -654,6 +687,7 @@
               "quantity": 3
             }
           ],
+          "ordered_final": true,
           "prerequisites": [],
           "rewards": [
             {

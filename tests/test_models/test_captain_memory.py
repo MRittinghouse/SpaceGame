@@ -363,3 +363,36 @@ class TestCaptainMemorySerialization:
         loaded = sm.load_game(slot=0)
         assert loaded is not None
         assert loaded["player"].captain_memory == {}
+
+
+class TestFledCaptain:
+    """BB-87: a captain whose ship fled stays in the rotation."""
+
+    def test_a_fled_captain_retires_only_after_the_third_meeting(self) -> None:
+        from spacegame.models.captain_memory import OUTCOME_FLED_CAPTAIN
+
+        memory = CaptainMemory(captain_id="wren_departure_angle")
+        memory.record_encounter(OUTCOME_FLED_CAPTAIN, 3)
+        assert memory.status == STATUS_ACTIVE
+        memory.record_encounter(OUTCOME_FLED_CAPTAIN, 9)
+        memory.record_encounter(OUTCOME_FLED_CAPTAIN, 15)
+        assert memory.status == STATUS_WANDERER
+
+    @pytest.mark.parametrize(
+        "outcome,fled,expected",
+        [
+            ("victory", True, "fled_captain"),
+            ("negotiated", True, "fled_captain"),
+            ("defeat", True, "defeat"),
+            ("bribed", True, "bribed"),
+            ("fled", True, "fled"),
+            ("victory", False, "victory"),
+            ("negotiated", False, "negotiated"),
+        ],
+    )
+    def test_the_fight_outcome_for_the_captain(
+        self, outcome: str, fled: bool, expected: str
+    ) -> None:
+        from spacegame.models.captain_memory import fight_outcome_for_captain
+
+        assert fight_outcome_for_captain(outcome, fled) == expected

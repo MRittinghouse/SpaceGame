@@ -618,8 +618,8 @@ def build_inspection_encounter(
 
         intimidate_outcome = EncounterOutcome(
             description=(
-                "The inspector calls for backup. Your intimidation attempt backfires — "
-                "they conduct a thorough search and double the penalties."
+                "The inspector calls for backup. Your intimidation attempt backfires. "
+                "They conduct a thorough search and double the penalties."
             ),
             rewards=fail_rewards,
         )
@@ -631,7 +631,7 @@ def build_inspection_encounter(
             label=f"Intimidate ({risk_label})",
             description=(
                 f"Lv {intimidation_level} vs {_INTIMIDATION_DIFFICULTY}. "
-                "A gamble — failure doubles all penalties."
+                "A gamble: failure doubles all penalties."
             ),
             outcome=intimidate_outcome,
         )
@@ -669,7 +669,7 @@ def _describe_penalty(inspection: InspectionResult, faction_name: str) -> str:
     """Build a human-readable description of inspection penalties."""
     parts: list[str] = [f"The {faction_name} inspector finds contraband in your hold."]
     if inspection.penalty == Penalty.WARN:
-        parts.append("You receive a warning — no further action this time.")
+        parts.append("You receive a warning. No further action this time.")
     elif inspection.penalty == Penalty.FINE:
         parts.append(f"You are fined {inspection.fine_amount} CR.")
     elif inspection.penalty == Penalty.CONFISCATE:

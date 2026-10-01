@@ -75,6 +75,15 @@ def test_defeat_setups_pin_cargo_credits_and_bonuses() -> None:
     assert cases["defeat_insured"].setup["max_level_bonus_types"] == ["insurance"]
 
 
+def test_defeat_quest_cargo_case_keeps_the_quest_good() -> None:
+    cases = {case.name: case for case in player.build_cases()}
+    case = cases["defeat_quest_cargo"]
+    assert {e["commodity_id"] for e in case.setup["cargo"]} >= {"data_chip"}  # type: ignore[union-attr]
+    cargo = case.steps[0]["state"]["ship"]["current_cargo"]  # type: ignore[index]
+    assert cargo["data_chip"] == 1
+    assert cargo["food"] == 14
+
+
 def test_player_cases_record_failures_and_payouts() -> None:
     cases = {case.name: case for case in player.build_cases()}
     buys = [s["result"] for s in cases["trading"].steps if s["call"] == "buy_commodity"]

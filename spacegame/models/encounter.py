@@ -320,6 +320,7 @@ def filter_enemies_for_system(
 
     Generic enemies (faction_id="") appear anywhere.
     Faction enemies only appear in their faction's systems.
+    - templates with random_pool false never roll (story ships, hunters)
     Danger tier filtering:
       - "safe" systems: only "low" tier enemies
       - "moderate" systems: "low" + "moderate" tier
@@ -338,6 +339,9 @@ def filter_enemies_for_system(
     for eid, template in all_templates.items():
         # Boss enemies are reserved for scripted encounters with level gates
         if getattr(template, "is_boss", False):
+            continue
+        # Story ships and hunters appear only where a mission or a bounty names them (BB-14)
+        if not template.random_pool:
             continue
         # Tier filter
         if template.danger_tier not in allowed_tiers:
@@ -594,7 +598,10 @@ def resolve_encounter_skill_check(
     """
     if social_manager is None:
         return False
-    success, _msg = social_manager.resolve_check(check.skill, check.difficulty, "")
+    game_day = player.game_day if player is not None else None
+    success, _msg = social_manager.resolve_check(
+        check.skill, check.difficulty, "", game_day=game_day
+    )
     if player is not None:
         flag = check.set_flag_on_success if success else check.set_flag_on_failure
         if flag:

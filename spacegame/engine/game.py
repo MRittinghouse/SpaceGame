@@ -88,6 +88,7 @@ if TYPE_CHECKING:
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
     from spacegame.models.lens import Lens
+    from spacegame.models.mission import MissionManager
     from spacegame.views.achievements_view import AchievementsView
     from spacegame.views.auction_view import AuctionView
     from spacegame.views.cantina_view import CantinaView
@@ -652,11 +653,12 @@ class Game:
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")
         logger.info(f"Starting credits: {self.player.credits} CR")
 
-        # Generate random faction assignments
+        # The faction map is content (BB-74): each system's faction_id, the same every game
         faction_ids = [f.id for f in self.data_loader.get_all_factions()]
-        system_ids = [s.id for s in self.data_loader.get_all_systems()]
         if faction_ids:
-            self.player.faction_assignments = generate_faction_assignments(system_ids, faction_ids)
+            self.player.faction_assignments = generate_faction_assignments(
+                self.data_loader.get_all_systems()
+            )
             self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
             self._apply_faction_assignments()
 
@@ -676,15 +678,15 @@ class Game:
         self.player.dialogue_flags["first_trade_bonus_available"] = True
 
         # Initialize mission system
-        from spacegame.models.mission import MissionManager
-
-        self.mission_manager = MissionManager(self.data_loader.missions)
-        self.mission_manager.update_availability(
+        self.mission_manager = self._build_mission_manager()
+        accepted = self.mission_manager.update_availability(
             self.player.dialogue_flags,
-            player_reputation=getattr(self.player, "faction_reputation", {}),
+            player_reputation=self.player.get_effective_reputations(self.data_loader.factions),
             game_day=self.player.game_day,
             player=self.player,
         )
+        for mission_id in accepted:
+            self._load_auto_accept_cargo(mission_id)
 
         # Auto-start campaign mission: bill of landing
         self.mission_manager.accept_mission(
@@ -1301,6 +1303,7 @@ class Game:
                                 tid,
                                 system_id=system_id,
                                 loyalty=loyalty_map[tid],
+                                player_flags=self.player.dialogue_flags,
                             )
                             if line:
                                 self._mission_notifications.append(f'{template.name}: "{line}"')
@@ -1311,6 +1314,7 @@ class Game:
                                 tid,
                                 faction_id=faction_id,
                                 loyalty=loyalty_map[tid],
+                                player_flags=self.player.dialogue_flags,
                             )
                             if line:
                                 self._mission_notifications.append(f'{template.name}: "{line}"')
@@ -1672,6 +1676,10 @@ class Game:
                         # reset their drift clocks — not just on the first
                         # conversation ever.
                         self.player.record_interaction(flag_key)
+                        # BB-19: count this conversation for the missions already active,
+                        # before the availability pass accepts new ones.
+                        if self.mission_manager:
+                            self.mission_manager.record_conversation(self._last_dialogue_npc_id)
                         self._last_dialogue_npc_id = None
 
                     # Check for journal auto-entries triggered by new flags
@@ -1680,12 +1688,17 @@ class Game:
                     # Immediately update mission availability — dialogue may have set
                     # flags that unlock or auto-accept missions (e.g. Petra's quest)
                     if self.mission_manager:
-                        self.mission_manager.update_availability(
+                        accepted = self.mission_manager.update_availability(
                             self.player.dialogue_flags,
-                            player_reputation=getattr(self.player, "faction_reputation", {}),
+                            player_reputation=self.player.get_effective_reputations(
+                                self.data_loader.factions
+                            ),
                             game_day=self.player.game_day,
                             player=self.player,
                         )
+                        # F-37: a mission this exit accepts loads its cargo here too
+                        for mission_id in accepted:
+                            self._load_auto_accept_cargo(mission_id)
 
                     # Handle mission failures triggered by dialogue
                     if (
@@ -3544,12 +3557,7 @@ class Game:
         """Create or recreate crew roster view."""
         from spacegame.views.crew_roster_view import CrewRosterView
 
-        crew_slots = (
-            self.player.ship.ship_type.crew_slots
-            + int(self.player.progression.get_bonus("crew_slot_bonus"))
-            if self._player is not None
-            else 1
-        )
+        crew_slots = self.player.get_crew_slots() if self._player is not None else 1
         from spacegame.models.mission import MissionStatus as _MS
 
         active_ids = (
@@ -3628,7 +3636,7 @@ class Game:
                 self.social_manager.modify_disposition(npc_id, disp_mod)
                 logger.info(f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}")
 
-        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id)
+        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id, game_day=self.player.game_day)
         self._ensure_dialogue_view()
         dialogue_view = self.dialogue_view
         assert dialogue_view is not None  # _ensure_dialogue_view always creates it
@@ -4276,8 +4284,13 @@ class Game:
         self.player.ship.current_hull = state.player.hull
         self.player.ship.current_shields = state.player.shields
 
-        # CB-2: record that combat occurred so combat_after banter can fire
-        if self.ambient_dialogue and self._player is not None:
+        # CB-2: record that combat occurred so combat_after banter can fire; a bribe, a
+        # talk-down, or a clean flee leaves no mark (BB-100)
+        if (
+            self.ambient_dialogue
+            and self._player is not None
+            and self.combat_view.engine.was_fought()
+        ):
             self.ambient_dialogue.mark_combat(self.player.game_day)
 
         if result == CombatResult.VICTORY:
@@ -5233,13 +5246,12 @@ class Game:
             # For now, just store the serialized data
             pass
 
-        # Apply faction assignments (generate if missing from old save)
+        # Apply faction assignments (the content's map when the save has none, BB-74)
         if not self.player.faction_assignments:
             faction_ids = [f.id for f in self.data_loader.get_all_factions()]
-            system_ids = [s.id for s in self.data_loader.get_all_systems()]
             if faction_ids:
                 self.player.faction_assignments = generate_faction_assignments(
-                    system_ids, faction_ids
+                    self.data_loader.get_all_systems()
                 )
                 self.player.faction_reputation = dict.fromkeys(faction_ids, 0)
         self._apply_faction_assignments()
@@ -5253,20 +5265,20 @@ class Game:
         self.social_manager.load_state(self.player.social_state)
 
         # Restore mission manager
-        from spacegame.models.mission import MissionManager
-
-        self.mission_manager = MissionManager(self.data_loader.missions)
+        self.mission_manager = self._build_mission_manager()
         if self.player.mission_state:
             self.mission_manager.load_state(self.player.mission_state)
         # Always run update_availability after load — flags may have been set
         # before the save but the mission status wasn't yet updated. Without
         # this, quests can get stuck as UNAVAILABLE after save/load.
-        self.mission_manager.update_availability(
+        accepted = self.mission_manager.update_availability(
             self.player.dialogue_flags,
-            player_reputation=getattr(self.player, "faction_reputation", {}),
+            player_reputation=self.player.get_effective_reputations(self.data_loader.factions),
             game_day=self.player.game_day,
             player=self.player,
         )
+        for mission_id in accepted:
+            self._load_auto_accept_cargo(mission_id)
 
         # Initialize procedural mission generator
         from spacegame.models.procedural_missions import ProceduralMissionGenerator
@@ -5805,7 +5817,7 @@ class Game:
             for contract in expired:
                 self.player.deduct_credits(contract.penalty_on_failure)
                 self._mission_notifications.append(
-                    f"Smuggling contract expired: {contract.client_name} — "
+                    f"Smuggling contract expired: {contract.client_name}. "
                     f"Penalty: {contract.penalty_on_failure} CR"
                 )
 
@@ -6118,6 +6130,45 @@ class Game:
         manager = self.politics_manager
         return lambda fid, amount: manager.apply_reputation_with_spillover(self.player, fid, amount)
 
+    def _build_mission_manager(self) -> "MissionManager":
+        """A mission manager whose auto-resolve knows which flags the content sets (BB-19)."""
+        from spacegame.models.flag_producers import content_flag_producers
+        from spacegame.models.mission import MissionManager
+
+        dl = self.data_loader
+        return MissionManager(
+            dl.missions,
+            produced_flags=content_flag_producers(
+                dl.dialogue_trees.values(), dl.encounter_definitions, dl.npcs.values()
+            ),
+        )
+
+    def _load_auto_accept_cargo(self, mission_id: str) -> None:
+        """Load the accept cargo of a mission an availability pass just auto-accepted.
+
+        Every pass calls it for each id ``update_availability`` returns, so a mission a
+        dialogue's exit, a load, or the new game accepts gets its cargo as one the
+        per-frame check accepts does (F-37, bug bash BB-7). A mission the pass only made
+        available, or one no longer active, loads nothing.
+
+        Args:
+            mission_id: A mission id the pass returned.
+        """
+        if self.mission_manager is None or self._player is None:
+            return
+        from spacegame.models.mission import MissionStatus
+
+        mission = self.mission_manager.get_mission(mission_id)
+        if mission is None or not mission.auto_accept:
+            return
+        if self.mission_manager.get_status(mission_id) != MissionStatus.ACTIVE:
+            return
+        for cargo in mission.on_accept_cargo:
+            self.player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
+            self._mission_notifications.append(
+                f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
+            )
+
     def check_missions(self) -> None:
         """Check mission objectives and handle completions."""
         if self._player is None or not self.mission_manager:
@@ -6259,7 +6310,7 @@ class Game:
         # Update availability (missions may unlock from completed prereqs or new flags)
         newly_available = self.mission_manager.update_availability(
             self.player.dialogue_flags,
-            player_reputation=getattr(self.player, "faction_reputation", {}),
+            player_reputation=self.player.get_effective_reputations(self.data_loader.factions),
         )
         if newly_available:
             discoverable_count = 0
@@ -6267,12 +6318,7 @@ class Game:
                 mission = self.mission_manager.get_mission(mid)
                 if mission:
                     # Auto-accepted missions grant on_accept_cargo immediately
-                    if mission.auto_accept and mission.on_accept_cargo:
-                        for cargo in mission.on_accept_cargo:
-                            self.player.ship.add_cargo(cargo.commodity_id, cargo.quantity, 0)
-                            self._mission_notifications.append(
-                                f"Cargo Loaded: {cargo.quantity} {cargo.commodity_id}"
-                            )
+                    self._load_auto_accept_cargo(mid)
                     if mission.auto_accept:
                         self._mission_notifications.append(f"Mission Accepted: {mission.name}")
                     else:
@@ -6292,9 +6338,9 @@ class Game:
                             )
             # Single consolidated notification instead of one per mission
             if discoverable_count == 1:
-                self._mission_notifications.append("New Mission Available — check your journal")
+                self._mission_notifications.append("New Mission Available: check your journal")
             elif discoverable_count > 1:
-                self._mission_notifications.append("New Missions Available — check your journal")
+                self._mission_notifications.append("New Missions Available: check your journal")
             # Update galaxy map markers and forced encounters
             if self.galaxy_map_view:
                 self.galaxy_map_view.mission_target_systems = (
@@ -6409,7 +6455,7 @@ class Game:
             if level >= lvl and not self.attribute_sheet.has_milestone(milestone_id):
                 self.attribute_sheet._awarded_milestones.add(milestone_id)
                 self.attribute_sheet.add_points(1)
-                self._mission_notifications.append(f"Level {lvl} reached — +1 attribute point!")
+                self._mission_notifications.append(f"Level {lvl} reached: +1 attribute point!")
 
         # Gameplay milestones
         if self.player.trades_completed >= 1:

@@ -50,6 +50,11 @@ FLEE_MIN_CHANCE = 10
 FLEE_MAX_CHANCE = 90
 FLEE_ACCURACY_PENALTY = 20
 
+# Ghost Counterstrike (BB-91): stacks cap at 3 plus Counterstrike Mastery's level, and each
+# stack adds 12% plus the skill's 5% per level.
+COUNTERSTRIKE_BASE_STACKS = 3
+COUNTERSTRIKE_BASE_PER_STACK = 0.12
+
 # Tier 3.E: cap on simultaneous living enemies. Reinforcement spawns are
 # silently declined above this cap so a misconfigured move can't flood
 # the combat arena. Matches the combat view's tested-layout budget of up
@@ -76,6 +81,26 @@ class CombatEngine:
         # and end of round) so ``turn_counter`` and ``hp_threshold`` triggers
         # both fire promptly.
         self._resolver = ComplicationResolver(complications or [])
+        # BB-100: each side's hull and shields when the fight began, so the game can tell a
+        # fight that was fought from one that ended with a bribe, a talk-down, or a clean exit.
+        self._start_marks = self._hull_and_shields()
+
+    def _hull_and_shields(self) -> tuple[int, ...]:
+        marks = [self._state.player.hull, self._state.player.shields]
+        for enemy in self._state.enemies:
+            marks.extend((enemy.current_hull, enemy.current_shields))
+        return tuple(marks)
+
+    def was_fought(self) -> bool:
+        """Whether the fight ended in a win or a loss, or either side's hull or shields moved.
+
+        A bribe, a talk-down, or a flee before a shot lands returns False, so crew
+        after-fight banter does not follow a fight that never happened (BB-100). A
+        reinforcement joining counts as a change.
+        """
+        if self._state.result in (CombatResult.VICTORY, CombatResult.DEFEAT):
+            return True
+        return self._hull_and_shields() != self._start_marks
 
     def _skill_bonus(self, bonus_type: str) -> float:
         """Get a skill bonus from progression, or 0.0 if not available."""
@@ -83,6 +108,13 @@ class CombatEngine:
         if prog and hasattr(prog, "get_bonus"):
             return prog.get_bonus(bonus_type)
         return 0.0
+
+    def _skill_level(self, skill_id: str) -> int:
+        """A skill's learned level from the progression, or 0 when there is none."""
+        prog = self._state.progression
+        skills = getattr(prog, "skills", None) if prog else None
+        node = skills.get(skill_id) if skills else None
+        return int(node.current_level) if node is not None else 0
 
     # ------------------------------------------------------------------
     # Player actions
@@ -126,7 +158,7 @@ class CombatEngine:
                         round_number=self._state.round_number,
                         actor="player",
                         action=action.move_name,
-                        effects_applied=[f"Target destroyed — {action.move_name} held fire"],
+                        effects_applied=[f"Target destroyed. {action.move_name} held fire"],
                         hit=False,
                     )
                     self._state.combat_log.append(skip_entry)
@@ -596,6 +628,8 @@ class CombatEngine:
         """Resolve a single enemy's turn based on AI behavior."""
         enemy = self._state.enemies[enemy_idx]
         actor = f"enemy:{enemy_idx}"
+        # BB-86: the move the telegraph showed, taken now so a stale one never plays later
+        told = self._take_telegraphed_move(enemy)
 
         # Check if frozen (Cryo 3-stack effect) — skip turn entirely
         for eff, _ in enemy.active_effects:
@@ -641,7 +675,7 @@ class CombatEngine:
             self._state.combat_log.append(entry)
             return [entry]
 
-        move = self._select_enemy_move(enemy)
+        move = told if told is not None else self._select_enemy_move(enemy)
         if move is None:
             entry = CombatLogEntry(
                 round_number=self._state.round_number,
@@ -818,6 +852,20 @@ class CombatEngine:
                 continue
             enemy.telegraphed_move = self._select_enemy_move(enemy)
 
+    def _take_telegraphed_move(self, enemy: EnemyShip) -> Optional[CombatMove]:
+        """The move the telegraph showed, if the enemy can still play it (BB-86).
+
+        Clears the telegraph either way. A frozen, crippled, or fleeing enemy returns before
+        its move is chosen, so a telegraph it cannot act on is dropped too.
+        """
+        told = enemy.telegraphed_move
+        enemy.telegraphed_move = None
+        if told is None:
+            return None
+        if told.id in enemy.cooldowns or enemy.current_energy < told.energy_cost:
+            return None
+        return told
+
     @staticmethod
     def _move_damage(move: CombatMove) -> float:
         """Total damage from a move's effects."""
@@ -979,7 +1027,7 @@ class CombatEngine:
             round_number=self._state.round_number,
             actor="player",
             action="Bribe",
-            effects_applied=[f"Paid {total_cost:,} CR — enemies stand down"],
+            effects_applied=[f"Paid {total_cost:,} CR. Enemies stand down"],
         )
         self._state.combat_log.append(entry)
         logs.append(entry)
@@ -1124,13 +1172,13 @@ class CombatEngine:
                 for tid in event.spawned_template_ids:
                     if living >= MAX_LIVING_ENEMIES:
                         messages.append(
-                            f"Reinforcement call capped — {MAX_LIVING_ENEMIES} "
+                            f"Reinforcement call capped: {MAX_LIVING_ENEMIES} "
                             "enemies already engaged"
                         )
                         break
                     template = dl.enemy_templates.get(tid)
                     if template is None:
-                        messages.append(f"Reinforcement call failed — unknown template '{tid}'")
+                        messages.append(f"Reinforcement call failed: unknown template '{tid}'")
                         continue
                     self._state.enemies.append(EnemyShip.from_template(template))
                     living += 1
@@ -1383,11 +1431,13 @@ class CombatEngine:
                             and defender.defensive_identity == "ghost"
                         ):
                             prev_stacks = defender.counterstrike_stacks
-                            defender.counterstrike_stacks = min(
-                                defender.counterstrike_stacks + 1, 3
-                            )
+                            cap = COUNTERSTRIKE_BASE_STACKS + self._skill_level("counterstrike")
+                            defender.counterstrike_stacks = min(prev_stacks + 1, cap)
                             if defender.counterstrike_stacks > prev_stacks:
-                                pct = defender.counterstrike_stacks * 12
+                                per_stack = COUNTERSTRIKE_BASE_PER_STACK + self._skill_bonus(
+                                    "counterstrike_bonus"
+                                )
+                                pct = round(per_stack * defender.counterstrike_stacks * 100)
                                 effects_applied.append(f"Counterstrike +{pct}%")
 
                         # Daring Gambit (B8.3): counter-on-dodge.
@@ -1584,7 +1634,7 @@ class CombatEngine:
                     if actor_name == "player" or actor_name.startswith("crew:")
                     else attacker
                 )
-                no_ally_note = "no ally to support — redirected to self"
+                no_ally_note = "no ally to support, redirected to self"
             else:
                 no_ally_note = None
 
@@ -1737,7 +1787,9 @@ class CombatEngine:
                     # Ghost Counterstrike: base +12% per stack
                     # counterstrike_bonus skill adds +5% per level per stack
                     if atk.defensive_identity == "ghost" and atk.counterstrike_stacks > 0:
-                        per_stack = 0.12 + self._skill_bonus("counterstrike_bonus")
+                        per_stack = COUNTERSTRIKE_BASE_PER_STACK + self._skill_bonus(
+                            "counterstrike_bonus"
+                        )
                         raw *= 1.0 + per_stack * atk.counterstrike_stacks
 
                 # Defender identity modifiers
@@ -1975,7 +2027,7 @@ class CombatEngine:
             elif effect.type == EffectType.ABSORB:
                 # Add absorb shield: next incoming hit is nullified
                 target.active_effects.append((effect, max(1, effect.duration)))
-                messages.append("Countermeasures deployed — next hit absorbed")
+                messages.append("Countermeasures deployed: next hit absorbed")
 
             # SPAWN_REINFORCEMENT is handled by _resolve_move's dedicated
             # spawn-effects bucket (Tier 3.E) — it's caster-invoked and
@@ -2002,7 +2054,7 @@ class CombatEngine:
         messages: list[str] = []
 
         if not template_id:
-            messages.append("Reinforcement call failed — no template specified")
+            messages.append("Reinforcement call failed: no template specified")
             return messages
 
         # Lazy import to avoid a circular dependency at module load.
@@ -2011,7 +2063,7 @@ class CombatEngine:
         dl = get_data_loader()
         template = dl.enemy_templates.get(template_id)
         if template is None:
-            messages.append(f"Reinforcement call failed — unknown template '{template_id}'")
+            messages.append(f"Reinforcement call failed: unknown template '{template_id}'")
             return messages
 
         living = sum(1 for e in self._state.enemies if e.is_alive and not e.is_fled)
@@ -2019,7 +2071,7 @@ class CombatEngine:
         for _ in range(count):
             if living >= MAX_LIVING_ENEMIES:
                 messages.append(
-                    f"Reinforcement call capped — {MAX_LIVING_ENEMIES} enemies already engaged"
+                    f"Reinforcement call capped: {MAX_LIVING_ENEMIES} enemies already engaged"
                 )
                 break
             new_enemy = EnemyShip.from_template(template)
@@ -2474,6 +2526,7 @@ class CombatEngine:
 
             elif effect_type == "guaranteed_flee":
                 self._state.result = CombatResult.FLED
+                messages.append("The burst breaks contact. You are clear.")
 
             elif effect_type == "hull_restore" and target == "self_percent":
                 restore = int(player.max_hull * value)

@@ -763,3 +763,48 @@ class TestSACArcSkills:
             assert rest_level == orig_level, (
                 f"{skill_id}: expected {orig_level}, got {rest_level} after round-trip"
             )
+
+
+class TestPriceMemoryPrerequisite:
+    """BB-90: Price Memory follows Market Eye, so a captain can hold it without Market Insider."""
+
+    def test_price_memory_is_learnable_without_market_insider(self) -> None:
+        prog = PlayerProgression(skill_points=10)
+        for skill_id in ("negotiator", "market_eye", "price_memory"):
+            ok, msg = prog.level_up_skill(skill_id)
+            assert ok, msg
+        assert prog.skills["market_insider"].current_level == 0
+        # The galaxy map shows the memory only when no remote_prices skill shadows it.
+        assert prog.skills["market_insider"].bonus_type == "remote_prices"
+        assert prog.get_bonus("remote_prices") == 0, "a remote-price skill shadows the memory"
+        assert prog.get_bonus("price_memory") > 0
+
+
+class TestLevelLoopIsBounded:
+    """BB-78: a damaged level cannot spin the level-up loop."""
+
+    @pytest.mark.timeout(10)
+    def test_a_huge_negative_level_does_not_loop(self) -> None:
+        prog = PlayerProgression(level=-(2**63))
+        assert prog.add_xp(5) == []
+        assert prog.level == -(2**63)
+
+    @pytest.mark.timeout(10)
+    def test_a_huge_level_does_not_loop(self) -> None:
+        prog = PlayerProgression(level=2**63 - 1)
+        assert prog.add_xp(5) == []
+
+    def test_levels_still_rise_below_the_cap(self) -> None:
+        prog = PlayerProgression()
+        assert prog.add_xp(500) == ["Level up! Now level 2. +1 skill point!"]
+
+    def test_the_level_stops_at_ten_thousand(self) -> None:
+        # The port's cap is 10,000; the numbers are written out so that moving the cap fails.
+        below = PlayerProgression(level=9_999, xp=get_xp_threshold(10_001))
+        messages = below.add_xp(0)
+        assert below.level == 10_000, f"Level 9,999 should rise to 10,000, got {below.level}"
+        assert len(messages) == 1, f"One level-up message expected, got {messages}"
+
+        at_cap = PlayerProgression(level=10_000, xp=get_xp_threshold(10_001))
+        assert at_cap.add_xp(0) == [], "Level 10,000 should not rise"
+        assert at_cap.level == 10_000

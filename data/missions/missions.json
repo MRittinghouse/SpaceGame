@@ -28,7 +28,17 @@
         {
           "reward_type": "trade_permit",
           "amount": 0,
-          "target_id": "all"
+          "target_id": "commerce_guild"
+        },
+        {
+          "reward_type": "trade_permit",
+          "amount": 0,
+          "target_id": "science_collective"
+        },
+        {
+          "reward_type": "trade_permit",
+          "amount": 0,
+          "target_id": "frontier_alliance"
         },
         {
           "reward_type": "xp",
@@ -294,6 +304,11 @@
         {
           "reward_type": "xp",
           "amount": 50
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "drifters_deal_complete"
         }
       ]
     },
@@ -357,8 +372,8 @@
     {
       "id": "recruit_navigator",
       "name": "Recruit Navigator",
-      "description": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. She's too good for dock work and she knows it. Return to Nexus Prime and offer her a berth before someone else does.",
-      "hint": "Return to Nexus Prime to recruit Elena Reeves as your navigator.",
+      "description": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. She's too good for dock work and she knows it. Return to Nexus Prime and offer her a berth before someone else does. If every berth is taken, she'll head home to Stellaris Port and wait for one to open.",
+      "hint": "Return to Nexus Prime to recruit Elena Reeves as your navigator. If your crew is full, she waits at Stellaris Port.",
       "prerequisites": [
         "footing_the_bill"
       ],
@@ -601,6 +616,12 @@
           "description": "Travel to Crimson Reach"
         },
         {
+          "type": "collect_cargo",
+          "target_id": "data_chip",
+          "target_quantity": 1,
+          "description": "Keep Dex's data chip aboard"
+        },
+        {
           "type": "has_flag",
           "target_id": "crimson_run_ground_complete",
           "description": "Complete the ground operation"
@@ -634,6 +655,11 @@
           "reward_type": "black_market_access",
           "amount": 0,
           "target_id": "crimson_reach"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "crimson_run_complete"
         }
       ]
     },
@@ -911,11 +937,6 @@
           "type": "has_flag",
           "target_id": "fulcrum_ground_complete",
           "description": "Infiltrate the assembly station"
-        },
-        {
-          "type": "has_flag",
-          "target_id": "warp_gate_discovered",
-          "description": "Find a way to stop Convergence, or find a way out"
         }
       ],
       "rewards": [

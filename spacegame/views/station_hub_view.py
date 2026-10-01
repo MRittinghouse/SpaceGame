@@ -674,9 +674,7 @@ class StationHubView(BaseView):
 
     def _get_crew_slots(self) -> int:
         """Get total crew slots including skill bonuses."""
-        return self.player.ship.ship_type.crew_slots + int(
-            self.player.progression.get_bonus("crew_slot_bonus")
-        )
+        return self.player.get_crew_slots()
 
     def _get_current_crew_count(self) -> int:
         """Get number of currently recruited crew members."""
@@ -785,7 +783,8 @@ class StationHubView(BaseView):
 
             # Reputation-locked mission teaser (at most 1)
             if hasattr(self.mission_manager, "get_reputation_locked_teaser"):
-                rep = getattr(self.player, "faction_reputation", {})
+                # BB-82: the standing the availability passes gate on, skill bonuses included.
+                rep = self.player.get_effective_reputations(self.data_loader.factions)
                 teaser = self.mission_manager.get_reputation_locked_teaser(self.system.id, rep)
                 if teaser:
                     mission_name, faction_name, tier_name = teaser

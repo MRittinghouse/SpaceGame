@@ -134,9 +134,8 @@ DUAL_TECH_PALETTE: dict[str, DualTech] = {
         energy_cost=8,
         cooldown=5,
         description=(
-            "Marcus opens a single mount's safeties, Priya overcharges the "
-            "capacitor. One weapon fires at double damage, ignores all "
-            "armor, +25% crit chance."
+            "Marcus opens a single mount's safeties and Priya overcharges the "
+            "capacitor. A single charged shot: 55 damage, +20 accuracy."
         ),
         implementation_ready=True,  # Expressible as a single-target damage move.
     ),
@@ -303,10 +302,10 @@ def build_gun_run_move() -> CombatMove:
 def build_focused_barrage_move() -> CombatMove:
     """Focused Barrage (Marcus + Priya) — single-target, very high damage.
 
-    Armor-ignoring and 25%-crit-boost behaviors are NOT yet wired into
-    the CombatEffect system — logged as B8.3 deferred. This move
-    implements the base damage portion (roughly 2× typical tech damage,
-    ≈55 dmg) so the tech is at least usable.
+    Armor-ignoring and 25%-crit-boost behaviors are NOT wired into the
+    CombatEffect system; they are an SP4 option, not a description promise.
+    This move is the base damage portion (roughly 2× typical tech damage,
+    55 dmg at +20 accuracy).
     """
     tech = DUAL_TECH_PALETTE["focused_barrage"]
     return CombatMove(

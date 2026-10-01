@@ -63,7 +63,7 @@
       "default": {}
     }
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -78,9 +78,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|deception": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -141,9 +142,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|deception": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -204,9 +206,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -267,9 +270,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -330,9 +334,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -393,9 +398,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -456,9 +462,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -519,9 +526,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -582,9 +590,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -645,9 +654,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -708,9 +718,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -771,9 +782,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -834,9 +846,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -897,9 +910,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -960,9 +974,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1023,9 +1038,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1086,9 +1102,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1149,9 +1166,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1212,9 +1230,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1275,9 +1294,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1338,9 +1358,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1401,9 +1422,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1464,9 +1486,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 48
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1529,9 +1552,10 @@
           "ce4_guild_called_out"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|deception": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1594,9 +1618,10 @@
           "ce4_smuggler_fooled"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|deception": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1659,9 +1684,10 @@
           "ce4_smuggler_warned_off"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1722,9 +1748,10 @@
       "state": {
         "flags": [],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1787,9 +1814,10 @@
           "ce4_union_backed_off"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|intimidation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1852,9 +1880,10 @@
           "ce4_read_frontier_truth"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1917,9 +1946,10 @@
           "ce4_spotted_civilian_bait"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -1982,9 +2012,10 @@
           "ce4_contraband_verified"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2047,9 +2078,10 @@
           "ce4_dealer_settled"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2112,9 +2144,10 @@
           "ce4_found_smuggler_traps"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2177,9 +2210,10 @@
           "ce4_spotted_fake_officer"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2242,9 +2276,10 @@
           "ce4_spotted_hulk_drones"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|observation": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2307,9 +2342,10 @@
           "ce4_frontier_friendly"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2372,9 +2408,10 @@
           "ce4_haggled_antique"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2437,9 +2474,10 @@
           "ce4_haggled_spice"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2502,9 +2540,10 @@
           "ce4_ransom_talked_down"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2567,9 +2606,10 @@
           "ce4_reach_negotiated"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2632,9 +2672,10 @@
           "ce4_redirected_hungry"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2697,9 +2738,10 @@
           "ce4_union_appealed"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|persuasion": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2762,9 +2804,10 @@
           "ce4_read_civilian_logs"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2827,9 +2870,10 @@
           "ce4_spotted_mining_bait"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2892,9 +2936,10 @@
           "ce4_spoofed_collective_security"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",
@@ -2957,9 +3002,10 @@
           "ce4_spotted_relay_bait"
         ],
         "social": {
-          "disposition": {
-            "": 53
+          "check_xp_days": {
+            "|technical": 1
           },
+          "disposition": {},
           "skills": {
             "deception": {
               "id": "deception",

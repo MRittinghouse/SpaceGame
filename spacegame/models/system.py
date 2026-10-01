@@ -71,6 +71,9 @@ class StarSystem:
     stations: List[Station]
     economy: Economy
     rest_cost: int  # Cost to rest/stay for one day
+    # BB-74: the faction that holds the system in every game (the cultural guide's map);
+    # "" for a system nobody holds (Heron's Mark). ``faction`` stays display text.
+    faction_id: str = ""
 
     def distance_to(self, other: "StarSystem") -> float:
         """

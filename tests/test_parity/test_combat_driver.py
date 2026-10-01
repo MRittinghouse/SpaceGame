@@ -152,3 +152,12 @@ def test_momentum_gauge_is_recorded_whole(cases: dict) -> None:
     for category in get_data_loader().ship_ultimates:
         case = cases[f"ultimate_{category}"]
         assert case.setup["player"]["momentum"]["current"] == 1.0
+
+
+def test_shield_mastery_is_pinned(cases: dict) -> None:
+    # BB-75: the one setup with a learned skill; every other setup keeps its shape.
+    setup = cases["skill_shield_mastery"].setup
+    assert setup["skill_levels"] == {"shield_mastery": 3}
+    assert (setup["player"]["shields"], setup["player"]["max_shields"]) == (26, 26)
+    learned = [name for name, case in cases.items() if "skill_levels" in case.setup]
+    assert learned == ["skill_shield_mastery"]

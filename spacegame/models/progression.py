@@ -177,6 +177,11 @@ LEVEL_XP_THRESHOLDS = [
 ]
 
 
+# BB-78: the level-up loop never runs past this level, far above any reachable one, and a
+# level below 1 (a damaged save) never levels.
+LEVEL_CAP = 10_000
+
+
 def get_xp_threshold(level: int) -> int:
     """Get cumulative XP needed to reach a given level.
 
@@ -214,8 +219,8 @@ class PlayerProgression:
     def add_xp(self, amount: int) -> List[str]:
         """Add XP and check for level ups.
 
-        No level cap — XP thresholds scale via formula.
-        Awards exactly 1 skill point per level, always.
+        XP thresholds scale via formula. Levels rise one at a time up to LEVEL_CAP; a level
+        below 1 never rises. Awards exactly 1 skill point per level, always.
 
         Args:
             amount: XP to add
@@ -226,15 +231,11 @@ class PlayerProgression:
         self.xp += amount
         messages = []
 
-        # Check for level ups (no cap, 1 point per level always)
-        while True:
-            next_threshold = get_xp_threshold(self.level + 1)
-            if self.xp >= next_threshold:
-                self.level += 1
-                self.skill_points += 1
-                messages.append(f"Level up! Now level {self.level}. +1 skill point!")
-            else:
-                break
+        # Level up one at a time, 1 skill point each, below LEVEL_CAP
+        while 1 <= self.level < LEVEL_CAP and self.xp >= get_xp_threshold(self.level + 1):
+            self.level += 1
+            self.skill_points += 1
+            messages.append(f"Level up! Now level {self.level}. +1 skill point!")
 
         return messages
 

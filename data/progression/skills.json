@@ -84,14 +84,14 @@
       "tree": "commerce",
       "max_level": 1,
       "cost_per_level": 1,
-      "prerequisite_id": "market_insider",
+      "prerequisite_id": "market_eye",
       "bonus_type": "price_memory",
       "bonus_per_level": 1.0
     },
     {
       "id": "tariff_negotiation",
       "name": "Tariff Negotiation",
-      "description": "-10% faction tariff per level",
+      "description": "-10% tariff per level at Unfriendly or Hostile standing",
       "tree": "commerce",
       "max_level": 2,
       "cost_per_level": 1,
@@ -113,7 +113,7 @@
     {
       "id": "smugglers_eye",
       "name": "Smuggler's Eye",
-      "description": "See legality status of all goods at a glance",
+      "description": "Adds a warning mark to restricted and illegal goods on the trade screen",
       "tree": "commerce",
       "max_level": 1,
       "cost_per_level": 1,
@@ -146,7 +146,7 @@
     {
       "id": "insurance",
       "name": "Insurance",
-      "description": "On combat defeat, keep 50% of cargo instead of losing all",
+      "description": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit).",
       "tree": "commerce",
       "max_level": 1,
       "cost_per_level": 1,
@@ -179,7 +179,7 @@
     {
       "id": "shield_mastery",
       "name": "Shield Mastery",
-      "description": "+10% shield effectiveness per level",
+      "description": "+10% max shields per level",
       "tree": "combat",
       "max_level": 3,
       "cost_per_level": 1,
@@ -300,7 +300,7 @@
     {
       "id": "counterstrike",
       "name": "Counterstrike Mastery",
-      "description": "Counterstrike bonus +5% per level, max stacks +1",
+      "description": "+5% Counterstrike damage per stack and +1 max stack per level",
       "tree": "combat",
       "max_level": 2,
       "cost_per_level": 1,
@@ -366,7 +366,7 @@
     {
       "id": "juggernaut_capstone",
       "name": "Juggernaut",
-      "description": "Hull > 75%: immune to crits. Hull < 25%: +25% damage",
+      "description": "Hull < 25%: +25% damage",
       "tree": "combat",
       "max_level": 1,
       "cost_per_level": 1,
@@ -542,7 +542,7 @@
     {
       "id": "diplomatic_relations",
       "name": "Diplomatic Relations",
-      "description": "+1 faction rep per trade per level",
+      "description": "+1 standing per level on a landing's first trade",
       "tree": "leadership",
       "max_level": 2,
       "cost_per_level": 1,
@@ -762,7 +762,7 @@
     {
       "id": "cultural_savant",
       "name": "Cultural Savant",
-      "description": "+1 to all social checks in faction-aligned systems per level",
+      "description": "+1 per level to Persuasion, Intimidation, Observation, Deception, and Leadership checks",
       "tree": "social",
       "max_level": 2,
       "cost_per_level": 1,
@@ -784,7 +784,7 @@
     {
       "id": "faction_ambassador",
       "name": "Faction Ambassador",
-      "description": "All faction rep gains doubled per level",
+      "description": "Multiplies standing from a landing's first trade: x2 at level 1, x3 at level 2",
       "tree": "social",
       "max_level": 2,
       "cost_per_level": 1,
@@ -806,7 +806,7 @@
     {
       "id": "underworld_contacts",
       "name": "Underworld Contacts",
-      "description": "Black market prices visible; access at all stations",
+      "description": "Black market access at every station that has one",
       "tree": "social",
       "max_level": 1,
       "cost_per_level": 1,
@@ -817,7 +817,7 @@
     {
       "id": "crew_whisperer",
       "name": "Crew Whisperer",
-      "description": "Crew loyalty changes from dialogue are +50%",
+      "description": "Crew loyalty gains from dialogue are +50%",
       "tree": "social",
       "max_level": 1,
       "cost_per_level": 1,
@@ -828,7 +828,7 @@
     {
       "id": "peacemaker",
       "name": "Peacemaker",
-      "description": "Non-hostile option always available; talk out of any fight",
+      "description": "Negotiation difficulty -2 (minimum 1)",
       "tree": "social",
       "max_level": 1,
       "cost_per_level": 1,

@@ -514,7 +514,7 @@ class FuturesState:
                 still_active.append(contract)
                 display_name = _commodity_display(nexus_market, contract.commodity_id)
                 notifications.append(
-                    f"Futures: {display_name} settlement deferred — market disruption."
+                    f"Futures: {display_name} settlement deferred by market disruption."
                 )
                 continue
 
@@ -550,11 +550,11 @@ class FuturesState:
             display_name = _commodity_display(nexus_market, contract.commodity_id)
             if payoff >= 0:
                 notifications.append(
-                    f"Futures: {display_name} settled at {settlement_price} cr — +{payoff:,} cr."
+                    f"Futures: {display_name} settled at {settlement_price} cr: +{payoff:,} cr."
                 )
             else:
                 notifications.append(
-                    f"Futures: {display_name} settled at {settlement_price} cr — {payoff:,} cr."
+                    f"Futures: {display_name} settled at {settlement_price} cr: {payoff:,} cr."
                 )
 
         self.active_contracts = still_active

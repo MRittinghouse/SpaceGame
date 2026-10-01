@@ -13,6 +13,7 @@ Each meaningful combat outcome resolves the rivalry immediately:
 - ``BRIBED``                         -> ``bribed_off`` (transactional)
 - ``DEFEAT`` (player lost combat)    -> no resolution; counts toward cap
 - ``FLED`` (player ran)              -> no resolution; counts toward cap
+- ``FLED_CAPTAIN`` (the captain's ship fled) -> no resolution; counts toward cap
 
 After ``RESOLUTION_THRESHOLD`` total encounters with no resolution
 trigger, the captain auto-retires to ``wanderer`` (they've made their
@@ -22,8 +23,12 @@ captain harasses the player forever.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from spacegame.models.combat import EnemyShip
 
 # Status constants — captain's current standing relative to the player.
 STATUS_ACTIVE = "active"  # Still in the recurring rotation.
@@ -57,6 +62,10 @@ OUTCOME_OUTBID = "outbid"
 # Behaves identically to OUTCOME_OUTBID from record_encounter's perspective —
 # accumulates toward RESOLUTION_THRESHOLD, auto-retires to STATUS_WANDERER.
 OUTCOME_OUTCOMPETED = "outcompeted"
+# BB-87: the captain's own ship left the fight (cowardice mid-fight, or an intimidation that
+# sent every survivor away). Accumulates toward RESOLUTION_THRESHOLD like DEFEAT and FLED,
+# so the captain stays in the rotation and retires to wanderer after the third meeting.
+OUTCOME_FLED_CAPTAIN = "fled_captain"
 
 # Encounters before an unresolved rivalry auto-retires.
 RESOLUTION_THRESHOLD = 3
@@ -158,3 +167,24 @@ class CaptainMemory:
             first_seen_day=int(data.get("first_seen_day", 0)),
             last_seen_day=int(data.get("last_seen_day", 0)),
         )
+
+
+def captain_ship_fled(enemies: Sequence["EnemyShip"], signature_template_id: str) -> bool:
+    """Whether the captain's ship, the enemy on the captain's signature template, fled."""
+    return any(e.is_fled and e.template.id == signature_template_id for e in enemies)
+
+
+def fight_outcome_for_captain(outcome: str, ship_fled: bool) -> str:
+    """The outcome a finished fight records for its named captain (RC-2, BB-87).
+
+    Args:
+        outcome: The fight's result as an OUTCOME_* string.
+        ship_fled: Whether the captain's own ship left the fight.
+
+    Returns:
+        OUTCOME_FLED_CAPTAIN when the captain's ship fled from a fight the player won or
+        talked down; otherwise ``outcome``. A player defeat stays a defeat.
+    """
+    if ship_fled and outcome in (OUTCOME_VICTORY, OUTCOME_NEGOTIATED):
+        return OUTCOME_FLED_CAPTAIN
+    return outcome

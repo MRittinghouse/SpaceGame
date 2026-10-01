@@ -33,6 +33,12 @@
           "description": "Speak with Neve Osei at Nexus Prime"
         },
         {
+          "type": "collect_cargo",
+          "target_id": "sealed_audit_chip",
+          "target_quantity": 1,
+          "description": "Keep the sealed audit chip aboard"
+        },
+        {
           "type": "reach_system",
           "target_id": "stellaris_port",
           "target_quantity": 1,
@@ -149,7 +155,8 @@
           "type": "reach_system",
           "target_id": "verdant",
           "target_quantity": 1,
-          "description": "Return the pesticide to Verdant"
+          "description": "Return the pesticide to Verdant",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -267,7 +274,7 @@
       "forced_encounter": {
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "corporate_enforcer"
+          "guild_enforcer"
         ],
         "trigger_flag": "whistleblower_intercepted",
         "encounter_def_id": "whistleblower_interception"
@@ -376,7 +383,7 @@
     {
       "id": "miners_plight",
       "name": "Miners' Plight",
-      "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can report the request and sleep fine. Probably.",
+      "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can turn her down and sleep fine. Probably.",
       "hint": "Talk to Britt Vasara at Breakstone. She needs 5 units of Medical Supplies delivered past the embargo.",
       "mission_type": "side",
       "available_at": [
@@ -409,7 +416,8 @@
           "type": "reach_system",
           "target_id": "breakstone",
           "target_quantity": 1,
-          "description": "Deliver medicine to Breakstone"
+          "description": "Deliver medicine to Breakstone",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -419,6 +427,11 @@
         }
       ],
       "rewards": [
+        {
+          "reward_type": "remove_cargo",
+          "amount": 5,
+          "target_id": "medical"
+        },
         {
           "reward_type": "credits",
           "amount": 250
@@ -608,7 +621,8 @@
           "type": "reach_system",
           "target_id": "axiom_labs",
           "target_quantity": 1,
-          "description": "Return to Axiom Labs with the data"
+          "description": "Return to Axiom Labs with the data",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -652,7 +666,9 @@
       "discovery_method": "automatic",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
+      "required_flags": [
+        "held_back_until_sp10"
+      ],
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
@@ -727,7 +743,8 @@
           "type": "reach_system",
           "target_id": "havens_rest",
           "target_quantity": 1,
-          "description": "Return to Haven's Rest with the news"
+          "description": "Return to Haven's Rest with the news",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -852,7 +869,8 @@
           "type": "reach_system",
           "target_id": "stellaris_port",
           "target_quantity": 1,
-          "description": "Return to Stellaris Port with findings"
+          "description": "Return to Stellaris Port with findings",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -925,7 +943,8 @@
           "type": "reach_system",
           "target_id": "crimson_reach",
           "target_quantity": 1,
-          "description": "Return to Crimson Reach"
+          "description": "Return to Crimson Reach",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -935,6 +954,11 @@
         }
       ],
       "rewards": [
+        {
+          "reward_type": "remove_cargo",
+          "amount": 3,
+          "target_id": "rare_parts"
+        },
         {
           "reward_type": "credits",
           "amount": 300
@@ -997,7 +1021,8 @@
           "type": "reach_system",
           "target_id": "crimson_reach",
           "target_quantity": 1,
-          "description": "Return to Crimson Reach"
+          "description": "Return to Crimson Reach",
+          "after_departure": true
         },
         {
           "type": "has_flag",
@@ -1227,7 +1252,9 @@
       "discovery_method": "encounter",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
+      "required_flags": [
+        "stowaway_discovered"
+      ],
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
@@ -1272,7 +1299,9 @@
       "discovery_method": "encounter",
       "repeatable": false,
       "prerequisites": [],
-      "required_flags": [],
+      "required_flags": [
+        "adrift_survivor_found"
+      ],
       "auto_accept": true,
       "on_accept_cargo": [],
       "objectives": [
@@ -1315,7 +1344,7 @@
       "name": "Verdant Machinery Run",
       "description": "Arna pulled a pallet of harvest machinery out of a stalled manifest and handed it to you. Verdant's agri hub has been waiting on it. A woman named Rhea signs for the delivery on their end. Straightforward run. Don't get cute.",
       "hint": "Jump to Verdant. Find Rhea at the agri hub. Hand off the pallet.",
-      "discovery_text": "Arna at the concourse handed me eighteen units of machinery and a destination. Verdant Agri Hub. First run.",
+      "discovery_text": "Arna at the concourse handed me four units of machinery and a destination. Verdant Agri Hub. First run.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"
@@ -1332,7 +1361,7 @@
       "on_accept_cargo": [
         {
           "commodity_id": "machinery",
-          "quantity": 18
+          "quantity": 4
         }
       ],
       "objectives": [
@@ -1341,6 +1370,12 @@
           "target_id": "verdant",
           "target_quantity": 1,
           "description": "Jump to Verdant"
+        },
+        {
+          "type": "collect_cargo",
+          "target_id": "machinery",
+          "target_quantity": 4,
+          "description": "Keep the pallet aboard: 4 Machinery"
         },
         {
           "type": "talk_to_npc",
@@ -1358,7 +1393,7 @@
       "rewards": [
         {
           "reward_type": "remove_cargo",
-          "amount": 18,
+          "amount": 4,
           "target_id": "machinery"
         },
         {
@@ -1421,7 +1456,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Nexus Prime with the contraband"
+          "description": "Return to Nexus Prime with the contraband",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
@@ -1464,8 +1500,8 @@
     {
       "id": "arna_05b_clean_pull",
       "name": "The Clean Pull",
-      "description": "Arna's sitting this one out. Her side's still bleeding and her plan fell apart. But she's had coordinates on a derelict in Havens Rest for a year. Nobody's worked it. No factions are watching. Small score, clean paper, nothing follows you out.",
-      "hint": "Jump to Havens Rest. Salvage what you can. Return to Arna at Nexus.",
+      "description": "Arna's sitting this one out. Her side's still bleeding and her plan fell apart. But she's had coordinates on a derelict in Haven's Rest for a year. Nobody's worked it. No factions are watching. Small score, clean paper, nothing follows you out.",
+      "hint": "Jump to Haven's Rest. Salvage what you can. Return to Arna at Nexus.",
       "discovery_text": "Arna walked me to the dock and handed me a data chip with coordinates on it. 'This one's clean,' she said. 'Small. But clean.' She didn't come aboard.",
       "mission_type": "side",
       "available_at": [
@@ -1486,7 +1522,7 @@
           "type": "reach_system",
           "target_id": "havens_rest",
           "target_quantity": 1,
-          "description": "Jump to Havens Rest"
+          "description": "Jump to Haven's Rest"
         },
         {
           "type": "collect_cargo",
@@ -1498,7 +1534,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Arna at Nexus Prime"
+          "description": "Return to Arna at Nexus Prime",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
@@ -1635,7 +1672,8 @@
           "type": "reach_system",
           "target_id": "nexus_prime",
           "target_quantity": 1,
-          "description": "Return to Nexus Prime"
+          "description": "Return to Nexus Prime",
+          "after_departure": true
         },
         {
           "type": "talk_to_npc",
@@ -1747,7 +1785,7 @@
       "name": "The Ore Tip",
       "description": "Arna has coordinates for a marginal mining site in Breakstone's outer belt. She claims the enforcement presence is thin and the rare metals are worth enough to make the run profitable. You're the rig she's been waiting for. Pull a load, bring it back.",
       "hint": "Travel to Breakstone. Mine at least 5 units of rare metals and return to Arna at Nexus Prime.",
-      "discovery_text": "Arna pitched me a rare-metal run at Breakstone's outer belt. Says the site is marginal, enforcement is thin, and the margin is better than she let on with coolant. She had coordinates ready before I said yes.",
+      "discovery_text": "Arna pitched me a rare-metal run at Breakstone's outer belt. Says the site is marginal, enforcement is thin, and the margin is better than she let on with the machinery run. She had coordinates ready before I said yes.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"

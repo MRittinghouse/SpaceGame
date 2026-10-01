@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -38,7 +38,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You close the gap. The transport's beacon flickers off. Two armed ships you didn't see drop out of stealth.",
+          "description": "You close the gap. The transport's beacon flickers off. An armed ship you didn't see drops out of stealth, and a second heat signature holds at the edge of your scope.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -745,7 +745,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock. The pilot wasn't a pilot. The rig was a shell. Two skiffs unhide from behind it.",
+          "description": "You dock. The pilot wasn't a pilot. The rig was a shell. An armed ship unhides from behind it, and another drive is warming up further out.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -1452,7 +1452,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side and three other ships uncloak.",
+          "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side, and somewhere behind him another ship drops its cloak.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -2165,7 +2165,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it and a second one pings off your starboard. Ambush.",
+          "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it, and a second one pings far off your starboard, closing. Ambush.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []

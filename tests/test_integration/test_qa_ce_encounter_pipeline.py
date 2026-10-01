@@ -25,6 +25,7 @@ from spacegame.models.combat import (
     CombatLogEntry,
     CombatResult,
     CombatState,
+    EnemyShip,
     PlayerCombatState,
 )
 from spacegame.models.combat_engine import CombatEngine
@@ -32,6 +33,8 @@ from spacegame.models.encounter import (
     EncounterContext,
     select_encounter_definition,
 )
+from spacegame.models.player import Player
+from spacegame.models.ship import Ship
 
 
 @pytest.fixture(scope="module")
@@ -256,3 +259,73 @@ class TestEncounterRateSanity:
             # Above 25% means CE-4 dominates and repeat exposure becomes
             # obvious given only 4 instances per type.
             assert 0.15 <= share <= 0.25, f"CE-4 share in {danger} = {share:.1%}, expected 15-25%"
+
+
+# ---------------------------------------------------------------------------
+# Path 6: A captain whose ship fled (BB-87)
+# ---------------------------------------------------------------------------
+
+
+class TestCaptainWhoseShipFled:
+    """BB-87: the retreat line and the fled_captain outcome."""
+
+    def _state(self, dl, captain_id: str, result: CombatResult, fled: bool) -> CombatState:
+        captain = dl.captains[captain_id]
+        ship = EnemyShip.from_template(dl.enemy_templates[captain.signature_ship_template])
+        ship.is_fled = fled
+        encounter = CombatEncounter(enemy_templates=[], encounter_seed=42, captain_id=captain_id)
+        state = CombatState(
+            player=_player_state(), enemies=[ship], encounter=encounter, combat_log=[]
+        )
+        state.result = result
+        return state
+
+    def _view(self, state: CombatState, player=None):  # noqa: ANN001, ANN202
+        from spacegame.views.combat_view import CombatView
+
+        view = CombatView.__new__(CombatView)
+        view.engine = CombatEngine(state, seed=42)
+        view.player = player
+        view.visible_log_lines = []
+        view.floating_texts = []
+        view._interjection_resolver = None
+        view._captain_encounter_recorded = False
+        view.journal = None
+        view._append_log_line = lambda entry: view.visible_log_lines.append(
+            entry.effects_applied[0]
+        )
+        return view
+
+    def _player(self, dl) -> Player:  # noqa: ANN001
+        ship_type = dl.ship_types["shuttle"]
+        return Player("TestPilot", 5000, "nexus_prime", Ship(ship_type=ship_type, current_fuel=40))
+
+    def test_wren_fleeing_speaks_his_retreat_line(self, dl) -> None:
+        state = self._state(dl, "wren_departure_angle", CombatResult.VICTORY, fled=True)
+        view = self._view(state)
+        view._maybe_surface_captain_outcome_line()
+        retreat = dl.captains["wren_departure_angle"].retreat_line
+        assert any(retreat in line for line in view.visible_log_lines), view.visible_log_lines
+
+    def test_wren_fleeing_stays_in_the_rotation(self, dl) -> None:
+        player = self._player(dl)
+        state = self._state(dl, "wren_departure_angle", CombatResult.VICTORY, fled=True)
+        self._view(state, player)._maybe_record_captain_encounter()
+        memory = player.captain_memory["wren_departure_angle"]
+        assert (memory.last_outcome, memory.status) == ("fled_captain", "active")
+
+    def test_a_defeat_after_the_captain_fled_keeps_the_victory_line(self, dl) -> None:
+        player = self._player(dl)
+        state = self._state(dl, "wren_departure_angle", CombatResult.DEFEAT, fled=True)
+        view = self._view(state, player)
+        view._maybe_surface_captain_outcome_line()
+        view._maybe_record_captain_encounter()
+        victory = dl.captains["wren_departure_angle"].victory_line
+        assert any(victory in line for line in view.visible_log_lines)
+        assert player.captain_memory["wren_departure_angle"].last_outcome == "defeat"
+
+    def test_ngozi_yields_when_talked_down(self, dl) -> None:
+        state = self._state(dl, "ngozi_pale_reckoning", CombatResult.NEGOTIATED, fled=False)
+        view = self._view(state)
+        view._maybe_surface_captain_outcome_line()
+        assert any("Keep the ore" in line for line in view.visible_log_lines)

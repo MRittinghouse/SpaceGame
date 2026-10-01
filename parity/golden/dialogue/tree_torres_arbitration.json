@@ -80,7 +80,7 @@
     },
     "tree_id": "torres_arbitration"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -244,9 +244,7 @@
         "response": 0
       },
       "state": {
-        "disposition": {
-          "": 48
-        },
+        "disposition": {},
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -516,9 +514,7 @@
         "response": 2
       },
       "state": {
-        "disposition": {
-          "": 48
-        },
+        "disposition": {},
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -690,9 +686,7 @@
         "response": 0
       },
       "state": {
-        "disposition": {
-          "": 53
-        },
+        "disposition": {},
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -962,9 +956,7 @@
         "response": 2
       },
       "state": {
-        "disposition": {
-          "": 53
-        },
+        "disposition": {},
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,

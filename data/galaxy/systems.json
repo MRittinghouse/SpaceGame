@@ -11,6 +11,7 @@
       },
       "danger_level": "safe",
       "faction": "Nexus Trade Consortium",
+      "faction_id": "commerce_guild",
       "stations": [
         {
           "id": "nexus_central_exchange",
@@ -55,6 +56,7 @@
       },
       "danger_level": "safe",
       "faction": "Verdant Agricultural Cooperative",
+      "faction_id": "frontier_alliance",
       "stations": [
         {
           "id": "verdant_agri_hub",
@@ -90,6 +92,7 @@
       },
       "danger_level": "moderate",
       "faction": "Forgeworks Industrial Syndicate",
+      "faction_id": "commerce_guild",
       "stations": [
         {
           "id": "forgeworks_main_foundry",
@@ -134,6 +137,7 @@
       },
       "danger_level": "dangerous",
       "faction": "Independent Miners Guild",
+      "faction_id": "miners_union",
       "stations": [
         {
           "id": "breakstone_rock_haven",
@@ -169,6 +173,7 @@
       },
       "danger_level": "moderate",
       "faction": "Axiom Research Institute",
+      "faction_id": "science_collective",
       "stations": [
         {
           "id": "axiom_research_station",
@@ -204,6 +209,7 @@
       },
       "danger_level": "safe",
       "faction": "Haven Pastoral Alliance",
+      "faction_id": "frontier_alliance",
       "stations": [
         {
           "id": "havens_rest_market",
@@ -238,6 +244,7 @@
       },
       "danger_level": "dangerous",
       "faction": "Free Salvagers Union",
+      "faction_id": "frontier_alliance",
       "stations": [
         {
           "id": "crimson_reach_outpost",
@@ -274,6 +281,7 @@
       },
       "danger_level": "safe",
       "faction": "Stellaris Commerce Guild",
+      "faction_id": "commerce_guild",
       "stations": [
         {
           "id": "stellaris_grand_bazaar",
@@ -318,6 +326,7 @@
       },
       "danger_level": "dangerous",
       "faction": "Deep Core Mining Corp",
+      "faction_id": "miners_union",
       "stations": [
         {
           "id": "iron_depths_core_station",
@@ -353,6 +362,7 @@
       },
       "danger_level": "moderate",
       "faction": "Nova Science Collective",
+      "faction_id": "science_collective",
       "stations": [
         {
           "id": "nova_research_lab",
@@ -388,6 +398,7 @@
       },
       "danger_level": "dangerous",
       "faction": "Commerce Guild",
+      "faction_id": "commerce_guild",
       "stations": [
         {
           "id": "fulcrum_platform",
@@ -423,6 +434,7 @@
       },
       "danger_level": "dangerous",
       "faction": "",
+      "faction_id": "",
       "stations": [
         {
           "id": "herons_mark_derelict",

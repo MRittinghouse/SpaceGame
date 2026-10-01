@@ -4,6 +4,7 @@ Player state and progression models.
 Tracks player credits, location, ship, and game progress.
 """
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
@@ -48,6 +49,9 @@ if TYPE_CHECKING:
     from spacegame.models.combat import EnemyShip
     from spacegame.models.combat_rewards import CombatVictory
     from spacegame.models.smuggling import HiddenCompartment
+
+# BB-91: Legend of the Expanse's berths, on top of the hull's and Crew Manager's.
+LEGEND_CREW_SLOTS = 2
 
 
 @dataclass
@@ -719,7 +723,7 @@ class Player:
     def apply_combat_defeat(self, safe_system_id: str) -> None:
         """Apply consequences of losing combat.
 
-        Consequences: cargo loss, credit loss, hull/shield damage,
+        Consequences: cargo loss (quest goods are kept), credit loss, hull/shield damage,
         fuel reduction, faction reputation hit, and retreat to safety.
         Painful but not permadeath — the player keeps their ship and parts.
 
@@ -733,13 +737,19 @@ class Player:
             COMBAT_DEFEAT_HULL_REMAINING_PERCENT,
             COMBAT_DEFEAT_REPUTATION_PENALTY,
         )
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.commodity import CommodityCategory
 
-        # Lose cargo (30% of each type, halved with insurance skill)
+        commodities = get_data_loader().commodities
+        # Lose cargo (30% of each type, halved with insurance skill); quest goods are kept
         has_insurance = self.progression.get_bonus("insurance") > 0
         cargo_loss_pct = COMBAT_DEFEAT_CARGO_LOSS_PERCENT
         if has_insurance:
-            cargo_loss_pct = cargo_loss_pct / 2  # Keep 50% more cargo
+            cargo_loss_pct = cargo_loss_pct / 2  # Insurance halves the loss, 30% to 15%
         for commodity_id, quantity in list(self.ship.current_cargo.items()):
+            commodity = commodities.get(commodity_id)
+            if commodity is not None and commodity.category == CommodityCategory.QUEST:
+                continue
             loss = max(1, int(quantity * cargo_loss_pct / 100))
             self.ship.remove_cargo(commodity_id, loss)
 
@@ -1130,6 +1140,17 @@ class Player:
         sign = "+" if amount >= 0 else ""
         return (True, f"{sign}{amount} reputation with {faction_id}")
 
+    def get_crew_slots(self) -> int:
+        """Crew berths: the hull's slots, Crew Manager's bonus, and Legend's two.
+
+        Returns:
+            How many crew members the ship can carry.
+        """
+        slots = self.ship.ship_type.crew_slots + int(self.progression.get_bonus("crew_slot_bonus"))
+        if self.progression.get_bonus("legendary_captain") > 0:
+            slots += LEGEND_CREW_SLOTS
+        return slots
+
     def get_reputation(self, faction_id: str) -> int:
         """Get current reputation value with a faction.
 
@@ -1145,6 +1166,18 @@ class Player:
             bonus = int(self.progression.get_bonus("frontier_rep_bonus"))
             base = min(100, base + bonus)
         return base
+
+    def get_effective_reputations(self, faction_ids: Iterable[str]) -> dict[str, int]:
+        """Every faction's standing as the game reads it, skill bonuses included (BB-82).
+
+        Args:
+            faction_ids: Every faction id; stored standings for other ids are kept too.
+
+        Returns:
+            Faction id to ``get_reputation`` value.
+        """
+        ids = list(dict.fromkeys([*faction_ids, *self.faction_reputation]))
+        return {faction_id: self.get_reputation(faction_id) for faction_id in ids}
 
     def get_reputation_tier(self, faction_id: str) -> ReputationTier:
         """Get the reputation tier with a faction.

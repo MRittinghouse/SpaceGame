@@ -54,6 +54,10 @@ class ActionQueue:
         # B8.4: once Fire at Will is queued, subsequent weapon adds apply
         # the 50% energy discount so the player can pre-plan bigger alphas.
         self._fire_at_will_queued: bool = False
+        # BB-88: slot keys whose first copy was queued after Fire at Will. The engine skips
+        # a weapon's cooldown only for a shot fired under Fire at Will, so only these may
+        # repeat past their own cooldown.
+        self._fire_at_will_keys: set[str] = set()
 
     @property
     def actions(self) -> list[QueuedAction]:
@@ -101,12 +105,16 @@ class ActionQueue:
         queue_key = getattr(move, "slot_key", "") or move_id
 
         # Once-per-turn check (per slot, not per move name)
-        # Volley Commander: allow one weapon to bypass this restriction
-        if queue_key in self._used_this_turn:
-            if self._extra_action_available:
-                self._extra_action_available = False  # Consumed
-            else:
+        # Volley Commander: allow one weapon to bypass this restriction, unless the
+        # weapon's own cooldown would stop the second shot (BB-88). A weapon whose first
+        # copy was queued after Fire at Will fires without a cooldown, so it may repeat.
+        repeat = queue_key in self._used_this_turn
+        if repeat:
+            if not self._extra_action_available:
                 return False, f"{move.name} already queued this turn"
+            covered = queue_key in self._fire_at_will_keys and self._is_weapon(move)
+            if move.cooldown > 0 and not covered:
+                return False, f"{move.name} cannot fire twice (cooldown {move.cooldown})"
 
         # Cooldown check (per slot)
         if queue_key in self._cooldowns and self._cooldowns[queue_key] > 0:
@@ -122,6 +130,12 @@ class ActionQueue:
                 f"Not enough energy for {move.name} "
                 f"({effective_cost} needed, {self.energy_remaining} available)"
             )
+
+        if repeat:
+            self._extra_action_available = False  # Consumed only by a repeat that queues
+        # Only a Fire at Will still queued covers the key; the discount sticks after undo (F-19).
+        elif any(a.move_id == "fire_at_will" for a in self._actions):
+            self._fire_at_will_keys.add(queue_key)
 
         # Add to queue
         action = QueuedAction(
@@ -145,14 +159,17 @@ class ActionQueue:
         base = int(move.energy_cost)
         # Fire at Will halves weapon energy when queued earlier this turn.
         # A weapon is any move with a damage effect.
-        if self._fire_at_will_queued:
-            is_weapon = any(
-                getattr(e, "type", None) is not None and getattr(e.type, "value", "") == "damage"
-                for e in move.effects
-            )
-            if is_weapon:
-                return max(0, base // 2)
+        if self._fire_at_will_queued and self._is_weapon(move):
+            return max(0, base // 2)
         return base
+
+    @staticmethod
+    def _is_weapon(move: CombatMove) -> bool:
+        """A weapon is any move with a damage effect."""
+        return any(
+            getattr(e, "type", None) is not None and getattr(e.type, "value", "") == "damage"
+            for e in move.effects
+        )
 
     def remove_last(self) -> bool:
         """Remove the last queued action and refund its energy.
@@ -166,6 +183,7 @@ class ActionQueue:
         removed = self._actions.pop()
         self._energy_committed -= removed.energy_cost
         self._used_this_turn.discard(removed.slot_key or removed.move_id)
+        self._fire_at_will_keys.discard(removed.slot_key or removed.move_id)
         return True
 
     def clear(self) -> None:
@@ -173,6 +191,7 @@ class ActionQueue:
         self._actions.clear()
         self._energy_committed = 0
         self._used_this_turn.clear()
+        self._fire_at_will_keys.clear()
         self._fire_at_will_queued = False
 
     def can_add(
@@ -181,6 +200,9 @@ class ActionQueue:
         move: CombatMove,
     ) -> tuple[bool, str]:
         """Check if a move can be added without actually adding it.
+
+        Note: it ignores Volley Commander's extra action (a screen gating on it hides the
+        skill; SP6).
 
         Args:
             move_id: The combat move ID.

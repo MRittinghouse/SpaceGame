@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from spacegame.engine.dual_tech_portraits import PortraitConfig
     from spacegame.models.combat import CombatEffect, CombatState, EnemyShip
     from spacegame.models.combat_tutorial_helper import CombatTutorialHelper
+    from spacegame.models.enemy_captain import EnemyCaptain
     from spacegame.models.journal import Journal
     from spacegame.models.social import SocialManager
 
@@ -2096,6 +2097,15 @@ class CombatView(BaseView):
         "fled": "fled",
     }
 
+    def _captain_for(self, captain_id: str) -> Optional["EnemyCaptain"]:
+        """The named captain's definition, or None when the loader cannot supply it."""
+        from spacegame.data_loader import get_data_loader
+
+        try:
+            return get_data_loader().captains.get(captain_id)
+        except Exception:
+            return None
+
     def _maybe_record_captain_encounter(self) -> None:
         """RC-2: record the encounter outcome on player's captain memory.
 
@@ -2119,6 +2129,13 @@ class CombatView(BaseView):
         outcome = self._RESULT_TO_OUTCOME.get(result_value)
         if outcome is None:
             return  # IN_PROGRESS or unrecognized — don't record
+        from spacegame.models.captain_memory import captain_ship_fled, fight_outcome_for_captain
+
+        captain = self._captain_for(captain_id)
+        if captain is not None:
+            outcome = fight_outcome_for_captain(
+                outcome, captain_ship_fled(state.enemies, captain.signature_ship_template)
+            )
 
         # RC-6: journal entry for first meeting (BEFORE recording so
         # is_first_meeting still reads true).
@@ -2183,9 +2200,8 @@ class CombatView(BaseView):
             captain = None
         if captain is None:
             return
-        # Use captain.name + captain.nickname directly. display_name uses
-        # an em-dash separator that's fine for headers but a Writing Bible
-        # violation in narrative text.
+        # Use captain.name + captain.nickname directly. display_name puts the
+        # nickname in parentheses, which suits a panel header but not a sentence.
         nickname_phrase = f", the {captain.nickname}," if captain.nickname else ","
         text = (
             f"Met {captain.name}{nickname_phrase} for the first time. "
@@ -2209,9 +2225,10 @@ class CombatView(BaseView):
         - VICTORY (player won)   -> defeat_line
         - DEFEAT (player lost)   -> victory_line
         - NEGOTIATED             -> surrender_line
+        - the captain's ship fled -> retreat_line (BB-87)
         - FLED / BRIBED          -> no line (player exited, captain silent)
         """
-        from spacegame.models.combat import CombatLogEntry, CombatResult
+        from spacegame.models.combat import CombatLogEntry
 
         state = self.engine.get_state()
         captain_id = getattr(state.encounter, "captain_id", "")
@@ -2219,8 +2236,10 @@ class CombatView(BaseView):
             return
 
         from spacegame.data_loader import get_data_loader
+        from spacegame.models.captain_memory import captain_ship_fled, fight_outcome_for_captain
         from spacegame.models.captain_variant import (
             get_effective_captain_dialogue,
+            outcome_line,
         )
 
         try:
@@ -2238,15 +2257,12 @@ class CombatView(BaseView):
             memory = self.player.captain_memory.get(captain_id)
         effective = get_effective_captain_dialogue(captain, memory, dl.captain_variants)
 
-        result = state.result
-        if result == CombatResult.VICTORY:
-            line = effective.defeat_line
-        elif result == CombatResult.DEFEAT:
-            line = effective.victory_line
-        elif result == CombatResult.NEGOTIATED:
-            line = effective.surrender_line
-        else:
-            return  # FLED / BRIBED: no captain outcome line
+        result_value = getattr(state.result, "value", str(state.result))
+        outcome = fight_outcome_for_captain(
+            self._RESULT_TO_OUTCOME.get(result_value, ""),
+            captain_ship_fled(state.enemies, captain.signature_ship_template),
+        )
+        line = outcome_line(effective, outcome)
 
         if not line.strip():
             return

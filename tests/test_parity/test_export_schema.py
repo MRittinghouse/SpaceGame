@@ -24,6 +24,7 @@ class TestSchema:
         assert types["StarSystem"]["economy"] == "Economy"
         assert types["StarSystem"]["stations"] == "list<Station>"
         assert types["StarSystem"]["rest_cost"] == "int"
+        assert types["StarSystem"]["faction_id"] == "str"
         assert types["Economy"]["available_commodities"] == "optional<list<str>>"
         assert types["Coordinates"]["x"] == "float"
 

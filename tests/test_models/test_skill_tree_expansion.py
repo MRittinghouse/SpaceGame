@@ -162,7 +162,7 @@ class TestNewSkillsExist:
         skills = create_default_skills()
         s = skills["price_memory"]
         assert s.tree == SkillTreeType.COMMERCE
-        assert s.prerequisite_id == "market_insider"
+        assert s.prerequisite_id == "market_eye"
 
     def test_weapon_specialization(self) -> None:
         skills = create_default_skills()

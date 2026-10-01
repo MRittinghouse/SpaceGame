@@ -156,12 +156,70 @@ class TestProceduralMissionGenerator:
         assert mission.discovery_method == "station_board"
 
     def test_generate_smuggling(self) -> None:
-        """Smuggling mission has COLLECT_CARGO + REACH_SYSTEM, grants cargo on accept."""
+        """Smuggling holds its cargo, then reaches the destination, in that order (BB-7)."""
         gen = self._make_generator()
         mission = gen.generate_smuggling("crimson_reach", game_day=10)
-        assert len(mission.on_accept_cargo) > 0, "Smuggling mission should grant cargo"
-        obj_types = {o.type for o in mission.objectives}
-        assert ObjectiveType.REACH_SYSTEM in obj_types
+        assert len(mission.on_accept_cargo) == 1, "Smuggling mission should grant cargo"
+        cargo = mission.on_accept_cargo[0]
+        collect, reach = mission.objectives
+        assert collect.type == ObjectiveType.COLLECT_CARGO
+        assert (collect.target_id, collect.target_quantity) == (cargo.commodity_id, cargo.quantity)
+        assert reach.type == ObjectiveType.REACH_SYSTEM
+        assert mission.ordered_final
+        assert "\u2014" not in mission.description
+
+    def test_return_legs_wait_for_departure(self) -> None:
+        gen = self._make_generator()
+        for mission in (
+            gen.generate_bounty("nexus_prime", game_day=3),
+            gen.generate_survey("nexus_prime", game_day=3),
+            gen.generate_salvage("nexus_prime", game_day=3),
+        ):
+            *earlier, back = mission.objectives
+            assert back.after_departure, mission.id
+            assert not any(o.after_departure for o in earlier), mission.id
+            assert not mission.ordered_final, mission.id
+
+    def test_a_delivery_orders_its_destination_after_the_goods(self) -> None:
+        mission = self._make_generator().generate_delivery("nexus_prime", game_day=3)
+        assert mission.ordered_final
+        assert not any(o.after_departure for o in mission.objectives)
+
+    def test_a_one_kill_bounty_reads_singular(self) -> None:
+        gen = self._make_generator()
+        names = {}
+        for day in range(1, 60):
+            bounty = gen.generate_bounty("nexus_prime", game_day=day)
+            names[bounty.objectives[0].target_quantity] = bounty.name
+        assert names[1] == "Bounty: Clear 1 Hostile"
+        assert names[2] == "Bounty: Clear 2 Hostiles"
+
+    def test_herons_mark_deliveries_name_goods_a_market_sells(self) -> None:
+        dl = get_data_loader()
+        dl.load_all()
+        listed = {
+            cid
+            for system in dl.systems.values()
+            for cid in (system.economy.available_commodities or [])
+        }
+        gen = self._make_generator()
+        for day in range(1, 61):
+            delivery = gen.generate_delivery("herons_mark", game_day=day)
+            commodity_id = delivery.objectives[0].target_id
+            assert commodity_id in listed, (day, commodity_id)
+            assert dl.commodities[commodity_id].base_price > 0, (day, commodity_id)
+
+    def test_the_new_fields_survive_a_save(self) -> None:
+        gen = self._make_generator()
+        for mission in (
+            gen.generate_bounty("nexus_prime", game_day=4),
+            gen.generate_smuggling("nexus_prime", game_day=4),
+        ):
+            restored = Mission.from_dict(mission.to_dict())
+            assert restored.ordered_final == mission.ordered_final
+            assert [o.after_departure for o in restored.objectives] == [
+                o.after_departure for o in mission.objectives
+            ]
 
     def test_generate_survey(self) -> None:
         """Survey mission has multiple REACH_SYSTEM objectives."""

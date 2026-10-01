@@ -130,6 +130,15 @@ class TestEligibilityFiltering:
         items = view.get_eligible_items()
         assert any(i["item_id"] == "axiom_circuit" for i in items)
 
+    def test_excludes_quest_goods(self) -> None:
+        manager, player = _make_view_env()
+        player.ship.add_cargo("data_chip", 1, price_per_unit=0)
+        view = _make_view(manager, player)
+        view.on_enter()
+        items = view.get_eligible_items()
+        assert not any(i["item_id"] == "data_chip" for i in items)
+        assert any(i["item_id"] == "axiom_circuit" for i in items)
+
     def test_lists_parts(self) -> None:
         manager, player = _make_view_env(has_parts=True)
         view = _make_view(manager, player)

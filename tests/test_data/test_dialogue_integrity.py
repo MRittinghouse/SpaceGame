@@ -736,8 +736,6 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "signal_from_deep_resolved",
     "stolen_item_recovered",
     "thieves_resolved",
-    "two_calls_choice_made",
-    "two_calls_resolved",
     "under_fire_ambush",
     "whistleblower_resolved",
     "wrench_request_resolved",
@@ -937,6 +935,13 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     "lens_closed_crime",
     "d8_crime_won",
     "d8_community_won",
+    # === REAL BUG (BB-17): nothing produces these. Two Calls is held back behind
+    # held_back_until_sp10 until SP10 writes its choice scene. ===
+    "two_calls_choice_made",
+    "two_calls_resolved",
+    # === DELIBERATE HOLD-BACK (BB-17): read by two_calls and the_silent_shaft, set by
+    # nothing until SP10 re-stages them. ===
+    "held_back_until_sp10",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -944,6 +949,10 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
 # Producer-only orphans are typically narrative-state flags (player-choice
 # memory) for save state + future content (Act Two), or transient UI flags.
 KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
+    # BB-73: set when a once-looping check fails, and read only through that response's own
+    # excluded_flags, which _collect_all_flag_uses does not scan (it reads forbidden_flags).
+    "arna_catch_check_failed",
+    "elena_about_check_failed",
     # === Player-choice memory + Act One ending state ===
     "alliance_followed",
     # Set on reva_distress Persuasion 2 success. Pre-existing narrative
@@ -1176,6 +1185,9 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # chain of command, informant leads).
     "senn_offered_leads",
     "senn_offered_ledger",
+    # BB-2: point_of_no_return's reward still sets it for Act II; the objective that
+    # waited on it is gone, so nothing reads it now.
+    "warp_gate_discovered",
 }
 
 

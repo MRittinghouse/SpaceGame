@@ -174,7 +174,7 @@ DUAL_TECH_REVEALS: dict[str, DualTechReveal] = {
             _line(
                 "",
                 (
-                    "The ship answers first — reactor resonant, every system "
+                    "The ship answers first: reactor resonant, every system "
                     "aligned with every other."
                 ),
             ),

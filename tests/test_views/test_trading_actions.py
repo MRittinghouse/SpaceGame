@@ -86,6 +86,35 @@ def _make_trading_view_with_real_player(
     return view, player
 
 
+class TestQuestGoodsStayOffTheTradeScreen:
+    """BB-7: a sale must not strand the chip deliveries."""
+
+    def test_cargo_rows_list_market_goods_and_not_quest_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        _rows, ids = view._build_cargo_rows()
+        assert ids == ["food"]
+
+    def test_sell_all_sells_market_goods_and_leaves_quest_goods(self) -> None:
+        view, player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        view._execute_sell_all()
+        assert player.ship.get_cargo_quantity("food") == 0
+        assert player.ship.get_cargo_quantity("data_chip") == 1
+
+    def test_sell_all_is_disabled_with_only_quest_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(starting_cargo={"data_chip": 1})
+        assert view._why_cannot_sell_all() == "Nothing to sell."
+
+    def test_sell_all_is_enabled_with_market_goods(self) -> None:
+        view, _player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5, "data_chip": 1}
+        )
+        assert view._why_cannot_sell_all() is None
+
+
 class TestExecuteSellAll:
     """Sell-all flow exercised against a real Player + Ship.
 
@@ -153,3 +182,62 @@ class TestExecuteSellAll:
 
         assert player.ship.get_cargo_quantity("food") == 10, "Cargo untouched without permit"
         assert player.credits == 1000, "Credits untouched without permit"
+
+
+class TestSellMaxAsksForTheTradePermit:
+    """BB-74: MAX SELL is gated by the same permit as every other sale.
+
+    Uses the real ``_has_trade_permit`` so the refusal comes from the
+    missing Union permit, not from a stub.
+    """
+
+    @staticmethod
+    def _build(permits: set[str]):
+        from unittest.mock import patch
+
+        from spacegame.data_loader import DataLoader
+        from spacegame.models.faction import generate_faction_assignments
+
+        view, player = _make_trading_view_with_real_player(
+            starting_cargo={"food": 5}, starting_credits=1000
+        )
+        del view._has_trade_permit
+        loader = DataLoader()
+        loader.load_all()
+        player.current_system_id = "breakstone"
+        player.faction_assignments = generate_faction_assignments(loader.get_all_systems())
+        player.trade_permits = set(permits)
+        view._get_selected_cargo_commodity = MagicMock(return_value="food")
+        view._get_adjusted_sell_price = MagicMock(return_value=30)
+        view._apply_trade_reputation = MagicMock()
+        patcher = patch("spacegame.views.trading_view.get_audio_manager")
+        patcher.start()
+        return view, player, patcher
+
+    def test_sell_max_refuses_at_breakstone_without_the_union_permit(self) -> None:
+        from spacegame.views.trading_view import NO_PERMIT
+
+        view, player, patcher = self._build(
+            {"commerce_guild", "science_collective", "frontier_alliance"}
+        )
+        try:
+            view._execute_sell_max()
+        finally:
+            patcher.stop()
+        assert player.ship.get_cargo_quantity("food") == 5
+        assert player.credits == 1000
+        assert view.transaction_message == NO_PERMIT
+        view._apply_trade_reputation.assert_not_called()
+        view.market.record_sell.assert_not_called()
+
+    def test_sell_max_sells_everything_with_the_union_permit(self) -> None:
+        view, player, patcher = self._build(
+            {"commerce_guild", "science_collective", "frontier_alliance", "miners_union"}
+        )
+        try:
+            view._execute_sell_max()
+        finally:
+            patcher.stop()
+        assert player.ship.get_cargo_quantity("food") == 0
+        assert player.credits == 1000 + 150
+        view._apply_trade_reputation.assert_called_once()

@@ -572,3 +572,74 @@ class TestDispositionTiers:
             assert len(tier["color"]) == 3, f"Tier '{tier['name']}' color not RGB"
             for c in tier["color"]:
                 assert 0 <= c <= 255, f"Tier '{tier['name']}' color out of range"
+
+
+class TestCheckXpOncePerDay:
+    """BB-73: a check pays XP once per NPC and skill per game day."""
+
+    def test_thirty_failures_in_a_day_pay_one_xp(self) -> None:
+        sm = SocialManager()
+        for _ in range(30):
+            sm.resolve_check("persuasion", 2, "elena_reeves", game_day=1)
+        skill = sm.get_skill("persuasion")
+        assert (skill.level, skill.xp) == (1, 1)
+
+    def test_the_next_day_pays_again(self) -> None:
+        sm = SocialManager()
+        sm.resolve_check("observation", 2, "arna", game_day=1)
+        sm.resolve_check("observation", 2, "arna", game_day=1)
+        assert sm.get_skill("observation").xp == 1
+        sm.resolve_check("observation", 2, "arna", game_day=2)
+        assert sm.get_skill("observation").xp == 2
+
+    def test_another_npc_or_skill_pays_the_same_day(self) -> None:
+        sm = SocialManager()
+        sm.resolve_check("persuasion", 2, "arna", game_day=1)
+        sm.resolve_check("persuasion", 2, "elena_reeves", game_day=1)
+        sm.resolve_check("observation", 2, "arna", game_day=1)
+        assert sm.get_skill("persuasion").xp == 2
+        assert sm.get_skill("observation").xp == 1
+
+    def test_a_caller_with_no_day_pays_every_check(self) -> None:
+        sm = SocialManager()
+        for _ in range(3):
+            sm.resolve_check("persuasion", 2, "arna")
+        assert sm.get_skill("persuasion").xp == 3
+
+    def test_the_day_map_survives_a_save(self) -> None:
+        sm = SocialManager()
+        sm.resolve_check("persuasion", 2, "arna", game_day=4)
+        state = sm.get_state()
+        assert state["check_xp_days"] == {"arna|persuasion": 4}
+        restored = SocialManager()
+        restored.load_state(state)
+        restored.resolve_check("persuasion", 2, "arna", game_day=4)
+        assert restored.get_skill("persuasion").xp == 1
+
+
+class TestAnonymousChecks:
+    """BB-85: encounter checks and NPC-less trees move and read no disposition."""
+
+    def test_six_failed_encounter_checks_leave_persuasion_at_one(self) -> None:
+        from spacegame.models.encounter import EncounterSkillCheck, resolve_encounter_skill_check
+
+        sm = SocialManager()
+        check = EncounterSkillCheck(skill="persuasion", difficulty=5)
+        for _ in range(6):
+            resolve_encounter_skill_check(check, sm, None)
+        assert sm.get_effective_level("persuasion", "") == 1
+        assert "" not in sm.get_state()["disposition"]
+
+    def test_a_saved_anonymous_disposition_is_kept_and_ignored(self) -> None:
+        sm = SocialManager()
+        sm.load_state({"skills": {}, "disposition": {"": 20}})
+        assert sm.get_effective_level("persuasion", "") == 1
+        assert sm.get_state()["disposition"] == {"": 20}
+
+    def test_anonymous_checks_share_one_daily_grant_per_skill(self) -> None:
+        sm = SocialManager()
+        sm.resolve_check("persuasion", 5, "", game_day=3)
+        sm.resolve_check("persuasion", 5, "", game_day=3)
+        sm.resolve_check("intimidation", 5, "", game_day=3)
+        assert sm.get_skill("persuasion").xp == 1
+        assert sm.get_skill("intimidation").xp == 1

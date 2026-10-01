@@ -429,6 +429,7 @@ class DataLoader:
             stations=stations,
             economy=economy,
             rest_cost=data["rest_cost"],
+            faction_id=data["faction_id"],
         )
 
     def load_commodities(self) -> Dict[str, Commodity]:
@@ -1608,6 +1609,7 @@ class DataLoader:
                 target_id=obj["target_id"],
                 target_quantity=obj.get("target_quantity", 1),
                 description=obj.get("description", ""),
+                after_departure=bool(obj.get("after_departure", False)),
             )
             for obj in data.get("objectives", [])
         ]
@@ -2065,6 +2067,8 @@ class DataLoader:
             trophy_drop=data.get("trophy_drop", ""),
             composite_build=data.get("composite_build"),
             targetable_subsystems=data.get("targetable_subsystems", []),
+            random_pool=bool(data.get("random_pool", True)),
+            bribable=bool(data.get("bribable", True)),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:

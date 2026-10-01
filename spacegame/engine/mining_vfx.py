@@ -74,7 +74,7 @@ _DEPTH_LAYERS = [
         "accent": (200, 60, 40),  # Magma orange-red
         "particle_color": (220, 80, 30),  # Magma embers
         "particle_rate": 0.3,
-        "description": "Unstable core — extreme pressure and heat",
+        "description": "Unstable core: extreme pressure and heat",
     },
 ]
 
@@ -423,7 +423,7 @@ class LayerTransition:
             banner_alpha = int(200 * (1.0 - t / 0.5))
             layer = _get_layer_for_depth(self._new_depth)
             font = get_font("machine", FONT_MD)
-            text = f"DEPTH {self._new_depth} — {layer['name']}"
+            text = f"DEPTH {self._new_depth}: {layer['name']}"
             surf = font.render(text, True, layer["accent"])
             surf.set_alpha(banner_alpha)
             rect = surf.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))

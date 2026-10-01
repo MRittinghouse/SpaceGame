@@ -222,6 +222,7 @@ def build_fight(
     crew_loyalty: int = 0,
     hull: int = 0,
     complication_ids: tuple[str, ...] = (),
+    skill_levels: dict[str, int] | None = None,
 ) -> Fight:
     """Build a fight on the ship-type path.
 
@@ -234,12 +235,16 @@ def build_fight(
         crew_loyalty: When positive, all four companions aboard at this loyalty.
         hull: When positive, overrides hull and max hull (bosses).
         complication_ids: Complications resolved from the data loader.
+        skill_levels: Skills the player has learned, by id and level; recorded in the setup
+            only when given.
 
     Returns:
         The fight.
     """
     dl = get_data_loader()
     player = fresh_player(ship_type_id=ship_type_id)
+    for skill_id, level in (skill_levels or {}).items():
+        player.progression.skills[skill_id].current_level = level
     upgrades = ShipUpgradeManager()
     for upgrade_id in loadout:
         ok, msg = upgrades.install(dl.upgrades[upgrade_id])
@@ -279,6 +284,8 @@ def build_fight(
             "fuel": 40,
         },
     }
+    if skill_levels:
+        setup["skill_levels"] = dict(skill_levels)
     return Fight(engine, state, setup)
 
 
@@ -490,6 +497,21 @@ def _resolution_fights() -> list[Case]:
     return cases
 
 
+def _skill_fights() -> list[Case]:
+    """A fight whose player has learned Shield Mastery (BB-75), the one skill case."""
+    fight = build_fight(
+        "skill_shield_mastery",
+        ship_type_id="shuttle",
+        loadout=LOADOUTS[0],
+        enemy_ids=("pirate_raider",),
+        seed=stable_seed("parity_skill", "shield_mastery"),
+        skill_levels={"shield_mastery": 3},
+    )
+    case = _new_case("skill_shield_mastery", fight)
+    _finish(fight, case)
+    return [case]
+
+
 def build_cases() -> list[Case]:
     """Every combat case."""
     get_data_loader().load_all()
@@ -499,4 +521,5 @@ def build_cases() -> list[Case]:
         *_ultimate_fights(),
         *_dual_tech_fights(),
         *_resolution_fights(),
+        *_skill_fights(),
     ]

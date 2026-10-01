@@ -11,10 +11,6 @@
       "patrol_vessel",
       "reach_rustrunner",
       "reach_wrecker",
-      "bounty_tracker",
-      "bounty_enforcer",
-      "ledger_raider",
-      "ledger_striker",
       "armored_transport",
       "support_frigate",
       "skiff_raider",
@@ -40,7 +36,7 @@
     },
     "system_id": "axiom_labs"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -182,7 +178,7 @@
         "encounter_seed": 559215499,
         "encounter_type": "distress_bait",
         "enemy_template_ids": [
-          "bounty_enforcer"
+          "patrol_vessel"
         ],
         "shakedown_demand": 0
       },
@@ -313,7 +309,7 @@
         "encounter_seed": 2281883942,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "reach_scout_ace"
+          "smuggler"
         ],
         "shakedown_demand": 0
       },
@@ -453,7 +449,7 @@
         "encounter_seed": 2937753360,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "hulk_derelict"
+          "reach_wrecker"
         ],
         "shakedown_demand": 0
       },
@@ -487,7 +483,7 @@
         "encounter_seed": 3826656667,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "bounty_enforcer"
+          "support_frigate"
         ],
         "shakedown_demand": 0
       },
@@ -818,7 +814,7 @@
         "encounter_seed": 3680946163,
         "encounter_type": "cargo_shakedown",
         "enemy_template_ids": [
-          "ledger_raider"
+          "skiff_raider"
         ],
         "shakedown_demand": 0
       },

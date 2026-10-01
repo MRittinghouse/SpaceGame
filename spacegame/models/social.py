@@ -154,6 +154,8 @@ class SocialManager:
             sid: SocialSkill(id=sid, name=name) for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
         }
         self._npc_disposition: dict[str, int] = {}
+        # BB-73: the game day each "npc|skill" pair last paid check XP.
+        self._check_xp_days: dict[str, int] = {}
         self._progression: Optional[PlayerProgression] = None
         self._attribute_sheet: Optional[AttributeSheet] = None
 
@@ -255,6 +257,8 @@ class SocialManager:
         - Disposition modifier only applies to social-interaction skills
           (Persuasion, Intimidation, Deception, Observation, Leadership).
           Expertise skills (Technical, Piloting) ignore NPC mood.
+        - An empty npc_id (an encounter, a fight, a tree with no NPC) has no
+          disposition (BB-85); a saved "" entry is ignored.
         - Synergy bonus draws from the skill's matching attribute per
           ``SKILL_TO_ATTRIBUTE``.
         - Specialization rewards focusing on a skill relative to peers
@@ -270,15 +274,15 @@ class SocialManager:
         base_level = self.get_skill_level(skill_id)
 
         disp_modifier = 0
-        if skill_id in SKILLS_USING_DISPOSITION:
+        if skill_id in SKILLS_USING_DISPOSITION and npc_id:
             disposition = self.get_disposition(npc_id)
             disp_modifier = (disposition - DISPOSITION_DEFAULT) // 10
 
         tree_bonus = 0
         if self._progression is not None:
             tree_bonus = int(self._progression.get_bonus(f"{skill_id}_bonus"))
-            # Cultural Savant: +1 per level in faction-aligned systems — only
-            # relevant to social-interaction skills.
+            # Cultural Savant: +1 per level in every system, to the
+            # social-interaction skills only.
             if skill_id in SKILLS_USING_DISPOSITION:
                 tree_bonus += int(self._progression.get_bonus("faction_social_bonus"))
 
@@ -305,13 +309,17 @@ class SocialManager:
         """
         return self.get_effective_level(skill_id, npc_id) >= difficulty
 
-    def resolve_check(self, skill_id: str, difficulty: int, npc_id: str) -> tuple[bool, str]:
+    def resolve_check(
+        self, skill_id: str, difficulty: int, npc_id: str, game_day: Optional[int] = None
+    ) -> tuple[bool, str]:
         """Resolve a skill check, awarding XP and adjusting disposition.
 
         Args:
             skill_id: Social skill to check.
             difficulty: Check difficulty (1-5).
-            npc_id: NPC whose disposition modifies the check.
+            npc_id: NPC whose disposition modifies the check. Empty for no NPC.
+            game_day: The game day; a check pays XP once per NPC and skill per day.
+                None pays every check.
 
         Returns:
             Tuple of (success, message).
@@ -323,16 +331,35 @@ class SocialManager:
         effective = self.get_effective_level(skill_id, npc_id)
         success = effective >= difficulty
 
+        pays_xp = self._claim_check_xp(npc_id, skill_id, game_day)
         if success:
-            skill.add_xp(XP_ON_SUCCESS, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
-            self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_SUCCESS)
+            if pays_xp:
+                skill.add_xp(XP_ON_SUCCESS, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
+            if npc_id:
+                self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_SUCCESS)
             msg = f"{skill.name} check passed!"
         else:
-            skill.add_xp(XP_ON_FAILURE, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
-            self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_FAILURE)
+            if pays_xp:
+                skill.add_xp(XP_ON_FAILURE, MAX_SOCIAL_LEVEL, SOCIAL_XP_THRESHOLDS)
+            if npc_id:
+                self.modify_disposition(npc_id, DISPOSITION_ON_CHECK_FAILURE)
             msg = f"{skill.name} check failed."
 
         return success, msg
+
+    def _claim_check_xp(self, npc_id: str, skill_id: str, game_day: Optional[int]) -> bool:
+        """Whether this check pays XP: once per NPC and skill per game day (BB-73).
+
+        Encounter checks and trees with no NPC share the "" npc id, so they pay one grant
+        per skill per day between them.
+        """
+        if game_day is None:
+            return True
+        key = f"{npc_id}|{skill_id}"
+        if self._check_xp_days.get(key) == game_day:
+            return False
+        self._check_xp_days[key] = game_day
+        return True
 
     # --- Serialization ---
 
@@ -341,6 +368,7 @@ class SocialManager:
         return {
             "skills": {sid: skill.to_dict() for sid, skill in self._skills.items()},
             "disposition": dict(self._npc_disposition),
+            "check_xp_days": dict(sorted(self._check_xp_days.items())),
         }
 
     def load_state(self, data: dict[str, Any]) -> None:
@@ -354,6 +382,7 @@ class SocialManager:
             sid: SocialSkill(id=sid, name=name) for sid, name in SOCIAL_SKILL_DEFINITIONS.items()
         }
         self._npc_disposition = {}
+        self._check_xp_days = {}
 
         if not data:
             return
@@ -366,3 +395,4 @@ class SocialManager:
 
         # Restore disposition
         self._npc_disposition = dict(data.get("disposition", {}))
+        self._check_xp_days = {str(k): int(v) for k, v in data.get("check_xp_days", {}).items()}

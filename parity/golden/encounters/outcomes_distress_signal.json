@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -1724,7 +1724,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull alongside and your toolkit does the rest . A cracked coolant line and a burned relay. Two hours of sweaty work in Nabil's engine bay, but the unit hums back to life. 'You just saved a season's worth of food,' Nabil says, voice thick. 'The cooperative will hear about this. That's a promise, not a proverb.'",
+          "description": "You pull alongside and your toolkit does the rest: a cracked coolant line and a burned relay. Two hours of sweaty work in Nabil's engine bay, but the unit hums back to life. 'You just saved a season's worth of food,' Nabil says, voice thick. 'The cooperative will hear about this. That's a promise, not a proverb.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3367,7 +3367,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything . Cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
+          "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything: cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3743,7 +3743,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits .'Won't need them if I'm dead.'",
+          "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits: 'Won't need them if I'm dead.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4108,7 +4108,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You burn hard toward the firefight, weapons hot. The raiders see you coming and break off . Two against two isn't the odds they wanted. The freighter captain nearly weeps with relief and transfers every credit she can spare.",
+          "description": "You burn hard toward the firefight, weapons hot. The raiders see you coming and break off: two against two isn't the odds they wanted. The freighter captain nearly weeps with relief and transfers every credit she can spare.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": [
@@ -4647,7 +4647,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You find debris. Not much . A sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
+          "description": "You find debris. Not much: a sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5007,7 +5007,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The Sundog is venting atmosphere from a dozen hull breaches. Not pirates . The damage pattern is internal. Stress fractures in the alloy composite. Cheap materials, corners cut. The captain's last log names the manufacturer and the contract that approved the hull grade. You copy everything.",
+          "description": "The Sundog is venting atmosphere from a dozen hull breaches. Not pirates. The damage pattern is internal. Stress fractures in the alloy composite. Cheap materials, corners cut. The captain's last log names the manufacturer and the contract that approved the hull grade. You copy everything.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5366,7 +5366,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week . You see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
+          "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week. You see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6304,7 +6304,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reel in the carrier. The cat . A massive orange tabby . Stares at you through the mesh with the cold fury of a creature that has seen the void and found it personally offensive. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later . Apparently Dr. Vasquez changed her mind.",
+          "description": "You reel in the carrier. The cat, a massive orange tabby, stares at you through the mesh with the cold fury of a creature that has seen the void and found it personally offensive. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later. Apparently Dr. Vasquez changed her mind.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6489,7 +6489,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Three people respond. None of them are missing a cat . They all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee, and the cat seems to approve of someone who lives in a place as cold and inhospitable as space.",
+          "description": "Three people respond. None of them are missing a cat. They all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee, and the cat seems to approve of someone who lives in a place as cold and inhospitable as space.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7960,7 +7960,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Threading through the rocks takes nerve, but you find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse . Could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
+          "description": "Threading through the rocks takes nerve, but you find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9809,7 +9809,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend half an hour babysitting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus' . Their words.",
+          "description": "You spend half an hour babysitting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'. Their words.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10168,7 +10168,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You navigate through venting gas and debris to reach the Delta Wing emergency lock. The workers . Soot-covered, shaken, but alive . Crowd into your cargo bay. The last one out, a shift foreman named Brennan, grips your hand hard enough to hurt. Crucible Station transfers an emergency services bounty to your account.",
+          "description": "You navigate through venting gas and debris to reach the Delta Wing emergency lock. The workers, soot-covered, shaken, but alive, crowd into your cargo bay. The last one out, a shift foreman named Brennan, grips your hand hard enough to hurt. Crucible Station transfers an emergency services bounty to your account.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10353,7 +10353,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station. You did your part . Sometimes the best help is getting the right people there faster.",
+          "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station. You did your part. Sometimes the best help is getting the right people there faster.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10707,7 +10707,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors penetrate the rubble and detect life signs . Faint but present. You relay the scan data to the nearest Union rescue team, cutting their search time in half. The rescue coordinator, a gruff woman named Kowalski, patches through when the miners are pulled out alive: \"Your scans saved three people today, Captain. Union doesn't forget that.\"",
+          "description": "Your sensors penetrate the rubble and detect life signs, faint but present. You relay the scan data to the nearest Union rescue team, cutting their search time in half. The rescue coordinator, a gruff woman named Kowalski, patches through when the miners are pulled out alive: \"Your scans saved three people today, Captain. Union doesn't forget that.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10899,7 +10899,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes. You've done what you can from out here . The rest is on the people with the drilling equipment and the nerve to go underground.",
+          "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes. You've done what you can from out here. The rest is on the people with the drilling equipment and the nerve to go underground.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11086,7 +11086,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the beacon coordinates and continue on your route. Shaft collapses happen in Breakstone . The Union has teams for this. You tell yourself that, anyway.",
+          "description": "You log the beacon coordinates and continue on your route. Shaft collapses happen in Breakstone. The Union has teams for this. You tell yourself that, anyway.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

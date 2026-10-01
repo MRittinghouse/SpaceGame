@@ -213,3 +213,24 @@ class TestGetEffectiveCaptainDialogue:
         }
         eff = get_effective_captain_dialogue(cap, memory, variants)
         assert eff.pre_combat_hail == "base hail"
+
+
+def test_each_outcome_speaks_its_line() -> None:
+    from spacegame.models.captain_variant import EffectiveCaptainDialogue, outcome_line
+
+    dialogue = EffectiveCaptainDialogue(
+        captain_id="c",
+        display_name="C",
+        pre_combat_hail="hail",
+        surrender_line="surrender",
+        retreat_line="retreat",
+        victory_line="victory",
+        defeat_line="defeat",
+        meeting_state="first_meeting",
+    )
+    assert outcome_line(dialogue, "victory") == "defeat"
+    assert outcome_line(dialogue, "defeat") == "victory"
+    assert outcome_line(dialogue, "negotiated") == "surrender"
+    assert outcome_line(dialogue, "fled_captain") == "retreat"
+    assert outcome_line(dialogue, "bribed") == ""
+    assert outcome_line(dialogue, "fled") == ""

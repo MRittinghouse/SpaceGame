@@ -17,7 +17,7 @@ from spacegame.engine.draw_utils import draw_bar
 from spacegame.engine.fonts import FONT_BODY, FONT_HEADING, FONT_LG, FONT_MD, get_font
 from spacegame.engine.particles import COLLECT_SPARKLE, ParticleConfig, ParticlePool
 from spacegame.engine.sprites import get_sprite_manager, res_scale
-from spacegame.models.commodity import Commodity
+from spacegame.models.commodity import Commodity, CommodityCategory
 from spacegame.models.market import Market
 from spacegame.models.player import Player
 from spacegame.models.system import StarSystem
@@ -34,6 +34,10 @@ from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
 from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
+
+# BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
+# the Union's, so the refusal names the permit rather than the bill.
+NO_PERMIT = "You need a trade permit to trade here"
 
 # Red flash for failed transactions
 FAIL_FLASH = ParticleConfig(
@@ -260,7 +264,7 @@ class TradingView(BaseView):
         system_id = self.player.current_system_id
         market_name = get_black_market_name(system_id)
         self._black_market_exists = market_name is not None
-        # Underworld Contacts skill grants black market access at all stations
+        # Underworld Contacts grants black market access only where a black market exists
         has_contacts = self.player.progression.get_bonus("underworld_contacts") > 0
         player_has_access = has_contacts or self.player.has_black_market_access(system_id)
         if player_has_access and market_name is not None:
@@ -577,12 +581,19 @@ class TradingView(BaseView):
 
         return rows, ids
 
+    def _is_quest_good(self, commodity_id: str) -> bool:
+        """True for a quest-category good, which is never offered for sale (BB-7)."""
+        commodity = self.commodities.get(commodity_id)
+        return commodity is not None and commodity.category == CommodityCategory.QUEST
+
     def _build_cargo_rows(self) -> tuple[list[list[str | tuple[str, tuple]]], list[str]]:
         """Build cargo table rows and parallel commodity ID list."""
         rows: list[list[str | tuple[str, tuple]]] = []
         ids: list[str] = []
 
         for commodity_id, quantity in self.player.ship.current_cargo.items():
+            if self._is_quest_good(commodity_id):
+                continue
             commodity = self.commodities[commodity_id]
             avg_cost = self.player.ship.get_average_purchase_price(commodity_id)
 
@@ -739,7 +750,7 @@ class TradingView(BaseView):
         if not self._has_trade_permit():
             return "No trade permit here."
         cargo = self.player.ship.current_cargo
-        if not any(qty > 0 for qty in cargo.values()):
+        if not any(qty > 0 and not self._is_quest_good(cid) for cid, qty in cargo.items()):
             return "Nothing to sell."
         return None
 
@@ -985,7 +996,7 @@ class TradingView(BaseView):
 
     def _execute_buy(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_market_commodity()
@@ -1047,7 +1058,7 @@ class TradingView(BaseView):
 
     def _execute_sell(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_cargo_commodity()
@@ -1107,7 +1118,7 @@ class TradingView(BaseView):
 
     def _execute_buy_max(self) -> None:
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
 
         commodity_id = self._get_selected_market_commodity()
@@ -1184,6 +1195,10 @@ class TradingView(BaseView):
             )
 
     def _execute_sell_max(self) -> None:
+        if not self._has_trade_permit():
+            self._show_message(NO_PERMIT)
+            return
+
         commodity_id = self._get_selected_cargo_commodity()
         if not commodity_id:
             self._show_message("Select an item from YOUR CARGO list first")
@@ -1214,7 +1229,7 @@ class TradingView(BaseView):
 
     def _execute_refuel(self) -> None:
         fuel_needed = self.player.ship.max_fuel - self.player.ship.current_fuel
-        if fuel_needed == 0:
+        if fuel_needed <= 0:
             self._show_message("Fuel tank is full")
             return
 
@@ -1241,7 +1256,7 @@ class TradingView(BaseView):
     def _execute_sell_all(self) -> None:
         """Sell all cargo at current market prices."""
         if not self._has_trade_permit():
-            self._show_message("You need a bill of landing to trade here")
+            self._show_message(NO_PERMIT)
             return
         cargo = dict(self.player.ship.current_cargo)
         if not cargo:
@@ -1250,7 +1265,7 @@ class TradingView(BaseView):
         total_credits = 0
         total_items = 0
         for commodity_id, quantity in cargo.items():
-            if quantity <= 0:
+            if quantity <= 0 or self._is_quest_good(commodity_id):
                 continue
             if self._black_market_mode:
                 sell_price = self._get_black_market_sell_price(commodity_id)

@@ -11,10 +11,6 @@
       "patrol_vessel",
       "reach_rustrunner",
       "reach_wrecker",
-      "bounty_tracker",
-      "bounty_enforcer",
-      "ledger_raider",
-      "ledger_striker",
       "armored_transport",
       "support_frigate",
       "skiff_raider",
@@ -40,7 +36,7 @@
     },
     "system_id": "forgeworks"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -334,7 +330,7 @@
         "encounter_seed": 2166773604,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "ledger_raider"
+          "reach_rustrunner"
         ],
         "shakedown_demand": 0
       },
@@ -423,7 +419,7 @@
         "encounter_seed": 2471399002,
         "encounter_type": "hostile",
         "enemy_template_ids": [
-          "reach_scout_ace"
+          "armored_transport"
         ],
         "shakedown_demand": 0
       },
@@ -892,7 +888,7 @@
         "encounter_seed": 434554231,
         "encounter_type": "ransom_demand",
         "enemy_template_ids": [
-          "reach_scout_ace"
+          "smuggler"
         ],
         "shakedown_demand": 0
       },

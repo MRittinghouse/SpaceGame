@@ -5,7 +5,7 @@
     "day": 1,
     "system_id": "stellaris_port"
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -24,7 +24,7 @@
           "encounter_chance_modifier": "f:1.0:4607182418800017408",
           "event_type": "embargo",
           "faction_id": "commerce_guild",
-          "flavor_text": "The commodity boards flash red  -- entire ore categories reading SUSPENDED.",
+          "flavor_text": "The commodity boards flash red. Entire ore categories read SUSPENDED.",
           "id": "guild_embargo_ore_1",
           "price_modifiers": {},
           "rep_bonus_amount": 0,

@@ -105,17 +105,26 @@ def _trading() -> Case:
     return case
 
 
-def _defeat(insured: bool) -> Case:
+_DEFEAT_CARGO: list[dict[str, Any]] = [
+    {"commodity_id": "food", "quantity": 20, "price": 10},
+    {"commodity_id": "electronics", "quantity": 10, "price": 10},
+    {"commodity_id": "scrap_metal", "quantity": 1, "price": 10},
+]
+_DEFEAT_QUEST_CARGO: list[dict[str, Any]] = [
+    {"commodity_id": "food", "quantity": 20, "price": 10},
+    {"commodity_id": "data_chip", "quantity": 1, "price": 0},
+]
+
+
+def _defeat(insured: bool, *, quest_cargo: bool = False) -> Case:
     name = "defeat_insured" if insured else "defeat"
+    if quest_cargo:
+        name = "defeat_quest_cargo"
     setup: dict[str, Any] = {
         "insured": insured,
         "player": _pilot(3000),
         "max_level_bonus_types": ["insurance"] if insured else [],
-        "cargo": [
-            {"commodity_id": "food", "quantity": 20, "price": 10},
-            {"commodity_id": "electronics", "quantity": 10, "price": 10},
-            {"commodity_id": "scrap_metal", "quantity": 1, "price": 10},
-        ],
+        "cargo": _DEFEAT_QUEST_CARGO if quest_cargo else _DEFEAT_CARGO,
         "faction_assignments": {"nexus_prime": "commerce_guild"},
     }
     case = Case("player", name, setup)
@@ -157,4 +166,10 @@ def _payouts() -> Case:
 def build_cases() -> list[Case]:
     """Every player case."""
     get_data_loader().load_all()
-    return [_trading(), _defeat(False), _defeat(True), _payouts()]
+    return [
+        _trading(),
+        _defeat(False),
+        _defeat(True),
+        _defeat(False, quest_cargo=True),
+        _payouts(),
+    ]

@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "d96fbd3b8824610e929630c137cadd2e4c8c7034",
+  "source_commit": "1579eaa9077f23984a079b092d9cd9a6bb3d4f75",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping . The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
+          "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -229,7 +229,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction . Not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
+          "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -421,7 +421,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow . Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself, and the questions don't stop gnawing at you in the quiet hours between jumps.",
+          "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow. Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself, and the questions don't stop gnawing at you in the quiet hours between jumps.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1337,7 +1337,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed . For now.\" No credits change hands, but you sense this is not over.",
+          "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed. For now.\" No credits change hands, but you sense this is not over.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2629,7 +2629,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gil's eyes light up. 'Now that's useful. We been tracking a pattern but missing a piece . This fills the gap.' He transmits a small bounty from the patrol's community fund. 'You ever need a favor out here, you got friends on channel seven.'",
+          "description": "Gil's eyes light up. 'Now that's useful. We been tracking a pattern but missing a piece. This fills the gap.' He transmits a small bounty from the patrol's community fund. 'You ever need a favor out here, you got friends on channel seven.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3181,7 +3181,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The officer shares tactical data . Raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
+          "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4265,7 +4265,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone . Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
+          "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4452,7 +4452,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Roz chews it over. 'You ain't Deep Core, I'll give you that. Alright . Go around the back side, quiet-like. And if anyone asks, you never saw us.' She transmits an alternate route through the asteroid scatter.",
+          "description": "Roz chews it over. 'You ain't Deep Core, I'll give you that. Alright. Go around the back side, quiet-like. And if anyone asks, you never saw us.' She transmits an alternate route through the asteroid scatter.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5754,7 +5754,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant . Symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
+          "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6128,7 +6128,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You catch fragments of an encrypted debate . Something about tariff adjustments and a 'Forge Sector proposal.' Nothing actionable, but you file it away. A patrol vessel gives you a long look before moving on.",
+          "description": "You catch fragments of an encrypted debate: something about tariff adjustments and a 'Forge Sector proposal.' Nothing actionable, but you file it away. A patrol vessel gives you a long look before moving on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6671,7 +6671,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors capture fragmented data before a Collective patrol ship moves to block your line of sight. The readings are strange . Energy patterns that don't match any known reactor type or weapon system. The patrol captain sends you a terse warning: \"Cease unauthorized scanning.\" But the data is already in your logs.",
+          "description": "Your sensors capture fragmented data before a Collective patrol ship moves to block your line of sight. The readings are strange: energy patterns that don't match any known reactor type or weapon system. The patrol captain sends you a terse warning: \"Cease unauthorized scanning.\" But the data is already in your logs.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7225,7 +7225,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses . They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
+          "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7412,7 +7412,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\" Corruption runs deep in Iron Depths . Sometimes the fastest route is through someone's wallet.",
+          "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\" Corruption runs deep in Iron Depths. Sometimes the fastest route is through someone's wallet.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7777,7 +7777,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit a confident Guild transit authorization . Slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through. Whether they bought it or simply decided you weren't worth the paperwork, you'll never know.",
+          "description": "You transmit a confident Guild transit authorization, slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through. Whether they bought it or simply decided you weren't worth the paperwork, you'll never know.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

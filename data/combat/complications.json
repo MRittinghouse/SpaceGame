@@ -13,12 +13,12 @@
     {
       "id": "shield_harmonic",
       "name": "Shield Harmonic Resonance",
-      "description": "Local field resonance interferes with shield regeneration for both sides.",
+      "description": "Local field resonance interferes with your shield regeneration.",
       "trigger_type": "turn_counter",
       "trigger_params": { "turn": 1 },
       "effect_type": "environmental",
       "effect_params": { "shield_regen_multiplier": 0.5 },
-      "narration": "Your shield emitters stutter against something in the local field. Regeneration is running at half. Same for them."
+      "narration": "Your shield emitters stutter against something in the local field. Regeneration is running at half."
     },
     {
       "id": "asteroid_closure",

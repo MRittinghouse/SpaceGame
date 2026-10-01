@@ -27,7 +27,7 @@
           "label": "Burn In to Help",
           "description": "Don't think. Help.",
           "outcome": {
-            "description": "You close the gap. The transport's beacon flickers off. Two armed ships you didn't see drop out of stealth.",
+            "description": "You close the gap. The transport's beacon flickers off. An armed ship you didn't see drops out of stealth, and a second heat signature holds at the edge of your scope.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -97,7 +97,7 @@
           "label": "Dock and Help",
           "description": "Mining rigs don't lie. Or so you tell yourself.",
           "outcome": {
-            "description": "You dock. The pilot wasn't a pilot. The rig was a shell. Two skiffs unhide from behind it.",
+            "description": "You dock. The pilot wasn't a pilot. The rig was a shell. An armed ship unhides from behind it, and another drive is warming up further out.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -166,7 +166,7 @@
           "label": "Escort Him",
           "description": "Officers don't lie. Officers don't lie. Officers don't lie.",
           "outcome": {
-            "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side and three other ships uncloak.",
+            "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side, and somewhere behind him another ship drops its cloak.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -241,7 +241,7 @@
           "label": "Approach to Investigate",
           "description": "Maybe the relay's just damaged. Maybe.",
           "outcome": {
-            "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it and a second one pings off your starboard. Ambush.",
+            "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it, and a second one pings far off your starboard, closing. Ambush.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -629,7 +629,7 @@
           "label": "Board the Wreck",
           "description": "Crack the airlock. See what's inside.",
           "outcome": {
-            "description": "You find the cargo bay half-stripped and three boarding drones still active. Their lights come on as you step in.",
+            "description": "You find the cargo bay half-stripped and two boarding drones still active. Their lights come on as you step in.",
             "rewards": [],
             "leads_to_combat": true,
             "enemy_template_ids": [

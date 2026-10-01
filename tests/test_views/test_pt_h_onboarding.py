@@ -116,7 +116,7 @@ class TestPTHDataIntegrity:
         assert "first_delivery_complete" in flag_targets
 
     def test_coolant_run_cargo_grant(self) -> None:
-        """Accept of the mission should give 18 machinery."""
+        """Accept gives 4 machinery: 32 volume, which fits beside the other day-one jobs."""
         loader = DataLoader()
         loader.load_all()
         mission = next((m for m in loader.missions if m.id == "coolant_run"), None)
@@ -124,7 +124,7 @@ class TestPTHDataIntegrity:
         assert len(mission.on_accept_cargo) == 1
         cargo = mission.on_accept_cargo[0]
         assert cargo.commodity_id == "machinery"
-        assert cargo.quantity == 18
+        assert cargo.quantity == 4
 
     def test_arna_dialogue_trees_exist(self) -> None:
         loader = DataLoader()

@@ -1271,3 +1271,132 @@ class TestCombatEffectMetadata:
         """Backward compat: old JSON without metadata loads with empty dict."""
         restored = CombatEffect.from_dict({"type": "damage", "value": 10.0})
         assert restored.metadata == {}
+
+
+class TestArmoredTransportKeepsFiring:
+    """BB-28: Hull Brace's cooldown lets the transport's cannon fire again after round 4."""
+
+    def test_the_cannon_fires_in_rounds_five_to_twenty(self) -> None:
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.action_queue import ActionQueue
+
+        dl = get_data_loader()
+        dl.load_all()
+        player = _make_player_state(
+            hull=100_000, max_hull=100_000, shields=0, max_shields=0, evasion=0
+        )
+        engine = _make_engine(
+            player=player, enemy_templates=[dl.enemy_templates["armored_transport"]]
+        )
+        state = engine.get_state()
+        late_actions: list[str] = []
+        for round_number in range(1, 21):
+            engine.execute_player_turn(
+                ActionQueue(
+                    energy_available=state.player.energy,
+                    cooldowns=dict(state.player.cooldowns),
+                )
+            )
+            logs = engine.execute_enemy_turns()
+            if round_number >= 5:
+                late_actions.extend(entry.action for entry in logs)
+            engine.end_round()
+        assert "Transport Cannon" in late_actions, late_actions
+
+
+class TestTelegraphedMoveIsPlayed:
+    """BB-86: an enemy plays the move its telegraph showed, when it still can."""
+
+    def test_pirate_heavy_plays_its_telegraph_every_time(self) -> None:
+        from spacegame.data_loader import get_data_loader
+
+        dl = get_data_loader()
+        dl.load_all()
+        template = dl.enemy_templates["pirate_heavy"]
+        mismatched: list[int] = []
+        for seed in range(200):
+            engine = _make_engine(
+                player=_make_player_state(hull=10_000, max_hull=10_000),
+                enemy_templates=[template],
+                seed=seed,
+            )
+            enemy = engine.get_state().enemies[0]
+            enemy.current_hull = int(enemy.max_hull * 0.45)
+            engine.telegraph_enemy_moves()
+            told = enemy.telegraphed_move
+            assert told is not None
+            actions = [entry.action for entry in engine.execute_enemy_turns()]
+            if told.name not in actions:
+                mismatched.append(seed)
+            assert enemy.telegraphed_move is None
+        assert mismatched == []
+
+
+class _AlwaysMiss:
+    """Stands in for the engine's stream: every hit roll is 100, a clean miss."""
+
+    def randint(self, low: int, high: int) -> int:
+        return high
+
+    def random(self) -> float:
+        return 0.99
+
+    def choice(self, seq):  # noqa: ANN001, ANN201
+        return seq[0]
+
+
+class TestCounterstrikeStacks:
+    """BB-91: Counterstrike Mastery raises the cap by one per level and logs the applied percent."""
+
+    def _ghost_engine(self, counterstrike_level: int) -> CombatEngine:
+        from spacegame.models.progression import PlayerProgression
+
+        player = _make_player_state(hull=1000, max_hull=1000, evasion=90)
+        player.defensive_identity = "ghost"
+        enemy = _make_enemy_template(energy=100, energy_regen=10, accuracy=10)
+        engine = _make_engine(player=player, enemy_templates=[enemy])
+        progression = PlayerProgression()
+        progression.skills["counterstrike"].current_level = counterstrike_level
+        engine.get_state().progression = progression
+        engine._rng = _AlwaysMiss()
+        return engine
+
+    def test_one_level_stacks_to_four_and_logs_the_applied_percent(self) -> None:
+        engine = self._ghost_engine(1)
+        effects: list[str] = []
+        for _ in range(6):
+            for entry in engine.execute_enemy_turns():
+                effects.extend(entry.effects_applied)
+        assert engine.get_state().player.counterstrike_stacks == 4
+        assert "Counterstrike +68%" in effects
+
+    def test_without_the_skill_the_cap_stays_three(self) -> None:
+        engine = self._ghost_engine(0)
+        effects: list[str] = []
+        for _ in range(6):
+            for entry in engine.execute_enemy_turns():
+                effects.extend(entry.effects_applied)
+        assert engine.get_state().player.counterstrike_stacks == 3
+        assert "Counterstrike +36%" in effects
+
+
+class TestWasFought:
+    """BB-100: a bribe or a clean exit is not a fight the crew talks about afterwards."""
+
+    def test_a_round_one_bribe_was_not_fought(self) -> None:
+        engine = _make_engine()
+        engine.get_state().result = CombatResult.BRIBED
+        assert not engine.was_fought()
+
+    def test_a_flee_after_a_hit_was_fought(self) -> None:
+        engine = _make_engine()
+        state = engine.get_state()
+        state.player.hull -= 10
+        state.result = CombatResult.FLED
+        assert engine.was_fought()
+
+    def test_a_win_or_a_loss_was_fought(self) -> None:
+        for result in (CombatResult.VICTORY, CombatResult.DEFEAT):
+            engine = _make_engine()
+            engine.get_state().result = result
+            assert engine.was_fought(), result

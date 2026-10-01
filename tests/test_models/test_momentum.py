@@ -265,6 +265,7 @@ from spacegame.models.combat import (
     CombatEffect,
     CombatLogEntry,
     CombatMove,
+    CombatResult,
     CombatState,
     CombatEncounter,
     EnemyBehavior,
@@ -473,6 +474,19 @@ class TestMomentumEngineIntegration:
         # This test verifies the momentum reset even if ultimate resolution is partial
         logs = engine.execute_ultimate()
         assert state.player.momentum.current == 0.0, "Ultimate should reset momentum to 0"
+
+    def test_mayday_burst_says_the_ship_got_away(self) -> None:
+        """BB-102: Mayday Burst's own log line reports the escape."""
+        from spacegame.data_loader import get_data_loader
+
+        get_data_loader().load_all()
+        state = _make_test_state(ship_class_category="starter")
+        engine = CombatEngine(state, seed=42)
+        state.player.momentum.add(1.0)
+        logs = engine.execute_ultimate()
+        effects = [e for entry in logs for e in entry.effects_applied]
+        assert state.result == CombatResult.FLED
+        assert "The burst breaks contact. You are clear." in effects
 
     def test_critical_hp_surge_fires_once(self) -> None:
         state = _make_test_state()

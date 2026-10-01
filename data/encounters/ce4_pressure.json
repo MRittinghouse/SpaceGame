@@ -445,7 +445,7 @@
       "id": "shakedown_contraband_intercept_01",
       "encounter_type": "cargo_shakedown",
       "name": "Smugglers Want Your Cargo",
-      "description": "A Reach rustrunner blocks your lane. The pilot says her sources tell her you're carrying restricted goods, and her sources are usually right. She'd like the contraband and you can keep moving.",
+      "description": "A Reach rustrunner blocks your lane. The pilot says his sources tell him you're carrying restricted goods, and his sources are usually right. He'd like the contraband and you can keep moving.",
       "icon_color": [
         140,
         60,
@@ -574,7 +574,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "He says the contract's the problem, not the answer. The pickets close in.",
+            "description": "He says the contract's the problem, not the answer. He waves his wingman back and closes in alone.",
             "rewards": [],
             "leads_to_combat": true,
             "enemy_template_ids": [
@@ -601,7 +601,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "Two pickets is more than enough for him. They open the engagement.",
+            "description": "He figures one picket is enough for you. His wingman holds station while he opens the engagement.",
             "rewards": [],
             "leads_to_combat": true,
             "enemy_template_ids": [
