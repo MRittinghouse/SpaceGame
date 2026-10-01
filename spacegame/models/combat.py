@@ -306,6 +306,12 @@ class EnemyShipTemplate:
     # enemies get 1-2; bosses/elites get 3-4. Empty list = enemy has
     # no subsystem layer (legacy combat feel).
     targetable_subsystems: list[str] = field(default_factory=list)
+    # BB-14: False keeps a story ship or a hunter out of the random hostile pools; a
+    # forced encounter or a bounty still names it directly.
+    random_pool: bool = True
+    # BB-12: False marks a template that refuses any bribe. Python's attempt_bribe does not
+    # read it; the Godot port's fight actions refuse on it.
+    bribable: bool = True
 
 
 @dataclass

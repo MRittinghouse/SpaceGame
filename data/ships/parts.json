@@ -1641,7 +1641,7 @@
       "weight": 0.0,
       "legendary": false,
       "combat_move": {
-        "id": "emergency_repair",
+        "id": "repair_kit_patch",
         "name": "Emergency Repair",
         "description": "Restores 25 hull points.",
         "effects": [
@@ -2553,7 +2553,7 @@
     },
     {
       "id": "point_defense_system",
-      "name": "Point Defense System",
+      "name": "Point Defense Screen",
       "description": "Automated turret network that intercepts incoming projectiles.",
       "slot_type": "defense",
       "min_size": "small",
@@ -2564,8 +2564,8 @@
       "weight": 0.0,
       "legendary": false,
       "combat_move": {
-        "id": "point_defense",
-        "name": "Point Defense",
+        "id": "point_defense_screen",
+        "name": "Point Defense Screen",
         "description": "Activates defensive countermeasures. Next incoming attack deals 50% less damage.",
         "effects": [
           {

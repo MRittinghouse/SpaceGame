@@ -2065,6 +2065,8 @@ class DataLoader:
             trophy_drop=data.get("trophy_drop", ""),
             composite_build=data.get("composite_build"),
             targetable_subsystems=data.get("targetable_subsystems", []),
+            random_pool=bool(data.get("random_pool", True)),
+            bribable=bool(data.get("bribable", True)),
         )
 
     def _parse_combat_move(self, data: dict) -> CombatMove:

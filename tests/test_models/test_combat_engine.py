@@ -1271,3 +1271,34 @@ class TestCombatEffectMetadata:
         """Backward compat: old JSON without metadata loads with empty dict."""
         restored = CombatEffect.from_dict({"type": "damage", "value": 10.0})
         assert restored.metadata == {}
+
+
+class TestArmoredTransportKeepsFiring:
+    """BB-28: Hull Brace's cooldown lets the transport's cannon fire again after round 4."""
+
+    def test_the_cannon_fires_in_rounds_five_to_twenty(self) -> None:
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.action_queue import ActionQueue
+
+        dl = get_data_loader()
+        dl.load_all()
+        player = _make_player_state(
+            hull=100_000, max_hull=100_000, shields=0, max_shields=0, evasion=0
+        )
+        engine = _make_engine(
+            player=player, enemy_templates=[dl.enemy_templates["armored_transport"]]
+        )
+        state = engine.get_state()
+        late_actions: list[str] = []
+        for round_number in range(1, 21):
+            engine.execute_player_turn(
+                ActionQueue(
+                    energy_available=state.player.energy,
+                    cooldowns=dict(state.player.cooldowns),
+                )
+            )
+            logs = engine.execute_enemy_turns()
+            if round_number >= 5:
+                late_actions.extend(entry.action for entry in logs)
+            engine.end_round()
+        assert "Transport Cannon" in late_actions, late_actions

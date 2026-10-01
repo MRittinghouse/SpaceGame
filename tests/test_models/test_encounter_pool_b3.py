@@ -44,6 +44,18 @@ T3_GENERIC_IDS = {"reach_void_dancer", "mercenary_ace"}  # faction_id=""
 
 T4_BOSS_IDS = {"pirate_lord", "reach_dreadnought", "union_behemoth"}
 
+# BB-14: story ships and hunters, fought only where a mission or a bounty sends them.
+KEPT_OUT_OF_POOLS = {
+    "ledger_raider",
+    "ledger_striker",
+    "ledger_vanguard",
+    "bounty_tracker",
+    "bounty_enforcer",
+    "bounty_vanguard",
+    "bounty_ace",
+    "faction_enforcer",
+}
+
 
 @pytest.fixture(scope="module")
 def enemies() -> dict:
@@ -269,3 +281,32 @@ class TestTravelEncounterUsesRoster:
                 "check_travel_encounter does not re-filter bosses — "
                 "exclusion happens upstream in filter_enemies_for_system"
             )
+
+
+class TestStoryShipsStayOutOfRandomPools:
+    """BB-14: the Ledger's story ships, the bounty hunters, and the Enforcer never roll."""
+
+    def test_no_pool_draws_them(self, enemies: dict) -> None:
+        factions = (
+            "",
+            "commerce_guild",
+            "miners_union",
+            "science_collective",
+            "frontier_alliance",
+            "crimson_reach",
+        )
+        for faction in factions:
+            for danger in ("safe", "moderate", "dangerous"):
+                pool = set(filter_enemies_for_system(enemies, faction, danger))
+                assert not pool & KEPT_OUT_OF_POOLS, (faction, danger, pool & KEPT_OUT_OF_POOLS)
+
+    def test_unaligned_pool_sizes(self, enemies: dict) -> None:
+        sizes = {
+            d: len(filter_enemies_for_system(enemies, "", d))
+            for d in ("safe", "moderate", "dangerous")
+        }
+        assert sizes == {"safe": 5, "moderate": 12, "dangerous": 18}
+
+    def test_forced_encounters_still_find_them(self, enemies: dict) -> None:
+        assert KEPT_OUT_OF_POOLS <= set(enemies)
+        assert not any(enemies[eid].random_pool for eid in KEPT_OUT_OF_POOLS)

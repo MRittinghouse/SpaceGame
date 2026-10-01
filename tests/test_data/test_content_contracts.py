@@ -55,8 +55,28 @@ PENDING_UNKNOWN_EVENT_COMMODITIES: set[str] = {
 }
 PENDING_OVERSIZED_ACCEPT_CARGO: set[str] = {"coolant_run:144"}  # Task 7, BB-15
 PENDING_DAY_ONE_CARGO_OVERFLOW: set[str] = {"day_one:155"}  # Task 7, BB-15
-PENDING_SHARED_CREW_MOVE_IDS: set[str] = {"emergency_repair"}  # Task 2, BB-13
-PENDING_MOVE_IDS_ON_TWO_ITEMS: set[str] = {"point_defense"}  # Task 2, BB-89
+PENDING_SHARED_CREW_MOVE_IDS: set[str] = set()
+PENDING_MOVE_IDS_ON_TWO_ITEMS: set[str] = set()
+# BB-12: templates that refuse any bribe. hulk_derelict and shield_drone cost 0 but stay
+# bribable (a zero total refuses on its own in the port).
+REFUSES_BRIBES = {
+    "ledger_raider",
+    "ledger_striker",
+    "ledger_vanguard",
+    "bounty_tracker",
+    "bounty_enforcer",
+    "bounty_vanguard",
+    "bounty_ace",
+    "faction_enforcer",
+    "corsair_king",
+    "guild_arbiter",
+    "iron_maw",
+    "ledger_phantom",
+    "the_collector",
+    "void_leviathan",
+    "rogue_ai_vessel",
+    "reach_dreadnought",
+}
 
 
 def _loader() -> DataLoader:
@@ -392,6 +412,13 @@ class TestContentContracts:
 
     def test_each_equipment_move_id_belongs_to_one_item(self) -> None:
         assert move_ids_on_two_items() == PENDING_MOVE_IDS_ON_TWO_ITEMS
+
+    def test_bribe_refusing_templates_are_marked(self) -> None:
+        dl = _loader()
+        marked = {t.id for t in dl.enemy_templates.values() if not t.bribable}
+        assert marked == REFUSES_BRIBES
+        zero_cost = {t.id for t in dl.enemy_templates.values() if t.bribe_cost == 0}
+        assert zero_cost - {"hulk_derelict", "shield_drone"} <= REFUSES_BRIBES
 
     @pytest.mark.timeout(300)
     def test_the_hold_back_flag_stays_unset_and_holds_back_two_missions(self) -> None:
