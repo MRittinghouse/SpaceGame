@@ -339,6 +339,7 @@ class _TalkStep:
     flags: tuple[str, ...] = ()
     statuses: tuple[tuple[str, str], ...] = ()
     recruited: tuple[str, ...] = ()
+    progress: tuple[tuple[str, tuple[bool, ...]], ...] = ()
 
 
 _ELENA_AWAY = ("iron_delivery_moved_on", "larsen_permit_complete", "talked_to_elena_cantina")
@@ -347,10 +348,13 @@ _ELENA_OPEN = (
     ("iron_delivery", "completed"),
     ("footing_the_bill", "active"),
 )
-# Each clause of npc_availability.is_listed, after every station's day one: the keep rule
-# after each kept exit, a companion aboard, a lesson learned, a hide flag, a prerequisite,
-# and an active talk objective. The Godot adapter drops the twelve Act II v1 NPCs (D-21).
+# Each clause of npc_availability.is_listed, after every station's day one: a one-shot scene
+# not yet played, the keep rule after each kept exit and its release once the awaited flag is
+# set, a companion aboard, a lesson learned, a hide flag, a prerequisite, and a talk objective
+# that keeps someone only while its mission is active and the talk unmet. Python lists the twelve
+# Act II v1 NPCs, and so does this golden; leaving them out is the port's clause alone (D-21).
 TALK_STEPS: tuple[_TalkStep, ...] = (
+    _TalkStep("elena_first_open", "nexus_prime", _ELENA_AWAY[:2], _ELENA_OPEN[:2]),
     _TalkStep("elena_walked_away", "nexus_prime", _ELENA_AWAY, _ELENA_OPEN),
     _TalkStep("elena_aboard", "nexus_prime", _ELENA_AWAY, _ELENA_OPEN, ("elena_reeves",)),
     _TalkStep(
@@ -360,11 +364,20 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         (*_ELENA_OPEN[:2], ("footing_the_bill", "completed")),
     ),
     _TalkStep(
+        "elena_lesson_landed",
+        "nexus_prime",
+        (*_ELENA_AWAY, "elena_gave_trading_tips"),
+        _ELENA_OPEN,
+    ),
+    _TalkStep(
         "dex_declined",
         "nexus_prime",
         ("cargo_lost_complete", "larsen_permit_complete", "met_dex_halloran"),
         (("cargo_lost", "completed"), ("whispers_at_the_bar", "active")),
     ),
+    # Synthetic: since BB-71's repair every exit of Tomas's scene resolves his deal, which
+    # auto-accepts, so play never leaves it available with his scene spent. It stays as the
+    # one step where an available mission keeps a spent NPC (the keep rule's 'available' half).
     _TalkStep(
         "tomas_unresolved",
         "havens_rest",
@@ -382,6 +395,12 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         "reva_reached", "nova_research", ("cargo_lost_accepted",), (("cargo_lost", "active"),)
     ),
     _TalkStep(
+        "wren_offered",
+        "forgeworks",
+        ("talked_to_cargo_broker",),
+        (("iron_delivery", "available"),),
+    ),
+    _TalkStep(
         "wren_awaited", "forgeworks", ("talked_to_cargo_broker",), (("iron_delivery", "active"),)
     ),
     _TalkStep(
@@ -389,6 +408,12 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         "nexus_prime",
         ("iron_delivery_failed", "larsen_permit_complete"),
         (("iron_delivery", "failed"),),
+    ),
+    _TalkStep(
+        "larsen_met",
+        "nexus_prime",
+        statuses=(("bill_of_landing", "active"),),
+        progress=(("bill_of_landing", (True,)),),
     ),
 )
 
@@ -398,7 +423,10 @@ def _talk_step(step: _TalkStep) -> dict[str, Any]:
         "label": step.label,
         "system_id": step.system_id,
         "flags": dict.fromkeys(sorted(step.flags), True),
-        "mission_state": {"status": dict(step.statuses)},
+        "mission_state": {
+            "status": dict(step.statuses),
+            "progress": {mission_id: list(done) for mission_id, done in step.progress},
+        },
         "recruited": list(step.recruited),
     }
 
