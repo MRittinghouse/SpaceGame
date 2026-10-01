@@ -2200,9 +2200,8 @@ class CombatView(BaseView):
             captain = None
         if captain is None:
             return
-        # Use captain.name + captain.nickname directly. display_name uses
-        # an em-dash separator that's fine for headers but a Writing Bible
-        # violation in narrative text.
+        # Use captain.name + captain.nickname directly. display_name puts the
+        # nickname in parentheses, which suits a panel header but not a sentence.
         nickname_phrase = f", the {captain.nickname}," if captain.nickname else ","
         text = (
             f"Met {captain.name}{nickname_phrase} for the first time. "

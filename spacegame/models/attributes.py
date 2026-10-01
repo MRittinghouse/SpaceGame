@@ -210,7 +210,7 @@ class AttributeSheet:
         self._awarded_milestones.add(milestone_id)
         self.unspent_points += 1
         desc = MILESTONE_DEFINITIONS[milestone_id]
-        return (True, f"Milestone: {desc} — +1 attribute point!")
+        return (True, f"Milestone reached: {desc}. +1 attribute point!")
 
     def has_milestone(self, milestone_id: str) -> bool:
         """Check if a milestone has been awarded.

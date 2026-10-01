@@ -88,8 +88,7 @@ class TestDisplayName:
             signature_ship_template="pirate_raider",
             pre_combat_hail="hail",
         )
-        # em-dash (U+2014) separator between name and nickname
-        assert captain.display_name == "Captain Vela \u2014 Wolf's Ear"
+        assert captain.display_name == "Captain Vela (Wolf's Ear)"
 
     def test_without_nickname(self) -> None:
         captain = EnemyCaptain(

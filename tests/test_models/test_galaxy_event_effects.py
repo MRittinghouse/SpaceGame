@@ -169,14 +169,15 @@ class TestFestivalPriceEffects:
         commodities = dl.get_all_commodities()
 
         market_base = Market(system, commodities, game_day=5)
-        fuel_base = market_base.get_price("fuel_cells")
+        fuel_base = market_base.get_price("fuel")
 
         market_fest = Market(system, commodities, game_day=5)
         festival = self._make_festival(price_modifiers={"food": 1.5})
         market_fest.galaxy_events = [festival]
         market_fest._generate_prices()
-        fuel_fest = market_fest.get_price("fuel_cells")
+        fuel_fest = market_fest.get_price("fuel")
 
+        assert fuel_base > 0, "Nexus Prime sells fuel, so the comparison means something"
         assert fuel_fest == fuel_base
 
 

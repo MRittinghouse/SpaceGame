@@ -342,7 +342,7 @@ class GroundPlayerState:
 
         tile = ground_map.get_tile(new_x, new_y)
         if tile is not None and tile.tile_type == TileType.HAZARD:
-            return True, "Moved onto hazard — taking damage!"
+            return True, "Moved onto a hazard: taking damage!"
 
         return True, "Moved"
 

@@ -361,7 +361,7 @@ class CorruptionOverlay:
         if self._ratio <= 0:
             label_text = "CORRUPTED"
         elif self._ratio < 0.25:
-            label_text = "CRITICAL — EVACUATE"
+            label_text = "CRITICAL: EVACUATE"
         label = self._label_font.render(label_text, True, Colors.TEXT_SECONDARY)
         screen.blit(label, (self._bar_x, self._bar_y - label.get_height() - 2))
 

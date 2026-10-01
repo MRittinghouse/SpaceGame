@@ -5801,7 +5801,7 @@ class Game:
             for contract in expired:
                 self.player.deduct_credits(contract.penalty_on_failure)
                 self._mission_notifications.append(
-                    f"Smuggling contract expired: {contract.client_name} — "
+                    f"Smuggling contract expired: {contract.client_name}. "
                     f"Penalty: {contract.penalty_on_failure} CR"
                 )
 
@@ -6301,9 +6301,9 @@ class Game:
                             )
             # Single consolidated notification instead of one per mission
             if discoverable_count == 1:
-                self._mission_notifications.append("New Mission Available — check your journal")
+                self._mission_notifications.append("New Mission Available: check your journal")
             elif discoverable_count > 1:
-                self._mission_notifications.append("New Missions Available — check your journal")
+                self._mission_notifications.append("New Missions Available: check your journal")
             # Update galaxy map markers and forced encounters
             if self.galaxy_map_view:
                 self.galaxy_map_view.mission_target_systems = (
@@ -6418,7 +6418,7 @@ class Game:
             if level >= lvl and not self.attribute_sheet.has_milestone(milestone_id):
                 self.attribute_sheet._awarded_milestones.add(milestone_id)
                 self.attribute_sheet.add_points(1)
-                self._mission_notifications.append(f"Level {lvl} reached — +1 attribute point!")
+                self._mission_notifications.append(f"Level {lvl} reached: +1 attribute point!")
 
         # Gameplay milestones
         if self.player.trades_completed >= 1:

@@ -78,9 +78,9 @@ class EnemyCaptain:
 
     @property
     def display_name(self) -> str:
-        """Panel-header text: 'Captain Vela' or 'Captain Vela — Wolf's Ear'."""
+        """Panel-header text: 'Captain Vela' or 'Captain Vela (Wolf's Ear)'."""
         if self.nickname:
-            return f"{self.name} \u2014 {self.nickname}"
+            return f"{self.name} ({self.nickname})"
         return self.name
 
     @classmethod

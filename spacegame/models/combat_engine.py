@@ -138,7 +138,7 @@ class CombatEngine:
                         round_number=self._state.round_number,
                         actor="player",
                         action=action.move_name,
-                        effects_applied=[f"Target destroyed — {action.move_name} held fire"],
+                        effects_applied=[f"Target destroyed. {action.move_name} held fire"],
                         hit=False,
                     )
                     self._state.combat_log.append(skip_entry)
@@ -1007,7 +1007,7 @@ class CombatEngine:
             round_number=self._state.round_number,
             actor="player",
             action="Bribe",
-            effects_applied=[f"Paid {total_cost:,} CR — enemies stand down"],
+            effects_applied=[f"Paid {total_cost:,} CR. Enemies stand down"],
         )
         self._state.combat_log.append(entry)
         logs.append(entry)
@@ -1152,13 +1152,13 @@ class CombatEngine:
                 for tid in event.spawned_template_ids:
                     if living >= MAX_LIVING_ENEMIES:
                         messages.append(
-                            f"Reinforcement call capped — {MAX_LIVING_ENEMIES} "
+                            f"Reinforcement call capped: {MAX_LIVING_ENEMIES} "
                             "enemies already engaged"
                         )
                         break
                     template = dl.enemy_templates.get(tid)
                     if template is None:
-                        messages.append(f"Reinforcement call failed — unknown template '{tid}'")
+                        messages.append(f"Reinforcement call failed: unknown template '{tid}'")
                         continue
                     self._state.enemies.append(EnemyShip.from_template(template))
                     living += 1
@@ -1614,7 +1614,7 @@ class CombatEngine:
                     if actor_name == "player" or actor_name.startswith("crew:")
                     else attacker
                 )
-                no_ally_note = "no ally to support — redirected to self"
+                no_ally_note = "no ally to support, redirected to self"
             else:
                 no_ally_note = None
 
@@ -2007,7 +2007,7 @@ class CombatEngine:
             elif effect.type == EffectType.ABSORB:
                 # Add absorb shield: next incoming hit is nullified
                 target.active_effects.append((effect, max(1, effect.duration)))
-                messages.append("Countermeasures deployed — next hit absorbed")
+                messages.append("Countermeasures deployed: next hit absorbed")
 
             # SPAWN_REINFORCEMENT is handled by _resolve_move's dedicated
             # spawn-effects bucket (Tier 3.E) — it's caster-invoked and
@@ -2034,7 +2034,7 @@ class CombatEngine:
         messages: list[str] = []
 
         if not template_id:
-            messages.append("Reinforcement call failed — no template specified")
+            messages.append("Reinforcement call failed: no template specified")
             return messages
 
         # Lazy import to avoid a circular dependency at module load.
@@ -2043,7 +2043,7 @@ class CombatEngine:
         dl = get_data_loader()
         template = dl.enemy_templates.get(template_id)
         if template is None:
-            messages.append(f"Reinforcement call failed — unknown template '{template_id}'")
+            messages.append(f"Reinforcement call failed: unknown template '{template_id}'")
             return messages
 
         living = sum(1 for e in self._state.enemies if e.is_alive and not e.is_fled)
@@ -2051,7 +2051,7 @@ class CombatEngine:
         for _ in range(count):
             if living >= MAX_LIVING_ENEMIES:
                 messages.append(
-                    f"Reinforcement call capped — {MAX_LIVING_ENEMIES} enemies already engaged"
+                    f"Reinforcement call capped: {MAX_LIVING_ENEMIES} enemies already engaged"
                 )
                 break
             new_enemy = EnemyShip.from_template(template)

@@ -40,9 +40,7 @@ PENDING_CHECK_GATED_FLAGS: set[str] = {"oren_intel_received"}
 PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = set()
 PENDING_SELF_LOOPING_CHECKS: set[str] = set()
 PENDING_UNKNOWN_FORCED_ENEMIES: set[str] = set()
-PENDING_UNKNOWN_EVENT_COMMODITIES: set[str] = {
-    "energy_breakthrough:fuel_cells",  # Task 12, BB-33
-}
+PENDING_UNKNOWN_EVENT_COMMODITIES: set[str] = set()
 PENDING_OVERSIZED_ACCEPT_CARGO: set[str] = set()
 PENDING_DAY_ONE_CARGO_OVERFLOW: set[str] = set()
 PENDING_SHARED_CREW_MOVE_IDS: set[str] = set()

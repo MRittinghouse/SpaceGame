@@ -95,35 +95,35 @@ class SubsystemEffect:
 SUBSYSTEM_PALETTE: dict[str, SubsystemEffect] = {
     SubsystemTag.WEAPON_ARRAY.value: SubsystemEffect(
         tag=SubsystemTag.WEAPON_ARRAY.value,
-        log_text="Weapon array destroyed — their damage drops sharply",
+        log_text="Weapon array destroyed. Their damage drops sharply",
         damage_multiplier=0.60,  # 40% reduction
     ),
     SubsystemTag.SHIELD_GENERATOR.value: SubsystemEffect(
         tag=SubsystemTag.SHIELD_GENERATOR.value,
-        log_text="Shield generator destroyed — barrier collapses",
+        log_text="Shield generator destroyed. The barrier collapses",
         disable_shield_regen=True,
         strip_current_shields=True,
     ),
     SubsystemTag.ENGINE.value: SubsystemEffect(
         tag=SubsystemTag.ENGINE.value,
-        log_text="Engines crippled — evasion lost, fleeing no longer an option",
+        log_text="Engines crippled. Evasion lost, and fleeing is no longer an option",
         evasion_override=0,
         disable_flee=True,
         trigger_tempo_skip=True,
     ),
     SubsystemTag.SENSOR_ARRAY.value: SubsystemEffect(
         tag=SubsystemTag.SENSOR_ARRAY.value,
-        log_text="Sensor array destroyed — their targeting falters",
+        log_text="Sensor array destroyed. Their targeting falters",
         accuracy_delta=-30,
     ),
     SubsystemTag.COCKPIT.value: SubsystemEffect(
         tag=SubsystemTag.COCKPIT.value,
-        log_text="Cockpit struck — ship goes dark",
+        log_text="Cockpit struck. The ship goes dark",
         instant_kill=True,
     ),
     SubsystemTag.REACTOR.value: SubsystemEffect(
         tag=SubsystemTag.REACTOR.value,
-        log_text="Reactor destroyed — their systems starve for power",
+        log_text="Reactor destroyed. Their systems starve for power",
         disable_energy_regen=True,
     ),
 }

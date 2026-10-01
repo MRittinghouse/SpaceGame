@@ -51,7 +51,7 @@ class NPC:
     def get_display_name(self) -> str:
         """Get formatted display name with title."""
         if self.title:
-            return f"{self.name} \u2014 {self.title}"
+            return f"{self.name} ({self.title})"
         return self.name
 
     def get_active_dialogue_id(self, flags: dict[str, bool]) -> str:

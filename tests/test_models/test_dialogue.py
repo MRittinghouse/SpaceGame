@@ -47,7 +47,14 @@ class TestNPC:
             home_system_id="nexus_prime",
             dialogue_id="elena_intro",
         )
-        assert npc.get_display_name() == "Elena Reeves \u2014 Navigator"
+        assert npc.get_display_name() == "Elena Reeves (Navigator)"
+
+    def test_display_name_with_a_title_that_holds_a_comma(self) -> None:
+        """BB-59: the parentheses keep a comma title from reading as a list."""
+        dl = get_data_loader()
+        dl.load_all()
+        clerk = dl.npcs["forgeworks_clerk"]
+        assert clerk.get_display_name() == "Deshi Wren (Intake Clerk, Cargo Broker)"
 
     def test_display_name_without_title(self) -> None:
         npc = NPC(
