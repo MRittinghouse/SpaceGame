@@ -4,9 +4,10 @@ Python keeps two flag stores. Code outside a conversation writes the player's st
 alone: a mission's accept flag (``MissionManager.accept_mission``), a reward's
 ``set_flag`` (``apply_rewards``), the iron job's clock at a rest and its sale sensor
 (``iron_consignment``), and the first sale's clear. The dialogue manager's copy is loaded
-only when a conversation opens or a game loads, so a save that replaced the player's
-store with that copy dropped every such flag. A save now lays the player's store over
-the copy. The harness patches ``Game.__init__`` out, as
+only when a conversation opens, a game loads or a new game starts, so a save that
+replaced the player's store with that copy dropped every such flag. A save now lays the
+player's store over the copy. A save merges in place, since a running combat holds the
+player's store by reference. The harness patches ``Game.__init__`` out, as
 ``test_scenario_procedural_board_reload.py`` does, and gives the game only what
 ``_save_game`` reads. The last test builds a whole Game, as ``test_new_game_factions.py``
 does: the dialogue manager outlives a main-menu New Game, so the new game reloads its copy.
@@ -23,6 +24,7 @@ import pygame
 from spacegame.constants.flags import talked_to_npc
 from spacegame.data_loader import get_data_loader
 from spacegame.models.dialogue import DialogueManager
+from spacegame.models.dual_tech_dialogue import check_and_mark_reveal, reveal_flag_key
 from spacegame.models.mission import MissionManager
 from spacegame.models.player import Player
 from tests.test_scenarios._helpers import fresh_player
@@ -108,3 +110,13 @@ def test_a_new_game_keeps_none_of_the_last_games_flags() -> None:
         game.save_manager.save_game.assert_called_once()
     finally:
         pygame.quit()
+
+
+def test_a_save_keeps_a_held_reference_live() -> None:
+    """A running combat holds the player's flags by reference, and a save keeps it live."""
+    player = fresh_player()
+    game = _game(player)
+    held = player.dialogue_flags  # as start_combat hands it to the combat state
+    game._save_game(0)  # the pause menu's save, mid-combat
+    assert check_and_mark_reveal(held, "gun_run") is not None  # a first use, after the save
+    assert player.dialogue_flags.get(reveal_flag_key("gun_run")) is True

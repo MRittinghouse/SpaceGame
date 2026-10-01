@@ -5148,8 +5148,12 @@ class Game:
             return
 
         # Sync dialogue flags to player before saving. F-C09: the player's store wins, since
-        # code outside a conversation writes it alone (accepts, reward flags, the sensors)
-        self.player.dialogue_flags = self.dialogue_manager.merged_flags(self.player.dialogue_flags)
+        # code outside a conversation writes it alone (accepts, reward flags, the sensors).
+        # In place: a running combat holds this dict for its dual-tech reveal flags
+        flags = self.player.dialogue_flags
+        merged = self.dialogue_manager.merged_flags(flags)
+        flags.clear()
+        flags.update(merged)
 
         # Sync mission state to player before saving
         if self.mission_manager:

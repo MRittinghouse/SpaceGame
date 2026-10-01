@@ -349,8 +349,9 @@ class DialogueManager:
 
         Python keeps two flag stores. Code outside a conversation (a mission's accept, a
         reward's set_flag, the iron job's clock and sale sensor, the first sale's clear)
-        writes the player's store alone, and this copy is loaded only when a conversation
-        opens or a game loads, so the player's store wins (SpaceGame register F-C09).
+        writes the player's store alone, and this copy is loaded only when a conversation opens,
+        a game loads or a new game starts, so the player's store wins (SpaceGame register
+        F-C09).
 
         Args:
             player_flags: The player's dialogue flags.
