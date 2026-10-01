@@ -2717,6 +2717,7 @@ class Game:
         sell_lot_view = SellLotView(
             ui_manager=self.ui_manager,
             player=self.player,
+            mission_manager=self.mission_manager,
         )
         self.sell_lot_view = sell_lot_view
         # Voice templates for the empty-state line.
@@ -3469,6 +3470,7 @@ class Game:
             system_id=self.player.current_system_id,
             progression=self.player.progression,
             social_manager=self.social_manager,
+            mission_manager=self.mission_manager,
         )
         self.refining_view = refining_view
         refining_view._get_crew_line = self._make_crew_commentary_fn()

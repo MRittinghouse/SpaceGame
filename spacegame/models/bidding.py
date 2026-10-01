@@ -1004,6 +1004,7 @@ class AuctionState:
         headline: Optional[str] = None,
         description: Optional[str] = None,
         category: str = "faction_commodity",
+        reserved: int = 0,
     ) -> tuple[bool, str, Optional[_PlayerListing]]:
         """Validate and register a player consignment.
 
@@ -1012,6 +1013,9 @@ class AuctionState:
         cargo or parts inventory, the listing is appended to
         ``active_listings``, and the attempt counter is incremented.
         On failure no state mutates and ``listing`` is ``None``.
+
+        ``reserved`` is the units of the commodity a mission's accept cargo holds,
+        which cannot be listed (bug bash BB-1).
         """
         from spacegame.config import (
             LISTING_RESERVE_PCT_MAX,
@@ -1051,7 +1055,7 @@ class AuctionState:
             )
         # Inventory check.
         if item_kind == "commodity":
-            held = player.ship.get_cargo_quantity(item_id)
+            held = player.ship.get_cargo_quantity(item_id) - reserved
         else:
             held = player.parts_inventory.get(item_id, 0)
         if held < quantity:

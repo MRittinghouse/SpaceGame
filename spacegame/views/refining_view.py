@@ -8,7 +8,7 @@ forge buffer output decoupling, forge token upgrades, and recipe mastery indicat
 
 import math
 import random
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 import pygame
 import pygame_gui
@@ -47,9 +47,17 @@ from spacegame.models.commodity import Commodity
 from spacegame.models.forge_buffer import ForgeBuffer
 from spacegame.models.player import Player
 from spacegame.models.rating import RATING_COLORS, REFINING_THRESHOLDS, calculate_rating
-from spacegame.models.refining import Recipe, RefiningResult, RefiningSession
+from spacegame.models.refining import (
+    Recipe,
+    RefiningResult,
+    RefiningSession,
+    start_on_free_cargo,
+)
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
+
+if TYPE_CHECKING:
+    from spacegame.models.mission import MissionManager
 
 # Forge upgrade color theme (warm orange)
 FORGE_COLOR = (255, 160, 60)
@@ -67,6 +75,7 @@ class RefiningView(BaseView):
         system_id: str,
         progression=None,
         social_manager=None,
+        mission_manager: Optional["MissionManager"] = None,
     ):
         super().__init__()
         self.ui_manager = ui_manager
@@ -75,6 +84,7 @@ class RefiningView(BaseView):
         self.all_recipes = recipes
         self.system_id = system_id
         self.progression = progression
+        self.mission_manager = mission_manager
         # NV-6.5: Technical XP grows from completed refining jobs so the
         # skill doesn't stagnate when dialogue checks alone are sparse.
         self.social_manager = social_manager
@@ -636,10 +646,12 @@ class RefiningView(BaseView):
                 return
 
         inventory = self.player.ship.current_cargo
-        if self.batch_count > 1:
-            success, msg = self.session.start_batch(recipe, inventory, self.batch_count)
+        # Bug bash BB-1: a mission's accept cargo is never a refining input
+        if self.mission_manager is not None:
+            free = self.mission_manager.free_cargo(self.player)
         else:
-            success, msg = self.session.start_job(recipe, inventory)
+            free = dict(inventory)
+        success, msg = start_on_free_cargo(self.session, recipe, inventory, free, self.batch_count)
         self._show_message(msg)
         if success:
             get_audio_manager().play_sfx("refine_start")
