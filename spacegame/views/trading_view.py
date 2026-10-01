@@ -1195,6 +1195,10 @@ class TradingView(BaseView):
             )
 
     def _execute_sell_max(self) -> None:
+        if not self._has_trade_permit():
+            self._show_message(NO_PERMIT)
+            return
+
         commodity_id = self._get_selected_cargo_commodity()
         if not commodity_id:
             self._show_message("Select an item from YOUR CARGO list first")

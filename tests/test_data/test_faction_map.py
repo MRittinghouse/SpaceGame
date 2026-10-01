@@ -86,4 +86,4 @@ class TestPermits:
         source = Path(trading_view.__file__).read_text(encoding="utf-8")
         assert trading_view.NO_PERMIT == "You need a trade permit to trade here"
         assert "bill of landing to trade" not in source
-        assert source.count("_show_message(NO_PERMIT)") == 4
+        assert source.count("_show_message(NO_PERMIT)") == 5
