@@ -15,6 +15,10 @@ import pytest
 from spacegame.data_loader import DataLoader
 from spacegame.models.mission import ObjectiveType
 
+# BB-17: two_calls and the_silent_shaft wait on this flag, which nothing sets until SP10
+# re-stages them (plan A1). A deliberate hold-back, not a settable flag.
+DELIBERATE_HOLD_BACK_FLAGS = frozenset({"held_back_until_sp10"})
+
 pytestmark = pytest.mark.act_two_v1
 
 # ---------------------------------------------------------------------------
@@ -371,6 +375,11 @@ class TestFlagReachability:
             if mission.ground_mission_complete_flag:
                 flags.add(mission.ground_mission_complete_flag)
 
+        # MissionManager.accept_mission sets "<mission_id>_accepted" on every accept with
+        # a player (BB-84: Mossa waits on the_dead_ledger_accepted)
+        for mission in loader.missions:
+            flags.add(f"{mission.id}_accepted")
+
         return flags
 
     def _collect_engine_flags(self) -> set[str]:
@@ -398,7 +407,7 @@ class TestFlagReachability:
         errors = []
         for mission in loader.missions:
             for flag in mission.required_flags:
-                if flag in settable or flag in engine_flags:
+                if flag in settable or flag in engine_flags or flag in DELIBERATE_HOLD_BACK_FLAGS:
                     continue
                 if flag.startswith(loyalty_pattern):
                     continue

@@ -6,7 +6,7 @@
       "description": "Marcus has been quieter than usual since you talked through your father's report. He asked you to meet him at Section 3 of the Breakstone mining levels. Old workings. The custodian there, a man named Sten, keeps the story of the place. Marcus said: bring time. He did not say what for.",
       "hint": "Meet Marcus at the Deep Shafts at Breakstone. Section 3.",
       "prerequisites": ["the_foremans_son"],
-      "required_flags": ["learned_father_story"],
+      "required_flags": ["learned_father_story", "held_back_until_sp10"],
       "objectives": [
         {
           "type": "has_flag",

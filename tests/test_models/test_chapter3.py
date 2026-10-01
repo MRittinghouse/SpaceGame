@@ -2733,14 +2733,15 @@ class TestPointOfNoReturnMission:
         assert mission.ground_mission_complete_flag == "fulcrum_ground_complete"
 
     def test_objectives(self) -> None:
-        """Mission has reach + ground mission + warp gate discovery."""
+        """Mission has reach + ground mission objectives."""
         _load_data()
         dl = get_data_loader()
         mission = next(m for m in dl.missions if m.id == "point_of_no_return")
         obj_types = [(o.type, o.target_id) for o in mission.objectives]
         assert (ObjectiveType.REACH_SYSTEM, "the_fulcrum") in obj_types
         assert (ObjectiveType.HAS_FLAG, "fulcrum_ground_complete") in obj_types
-        assert (ObjectiveType.HAS_FLAG, "warp_gate_discovered") in obj_types
+        assert (ObjectiveType.HAS_FLAG, "warp_gate_discovered") not in obj_types
+        assert len(mission.objectives) == 2
 
     def test_rewards(self) -> None:
         """Mission rewards set convergence_active and warp_gate_discovered flags."""
@@ -2753,7 +2754,7 @@ class TestPointOfNoReturnMission:
         assert "convergence_active" in reward_flags
 
     def test_mission_completion_flow(self) -> None:
-        """Mission completes when ground mission done + warp gate found."""
+        """Mission completes when the ground mission is done."""
         _load_data()
         dl = get_data_loader()
         mgr = MissionManager(dl.missions)
@@ -2785,11 +2786,6 @@ class TestPointOfNoReturnMission:
         # Ground mission done
         player.current_system_id = "the_fulcrum"
         player.dialogue_flags["fulcrum_ground_complete"] = True
-        completed = mgr.check_objectives(player)
-        assert "point_of_no_return" not in completed
-
-        # Warp gate discovered — complete
-        player.dialogue_flags["warp_gate_discovered"] = True
         completed = mgr.check_objectives(player)
         assert "point_of_no_return" in completed
 

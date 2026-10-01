@@ -34,28 +34,20 @@ STARTING_SHIP_TYPE = "shuttle"
 # between them. Their accept cargo must fit the starting hold together.
 DAY_ONE_JOBS = ("iron_delivery", "coolant_run", "the_price_of_information")
 
-PENDING_PRODUCER_CYCLES: set[str] = {
-    "point_of_no_return:warp_gate_discovered",  # Task 7, BB-2
-    "two_calls:two_calls_choice_made",  # Task 7, BB-17
-    "two_calls:two_calls_resolved",  # Task 7, BB-17
-}
+PENDING_PRODUCER_CYCLES: set[str] = set()
 # The later plan (BB-69): Oren's refusal gains a partial-intel node that sets it.
 PENDING_CHECK_GATED_FLAGS: set[str] = {"oren_intel_received"}
-PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = {
-    "torres_memorial:wrenchs_request_complete",  # Task 7, BB-32
-}
+PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = set()
 PENDING_SELF_LOOPING_CHECKS: set[str] = {
     "elena_cantina:about_elena:1",  # Task 8, BB-73
     "arna_post_completion:catch:1",  # Task 8, BB-73
 }
-PENDING_UNKNOWN_FORCED_ENEMIES: set[str] = {
-    "whistleblower:corporate_enforcer",  # Task 7, BB-30
-}
+PENDING_UNKNOWN_FORCED_ENEMIES: set[str] = set()
 PENDING_UNKNOWN_EVENT_COMMODITIES: set[str] = {
     "energy_breakthrough:fuel_cells",  # Task 12, BB-33
 }
-PENDING_OVERSIZED_ACCEPT_CARGO: set[str] = {"coolant_run:144"}  # Task 7, BB-15
-PENDING_DAY_ONE_CARGO_OVERFLOW: set[str] = {"day_one:155"}  # Task 7, BB-15
+PENDING_OVERSIZED_ACCEPT_CARGO: set[str] = set()
+PENDING_DAY_ONE_CARGO_OVERFLOW: set[str] = set()
 PENDING_SHARED_CREW_MOVE_IDS: set[str] = set()
 PENDING_MOVE_IDS_ON_TWO_ITEMS: set[str] = set()
 # BB-12: templates that refuse any bribe. hulk_derelict and shield_drone cost 0 but stay

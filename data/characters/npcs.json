@@ -341,6 +341,9 @@
       "home_system_id": "nexus_prime",
       "dialogue_id": "dead_ledger_investigation",
       "faction_id": "",
+      "auto_trigger_prerequisites": [
+        "the_dead_ledger_accepted"
+      ],
       "hide_after_flag": "dead_ledger_complete"
     },
     {
@@ -430,6 +433,9 @@
       "home_system_id": "the_fulcrum",
       "dialogue_id": "callum_rhee_informant",
       "faction_id": "",
+      "auto_trigger_prerequisites": [
+        "drifters_deal_complete"
+      ],
       "hide_after_flag": "informant_complete"
     },
     {
@@ -489,6 +495,9 @@
       "home_system_id": "crimson_reach",
       "dialogue_id": "rook_honor_thieves",
       "faction_id": "",
+      "auto_trigger_prerequisites": [
+        "crimson_run_complete"
+      ],
       "hide_after_flag": "honor_thieves_complete"
     },
     {
@@ -503,6 +512,9 @@
       "home_system_id": "nova_research",
       "dialogue_id": "yuki_signal_deep",
       "faction_id": "science_collective",
+      "auto_trigger_prerequisites": [
+        "embassy_complete"
+      ],
       "hide_after_flag": "signal_from_deep_complete",
       "dialogue_music": "dialogue_intimate"
     },
@@ -535,7 +547,7 @@
     },
     {
       "id": "amara_okonkwo",
-      "name": "Dr. Amara Okonkwo",
+      "name": "Dr. Teodora Rautio-Mensah",
       "title": "Collective Research Partner",
       "portrait_color": [
         140,
@@ -619,7 +631,7 @@
       "auto_trigger_prerequisites": [
         "met_malia_torres"
       ],
-      "hide_after_flag": "wrenchs_request_complete"
+      "hide_after_flag": "wrench_request_complete"
     },
     {
       "id": "paz_reina",

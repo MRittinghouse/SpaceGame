@@ -478,10 +478,10 @@
         {
           "id": "bribe_accept",
           "speaker_id": "lira_feng",
-          "text": "Two thousand credits and I'll fast-track the investigation. Dask won't know until the inspectors are at his door.",
+          "text": "Make it worth my while and I'll fast-track the investigation. Dask won't know until the inspectors are at his door.",
           "responses": [
             {
-              "text": "[Pay 2000 credits]",
+              "text": "[Agree to her terms.]",
               "next_node_id": null,
               "set_flag": "marcus_bribed_inspector"
             }
@@ -657,7 +657,7 @@
         {
           "id": "start",
           "speaker_id": "dr_priya_osei",
-          "text": "The review board is in session. Voss is here, and he's confident. He thinks his reputation will carry the day. I need to present the evidence clearly, but I could use help. Either we find hard proof of the timeline discrepancy, or we convince his research partner, Dr. Amara Okonkwo, to testify.",
+          "text": "The review board is in session. Voss is here, and he's confident. He thinks his reputation will carry the day. I need to present the evidence clearly, but I could use help. Either we find hard proof of the timeline discrepancy, or we convince his research partner, Dr. Teodora Rautio-Mensah, to testify.",
           "responses": [
             {
               "text": "[Examine the data timestamps for proof] (Acuity check)",
@@ -671,7 +671,7 @@
               }
             },
             {
-              "text": "[Convince Dr. Okonkwo to speak up] (Communication check)",
+              "text": "[Convince Dr. Rautio-Mensah to speak up] (Communication check)",
               "next_node_id": null,
               "skill_check": {
                 "skill": "com",
@@ -735,7 +735,7 @@
         {
           "id": "witness_fail",
           "speaker_id": "dr_priya_osei",
-          "text": "Okonkwo wouldn't budge. Voss still has too much influence. But the board has seen my original data. They'll order a formal inquiry. Slower than I'd like, but the wheels are turning.",
+          "text": "Rautio-Mensah wouldn't budge. Voss still has too much influence. But the board has seen my original data. They'll order a formal inquiry. Slower than I'd like, but the wheels are turning.",
           "responses": [
             {
               "text": "[Continue]",
