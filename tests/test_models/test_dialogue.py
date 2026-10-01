@@ -1,5 +1,6 @@
 """Tests for dialogue system models."""
 
+from spacegame.data_loader import get_data_loader
 from spacegame.models.dialogue import (
     NPC,
     DialogueManager,
@@ -975,3 +976,50 @@ class TestDialogueNodeExpression:
         for expr in ["happy", "sad", "angry", "surprised", "neutral"]:
             node = DialogueNode(id="n1", speaker_id="npc1", text="Hi", expression=expr)
             assert node.expression == expr
+
+
+def _walk_to_about_elena(dm: DialogueManager) -> None:
+    """start -> lesson -> trading_tips -> about_elena, by each node's first reply."""
+    for _ in range(3):
+        dm.select_response(0)
+
+
+def _check_index(dm: DialogueManager) -> int | None:
+    return next((i for i, r in enumerate(dm.get_available_responses()) if r.skill_check), None)
+
+
+class TestElenaCheck:
+    """BB-73 and BB-99, on Elena's Persuasion 2 check about her past."""
+
+    def _manager(self) -> tuple[DialogueManager, SocialManager]:
+        sm = SocialManager()
+        dm = DialogueManager()
+        dm.set_social_manager(sm)
+        return dm, sm
+
+    def test_a_failed_check_reads_out_the_level_it_tested(self) -> None:
+        dl = get_data_loader()
+        dl.load_all()
+        dm, _sm = self._manager()
+        dm.start_dialogue(dl.dialogue_trees["elena_cantina"], npc_id="elena_reeves", game_day=1)
+        _walk_to_about_elena(dm)
+        index = _check_index(dm)
+        assert index is not None
+        dm.select_response(index)
+        assert dm.get_last_check_readout() == "PERSUASION 1 vs 2  FAIL"
+
+    def test_thirty_tries_pay_one_xp_and_the_check_does_not_return(self) -> None:
+        dl = get_data_loader()
+        dl.load_all()
+        dm, sm = self._manager()
+        tries = 0
+        for _ in range(30):
+            dm.start_dialogue(dl.dialogue_trees["elena_cantina"], npc_id="elena_reeves", game_day=1)
+            _walk_to_about_elena(dm)
+            index = _check_index(dm)
+            if index is not None:
+                tries += 1
+                dm.select_response(index)
+                assert dm.get_current_node().id == "about_elena_deflect"
+        skill = sm.get_skill("persuasion")
+        assert (tries, skill.level, skill.xp) == (1, 1, 1)

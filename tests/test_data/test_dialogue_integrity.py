@@ -949,6 +949,10 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
 # Producer-only orphans are typically narrative-state flags (player-choice
 # memory) for save state + future content (Act Two), or transient UI flags.
 KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
+    # BB-73: set when a once-looping check fails, and read only through that response's own
+    # excluded_flags, which _collect_all_flag_uses does not scan (it reads forbidden_flags).
+    "arna_catch_check_failed",
+    "elena_about_check_failed",
     # === Player-choice memory + Act One ending state ===
     "alliance_followed",
     # Set on reva_distress Persuasion 2 success. Pre-existing narrative

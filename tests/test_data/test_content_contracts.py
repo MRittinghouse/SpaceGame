@@ -38,10 +38,7 @@ PENDING_PRODUCER_CYCLES: set[str] = set()
 # The later plan (BB-69): Oren's refusal gains a partial-intel node that sets it.
 PENDING_CHECK_GATED_FLAGS: set[str] = {"oren_intel_received"}
 PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = set()
-PENDING_SELF_LOOPING_CHECKS: set[str] = {
-    "elena_cantina:about_elena:1",  # Task 8, BB-73
-    "arna_post_completion:catch:1",  # Task 8, BB-73
-}
+PENDING_SELF_LOOPING_CHECKS: set[str] = set()
 PENDING_UNKNOWN_FORCED_ENEMIES: set[str] = set()
 PENDING_UNKNOWN_EVENT_COMMODITIES: set[str] = {
     "energy_breakthrough:fuel_cells",  # Task 12, BB-33

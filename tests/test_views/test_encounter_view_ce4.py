@@ -39,6 +39,7 @@ class _FakePlayer:
 
     def __init__(self, credits: int = 1000) -> None:
         self.credits = credits
+        self.game_day = 1
         self.dialogue_flags: dict[str, bool] = {}
 
 

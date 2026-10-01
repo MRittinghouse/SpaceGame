@@ -118,14 +118,28 @@
             {
               "text": "[Persuasion 2] \"Between contracts is a place people live for a week. You've been living here long enough to know everyone's first drink order.\"",
               "next_node_id": "press_further",
+              "excluded_flags": ["elena_about_check_failed"],
               "skill_check": {
                 "skill": "persuasion",
                 "difficulty": 2,
                 "success_node_id": "press_further",
-                "failure_node_id": "about_elena",
-                "set_flag_on_success": "read_elena_grounded"
+                "failure_node_id": "about_elena_deflect",
+                "set_flag_on_success": "read_elena_grounded",
+                "set_flag_on_failure": "elena_about_check_failed"
               }
             },
+            {
+              "text": "Fair enough. Thanks for the trading lesson.",
+              "next_node_id": "farewell"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "about_elena_deflect",
+          "speaker_id": "elena_reeves",
+          "text": "Nice try. One trading lesson doesn't buy my life story. Between contracts, Captain. Leave it there.",
+          "responses": [
             {
               "text": "Fair enough. Thanks for the trading lesson.",
               "next_node_id": "farewell"
@@ -6703,13 +6717,31 @@
             {
               "text": "[Observation 2] \"Your 'contact is solid' voice is the same voice you use for things you aren't sure about.\"",
               "next_node_id": "catch",
+              "excluded_flags": ["arna_catch_check_failed"],
               "skill_check": {
                 "skill": "observation",
                 "difficulty": 2,
                 "success_node_id": "catch_seen",
-                "failure_node_id": "catch",
-                "set_flag_on_success": "read_arna_contact_hedge"
+                "failure_node_id": "catch_unread",
+                "set_flag_on_success": "read_arna_contact_hedge",
+                "set_flag_on_failure": "arna_catch_check_failed"
               }
+            },
+            {
+              "text": "[I will think on it.]",
+              "next_node_id": "think"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "catch_unread",
+          "speaker_id": "arna",
+          "text": "What voice? That's my voice. You're reading tea leaves, kid. So. In or out?",
+          "responses": [
+            {
+              "text": "[Fine. I am in.]",
+              "next_node_id": "accepted"
             },
             {
               "text": "[I will think on it.]",

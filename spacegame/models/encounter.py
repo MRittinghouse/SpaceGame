@@ -598,7 +598,10 @@ def resolve_encounter_skill_check(
     """
     if social_manager is None:
         return False
-    success, _msg = social_manager.resolve_check(check.skill, check.difficulty, "")
+    game_day = player.game_day if player is not None else None
+    success, _msg = social_manager.resolve_check(
+        check.skill, check.difficulty, "", game_day=game_day
+    )
     if player is not None:
         flag = check.set_flag_on_success if success else check.set_flag_on_failure
         if flag:

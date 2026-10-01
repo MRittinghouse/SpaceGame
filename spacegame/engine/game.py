@@ -3626,7 +3626,7 @@ class Game:
                 self.social_manager.modify_disposition(npc_id, disp_mod)
                 logger.info(f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}")
 
-        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id)
+        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id, game_day=self.player.game_day)
         self._ensure_dialogue_view()
         dialogue_view = self.dialogue_view
         assert dialogue_view is not None  # _ensure_dialogue_view always creates it

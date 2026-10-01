@@ -47,3 +47,10 @@ def test_every_mission_manager_knows_the_content_producers() -> None:
         assert isinstance(value, ast.Call), ast.dump(value)
         assert isinstance(value.func, ast.Attribute), ast.dump(value)
         assert value.func.attr == "_build_mission_manager", ast.dump(value)
+
+
+def test_a_dialogue_starts_with_the_day() -> None:
+    starts = _calls(_function("start_dialogue"), "start_dialogue")
+    assert starts
+    for call in starts:
+        assert any(k.arg == "game_day" for k in call.keywords), ast.dump(call)

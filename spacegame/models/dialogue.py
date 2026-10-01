@@ -149,6 +149,7 @@ class DialogueManager:
         self._current_tree: Optional[DialogueTree] = None
         self._current_node_id: Optional[str] = None
         self._current_npc_id: Optional[str] = None
+        self._game_day: Optional[int] = None
         self._flags: dict[str, bool] = {}
         self._social_manager: Optional[SocialManager] = None
         self._politics_manager: Optional[PoliticsManager] = None
@@ -178,13 +179,17 @@ class DialogueManager:
         """Check if a dialogue is currently in progress."""
         return self._current_tree is not None and self._current_node_id is not None
 
-    def start_dialogue(self, tree: DialogueTree, npc_id: Optional[str] = None) -> None:
+    def start_dialogue(
+        self, tree: DialogueTree, npc_id: Optional[str] = None, game_day: Optional[int] = None
+    ) -> None:
         """Begin a new dialogue conversation.
 
         Args:
             tree: The dialogue tree to start.
             npc_id: Optional NPC ID for disposition tracking.
+            game_day: The day of the conversation, for the once-a-day check XP (BB-73).
         """
+        self._game_day = game_day
         self._current_tree = tree
         self._current_node_id = tree.start_node_id
         self._current_npc_id = npc_id
@@ -294,11 +299,13 @@ class DialogueManager:
         npc_id = self._current_npc_id or ""
 
         if self._social_manager:
-            success, msg = self._social_manager.resolve_check(check.skill, check.difficulty, npc_id)
-            self._last_check_result = (success, msg)
-            # PT-K: format a compact level-vs-difficulty readout. Shows what
-            # actually got checked so the player learns how checks work.
+            # PT-K, BB-99: the readout shows the level the check tests, read before the
+            # check moves disposition or pays XP.
             effective = self._social_manager.get_effective_level(check.skill, npc_id)
+            success, msg = self._social_manager.resolve_check(
+                check.skill, check.difficulty, npc_id, game_day=self._game_day
+            )
+            self._last_check_result = (success, msg)
             skill_obj = self._social_manager._skills.get(check.skill)
             skill_name = skill_obj.name.upper() if skill_obj else check.skill.upper()
             verdict = "PASS" if success else "FAIL"
