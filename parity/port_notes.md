@@ -558,16 +558,19 @@ the first four; unit tests are the spec for the rest. Every item below landed, H
 gate and Tomas's two missions included (polish design 6.3, in the author's scope).
 
 - Missions (`mission.py`): the reward `deliver_cargo` (`amount`, `target_id`) takes
-  `min(free units of its own mission, amount)` and, only when short, pays every
-  `credits` reward `int(amount * credit_mult * delivered / named)` (that operand order);
-  messages "+420 Credits (7 of 10 delivered)", "+315 Credits (late, 75% of 600, 7 of 10
-  delivered)", and "Delivered <n> <id>" (a full load prints what `remove_cargo`
-  printed). `iron_delivery`, `cargo_lost` and `drifters_delivery` hand over through it.
-  `check_objectives` returns at most one id a call, the first completed in content
-  order; Python's per-frame check completes the next one a frame later, and the port
-  loops. The reward `route_fuel` pays at most once per landing (game day and system),
-  "+<n> Credits (route fuel)", saved as `route_fuel_landing` (`[day, system]`, `[]` for
-  none).
+  `min(free units of its own mission, amount)` and, only when short, pays every `credits`
+  reward `int(amount * credit_mult * delivered / named)` (that operand order); messages
+  "+420 Credits (7 of 10 delivered)", "+315 Credits (late, 75% of 600, 7 of 10
+  delivered)", and "Delivered <n> <id>" (a full load prints what `remove_cargo` printed).
+  `iron_delivery`, `cargo_lost`, `drifters_delivery` and `coolant_run` (4 machinery) hand
+  over through it. A mission carries at most one `deliver_cargo`
+  (`test_each_hand_over_names_the_accept_cargo` pins authored content, and the board
+  generator writes one a delivery); Python reads that one's share for every credits
+  reward, so a second hand-over is unsupported in both builds. `check_objectives` returns
+  at most one id a call, the first completed in content order; Python's per-frame check
+  completes the next one a frame later, and the port loops. The reward `route_fuel` pays
+  at most once per landing (game day and system), "+<n> Credits (route fuel)", saved as
+  `route_fuel_landing` (`[day, system]`, `[]` for none).
 - Board generator (`procedural_missions.py`): a delivery draws one of the origin's legal
   specialty exports (none: no delivery, and `generate_for_system` skips it), keeps the
   draw order (destination, good, quantity), clamps the quantity to `50 //
@@ -580,45 +583,68 @@ gate and Tomas's two missions included (polish design 6.3, in the author's scope
   crew member aboard, every prerequisite set, the hide flag unset, and the gate unset or
   `needed_by` naming a mission (the first open mission in content order with an unset
   has_flag objective one of the NPC's trees can set, or an active mission with an unmet
-  talk objective naming it). Python lists the twelve Act II v1 NPCs; the port's adapter
-  drops them citing D-21. Opening an NPC sets its unset gate first (`game.py
-  start_dialogue`).
+  talk objective naming it). Python lists the twelve Act II v1 NPCs, and the golden holds
+  them; leaving them out is the port's clause alone (D-21). Opening an NPC sets its unset
+  gate first (`game.py start_dialogue`).
 - Content: `tomas_havens`' accept reply sets `drifter_deal_resolved`, and six sub-node
   replies exclude the other deal flag; `the_drifters_deal` and `drifters_delivery`
   auto-accept, the delivery's objectives are `collect_cargo textiles 5` then
   `reach_system stellaris_port`, and `tomas_friendship` moves from the delivery to
   `recruit_trader`; Reva waits for `cargo_lost_accepted`, Dex for `cargo_lost_complete`,
   Hanna for `elena_gave_trading_tips`; `iron_delivery` sets `iron_delivery_moved_on`;
-  Emergency Reserves' description (`skills/catalog`).
+  `merchant_delivery`'s "About that iron ore..." excludes `iron_ore_delivered`, so a
+  finished delivery never offers the betrayal (design 2.9) now that the sale sensor's
+  `broker_ore_sold` outlives a sale the captain covers; neither golden profile selects
+  it, so it joins the unselected responses as `merchant_delivery` greet #8 (golden
+  `dialogue/tree_merchant_delivery`: the expert profile's greet steps go from seven to
+  six); Emergency Reserves' description (`skills/catalog`).
 - Iron job (`iron_consignment.py`; no golden): `on_clock` at a landing and a rest sets
   `iron_delivery_moved_on` from accept day + 19 (`partial_reward_day_count + 1`; day 1
   when no accept day was recorded) for an open job, and from day 20 for a permit holder
-  who never took it; a settled job is left to the flag its ending set, and no branch
-  handles a save from before this rule (the port mirrors none); `close_on_exit` fails an
-  open job when `iron_delivery_failed` is set and sets the flag; `note_sale` sets
-  `broker_ore_sold` when a sale of iron ore draws below the reserved count, hidden units
-  counted as held, while the job is open. Python runs the clock at the arrival before
-  `_check_auto_triggers`, so Elena can appear on the landing the clock fires; the
-  design's DOCKED placement shows her one arrival or departure later (plan B2 decides
-  whether to match). The count test at Odom's opening is gone in Python.
+  who never took it. An open job with no accept day is ordinary play in Python and not
+  only an edge case: a captain who hears Odom's offer at the Nexus Prime hub before
+  Larsen's landing trigger has the job accepted by `check_missions`' availability pass,
+  which passes no day (aurelia F-32, closed in the port by D-8), so Python moves the
+  campaign on from day 20 and pays that job without the soft deadline's decay, where the
+  port records the day, waits for accept + 19 and decays the pay. A settled job is left
+  to the flag its ending set, and no branch handles a save from before this rule (the
+  port mirrors none); `close_on_exit` fails an open job when `iron_delivery_failed` is
+  set and sets the flag; `note_sale` sets `broker_ore_sold` when a sale of iron ore draws
+  below the reserved count, hidden units counted as held, while the job is open. Python
+  runs the clock at the arrival before `_check_auto_triggers`, so Elena can appear on the
+  landing the clock fires; the design's DOCKED placement shows her one arrival or
+  departure later (plan B2 decides whether to match). The count test at Odom's opening is
+  gone in Python.
 - Consignment (Python counts; the port's `CargoLots` owns lots): every active mission's
-  accept cargo is reserved for it (`reserved_units`, `free_units`, `free_cargo`); a board
-  contract's is sealed (`sealed_units`; "That cargo is sealed under your contract.");
-  collect legs and hand-overs count only the mission's own and the captain's units; Sell
-  All, Sell Max, refining, the auction house and the Wreckers' Guild leave reserved units
-  aboard. An explicit Sell draws a campaign or authored mission's reserved units without
-  a confirm (plan B1 ruling: the prompt would be a new line); the port's
-  `sell(..., include_owned)` stands for SP6's confirm, and deviation D-22 records the
-  difference. Hiding is allowed and the hidden compartment counts as aboard
-  (`held_units`): the reserved count, the seal and the sensor read both holds, the
-  captain's own units first, so hiding never makes a sale of the captain's own look like
-  a sale of a consignment (plan B1 ruling; the port has no hidden compartment). None of
-  `MissionManager`'s new methods (`reserved_units`, `sealed_units`, `free_units`,
-  `free_cargo`, `open_missions`) is a port interface: the port's `MissionManager` sits at
-  24 public methods.
+  accept cargo is reserved for it (`reserved_units`, `free_units`, `free_cargo`), counted
+  as loaded, not as left: after a loss draws a consignment and the captain buys back,
+  Python holds the whole load back where the port's lot holds only what is left (Odom's
+  ten, three lost, four bought: Python frees 1 unit, the port 4), so Sell All, Sell Max,
+  refining, auctions and other collect legs see fewer free units in Python; the seal and
+  the sale sensor read the same loaded count, so after a loss and a top-up a named Sell
+  of units the captain bought can be sealed or recorded in Python where the port's lots
+  draw the captain's own first (Odom's ten, three lost, five bought: a Sell of 3 sets
+  `broker_ore_sold` in Python and records nothing in the port; a board contract's three,
+  two lost, four bought: Python seals a Sell of 3 or 4, the port allows up to 4), which
+  design 2.2 rule 2's count form ("a sale ... that leaves fewer than ten aboard")
+  defines; a board contract's accept cargo is sealed (`sealed_units`; "That cargo is
+  sealed under your contract."); collect legs and hand-overs count only the mission's own
+  and the captain's units; Sell All, Sell Max, refining, the auction house and the
+  Wreckers' Guild leave reserved units aboard. An explicit Sell draws a campaign or
+  authored mission's reserved units without a confirm (plan B1 ruling: the prompt would
+  be a new line); the port's `sell(..., include_owned)` stands for SP6's confirm, and
+  deviation D-22 records the difference. Hiding is allowed and the hidden compartment
+  counts as aboard (`held_units`): the reserved count, the seal and the sensor read both
+  holds, the captain's own units first, so hiding never makes a sale of the captain's own
+  look like a sale of a consignment (plan B1 ruling; the port has no hidden compartment).
+  None of `MissionManager`'s new methods (`reserved_units`, `sealed_units`, `free_units`,
+  `sale_draws_sealed`, `free_cargo`, `open_missions`) is a port interface: the port's
+  `MissionManager` sits at 24 public methods.
 - Flag stores (SpaceGame F-C09): Python's save now lays the player's flag store over the
-  dialogue manager's copy (`DialogueManager.merged_flags`), so a flag written outside a
-  conversation survives the save. The port keeps one `FlagStore`; nothing to port.
+  dialogue manager's copy, in place (`DialogueManager.merged_flags`), so a flag written
+  outside a conversation survives the save and a running combat's reference stays live; a
+  new game reloads the copy; and the crew loyalty threshold flags now reach the player's
+  store too. The port keeps one `FlagStore`; nothing to port.
 
 ### Records for plan B2
 
@@ -629,20 +655,26 @@ D-20, F-74 and A12 (polish design 8.1).
 - Deviations: D-21 (BB-38: Python's `start_dialogue` trusts its two views and lists the
   twelve Act II v1 NPCs; the port refuses an unlisted NPC, opens a raw tree only for
   `intro_narration`, and excludes the twelve); D-22 (Python's cell: counts with a
-  reserved count, an explicit Sell drawing a campaign or authored mission's reserved
-  units without a confirm, and the hidden compartment allowed and counted as aboard, per
-  the Consignment bullet above); D-23 (BB-27: Python keeps the first sale's 1.5x; the
-  port pays the premium from `economy.new_market_premium`, which Python ignores); D-25
-  (BB-3: Emergency Reserves' text names the port's cell while Python keeps its 1-fuel
-  floor). No deviation for `deliver_cargo`, one completion a check, route fuel, the board
-  generator, the keep rule, the gate set on open, or the iron clock, close and sensor:
-  both builds change. If the author ever rules choice 6 port-only, only the sale sensor
-  moves: the port's sensor takes D-26, and Python keeps its count test at Odom's opening.
+  reserved count, the reserved count read as loaded (a loss shrinks no lot) and read by
+  the seal and the sale sensor too, an explicit Sell drawing a campaign or authored
+  mission's reserved units without a confirm, and the hidden compartment allowed and
+  counted as aboard, per the Consignment bullet above); D-23 (BB-27: Python keeps the
+  first sale's 1.5x; the port pays the premium from `economy.new_market_premium`, which
+  Python ignores); D-25 (BB-3: Emergency Reserves' text names the port's cell while
+  Python keeps its 1-fuel floor). No deviation for `deliver_cargo`, one completion a
+  check, route fuel, the board generator, the keep rule, the gate set on open, or the
+  iron clock, close and sensor: both builds change. If the author ever rules choice 6
+  port-only, only the sale sensor moves: the port's sensor takes D-26, and Python keeps
+  its count test at Odom's opening.
 - BB-9 (plan A2's D-15 note): Python keeps counts, so loaded contract cargo has no
   purchase record here; the port's accept-cargo lot should record the loading station,
   the accept day and the base price as unit price and the loading station's price that
   day as market price, with a mark that it was not bought, so the premium still excludes
   it.
+- Dialogue parity: the port's F-33 pin (`dialogue_manager_test.gd`,
+  `test_the_seven_unselected_responses_move_to_their_next_node`) gains
+  `["merchant_delivery", "greet", 8, 2, "betrayal"]` (available index 2 with its one
+  required flag set; B2 confirms it) and counts eight.
 - Register: BB-4 closes (F-75); BB-1's false accusation and Sell All close, its scenes
   stay open (F-75); BB-38, BB-67, BB-68, BB-71, BB-72 close and BB-69 stays open for
   Oren's fail-forward (F-76); F-4's closure note (the Talk list now has one filter).
@@ -654,9 +686,14 @@ D-20, F-74 and A12 (polish design 8.1).
   description's "Sell the goods" now reads loosely); Emergency Reserves' description (F);
   the ten first-sale lines (N, choice 17; Crimson Reach's orients only, its lore waits).
   Existing lines in new places: "No cargo to sell" from Sell Max and Sell All over
-  consigned cargo; refining's "Missing: ..." and "Need ..., have ..." and the auction's
+  consigned cargo, and from Sell All over a hold of quest goods alone, where the press
+  was silent before; refining's "Missing: ..." and "Need ..., have ..." and the auction's
   "You do not have 1 of '<id>' in inventory." over free units; "Delivered <n> <id>" from
-  `deliver_cargo`.
+  `deliver_cargo`; "Progress: iron_delivery_moved_on" in the iron delivery's Mission
+  Complete notice (the set_flag reward's existing "Progress: <flag>" form, which shows
+  the player a raw flag id beside "Progress: iron_ore_delivered"); "Progress:
+  tomas_friendship" moved from Drifter's Delivery's Mission Complete notice to Recruit
+  Trader's (the set_flag reward's existing "Progress: <flag>" form).
 - Content left for the writing session: the return scenes (`AWAITING_RETURN_SCENES` in
   `tests/test_data/test_one_shot_scenes.py`: Dex, Elena, Oren; `CHECK_GATED_RETURNS`:
   Oren; A1's `PENDING_CHECK_GATED_FLAGS` keeps `oren_intel_received`); the iron scenes,
@@ -679,8 +716,15 @@ D-20, F-74 and A12 (polish design 8.1).
   approved "once a trip" overstates it: two surveys or salvages to one distant target,
   accepted at neighboring origins, each pay their own round trip, about 2(d1 + d2) for a
   tour that burns about 2(c + d2) (d1 and d2 the origins' distances to the target, c the
-  hop between the origins), an overpayment the board's own contracts allow (SP5
-  and SP8, which own route pricing and the career).
+  hop between the origins), an overpayment the board's own contracts allow (SP5 and SP8,
+  which own route pricing and the career). Until the iron scenes land, a captain who sold
+  Odom's ore and bought back to ten (O4) is offered only the betrayal for the ore at
+  Odom's greet while the job is open ("Any word on the ore shipment?" excludes
+  `broker_ore_sold`). Its text ("Your hold's empty", "your bay is reading zero") is false
+  for that captain, and after the delivery they hear `thanks` ("you don't skim"). Design
+  2.6's `waiting_count` and `thanks_replaced` (`iron_job_replaced`,
+  `iron_job_done_replaced`) are the writing session's, and the port meets the same
+  content once B2 ports the sensor.
 
 ## Act II v1
 
