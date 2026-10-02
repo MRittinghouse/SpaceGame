@@ -1,0 +1,34 @@
+# The act-verb list (writing discipline spec 5.1, G9): a bracket tag on an option passes when
+# its first word is one of these. One lowercase verb a line. Spoken imperatives stay off the
+# list ("drop", "go", "hold", "tell"): "[Go on.]" is a line, not an act.
+accept
+agree
+approach
+ask
+assist
+attempt
+back
+confront
+continue
+convince
+examine
+execute
+follow
+give
+hand
+leave
+listen
+nod
+pick
+sell
+show
+sit
+stand
+stay
+step
+take
+turn
+vouch
+wait
+walk
+watch
