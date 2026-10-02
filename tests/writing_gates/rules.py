@@ -397,7 +397,7 @@ def _is_exit(reply: dict[str, object]) -> bool:
 
 def _successors(node: dict[str, object], ids: set[str]) -> list[str]:
     found: list[str] = []
-    for reply in node.get("responses", []):  # type: ignore[union-attr]
+    for reply in node.get("responses", []):  # type: ignore[attr-defined]
         check = reply.get("skill_check")
         targets = [reply.get("next_node_id")]
         if isinstance(check, dict):
@@ -408,7 +408,7 @@ def _successors(node: dict[str, object], ids: set[str]) -> list[str]:
 
 def longest_run_without_exit(tree: dict[str, object]) -> float:
     """The longest run of consecutive reachable nodes with no exit; a loop of them is inf."""
-    nodes = {node["id"]: node for node in tree["nodes"]}  # type: ignore[union-attr,index]
+    nodes = {node["id"]: node for node in tree["nodes"]}  # type: ignore[attr-defined]
     ids = set(nodes)
     memo: dict[str, float] = {}
     on_path: set[str] = set()
@@ -429,7 +429,7 @@ def longest_run_without_exit(tree: dict[str, object]) -> float:
         return best
 
     reachable: set[str] = set()
-    stack = [tree["start_node_id"]]
+    stack: list[str] = [tree["start_node_id"]]  # type: ignore[list-item]
     while stack:
         node_id = stack.pop()
         if node_id in reachable or node_id not in nodes:

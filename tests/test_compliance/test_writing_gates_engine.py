@@ -83,7 +83,7 @@ class TestTheChangeAndRomanceFields:
         for file, _path, tree in surfaces.trees():
             assert "change" not in tree, (file, tree["id"])
             assert isinstance(tree.get("romance", False), bool), (file, tree["id"])
-            for node in tree["nodes"]:  # type: ignore[union-attr]
+            for node in tree["nodes"]:  # type: ignore[attr-defined]
                 assert "romance" not in node, (file, tree["id"], node["id"])
                 assert isinstance(node.get("change", False), bool), (file, tree["id"], node["id"])
 
