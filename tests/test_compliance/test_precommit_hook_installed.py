@@ -58,6 +58,21 @@ def _git_dir() -> Path | None:
     return None
 
 
+def _hooks_dir() -> Path | None:
+    """The hooks directory git runs for this checkout, or None outside a git checkout.
+
+    A linked worktree's git dir holds a ``commondir`` file naming the main repository's git
+    dir, and git runs that directory's hooks for every worktree.
+    """
+    git_dir = _git_dir()
+    if git_dir is None:
+        return None
+    common = git_dir / "commondir"
+    if common.is_file():
+        git_dir = (git_dir / common.read_text(encoding="utf-8").strip()).resolve()
+    return git_dir / "hooks"
+
+
 pytestmark = [
     pytest.mark.skipif(
         os.environ.get("CI") is not None,
@@ -73,9 +88,9 @@ pytestmark = [
 class TestPreCommitHookInstalled:
     def test_hook_file_exists(self) -> None:
         """``pre-commit install`` must have been run in this clone."""
-        git_dir = _git_dir()
-        assert git_dir is not None  # guarded by pytestmark
-        hook = git_dir / "hooks" / "pre-commit"
+        hooks = _hooks_dir()
+        assert hooks is not None  # guarded by pytestmark
+        hook = hooks / "pre-commit"
         assert hook.exists(), INSTALL_HINT
 
     def test_hook_is_the_precommit_framework(self) -> None:
@@ -85,9 +100,9 @@ class TestPreCommitHookInstalled:
         Either would satisfy an existence check while running none of our
         configured gates.
         """
-        git_dir = _git_dir()
-        assert git_dir is not None  # guarded by pytestmark
-        hook = git_dir / "hooks" / "pre-commit"
+        hooks = _hooks_dir()
+        assert hooks is not None  # guarded by pytestmark
+        hook = hooks / "pre-commit"
         if not hook.exists():
             pytest.fail(INSTALL_HINT)
 
@@ -112,3 +127,19 @@ class TestPreCommitHookInstalled:
                 f"`.pre-commit-config.yaml` no longer declares a {expected!r} "
                 f"hook. The local gate has been weakened."
             )
+
+    def test_a_linked_worktree_runs_the_common_dirs_hooks(self, tmp_path, monkeypatch) -> None:
+        """git runs ``<common dir>/hooks`` for a linked worktree, whose own git dir has none."""
+        import tests.test_compliance.test_precommit_hook_installed as module
+
+        main_git = tmp_path / "main" / ".git"
+        worktree_git = main_git / "worktrees" / "w1"
+        worktree_git.mkdir(parents=True)
+        (worktree_git / "commondir").write_text("../..\n", encoding="utf-8")
+        checkout = tmp_path / "w1"
+        checkout.mkdir()
+        (checkout / ".git").write_text(f"gitdir: {worktree_git}\n", encoding="utf-8")
+        monkeypatch.setattr(module, "PROJECT_ROOT", checkout)
+        hooks = module._hooks_dir()
+        assert hooks is not None
+        assert hooks.resolve() == (main_git / "hooks").resolve()
