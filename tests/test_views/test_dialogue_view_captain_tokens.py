@@ -95,6 +95,22 @@ def test_node_text_replies_and_subtext_render_for_the_choice(
         view.on_exit()
 
 
+def test_the_subtext_printer_draws_the_rendered_line() -> None:
+    """What the font draws is the rendered line, not the node's raw tokens."""
+    player = fresh_player()
+    player.pronouns = Pronouns.SHE
+    view = _view(player)
+    try:
+        view.dialogue_manager.set_flag("empathic_read_active", True)
+        view._text_complete = True
+        view._subtext_font = MagicMock(wraps=view._subtext_font)
+        view._render_subtext(pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT)))
+        drawn = [call.args[0] for call in view._subtext_font.render.call_args_list]
+        assert drawn == ["* She holds the papers out."]
+    finally:
+        view.on_exit()
+
+
 def test_the_intro_renders_without_a_player() -> None:
     """The intro narration plays before any player exists: they/them."""
     view = _view(None)

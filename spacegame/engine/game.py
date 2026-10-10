@@ -1184,6 +1184,7 @@ class Game:
                 def _do():
                     # Always start fresh — clear existing player if loaded
                     self._player = None
+                    self.dialogue_manager.clear_player()
                     self._start_intro_narration(return_state=GameState.NAME_INPUT)
 
                 self._start_transition(TransitionType.FADE, 0.5, _do)

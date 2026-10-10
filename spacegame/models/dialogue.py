@@ -180,6 +180,11 @@ class DialogueManager:
         """The player this manager's lines address, or None before a game (the intro)."""
         return self._player
 
+    def clear_player(self) -> None:
+        """Forget the last game's player and politics manager, as before any game (the intro)."""
+        self._politics_manager = None
+        self._player = None
+
     @property
     def is_active(self) -> bool:
         """Check if a dialogue is currently in progress."""
