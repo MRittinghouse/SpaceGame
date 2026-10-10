@@ -1,0 +1,4238 @@
+{
+  "format": 1,
+  "about": "Prose gate baseline (writing discipline spec 5.1); rows may only be removed.",
+  "rows": [
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_05].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_06].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_12].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_13].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_15].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_17].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_18].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_21].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_22].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_23].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_24].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_26].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_27].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_29].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_30].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_32].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_37].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_39].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_40].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_42].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_43].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_49].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=flavor_50].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=ge_embargo_01].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=ge_embargo_02].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=ge_festival_02].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=ge_festival_04].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=ge_pirate_02].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=me_surge_01].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=pe_02].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/economy/news_templates.json",
+      "path": ".news_templates[id=pm_02].template",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_10_crimson_reach.json",
+      "path": ".interactables[1].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_10_crimson_reach.json",
+      "path": ".story_triggers[0].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_10_crimson_reach.json",
+      "path": ".story_triggers[2].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
+      "path": ".interactables[1].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
+      "path": ".story_triggers[2].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
+      "path": ".story_triggers[4].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".interactables[1].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".interactables[2].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".story_triggers[0].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".story_triggers[1].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".story_triggers[2].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".story_triggers[3].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
+      "path": ".story_triggers[4].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_pirate_base.json",
+      "path": ".interactables[0].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_pirate_base.json",
+      "path": ".interactables[3].description",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_pirate_base.json",
+      "path": ".story_triggers[0].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_pirate_base.json",
+      "path": ".story_triggers[1].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_pirate_base.json",
+      "path": ".story_triggers[4].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[0].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[1].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[2].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[3].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[4].text",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.axiom_labs",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.breakstone",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.crimson_reach",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.havens_rest",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.nexus_prime",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.the_fulcrum",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".first_visit.verdant",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".galaxy_event_witnessed[1]",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/journal/travel_log_templates.json",
+      "path": ".galaxy_event_witnessed[2]",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=connection].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=crime].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=discovery].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=legacy].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=preservation].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=revolution].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=transcendence].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "double hyphen",
+      "file": "data/narrative/lenses.json",
+      "path": ".lenses[id=truth].core_fantasy",
+      "match": "--",
+      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/auction_view.py",
+      "path": "AuctionView.player_seller_banner_text|Your lot \u2014 watching the floor.",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/combat_view.py",
+      "path": "CombatView._render_boss_health_bar| \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/encounter_view.py",
+      "path": "EncounterView._format_choice_button| credits \u2014 short by ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/ground_result_view.py",
+      "path": "GroundResultView.build_stat_lines|Objectives incomplete \u2014 no mission reward",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/journal_view.py",
+      "path": "JournalView._render_hint_card|NEXT \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/journal_view.py",
+      "path": "JournalView._render_hint_card|WHAT TO DO NEXT \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/journal_view.py",
+      "path": "_EntryItem.render| \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/mining_view.py",
+      "path": "MiningView._render_transfer_screen|Sell Rest Wholesale \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/mining_view.py",
+      "path": "MiningView._render_transfer_screen|Sell Rest Wholesale \u2014 nothing to sell",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/salvage_view.py",
+      "path": "SalvageView.render| Mode \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/ship_builder_view.py",
+      "path": "ShipBuilderView.render|DRYDOCK \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/station_hub_view.py",
+      "path": "StationHubView._create_npc_buttons| \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/station_hub_view.py",
+      "path": "StationHubView._create_npc_buttons| \u2014 #2",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/station_hub_view.py",
+      "path": "StationHubView._render_header|DOCKED \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "em dash",
+      "file": "spacegame/views/wreckers_guild_view.py",
+      "path": "WreckersGuildView._create_contact_buttons| \u2014 ",
+      "match": "\u2014",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/market.py",
+      "path": "Market.get_market_report|High demand - Good for selling",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/market.py",
+      "path": "Market.get_market_report|High local demand - Excellent for selling",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/market.py",
+      "path": "Market.get_market_report|Local production - Good for buying",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/market.py",
+      "path": "Market.get_market_report|Regional specialty - Excellent for buying",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/salvage.py",
+      "path": "SalvageSession.scan_cell|Empty - nothing here",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G1",
+      "rule": "spaced hyphen",
+      "file": "spacegame/models/salvage.py",
+      "path": "SalvageSession.scan_cell|Empty - nothing here#2",
+      "match": " - ",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d1_vengeance_justice.json",
+      "path": ".dilemmas[id=d1_vengeance_justice].outcomes[1].tier_unlocks[0]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d2_wealth_community.json",
+      "path": ".dilemmas[id=d2_wealth_community].outcomes[0].tier_unlocks[0]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d2_wealth_community.json",
+      "path": ".dilemmas[id=d2_wealth_community].outcomes[0].tier_unlocks[1]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d5_legacy_connection.json",
+      "path": ".dilemmas[id=d5_legacy_connection].outcomes[0].tier_unlocks[0]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d5_legacy_connection.json",
+      "path": ".dilemmas[id=d5_legacy_connection].outcomes[0].tier_unlocks[1]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d6_preservation_empire.json",
+      "path": ".dilemmas[id=d6_preservation_empire].outcomes[0].narration_summary",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d6_preservation_empire.json",
+      "path": ".dilemmas[id=d6_preservation_empire].outcomes[1].tier_unlocks[0]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G10",
+      "rule": "the player",
+      "file": "data/narrative/dilemmas/d6_preservation_empire.json",
+      "path": ".dilemmas[id=d6_preservation_empire].outcomes[1].tier_unlocks[1]",
+      "match": "the player",
+      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/combat/crew_interjections.json",
+      "path": ".interjections[11].lines[0]",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_confrontation_dialogue].nodes[id=partial].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_confrontation_dialogue].nodes[id=success].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_inspector_dialogue].nodes[id=bribe].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_inspector_dialogue].nodes[id=public].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_old_debts_dialogue].nodes[id=grateful].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "captain from marcus",
+      "file": "data/dialogue/crew_quest_dialogues.json",
+      "path": ".dialogues[id=marcus_old_debts_dialogue].nodes[id=start].text",
+      "match": "Captain",
+      "reason": "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
+    },
+    {
+      "gate": "G11",
+      "rule": "navy",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=salvage_evidence].outcome.description",
+      "match": "naval",
+      "reason": "naval facility becomes a Guild yard or an enforcement term (impact 10.8); W2"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_destination].responses[0].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_smooth].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].responses[3].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].responses[0].text",
+      "match": "500 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].text",
+      "match": "500 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].responses[0].text",
+      "match": "250 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].text",
+      "match": "250 credit",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=merchant_delivery].nodes[id=offer].text",
+      "match": "500 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=priya_stranded].nodes[id=agree_transport].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].responses[0].text",
+      "match": "400 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].text",
+      "match": "400 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tomas_havens].nodes[id=tariff_pitch].text",
+      "match": "30 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "price in speech",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=yuki_signal_deep].nodes[id=compensation].text",
+      "match": "350 credits",
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/combat/complications.json",
+      "path": ".complications[id=reinforcement_arrival].narration",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/combat/enemies.json",
+      "path": ".enemy_templates[id=ledger_vanguard].description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=alarm].responses[1].text",
+      "match": "warp",
+      "reason": "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=alliance_escort].text",
+      "match": "warp",
+      "reason": "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=gate_activation].text",
+      "match": "warp",
+      "reason": "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=looking_back].text",
+      "match": "warp",
+      "reason": "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_breakstone_ore_heist_01].choices[id=scavenge].outcome.description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/galaxy/locations.json",
+      "path": ".locations.the_fulcrum[id=fulcrum_core].description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/galaxy/locations.json",
+      "path": ".locations.the_fulcrum[id=fulcrum_core].flavor_text",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
+      "path": ".story_triggers[4].text",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/missions/missions.json",
+      "path": ".missions[id=the_collapse].description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/missions/missions.json",
+      "path": ".missions[id=the_collapse].hint",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/missions/missions.json",
+      "path": ".missions[id=the_collapse].objectives[1].description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "warp",
+      "file": "data/missions/missions.json",
+      "path": ".missions[id=under_fire].description",
+      "match": "warp",
+      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
+    },
+    {
+      "gate": "G11",
+      "rule": "without looking up",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=merchant_delivery].nodes[id=greet].text",
+      "match": "without looking up",
+      "reason": "without looking up is Marcus's gesture alone; W2 gives this speaker another"
+    },
+    {
+      "gate": "G11",
+      "rule": "without looking up",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=merchant_delivery].nodes[id=odom_arna_branch_b].text",
+      "match": "without looking up",
+      "reason": "without looking up is Marcus's gesture alone; W2 gives this speaker another"
+    },
+    {
+      "gate": "G11",
+      "rule": "without looking up",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=priya_calibrates].text",
+      "match": "without looking up",
+      "reason": "without looking up is Marcus's gesture alone; W2 gives this speaker another"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout]",
+      "match": "7 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush]",
+      "match": "13 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=cassian_velo_main]",
+      "match": "a loop",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=dex_assembly_intel]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=dex_cantina]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=elena_cantina]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=embassy_summit]",
+      "match": "10 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=jez_okafor_dialogue]",
+      "match": "5 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=larsen_customs]",
+      "match": "8 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marcus_recognition]",
+      "match": "8 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=oren_tak_meeting]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=petra_vance_whistleblower]",
+      "match": "5 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=priya_convergence_analysis]",
+      "match": "7 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=priya_stranded]",
+      "match": "5 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=reach_floor_manager_main]",
+      "match": "a loop",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=sienna_vek_warning]",
+      "match": "9 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence]",
+      "match": "11 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tomas_havens]",
+      "match": "6 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tomasz_brennan_old_debts]",
+      "match": "5 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G13",
+      "rule": "exits",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=torres_underground]",
+      "match": "8 nodes",
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "data/crew/station_chatter.json",
+      "path": ".chatter_lines[id=fu_atm_01].text",
+      "match": "No idle chatter. No lingering",
+      "reason": "a paired negation; W2 rewrites it"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=intro_narration].nodes[id=intro_2].text",
+      "match": "No path forward, no schooling",
+      "reason": "a paired negation; W2 rewrites it"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=new_horizon].text",
+      "match": "No mapped systems, no trade",
+      "reason": "a paired negation; W2 rewrites it"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_sato_ghost_01].description",
+      "match": "No debris field. No ion",
+      "reason": "a paired negation; W2 rewrites it"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=derelict_freighter_01].description",
+      "match": "No life signs, no active",
+      "reason": "a paired negation; W2 rewrites it"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "spacegame/views/ship_builder_view.py",
+      "path": "ShipBuilderView._render_tutorial_narration|Fuel tank. No fuel, no jumps. Simple.",
+      "match": "No fuel, no jumps",
+      "reason": "a dash or a paired negation in a string built in code, outside the narrator audit (spec 9.4); register F-016 names its owner"
+    },
+    {
+      "gate": "G2",
+      "rule": "paired negation",
+      "file": "spacegame/views/station_layouts.py",
+      "path": "ReachDarkLayout|No laws. No mercy. No refunds.",
+      "match": "No laws. No mercy",
+      "reason": "the Crimson Reach tagline, exempt by name as in character outlaw bravado (requirements/station_legibility.md, 2026-04-26)"
+    },
+    {
+      "gate": "G3",
+      "rule": "palpable",
+      "file": "data/encounters/commerce_guild.json",
+      "path": ".encounters[id=guild_inspection_01].choices[id=submit].outcome.description",
+      "match": "palpable",
+      "reason": "an overused word (spec G3); W2 rewrites it"
+    },
+    {
+      "gate": "G3",
+      "rule": "palpable",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=distress_engine_01].choices[id=tow].outcome.description",
+      "match": "palpable",
+      "reason": "an overused word (spec G3); W2 rewrites it"
+    },
+    {
+      "gate": "G3",
+      "rule": "remarkable",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=caught].text",
+      "match": "remarkably",
+      "reason": "an overused word (spec G3); W2 rewrites it"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "adisa|dima",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "adisa|nadia",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "amara|marat",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "arna|hanna",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "arna|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "arna|sana",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bram|bram",
+      "match": "shared stem, edit distance 0",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bram|bren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bram|britt",
+      "match": "same system, same first two letters",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bram|brix",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|brix",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|keren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|oren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|orin",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|rec",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|ren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|soren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|sten",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "bren|wren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "britt|brix",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "brix|iris",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "brix|orin",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "cassian|cassiel",
+      "match": "shared stem, edit distance 2, same system, same first two letters",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "cass|cassian",
+      "match": "shared stem",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "cass|cassiel",
+      "match": "shared stem",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "daro|zero",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "deshi|desta",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "deshi|pesh",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "desta|odessa",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|jez",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|rec",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|ren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|vex",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dex|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dima|dimi",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dima|lira",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "dima|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "hanna|sana",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "idris|iris",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ife|imre",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "in\u00e9s|iris",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "iris|orin",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "issa|mossa",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|paz",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|rec",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|ren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|vex",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "jez|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "junho|juno",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "juno|juno",
+      "match": "shared stem, edit distance 0",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "juno|rudo",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "kai|lani",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "kai|paz",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "kai|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "keren|oren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "keren|ren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "keren|soren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "keren|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "lani|sana",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "leah|pesh",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "lira|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "malia|nadia",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "marat|marcus",
+      "match": "same system, same first two letters",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "nadia|nadia",
+      "match": "shared stem, edit distance 0",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "nadia|naveen",
+      "match": "same system, same first two letters",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "neve|reva",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "neve|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "noor|rook",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "nuri|suki",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "nuri|yuki",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|orin",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|rec",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|ren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|soren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|sten",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "oren|wren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "orin|ren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "orin|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "orin|soren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "orin|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "petra|petra",
+      "match": "shared stem, edit distance 0",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "priya|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|ren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|reva",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|rhea",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|vex",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rec|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|reva",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|rhea",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|senn",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|soren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|sten",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|vex",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "ren|wren",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "reva|rhea",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "reva|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "reva|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "reva|tova",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "reva|vela",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rhea|rina",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rhea|theo",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "rina|sana",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "sana|senn",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "senn|sienna",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "senn|sten",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "sorcha|soren",
+      "match": "same system, same first two letters",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "soren|sten",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "soren|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "sten|tev",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "sten|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "suki|yuki",
+      "match": "edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tev|theo",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tev|tova",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tev|vex",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tev|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "theo|thuy",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tomas|tomasz",
+      "match": "shared stem, edit distance 1",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "tomas|tova",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "vela|vex",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "vex|wei",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "wei|wren",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "wren|wren",
+      "match": "shared stem, edit distance 0",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G4",
+      "rule": "near collision",
+      "file": "(person names)",
+      "path": "yuki|yuta",
+      "match": "edit distance 2",
+      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
+    },
+    {
+      "gate": "G5",
+      "rule": "pronoun",
+      "file": "data/encounters/ce4_pressure.json",
+      "path": ".encounters[id=ransom_pirate_corvette_01].description",
+      "match": "The captain opens a channel without bothering to mask his face.",
+      "reason": "his: the corvette's captain, an NPC"
+    },
+    {
+      "gate": "G5",
+      "rule": "pronoun",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=merchant_trader_01].description",
+      "match": "The captain identifies herself as an independent trader running surplus goods between systems.",
+      "reason": "herself: the trader's captain, an NPC"
+    },
+    {
+      "gate": "G5",
+      "rule": "pronoun",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=refugee_transport_01].choices[id=directions].outcome.description",
+      "match": "The captain's voice breaks as she thanks you.",
+      "reason": "she: the transport's captain, an NPC"
+    },
+    {
+      "gate": "G5",
+      "rule": "pronoun",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_haven_supply_run_01].choices[id=donate].outcome.description",
+      "match": "The captain (her name tag reads 'Okonkwo') shakes your hand firmly.",
+      "reason": "her: Captain Okonkwo, an NPC"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/combat/captains.json",
+      "path": ".captains[id=odalys_kindling].surrender_line",
+      "match": "sweetheart",
+      "reason": "the author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/combat/crew_interjections.json",
+      "path": ".interjections[0].lines[1]",
+      "match": "sir",
+      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=larsen_customs].nodes[id=greeting].text",
+      "match": "sir",
+      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_moonshine_01].choices[id=report].outcome.description",
+      "match": "Son",
+      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
+      "match": "darling",
+      "reason": "the author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)"
+    },
+    {
+      "gate": "G5",
+      "rule": "vocative",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_stellaris_art_dealer_01].description",
+      "match": "darling",
+      "reason": "the author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description",
+      "match": "you feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_guild_shadow_01].description",
+      "match": "You've notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description",
+      "match": "you notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].outcome.description",
+      "match": "you notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_torres_tip_01].choices[id=delete_message].outcome.description",
+      "match": "you notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/ce4_variety.json",
+      "path": ".encounters[id=bait_patrol_officer_01].choices[id=verify_id].failure_outcome.description",
+      "match": "You decide",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/commerce_guild.json",
+      "path": ".encounters[id=guild_diplomat_01].choices[id=decline_passenger].outcome.description",
+      "match": "you wonder",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/commerce_guild.json",
+      "path": ".encounters[id=guild_tariff_01].choices[id=dispute].outcome.description",
+      "match": "you sense",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_community_01].choices[id=donate].outcome.description",
+      "match": "You feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].outcome.description",
+      "match": "you notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_smuggler_medicine_01].choices[id=refuse].outcome.description",
+      "match": "You wonder",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_storyteller_01].choices[id=listen].outcome.description",
+      "match": "You feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_bureaucracy_01].choices[id=comply].outcome.description",
+      "match": "you feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_bureaucracy_01].choices[id=ignore].outcome.description",
+      "match": "You wonder",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_space_cat_01].description",
+      "match": "you realize",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_space_junk_art_01].choices[id=donate].outcome.description",
+      "match": "You feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_space_junk_art_01].description",
+      "match": "you feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/lore.json",
+      "path": ".encounters[id=lore_aurelia_beacon_01].choices[id=study].outcome.description",
+      "match": "you notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/science_collective.json",
+      "path": ".encounters[id=collective_nova_test_01].choices[id=ask_details].outcome.description",
+      "match": "You notice",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=comply].outcome.description",
+      "match": "You feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_haven_newcomer_01].choices[id=guide].outcome.description",
+      "match": "you realize",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_haven_supply_run_01].choices[id=decline].description",
+      "match": "You can't help",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
+      "match": "You feel",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G6",
+      "rule": "filter verb",
+      "file": "data/missions/side_missions.json",
+      "path": ".missions[id=the_forgery].description",
+      "match": "you realize",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G7",
+      "rule": "shaking hands",
+      "file": "data/encounters/lore.json",
+      "path": ".encounters[id=lore_earth_broadcast_01].choices[id=listen].outcome.description",
+      "match": "your hands are shaking",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G7",
+      "rule": "your body",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_bureaucracy_01].choices[id=ignore].outcome.description",
+      "match": "your stomach",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G7",
+      "rule": "your body",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_space_junk_art_01].description",
+      "match": "your breath",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G7",
+      "rule": "your body",
+      "file": "data/encounters/lore.json",
+      "path": ".encounters[id=lore_earth_broadcast_01].description",
+      "match": "your heart",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G7",
+      "rule": "your body",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=retreat].outcome.description",
+      "match": "Your heart",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "makes you nervous",
+      "file": "data/encounters/science_collective.json",
+      "path": ".encounters[id=collective_artifact_01].choices[id=decline_artifact].description",
+      "match": "make you nervous",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_payback].nodes[id=what_now].subtext",
+      "match": "not your problem",
+      "reason": "a Read quoting Arna's words, not a feeling of the captain's; W2 restates it (impact 7c)"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/encounters/commerce_guild.json",
+      "path": ".encounters[id=guild_insider_01].choices[id=ignore].description",
+      "match": "Not your business",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_distress_crop_01].choices[id=pass].description",
+      "match": "Not your problem",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=distress_cold_signal_01].choices[id=log_it].description",
+      "match": "not your fault",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/encounters/science_collective.json",
+      "path": ".encounters[id=collective_ethics_01].choices[id=delete_intercept].description",
+      "match": "not your concern",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "not your problem",
+      "file": "data/encounters/science_collective.json",
+      "path": ".encounters[id=collective_ethics_01].choices[id=delete_intercept].outcome.description",
+      "match": "not your problem",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_black_market_intel_01].choices[id=decline].description",
+      "match": "You can't afford",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=derelict_cargo_log_01].choices[id=pass].description",
+      "match": "You can't stop",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=derelict_cargo_log_01].choices[id=pass].outcome.description",
+      "match": "You can't stop",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/miners_union.json",
+      "path": ".encounters[id=union_cave_in_01].choices[id=move_on].description",
+      "match": "You can't stop",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/miners_union.json",
+      "path": ".encounters[id=union_strike_fund_01].choices[id=decline].description",
+      "match": "You can't afford",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you can't",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_haven_supply_run_01].choices[id=decline].description",
+      "match": "You can't help",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/ce4_variety.json",
+      "path": ".encounters[id=derelict_civilian_wreck_01].description",
+      "match": "you don't want",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=derelict_freighter_01].choices[id=pass].description",
+      "match": "you don't need",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=distress_witness_01].choices[id=leave].description",
+      "match": "You don't owe",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/lore.json",
+      "path": ".encounters[id=lore_earth_broadcast_01].choices[id=change_freq].description",
+      "match": "You don't need",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_axiom_containment_01].choices[id=leave].outcome.description",
+      "match": "You don't need",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_fulcrum_weapons_test_01].choices[id=leave].outcome.description",
+      "match": "You don't need",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you don't",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_nova_whistleblower_01].choices[id=delete].description",
+      "match": "you don't want",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description",
+      "match": "you feel in",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_community_01].choices[id=donate].outcome.description",
+      "match": "You feel good",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_storyteller_01].choices[id=listen].outcome.description",
+      "match": "You feel sharper",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_bureaucracy_01].choices[id=comply].outcome.description",
+      "match": "you feel strangely",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/humor.json",
+      "path": ".encounters[id=humor_space_junk_art_01].choices[id=donate].outcome.description",
+      "match": "You feel like",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=comply].outcome.description",
+      "match": "You feel watched",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you feel",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
+      "match": "You feel slightly",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you have earned",
+      "file": "data/encounters/frontier_alliance.json",
+      "path": ".encounters[id=alliance_festival_01].choices[id=join].description",
+      "match": "You have earned",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you prefer",
+      "file": "data/encounters/campaign.json",
+      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].description",
+      "match": "You won't let",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you prefer",
+      "file": "data/encounters/science_collective.json",
+      "path": ".encounters[id=collective_grant_01].choices[id=decline_grant].description",
+      "match": "You prefer",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/generic.json",
+      "path": ".encounters[id=merchant_barter_01].choices[id=decline].description",
+      "match": "You'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_axiom_field_test_01].choices[id=decline].description",
+      "match": "You'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].outcome.description",
+      "match": "you'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_forge_smuggle_parts_01].choices[id=decline].description",
+      "match": "You'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_iron_deep_signal_01].choices[id=ignore].description",
+      "match": "you'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G8",
+      "rule": "you'd rather",
+      "file": "data/encounters/system_specific.json",
+      "path": ".encounters[id=sys_verdant_tariff_protest_01].choices[id=ignore].description",
+      "match": "you'd rather",
+      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
+    },
+    {
+      "gate": "G9",
+      "rule": "mood",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=fee_breakdown].responses[0].text",
+      "match": "[That math feels heavy.]",
+      "reason": "the tag names a mood; W2 makes it an act or the exact line (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_betray_followthrough].nodes[id=start].responses[0].text",
+      "match": "[I need to ask you something.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_first_encounter].nodes[id=accepted_confirm].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_first_encounter].nodes[id=board_is_ledger].responses[0].text",
+      "match": "[The board tells me what to do next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_first_encounter].nodes[id=board_is_ledger].responses[1].text",
+      "match": "[Not sure what I'm doing here yet.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_first_encounter].nodes[id=start].responses[0].text",
+      "match": "[Yeah. Off the line this hour.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_first_encounter].nodes[id=the_offer].responses[1].text",
+      "match": "[Not yet.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=brother].responses[0].text",
+      "match": "[Can I help somehow?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=destination].responses[0].text",
+      "match": "[Your brother?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=farewell].responses[0].text",
+      "match": "[Goodbye, Arna.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=next_step].responses[0].text",
+      "match": "[Your brother?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=pendant].responses[0].text",
+      "match": "[I have. Three times.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=pendant_truth].responses[0].text",
+      "match": "[Why tell me now?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=start].responses[0].text",
+      "match": "[Where are you going?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_last_freight_out_closeout].nodes[id=start].responses[1].text",
+      "match": "[What's next for you?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=branches].responses[0].text",
+      "match": "[We go after Keren.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=branches].responses[1].text",
+      "match": "[We walk. One clean pull.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=branches].responses[2].text",
+      "match": "[I am turning you in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=brother].responses[0].text",
+      "match": "[What's next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=chose_payback].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=chose_walkaway].responses[0].text",
+      "match": "[See you there.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=come_clean].responses[0].text",
+      "match": "[Why didn't you tell me?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=come_clean].responses[1].text",
+      "match": "[Tell me what I'm actually in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=okay].responses[0].text",
+      "match": "[Who was that?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_black_market].responses[0].text",
+      "match": "[What about your brother?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_black_market].responses[1].text",
+      "match": "[What's next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_compartments].responses[0].text",
+      "match": "[Where do I actually sell this stuff?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_inspections].responses[0].text",
+      "match": "[Any way to beat inspections?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_legality].responses[0].text",
+      "match": "[Go on.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=primer_penalties].responses[0].text",
+      "match": "[How do they catch you?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=start].responses[0].text",
+      "match": "[Who was that?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=start].responses[1].text",
+      "match": "[Are you okay?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=who].responses[0].text",
+      "match": "[What was that meet actually about?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=who_commanded].responses[0].text",
+      "match": "[Who was that?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ambush].nodes[id=why_hid].responses[0].text",
+      "match": "[Tell me what I'm actually in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=accepted].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch].responses[0].text",
+      "match": "[Fine. I am in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch].responses[2].text",
+      "match": "[I will think on it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch_seen].responses[0].text",
+      "match": "[Fine. I am in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch_seen].responses[1].text",
+      "match": "[I will think on it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[0].text",
+      "match": "[Fine. I am in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[1].text",
+      "match": "[I will think on it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=ore_pitch].responses[0].text",
+      "match": "[I am in.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=ore_pitch].responses[1].text",
+      "match": "[What is the catch?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=ore_pitch].responses[2].text",
+      "match": "[I need to think about it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=start].responses[0].text",
+      "match": "[Tell me.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_completion].nodes[id=start].responses[1].text",
+      "match": "[I am out.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ore_tip].nodes[id=about_site].responses[0].text",
+      "match": "[Fine. What's next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ore_tip].nodes[id=start].responses[2].text",
+      "match": "[What's next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ore_tip].nodes[id=weighing_caught].responses[0].text",
+      "match": "[What's next, then.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_ore_tip].nodes[id=whats_next].responses[0].text",
+      "match": "[On my way.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_payback].nodes[id=gone].responses[0].text",
+      "match": "[What now?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_payback].nodes[id=spared].responses[0].text",
+      "match": "[What now?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_payback].nodes[id=start].responses[0].text",
+      "match": "[He's gone.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_payback].nodes[id=start].responses[1].text",
+      "match": "[I let him go.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_refining].nodes[id=defend_tev].responses[0].text",
+      "match": "[Drop it. What's next?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_refining].nodes[id=start].responses[1].text",
+      "match": "[Observation]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_refining].nodes[id=whats_next].responses[0].text",
+      "match": "[Understood. Let's go.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_walkaway].nodes[id=okay].responses[0].text",
+      "match": "[What's next for you?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_walkaway].nodes[id=start].responses[0].text",
+      "match": "[You okay?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_post_walkaway].nodes[id=what_next].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_stays_closeout].nodes[id=check].responses[0].text",
+      "match": "[Got a spot on the ship if you want it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_stays_closeout].nodes[id=offer].responses[0].text",
+      "match": "[Yeah.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_stays_closeout].nodes[id=offer_decline].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_stays_closeout].nodes[id=start].responses[0].text",
+      "match": "[Wanted to check on you.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=arna_stays_closeout].nodes[id=start].responses[1].text",
+      "match": "[Got a spot on the ship if you want it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_default].nodes[id=cells].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_default].nodes[id=fund].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_default].nodes[id=start].responses[2].text",
+      "match": "[Nothing right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_victorious].nodes[id=access].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=deng_victorious].nodes[id=acknowledged].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=elena_connection_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood. Thank you.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=elena_connection_deepened].nodes[id=is_good].responses[0].text",
+      "match": "[Good to hear.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=elena_connection_deepened].nodes[id=marcus_note].responses[0].text",
+      "match": "[That is something.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=elena_connection_deepened].nodes[id=wrap].responses[0].text",
+      "match": "[Go ahead.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_d6_administering].nodes[id=filer].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_d6_administering].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_d6_victorious].nodes[id=acknowledged].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_d6_victorious].nodes[id=sites].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_default].nodes[id=filing].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_default].nodes[id=mediation].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_default].nodes[id=start].responses[2].text",
+      "match": "[Nothing right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_victorious].nodes[id=acknowledged].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=halvorsen_victorious].nodes[id=administrator].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=keren_meet].nodes[id=inspect].responses[0].text",
+      "match": "[Weapons up.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=keren_meet].nodes[id=start].responses[2].text",
+      "match": "[Hold on. Arna, you okay?]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=kweon_legacy_post_clinic_run].nodes[id=quiet_warmth].responses[0].text",
+      "match": "[Understood. I will keep watching the board.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_declined].nodes[id=other].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_declined].nodes[id=start].responses[1].text",
+      "match": "[I understand.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_default].nodes[id=personal].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_default].nodes[id=procedure].responses[1].text",
+      "match": "[I understand.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_default].nodes[id=qualifying].responses[0].text",
+      "match": "[I see.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_default].nodes[id=start].responses[2].text",
+      "match": "[Not interested right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_victorious].nodes[id=access].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marchetti_victorious].nodes[id=thanks].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=noor_default].nodes[id=start].responses[0].text",
+      "match": "[Not today.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_default].nodes[id=qualifies].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_default].nodes[id=start].responses[2].text",
+      "match": "[Nothing right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_default].nodes[id=warrants].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_warrant_sponsor].nodes[id=access].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=odusanya_warrant_sponsor].nodes[id=acknowledged].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_default].nodes[id=onto_agenda].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_default].nodes[id=quorum].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_default].nodes[id=start].responses[2].text",
+      "match": "[Nothing right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_victorious].nodes[id=acknowledged].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=owusu_victorious].nodes[id=covers].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=rhea_receives_coolant].nodes[id=advice].responses[0].text",
+      "match": "[Thanks.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=rhea_receives_coolant].nodes[id=paid].responses[0].text",
+      "match": "[Yeah.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=rhea_receives_coolant].nodes[id=paid].responses[1].text",
+      "match": "[Don't remember.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_declined].nodes[id=anything].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_default].nodes[id=role].responses[1].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_default].nodes[id=same].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_default].nodes[id=start].responses[2].text",
+      "match": "[Maybe another time.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_default].nodes[id=walkaround].responses[1].text",
+      "match": "[I see.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_default].nodes[id=wrong].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_victorious].nodes[id=accepted].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solano_victorious].nodes[id=rotation].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_declined].nodes[id=start].responses[1].text",
+      "match": "[I understand.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_default].nodes[id=continue_funding].responses[0].text",
+      "match": "[Good to know.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_default].nodes[id=start].responses[3].text",
+      "match": "[I understand. Another time.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_default].nodes[id=succession].responses[0].text",
+      "match": "[I see.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_default].nodes[id=wing_dedication].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=solheim_victorious].nodes[id=authority_detail].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=defend].responses[0].text",
+      "match": "[Drop it. Run it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=defend].responses[1].text",
+      "match": "[I want to weigh the output.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=fee_breakdown].responses[2].text",
+      "match": "[Fine. Run it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=fee_breakdown].responses[3].text",
+      "match": "[I want to weigh the output myself.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=weigh_output].responses[1].text",
+      "match": "[Noted. Run it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=act_one_end].responses[0].text",
+      "match": "[End of Act One]",
+      "reason": "a stage tag in the collapse sequence; SP10 rewrites the sequence"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=the_collapse_sequence].nodes[id=looking_back].responses[0].text",
+      "match": "[Silence]",
+      "reason": "a stage tag in the collapse sequence; SP10 rewrites the sequence"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_declined].nodes[id=loss].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_declined].nodes[id=start].responses[1].text",
+      "match": "[I understand.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_default].nodes[id=about].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_default].nodes[id=alone].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_default].nodes[id=logbook].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_default].nodes[id=start].responses[2].text",
+      "match": "[Nothing right now.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_victorious].nodes[id=changes].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=virtanen_victorious].nodes[id=glad].responses[0].text",
+      "match": "[Noted.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=wulan_declined].nodes[id=start].responses[1].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=wulan_default].nodes[id=cost].responses[0].text",
+      "match": "[Understood. I will be back.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=wulan_default].nodes[id=standing].responses[1].text",
+      "match": "[Noted. I will think on it.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "not an act",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=wulan_victorious].nodes[id=key].responses[0].text",
+      "match": "[Understood.]",
+      "reason": "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=start].responses[1].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=embassy_summit].nodes[id=observation_moment].responses[0].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=keren_meet].nodes[id=start].responses[1].text",
+      "match": "[Observation 3]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=marcus_recognition].nodes[id=start].responses[2].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=neve_osei_price_of_info].nodes[id=start].responses[1].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=oren_tak_meeting].nodes[id=start].responses[1].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    },
+    {
+      "gate": "G9",
+      "rule": "observation unquoted",
+      "file": "data/dialogue/dialogues.json",
+      "path": ".dialogues[id=tev_refining_intro].nodes[id=weigh_output].responses[0].text",
+      "match": "[Observation 2]",
+      "reason": "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or makes it an act (impact 7e)"
+    }
+  ]
+}
