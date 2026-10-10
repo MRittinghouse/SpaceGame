@@ -399,9 +399,10 @@ def _successors(node: dict[str, object], ids: set[str]) -> list[str]:
     found: list[str] = []
     for reply in node.get("responses", []):  # type: ignore[attr-defined]
         check = reply.get("skill_check")
-        targets = [reply.get("next_node_id")]
         if isinstance(check, dict):
-            targets += [check.get("success_node_id"), check.get("failure_node_id")]
+            targets = [check.get("success_node_id"), check.get("failure_node_id")]
+        else:
+            targets = [reply.get("next_node_id")]
         found += [t for t in targets if isinstance(t, str) and t in ids and t not in found]
     return found
 

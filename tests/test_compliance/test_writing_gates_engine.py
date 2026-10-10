@@ -292,6 +292,21 @@ class TestG13:
         )
         assert rules.longest_run_without_exit(tree) == 1
 
+    def test_a_skill_check_leads_only_to_its_branches(self) -> None:
+        check = {
+            "skill": "observation",
+            "difficulty": 2,
+            "success_node_id": "b",
+            "failure_node_id": "b",
+        }
+        tree = _tree(
+            {"id": "a", "responses": [{"text": "x", "next_node_id": "a", "skill_check": check}]},
+            _node("b"),
+        )
+        assert rules.longest_run_without_exit(tree) == 1
+        check["failure_node_id"] = "a"
+        assert rules.longest_run_without_exit(tree) == float("inf")
+
     def test_a_loop_without_an_exit_fails(self) -> None:
         assert rules.longest_run_without_exit(_tree(_node("a", "b"), _node("b", "a"))) == float(
             "inf"
