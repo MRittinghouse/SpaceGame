@@ -835,7 +835,32 @@ hand-off entries) are its own.
   `dex_halloran`, `dex_tunnel_contact`, `dex_final_lead`, keeping each beat's expected
   list. No aurelia unit test pins M05's title (`test/unit/mission_manager_test.gd` uses
   only the id `the_foremans_son`, which stays); the synced golden
-  `lifecycle_the_foremans_son` carries "Accepted: Deferred".
+  `lifecycle_the_foremans_son` carries "Accepted: Deferred". A second test fails at Task 1
+  Step 4: `test/unit/dialogue_content_test.gd`'s `test_every_npc_and_tree_loads` pins the
+  dialogue totals (nodes, replies, skill checks, replies that set a flag, replies that end
+  the conversation) at plan B2's `[742, 1160, 59, 174, 288]`, and the intro's repair
+  (`intro_narration` from five nodes and four replies to two and one) makes them
+  `[739, 1157, 59, 174, 288]`: re-pin the first two (742 to 739, 1160 to 1157) in the sync
+  commit.
+- Where plan W1-A's text no longer matches this branch, for its controller to amend before
+  Task 1 runs:
+  - Koren stays "he" in `data/missions/crew_quests.json` (W2's, under Deferred below), so
+    Task 1's "Koren as 'she'" and Step 3's crew quests do not arrive by sync. The sync
+    changes nine data files (dialogues, crew interjections, the Alliance encounters,
+    missions, journal entries, NPCs, commodities, news templates, the humor encounters)
+    plus `SYNC.json`, ten in all, where Step 3 expects about eleven.
+  - B2's committed `test_the_dex_records_are_listed_one_at_a_time` pins each beat's exact
+    list, so after the sync it fails at beats 1, 2, 4 and 6, where Step 4 expects a pass
+    with nothing checked. It has no `for beat: Variant in beats:` loop or
+    `is_less_equal(1)` assertion for Step 5's `seen` guard to hang on, and its exact-list
+    pins already fail an empty listing, so the guard and Step 6's "no fixer record was
+    listed" are unnecessary: Step 10's re-key on the ids is the whole fix.
+  - G5's `token_names` (`tests/writing_gates/rules.py`) names a brace `v` only for the full
+    `{v:A|B}` form, two forms around exactly one pipe; any other body that begins `v:`
+    keeps its whole brace as its name and fails G5 as an unknown token. Task 6's
+    `TokenRegistry.names_in` names `v` for any body that begins `v:`, looser than the
+    function it cites, so Task 6 ports the full form. Nothing ships wrong meanwhile:
+    aurelia's `data/` is a copy this stricter G5 has passed.
 - The `change` and `romance` fields need no port code (the port reads named keys only);
   G13's disposition half reads `change` once a tree marks a node.
 - `{player}` renders only in the news fill today (spec 2.7): a line that wants the
@@ -885,14 +910,18 @@ hand-off entries) are its own.
     entry's heading ("names what it means") and pattern note ("one synthesis") follow spec
     2.2's edge 6 with it, and the Before/After gallery's last row quotes
     `arna_post_refining.start`'s knowledge-gated reply (G9 `not an act`, W2), which it
-    follows the same way.
+    follows the same way. Missing from plan W1-A's Task 12 hand-offs text, which names the
+    seven replies alone: W1-A adds the NV-7 heading and pattern note and the
+    `arna_post_refining.start` gallery row to W2's list in `docs/handoffs.md`.
   - Spoken lines that pass G9 because their first word is an act verb:
     "[Take care of yourself.]" in `arna_post_payback.what_now`,
     `arna_last_freight_out_closeout.brother` and `.help_offer`, and "[Take care.]" in
     `arna_stays_closeout.check`, farewells said to Arna; and "[Leave it.]" in
     `merchant_delivery.odom_arna_branch_a` to `_c`, an act or a line beside the failing
     "[Drop it. Run it.]": W2. G9 reads a tag's first word only (spec 5.1), so no allowlist
-    row carries them and audit.md lists none.
+    row carries them and audit.md lists none. Missing from plan W1-A's Task 12 hand-offs
+    text: W1-A adds the seven tags to W2's list in `docs/handoffs.md`, since W2's sweep
+    reads only the allowlist and audit.md.
 - Observations: until SP6's creator every player sees the they/them column; the gates'
   "player-facing" set is every string under `data/` less the sprite manifest, `_` keys,
   lowercase identifiers and six lens authoring keys, plus every string built in code under
@@ -904,7 +933,9 @@ hand-off entries) are its own.
   brace one news trigger fills and another does not passes it: `news_templates.json`'s
   pm_01 to pm_03 write `{description}`, which the `player_milestone` fill (`{milestone}`
   alone) never supplies; nothing passes milestones to `generate_headlines` today, and the
-  port's news surface settles it.
+  port's news surface settles it. Missing from plan W1-A's Task 12 hand-offs text: W1-A
+  adds it to `docs/handoffs.md` beside the news templates' entry among the token
+  registry's unported files.
 
 ## Act II v1
 
