@@ -360,7 +360,7 @@ Frame as presence, not threats:
 
 When the player has invested in Empathic Read:
 - Disposition bar becomes visible during dialogue (SP5 implements the UI)
-- Subtext hints appear in italic when available: "*She's choosing her words carefully. Whatever she's hiding, it matters to her.*"
+- Subtext hints appear in italic when available, as the observable fact with the inference left to the player (writing discipline spec 2.2, edge 6): "*She stops twice before she answers.*"
 - These hints are gated on the skill investment -- players without Empathic Read don't see them
 
 ### Master Negotiator (Skill Tree)
@@ -391,8 +391,8 @@ Every skill-gated response must answer: *"What does this character see, say, or 
 
 **A — skill IS the insight**
 - Response carries what expertise specifically reveals. Could not be written by a character without this skill.
-- `[Observation] His second tap was for him, not the scale.`
-- `[Perception] The serial number's been filed and re-etched. Whoever did it was in a hurry. Whoever sold it to him wasn't.`
+- `[Observation 2] "That second tap was for you, not the scale."`
+- `[Observation 2] "Somebody filed this serial and etched it again. In a hurry."`
 
 **Target:** every shipped skill-gated response at B or A. Zero at D.
 
@@ -412,10 +412,10 @@ Default per skill category. Mix when narrative demands.
 
 - **Speech skills** (Persuasion, Intimidation, Deception) default to in-quote spoken dialogue.
   `[Persuasion 2] "You have a son in the academy. Three years. I don't touch anyone I might see again at graduation. Let me pass."`
-- **Observation skills** (Perception / Observation) default to internal observation.
-  `[Observation] His second tap was for him, not the scale.`
-- **Hybrid skills** (Technical, Piloting, Leadership) — author's choice per line.
-- **Mixing is encouraged** when a beat serves both. Observation setting up speech, self-directed internal voice, and so on are all fair.
+- **Observation skills** (Perception / Observation): the option is the captain's exact words or a concrete act, never an unspoken insight; a read is the observable fact, with the inference left to the player (writing discipline spec 2.1, 2.2).
+  `[Observation 2] "You stopped at the name. Not the ship."`
+- **Hybrid skills** (Technical, Piloting, Leadership): the exact line or an act, the author's choice per line.
+- **Mixing is encouraged** when a beat serves both: an observation that sets up speech. The captain's internal voice is struck (writing discipline spec 2.1).
 
 The rule under the guideline: **skill produces insight.** Format is craft.
 
@@ -425,7 +425,7 @@ These rewrites ship in `dialogues.json`. Use them as templates for new skill-che
 
 | Before (grade) | After (grade) | Why |
 |----------------|---------------|-----|
-| `[Persuasion 3] What do you think is really going on?` (C) | `[Persuasion 3] "You pulled me in here because you've already made up your mind. Say it."` (B) | Reads Dex's decision state; presses him to name what he already believes |
+| `[Persuasion 3] What do you think is really going on?` (C) | `[Persuasion 3] "You pulled me in here because you've already made up your mind. Say it."` (B) | Reads Glyn's decision state; presses him to name what he already believes |
 | `[Observation] Watch the delegates carefully.` (D) | `[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows the clock runs out today.` (A) | Replaces meta-instruction with the specific read Observation reveals |
 | `[Persuasion] May I address the delegates?` (C) | `[Persuasion] "One minute. Before the next person walks out of this room."` (B) | Reads room-collapse state; urgency + economy commands attention |
 | `[Persuasion] Whatever you saw, it's connected to the pirate attacks. People are dying on those convoy routes.` (B) | `[Persuasion] "Forty years in the tunnels. You sealed your mouth when the Union asked. Convoy crews are dying now and nobody's asked them to stay quiet. Flip the question."` (A) | Turns Oren's own silence-logic against him |

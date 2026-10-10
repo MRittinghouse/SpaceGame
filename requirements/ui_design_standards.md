@@ -43,11 +43,11 @@ Every screen the player sees is a diegetic artifact. A cracked shuttle terminal,
 Consequences:
 
 - Fonts are chosen for voice, not only hierarchy. Mechanical readouts use `SpaceMono`. Dialogue uses `PixeloidSans`. Narration uses `Silver`. See `spacegame/engine/fonts.py`.
-- UI copy follows `requirements/dialogue_writing_guide.md`. That means working-class register, second-person internal voice, no corporate marketing tone.
+- UI copy follows `requirements/dialogue_writing_guide.md`. That means working-class register, second-person narration that reports what the captain does and observes (the narrator contract, writing discipline spec 2.1), no corporate marketing tone.
 - Chrome detailing (rivets, weathering, stamps, stencil labels) carries narrative weight. Panels are not neutral. They reflect who made them.
 - Before deciding what a new UI surface looks like, decide what it *is* in-world.
 
-Counter-example: the pre-polish tutorial opened with "Welcome to Aurelia! You are a trader in a galaxy of opportunity." That is a marketing voice, not a diegetic one. Rewritten in QA Pass 6 into the protagonist's internal voice, rooted in the orphan-on-a-colony-ship backstory.
+Counter-example: the pre-polish tutorial opened with "Welcome to Aurelia! You are a trader in a galaxy of opportunity." That is a marketing voice, not a diegetic one. QA Pass 6 rewrote it into the protagonist's internal voice, rooted in the orphan-on-a-colony-ship backstory; the narrator contract (writing discipline spec 2.1) supersedes that voice, and SP6 ports the tutorials to the contract (findings F-47).
 
 ### 2. Readability wins every conflict
 
@@ -91,7 +91,7 @@ Counter-example: `tutorial_shop_view.py::_render_part_card` reimplemented card a
 
 ### 5. Voice matches earned authority
 
-The player is a scrapyard kid from a colony ship. The game addresses them accordingly until the narrative promotes them.
+The captain is a twenty-year-old from the Nexus Prime orbital on a provisional license. The world addresses them through the address table (writing discipline spec 2.6): ungendered address ("kid", "Captain", the name) needs no token, and gendered address comes from the table's column for the captain's pronouns.
 
 Consequences:
 
@@ -417,15 +417,15 @@ Fix: badge or stamp visible at rest. Tooltip carries the rationale.
 
 Problem: breaks diegesis. Voice mismatch with the rest of the game.
 
-Fix: rewrite in protagonist voice. See the QA Pass 6 tutorial rewrite.
+Fix: rewrite in a diegetic voice: a person or a document in the world, or narration that reports what the captain does and observes (writing discipline spec 2.1).
 
 ### Premature "Captain"
 
 Any UI copy calling the player Captain before the narrative has earned it.
 
-Problem: voice mismatch. The player knows they are a scrapyard kid.
+Problem: voice mismatch. The world grants an address it has not earned; the captain is a twenty-year-old on a provisional license.
 
-Fix: no honorific, or an in-world fallback ("kid", "friend", context-dependent).
+Fix: no honorific, an in-world fallback ("kid", "friend", context-dependent), or address through the table and its neutral column (writing discipline spec 2.6). Regulation address (`{sir}`, whose neutral column reads Captain) is exempt from this rule.
 
 ### Chain of confirmations
 
