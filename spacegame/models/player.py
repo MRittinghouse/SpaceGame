@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Optional
 import spacegame.config as sg_config
 from spacegame.models.bidding import AuctionState
 from spacegame.models.captain_memory import CaptainMemory
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.deep_core import DeepCoreUpgradeState
 from spacegame.models.deep_shafts import DeepShaftsState
 from spacegame.models.dilemma import DilemmaRuntimeState
@@ -67,6 +68,9 @@ class Player:
     current_system_id: str
     ship: Ship
     ship_name: str = ""  # Player-chosen ship name (empty = use ship type name)
+    # The captain's pronouns (writing discipline spec 2.5): only the words change. SP6's
+    # creator sets them; until then every captain is they/them.
+    pronouns: Pronouns = field(default=Pronouns.THEY, kw_only=True)
     game_day: int = 1  # Turn counter for turn-based travel
     total_profit: int = 0  # Career profit tracking
     trades_completed: int = 0

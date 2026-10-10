@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.event import MarketEvent
 from spacegame.models.market import Market
 from spacegame.models.player import Player
@@ -402,6 +403,7 @@ class SaveManager:
         result = {
             "name": player.name,
             "ship_name": player.ship_name,
+            "pronouns": player.pronouns.value,
             "credits": player.credits,
             "current_system_id": player.current_system_id,
             "game_day": player.game_day,
@@ -563,6 +565,7 @@ class SaveManager:
             current_system_id=data["current_system_id"],
             ship=ship,
             ship_name=data.get("ship_name", ""),
+            pronouns=Pronouns.parse(data.get("pronouns")),  # an older save is they/them
             game_day=data["game_day"],
         )
 

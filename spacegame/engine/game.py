@@ -67,6 +67,7 @@ from spacegame.engine.screen_effects import ScreenShake, Vignette
 from spacegame.engine.startup_timer import StartupTimer
 from spacegame.engine.state_manager import StateManager
 from spacegame.engine.transitions import TransitionManager, TransitionType
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.event import EventGenerator
 from spacegame.models.faction import generate_faction_assignments
 from spacegame.models.market import Market
@@ -615,12 +616,16 @@ class Game:
                 self.player.make_news_context(detail, commodity, amount)
             )
 
-    def initialize_new_game(self, player_name: str = "Captain", ship_name: str = "") -> None:
+    def initialize_new_game(
+        self, player_name: str = "Captain", ship_name: str = "", pronouns: Pronouns = Pronouns.THEY
+    ) -> None:
         """Initialize a new game with starting conditions.
 
         Args:
             player_name: Name chosen by the player.
             ship_name: Player-chosen ship name (empty = use ship type name).
+            pronouns: The captain's pronouns (writing discipline spec 2.5); SP6's creator
+                passes the player's pick.
         """
         logger.info("Initializing new game...")
 
@@ -648,6 +653,7 @@ class Game:
             current_system_id="nexus_prime",
             ship=starting_ship,
             ship_name=ship_name,
+            pronouns=pronouns,
         )
 
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")

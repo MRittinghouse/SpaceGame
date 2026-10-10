@@ -17,6 +17,7 @@ from spacegame.save_manager import SaveManager
 WAVE_A_PLAYER_KEYS: tuple[str, ...] = (
     "name",
     "ship_name",
+    "pronouns",
     "credits",
     "current_system_id",
     "previous_system_id",
