@@ -546,3 +546,25 @@ class TestEdgeCases:
         ticker.add_headline("Something.")
         results = ticker.get_headlines(count=0)
         assert results == [], "count=0 should return empty list"
+
+
+class TestCaptainTokensSurviveTheFill:
+    """The ticker fills its own placeholders and leaves the captain's tokens for the map."""
+
+    def test_a_verb_token_and_an_unknown_brace_survive(self) -> None:
+        from spacegame.models.news_ticker import _fill
+
+        filled = _fill("{They} {v:docks|dock} at {system}. {unknown}", {"system": "Verdant"})
+        assert filled == "{They} {v:docks|dock} at Verdant. {unknown}"
+
+    def test_a_player_action_headline_keeps_its_tokens(self) -> None:
+        template = _make_template(
+            id="dock_record",
+            template="Dock records list {player}. {They} {v:holds|hold} a provisional license.",
+            trigger="player_action",
+        )
+        ticker = _make_ticker([template])
+        ticker.generate_headlines({"player_actions": [{"player_name": "Ash"}]})
+        assert ticker.get_headlines(count=1) == [
+            "Dock records list Ash. {They} {v:holds|hold} a provisional license."
+        ]

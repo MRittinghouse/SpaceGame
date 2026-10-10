@@ -3,6 +3,7 @@
 import json
 import sys
 import types
+from types import SimpleNamespace
 
 import pygame
 import pygame_gui
@@ -10,6 +11,7 @@ import pygame_gui
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState
 from spacegame.data_loader import DataLoader
 from spacegame.engine.activity_registry import create_default_registry
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.mission import MissionManager
 from spacegame.models.player import Player
 from spacegame.models.ship import Ship
@@ -639,3 +641,28 @@ class TestStationHubReputationTeaser:
     def test_a_skill_that_lifts_the_standing_to_the_tier_shows_no_lock(self) -> None:
         teaser = self._teaser(skill_level=2)
         assert teaser is None, f"Frontier 5 plus the skill's 10 meets the gate: {teaser}"
+
+
+class TestChatterCaptainTokens:
+    """Writing discipline spec 2.7: overheard chatter renders the captain's tokens."""
+
+    def test_chatter_renders_for_the_captains_choice(self) -> None:
+        manager, player, loader = _make_test_env()
+        player.pronouns = Pronouns.SHE
+        chatter = SimpleNamespace(
+            get_chatter=lambda *args, **kwargs: ["{They}{v:'s|'re} on the board again."]
+        )
+        view = StationHubView(
+            ui_manager=manager,
+            player=player,
+            system=loader.get_system("nexus_prime"),
+            locations=loader.get_locations_for_system("nexus_prime"),
+            activity_registry=create_default_registry(),
+            data_loader=loader,
+            station_chatter=chatter,
+        )
+        view.on_enter()
+        try:
+            assert view._flavor_texts[0] == "She's on the board again."
+        finally:
+            view.on_exit()

@@ -41,6 +41,16 @@ SURFACE_SITES: dict[str, tuple[tuple[str, str], ...]] = {
         ("spacegame/views/encounter_view.py", "EncounterView.__init__"),
         ("spacegame/views/encounter_view.py", "_substitute_choices"),
     ),
+    "data/crew/ambient_dialogue.json": (
+        ("spacegame/engine/game.py", "Game._next_mission_notification"),
+        ("spacegame/engine/game.py", "Game._make_crew_commentary_fn"),
+    ),
+    "data/crew/station_chatter.json": (
+        ("spacegame/views/station_hub_view.py", "StationHubView.on_enter"),
+    ),
+    "data/economy/news_templates.json": (
+        ("spacegame/views/galaxy_map_view.py", "GalaxyMapView._ticker_headlines"),
+    ),
 }
 
 

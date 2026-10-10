@@ -37,6 +37,9 @@ REGISTRY: tuple[Renders, ...] = (
     Renders("data/combat/captains.json", CAPTAIN_TOKENS, "encounter_view hail; combat_view line"),
     Renders("data/combat/captain_variants.json", CAPTAIN_TOKENS, "as captains.json"),
     Renders("data/encounters/*.json", CAPTAIN_TOKENS, "encounter_view, before its format_map"),
+    Renders("data/crew/ambient_dialogue.json", CAPTAIN_TOKENS, "game.py banner; crew commentary"),
+    Renders("data/crew/station_chatter.json", CAPTAIN_TOKENS, "station_hub_view flavor lines"),
+    Renders("data/economy/news_templates.json", CAPTAIN_TOKENS, "galaxy_map_view's ticker"),
     Renders(
         "data/economy/news_templates.json",
         frozenset(

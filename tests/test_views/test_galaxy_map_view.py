@@ -1,11 +1,14 @@
 """Tests for galaxy map view: travel animation, ship icon, and encounter integration."""
 
+from types import SimpleNamespace
+
 import pytest
 
 pygame = pytest.importorskip("pygame", reason="pygame required for GalaxyMapView tests")
 pygame_gui = pytest.importorskip("pygame_gui", reason="pygame_gui required")
 
 from spacegame.config import WINDOW_WIDTH, WINDOW_HEIGHT, GameState  # noqa: E402
+from spacegame.models.captain_tokens import Pronouns  # noqa: E402
 from spacegame.models.system import StarSystem, Coordinates, Station, Economy  # noqa: E402
 from spacegame.models.player import Player  # noqa: E402
 from spacegame.models.ship import Ship, ShipType  # noqa: E402
@@ -714,3 +717,24 @@ class TestSystemInfoFactionEmblem:
         screen = pygame.display.get_surface()
         view._draw_system_info(screen, "nexus_prime")
         view.on_exit()
+
+
+class TestTickerCaptainTokens:
+    """Writing discipline spec 2.5's bulletin: the ticker renders the captain's tokens."""
+
+    BULLETIN = (
+        "Dock records list Ash as master of record. {They} {v:holds|hold} a provisional license."
+    )
+
+    def test_headlines_render_for_the_captains_choice(self) -> None:
+        stub = SimpleNamespace(
+            news_ticker=SimpleNamespace(get_headlines=lambda count: [self.BULLETIN]),
+            player=SimpleNamespace(pronouns=Pronouns.HE, game_day=4),
+        )
+        assert GalaxyMapView._ticker_headlines(stub) == [
+            "Dock records list Ash as master of record. He holds a provisional license."
+        ]
+
+    def test_no_ticker_no_headlines(self) -> None:
+        stub = SimpleNamespace(news_ticker=None, player=None)
+        assert GalaxyMapView._ticker_headlines(stub) == []

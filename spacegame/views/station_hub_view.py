@@ -37,6 +37,7 @@ from spacegame.engine.fonts import (
     get_font,
 )
 from spacegame.engine.sprites import get_sprite_manager, res_scale
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.location import Location
 from spacegame.models.npc_availability import is_listed, settable_flags
 from spacegame.models.player import Player
@@ -391,7 +392,8 @@ class StationHubView(BaseView):
                     self.system.id, rep, [], count=3, player_flags=pflags
                 )
                 if chatter_lines:
-                    self._flavor_texts = chatter_lines + self._flavor_texts
+                    rendered = [captain_line(line, self.player) for line in chatter_lines]
+                    self._flavor_texts = rendered + self._flavor_texts
                     self._flavor_index = 0
             except Exception:
                 pass  # Chatter is non-critical ambient flavor
