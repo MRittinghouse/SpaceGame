@@ -227,7 +227,7 @@ class DeepShaftsView(BaseView):
 
         Tone is observational — the captain reads what is in front of
         them. Marcus's silence is the load-bearing beat when he is
-        present (per ``character_voices.md:119``); the player-narrator
+        present (per Marcus's SA-2 note in ``character_voices.md``); the player-narrator
         does not interpret it.
         """
         lines = [

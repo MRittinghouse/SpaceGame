@@ -423,7 +423,7 @@ Fix: rewrite in a diegetic voice: a person or a document in the world, or narrat
 
 Any UI copy calling the player Captain before the narrative has earned it.
 
-Problem: voice mismatch. The world grants an address it has not earned; the captain is a twenty-year-old on a provisional license.
+Problem: voice mismatch. The world grants an address the captain has not earned; they are a twenty-year-old on a provisional license.
 
 Fix: no honorific, an in-world fallback ("kid", "friend", context-dependent), or address through the table and its neutral column (writing discipline spec 2.6). Regulation address (`{sir}`, whose neutral column reads Captain) is exempt from this rule.
 

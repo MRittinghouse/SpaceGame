@@ -818,7 +818,7 @@ class WreckersGuildView(BaseView):
     def _promotion_message(tier_id: str) -> str:
         """Return Malia's voiced promotion line for a tier id.
 
-        Per the SA Arc Note (character_voices.md:408), the master-tier
+        Per Malia's SA-1 arc note (character_voices.md), the master-tier
         message must NOT include the "kid" address. The journeyman line
         keeps it.
         """
