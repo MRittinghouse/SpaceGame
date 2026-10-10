@@ -284,6 +284,15 @@ def test_the_captain_token_case_renders_every_line_for_every_choice() -> None:
     )
 
 
+def test_the_shipped_tokened_lines_join_the_captain_token_case() -> None:
+    lines = set(_named()["captain_tokens"].setup["lines"])
+    assert {
+        "I need your bill of landing, and your registration, {sir}.",
+        "Good luck out there, {sir}. Fly smart.",
+    } <= lines
+    assert any(line.startswith("Szabo scratches his chin. '{Son},") for line in lines)
+
+
 def test_cases_replay_from_setup() -> None:
     for name, case in _named().items():
         if name.startswith("tree_"):

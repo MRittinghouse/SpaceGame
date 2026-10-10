@@ -9,7 +9,7 @@
         "late_multiplier": 0.5
       },
       "name": "Bill of Landing",
-      "description": "Nobody trades in the Expanse without paperwork. Customs Officer Larsen at Nexus Prime can issue a bill of landing, assuming you can cover the filing fee and don't mind the way she looks at your ship.",
+      "description": "Nobody trades in the Expanse without paperwork. Customs Officer Larsen at Nexus Prime can issue a bill of landing, assuming you can cover the filing fee and don't mind the way he looks at your ship.",
       "hint": "Speak with Customs Officer Larsen at the Nexus Prime cantina to get your trade permit.",
       "prerequisites": [],
       "objectives": [
@@ -206,8 +206,8 @@
     },
     {
       "id": "the_foremans_son",
-      "name": "The Foreman's Son",
-      "description": "Marcus Jin went quiet when he heard your name. The Breakstone engineer knew your father. Or at least, he knew about the safety report that could have saved him. The one that got buried. He's carrying something, and it's not just guilt.",
+      "name": "Deferred",
+      "description": "Marcus Jin went quiet when he heard your name. The Breakstone engineer knew your father. Or at least, he knew about the safety report that could have saved him. The one that came back deferred. He's carrying something, and it's not just guilt.",
       "hint": "Talk to Marcus Jin at Breakstone. He knows something about your father.",
       "prerequisites": [
         "union_territory"

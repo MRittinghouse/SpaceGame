@@ -905,7 +905,7 @@
         {
           "id": "greeting",
           "speaker_id": "officer_larsen",
-          "text": "I need your bill of landing, and your registration, sir.",
+          "text": "I need your bill of landing, and your registration, {sir}.",
           "responses": [
             {
               "text": "Here is my registration, but I don't have a bill of landing.",
@@ -1017,7 +1017,7 @@
         {
           "id": "farewell",
           "speaker_id": "officer_larsen",
-          "text": "Good luck out there, Captain. Space doesn't care how young you are, it'll chew you up just the same. Fly smart.",
+          "text": "Good luck out there, {sir}. Fly smart.",
           "responses": [
             {
               "text": "[Leave]",

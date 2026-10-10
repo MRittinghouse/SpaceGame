@@ -2445,30 +2445,6 @@
     {
       "gate": "G5",
       "rule": "vocative",
-      "file": "data/combat/crew_interjections.json",
-      "path": ".interjections[0].lines[1]",
-      "match": "sir",
-      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
-    },
-    {
-      "gate": "G5",
-      "rule": "vocative",
-      "file": "data/dialogue/dialogues.json",
-      "path": ".dialogues[id=larsen_customs].nodes[id=greeting].text",
-      "match": "sir",
-      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
-    },
-    {
-      "gate": "G5",
-      "rule": "vocative",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_moonshine_01].choices[id=report].outcome.description",
-      "match": "Son",
-      "reason": "the captain's address, routed through the table or reworded by this plan (spec 2.6); Task 9 prunes it"
-    },
-    {
-      "gate": "G5",
-      "rule": "vocative",
       "file": "data/encounters/system_specific.json",
       "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
       "match": "darling",
