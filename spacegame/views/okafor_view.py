@@ -56,6 +56,7 @@ from spacegame.engine.fonts import (
     FONT_TITLE,
     get_font,
 )
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.dialogue import DialogueNode, DialogueTree
 from spacegame.models.okafor_research import (
     SELL_LUMP_SUM_RATE,
@@ -1008,7 +1009,7 @@ class OkaforView(BaseView):
         screen.blit(header, (x, y))
         y += scale_y(28)
         body_w = LEFT_W - scale_x(32)
-        for line in word_wrap(node.text, self.body_font, body_w):
+        for line in word_wrap(captain_line(node.text, self.player), self.body_font, body_w):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
             screen.blit(surf, (x, y))
             y += self.body_font.get_linesize()

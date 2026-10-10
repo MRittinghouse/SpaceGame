@@ -32,6 +32,7 @@ class Renders:
 
 
 REGISTRY: tuple[Renders, ...] = (
+    Renders("data/dialogue/*.json", CAPTAIN_TOKENS, "dialogue_view; the inline dialogue panels"),
     Renders(
         "data/economy/news_templates.json",
         frozenset(

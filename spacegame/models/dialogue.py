@@ -176,6 +176,11 @@ class DialogueManager:
         self._player = player
 
     @property
+    def player(self) -> Optional[Player]:
+        """The player this manager's lines address, or None before a game (the intro)."""
+        return self._player
+
+    @property
     def is_active(self) -> bool:
         """Check if a dialogue is currently in progress."""
         return self._current_tree is not None and self._current_node_id is not None

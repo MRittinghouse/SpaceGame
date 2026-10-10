@@ -37,7 +37,8 @@ from spacegame.engine.fonts import (
     get_font,
 )
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
-from spacegame.models.dialogue import NPC, DialogueManager
+from spacegame.models.captain_tokens import captain_line
+from spacegame.models.dialogue import NPC, DialogueManager, DialogueNode
 from spacegame.models.social import SocialManager
 from spacegame.utils.logger import logger
 from spacegame.views.base_view import BaseView
@@ -264,7 +265,7 @@ class DialogueView(BaseView):
             self._current_npc = self.data_loader.get_npc(node.speaker_id)
 
         # Start typewriter effect
-        self._full_text = node.text
+        self._full_text = captain_line(node.text, self.dialogue_manager.player)
         self._revealed_chars = 0
         self._text_timer = 0.0
         self._text_complete = DIALOGUE_TEXT_SPEED <= 0
@@ -294,7 +295,7 @@ class DialogueView(BaseView):
 
         # read_the_room skill: preview disposition changes on responses
         has_read_the_room = False
-        player = self.dialogue_manager._player
+        player = self.dialogue_manager.player
         if player and hasattr(player, "progression"):
             has_read_the_room = player.progression.get_bonus("read_the_room") > 0
 
@@ -315,7 +316,8 @@ class DialogueView(BaseView):
                     effective = self.social_manager.get_effective_level(sc.skill, npc_id)
                     can_pass = self.social_manager.can_pass_check(sc.skill, sc.difficulty, npc_id)
                     skill_name = sc.skill.capitalize()
-                    display_text = f"[{skill_name}: {effective}/{sc.difficulty}] {r.text}"
+                    line = captain_line(r.text, player)
+                    display_text = f"[{skill_name}: {effective}/{sc.difficulty}] {line}"
                     responses_text.append(display_text)
                     check_infos.append(
                         {
@@ -326,7 +328,7 @@ class DialogueView(BaseView):
                         }
                     )
                 else:
-                    responses_text.append(r.text)
+                    responses_text.append(captain_line(r.text, player))
                     check_infos.append(None)
                 # read_the_room: track disposition change for this response
                 disposition_previews.append(r.disposition_change if has_read_the_room else 0)
@@ -765,6 +767,10 @@ class DialogueView(BaseView):
         fill_w = max(2, int(bar_w * disposition / 100))
         pygame.draw.rect(screen, tier["color"], (bar_x, bar_y, fill_w, bar_h), border_radius=2)
 
+    def _subtext_line(self, node: DialogueNode) -> str:
+        """The Empathic Read line under the node's text, the captain's tokens rendered."""
+        return f"* {captain_line(node.subtext, self.dialogue_manager.player)}"
+
     def _render_subtext(self, screen: pygame.Surface) -> None:
         """Render Empathic Read subtext hint below dialogue text."""
         if not self.dialogue_manager.get_flag("empathic_read_active"):
@@ -780,12 +786,13 @@ class DialogueView(BaseView):
 
         # Render in muted italic color
         color = (140, 160, 180)
-        surf = self._subtext_font.render(f"* {node.subtext}", True, color)
+        line = self._subtext_line(node)
+        surf = self._subtext_font.render(line, True, color)
         # Truncate if too wide
         max_w = self.PANEL_WIDTH - self.TEXT_LEFT_MARGIN - 30
         if surf.get_width() > max_w:
             # Word-wrap into up to 2 lines
-            words = f"* {node.subtext}".split()
+            words = line.split()
             line1 = ""
             line2 = ""
             for word in words:

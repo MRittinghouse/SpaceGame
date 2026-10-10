@@ -27,3 +27,12 @@ def test_a_new_game_takes_the_choice() -> None:
         assert game.player.pronouns is Pronouns.SHE
     finally:
         pygame.quit()
+
+
+def test_the_dialogue_manager_addresses_the_new_player() -> None:
+    game = Game()
+    try:
+        game.initialize_new_game(player_name="Test", pronouns=Pronouns.HE)
+        assert game.dialogue_manager.player is game.player
+    finally:
+        pygame.quit()

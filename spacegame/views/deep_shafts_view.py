@@ -44,6 +44,7 @@ from spacegame.engine.fonts import (
     FONT_TITLE,
     get_font,
 )
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.deep_shafts import DeepShaftsState, apply_visit
 from spacegame.models.dialogue import DialogueNode, DialogueTree
 from spacegame.models.player import Player
@@ -625,7 +626,7 @@ class DeepShaftsView(BaseView):
         body_x = PANEL_X + scale_x(20)
         body_y = BODY_TOP_Y + scale_y(54)
         body_w = PANEL_W - scale_x(40)
-        for line in word_wrap(node.text, self.body_font, body_w):
+        for line in word_wrap(captain_line(node.text, self.player), self.body_font, body_w):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
             screen.blit(surf, (body_x, body_y))
             body_y += self.body_font.get_linesize()
