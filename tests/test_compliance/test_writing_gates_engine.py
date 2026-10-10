@@ -172,6 +172,14 @@ class TestG5Address:
         text = "{They}{v:'s|'re} at {system}."
         assert rules.token_names(text) == ["They", "v", "system"]
 
+    @pytest.mark.parametrize("body", ["v:'s|'re", "v:holds|hold", "v:s|", "v:|s"])
+    def test_a_well_formed_verb_token_is_named_v(self, body: str) -> None:
+        assert rules.token_names("{" + body + "}") == ["v"]
+
+    @pytest.mark.parametrize("body", ["v", "v:", "v:is", "v:holds/hold", "v:a|b|c"])
+    def test_a_malformed_verb_token_is_named_by_its_whole_brace(self, body: str) -> None:
+        assert rules.token_names("{" + body + "}") == ["{" + body + "}"]
+
 
 class TestG6ToG8Narration:
     def test_filter_verbs_fail_and_direct_perception_passes(self) -> None:

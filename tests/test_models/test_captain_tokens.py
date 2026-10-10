@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from spacegame.models.captain_tokens import TOKEN_NAMES, WORDS, Pronouns, captain_line, fill
+from tests.writing_gates import rules
 from tests.writing_gates.registry import CAPTAIN_TOKENS
 
 HE, SHE, THEY = Pronouns.HE, Pronouns.SHE, Pronouns.THEY
@@ -119,3 +120,15 @@ class TestPronounsParse:
 def test_the_gate_registry_names_the_renderers_tokens() -> None:
     """tests/writing_gates/registry.py allows exactly the tokens this renderer fills."""
     assert CAPTAIN_TOKENS == TOKEN_NAMES
+
+
+@pytest.mark.parametrize(
+    "body",
+    ["v:'s|'re", "v:holds|hold", "v:s|", "v:|s", "v", "v:", "v:is", "v:holds/hold", "v:a|b|c"],
+)
+def test_the_gate_names_v_exactly_when_the_renderer_fills_it(body: str) -> None:
+    """G5 and the renderer agree: a brace is a verb token only if every render consumes it."""
+    line = "{" + body + "}"
+    renders = [fill(line, choice) for choice in (HE, SHE, THEY)]
+    filled = not any("{" in r or "|" in r for r in renders)
+    assert ("v" in rules.token_names(line)) == filled

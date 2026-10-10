@@ -82,6 +82,8 @@ G5_VOCATIVE = re.compile(
     r"|sweetheart|darling)(?=\s*[,.!?])"
 )
 BRACE = re.compile(r"\{([^{}]*)\}")
+# A verb token's body is two forms around one pipe (spec 2.5); a BRACE body holds no brace.
+VERB_TOKEN = re.compile(r"v:[^|]*\|[^|]*")
 G6_FILTER_VERBS = re.compile(
     r"(?i)\byou(?:'d|'ll|'ve| would| will| can't| could)? (?:\w+ly )?(?:notice|realize"
     r"|remember|recall|sense|feel|wonder|decide|see that|can't help)"
@@ -253,10 +255,29 @@ def g4() -> list[Offence]:
 
 
 def token_names(text: str) -> list[str]:
-    """The name of every ``{...}`` in text; a verb token ``{v:A|B}`` is named ``v``."""
-    return [
-        body.split(":", 1)[0] if body.startswith("v:") else body for body in BRACE.findall(text)
-    ]
+    """The name of every ``{...}`` in text, as the G5 registry check sees it.
+
+    A brace is named ``v`` only when its body has the verb token's form, ``v:`` and two forms
+    around exactly one pipe (spec 2.5). A body whose part before the first colon is ``v`` but
+    that lacks that form is named by the whole brace, braces kept (``{v:is}``), so it equals no
+    registry name and fails G5 as an unknown token on every surface, as the renderer would
+    leave it unfilled (spec 2.7). Any other body is named as written.
+
+    Args:
+        text: The string to scan.
+
+    Returns:
+        One name per brace, in order.
+    """
+    names: list[str] = []
+    for body in BRACE.findall(text):
+        if VERB_TOKEN.fullmatch(body):
+            names.append("v")
+        elif body.split(":", 1)[0] == "v":
+            names.append("{" + body + "}")
+        else:
+            names.append(body)
+    return names
 
 
 def g5() -> list[Offence]:
