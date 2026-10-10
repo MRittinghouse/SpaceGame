@@ -8,6 +8,7 @@ from typing import Any
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.ambient_dialogue import AmbientDialogueManager
+from spacegame.models.captain_tokens import Pronouns, fill
 from spacegame.models.combat import EnemyShip
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
@@ -261,6 +262,28 @@ def _replay_npcs_here(case: Case) -> Case:
     return replay
 
 
+def _replay_captain_tokens(case: Case) -> Case:
+    replay = Case("dialogue", "captain_tokens", case.setup)
+    for step in case.steps:
+        choice, line, day = step["args"]
+        replay.record("fill", [choice, line, day], fill(line, Pronouns(choice), day), {})
+    return replay
+
+
+def test_the_captain_token_case_renders_every_line_for_every_choice() -> None:
+    case = _named()["captain_tokens"]
+    lines = case.setup["lines"]
+    assert len(case.steps) == 3 * len(lines) * 2
+    renders = {tuple(step["args"]): step["result"] for step in case.steps}
+    crew_talk = dialogue.CAPTAIN_TOKEN_PROBES[0]
+    assert renders[("she/her", crew_talk, 61)] == (
+        "She's asleep in the pilot's chair again. Leave her."
+    )
+    assert renders[("they/them", "Day {day}. Fourteen-oh-six.", None)] == (
+        "Day {day}. Fourteen-oh-six."
+    )
+
+
 def test_cases_replay_from_setup() -> None:
     for name, case in _named().items():
         if name.startswith("tree_"):
@@ -271,6 +294,8 @@ def test_cases_replay_from_setup() -> None:
             replay = _replay_chatter(case)
         elif name == "npcs_here":
             replay = _replay_npcs_here(case)
+        elif name == "captain_tokens":
+            replay = _replay_captain_tokens(case)
         else:
             assert name == "interjections", name
             replay = _replay_interjections(case)
