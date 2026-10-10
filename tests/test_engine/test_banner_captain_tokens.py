@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 from typing import Optional
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from spacegame.engine.game import Game
 from spacegame.models.captain_tokens import Pronouns
@@ -54,3 +54,17 @@ def test_crew_commentary_renders_for_the_captain() -> None:
     )
     commentary = game._make_crew_commentary_fn()
     assert commentary("mining") == ("Elena", "He sells high.")
+
+
+def test_the_banner_draws_the_rendered_line() -> None:
+    """What the banner's font draws is the rendered line, not the queued raw tokens."""
+    game = _game(Pronouns.SHE)
+    game._mission_notifications.append("Elena: \"{They}{v:'s|'re} on the board again.\"")
+    game._mission_notify_timer = 0.0
+    game._current_mission_msg = ""
+    game.event_banner_timer = 0.0
+    game._achievement_notify_timer = 0.0
+    game._banner_font = MagicMock()
+    game._render_mission_notification(MagicMock())
+    drawn = [call.args[0] for call in game._banner_font.render.call_args_list]
+    assert drawn == ['Elena: "She\'s on the board again."']

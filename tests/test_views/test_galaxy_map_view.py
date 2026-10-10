@@ -1,6 +1,7 @@
 """Tests for galaxy map view: travel animation, ship icon, and encounter integration."""
 
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -738,3 +739,18 @@ class TestTickerCaptainTokens:
     def test_no_ticker_no_headlines(self) -> None:
         stub = SimpleNamespace(news_ticker=None, player=None)
         assert GalaxyMapView._ticker_headlines(stub) == []
+
+    def test_the_ticker_draws_the_rendered_headlines(self) -> None:
+        """What the ticker's font draws is the rendered bulletin, not the raw tokens."""
+        stub = SimpleNamespace(
+            news_ticker=SimpleNamespace(get_headlines=lambda count: [self.BULLETIN]),
+            player=SimpleNamespace(pronouns=Pronouns.HE, game_day=4),
+            info_font=MagicMock(),
+        )
+        stub._ticker_headlines = lambda: GalaxyMapView._ticker_headlines(stub)
+        stub.info_font.render.return_value.get_width.return_value = 100
+        GalaxyMapView._draw_news_ticker(stub, MagicMock())
+        drawn = [call.args[0] for call in stub.info_font.render.call_args_list]
+        assert drawn == [
+            "Dock records list Ash as master of record. He holds a provisional license."
+        ]
