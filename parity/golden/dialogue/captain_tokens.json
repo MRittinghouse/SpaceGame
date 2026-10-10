@@ -1,0 +1,567 @@
+{
+  "case": "captain_tokens",
+  "format": 1,
+  "setup": {
+    "choices": [
+      "he/him",
+      "she/her",
+      "they/them"
+    ],
+    "day": 61,
+    "lines": [
+      "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+      "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+      "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+      "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+      "Day {day}. Fourteen-oh-six.",
+      "{system} and {shakedown_demand} wait for their own fill.",
+      "Good luck out there, {sir}. Fly smart.",
+      "I need your bill of landing, and your registration, {sir}.",
+      "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly."
+    ]
+  },
+  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "steps": [
+    {
+      "args": [
+        "he/him",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        61
+      ],
+      "call": "fill",
+      "result": "He's asleep in the pilot's chair again. Leave him.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        null
+      ],
+      "call": "fill",
+      "result": "He's asleep in the pilot's chair again. Leave him.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        61
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. He holds a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        null
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. He holds a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        61
+      ],
+      "call": "fill",
+      "result": "he He him his His his himself sir Sir son Son",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        null
+      ],
+      "call": "fill",
+      "result": "he He him his His his himself sir Sir son Son",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        61
+      ],
+      "call": "fill",
+      "result": "he's gone. he doesn't know. he wasn't. he'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        null
+      ],
+      "call": "fill",
+      "result": "he's gone. he doesn't know. he wasn't. he'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Day {day}. Fourteen-oh-six.",
+        61
+      ],
+      "call": "fill",
+      "result": "Day 61. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Day {day}. Fourteen-oh-six.",
+        null
+      ],
+      "call": "fill",
+      "result": "Day {day}. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        61
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        null
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Good luck out there, {sir}. Fly smart.",
+        61
+      ],
+      "call": "fill",
+      "result": "Good luck out there, sir. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Good luck out there, {sir}. Fly smart.",
+        null
+      ],
+      "call": "fill",
+      "result": "Good luck out there, sir. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "I need your bill of landing, and your registration, {sir}.",
+        61
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, sir.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "I need your bill of landing, and your registration, {sir}.",
+        null
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, sir.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        61
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    },
+    {
+      "args": [
+        "he/him",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        null
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        61
+      ],
+      "call": "fill",
+      "result": "She's asleep in the pilot's chair again. Leave her.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        null
+      ],
+      "call": "fill",
+      "result": "She's asleep in the pilot's chair again. Leave her.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        61
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. She holds a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        null
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. She holds a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        61
+      ],
+      "call": "fill",
+      "result": "she She her her Her hers herself ma'am Ma'am girl Girl",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        null
+      ],
+      "call": "fill",
+      "result": "she She her her Her hers herself ma'am Ma'am girl Girl",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        61
+      ],
+      "call": "fill",
+      "result": "she's gone. she doesn't know. she wasn't. she'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        null
+      ],
+      "call": "fill",
+      "result": "she's gone. she doesn't know. she wasn't. she'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Day {day}. Fourteen-oh-six.",
+        61
+      ],
+      "call": "fill",
+      "result": "Day 61. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Day {day}. Fourteen-oh-six.",
+        null
+      ],
+      "call": "fill",
+      "result": "Day {day}. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        61
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        null
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Good luck out there, {sir}. Fly smart.",
+        61
+      ],
+      "call": "fill",
+      "result": "Good luck out there, ma'am. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Good luck out there, {sir}. Fly smart.",
+        null
+      ],
+      "call": "fill",
+      "result": "Good luck out there, ma'am. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "I need your bill of landing, and your registration, {sir}.",
+        61
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, ma'am.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "I need your bill of landing, and your registration, {sir}.",
+        null
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, ma'am.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        61
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    },
+    {
+      "args": [
+        "she/her",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        null
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        61
+      ],
+      "call": "fill",
+      "result": "They're asleep in the pilot's chair again. Leave them.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+        null
+      ],
+      "call": "fill",
+      "result": "They're asleep in the pilot's chair again. Leave them.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        61
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. They hold a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+        null
+      ],
+      "call": "fill",
+      "result": "Dock records list {player} as master of record. They hold a provisional license.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        61
+      ],
+      "call": "fill",
+      "result": "they They them their Their theirs themself Captain Captain kid Kid",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+        null
+      ],
+      "call": "fill",
+      "result": "they They them their Their theirs themself Captain Captain kid Kid",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        61
+      ],
+      "call": "fill",
+      "result": "they've gone. they don't know. they weren't. they'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+        null
+      ],
+      "call": "fill",
+      "result": "they've gone. they don't know. they weren't. they'll",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Day {day}. Fourteen-oh-six.",
+        61
+      ],
+      "call": "fill",
+      "result": "Day 61. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Day {day}. Fourteen-oh-six.",
+        null
+      ],
+      "call": "fill",
+      "result": "Day {day}. Fourteen-oh-six.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        61
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "{system} and {shakedown_demand} wait for their own fill.",
+        null
+      ],
+      "call": "fill",
+      "result": "{system} and {shakedown_demand} wait for their own fill.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Good luck out there, {sir}. Fly smart.",
+        61
+      ],
+      "call": "fill",
+      "result": "Good luck out there, Captain. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Good luck out there, {sir}. Fly smart.",
+        null
+      ],
+      "call": "fill",
+      "result": "Good luck out there, Captain. Fly smart.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "I need your bill of landing, and your registration, {sir}.",
+        61
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, Captain.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "I need your bill of landing, and your registration, {sir}.",
+        null
+      ],
+      "call": "fill",
+      "result": "I need your bill of landing, and your registration, Captain.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        61
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    },
+    {
+      "args": [
+        "they/them",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        null
+      ],
+      "call": "fill",
+      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "state": {}
+    }
+  ],
+  "subsystem": "dialogue"
+}
