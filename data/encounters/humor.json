@@ -191,8 +191,8 @@
     {
       "id": "humor_cooking_show_01",
       "encounter_type": "comm_intercept",
-      "name": "The Spacer's Palate",
-      "description": "Your comms pick up an unlicensed broadcast with surprisingly high production values. A gravelly voice narrates over what sounds like sizzling: 'Welcome back to The Spacer's Palate, the only culinary review show broadcasting from a Class-C cargo hauler. I'm your host, and today we're reviewing the cafeteria at Breakstone Station.' A dramatic pause. 'Two out of five stars. The ore dust adds crunch but not flavor. The reconstituted protein claims to be chicken. It is not chicken. I have met chickens. This substance has never been within three star systems of a chicken.'",
+      "name": "Mouthfeel",
+      "description": "Your comms pick up an unlicensed broadcast with surprisingly high production values. A gravelly voice narrates over what sounds like sizzling: 'Welcome back to Mouthfeel, the only culinary review show broadcasting from a Class-C cargo hauler. I'm your host, and today we're reviewing the cafeteria at Breakstone Station.' A dramatic pause. 'Two out of five stars. The ore dust adds crunch but not flavor. The reconstituted protein claims to be chicken. It is not chicken. I have met chickens. This substance has never been within three star systems of a chicken.'",
       "icon_color": [
         240,
         180,

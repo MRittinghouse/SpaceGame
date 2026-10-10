@@ -72,7 +72,7 @@
     },
     {
       "entry_id": "auto_m09_dex",
-      "text": "Dex Halloran, information broker, approached at the Nexus Prime cantina. Offered intel on the pirate attacks in exchange for a delivery to Crimson Reach. No questions asked.",
+      "text": "Glyn Quintela, information broker, approached at the Nexus Prime cantina. Offered intel on the pirate attacks in exchange for a delivery to Crimson Reach. No questions asked.",
       "trigger_flag": "met_dex_halloran",
       "system_id": "nexus_prime",
       "mission_id": ""

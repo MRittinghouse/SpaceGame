@@ -815,7 +815,7 @@ def check_black_market_access(
         if not has_contact:
             return BlackMarketAccess(
                 available=False,
-                reason="You need a contact who knows the local underground. (Meet Dex Halloran)",
+                reason="You need a contact who knows the local underground. (Meet Glyn Quintela)",
             )
         if criminal_heat < _DEX_HEAT_THRESHOLD:
             return BlackMarketAccess(
@@ -867,13 +867,13 @@ _CONTRACT_POOL_LOW: list[tuple[str, str, str]] = [
 
 _CONTRACT_POOL_MEDIUM: list[tuple[str, str, str]] = [
     ("Malia Torres", "weapons_components", "medium"),
-    ("Dex Halloran", "stolen_data", "medium"),
+    ("Glyn Quintela", "stolen_data", "medium"),
     ("Anonymous", "restricted_tech", "medium"),
     ("Malia Torres", "combat_stims", "medium"),
 ]
 
 _CONTRACT_POOL_HIGH: list[tuple[str, str, str]] = [
-    ("Dex Halloran", "stolen_data", "high"),
+    ("Glyn Quintela", "stolen_data", "high"),
     ("Malia Torres", "combat_stims", "high"),
     ("Anonymous", "restricted_tech", "high"),
 ]

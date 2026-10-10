@@ -563,8 +563,8 @@
     {
       "id": "whispers_at_the_bar",
       "name": "Whispers at the Bar",
-      "description": "Dex Halloran found you at the Nexus Prime cantina. Not the other way around. He bought a drink he didn't touch and started talking about the convoy raids like he'd read the incident reports. Nobody has that kind of intel unless they're law, press, or involved. He's none of those things. Or maybe all three.",
-      "hint": "Dex Halloran will find you at Nexus Prime. He has intel on the pirate attacks.",
+      "description": "Glyn Quintela found you at the Nexus Prime cantina. Not the other way around. He bought a drink he didn't touch and started talking about the convoy raids like he'd read the incident reports. Nobody has that kind of intel unless they're law, press, or involved. He's none of those things. Or maybe all three.",
+      "hint": "Glyn Quintela will find you at Nexus Prime. He has intel on the pirate attacks.",
       "prerequisites": [
         "cargo_lost"
       ],
@@ -576,7 +576,7 @@
         {
           "type": "has_flag",
           "target_id": "dex_favor_accepted",
-          "description": "Decide whether to help Dex"
+          "description": "Decide whether to help Glyn"
         }
       ],
       "rewards": [
@@ -594,8 +594,8 @@
     {
       "id": "the_crimson_run",
       "name": "The Crimson Run",
-      "description": "Dex pressed an encrypted data chip into your hand like it was a grenade with the pin pulled. Whatever's on it, he can't decrypt it himself, and he trusts exactly one person in the Expanse to try: Malia Torres at Crimson Reach. A salvage tech in lawless space. This is either the break you need or the kind of favor that gets people killed.",
-      "hint": "Travel to Crimson Reach and deliver Dex's data chip to Malia Torres.",
+      "description": "Glyn pressed an encrypted data chip into your hand like it was a grenade with the pin pulled. Whatever's on it, he can't decrypt it himself, and he trusts exactly one person in the Expanse to try: Malia Torres at Crimson Reach. A salvage tech in lawless space. This is either the break you need or the kind of favor that gets people killed.",
+      "hint": "Travel to Crimson Reach and deliver Glyn's data chip to Malia Torres.",
       "prerequisites": [
         "whispers_at_the_bar"
       ],
@@ -622,7 +622,7 @@
           "type": "collect_cargo",
           "target_id": "data_chip",
           "target_quantity": 1,
-          "description": "Keep Dex's data chip aboard"
+          "description": "Keep Glyn's data chip aboard"
         },
         {
           "type": "has_flag",
@@ -744,8 +744,8 @@
     {
       "id": "the_favor_returned",
       "name": "The Favor Returned",
-      "description": "Dex called in a marker. A retired miner named Oren Tak saw something in the deep tunnels near Iron Depths: a sealed facility running Guild freight codes, buried under a hundred meters of rock and silence. Oren went quiet after that. People who ask about the tunnels tend to. Find him at Breakstone before someone else does.",
-      "hint": "Travel to Breakstone and find Oren Tak in the mining tunnels. Dex sent you.",
+      "description": "Glyn called in a marker. A retired miner named Oren Tak saw something in the deep tunnels near Iron Depths: a sealed facility running Guild freight codes, buried under a hundred meters of rock and silence. Oren went quiet after that. People who ask about the tunnels tend to. Find him at Breakstone before someone else does.",
+      "hint": "Travel to Breakstone and find Oren Tak in the mining tunnels. Glyn sent you.",
       "prerequisites": [
         "under_fire"
       ],

@@ -7,9 +7,13 @@ intro cards repaired in place, Marcus's timeline and the Log, and the renames.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.mission import Mission
+from tests.writing_gates.surfaces import player_facing
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _node_text(tree_id: str, node_id: str) -> str:
@@ -151,3 +155,32 @@ class TestMarcusAndTheLog:
         assert entry.text == AUTO_M05
         for cut in ("dead", "died", "buried", "my father"):
             assert cut not in entry.text.lower(), cut
+
+
+class TestRenames:
+    """Spec 10: Glyn Quintela for Dex Halloran, Mouthfeel for The Spacer's Palate; ids stay."""
+
+    def test_the_fixer_is_glyn_quintela(self) -> None:
+        npcs = get_data_loader().npcs
+        ids = ("dex_halloran", "dex_tunnel_contact", "dex_final_lead")
+        assert [npcs[npc_id].name for npc_id in ids] == ["Glyn Quintela"] * 3
+
+    def test_no_player_facing_string_keeps_an_old_name(self) -> None:
+        old = re.compile(r"Dex|Halloran|Spacer's Palate")
+        assert not [(row.file, row.path) for row in player_facing() if old.search(row.text)]
+
+    def test_orens_line_keeps_its_one_beat(self) -> None:
+        line = _node_text("oren_tak_meeting", "suspicious")
+        assert line.startswith("Glyn. That name buys you thirty seconds.")
+
+    def test_the_show_is_mouthfeel(self) -> None:
+        show = next(
+            e for e in get_data_loader().encounter_definitions if e.id == "humor_cooking_show_01"
+        )
+        assert show.name == "Mouthfeel"
+        assert "'Welcome back to Mouthfeel, the only culinary review show" in show.description
+
+    def test_the_smuggling_code_names_glyn(self) -> None:
+        source = (REPO_ROOT / "spacegame" / "models" / "smuggling.py").read_text(encoding="utf-8")
+        assert "Dex Halloran" not in source
+        assert source.count("Glyn Quintela") == 3

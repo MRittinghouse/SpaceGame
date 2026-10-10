@@ -105,7 +105,7 @@ class TestChapter3NPCs:
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["dex_halloran"]
-        assert npc.name == "Dex Halloran"
+        assert npc.name == "Glyn Quintela"
         assert npc.title == "Information Broker"
         assert npc.home_system_id == "nexus_prime"
         assert npc.portrait_color == (180, 160, 100)
@@ -1860,7 +1860,7 @@ class TestDexTunnelContactNPC:
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["dex_tunnel_contact"]
-        assert npc.name == "Dex Halloran"
+        assert npc.name == "Glyn Quintela"
         assert npc.home_system_id == "nexus_prime"
         assert npc.dialogue_id == "dex_tunnel_briefing"
         assert npc.portrait_color == (180, 160, 100)
@@ -2419,7 +2419,7 @@ class TestDexFinalLeadNPC:
         _load_data()
         dl = get_data_loader()
         npc = dl.npcs["dex_final_lead"]
-        assert npc.name == "Dex Halloran"
+        assert npc.name == "Glyn Quintela"
         assert npc.home_system_id == "nexus_prime"
         assert npc.dialogue_id == "dex_assembly_intel"
         assert npc.portrait_color == (180, 160, 100)

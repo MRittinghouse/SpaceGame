@@ -343,7 +343,7 @@
       "id": "data_chip",
       "name": "Encrypted Data Chip",
       "category": "quest",
-      "description": "A military-grade encrypted data chip intercepted by Dex Halloran. Contains information about organized convoy raids.",
+      "description": "A military-grade encrypted data chip intercepted by Glyn Quintela. Contains information about organized convoy raids.",
       "base_price": 0,
       "variance_min": 0.0,
       "variance_max": 0.0,

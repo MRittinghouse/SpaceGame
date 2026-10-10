@@ -1590,54 +1590,6 @@
       "gate": "G4",
       "rule": "near collision",
       "file": "(person names)",
-      "path": "dex|jez",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "dex|rec",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "dex|ren",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "dex|tev",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "dex|vex",
-      "match": "edit distance 1",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "dex|wei",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
       "path": "dima|dimi",
       "match": "edit distance 1",
       "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
