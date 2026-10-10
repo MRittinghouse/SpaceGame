@@ -33,6 +33,10 @@ class Renders:
 
 REGISTRY: tuple[Renders, ...] = (
     Renders("data/dialogue/*.json", CAPTAIN_TOKENS, "dialogue_view; the inline dialogue panels"),
+    Renders("data/combat/crew_interjections.json", CAPTAIN_TOKENS, "combat_view interjections"),
+    Renders("data/combat/captains.json", CAPTAIN_TOKENS, "encounter_view hail; combat_view line"),
+    Renders("data/combat/captain_variants.json", CAPTAIN_TOKENS, "as captains.json"),
+    Renders("data/encounters/*.json", CAPTAIN_TOKENS, "encounter_view, before its format_map"),
     Renders(
         "data/economy/news_templates.json",
         frozenset(

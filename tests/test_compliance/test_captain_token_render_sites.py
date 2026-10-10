@@ -26,6 +26,21 @@ SURFACE_SITES: dict[str, tuple[tuple[str, str], ...]] = {
         ("spacegame/views/okafor_view.py", "OkaforView._render_dialogue_panel"),
         ("spacegame/views/wreckers_guild_view.py", "WreckersGuildView._render_contact_dialogue"),
     ),
+    "data/combat/crew_interjections.json": (
+        ("spacegame/views/combat_view.py", "CombatView._surface_interjection"),
+    ),
+    "data/combat/captains.json": (
+        ("spacegame/views/encounter_view.py", "EncounterView.__init__"),
+        ("spacegame/views/combat_view.py", "CombatView._maybe_surface_captain_outcome_line"),
+    ),
+    "data/combat/captain_variants.json": (
+        ("spacegame/views/encounter_view.py", "EncounterView.__init__"),
+        ("spacegame/views/combat_view.py", "CombatView._maybe_surface_captain_outcome_line"),
+    ),
+    "data/encounters/*.json": (
+        ("spacegame/views/encounter_view.py", "EncounterView.__init__"),
+        ("spacegame/views/encounter_view.py", "_substitute_choices"),
+    ),
 }
 
 

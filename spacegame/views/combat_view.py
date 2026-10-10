@@ -67,6 +67,7 @@ from spacegame.engine.particles import (
 from spacegame.engine.scene_camera import SceneCamera
 from spacegame.engine.screen_effects import ScreenShake, Vignette
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.combat import (
     CombatLogEntry,
     CombatMove,
@@ -2267,7 +2268,7 @@ class CombatView(BaseView):
         if not line.strip():
             return
 
-        formatted = f'{effective.display_name}: "{line}"'
+        formatted = captain_line(f'{effective.display_name}: "{line}"', self.player)
         log_entry = CombatLogEntry(
             round_number=state.round_number,
             actor=f"captain:{captain_id}",
@@ -2294,7 +2295,7 @@ class CombatView(BaseView):
 
         if self._interjection_resolver is not None:
             self._interjection_resolver.commit(event)
-        formatted = f'{event.crew_name}: "{event.line}"'
+        formatted = captain_line(f'{event.crew_name}: "{event.line}"', self.player)
         state = self.engine.get_state()
         log_entry = CombatLogEntry(
             round_number=state.round_number,

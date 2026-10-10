@@ -17,6 +17,7 @@ from spacegame.models.captain_memory import (
     STATUS_TRUCE,
     CaptainMemory,
 )
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.captain_variant import (
     MEETING_STATE_POST_TRUCE,
     MEETING_STATE_RETURN,
@@ -271,4 +272,33 @@ class TestSurfaceBeforeRecordOrdering:
         assert not any("POST-DEFEATED-state" in line for line in view.visible_log_lines)
         # Memory is now updated for next time
         assert player.captain_memory["vela_wolfs_ear"].status == "defeated"
+        view.on_exit()
+
+
+class TestCaptainTokensInOutcomeLines:
+    """Writing discipline spec 2.6: a captain's outcome line reads the address table."""
+
+    def test_a_variant_line_renders_the_address(self, monkeypatch) -> None:
+        variant = CaptainVariant(
+            captain_id="vela_wolfs_ear",
+            meeting_state=MEETING_STATE_RETURN,
+            surrender_line="Standing down, {sir}. You win this one.",
+        )
+        _patch_dl_with_variants(monkeypatch, {("vela_wolfs_ear", MEETING_STATE_RETURN): variant})
+        player = _make_player()
+        player.pronouns = Pronouns.SHE
+        player.captain_memory["vela_wolfs_ear"] = CaptainMemory(
+            captain_id="vela_wolfs_ear",
+            encounter_count=1,
+            last_outcome=OUTCOME_FLED,
+            status=STATUS_ACTIVE,
+            first_seen_day=2,
+            last_seen_day=2,
+        )
+        view = CombatView(_ui_manager(), _make_engine(), player)
+        view.on_enter()
+        view.engine.get_state().result = CombatResult.NEGOTIATED
+        view._maybe_surface_captain_outcome_line()
+        expected = "Standing down, ma'am. You win this one."
+        assert any(expected in line for line in view.visible_log_lines), view.visible_log_lines
         view.on_exit()
