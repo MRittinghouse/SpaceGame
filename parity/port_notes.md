@@ -830,10 +830,12 @@ hand-off entries) are its own.
   package is not under `data/` or `parity/golden/`, so the cutover copies it by hand or
   widens `tools/sync_data.py`'s trees.
 - Tests the sync breaks: B2's `test_the_dex_records_are_listed_one_at_a_time` filters on a
-  display name beginning "Dex" and would then check nothing: re-key it on the ids
-  `dex_halloran`, `dex_tunnel_contact`, `dex_final_lead`. No aurelia unit test pins M05's
-  title (`test/unit/mission_manager_test.gd` uses only the id `the_foremans_son`, which
-  stays); the synced golden `lifecycle_the_foremans_son` carries "Accepted: Deferred".
+  display name beginning "Dex", which no record carries after the sync, so beats 1, 2, 4
+  and 6 find no record where each expects one and the test fails: re-key it on the ids
+  `dex_halloran`, `dex_tunnel_contact`, `dex_final_lead`, keeping each beat's expected
+  list. No aurelia unit test pins M05's title (`test/unit/mission_manager_test.gd` uses
+  only the id `the_foremans_son`, which stays); the synced golden
+  `lifecycle_the_foremans_son` carries "Accepted: Deferred".
 - The `change` and `romance` fields need no port code (the port reads named keys only);
   G13's disposition half reads `change` once a tree marks a node.
 - `{player}` renders only in the news fill today (spec 2.7): a line that wants the
