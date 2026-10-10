@@ -273,6 +273,8 @@ class TestTheAllowlist:
         for row in allowlist.rows():
             assert row.gate in GATES, row
             assert row.rule and row.path and row.reason.strip(), row
+            assert row.reason == allowlist.reason_for(Offence(*row.key, "", "")), row
+            assert not any(dash in row.reason for dash in _EM_DASHES), row
 
     def test_rows_are_unique(self) -> None:
         keys = [row.key for row in allowlist.rows()]
