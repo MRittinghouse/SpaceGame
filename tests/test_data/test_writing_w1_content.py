@@ -74,3 +74,80 @@ class TestMissionTitles:
         description = _mission("bill_of_landing").description
         assert "the way he looks at your ship" in description
         assert not re.search(r"\bshe\b", description)
+
+
+CARD_1 = (
+    "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring."
+    " The trading post buys the rest. What's left of his savings goes in the same pocket."
+)
+CARD_2 = (
+    "The scrapyard drydock smells like ozone and bad coolant. The mechanic from maintenance has"
+    ' a salvaged shuttle frame waiting under a tarp. He pulls it back and looks at you. "You'
+    " count what you've got. I'll show you what fits. We don't waste a credit if we can help"
+    ' it."'
+)
+REPORT_DEFERRED = (
+    "Nothing. Got filed. Came back stamped deferred. Every year, same stamp. Then the recyclers"
+    " quit on your father's shift. He didn't come off it. Three others are still in medical"
+    " with lung damage."
+)
+AUTO_M05 = (
+    "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He said his team"
+    " flagged the air recyclers on the Nexus Prime orbital, and the report came back deferred."
+)
+
+
+class TestTheIntro:
+    """Section 7: the cards repaired in place to the narrator contract until SP7's opening."""
+
+    def test_two_cards_of_acts_and_objects(self) -> None:
+        tree = get_data_loader().dialogue_trees["intro_narration"]
+        assert tree.start_node_id == "intro_1"
+        assert list(tree.nodes) == ["intro_1", "intro_2"]
+        assert tree.nodes["intro_1"].text == CARD_1
+        assert [r.next_node_id for r in tree.nodes["intro_1"].responses] == ["intro_2"]
+        assert tree.nodes["intro_2"].text == CARD_2
+        assert tree.nodes["intro_2"].responses == []
+
+    def test_no_biography_memory_or_purse(self) -> None:
+        tree = get_data_loader().dialogue_trees["intro_narration"]
+        text = " ".join(node.text for node in tree.nodes.values()).lower()
+        cuts = (
+            "16th",
+            "colony ship",
+            "school",
+            "grew up",
+            "passed away",
+            "remember",
+            "hoped",
+            "thousand",
+            "hull and a promise",
+            "used to look",
+        )
+        for cut in cuts:
+            assert cut not in text, cut
+
+
+class TestMarcusAndTheLog:
+    """Impact 1b.7 and 1b.8: the timeline against a twenty-year-old."""
+
+    def test_the_recognition_drops_the_date(self) -> None:
+        assert (
+            _node_text("marcus_recognition", "recognition")
+            == "You related to someone who worked the Nexus Prime orbital? Mining crew?"
+        )
+
+    def test_marcus_says_the_death(self) -> None:
+        assert _node_text("marcus_recognition", "report_buried") == REPORT_DEFERRED
+
+    def test_his_age_at_the_flag_still_holds(self) -> None:
+        """Twenty-four, about twenty years back: before the captain was born (spec 4.3)."""
+        assert "twenty-four" in _node_text("marcus_recognition", "why_didnt_push")
+
+    def test_the_log_records_what_marcus_said_and_never_the_death(self) -> None:
+        entry = next(
+            e for e in get_data_loader().journal_entries if e.entry_id == "auto_m05_marcus"
+        )
+        assert entry.text == AUTO_M05
+        for cut in ("dead", "died", "buried", "my father"):
+            assert cut not in entry.text.lower(), cut

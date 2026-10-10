@@ -315,7 +315,7 @@
         {
           "id": "recognition",
           "speaker_id": "marcus_jin",
-          "text": "You related to someone who worked the Nexus Prime orbital? Mining crew, maybe eight, nine years back?",
+          "text": "You related to someone who worked the Nexus Prime orbital? Mining crew?",
           "responses": [
             {
               "text": "That was my father.",
@@ -356,7 +356,7 @@
         {
           "id": "report_buried",
           "speaker_id": "marcus_jin",
-          "text": "Nothing. Got filed. Got buried. Six months later your father's dead and three other workers are in medical with lung damage. I've been carrying that for years.",
+          "text": "Nothing. Got filed. Came back stamped deferred. Every year, same stamp. Then the recyclers quit on your father's shift. He didn't come off it. Three others are still in medical with lung damage.",
           "responses": [
             {
               "text": "That's not your fault.",
@@ -844,7 +844,7 @@
         {
           "id": "intro_1",
           "speaker_id": "narrator",
-          "text": "You are the child of an assistant foreman for an asteroid mining operation in the orbit of Nexus Prime. You grew up in an impoverished community, bled dry by corporate greed and wage slavery. As a child, you watched your father pull 16 hour shifts consistently, working himself into an early grave.",
+          "text": "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring. The trading post buys the rest. What's left of his savings goes in the same pocket.",
           "responses": [
             {
               "text": "[Continue]",
@@ -856,43 +856,7 @@
         {
           "id": "intro_2",
           "speaker_id": "narrator",
-          "text": "Between the stress and the poor air conditioning systems in your colony ship, your father passed away six months ago, at the age of 43. You had only just celebrated your 16th birthday. You have nothing. No path forward, no schooling to fall back on, no family left, and no reason to think tomorrow will be different from today.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_3"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_3",
-          "speaker_id": "narrator",
-          "text": "You consider staying aboard the colony ship, taking on some menial position. But without anyone to take you in, you'd merely be sinking into the same wage slavery that killed your father. At night, as you toss and turn weighing your options, it torments you to know that nothing gets better. Nothing will improve.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_4"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_4",
-          "speaker_id": "narrator",
-          "text": "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring you don't remember him wearing. The trading post pays less than you'd hoped. What's left of his savings goes in the same pocket. Four thousand credits. Not enough for a working ship. Enough for a hull and a promise.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_5"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_5",
-          "speaker_id": "narrator",
-          "text": "The scrapyard drydock smells like ozone and bad coolant. Your neighbor in maintenance, the mechanic he goes by, has a salvaged shuttle frame waiting under a tarp. He pulls it back, looks at you the way he used to look at your father. \"You count what you've got. I'll show you what fits. We don't waste a credit if we can help it.\"",
+          "text": "The scrapyard drydock smells like ozone and bad coolant. The mechanic from maintenance has a salvaged shuttle frame waiting under a tarp. He pulls it back and looks at you. \"You count what you've got. I'll show you what fits. We don't waste a credit if we can help it.\"",
           "responses": [],
           "expression": "neutral"
         }

@@ -30,7 +30,7 @@
     },
     {
       "entry_id": "auto_m05_marcus",
-      "text": "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He filed an engineering report about the air recyclers on the Nexus Prime orbital. The report was buried. Six months later, my father was dead.",
+      "text": "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He said his team flagged the air recyclers on the Nexus Prime orbital, and the report came back deferred.",
       "trigger_flag": "met_marcus_jin",
       "system_id": "breakstone",
       "mission_id": ""

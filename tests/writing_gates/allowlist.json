@@ -1294,14 +1294,6 @@
       "gate": "G2",
       "rule": "paired negation",
       "file": "data/dialogue/dialogues.json",
-      "path": ".dialogues[id=intro_narration].nodes[id=intro_2].text",
-      "match": "No path forward, no schooling",
-      "reason": "a paired negation; W2 rewrites it"
-    },
-    {
-      "gate": "G2",
-      "rule": "paired negation",
-      "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=new_horizon].text",
       "match": "No mapped systems, no trade",
       "reason": "a paired negation; W2 rewrites it"
