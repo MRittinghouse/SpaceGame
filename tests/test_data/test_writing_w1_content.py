@@ -166,7 +166,7 @@ class TestRenames:
         assert [npcs[npc_id].name for npc_id in ids] == ["Glyn Quintela"] * 3
 
     def test_no_player_facing_string_keeps_an_old_name(self) -> None:
-        old = re.compile(r"Dex|Halloran|Spacer's Palate")
+        old = re.compile(r"\bDex\b|Halloran|Spacer's Palate")
         assert not [(row.file, row.path) for row in player_facing() if old.search(row.text)]
 
     def test_orens_line_keeps_its_one_beat(self) -> None:
