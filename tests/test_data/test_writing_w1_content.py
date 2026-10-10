@@ -53,6 +53,14 @@ class TestAddress:
     def test_the_two_endearments_stay_as_written(self) -> None:
         """The author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)."""
         assert "sweetheart" in get_data_loader().captains["odalys_kindling"].surrender_line
+        tariq = next(
+            e
+            for e in get_data_loader().encounter_definitions
+            if e.id == "sys_stellaris_art_dealer_01"
+        )
+        sell_story = next(c for c in tariq.choices if c.id == "sell_story")
+        assert "darling" in tariq.description
+        assert "darling" in sell_story.outcome.description
 
 
 class TestMissionTitles:
