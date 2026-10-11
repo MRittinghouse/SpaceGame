@@ -276,7 +276,7 @@
       "encounter_type": "ransom_demand",
       "name": "Commerce Guild Revenue Cutter",
       "min_level": 2,
-      "description": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. She produces a number. The paperwork looks real. Either way, it's 250 credits.",
+      "description": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. She produces a number. The paperwork looks real. The assessment comes to 250 credits.",
       "icon_color": [
         120,
         180,

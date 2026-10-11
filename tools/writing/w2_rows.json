@@ -4670,7 +4670,7 @@
    "file": "data/encounters/ce4_pressure.json",
    "gate_path": ".encounters[id=ransom_guild_audit_01].description",
    "old": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. He produces a number. The paperwork looks real enough that you're not sure if this is policy or piracy. Either way, it's 250 credits.",
-   "new": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. She produces a number. The paperwork looks real. Either way, it's 250 credits.",
+   "new": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. She produces a number. The paperwork looks real. The assessment comes to 250 credits.",
    "disposition": "draft",
    "owner": "",
    "flags": [
