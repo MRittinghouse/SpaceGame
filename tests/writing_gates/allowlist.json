@@ -860,14 +860,6 @@
     },
     {
       "gate": "G11",
-      "rule": "navy",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=salvage_evidence].outcome.description",
-      "match": "naval",
-      "reason": "naval facility becomes a Guild yard or an enforcement term (impact 10.8); W2"
-    },
-    {
-      "gate": "G11",
       "rule": "price in speech",
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_destination].responses[0].text",
@@ -1288,14 +1280,6 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=new_horizon].text",
       "match": "No mapped systems, no trade",
-      "reason": "a paired negation; W2 rewrites it"
-    },
-    {
-      "gate": "G2",
-      "rule": "paired negation",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_sato_ghost_01].description",
-      "match": "No debris field. No ion",
       "reason": "a paired negation; W2 rewrites it"
     },
     {
@@ -2381,54 +2365,6 @@
     {
       "gate": "G6",
       "rule": "filter verb",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description",
-      "match": "you feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_guild_shadow_01].description",
-      "match": "You've notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description",
-      "match": "you notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].outcome.description",
-      "match": "you notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_torres_tip_01].choices[id=delete_message].outcome.description",
-      "match": "you notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/ce4_variety.json",
-      "path": ".encounters[id=bait_patrol_officer_01].choices[id=verify_id].failure_outcome.description",
-      "match": "You decide",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
       "file": "data/encounters/commerce_guild.json",
       "path": ".encounters[id=guild_diplomat_01].choices[id=decline_passenger].outcome.description",
       "match": "you wonder",
@@ -2621,14 +2557,6 @@
     {
       "gate": "G8",
       "rule": "you can't",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_black_market_intel_01].choices[id=decline].description",
-      "match": "You can't afford",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you can't",
       "file": "data/encounters/miners_union.json",
       "path": ".encounters[id=union_cave_in_01].choices[id=move_on].description",
       "match": "You can't stop",
@@ -2645,25 +2573,9 @@
     {
       "gate": "G8",
       "rule": "you don't",
-      "file": "data/encounters/ce4_variety.json",
-      "path": ".encounters[id=derelict_civilian_wreck_01].description",
-      "match": "you don't want",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
       "file": "data/encounters/lore.json",
       "path": ".encounters[id=lore_earth_broadcast_01].choices[id=change_freq].description",
       "match": "You don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description",
-      "match": "you feel in",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2704,14 +2616,6 @@
       "file": "data/encounters/frontier_alliance.json",
       "path": ".encounters[id=alliance_festival_01].choices[id=join].description",
       "match": "You have earned",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you prefer",
-      "file": "data/encounters/campaign.json",
-      "path": ".encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].description",
-      "match": "You won't let",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {

@@ -30,7 +30,7 @@
           "description": "Hand over the credits. They leave. Your reputation does not.",
           "requires_credits": 200,
           "outcome": {
-            "description": "You authorize the transfer. The corvette acknowledges, banks away, and is gone before your hands stop shaking.",
+            "description": "You authorize the transfer. The corvette acknowledges, banks away, and is gone.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -75,7 +75,7 @@
             "difficulty": 4
           },
           "outcome": {
-            "description": "Something in your voice convinces him you'll follow through. He veers off without another word.",
+            "description": "He veers off without another word.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -276,7 +276,7 @@
       "encounter_type": "ransom_demand",
       "name": "Commerce Guild Revenue Cutter",
       "min_level": 2,
-      "description": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. He produces a number. The paperwork looks real enough that you're not sure if this is policy or piracy. Either way, it's 250 credits.",
+      "description": "A Commerce Guild revenue cutter pulls alongside. The officer cites a transit assessment. She produces a number. The paperwork looks real. Either way, it's 250 credits.",
       "icon_color": [
         120,
         180,
@@ -429,7 +429,7 @@
         {
           "id": "refuse",
           "label": "Tell Her No",
-          "description": "There's no good way to say it. Say it anyway.",
+          "description": "Tell her no.",
           "outcome": {
             "description": "Her voice gets very flat. The skiff opens up.",
             "rewards": [],
@@ -676,7 +676,7 @@
             "set_flag_on_success": "ce4_read_frontier_truth"
           },
           "outcome": {
-            "description": "His grief is real. You give him what you can spare and he's gone. The cost is 60 credits in supplies.",
+            "description": "He sends the clinic's fire report unasked. You give him what you can spare and he's gone. The cost is 60 credits in supplies.",
             "rewards": [
               {
                 "reward_type": "deduct_credits",
@@ -694,7 +694,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "You can't tell. He sees you hesitate. Decides you've already chosen.",
+            "description": "He watches the pause run long. Decides you've already chosen.",
             "rewards": [],
             "leads_to_combat": true,
             "enemy_template_ids": [
@@ -705,7 +705,7 @@
         {
           "id": "refuse",
           "label": "Refuse",
-          "description": "He could be lying. Hold what you've got.",
+          "description": "Hold what you've got.",
           "outcome": {
             "description": "He doesn't argue. He just opens fire.",
             "rewards": [],
