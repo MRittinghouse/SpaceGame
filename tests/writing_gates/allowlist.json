@@ -253,190 +253,6 @@
     {
       "gate": "G1",
       "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_10_crimson_reach.json",
-      "path": ".interactables[1].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_10_crimson_reach.json",
-      "path": ".story_triggers[0].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_10_crimson_reach.json",
-      "path": ".story_triggers[2].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
-      "path": ".interactables[1].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
-      "path": ".story_triggers[2].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_13_breakstone_tunnels.json",
-      "path": ".story_triggers[4].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".interactables[1].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".interactables[2].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".story_triggers[0].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".story_triggers[1].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".story_triggers[2].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".story_triggers[3].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_14_iron_depths_facility.json",
-      "path": ".story_triggers[4].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_pirate_base.json",
-      "path": ".interactables[0].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_pirate_base.json",
-      "path": ".interactables[3].description",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_pirate_base.json",
-      "path": ".story_triggers[0].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_pirate_base.json",
-      "path": ".story_triggers[1].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_pirate_base.json",
-      "path": ".story_triggers[4].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[0].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[1].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[2].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[3].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[4].text",
-      "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-    },
-    {
-      "gate": "G1",
-      "rule": "double hyphen",
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=connection].core_fantasy",
       "match": "--",
@@ -901,22 +717,6 @@
     {
       "gate": "G11",
       "rule": "warp",
-      "file": "data/combat/complications.json",
-      "path": ".complications[id=reinforcement_arrival].narration",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/combat/enemies.json",
-      "path": ".enemy_templates[id=ledger_vanguard].description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=alarm].responses[1].text",
       "match": "warp",
@@ -945,62 +745,6 @@
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=looking_back].text",
       "match": "warp",
       "reason": "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/galaxy/locations.json",
-      "path": ".locations.the_fulcrum[id=fulcrum_core].description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/galaxy/locations.json",
-      "path": ".locations.the_fulcrum[id=fulcrum_core].flavor_text",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/ground/campaign/mission_16_the_fulcrum.json",
-      "path": ".story_triggers[4].text",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/missions/missions.json",
-      "path": ".missions[id=the_collapse].description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/missions/missions.json",
-      "path": ".missions[id=the_collapse].hint",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/missions/missions.json",
-      "path": ".missions[id=the_collapse].objectives[1].description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
-      "file": "data/missions/missions.json",
-      "path": ".missions[id=under_fire].description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
     },
     {
       "gate": "G11",
@@ -1177,14 +921,6 @@
       "path": ".dialogues[id=torres_underground]",
       "match": "8 nodes",
       "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
-    },
-    {
-      "gate": "G2",
-      "rule": "paired negation",
-      "file": "data/crew/station_chatter.json",
-      "path": ".chatter_lines[id=fu_atm_01].text",
-      "match": "No idle chatter. No lingering",
-      "reason": "a paired negation; W2 rewrites it"
     },
     {
       "gate": "G2",
@@ -2257,14 +1993,6 @@
       "path": ".encounters[id=sys_stellaris_art_dealer_01].description",
       "match": "darling",
       "reason": "the author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/missions/side_missions.json",
-      "path": ".missions[id=the_forgery].description",
-      "match": "you realize",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
       "gate": "G9",

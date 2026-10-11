@@ -13,6 +13,11 @@ import pytest
 from tools.writing import w2_audit
 
 DONE_FILES: tuple[str, ...] = (
+    "data/auctions/stellaris_voices.json",
+    "data/combat/complications.json",
+    "data/combat/enemies.json",
+    "data/crew/crew_members.json",
+    "data/crew/station_chatter.json",
     "data/dialogue/dialogues.json",
     "data/encounters/campaign.json",
     "data/encounters/ce4_pressure.json",
@@ -25,8 +30,24 @@ DONE_FILES: tuple[str, ...] = (
     "data/encounters/miners_union.json",
     "data/encounters/science_collective.json",
     "data/encounters/system_specific.json",
+    "data/galaxy/locations.json",
+    "data/ground/campaign/mission_10_crimson_reach.json",
+    "data/ground/campaign/mission_13_breakstone_tunnels.json",
+    "data/ground/campaign/mission_14_iron_depths_facility.json",
+    "data/ground/campaign/mission_16_pirate_base.json",
+    "data/ground/campaign/mission_16_the_fulcrum.json",
     "data/journal/entries.json",
     "data/journal/travel_log_templates.json",
+    "data/missions/crew_quests.json",
+    "data/missions/missions.json",
+    "data/missions/side_missions.json",
+    "data/narrative/dilemmas/d1_vengeance_justice.json",
+    "data/narrative/dilemmas/d2_wealth_community.json",
+    "data/narrative/dilemmas/d3_power_revolution_empire.json",
+    "data/narrative/dilemmas/d5_legacy_connection.json",
+    "data/narrative/dilemmas/d6_preservation_empire.json",
+    "data/narrative/lenses.json",
+    "data/ships/modules.json",
 )
 
 

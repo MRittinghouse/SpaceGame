@@ -696,7 +696,7 @@
       "role": "auction reader",
       "faction_id": "commerce_guild",
       "home_system_id": "stellaris_port",
-      "description": "Six years on a Commerce Guild auction desk gave Sable a cataloguer's eye for bid patterns. She shows you the ceiling she thinks a lot will reach, and she's right often enough that you stop questioning it.",
+      "description": "Six years on a Commerce Guild auction desk gave Sable a cataloguer's eye for bid patterns. She shows you the ceiling she thinks a lot will reach; her ceilings hold more often than not.",
       "portrait_color": [90, 160, 200],
       "base_attributes": {"com": 2, "acu": 3, "res": 1, "ing": 1, "syn": 1},
       "max_level": 1,

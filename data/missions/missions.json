@@ -119,7 +119,7 @@
     {
       "id": "footing_the_bill",
       "name": "Footing the Bill",
-      "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice like she was doing you a favor, and she probably was. But nobody gives something for nothing out here.",
+      "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice.",
       "hint": "Elena Reeves will appear at Nexus Prime once the iron delivery is settled or overdue. Listen to her trading advice.",
       "prerequisites": [
         "bill_of_landing"
@@ -155,7 +155,7 @@
     {
       "id": "union_territory",
       "name": "Union Territory",
-      "description": "Hanna Voss runs the Breakstone docks with a wrench in one hand and a grudge against the Commerce Guild in the other. She'll let you trade here, but only after you prove you're not another profiteer. Five units of food for the miners' commissary. Fair price for trust.",
+      "description": "Hanna Voss runs the Breakstone docks with a wrench in one hand and a grudge against the Commerce Guild in the other. She'll let you trade here, but only after you prove you're not another profiteer. Five units of food for the miners' commissary.",
       "hint": "Buy 5 food and deliver it to Breakstone to earn the miners' trust. Hanna Voss is waiting.",
       "prerequisites": [
         "footing_the_bill"
@@ -207,7 +207,7 @@
     {
       "id": "the_foremans_son",
       "name": "Deferred",
-      "description": "Marcus Jin went quiet when he heard your name. The Breakstone engineer knew your father. Or at least, he knew about the safety report that could have saved him. The one that came back deferred. He's carrying something, and it's not just guilt.",
+      "description": "Marcus Jin went quiet when he heard your name. The Breakstone engineer knew your father. Or at least, he knew about the safety report that could have saved him. The one that came back deferred.",
       "hint": "Talk to Marcus Jin at Breakstone. He knows something about your father.",
       "prerequisites": [
         "union_territory"
@@ -247,7 +247,7 @@
         "late_multiplier": 0.5
       },
       "name": "The Scholar's Errand",
-      "description": "Dr. Priya Osei's chartered transport was quietly reassigned. She suspects political pressure, though she's too polite to say it outright. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride. You need a reason to visit Science Collective space.",
+      "description": "Dr. Priya Osei's chartered transport was quietly reassigned. She suspects political pressure, though she's too polite to say it outright. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride.",
       "hint": "Transport Dr. Priya Osei to Axiom Labs. She's waiting at Nexus Prime.",
       "prerequisites": [
         "union_territory"
@@ -287,7 +287,7 @@
     {
       "id": "the_drifters_deal",
       "name": "The Drifter's Deal",
-      "description": "Tomas Drifter has a smile that could sell atmo to a fish. He cornered you at Haven's Rest with a proposal involving Alliance textiles, Guild tariff loopholes, and what he calls 'creative commerce.' The profit margins are real. The legality is... interpretive.",
+      "description": "Tomas Drifter cornered you at Haven's Rest with a proposal involving Alliance textiles, Guild tariff loopholes, and what he calls 'creative commerce.' The profit margins are real. The legality is... interpretive.",
       "hint": "Meet Tomas Drifter at Haven's Rest. He has a proposition for you.",
       "prerequisites": [
         "union_territory"
@@ -322,7 +322,7 @@
     {
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
-      "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods, split the take, and try not to think too hard about the tariff codes.",
+      "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods and split the take.",
       "hint": "Travel to Stellaris Port with Tomas's textiles.",
       "prerequisites": [
         "the_drifters_deal"
@@ -432,7 +432,7 @@
     {
       "id": "recruit_scientist",
       "name": "Recruit Scientist",
-      "description": "Priya's lab at Axiom is pristine, well-funded, and slowly killing her curiosity. She needs field data, not simulations. A ship with cargo space and a captain who doesn't flinch at uncharted readings is worth more to her than tenure.",
+      "description": "Priya's lab at Axiom is pristine, well-funded, and slowly killing her curiosity. She needs field data, not simulations. A ship with cargo space is worth more to her than tenure.",
       "hint": "Travel to Axiom Labs to recruit Dr. Priya Osei as your scientist.",
       "prerequisites": [
         "the_scholars_errand"
@@ -463,7 +463,7 @@
     {
       "id": "recruit_trader",
       "name": "Recruit Trader",
-      "description": "Tomas has been working solo since his family's business collapsed. He's good at reading people, better at reading markets, and tired of sleeping in transit berths. He proposed a partnership at Haven's Rest. His contacts, your ship. Worst case, you get a decent card player.",
+      "description": "Tomas has been working solo since his family's business collapsed. He's good at reading people, better at reading markets, and tired of sleeping in transit berths. He proposed a partnership at Haven's Rest. His contacts, your ship.",
       "hint": "Travel to Haven's Rest to recruit Tomas Drifter as your trader.",
       "prerequisites": [
         "the_drifters_deal"
@@ -563,7 +563,7 @@
     {
       "id": "whispers_at_the_bar",
       "name": "Whispers at the Bar",
-      "description": "Glyn Quintela found you at the Nexus Prime cantina. Not the other way around. He bought a drink he didn't touch and started talking about the convoy raids like he'd read the incident reports. Nobody has that kind of intel unless they're law, press, or involved. He's none of those things. Or maybe all three.",
+      "description": "Glyn Quintela found you at the Nexus Prime cantina. Not the other way around. He bought a drink he didn't touch and started talking about the convoy raids like he'd read the incident reports.",
       "hint": "Glyn Quintela will find you at Nexus Prime. He has intel on the pirate attacks.",
       "prerequisites": [
         "cargo_lost"
@@ -594,7 +594,7 @@
     {
       "id": "the_crimson_run",
       "name": "The Crimson Run",
-      "description": "Glyn pressed an encrypted data chip into your hand like it was a grenade with the pin pulled. Whatever's on it, he can't decrypt it himself, and he trusts exactly one person in the Expanse to try: Malia Torres at Crimson Reach. A salvage tech in lawless space. This is either the break you need or the kind of favor that gets people killed.",
+      "description": "Glyn pressed an encrypted data chip into your hand like it was a grenade with the pin pulled. Whatever's on it, he can't decrypt it himself, and he trusts exactly one person in the Expanse to try: Malia Torres at Crimson Reach. A salvage tech in lawless space.",
       "hint": "Travel to Crimson Reach and deliver Glyn's data chip to Malia Torres.",
       "prerequisites": [
         "whispers_at_the_bar"
@@ -703,7 +703,7 @@
     {
       "id": "under_fire",
       "name": "Under Fire",
-      "description": "They dropped out of warp already firing. Military-grade weapons, coordinated formation tactics, unmarked hulls running Guild-pattern drive cores. These aren't pirates scraping by on salvage. Someone with deep pockets and access to hardware that doesn't exist on any civilian market is building an army. And they just put you on the target list.",
+      "description": "They jumped in already firing. Military-grade weapons, coordinated formation tactics, unmarked hulls running Guild-pattern drive cores. These aren't pirates scraping by on salvage. Someone with deep pockets and access to hardware that doesn't exist on any civilian market is building an army. And they just put you on the target list.",
       "hint": "Pirates are hunting you. Travel between systems and be ready to fight.",
       "prerequisites": [
         "embassy_visit"
@@ -967,8 +967,8 @@
     {
       "id": "the_collapse",
       "name": "The Collapse",
-      "description": "The arrays have deployed. The Aurelia star is dying. Project Convergence is active and irreversible. The only escape is the warp gate at The Fulcrum, but the Ledger's forces are between you and salvation. Fight through, reach the gate, and pray it takes you somewhere survivable.",
-      "hint": "Fight through the Ledger blockade and escape through the warp gate. Now or never.",
+      "description": "The arrays have deployed. The Aurelia star is dying. Project Convergence is active and irreversible. The only escape is the gate at The Fulcrum, but the Ledger's forces are between you and salvation. Fight through and reach the gate.",
+      "hint": "Fight through the Ledger blockade and escape through the gate. Now or never.",
       "prerequisites": [
         "point_of_no_return"
       ],
@@ -994,7 +994,7 @@
         {
           "type": "has_flag",
           "target_id": "expanse_collapsed",
-          "description": "Escape through the warp gate"
+          "description": "Escape through the gate"
         }
       ],
       "rewards": [

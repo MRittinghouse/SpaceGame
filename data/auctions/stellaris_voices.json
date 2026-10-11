@@ -28,7 +28,7 @@
         "Prentiss accepts the result. The recalibration is internal."
       ],
       "no_overlap": [
-        "Prentiss attended. He did not bid against you on the lots you wanted.",
+        "Prentiss attended. He did not bid against you on the lots you bid on.",
         "Prentiss watched the floor. His attention rested elsewhere this session.",
         "Prentiss attended the session. The lots that drew him were not yours."
       ],
@@ -74,7 +74,7 @@
       "no_overlap": [
         "Salko was here. He bid where he chose.",
         "Salko attended. The lots that brought him were not the ones in front of you.",
-        "Salko sat through the session. He did not engage on the lots you wanted."
+        "Salko sat through the session. He did not engage on your lots."
       ],
       "absent_retired": [
         "Salko has not been on the floor in a while.",
