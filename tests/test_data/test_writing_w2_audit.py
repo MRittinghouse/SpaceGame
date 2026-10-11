@@ -12,7 +12,10 @@ import pytest
 
 from tools.writing import w2_audit
 
-DONE_FILES: tuple[str, ...] = ("data/encounters/generic.json",)
+DONE_FILES: tuple[str, ...] = (
+    "data/encounters/generic.json",
+    "data/encounters/system_specific.json",
+)
 
 
 def test_the_worklist_holds_every_open_audit_row() -> None:

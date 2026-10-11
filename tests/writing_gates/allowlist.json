@@ -1029,14 +1029,6 @@
     {
       "gate": "G11",
       "rule": "warp",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_breakstone_ore_heist_01].choices[id=scavenge].outcome.description",
-      "match": "warp",
-      "reason": "warp is out of the Expanse's lexicon; W2 rewrites the line"
-    },
-    {
-      "gate": "G11",
-      "rule": "warp",
       "file": "data/galaxy/locations.json",
       "path": ".locations.the_fulcrum[id=fulcrum_core].description",
       "match": "warp",
@@ -2541,38 +2533,6 @@
     {
       "gate": "G6",
       "rule": "filter verb",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=comply].outcome.description",
-      "match": "You feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_haven_newcomer_01].choices[id=guide].outcome.description",
-      "match": "you realize",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_haven_supply_run_01].choices[id=decline].description",
-      "match": "You can't help",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
-      "match": "You feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
       "file": "data/missions/side_missions.json",
       "path": ".missions[id=the_forgery].description",
       "match": "you realize",
@@ -2608,14 +2568,6 @@
       "file": "data/encounters/lore.json",
       "path": ".encounters[id=lore_earth_broadcast_01].description",
       "match": "your heart",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G7",
-      "rule": "your body",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=retreat].outcome.description",
-      "match": "Your heart",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2692,14 +2644,6 @@
     },
     {
       "gate": "G8",
-      "rule": "you can't",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_haven_supply_run_01].choices[id=decline].description",
-      "match": "You can't help",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
       "rule": "you don't",
       "file": "data/encounters/ce4_variety.json",
       "path": ".encounters[id=derelict_civilian_wreck_01].description",
@@ -2712,30 +2656,6 @@
       "file": "data/encounters/lore.json",
       "path": ".encounters[id=lore_earth_broadcast_01].choices[id=change_freq].description",
       "match": "You don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_axiom_containment_01].choices[id=leave].outcome.description",
-      "match": "You don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_fulcrum_weapons_test_01].choices[id=leave].outcome.description",
-      "match": "You don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_nova_whistleblower_01].choices[id=delete].description",
-      "match": "you don't want",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2780,22 +2700,6 @@
     },
     {
       "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=comply].outcome.description",
-      "match": "You feel watched",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_stellaris_art_dealer_01].choices[id=sell_story].outcome.description",
-      "match": "You feel slightly",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
       "rule": "you have earned",
       "file": "data/encounters/frontier_alliance.json",
       "path": ".encounters[id=alliance_festival_01].choices[id=join].description",
@@ -2816,46 +2720,6 @@
       "file": "data/encounters/science_collective.json",
       "path": ".encounters[id=collective_grant_01].choices[id=decline_grant].description",
       "match": "You prefer",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_axiom_field_test_01].choices[id=decline].description",
-      "match": "You'd rather",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].outcome.description",
-      "match": "you'd rather",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_forge_smuggle_parts_01].choices[id=decline].description",
-      "match": "You'd rather",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_iron_deep_signal_01].choices[id=ignore].description",
-      "match": "you'd rather",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/system_specific.json",
-      "path": ".encounters[id=sys_verdant_tariff_protest_01].choices[id=ignore].description",
-      "match": "you'd rather",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
