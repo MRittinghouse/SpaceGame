@@ -2413,54 +2413,6 @@
     {
       "gate": "G6",
       "rule": "filter verb",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_bureaucracy_01].choices[id=comply].outcome.description",
-      "match": "you feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_bureaucracy_01].choices[id=ignore].outcome.description",
-      "match": "You wonder",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_space_cat_01].description",
-      "match": "you realize",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_space_junk_art_01].choices[id=donate].outcome.description",
-      "match": "You feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_space_junk_art_01].description",
-      "match": "you feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/lore.json",
-      "path": ".encounters[id=lore_aurelia_beacon_01].choices[id=study].outcome.description",
-      "match": "you notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
       "file": "data/encounters/science_collective.json",
       "path": ".encounters[id=collective_nova_test_01].choices[id=ask_details].outcome.description",
       "match": "You notice",
@@ -2472,38 +2424,6 @@
       "file": "data/missions/side_missions.json",
       "path": ".missions[id=the_forgery].description",
       "match": "you realize",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G7",
-      "rule": "shaking hands",
-      "file": "data/encounters/lore.json",
-      "path": ".encounters[id=lore_earth_broadcast_01].choices[id=listen].outcome.description",
-      "match": "your hands are shaking",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G7",
-      "rule": "your body",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_bureaucracy_01].choices[id=ignore].outcome.description",
-      "match": "your stomach",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G7",
-      "rule": "your body",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_space_junk_art_01].description",
-      "match": "your breath",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G7",
-      "rule": "your body",
-      "file": "data/encounters/lore.json",
-      "path": ".encounters[id=lore_earth_broadcast_01].description",
-      "match": "your heart",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2572,14 +2492,6 @@
     },
     {
       "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/lore.json",
-      "path": ".encounters[id=lore_earth_broadcast_01].choices[id=change_freq].description",
-      "match": "You don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
       "rule": "you feel",
       "file": "data/encounters/frontier_alliance.json",
       "path": ".encounters[id=alliance_community_01].choices[id=donate].outcome.description",
@@ -2592,22 +2504,6 @@
       "file": "data/encounters/frontier_alliance.json",
       "path": ".encounters[id=alliance_storyteller_01].choices[id=listen].outcome.description",
       "match": "You feel sharper",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_bureaucracy_01].choices[id=comply].outcome.description",
-      "match": "you feel strangely",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/humor.json",
-      "path": ".encounters[id=humor_space_junk_art_01].choices[id=donate].outcome.description",
-      "match": "You feel like",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
