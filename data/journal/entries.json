@@ -23,7 +23,7 @@
     },
     {
       "entry_id": "auto_m04_breakstone",
-      "text": "Earned trade access at Breakstone by delivering food to the miners' commissary. Hanna Voss runs the docks here. The Union judges people by what they do, not what they say.",
+      "text": "Earned trade access at Breakstone by delivering food to the miners' commissary. Hanna Voss ran the docks.",
       "trigger_flag": "breakstone_permit_earned",
       "system_id": "breakstone",
       "mission_id": ""
@@ -44,14 +44,14 @@
     },
     {
       "entry_id": "auto_m07_tomas_accepted",
-      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade. Rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
+      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs. Haven's Rest ran on handshakes and trust.",
       "trigger_flag": "accepted_drifter_deal",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_m07_tomas_declined",
-      "text": "Met Tomas Drifter at Haven's Rest. Declined his offer to reroute supplies around Guild tariffs. The rules exist for a reason, even if the reasons are not always fair.",
+      "text": "Met Tomas Drifter at Haven's Rest. Declined his offer to reroute supplies around Guild tariffs.",
       "trigger_flag": "declined_drifter_deal",
       "system_id": "havens_rest",
       "mission_id": ""
@@ -65,7 +65,7 @@
     },
     {
       "entry_id": "auto_m08_ignored",
-      "text": "Passed a freighter sending a distress signal. Later heard Captain Reva Sato arrived too late. Three convoy attacks this month. The pattern is impossible to ignore.",
+      "text": "Passed a freighter sending a distress signal. Later heard Captain Reva Sato arrived too late. Three convoy attacks this month.",
       "trigger_flag": "ignored_distress",
       "system_id": "",
       "mission_id": ""
@@ -128,7 +128,7 @@
     },
     {
       "entry_id": "auto_m17_horizon",
-      "text": "Act One concluded. The Ledger is exposed but not destroyed. Uncharted coordinates recovered from the base point to more operations beyond the Expanse's borders. The factions are talking. It is a start.",
+      "text": "Act One concluded. The Ledger was exposed but not destroyed. Uncharted coordinates recovered from the base pointed to more operations beyond the Expanse's borders. The factions were talking.",
       "trigger_flag": "act_one_complete",
       "system_id": "",
       "mission_id": ""
@@ -149,14 +149,14 @@
     },
     {
       "entry_id": "auto_arna_brother_reveal",
-      "text": "Arna has a younger brother on a Union refinery station. His lungs are giving out from processed air. Union healthcare gave him two options: keep working or pay out of pocket for transfer. The transfer costs more than she makes in ten years. The ore, the refining, the sale, the ambush, all of it was for him. She hid that like she hides everything, because telling would have meant admitting she was desperate.",
+      "text": "Arna's younger brother was on a Union refinery station. His lungs were giving out from processed air. Union healthcare gave him two options: keep working or pay out of pocket for transfer. The transfer cost more than she made in ten years. She said the ore, the refining, the sale, the ambush, all of it was for him.",
       "trigger_flag": "arna_scheme_revealed",
       "system_id": "herons_mark",
       "mission_id": "arna_04_the_buyer"
     },
     {
       "entry_id": "auto_arna_branch_a",
-      "text": "Went back to Heron's Mark. Keren was waiting, thought it was quiet. It wasn't. The depot held more than the sale was worth and the Crimson Reach will notice. Arna is packing a bag now. Two blacklists instead of one. She said something smaller than I expected and walked off toward the dock.",
+      "text": "Went back to Heron's Mark. Keren was waiting. The depot held more than the sale was worth. Arna was packing a bag. Two blacklists instead of one. She said something small and walked off toward the dock.",
       "trigger_flag": "arna_branch_a_complete",
       "system_id": "nexus_prime",
       "mission_id": "arna_05a_last_freight_out"
@@ -170,7 +170,7 @@
     },
     {
       "entry_id": "auto_arna_branch_c",
-      "text": "I turned Arna in. She did not see it coming. She wouldn't have. She said 'oh, that's what this is' and put her hands flat on the terminal. She didn't look at me. I didn't look at her either. I got paid. The docks kept running.",
+      "text": "I turned Arna in. She said 'oh, that's what this is' and put her hands flat on the terminal. She didn't look at me. I didn't look at her either. I got paid. The docks kept running.",
       "trigger_flag": "arna_betrayal_resolved",
       "system_id": "nexus_prime",
       "mission_id": "arna_05c_clean_paper"
@@ -289,70 +289,70 @@
     },
     {
       "entry_id": "auto_sa_v_longer_ledger",
-      "text": "Odom finally cracked open the part of the ledger most pilots never see. Said I had cleared the floor. Talked about putting credits to work in places that pay back over time. There are stations in the expanse that run structured returns on parked capital. Terms on the card, he said. I am now one of the people who knows the card exists. He named one person at the end: Ilse Vey at Meridian. Did not elaborate. Will remember the name.",
+      "text": "Odom cracked open the part of the ledger most pilots never saw. Said I had cleared the floor. Talked about putting credits to work in places that paid back over time. There were stations in the expanse that ran structured returns on parked capital. Terms on the card, he said. He named one person at the end: Ilse Vey at Meridian. Did not elaborate.",
       "trigger_flag": "investment_introduced",
       "system_id": "nexus_prime",
       "mission_id": "sa_v_investment_intro"
     },
     {
       "entry_id": "auto_p3_first_dispute_attended",
-      "text": "First session at the Verdant council. Three delegates and a mayor, three different ideas of what the bill was about. The vote went the way it went. I came out of it with a clearer picture of who carries which piece of the room. Hask anchors the soil. Drift carries the data. Marsh holds the water number. Vance keeps the floor moving. I need to know which argument moved which delegate before I come back.",
+      "text": "First session at the Verdant council. Three delegates and a mayor, three different ideas of what the bill was about. The vote went the way it went. Hask anchored the soil. Drift carried the data. Marsh held the water number. Vance kept the floor moving.",
       "trigger_flag": "first_dispute_attended",
       "system_id": "verdant",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p3_first_partial_win",
-      "text": "Got the concession out before the vote. The bill failed on the floor. The delegate I worked in mediation came out of the session with a position that shifted two steps. Off the record, but it was real. The vote was not the only thing on the table tonight. Worth something next time the same room reopens.",
+      "text": "Got the concession out before the vote. The bill failed on the floor. The delegate I worked in mediation came out of the session with a position that shifted two steps.",
       "trigger_flag": "first_partial_win",
       "system_id": "verdant",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p3_first_coalition_won",
-      "text": "Had the count before the session opened. Two pre-commits in the corridor, one of them quiet. The vote was the easy part. The work was in the conversations the delegates do not name on the record. The bill passed. The corridor work paid for the floor.",
+      "text": "Had the count before the session opened. Two pre-commits in the corridor, one of them quiet. The bill passed.",
       "trigger_flag": "first_coalition_won",
       "system_id": "verdant",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p4_first_alliance_congress_attended",
-      "text": "First session at the Alliance Congress in Haven's Rest. Four delegates and four different reads on the same resolution. Wentworth tracks precedent. Shirane drafts the deal. Vasc holds the principle. Tejada speaks for the Reach. The room runs slower than Verdant and the stakes scale across settlements. I need to know which delegate moves on which lever before I come back next year.",
+      "text": "First session at the Alliance Congress in Haven's Rest. Four delegates and four different reads on the same resolution. Wentworth tracked precedent. Shirane drafted the deal. Vasc held the principle. Tejada spoke for the Reach. The room ran slower than Verdant and the stakes scaled across settlements.",
       "trigger_flag": "first_alliance_congress_attended",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p4_first_coalition_betrayal_handled",
-      "text": "Had a delegate locked before the session and watched the pre-commit break mid-arc. The room saw it. The vote went sideways for a round. I rebuilt what I could and walked out with something. Not the win I came for. Better than nothing. Note for the next cycle: a pre-commit is good for as long as the conditions that bought it hold.",
+      "text": "Had a delegate locked before the session and watched the pre-commit break mid-arc. The room saw it. The vote went sideways for a round. I rebuilt what I could and walked out with something.",
       "trigger_flag": "first_coalition_betrayal_handled",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p4_first_alliance_wide_vote_won",
-      "text": "Carried a Congress vote that ripples beyond Haven's Rest. Markets at two settlements moved on the resolution. The work was building a coalition that held in two settlements at once, not one. The Alliance feels different from this side of a Congress win. Bigger room. Slower clock. The vote stays.",
+      "text": "Carried a Congress vote that rippled beyond Haven's Rest. Markets at two settlements moved on the resolution. Built a coalition that held in two settlements at once. Bigger room. Slower clock. The vote stood.",
       "trigger_flag": "first_alliance_wide_vote_won",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p5_first_reach_arbitration",
-      "text": "First session at the Guild arbitration floor. Malia runs it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. I walked out with a cleaner picture of what the Guild holds and what it does not. The Reach runs on informal consensus. The arbitration floor is where the informal gets written down.",
+      "text": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. The Reach ran on informal consensus. The arbitration floor was where the informal got written down.",
       "trigger_flag": "first_reach_arbitration",
       "system_id": "crimson_reach",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p5_first_salvage_rights_concession",
-      "text": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stay unchanged for now. What shifted was the delegate's position on the next case. I know what the concession cost and what it bought. Both were real.",
+      "text": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged for now. What shifted was the delegate's position on the next case.",
       "trigger_flag": "first_salvage_rights_concession",
       "system_id": "crimson_reach",
       "mission_id": ""
     },
     {
       "entry_id": "auto_p5_first_master_mediation_won",
-      "text": "Ran the mediation myself. Malia stepped back and recorded. The floor was cleaner than I expected. The position I had to hold was not the one I argued for, which meant two delegates heard something they trusted more than a pitch. The session closed on a win. Malia said nothing at the end. That seems settled.",
+      "text": "Ran the mediation myself. Malia stepped back and recorded. The position I had to hold was not the one I argued for. The session closed on a win. Malia said nothing at the end.",
       "trigger_flag": "first_master_mediation_won",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -366,7 +366,7 @@
     },
     {
       "entry_id": "auto_auction_first_win",
-      "text": "Won my first lot. Took it at the price the room held. Filed the receipt. Next time I will know what that price meant.",
+      "text": "Won my first lot. Took it at the price the room held. Filed the receipt.",
       "trigger_flag": "auction_first_win",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -380,7 +380,7 @@
     },
     {
       "entry_id": "auto_auction_first_velo_encounter",
-      "text": "Talked to the auctioneer between sessions. Cassian Velo. Off the floor he is quieter. He will not give me a reserve. He will tell me what the catalogue rewards. I think that is a fair trade.",
+      "text": "Talked to the auctioneer between sessions. Cassian Velo. Off the floor he was quieter. He would not give me a reserve. He would tell me what the catalogue rewarded.",
       "trigger_flag": "seen_first_velo_encounter",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -401,7 +401,7 @@
     },
     {
       "entry_id": "auto_auction_first_contraband_lesson",
-      "text": "Won a lot the Stellaris Commerce Guild would not have signed off on. Two points off the standing ledger. Vex did not comment. The crate was already on the trolley when I noticed.",
+      "text": "Won a lot the Stellaris Commerce Guild would not have signed off on. Two points off the standing ledger. Vex did not comment. The crate was already on the trolley.",
       "trigger_flag": "auction_first_contraband_win",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -422,7 +422,7 @@
     },
     {
       "entry_id": "auto_auction_first_listing_withdrawn",
-      "text": "Reserve was not met. The lot returns to my hold. The fee stays with the floor. The room had its limit and I had mine, and the two did not meet. I will set the reserve closer next time.",
+      "text": "Reserve was not met. The lot went back to my hold. The fee stayed with the floor. The room had its limit and I had set mine, and the two did not meet.",
       "trigger_flag": "auction_first_listing_withdrawn",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -464,7 +464,7 @@
     },
     {
       "entry_id": "auto_d4_vengeance_won",
-      "text": "The file on Aldric Senn closed today. He and the leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question does not get answered now. It was the cost. I paid it.",
+      "text": "The file on Aldric Senn closed today. He and the leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question went unanswered.",
       "trigger_flag": "d4_vengeance_won",
       "system_id": "the_fulcrum",
       "mission_id": ""
@@ -534,7 +534,7 @@
     },
     {
       "entry_id": "auto_d6_preservation_won",
-      "text": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard is on the regional record now, the boundary documented, the catalogue recognized. The sites I did not claim went to someone else. Halvorsen filed adjacent territory. I watched the development schedule fill in from the outside of a boundary I could have drawn differently.",
+      "text": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard was on the regional record, the boundary documented, the catalogue recognized. The sites I did not claim went to someone else. Halvorsen filed adjacent territory. I watched the development schedule fill in from outside the boundary.",
       "trigger_flag": "d6_preservation_won",
       "system_id": "herons_mark",
       "mission_id": ""

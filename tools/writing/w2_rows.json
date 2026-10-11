@@ -12933,7 +12933,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_arna_branch_a].text",
    "old": "Went back to Heron's Mark. Keren was waiting, thought it was quiet. It wasn't. The depot held more than the sale was worth and the Crimson Reach will notice. Arna is packing a bag now. Two blacklists instead of one. She said something smaller than I expected and walked off toward the dock.",
-   "new": "",
+   "new": "Went back to Heron's Mark. Keren was waiting. The depot held more than the sale was worth. Arna was packing a bag. Two blacklists instead of one. She said something small and walked off toward the dock.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -12955,7 +12955,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_arna_branch_c].text",
    "old": "I turned Arna in. She did not see it coming. She wouldn't have. She said 'oh, that's what this is' and put her hands flat on the terminal. She didn't look at me. I didn't look at her either. I got paid. The docks kept running.",
-   "new": "",
+   "new": "I turned Arna in. She said 'oh, that's what this is' and put her hands flat on the terminal. She didn't look at me. I didn't look at her either. I got paid. The docks kept running.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -12977,7 +12977,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_arna_brother_reveal].text",
    "old": "Arna has a younger brother on a Union refinery station. His lungs are giving out from processed air. Union healthcare gave him two options: keep working or pay out of pocket for transfer. The transfer costs more than she makes in ten years. The ore, the refining, the sale, the ambush, all of it was for him. She hid that like she hides everything, because telling would have meant admitting she was desperate.",
-   "new": "",
+   "new": "Arna's younger brother was on a Union refinery station. His lungs were giving out from processed air. Union healthcare gave him two options: keep working or pay out of pocket for transfer. The transfer cost more than she made in ten years. She said the ore, the refining, the sale, the ambush, all of it was for him.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -12999,7 +12999,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_auction_first_contraband_lesson].text",
    "old": "Won a lot the Stellaris Commerce Guild would not have signed off on. Two points off the standing ledger. Vex did not comment. The crate was already on the trolley when I noticed.",
-   "new": "",
+   "new": "Won a lot the Stellaris Commerce Guild would not have signed off on. Two points off the standing ledger. Vex did not comment. The crate was already on the trolley.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13021,7 +13021,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_auction_first_listing_withdrawn].text",
    "old": "Reserve was not met. The lot returns to my hold. The fee stays with the floor. The room had its limit and I had mine, and the two did not meet. I will set the reserve closer next time.",
-   "new": "",
+   "new": "Reserve was not met. The lot went back to my hold. The fee stayed with the floor. The room had its limit and I had set mine, and the two did not meet.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13043,7 +13043,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_auction_first_velo_encounter].text",
    "old": "Talked to the auctioneer between sessions. Cassian Velo. Off the floor he is quieter. He will not give me a reserve. He will tell me what the catalogue rewards. I think that is a fair trade.",
-   "new": "",
+   "new": "Talked to the auctioneer between sessions. Cassian Velo. Off the floor he was quieter. He would not give me a reserve. He would tell me what the catalogue rewarded.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13065,7 +13065,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_auction_first_win].text",
    "old": "Won my first lot. Took it at the price the room held. Filed the receipt. Next time I will know what that price meant.",
-   "new": "",
+   "new": "Won my first lot. Took it at the price the room held. Filed the receipt.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13087,7 +13087,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_d4_vengeance_won].text",
    "old": "The file on Aldric Senn closed today. He and the leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question does not get answered now. It was the cost. I paid it.",
-   "new": "",
+   "new": "The file on Aldric Senn closed today. He and the leadership who fled with him were the only witnesses left who could have said why the home galaxy was chosen. That question went unanswered.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13109,7 +13109,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_d6_preservation_won].text",
    "old": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard is on the regional record now, the boundary documented, the catalogue recognized. The sites I did not claim went to someone else. Halvorsen filed adjacent territory. I watched the development schedule fill in from the outside of a boundary I could have drawn differently.",
-   "new": "",
+   "new": "Chose the archive. Virtanen filed the standing authority the same week. The Long Yard was on the regional record, the boundary documented, the catalogue recognized. The sites I did not claim went to someone else. Halvorsen filed adjacent territory. I watched the development schedule fill in from outside the boundary.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13153,7 +13153,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m04_breakstone].text",
    "old": "Earned trade access at Breakstone by delivering food to the miners' commissary. Hanna Voss runs the docks here. The Union judges people by what they do, not what they say.",
-   "new": "",
+   "new": "Earned trade access at Breakstone by delivering food to the miners' commissary. Hanna Voss ran the docks.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13175,7 +13175,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m07_tomas_accepted].text",
    "old": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade. Rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
-   "new": "",
+   "new": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs. Haven's Rest ran on handshakes and trust.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13197,7 +13197,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m07_tomas_declined].text",
    "old": "Met Tomas Drifter at Haven's Rest. Declined his offer to reroute supplies around Guild tariffs. The rules exist for a reason, even if the reasons are not always fair.",
-   "new": "",
+   "new": "Met Tomas Drifter at Haven's Rest. Declined his offer to reroute supplies around Guild tariffs.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13219,7 +13219,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m08_ignored].text",
    "old": "Passed a freighter sending a distress signal. Later heard Captain Reva Sato arrived too late. Three convoy attacks this month. The pattern is impossible to ignore.",
-   "new": "",
+   "new": "Passed a freighter sending a distress signal. Later heard Captain Reva Sato arrived too late. Three convoy attacks this month.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13263,7 +13263,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m17_horizon].text",
    "old": "Act One concluded. The Ledger is exposed but not destroyed. Uncharted coordinates recovered from the base point to more operations beyond the Expanse's borders. The factions are talking. It is a start.",
-   "new": "",
+   "new": "Act One concluded. The Ledger was exposed but not destroyed. Uncharted coordinates recovered from the base pointed to more operations beyond the Expanse's borders. The factions were talking.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13285,7 +13285,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p3_first_coalition_won].text",
    "old": "Had the count before the session opened. Two pre-commits in the corridor, one of them quiet. The vote was the easy part. The work was in the conversations the delegates do not name on the record. The bill passed. The corridor work paid for the floor.",
-   "new": "",
+   "new": "Had the count before the session opened. Two pre-commits in the corridor, one of them quiet. The bill passed.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13307,7 +13307,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p3_first_dispute_attended].text",
    "old": "First session at the Verdant council. Three delegates and a mayor, three different ideas of what the bill was about. The vote went the way it went. I came out of it with a clearer picture of who carries which piece of the room. Hask anchors the soil. Drift carries the data. Marsh holds the water number. Vance keeps the floor moving. I need to know which argument moved which delegate before I come back.",
-   "new": "",
+   "new": "First session at the Verdant council. Three delegates and a mayor, three different ideas of what the bill was about. The vote went the way it went. Hask anchored the soil. Drift carried the data. Marsh held the water number. Vance kept the floor moving.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13329,7 +13329,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p3_first_partial_win].text",
    "old": "Got the concession out before the vote. The bill failed on the floor. The delegate I worked in mediation came out of the session with a position that shifted two steps. Off the record, but it was real. The vote was not the only thing on the table tonight. Worth something next time the same room reopens.",
-   "new": "",
+   "new": "Got the concession out before the vote. The bill failed on the floor. The delegate I worked in mediation came out of the session with a position that shifted two steps.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13351,7 +13351,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p4_first_alliance_congress_attended].text",
    "old": "First session at the Alliance Congress in Haven's Rest. Four delegates and four different reads on the same resolution. Wentworth tracks precedent. Shirane drafts the deal. Vasc holds the principle. Tejada speaks for the Reach. The room runs slower than Verdant and the stakes scale across settlements. I need to know which delegate moves on which lever before I come back next year.",
-   "new": "",
+   "new": "First session at the Alliance Congress in Haven's Rest. Four delegates and four different reads on the same resolution. Wentworth tracked precedent. Shirane drafted the deal. Vasc held the principle. Tejada spoke for the Reach. The room ran slower than Verdant and the stakes scaled across settlements.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13373,7 +13373,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p4_first_alliance_wide_vote_won].text",
    "old": "Carried a Congress vote that ripples beyond Haven's Rest. Markets at two settlements moved on the resolution. The work was building a coalition that held in two settlements at once, not one. The Alliance feels different from this side of a Congress win. Bigger room. Slower clock. The vote stays.",
-   "new": "",
+   "new": "Carried a Congress vote that rippled beyond Haven's Rest. Markets at two settlements moved on the resolution. Built a coalition that held in two settlements at once. Bigger room. Slower clock. The vote stood.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13395,7 +13395,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p4_first_coalition_betrayal_handled].text",
    "old": "Had a delegate locked before the session and watched the pre-commit break mid-arc. The room saw it. The vote went sideways for a round. I rebuilt what I could and walked out with something. Not the win I came for. Better than nothing. Note for the next cycle: a pre-commit is good for as long as the conditions that bought it hold.",
-   "new": "",
+   "new": "Had a delegate locked before the session and watched the pre-commit break mid-arc. The room saw it. The vote went sideways for a round. I rebuilt what I could and walked out with something.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13417,7 +13417,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p5_first_master_mediation_won].text",
    "old": "Ran the mediation myself. Malia stepped back and recorded. The floor was cleaner than I expected. The position I had to hold was not the one I argued for, which meant two delegates heard something they trusted more than a pitch. The session closed on a win. Malia said nothing at the end. That seems settled.",
-   "new": "",
+   "new": "Ran the mediation myself. Malia stepped back and recorded. The position I had to hold was not the one I argued for. The session closed on a win. Malia said nothing at the end.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13446,7 +13446,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p5_first_reach_arbitration].text",
    "old": "First session at the Guild arbitration floor. Malia runs it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. I walked out with a cleaner picture of what the Guild holds and what it does not. The Reach runs on informal consensus. The arbitration floor is where the informal gets written down.",
-   "new": "",
+   "new": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. The Reach ran on informal consensus. The arbitration floor was where the informal got written down.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13468,7 +13468,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p5_first_salvage_rights_concession].text",
    "old": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stay unchanged for now. What shifted was the delegate's position on the next case. I know what the concession cost and what it bought. Both were real.",
-   "new": "",
+   "new": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged for now. What shifted was the delegate's position on the next case.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13490,7 +13490,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_sa_v_longer_ledger].text",
    "old": "Odom finally cracked open the part of the ledger most pilots never see. Said I had cleared the floor. Talked about putting credits to work in places that pay back over time. There are stations in the expanse that run structured returns on parked capital. Terms on the card, he said. I am now one of the people who knows the card exists. He named one person at the end: Ilse Vey at Meridian. Did not elaborate. Will remember the name.",
-   "new": "",
+   "new": "Odom cracked open the part of the ledger most pilots never saw. Said I had cleared the floor. Talked about putting credits to work in places that paid back over time. There were stations in the expanse that ran structured returns on parked capital. Terms on the card, he said. He named one person at the end: Ilse Vey at Meridian. Did not elaborate.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13512,7 +13512,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[0]",
    "old": "Hostile contact near {system}. Hull took hits. Hands are still shaking an hour later, but the ship held and I'm still here.",
-   "new": "",
+   "new": "Hostile contact near {system}. Hull took hits. The ship held.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13534,7 +13534,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[1]",
    "old": "Pirates near {system}. They wanted the cargo. I wanted to keep breathing. Both of us got part of what we wanted.",
-   "new": "",
+   "new": "Pirates near {system}. They demanded the cargo and took part of it.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13556,7 +13556,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[2]",
    "old": "Close call near {system}. Hostiles in the shipping lanes. Made it through with scorch marks and a new appreciation for shield generators.",
-   "new": "",
+   "new": "Close call near {system}. Hostiles in the shipping lanes. Made it through with scorch marks.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13578,7 +13578,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[3]",
    "old": "Engagement near {system}. It was over fast. Spent the next twenty minutes checking systems and trying to slow my heart rate.",
-   "new": "",
+   "new": "Engagement near {system}. It was over fast. Spent the next twenty minutes checking systems.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13600,7 +13600,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[4]",
    "old": "Survived an ambush near {system}. Debris and silence afterward. Someone else's cargo floating in the void. Could've been mine.",
-   "new": "",
+   "new": "Survived an ambush near {system}. Debris and silence afterward. Someone else's cargo floating in the void.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13622,7 +13622,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".encounter_survived[5]",
    "old": "Tense encounter near {system}. The kind that makes you recalculate whether the trade route is worth the risk. It is. Probably.",
-   "new": "",
+   "new": "Encounter on the trade route near {system}. Came through it.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13644,7 +13644,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.axiom_labs",
    "old": "Arrived at Axiom Labs. Synthesized coffee and quiet desperation  -- grant season, apparently. Color-coded lab coats crowd every corridor, arguing in shorthand about things I only half understand. The Okafor Institute's reputation precedes it, but so does its dropout rate.",
-   "new": "",
+   "new": "Arrived at Axiom Labs. Synthesized coffee. Color-coded lab coats crowded every corridor, arguing in shorthand. The Okafor Institute's reputation preceded it, but so did its dropout rate.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13668,7 +13668,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.breakstone",
    "old": "Arrived at Breakstone. Rock dust on everything  -- the handrails, the meal trays, the inside of your lungs if you stay long enough. The station thrums with a rhythm that never stops: drilling, hauling, drilling again. Someone's chalked a name and two dates on the corridor wall near Bay 3. Nobody's erased it.",
-   "new": "",
+   "new": "Arrived at Breakstone. Rock dust on everything: the handrails, the meal trays, the inside of your lungs if you stayed long enough. The station thrummed with a rhythm that never stopped: drilling, hauling, drilling again. Someone had chalked a name and two dates on the corridor wall near Bay 3. Nobody had erased it.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13684,7 +13684,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.crimson_reach",
    "old": "Arrived at Crimson Reach. Dim lighting, exposed pipes, and the smell of coolant and old decisions. Half the overhead panels are dark. The other half flicker on a schedule nobody posted. A woman at the bar watched me dock through a porthole and looked away when I noticed. No questions asked here. That's not hospitality  -- it's policy.",
-   "new": "",
+   "new": "Arrived at Crimson Reach. Dim lighting, exposed pipes, and the smell of coolant and old decisions. Half the overhead panels were dark. The other half flickered on a schedule nobody had posted. A woman at the bar watched me dock through a porthole, then looked away. No questions asked here.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13715,7 +13715,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.havens_rest",
    "old": "Arrived at Haven's Rest. The air smells like soil and basil  -- real basil, not the synthesized kind. Children running between planting beds. Wind chimes made from recycled hull plating. After the sterile efficiency of Guild stations, this place feels almost dangerous in how much it makes you want to stay.",
-   "new": "",
+   "new": "Arrived at Haven's Rest. The air smelled like soil and basil. Real basil, not the synthesized kind. Children running between planting beds. Wind chimes made from recycled hull plating.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13739,7 +13739,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.nexus_prime",
    "old": "First visit to Nexus Prime. The docking fee alone cost more than fuel at most stations. The old Aurelia's hull looms above the bay, polished to a museum shine nobody stops to look at. Holographic price tickers scroll across every surface. The air tastes like recycled money  -- stale, filtered, and somebody else's.",
-   "new": "",
+   "new": "First visit to Nexus Prime. The docking fee alone cost more than fuel at most stations. The old Aurelia's hull loomed above the bay, polished to a museum shine nobody stopped to look at. Holographic price tickers scrolled across every surface. The air tasted stale and filtered.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13763,7 +13763,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.nova_research",
    "old": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors are soundproofed and the researchers walk fast and don't look up. Whatever they're working on here, they'd rather you didn't ask. The cafeteria serves three meals. All of them taste like secrecy.",
-   "new": "",
+   "new": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors were soundproofed and the researchers walked fast and didn't look up. The cafeteria served three meals.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13785,7 +13785,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.stellaris_port",
    "old": "Arrived at Stellaris Port. Crystal chandeliers throw fragmented light across the promenade, but look past the polish and you see the prices. A cup of coffee costs what a miner makes in a shift. This is where fortunes are displayed and quietly redistributed upward.",
-   "new": "",
+   "new": "Arrived at Stellaris Port. Crystal chandeliers threw fragmented light across the promenade, but past the polish I saw the prices. A cup of coffee cost what a miner made in a shift.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13807,7 +13807,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.the_fulcrum",
    "old": "First visit to The Fulcrum. The corridors are sterile. Not clean  -- sterile, like something was scrubbed away. Military-grade scanners at every junction, guards who check credentials without speaking, blast doors sealed on sections nobody acknowledges. The air recyclers work perfectly. That's the most unsettling thing about this place.",
-   "new": "",
+   "new": "First visit to The Fulcrum. The corridors were sterile. Not clean. Sterile, like something had been scrubbed away. Military-grade scanners at every junction, guards who checked credentials without speaking, blast doors sealed on sections nobody acknowledged. The air recyclers worked perfectly.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13831,7 +13831,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".first_visit.verdant",
    "old": "Docked at Verdant. Rows of green stretch through observation windows as far as I can see. The light is uncanny  -- too even, too perfect, the grow-lamps mimicking a sun that never existed here. Prosperity worn so lightly it almost hides the quiet guilt of abundance in a sector where people cough dust.",
-   "new": "",
+   "new": "Docked at Verdant. Rows of green stretched through observation windows as far as I could see. The light was too even, too perfect, the grow-lamps mimicking a sun that never existed here.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13855,7 +13855,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".galaxy_event_witnessed[0]",
    "old": "Was at {system} when the {event_type} hit. {description} You can feel the station holding its breath.",
-   "new": "",
+   "new": "Was at {system} when the {event_type} hit. {description}.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13877,7 +13877,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".galaxy_event_witnessed[1]",
    "old": "{description}  -- caught it firsthand at {system}. The kind of thing that changes prices and plans overnight.",
-   "new": "",
+   "new": "{description}. Caught it firsthand at {system}.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13893,7 +13893,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".galaxy_event_witnessed[2]",
    "old": "Witnessed a {event_type} at {system}. {description} People react differently  -- some scramble, some go quiet. I took notes.",
-   "new": "",
+   "new": "Witnessed a {event_type} at {system}. {description}. People reacted differently: some scrambled, some went quiet. I took notes.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13909,7 +13909,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".major_trade[2]",
    "old": "{profit} CR on {commodity} at {system}. The buyer didn't haggle. Either I undercharged or they were desperate. Either way, credits are credits.",
-   "new": "",
+   "new": "{profit} CR on {commodity} at {system}. The buyer didn't haggle.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13931,7 +13931,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".major_trade[3]",
    "old": "Sold {commodity} at {system} for {profit} CR over purchase. Watched the crates disappear into the cargo bay and wondered where they'd end up. Not my problem anymore.",
-   "new": "",
+   "new": "Sold {commodity} at {system} for {profit} CR over purchase. Watched the crates disappear into the cargo bay.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13953,7 +13953,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".major_trade[4]",
    "old": "Major haul at {system}: {profit} CR on {commodity}. Enough to cover docking fees, fuel, and maybe something that isn't a ration bar for dinner.",
-   "new": "",
+   "new": "Major haul at {system}: {profit} CR on {commodity}. Filed the receipt.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13976,7 +13976,7 @@
    "file": "data/journal/travel_log_templates.json",
    "gate_path": ".major_trade[5]",
    "old": "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it without looking up. Just another shipment. Just another day someone else can eat.",
-   "new": "",
+   "new": "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it without looking up.",
    "disposition": "draft",
    "owner": "",
    "flags": [
