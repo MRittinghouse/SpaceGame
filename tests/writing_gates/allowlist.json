@@ -1309,14 +1309,6 @@
     {
       "gate": "G2",
       "rule": "paired negation",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=derelict_freighter_01].description",
-      "match": "No life signs, no active",
-      "reason": "a paired negation; W2 rewrites it"
-    },
-    {
-      "gate": "G2",
-      "rule": "paired negation",
       "file": "spacegame/views/ship_builder_view.py",
       "path": "ShipBuilderView._render_tutorial_narration|Fuel tank. No fuel, no jumps. Simple.",
       "match": "No fuel, no jumps",
@@ -1335,14 +1327,6 @@
       "rule": "palpable",
       "file": "data/encounters/commerce_guild.json",
       "path": ".encounters[id=guild_inspection_01].choices[id=submit].outcome.description",
-      "match": "palpable",
-      "reason": "an overused word (spec G3); W2 rewrites it"
-    },
-    {
-      "gate": "G3",
-      "rule": "palpable",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=distress_engine_01].choices[id=tow].outcome.description",
       "match": "palpable",
       "reason": "an overused word (spec G3); W2 rewrites it"
     },
@@ -2669,14 +2653,6 @@
     {
       "gate": "G8",
       "rule": "not your problem",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=distress_cold_signal_01].choices[id=log_it].description",
-      "match": "not your fault",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "not your problem",
       "file": "data/encounters/science_collective.json",
       "path": ".encounters[id=collective_ethics_01].choices[id=delete_intercept].description",
       "match": "not your concern",
@@ -2696,22 +2672,6 @@
       "file": "data/encounters/campaign.json",
       "path": ".encounters[id=campaign_black_market_intel_01].choices[id=decline].description",
       "match": "You can't afford",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you can't",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=derelict_cargo_log_01].choices[id=pass].description",
-      "match": "You can't stop",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you can't",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=derelict_cargo_log_01].choices[id=pass].outcome.description",
-      "match": "You can't stop",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2744,22 +2704,6 @@
       "file": "data/encounters/ce4_variety.json",
       "path": ".encounters[id=derelict_civilian_wreck_01].description",
       "match": "you don't want",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=derelict_freighter_01].choices[id=pass].description",
-      "match": "you don't need",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you don't",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=distress_witness_01].choices[id=leave].description",
-      "match": "You don't owe",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2872,14 +2816,6 @@
       "file": "data/encounters/science_collective.json",
       "path": ".encounters[id=collective_grant_01].choices[id=decline_grant].description",
       "match": "You prefer",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you'd rather",
-      "file": "data/encounters/generic.json",
-      "path": ".encounters[id=merchant_barter_01].choices[id=decline].description",
-      "match": "You'd rather",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
