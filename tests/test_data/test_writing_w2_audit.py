@@ -16,9 +16,13 @@ DONE_FILES: tuple[str, ...] = (
     "data/encounters/campaign.json",
     "data/encounters/ce4_pressure.json",
     "data/encounters/ce4_variety.json",
+    "data/encounters/commerce_guild.json",
+    "data/encounters/frontier_alliance.json",
     "data/encounters/generic.json",
     "data/encounters/humor.json",
     "data/encounters/lore.json",
+    "data/encounters/miners_union.json",
+    "data/encounters/science_collective.json",
     "data/encounters/system_specific.json",
 )
 

@@ -116,7 +116,7 @@
           "label": "Counter-Offer",
           "description": "Propose better terms with fewer restrictions.",
           "outcome": {
-            "description": "Sable listens to your counter-proposal and consults his datapad. \"I am not authorized to modify the exclusivity clause, but I can offer an improved rate on your first three deliveries.\" The compromise leaves both sides satisfied, if not thrilled.",
+            "description": "Sable listens to your counter-proposal and consults his datapad. \"I am not authorized to modify the exclusivity clause, but I can offer an improved rate on your first three deliveries.\"",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -137,7 +137,7 @@
         {
           "id": "decline",
           "label": "Decline Politely",
-          "description": "Thank them but preserve your independence.",
+          "description": "Thank them and decline.",
           "outcome": {
             "description": "Sable takes the rejection with professional grace. \"I understand. Independence has its own value in these lanes. Should you reconsider, Meridian's offer remains open for thirty standard days.\" He signs off with a courteous nod.",
             "rewards": [
@@ -194,7 +194,7 @@
           "label": "Dispute the Tariff",
           "description": "Challenge the legality of the tariff in this corridor.",
           "outcome": {
-            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed. For now.\" No credits change hands, but you sense this is not over.",
+            "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed. For now.\" No credits change hands.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -273,7 +273,7 @@
           "label": "Trade on the Tip",
           "description": "Use the insider knowledge to make profitable trades.",
           "outcome": {
-            "description": "You adjust your trade route to capitalize on the inflated prices before the manipulation is discovered. The profits are immediate and satisfying, though you cannot shake the feeling that someone is watching.",
+            "description": "You adjust your trade route to capitalize on the inflated prices before the manipulation is discovered. The profits are immediate.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -289,9 +289,9 @@
         {
           "id": "ignore",
           "label": "Delete and Forget",
-          "description": "Purge the intercept. Not your business.",
+          "description": "Purge the intercept.",
           "outcome": {
-            "description": "You wipe the transmission from your logs. Whatever games the Guild's upper echelon plays with commodity prices, it has nothing to do with you. Probably.",
+            "description": "You wipe the transmission from your logs.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -347,7 +347,7 @@
         {
           "id": "negotiate_fee",
           "label": "Demand Higher Fee",
-          "description": "The danger warrants better compensation.",
+          "description": "Ask for a higher fee.",
           "outcome": {
             "description": "Novik hesitates, then consults with his logistics team. \"Solari Logistics is authorized to increase the offer by forty percent, given the elevated threat assessment. Do we have an agreement?\" You accept, and the convoy proceeds under your watchful eye.",
             "rewards": [
@@ -370,7 +370,7 @@
         {
           "id": "decline",
           "label": "Decline Request",
-          "description": "You have your own schedule to keep.",
+          "description": "Decline the escort.",
           "outcome": {
             "description": "Novik accepts your refusal with the composure of a man accustomed to logistics setbacks. \"Understood. Safe travels, Captain.\" The convoy tightens formation and continues on, their running lights blinking nervously in the dark.",
             "rewards": [
@@ -429,7 +429,7 @@
           "label": "Browse Only",
           "description": "Take a look but do not commit to buying.",
           "outcome": {
-            "description": "You review the manifest but nothing catches your eye at the right price point. The cargo master shrugs philosophically. \"No obligation, Captain. The Overstock will be in this corridor for another twelve hours if you change your mind.\"",
+            "description": "You review the manifest and buy nothing. The cargo master shrugs philosophically. \"No obligation, Captain. The Overstock will be in this corridor for another twelve hours if you change your mind.\"",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -485,7 +485,7 @@
         {
           "id": "charge_premium",
           "label": "Charge Premium Rate",
-          "description": "Diplomats can afford a surcharge.",
+          "description": "Quote her a surcharge.",
           "outcome": {
             "description": "Rhett raises an eyebrow but does not argue. \"I suppose urgency commands its own premium. Very well.\" She pays without further comment, though her thank-you note upon departure is notably brief.",
             "rewards": [
@@ -510,7 +510,7 @@
           "label": "Cannot Accommodate",
           "description": "Your vessel is not set up for passengers.",
           "outcome": {
-            "description": "Rhett accepts the refusal graciously. \"I understand, Captain. I will arrange alternative transport. Thank you for your time.\" Her courier vessel limps onward, and you wonder briefly if the drive will hold.",
+            "description": "Rhett accepts the refusal graciously. \"I understand, Captain. I will arrange alternative transport. Thank you for your time.\" Her courier vessel limps onward.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -546,7 +546,7 @@
           "label": "Submit to Inspection",
           "description": "Open your cargo bay and let them look.",
           "outcome": {
-            "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is almost palpable.",
+            "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -664,9 +664,9 @@
         {
           "id": "delete_evidence",
           "label": "Purge the Data",
-          "description": "This is above your pay grade.",
+          "description": "Wipe the transmission and scrub your comm logs.",
           "outcome": {
-            "description": "You wipe the transmission and scrub your comm logs. Guild politics are a labyrinth, and you have no interest in being someone's pawn. The data is gone, but you cannot quite forget those account numbers.",
+            "description": "You wipe the transmission and scrub your comm logs. The data is gone.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -747,7 +747,7 @@
           "label": "Propose a Split",
           "description": "Suggest they divide the route between them.",
           "outcome": {
-            "description": "You propose they split the delivery route at the midpoint: Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
+            "description": "You propose they split the delivery route at the midpoint: Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -835,7 +835,7 @@
         {
           "id": "pass_by",
           "label": "Continue On",
-          "description": "This does not sound like an actual emergency.",
+          "description": "Log the signal and continue on your route.",
           "outcome": {
             "description": "You log the distress signal, note that no lives are in danger, and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
             "rewards": [
@@ -911,9 +911,9 @@
         {
           "id": "ignore_signal",
           "label": "Scrub and Move On",
-          "description": "Restricted frequencies mean restricted consequences.",
+          "description": "Purge the intercept and avoid the restricted band.",
           "outcome": {
-            "description": "You purge the intercept from your comm logs and recalibrate your array to avoid the restricted band. Whatever \"Project Dividend\" is, it is none of your concern. The signal fades into the background noise of the void.",
+            "description": "You purge the intercept from your comm logs and recalibrate your array to avoid the restricted band. The signal fades into the background noise of the void.",
             "rewards": [
               {
                 "reward_type": "xp",

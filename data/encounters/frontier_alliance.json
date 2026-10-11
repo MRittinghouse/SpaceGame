@@ -68,9 +68,9 @@
         {
           "id": "pass",
           "label": "Wish Him Luck",
-          "description": "You have your own schedule to keep.",
+          "description": "Wish Fen luck and fly on.",
           "outcome": {
-            "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn. Frontier folk manage.",
+            "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
             "rewards": []
           }
         }
@@ -100,7 +100,7 @@
           "label": "Escort Them",
           "description": "Fly with them to ensure they reach Haven's Rest safely.",
           "outcome": {
-            "description": "You match speed with their limping ship and fly escort through the lane. Dara's kids wave at you through the viewport. At Haven's Rest, the community council logs your good deed. Dara shakes your hand at the dock. 'Way I see it, people who help strangers ain't really strangers.'",
+            "description": "You match speed with their limping ship and fly escort through the lane. Dara's kids wave at you through the viewport. At Haven's Rest, the community council logs your escort. Dara shakes your hand at the dock. 'Way I see it, people who help strangers ain't really strangers.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -142,7 +142,7 @@
           "label": "Send Coordinates",
           "description": "Transmit nav data for Haven's Rest and move on.",
           "outcome": {
-            "description": "You beam over the safest route you know. Dara thanks you quietly and the patchwork ship putters onward. It is not much, but out here, a good heading is worth more than most realize.",
+            "description": "You beam over the safest route you know. Dara thanks you quietly and the patchwork ship putters onward.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -175,7 +175,7 @@
         {
           "id": "side_tomoko",
           "label": "Back Tomoko",
-          "description": "No beacon means no claim. Simple as that.",
+          "description": "Tell Brannick no beacon means no claim.",
           "outcome": {
             "description": "Brannick grumbles but backs off: Wrecker's Guild rules are clear on unmarked salvage. Tomoko splits a finder's fee with you. 'Appreciate the honesty. My old man always said the best judge is the one passing through.'",
             "rewards": [
@@ -198,7 +198,7 @@
         {
           "id": "side_brannick",
           "label": "Back Brannick",
-          "description": "He says he was here first. Benefit of the doubt.",
+          "description": "He says he was here first. Back his claim.",
           "outcome": {
             "description": "Tomoko spits a curse but peels off. Brannick docks with the wreck and tosses you a cut from the first crate. 'You got good instincts, friend. Drinks on me next time you're at Haven's Rest.'",
             "rewards": [
@@ -265,7 +265,7 @@
         {
           "id": "buy",
           "label": "Buy Some",
-          "description": "A bargain is a bargain. What could go wrong?",
+          "description": "Buy Szabo's homemade coolant.",
           "outcome": {
             "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.' The coolant actually works surprisingly well.",
             "rewards": [
@@ -289,7 +289,7 @@
           "label": "Just Chat",
           "description": "Hear the old man's stories but skip the purchase.",
           "outcome": {
-            "description": "Szabo talks your ear off for twenty minutes about coolant chemistry, his grandmother's soup, and a fish he once caught on Verdant that was 'big as a shuttle, I swear it.' You learn nothing useful but somehow feel better about your day.",
+            "description": "Szabo talks your ear off for twenty minutes about coolant chemistry, his grandmother's soup, and a fish he once caught on Verdant that was 'big as a shuttle, I swear it.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -303,7 +303,7 @@
           "label": "Warn Him Off",
           "description": "Tell him he is going to get himself arrested running unregistered chemicals.",
           "outcome": {
-            "description": "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+            "description": "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -336,9 +336,9 @@
         {
           "id": "trade",
           "label": "Make the Swap",
-          "description": "Barter goods directly. Credits are overrated anyway.",
+          "description": "Barter goods directly.",
           "outcome": {
-            "description": "Ines grins as the cargo grapples do their work. 'This is how trade ought to be. Two people, two holds, everybody walks away happy.' The goods she traded are genuinely worth more than what you gave. Honest dealing, Alliance style.",
+            "description": "Ines grins as the cargo grapples do their work. 'This is how trade ought to be. Two people, two holds, everybody walks away happy.' The goods she traded are genuinely worth more than what you gave.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -414,7 +414,7 @@
           "label": "Donate Generously",
           "description": "Contribute credits and materials to the repair fund.",
           "outcome": {
-            "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not. Some folks prefer quiet giving. Either way, deck seven thanks you.' You feel good about this one.",
+            "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not. Some folks prefer quiet giving. Either way, deck seven thanks you.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -458,7 +458,7 @@
         {
           "id": "decline",
           "label": "Pass This Time",
-          "description": "You cannot afford to give right now.",
+          "description": "Pass this time.",
           "outcome": {
             "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way: no one keeps score out loud.",
             "rewards": []
@@ -488,9 +488,9 @@
         {
           "id": "comply",
           "label": "Allow the Scan",
-          "description": "Let them check your transponder. Nothing to hide.",
+          "description": "Let them check your transponder.",
           "outcome": {
-            "description": "Gil's scanner sweeps your ship in seconds. 'Clean as creek water. Appreciate the cooperation, Captain.' His wingmate tips a salute. 'You see anything suspicious out there, broadcast on channel seven. We'll come running.' Good folks doing thankless work.",
+            "description": "Gil's scanner sweeps your ship in seconds. 'Clean as creek water. Appreciate the cooperation, Captain.' His wingmate tips a salute. 'You see anything suspicious out there, broadcast on channel seven. We'll come running.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -509,7 +509,7 @@
           "label": "Decline the Scan",
           "description": "Volunteers have no legal authority over your ship.",
           "outcome": {
-            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol moves on, but you notice them logging your transponder ID. The frontier has a long memory.",
+            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on. The frontier has a long memory.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",
@@ -522,7 +522,7 @@
         {
           "id": "intel",
           "label": "Share Pirate Intel",
-          "description": "You spotted suspicious ships earlier. Pass along what you know.",
+          "description": "Pass along the suspicious contacts in your sensor log.",
           "outcome": {
             "description": "Gil's eyes light up. 'Now that's useful. We been tracking a pattern but missing a piece. This fills the gap.' He transmits a small bounty from the patrol's community fund. 'You ever need a favor out here, you got friends on channel seven.'",
             "rewards": [
@@ -591,7 +591,7 @@
           "label": "Split the Cargo",
           "description": "Take half the crop in your own hold to save what you can.",
           "outcome": {
-            "description": "You split the flashfruit between both ships. Your hold can keep it cool enough. Half a harvest saved is better than none, and Nabil insists you sell your share. 'It's honest pay for honest help. That's how we do things.'",
+            "description": "You split the flashfruit between both ships. Your hold can keep it cool enough. Nabil insists you sell your share. 'It's honest pay for honest help. That's how we do things.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -612,9 +612,9 @@
         {
           "id": "pass",
           "label": "Move On",
-          "description": "Not your problem and not your crop.",
+          "description": "Fly on.",
           "outcome": {
-            "description": "Nabil's voice fades behind you, still calling on the open channel. Somewhere, three stations will have a lean month. The frontier remembers who showed up and who kept flying.",
+            "description": "Nabil's voice fades behind you, still calling on the open channel. Somewhere, three stations will have a lean month.",
             "rewards": []
           }
         }
@@ -644,7 +644,7 @@
           "label": "Tune In",
           "description": "Pour yourself a drink and listen to the story.",
           "outcome": {
-            "description": "Oksana's story is long, meandering, and absolutely riveting. The warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. You laugh until your sides hurt. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.' You feel sharper somehow. Good stories do that.",
+            "description": "Oksana's story is long and meandering: the warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -716,7 +716,7 @@
           "label": "Provide Cover",
           "description": "Fly alongside and make it look like a normal convoy.",
           "outcome": {
-            "description": "You match course with Reeta, broadcasting routine trade chatter. The patrol shadow loses interest in a two-ship convoy and peels off. Reeta exhales. 'People at Haven's Rest clinic needed this a week ago. You just helped more folks than you know.' She sends over a cut of her payment. Modest, but earned.",
+            "description": "You match course with Reeta, broadcasting routine trade chatter. The patrol shadow loses interest in a two-ship convoy and peels off. Reeta exhales. 'People at Haven's Rest clinic needed this a week ago. You just helped more folks than you know.' She sends over a cut of her payment.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -763,9 +763,9 @@
         {
           "id": "refuse",
           "label": "Stay Clear",
-          "description": "Getting involved with smugglers is asking for trouble.",
+          "description": "Stay clear of the courier.",
           "outcome": {
-            "description": "Reeta nods curtly and accelerates away. 'Understood. No judgment. Everybody's got their own line.' Her ship vanishes into the lane traffic. You wonder if those supplies will reach Haven's Rest in time.",
+            "description": "Reeta nods curtly and accelerates away. 'Understood. No judgment. Everybody's got their own line.' Her ship vanishes into the lane traffic.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -798,7 +798,7 @@
         {
           "id": "respect",
           "label": "Respect the Claim",
-          "description": "His beacon, his wreck. Back off.",
+          "description": "Back off the wreck.",
           "outcome": {
             "description": "Haddek tips an imaginary hat. 'Appreciate that, Captain. Lot of folks don't bother with Wrecker's rules anymore. Tell you what, I pulled some nav data off her computers. Trade routes, fuel cache locations. Take a copy. One good turn deserves another.' He transmits the data with a weathered smile.",
             "rewards": [
@@ -817,7 +817,7 @@
         {
           "id": "contest",
           "label": "Contest the Claim",
-          "description": "You were here first today. Possession is nine-tenths.",
+          "description": "Tell Haddek you were here first today.",
           "outcome": {
             "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in. Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
             "rewards": [
@@ -875,9 +875,9 @@
         {
           "id": "join",
           "label": "Join the Party",
-          "description": "Dock up and enjoy the festival. You have earned a break.",
+          "description": "Dock up and join the festival.",
           "outcome": {
-            "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices, generous to a fault. By the time you undock, your spirits are high and your hold has a few new treasures picked up for cheap.",
+            "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices, generous to a fault. By the time you undock, your hold has a few new treasures picked up for cheap.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -921,9 +921,9 @@
         {
           "id": "pass",
           "label": "Fly On Past",
-          "description": "Festivals are not really your thing.",
+          "description": "Wave and fly on.",
           "outcome": {
-            "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying. No judgment. Just a little sadness.",
+            "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying.",
             "rewards": []
           }
         }

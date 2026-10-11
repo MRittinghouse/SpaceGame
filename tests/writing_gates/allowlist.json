@@ -1300,14 +1300,6 @@
     },
     {
       "gate": "G3",
-      "rule": "palpable",
-      "file": "data/encounters/commerce_guild.json",
-      "path": ".encounters[id=guild_inspection_01].choices[id=submit].outcome.description",
-      "match": "palpable",
-      "reason": "an overused word (spec G3); W2 rewrites it"
-    },
-    {
-      "gate": "G3",
       "rule": "remarkable",
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=caught].text",
@@ -2365,73 +2357,9 @@
     {
       "gate": "G6",
       "rule": "filter verb",
-      "file": "data/encounters/commerce_guild.json",
-      "path": ".encounters[id=guild_diplomat_01].choices[id=decline_passenger].outcome.description",
-      "match": "you wonder",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/commerce_guild.json",
-      "path": ".encounters[id=guild_tariff_01].choices[id=dispute].outcome.description",
-      "match": "you sense",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_community_01].choices[id=donate].outcome.description",
-      "match": "You feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].outcome.description",
-      "match": "you notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_smuggler_medicine_01].choices[id=refuse].outcome.description",
-      "match": "You wonder",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_storyteller_01].choices[id=listen].outcome.description",
-      "match": "You feel",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
-      "file": "data/encounters/science_collective.json",
-      "path": ".encounters[id=collective_nova_test_01].choices[id=ask_details].outcome.description",
-      "match": "You notice",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G6",
-      "rule": "filter verb",
       "file": "data/missions/side_missions.json",
       "path": ".missions[id=the_forgery].description",
       "match": "you realize",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "makes you nervous",
-      "file": "data/encounters/science_collective.json",
-      "path": ".encounters[id=collective_artifact_01].choices[id=decline_artifact].description",
-      "match": "make you nervous",
       "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
@@ -2441,86 +2369,6 @@
       "path": ".dialogues[id=arna_post_payback].nodes[id=what_now].subtext",
       "match": "not your problem",
       "reason": "a Read quoting Arna's words, not a feeling of the captain's; W2 restates it (impact 7c)"
-    },
-    {
-      "gate": "G8",
-      "rule": "not your problem",
-      "file": "data/encounters/commerce_guild.json",
-      "path": ".encounters[id=guild_insider_01].choices[id=ignore].description",
-      "match": "Not your business",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "not your problem",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_distress_crop_01].choices[id=pass].description",
-      "match": "Not your problem",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "not your problem",
-      "file": "data/encounters/science_collective.json",
-      "path": ".encounters[id=collective_ethics_01].choices[id=delete_intercept].description",
-      "match": "not your concern",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "not your problem",
-      "file": "data/encounters/science_collective.json",
-      "path": ".encounters[id=collective_ethics_01].choices[id=delete_intercept].outcome.description",
-      "match": "not your problem",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you can't",
-      "file": "data/encounters/miners_union.json",
-      "path": ".encounters[id=union_cave_in_01].choices[id=move_on].description",
-      "match": "You can't stop",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you can't",
-      "file": "data/encounters/miners_union.json",
-      "path": ".encounters[id=union_strike_fund_01].choices[id=decline].description",
-      "match": "You can't afford",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_community_01].choices[id=donate].outcome.description",
-      "match": "You feel good",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you feel",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_storyteller_01].choices[id=listen].outcome.description",
-      "match": "You feel sharper",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you have earned",
-      "file": "data/encounters/frontier_alliance.json",
-      "path": ".encounters[id=alliance_festival_01].choices[id=join].description",
-      "match": "You have earned",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
-    },
-    {
-      "gate": "G8",
-      "rule": "you prefer",
-      "file": "data/encounters/science_collective.json",
-      "path": ".encounters[id=collective_grant_01].choices[id=decline_grant].description",
-      "match": "You prefer",
-      "reason": "the narrator audit's finding (audit.md); W2 rewrites it"
     },
     {
       "gate": "G9",
