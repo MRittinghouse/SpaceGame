@@ -8,7 +8,7 @@
           "id": "start",
           "speaker_id": "elena_reeves",
           "text": "You've been staring at those boards for twenty minutes. Either you're trying to memorize them or you're hoping they'll start making sense on their own. They won't.",
-          "subtext": "Her posture is precise, practiced. Ex-military or ex-corporate. But her eyes keep drifting to the departure boards like she's calculating routes she'll never fly.",
+          "subtext": "Her posture is precise, practiced. Her eyes keep drifting to the departure boards.",
           "responses": [
             {
               "text": "I'm trying to learn. Any advice?",
@@ -288,7 +288,7 @@
           "id": "start",
           "speaker_id": "marcus_jin",
           "text": "What did you say your name was?",
-          "subtext": "His hands stopped moving when he heard your voice. Whatever he's thinking, he's working hard to keep it off his face.",
+          "subtext": "His hands stopped moving when he heard your voice.",
           "responses": [
             {
               "text": "I didn't. Why do you ask?",
@@ -299,7 +299,7 @@
               "next_node_id": "recognition"
             },
             {
-              "text": "[Observation 2] Your hands stopped when you heard me talk. You knew my name before you asked.",
+              "text": "[Observation 2] \"Your hands stopped when you heard me talk. You knew my name before you asked.\"",
               "next_node_id": "recognition",
               "skill_check": {
                 "skill": "observation",
@@ -1000,7 +1000,7 @@
         {
           "id": "greet",
           "speaker_id": "odom_broker",
-          "text": "*A heavyset man flips through shipping manifests, muttering numbers under his breath. He holds up one finger without looking up.* One second. Three shipments behind today.",
+          "text": "*A heavyset man flips through shipping manifests, muttering numbers under his breath. He holds up one finger and keeps counting.* One second. Three shipments behind today.",
           "responses": [
             {
               "text": "You knew Arna?",
@@ -1242,7 +1242,7 @@
           "subtext": "He goes back to the manifest without waiting for a response.",
           "responses": [
             {
-              "text": "[Leave it.]",
+              "text": "Leave it.",
               "next_node_id": null,
               "set_flag": "odom_spoke_of_arna"
             }
@@ -1252,10 +1252,10 @@
         {
           "id": "odom_arna_branch_b",
           "speaker_id": "odom_broker",
-          "text": "*Odom grunts without looking up.* Still at the desk, I hear. Good. Some people shouldn't fly. She still owes me seventy credits. I'll get it out of her next week.",
+          "text": "*Odom grunts and ticks off a line on the manifest.* Still at the desk, I hear. Good. Some people shouldn't fly. She still owes me seventy credits. I'll get it out of her next week.",
           "responses": [
             {
-              "text": "[Leave it.]",
+              "text": "Leave it.",
               "next_node_id": null,
               "set_flag": "odom_spoke_of_arna"
             }
@@ -1266,10 +1266,10 @@
           "id": "odom_arna_branch_c",
           "speaker_id": "odom_broker",
           "text": "*Odom looks up for the first time. His face does not change.* Heard about your friend. She owed me seventy credits.",
-          "subtext": "He goes back to the manifest. He does not say anything else. He does not need to.",
+          "subtext": "He goes back to the manifest. He does not say anything else.",
           "responses": [
             {
-              "text": "[Leave it.]",
+              "text": "Leave it.",
               "next_node_id": null,
               "set_flag": "odom_spoke_of_arna"
             }
@@ -2131,7 +2131,7 @@
           "text": "The session winds down. Delegates gather their materials and exchange stiff courtesies. As the room empties, you have a last chance to observe.",
           "responses": [
             {
-              "text": "[Observation 2] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows this ends today.",
+              "text": "[Observation 2] \"The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once.\"",
               "next_node_id": "missed_signal",
               "skill_check": {
                 "skill": "observation",
@@ -2312,7 +2312,7 @@
               "next_node_id": "suspicious"
             },
             {
-              "text": "[Observation 2] Your right hand stays near your coat pocket the whole time you're talking. Whatever you carry in there, you want me to see you reach for it.",
+              "text": "[Observation 2] \"Your right hand stays near your coat pocket the whole time you're talking. Whatever you carry in there, you want me to see you reach for it.\"",
               "next_node_id": "suspicious",
               "skill_check": {
                 "skill": "observation",
@@ -2686,7 +2686,7 @@
         {
           "id": "start",
           "speaker_id": "dr_priya_osei",
-          "text": "Priya is waiting in her lab when you arrive. The holographic displays are dark except for one, cycling through structural diagrams you recognize from the facility. She looks like she hasn't slept. I've been running the numbers since you sent the preliminary data. Tell me you brought more.",
+          "text": "Priya is waiting in her lab when you arrive. The holographic displays are dark except for one, cycling through structural diagrams from the facility. She looks like she hasn't slept. I've been running the numbers since you sent the preliminary data. Tell me you brought more.",
           "responses": [
             {
               "text": "[Hand over the data chip]",
@@ -3114,7 +3114,7 @@
           "id": "start",
           "speaker_id": "neve_osei",
           "text": "Captain. A word, if you have a moment. I'm Neve Osei. I deal in information. The kind that doesn't show up on public ledgers.",
-          "subtext": "She chose this table for the sightlines. Two exits within reach, back to the wall. Whatever she's selling, she's been burned before.",
+          "subtext": "Two exits within reach. Her back is to the wall.",
           "responses": [
             {
               "text": "What kind of information?",
@@ -3124,7 +3124,7 @@
               ]
             },
             {
-              "text": "[Observation 2] Two exits in reach. Back to the wall. You weren't waiting for me. You were waiting for someone, and I'm just what showed up.",
+              "text": "[Observation 2] \"Two exits in reach. Back to the wall. You weren't waiting for me. You were waiting for someone, and I'm just what showed up.\"",
               "next_node_id": "pitch",
               "excluded_flags": [
                 "price_of_info_accepted"
@@ -3261,7 +3261,7 @@
           "id": "start",
           "speaker_id": "petra_vance",
           "text": "*She checks the corridor behind you before making eye contact.* You fly independent? Not Guild-contracted, not Union-dispatched? I need to be sure.",
-          "subtext": "The clipboard she's holding has been rewritten three times. Whatever decision she's making, she's been making it for weeks.",
+          "subtext": "The clipboard she's holding has been rewritten three times.",
           "responses": [
             {
               "text": "That's me. What do you need?",
@@ -3778,7 +3778,7 @@
               ]
             },
             {
-              "text": "[Observation 2] Jeweler's grip. Mirror-practiced smile. You don't deal in antiquities. You deal in the kind of antique that gets sold three times before anyone checks the provenance.",
+              "text": "[Observation 2] \"Jeweler's grip. Mirror-practiced smile. You don't deal in antiquities. You deal in the kind of antique that gets sold three times before anyone checks the provenance.\"",
               "next_node_id": "reassure",
               "excluded_flags": [
                 "forgery_job_accepted"
@@ -3931,7 +3931,7 @@
         {
           "id": "caught",
           "speaker_id": "cassiel_maren",
-          "text": "I... how thorough was the appraiser? Some of those pieces are remarkably well-crafted reproductions, I'll grant you, but to call them all. Captain, please. Let's discuss this calmly.",
+          "text": "I... how thorough was the appraiser? Some of those pieces are exceptionally well-crafted reproductions, I'll grant you, but to call them all. Captain, please. Let's discuss this calmly.",
           "responses": [
             {
               "text": "The isotope dating was conclusive. These were made in the last decade, not the founding era. I'm reporting this to the Guild trade authority.",
@@ -4889,7 +4889,7 @@
           "id": "greet",
           "speaker_id": "dock_investigator",
           "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
-          "subtext": "The coffee rings overlap in layers. She's been at this desk for days. The evidence bags are organized by a system only she understands.",
+          "subtext": "The coffee rings overlap in layers. The evidence bags carry no labels anyone else could read.",
           "responses": [
             {
               "text": "Walk me through what happened.",
@@ -5156,7 +5156,7 @@
           "id": "case_closed",
           "speaker_id": "dock_investigator",
           "text": "Filed. Prosecutor's running it now. Your name's sealed on the referral, so whatever shakes out, you're not in the paperwork. *She glances up for the first time.* That's how these close. Record sticks. Truth wobbles. Work's done.",
-          "subtext": "There's no satisfaction in her voice. Just the fact of it.",
+          "subtext": "Her voice stays flat.",
           "responses": [
             {
               "text": "[Leave]",
@@ -5580,7 +5580,7 @@
           "id": "greet",
           "speaker_id": "jez_okafor",
           "text": "*A woman in a dust-caked hardsuit leans against the bulkhead, flexing her fingers one at a time.* You're not from the crews. Visitor?",
-          "subtext": "Her right hand has a fine tremor she's trying to work out. Long-term vibration damage from deep-core drilling rigs.",
+          "subtext": "Her right hand has a fine tremor. She keeps working the fingers.",
           "responses": [
             {
               "text": "Just passing through. What's it like down here?",
@@ -5760,7 +5760,7 @@
           "id": "greet",
           "speaker_id": "naveen_prakash",
           "text": "*A man in a clean suit sits at a table covered in data pads, looking profoundly out of place.* Good afternoon. Naveen Prakash, Commerce Guild Compliance Division. I'm conducting a standard regulatory assessment. How can I direct your inquiry?",
-          "subtext": "His suit is spotless but his eyes are bloodshot. He's been sleeping here, or not sleeping at all.",
+          "subtext": "His suit is spotless but his eyes are bloodshot.",
           "responses": [
             {
               "text": "How's the assessment going?",
@@ -6426,7 +6426,7 @@
           "id": "greet",
           "speaker_id": "chandra_osei",
           "text": "*A woman kneels beside a soil sampling array, dirt under her nails and data pad balanced on her knee.* Oh. Hello. I'm Chandra. If you're looking for someone important, try the admin office. If you're looking for someone who knows what makes things grow, you found her.",
-          "subtext": "Her voice has the Collective's precision but none of its stiffness. She's been out of the lab long enough that the field rewired her.",
+          "subtext": "Her voice has the Collective's precision but none of its stiffness.",
           "responses": [
             {
               "text": "What are you researching?",
@@ -6554,10 +6554,10 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "Kid. Just built that rig?",
-          "subtext": "She doesn't look up from the manifest terminal. Just knows.",
+          "subtext": "She doesn't look up from the manifest terminal.",
           "responses": [
             {
-              "text": "[Yeah. Off the line this hour.]",
+              "text": "Yeah. Off the line this hour.",
               "next_node_id": "board_is_ledger",
               "set_flag": "met_arna"
             },
@@ -6576,11 +6576,11 @@
           "subtext": "Her eyes flick to you. Then back to the terminal.",
           "responses": [
             {
-              "text": "[The board tells me what to do next?]",
+              "text": "The board tells me what to do next?",
               "next_node_id": "the_offer"
             },
             {
-              "text": "[Not sure what I'm doing here yet.]",
+              "text": "Not sure what I'm doing here yet.",
               "next_node_id": "the_offer"
             }
           ],
@@ -6597,7 +6597,7 @@
               "next_node_id": "accepted_confirm"
             },
             {
-              "text": "[Not yet.]",
+              "text": "Not yet.",
               "next_node_id": "not_yet"
             }
           ],
@@ -6609,7 +6609,7 @@
           "text": "Good. Pallet's on your ship. Nav's updated. Don't get cute out there. If you come back, come back with the manifest signed.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null,
               "set_flag": "arna_delivery_accepted"
             }
@@ -6659,11 +6659,11 @@
           "subtext": "She puts the manifest down for the first time and meets your eyes.",
           "responses": [
             {
-              "text": "[Tell me.]",
+              "text": "Tell me.",
               "next_node_id": "ore_pitch"
             },
             {
-              "text": "[I am out.]",
+              "text": "I am out.",
               "next_node_id": "retire_early"
             }
           ],
@@ -6673,18 +6673,18 @@
           "id": "ore_pitch",
           "speaker_id": "arna",
           "text": "I have got a tip on a vein nobody is working. Breakstone outer belt, rare metals. Site is marginal. Enforcement is thin, the tax collectors forgot it exists. We pull a load, I get it refined cheap through a friend of mine, we sell it to a contact I have been cultivating. Split is fair. Cut that pays for more than a pallet of machinery.",
-          "subtext": "She is talking fast now. Excited in a way she was not before.",
+          "subtext": "She is talking fast now, faster than before.",
           "responses": [
             {
-              "text": "[I am in.]",
+              "text": "I am in.",
               "next_node_id": "accepted"
             },
             {
-              "text": "[What is the catch?]",
+              "text": "What is the catch?",
               "next_node_id": "catch"
             },
             {
-              "text": "[I need to think about it.]",
+              "text": "I need to think about it.",
               "next_node_id": "think"
             }
           ],
@@ -6694,10 +6694,10 @@
           "id": "catch",
           "speaker_id": "arna",
           "text": "Catch? Nothing you and a half-decent rig can't handle. Breakstone's moderate danger, bring weapons, keep your eyes up. Site has been picked over some, but I know the angles. Refining is off-books, yeah, but cheap and fast. Sale we will worry about when we get there. My contact is solid.",
-          "subtext": "She says 'my contact is solid' the way she says everything she is not sure about. Too confident. Too specific.",
+          "subtext": "She says 'my contact is solid' too fast. Too confident. Too specific.",
           "responses": [
             {
-              "text": "[Fine. I am in.]",
+              "text": "Fine. I am in.",
               "next_node_id": "accepted"
             },
             {
@@ -6714,7 +6714,7 @@
               }
             },
             {
-              "text": "[I will think on it.]",
+              "text": "I will think on it.",
               "next_node_id": "think"
             }
           ],
@@ -6726,11 +6726,11 @@
           "text": "What voice? That's my voice. You're reading tea leaves, kid. So. In or out?",
           "responses": [
             {
-              "text": "[Fine. I am in.]",
+              "text": "Fine. I am in.",
               "next_node_id": "accepted"
             },
             {
-              "text": "[I will think on it.]",
+              "text": "I will think on it.",
               "next_node_id": "think"
             }
           ],
@@ -6740,14 +6740,14 @@
           "id": "catch_seen",
           "speaker_id": "arna",
           "text": "Fair read. It's solid enough. I've traded with him three times clean. If I'm wrong about him this time, that's on me, not you.",
-          "subtext": "She doesn't like being read. She also doesn't deny it.",
+          "subtext": "Her mouth tightens. She also doesn't deny it.",
           "responses": [
             {
-              "text": "[Fine. I am in.]",
+              "text": "Fine. I am in.",
               "next_node_id": "accepted"
             },
             {
-              "text": "[I will think on it.]",
+              "text": "I will think on it.",
               "next_node_id": "think"
             }
           ],
@@ -6759,7 +6759,7 @@
           "text": "Good. Coordinates are in your nav. Come back with ore. Don't spend it before it is in my hand.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null,
               "set_flag": "arna_accepted_ore_tip"
             }
@@ -6782,7 +6782,7 @@
           "id": "retire_early",
           "speaker_id": "arna",
           "text": "Fair enough. Not everyone wants the trouble. Board's there. People are there. I am going back to work.",
-          "subtext": "She looks a little disappointed. A little relieved.",
+          "subtext": "She lets out a breath. Picks the manifest back up.",
           "responses": [
             {
               "text": "[Leave]",
@@ -6910,7 +6910,7 @@
               }
             },
             {
-              "text": "[What's next?]",
+              "text": "What's next?",
               "next_node_id": "whats_next"
             }
           ],
@@ -6920,10 +6920,10 @@
           "id": "weighing_caught",
           "speaker_id": "arna",
           "text": "Huh. Not much gets past you, does it. Yeah. I was. Good to know. Next time I won't try to hide it. Come on, let's talk about what's next.",
-          "subtext": "She doesn't apologize. She respects the catch.",
+          "subtext": "She doesn't apologize. She nods once.",
           "responses": [
             {
-              "text": "[What's next, then.]",
+              "text": "What's next, then.",
               "next_node_id": "whats_next"
             }
           ],
@@ -6933,10 +6933,10 @@
           "id": "about_site",
           "speaker_id": "arna",
           "text": "What about it? Marginal yield on a marginal site. That's how it works. Whoever flagged the tip didn't have the refining angle. That's where we do better.",
-          "subtext": "The answer comes too fast. Like she had it ready.",
+          "subtext": "The answer comes too fast.",
           "responses": [
             {
-              "text": "[Fine. What's next?]",
+              "text": "Fine. What's next?",
               "next_node_id": "whats_next"
             }
           ],
@@ -6948,7 +6948,7 @@
           "text": "Next is Forgeworks. My friend Tev runs a refining outfit there. Off-books, cheap, fast. Take the ore to him. Tell him I sent you. He will process it into something we can sell. Coordinates are in your nav when you leave.",
           "responses": [
             {
-              "text": "[On my way.]",
+              "text": "On my way.",
               "next_node_id": null,
               "set_flag": "arna_sent_to_tev"
             }
@@ -6972,7 +6972,7 @@
               "next_node_id": "inspect"
             },
             {
-              "text": "[Observation 3] His hands haven't left his pockets. Men who want to handle cargo take their hands out first.",
+              "text": "[Observation 3] \"His hands haven't left his pockets. Men who want to handle cargo take their hands out first.\"",
               "next_node_id": "inspect",
               "skill_check": {
                 "skill": "observation",
@@ -6983,7 +6983,7 @@
               }
             },
             {
-              "text": "[Hold on. Arna, you okay?]",
+              "text": "Hold on. Arna, you okay?",
               "next_node_id": "hold"
             }
           ],
@@ -6993,7 +6993,7 @@
           "id": "keren_tell_caught",
           "speaker_id": "keren",
           "text": "Sharp eyes. Relax, friend. I'm a careful man. Let me see the haul. No surprises.",
-          "subtext": "His hands come out of his pockets. Empty. But his smile doesn't change, and his eyes keep finding the side hatch. You noted the exit before he did.",
+          "subtext": "His hands come out of his pockets. Empty. But his smile doesn't change, and his eyes keep finding the side hatch.",
           "responses": [
             {
               "text": "[Show him the cargo. Stay ready.]",
@@ -7006,7 +7006,7 @@
           "id": "hold",
           "speaker_id": "arna",
           "text": "I am fine. Let him look.",
-          "subtext": "She is not fine. But she waves you on anyway.",
+          "subtext": "She waves you on anyway.",
           "responses": [
             {
               "text": "[Show him the cargo.]",
@@ -7022,7 +7022,7 @@
           "subtext": "Arna freezes. Nobody calls her Ernie. Keren disappears through a side hatch. Three figures step out from behind cargo containers, weapons already up.",
           "responses": [
             {
-              "text": "[Weapons up.]",
+              "text": "Weapons up.",
               "next_node_id": null,
               "set_flag": "keren_ambush_triggered"
             }
@@ -7072,7 +7072,7 @@
           "subtext": "He says the numbers quickly. He doesn't add them up.",
           "responses": [
             {
-              "text": "[That math feels heavy.]",
+              "text": "That math feels heavy.",
               "next_node_id": "defend"
             },
             {
@@ -7087,11 +7087,11 @@
               }
             },
             {
-              "text": "[Fine. Run it.]",
+              "text": "Fine. Run it.",
               "next_node_id": "run_it"
             },
             {
-              "text": "[I want to weigh the output myself.]",
+              "text": "I want to weigh the output myself.",
               "next_node_id": "weigh_output"
             }
           ],
@@ -7104,11 +7104,11 @@
           "subtext": "He's smiling. The smile has been there the whole time.",
           "responses": [
             {
-              "text": "[Drop it. Run it.]",
+              "text": "Drop it. Run it.",
               "next_node_id": "run_it"
             },
             {
-              "text": "[I want to weigh the output.]",
+              "text": "I want to weigh the output.",
               "next_node_id": "weigh_output"
             }
           ],
@@ -7121,7 +7121,7 @@
           "subtext": "He doesn't stop smiling. He works quickly now.",
           "responses": [
             {
-              "text": "[Observation 2] His second tap was for him, not the scale.",
+              "text": "[Observation 2] \"That second tap was for you, not the scale.\"",
               "next_node_id": "run_it",
               "skill_check": {
                 "skill": "observation",
@@ -7132,7 +7132,7 @@
               }
             },
             {
-              "text": "[Noted. Run it.]",
+              "text": "Noted. Run it.",
               "next_node_id": "run_it"
             }
           ],
@@ -7155,7 +7155,7 @@
           "id": "finished",
           "speaker_id": "tev",
           "text": "Done. Here's your refined product. Two units of marketable alloy. Not as much as you brought me raw, but that's how it goes. Tell Arna I said hi. Tell her I miss her laugh.",
-          "subtext": "Two units out of five raw. You do the math he didn't. The fees add up to more than he said.",
+          "subtext": "Two units out of five raw. The fees add up to more than he said.",
           "responses": [
             {
               "text": "[Take the alloy and leave.]",
@@ -7175,14 +7175,14 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "That's it? That's the refined yield? Two units from five raw?",
-          "subtext": "She weighs it. Sets it down. Looks at the wall for a second. She is doing the math.",
+          "subtext": "She weighs it. Sets it down. Looks at the wall for a second.",
           "responses": [
             {
               "text": "[Stay silent.]",
               "next_node_id": "defend_tev"
             },
             {
-              "text": "[Observation] \"His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to.\"",
+              "text": "[Observation 2] \"His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to.\"",
               "next_node_id": "defend_tev",
               "required_flags": [
                 "knows_tev_skims"
@@ -7195,10 +7195,10 @@
           "id": "defend_tev",
           "speaker_id": "arna",
           "text": "Tev's been with me a long time. Calibration tolerances, processing loss, storage. It adds up. That's how refining works. He wouldn't. He's not like that.",
-          "subtext": "She says 'he's not like that' the way she says everything she does not want to think about. Too certain. Too specific.",
+          "subtext": "She says 'he's not like that' too fast. Too certain. Too specific.",
           "responses": [
             {
-              "text": "[Drop it. What's next?]",
+              "text": "Drop it. What's next?",
               "next_node_id": "whats_next"
             }
           ],
@@ -7208,10 +7208,10 @@
           "id": "whats_next",
           "speaker_id": "arna",
           "text": "Buyer. That's next. I have a contact at a derelict station off the Breakstone edge. Place called Heron's Mark. He pays premium for untraced alloy. We go in person, we come out with credits. Bring your ship. I am coming with you this time.",
-          "subtext": "She hasn't been off-station in a year. She's trying to act like it's routine.",
+          "subtext": "She hasn't been off-station in a year.",
           "responses": [
             {
-              "text": "[Understood. Let's go.]",
+              "text": "Understood. Let's go.",
               "next_node_id": null,
               "set_flag": "arna_arranging_buyer"
             }
@@ -7228,14 +7228,14 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "He's gone. I should have known. He mispronounced my name. Ernie. My own cousin calls me Ernie.",
-          "subtext": "She is holding a bloody gash on her side. Alive. Angrier about the name than the wound.",
+          "subtext": "She is holding a bloody gash on her side. Alive.",
           "responses": [
             {
-              "text": "[Who was that?]",
+              "text": "Who was that?",
               "next_node_id": "who"
             },
             {
-              "text": "[Are you okay?]",
+              "text": "Are you okay?",
               "next_node_id": "okay"
             }
           ],
@@ -7247,7 +7247,7 @@
           "text": "I'll live. Hit a rib, not a lung. Patched well enough to talk. Ask the other question.",
           "responses": [
             {
-              "text": "[Who was that?]",
+              "text": "Who was that?",
               "next_node_id": "who"
             },
             {
@@ -7271,7 +7271,7 @@
           "subtext": "She listens. Takes the minute. The bleeding slows. When she speaks again, her voice is steadier than it was.",
           "responses": [
             {
-              "text": "[Who was that?]",
+              "text": "Who was that?",
               "next_node_id": "who"
             }
           ],
@@ -7284,7 +7284,7 @@
           "subtext": "Her voice stays even. Her eyes do not.",
           "responses": [
             {
-              "text": "[What was that meet actually about?]",
+              "text": "What was that meet actually about?",
               "next_node_id": "come_clean"
             }
           ],
@@ -7297,11 +7297,11 @@
           "subtext": "She takes a breath. Looks at you straight for the first time since the ambush.",
           "responses": [
             {
-              "text": "[Why didn't you tell me?]",
+              "text": "Why didn't you tell me?",
               "next_node_id": "why_hid"
             },
             {
-              "text": "[Tell me what I'm actually in.]",
+              "text": "Tell me what I'm actually in.",
               "next_node_id": "primer_legality"
             }
           ],
@@ -7313,7 +7313,7 @@
           "text": "Because you would have said no. Or because I didn't want to say it out loud. Both. I have been running this kind of scheme for two years. Small stuff. Nobody noticed. I thought if I kept the scale small enough, I would be small enough to ignore. This was supposed to be my last one. I got greedy.",
           "responses": [
             {
-              "text": "[Tell me what I'm actually in.]",
+              "text": "Tell me what I'm actually in.",
               "next_node_id": "primer_legality"
             }
           ],
@@ -7325,7 +7325,7 @@
           "text": "Three legality tiers. Legal, you can move anywhere. Restricted, you need papers, faction permits, customs stamps, the whole manifest trail. Illegal, that's contraband, weapons, narcotics, biohazards, stolen goods. Different penalties if caught depending on which tier and which faction.",
           "responses": [
             {
-              "text": "[Go on.]",
+              "text": "Go on.",
               "next_node_id": "primer_penalties"
             }
           ],
@@ -7337,7 +7337,7 @@
           "text": "Penalties go warn, fine, confiscate, ban. Warn is a slap. Fine bleeds your account. Confiscate takes the cargo. Ban locks you out of that faction's stations. Commerce Guild inspects everything. Frontier Alliance barely looks. Crimson Reach, they just shoot you.",
           "responses": [
             {
-              "text": "[How do they catch you?]",
+              "text": "How do they catch you?",
               "next_node_id": "primer_inspections"
             }
           ],
@@ -7349,7 +7349,7 @@
           "text": "Inspections. Every system has an inspection rate. High traffic, high enforcement, high rate. Frontier edges, lower. And there's heat. Criminal attention. Do dirty work and eyes start following you. Heat decays when you stay clean. Builds when you don't.",
           "responses": [
             {
-              "text": "[Any way to beat inspections?]",
+              "text": "Any way to beat inspections?",
               "next_node_id": "primer_compartments"
             }
           ],
@@ -7361,7 +7361,7 @@
           "text": "Smuggling compartment. Install at any shipyard. Hides contraband from routine inspections. Not foolproof, persistent searches find it, but good for most checkpoints. You want one now. That's what this mess was supposed to fund.",
           "responses": [
             {
-              "text": "[Where do I actually sell this stuff?]",
+              "text": "Where do I actually sell this stuff?",
               "next_node_id": "primer_black_market"
             }
           ],
@@ -7373,11 +7373,11 @@
           "text": "Black markets. Not every station has one. The ones that do hide it behind rep or introductions. You just met one of the intros. Keren. He is not the only one. The access doesn't leave you once you have it. Primer's in your journal now. You can read it back when it matters.",
           "responses": [
             {
-              "text": "[What about your brother?]",
+              "text": "What about your brother?",
               "next_node_id": "brother"
             },
             {
-              "text": "[What's next?]",
+              "text": "What's next?",
               "next_node_id": "branches"
             }
           ],
@@ -7387,10 +7387,10 @@
           "id": "brother",
           "speaker_id": "arna",
           "text": "My brother. Yeah. I owe you that one. He's on a Union refinery station. Processed air his whole life. His lungs are giving out. Union healthcare gave him two options, keep working the same atmosphere that is killing him, or pay out of pocket for transfer. Second one costs more than I make in ten years at the manifest desk. That is why the scheme. That is why all of it. I was not going to stop until I had the money.",
-          "subtext": "She does not cry. She does not even look at you. She just says it flat because the words have been sitting under her tongue for two years.",
+          "subtext": "She does not cry. She does not even look at you. She just says it flat.",
           "responses": [
             {
-              "text": "[What's next?]",
+              "text": "What's next?",
               "next_node_id": "branches"
             }
           ],
@@ -7402,15 +7402,15 @@
           "text": "Three options on the table. I have been thinking while you were shooting. One, we go after Keren. Take what he took, take what he owes us, take his contraband and flip it. Risky, payback, full commitment. Two, we walk. There's a derelict I have had coordinates on for a year, clean, nobody watching. Small score, nothing follows us. Three, you turn me in. Security or Reach. Either way you walk with a bounty, I go somewhere worse. Your call.",
           "responses": [
             {
-              "text": "[We go after Keren.]",
+              "text": "We go after Keren.",
               "next_node_id": "chose_payback"
             },
             {
-              "text": "[We walk. One clean pull.]",
+              "text": "We walk. One clean pull.",
               "next_node_id": "chose_walkaway"
             },
             {
-              "text": "[I am turning you in.]",
+              "text": "I am turning you in.",
               "next_node_id": "chose_betray"
             }
           ],
@@ -7422,7 +7422,7 @@
           "text": "Good. I was hoping. Keren's depot coordinates are in your nav. Get me patched up at Nexus first, then we move. Bring weapons.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null,
               "set_flag": "arna_branch_payback"
             }
@@ -7435,7 +7435,7 @@
           "text": "Smart. Derelict coordinates are in your nav. Clean run, no entanglements. Smaller pull than I hoped, but nothing follows us out. I'll meet you back at Nexus.",
           "responses": [
             {
-              "text": "[See you there.]",
+              "text": "See you there.",
               "next_node_id": null,
               "set_flag": "arna_branch_walkaway"
             }
@@ -7446,7 +7446,7 @@
           "id": "chose_betray",
           "speaker_id": "arna",
           "text": "Huh. Okay. Fair read, I guess. I'd probably have done the same. Go on then.",
-          "subtext": "She sounds tired. She doesn't look surprised. Somewhere under the tiredness there is something small that wishes you had chosen different.",
+          "subtext": "She sounds tired. She doesn't look surprised.",
           "responses": [
             {
               "text": "[Leave]",
@@ -7469,11 +7469,11 @@
           "subtext": "She is in the same chair at the same terminal, bandage changed, color better. She looks up this time.",
           "responses": [
             {
-              "text": "[He's gone.]",
+              "text": "He's gone.",
               "next_node_id": "gone"
             },
             {
-              "text": "[I let him go.]",
+              "text": "I let him go.",
               "next_node_id": "spared"
             }
           ],
@@ -7486,7 +7486,7 @@
           "subtext": "She takes a long breath. Puts both hands flat on the terminal. Doesn't cry. Doesn't smile either.",
           "responses": [
             {
-              "text": "[What now?]",
+              "text": "What now?",
               "next_node_id": "what_now"
             }
           ],
@@ -7498,7 +7498,7 @@
           "text": "Huh. Probably smarter than killing him. Reach respects a mercy they didn't expect. He might even remember it. He probably won't. But might.",
           "responses": [
             {
-              "text": "[What now?]",
+              "text": "What now?",
               "next_node_id": "what_now"
             }
           ],
@@ -7508,10 +7508,10 @@
           "id": "what_now",
           "speaker_id": "arna",
           "text": "Now I'm on two blacklists instead of one. Dock rats don't get to stay when the file gets too thick. I know a freighter pulling out of Nexus in two days. Going to Port Kestrel. I can ride out on it. After that I'm not your problem.",
-          "subtext": "She says 'not your problem' the way people say the last line of a letter they already wrote.",
+          "subtext": "She says the last sentence without a pause.",
           "responses": [
             {
-              "text": "[Take care of yourself.]",
+              "text": "Take care of yourself.",
               "next_node_id": null,
               "set_flag": "arna_closeout_ready"
             }
@@ -7528,10 +7528,10 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "Small score. Clean paper. Fair trade for a scar and a lesson. You held up your end.",
-          "subtext": "She's quieter than before. The fast-talk register has slowed. She has been thinking a lot.",
+          "subtext": "She's quieter than before. The fast-talk register has slowed.",
           "responses": [
             {
-              "text": "[You okay?]",
+              "text": "You okay?",
               "next_node_id": "okay"
             }
           ],
@@ -7543,7 +7543,7 @@
           "text": "I'm fine. I'll be fine. The scheme was the plan. The plan fell apart. That's fine too. I have been running this kind of scheme for two years, you know that now. Three times smaller it worked. Once bigger it didn't. Lesson's in the numbers.",
           "responses": [
             {
-              "text": "[What's next for you?]",
+              "text": "What's next for you?",
               "next_node_id": "what_next"
             }
           ],
@@ -7553,10 +7553,10 @@
           "id": "what_next",
           "speaker_id": "arna",
           "text": "Manifest desk. Not leaving Nexus. Can't tell you why, so don't ask. I'll keep the terminal running. Maybe I'll find smaller schemes that work, and I'll remember not to step up. Maybe I won't. Either way, this is my home and I'm staying in it.",
-          "subtext": "She is not going to save her brother this way. She knows. She is saying it anyway.",
+          "subtext": "She says it to the terminal, not to you.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null,
               "set_flag": "arna_closeout_ready"
             }
@@ -7573,10 +7573,10 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "You're back. Good trip? You disappeared for a day there. I figured you were patching something on the ship.",
-          "subtext": "She's in the same chair. The bandage is a cleaner one. She is acting like nothing happened because she doesn't know anything has.",
+          "subtext": "She's in the same chair. The bandage is a cleaner one.",
           "responses": [
             {
-              "text": "[I need to ask you something.]",
+              "text": "I need to ask you something.",
               "next_node_id": "ask"
             }
           ],
@@ -7637,14 +7637,14 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "You're early. Freighter doesn't pull out for another hour. But you came to see me off. Most people wouldn't have.",
-          "subtext": "She has a duffel bag at her feet. Smaller than you expected. Dock rat's worth of things fits in one bag.",
+          "subtext": "She has a duffel bag at her feet. A small one. Dock rat's worth of things fits in one bag.",
           "responses": [
             {
-              "text": "[Where are you going?]",
+              "text": "Where are you going?",
               "next_node_id": "destination"
             },
             {
-              "text": "[What's next for you?]",
+              "text": "What's next for you?",
               "next_node_id": "next_step"
             }
           ],
@@ -7657,7 +7657,7 @@
           "subtext": "She is not looking at you. She is looking at the main concourse exit, the one that goes toward the bays.",
           "responses": [
             {
-              "text": "[Your brother?]",
+              "text": "Your brother?",
               "next_node_id": "brother"
             }
           ],
@@ -7669,7 +7669,7 @@
           "text": "Don't know. Maybe I find work on Kestrel. Maybe a berth on a longer run. Maybe the Reach finds me first. Hard to say.",
           "responses": [
             {
-              "text": "[Your brother?]",
+              "text": "Your brother?",
               "next_node_id": "brother"
             }
           ],
@@ -7682,11 +7682,11 @@
           "subtext": "Her voice stays flat. It has been flat since the ambush.",
           "responses": [
             {
-              "text": "[Can I help somehow?]",
+              "text": "Can I help somehow?",
               "next_node_id": "help_offer"
             },
             {
-              "text": "[Take care of yourself.]",
+              "text": "Take care of yourself.",
               "next_node_id": "pendant"
             }
           ],
@@ -7699,7 +7699,7 @@
           "subtext": "She almost smiles. Not quite.",
           "responses": [
             {
-              "text": "[Take care of yourself.]",
+              "text": "Take care of yourself.",
               "next_node_id": "pendant"
             }
           ],
@@ -7709,10 +7709,10 @@
           "id": "pendant",
           "speaker_id": "arna",
           "text": "Before I go. You have seen this.",
-          "subtext": "She pulls the silver pendant out from under her shirt. You have seen it three times across three different stories. This time her eyes finally meet yours.",
+          "subtext": "She pulls the silver pendant out from under her shirt. This time her eyes finally meet yours.",
           "responses": [
             {
-              "text": "[I have. Three times.]",
+              "text": "I have. Three times.",
               "next_node_id": "pendant_truth"
             }
           ],
@@ -7724,7 +7724,7 @@
           "text": "Not my brother's. Not a lover's. Not a market find. It was my mother's. She died when I was seven. I have been telling people whatever story felt right that day. You got three of them, I think. Truth is I do not remember her well enough to deserve it. But I carry it anyway.",
           "responses": [
             {
-              "text": "[Why tell me now?]",
+              "text": "Why tell me now?",
               "next_node_id": "why_now"
             }
           ],
@@ -7751,7 +7751,7 @@
           "subtext": "She does not offer a handshake. She picks up the bag. Walks toward the departure bay. She does not look back.",
           "responses": [
             {
-              "text": "[Goodbye, Arna.]",
+              "text": "Goodbye, Arna.",
               "next_node_id": null,
               "set_flag": "arna_gone_from_nexus"
             }
@@ -7771,11 +7771,11 @@
           "subtext": "She is at the manifest terminal. Same seat, same posture. The bandage has been replaced with a smaller dressing.",
           "responses": [
             {
-              "text": "[Wanted to check on you.]",
+              "text": "Wanted to check on you.",
               "next_node_id": "check"
             },
             {
-              "text": "[Got a spot on the ship if you want it.]",
+              "text": "Got a spot on the ship if you want it.",
               "next_node_id": "offer"
             }
           ],
@@ -7787,11 +7787,11 @@
           "text": "I'm fine. Clean papers, desk job, scar that will heal. Better than a lot of my cousins.",
           "responses": [
             {
-              "text": "[Got a spot on the ship if you want it.]",
+              "text": "Got a spot on the ship if you want it.",
               "next_node_id": "offer"
             },
             {
-              "text": "[Take care.]",
+              "text": "Take care.",
               "next_node_id": "farewell"
             }
           ],
@@ -7804,7 +7804,7 @@
           "subtext": "She looks up. Something almost happens in her face. Then doesn't.",
           "responses": [
             {
-              "text": "[Yeah.]",
+              "text": "Yeah.",
               "next_node_id": "offer_decline"
             }
           ],
@@ -7816,7 +7816,7 @@
           "text": "Kind of you. But no. Nexus is the only place I have lived. I have a brother on a refinery who needs a sister who does not move around. I need the terminal. I need the desk. I need the noise. If I left here I would not know who I was the next morning.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": "farewell"
             }
           ],
@@ -7826,7 +7826,7 @@
           "id": "farewell",
           "speaker_id": "arna",
           "text": "You check in when you're docked. I'll be here. I'll always be here. That's the deal I made with myself. Fly safe.",
-          "subtext": "She goes back to the manifest. The numbers scroll past. She starts humming under her breath. You have not heard her hum before.",
+          "subtext": "She goes back to the manifest. The numbers scroll past. She starts humming under her breath.",
           "responses": [
             {
               "text": "[Leave]",
@@ -7880,11 +7880,11 @@
           "text": "Clean pallet. Didn't lose a unit. That's better than half the haulers I see. Pay's on your account. First run?",
           "responses": [
             {
-              "text": "[Yeah.]",
+              "text": "Yeah.",
               "next_node_id": "advice"
             },
             {
-              "text": "[Don't remember.]",
+              "text": "Don't remember.",
               "next_node_id": "closeout"
             }
           ],
@@ -7896,7 +7896,7 @@
           "text": "Then hear this. Don't go empty on the way back. Check Verdant's board. Even a small load pays for fuel. Nexus has its own board when you land. Work stacks up if you keep moving.",
           "responses": [
             {
-              "text": "[Thanks.]",
+              "text": "Thanks.",
               "next_node_id": null
             }
           ],
@@ -9737,7 +9737,7 @@
           "text": "I do not typically name something useful when the account already shows it. The clinic's intake register is the record and it is clear. What I want to say is that I noticed, and that is harder to annotate than tonnage.",
           "responses": [
             {
-              "text": "[Understood. I will keep watching the board.]",
+              "text": "Understood. I will keep watching the board.",
               "next_node_id": "close"
             }
           ],
@@ -9783,7 +9783,7 @@
           "id": "start",
           "speaker_id": "aldric_senn",
           "text": "So you followed it. Sit if you want. The chair is bolted to the floor and I am not going anywhere. You are looking at the man they told you did it. Take your look. I am not what you were told.",
-          "subtext": "He is thinner than the operational photos. The office is small, the lock on the door is on the outside, and he does not glance at it. He has been waiting for this conversation for a while.",
+          "subtext": "He is thinner than the operational photos. The office is small, the lock on the door is on the outside, and he does not glance at it.",
           "responses": [
             {
               "text": "Then who authorized Project Convergence.",
@@ -10011,7 +10011,7 @@
           "text": "Castellano. Coinmark. Say a number or say a route; I will tell you which side of the ledger it lands on.",
           "responses": [
             {
-              "text": "[Not today.]",
+              "text": "Not today.",
               "next_node_id": null
             }
           ],
@@ -10027,7 +10027,7 @@
           "id": "start",
           "speaker_id": "noor_castellano",
           "text": "Your volume is proven. Your paper is clean enough. I have three lines I am willing to route your way. Pick the one that matches how you like to earn.",
-          "subtext": "The office is glass on three sides. The ticker on the fourth wall runs quotes she is not looking at. She has already priced this conversation.",
+          "subtext": "The office is glass on three sides. The ticker on the fourth wall runs quotes she is not looking at.",
           "responses": [
             {
               "text": "Leveraged. I want the ceiling raised.",
@@ -10130,7 +10130,7 @@
               "next_node_id": "qualifies"
             },
             {
-              "text": "[Nothing right now.]",
+              "text": "Nothing right now.",
               "next_node_id": null
             }
           ],
@@ -10142,7 +10142,7 @@
           "text": "Warrant requires a complaint, a named respondent, and a charge that fits the settlement code. Not an allegation. Not a suspicion. A charge. The distinction matters. I was pardoned once for a killing I committed and never disputed, because the council decided the finding was not worth the paperwork. I have spent the time since making sure that courtesy is not extended only to the sympathetic. Bring me a charge.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10154,7 +10154,7 @@
           "text": "Violation of settlement code. Theft of registered cargo under a manifest. Unlawful restraint. The list is longer than that but those are the ones I see most often on this circuit. What I do not issue warrants for is personal grievance dressed as a charge. I can tell the difference. Most people who try it know I can.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10176,7 +10176,7 @@
               "next_node_id": "too_slow"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10222,7 +10222,7 @@
           "text": "Witnesses who will testify for someone who has proven they use due process even when it costs them a target. Contacts across the settlements who do not take referrals from operators whose methods skip the hearing record. The list is long but it starts there.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10234,7 +10234,7 @@
           "text": "Do not thank me yet. The warrant-holding authority is only as useful as the cases you bring. Bring bad cases and the list closes back up. I have seen it happen.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10260,7 +10260,7 @@
               "next_node_id": "onto_agenda"
             },
             {
-              "text": "[Nothing right now.]",
+              "text": "Nothing right now.",
               "next_node_id": null
             }
           ],
@@ -10272,7 +10272,7 @@
           "text": "Anything that requires the council to speak with one voice. Docking-fee schedules. Water allocation. Which parcels get patrol coverage and which do not. Small town, small quorum, and every seat counts. I do not have votes I can promise you. I have a seat I can promise to fill honestly.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10284,7 +10284,7 @@
           "text": "Bring me something the council can act on. Not a grievance. Not a rumor. A proposal with a signatory list, a cost line, and one clear ask. I have been counting votes long enough to know the difference between a proposal that moves and a wish list. Bring the first kind.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10318,7 +10318,7 @@
           "text": "Fourth-day quorum, first-day dockside review, and a standing invitation to the fee-schedule working group. The other councils on the circuit will recognize your signature. That opens some doors the private applicants do not walk through. Use it for real proposals and the doors stay open.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10330,7 +10330,7 @@
           "text": "Do not thank me for the seat. Thank me by filling it. I have watched people take a chair and treat it like a trophy. That is not what this is for.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10352,7 +10352,7 @@
               "next_node_id": "too_slow"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10390,7 +10390,7 @@
               "next_node_id": "mediation"
             },
             {
-              "text": "[Nothing right now.]",
+              "text": "Nothing right now.",
               "next_node_id": null
             }
           ],
@@ -10402,7 +10402,7 @@
           "text": "Signed survey. Drift analysis for the parcel over the last six cycles. A clean chain of title back to the last unambiguous holder. If any of those three are missing, I hold the file and mark the window open. I do not close windows early. That is what turns filings into disputes.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10414,7 +10414,7 @@
           "text": "Both parties sit in the office. Both surveyors present. The drift record on the table between them. I read the record and the parties speak to what it shows. Nine times in ten, the drift settles the question before I have to. That is why I keep the drift record and not opinions.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10448,7 +10448,7 @@
           "text": "You file, you do not petition. You call windows, you do not wait for them. The surveyors send drift reports to your office as they send them to mine. It is not authority over people. It is authority over paperwork. In this line of work, that is most of the authority there is.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10460,7 +10460,7 @@
           "text": "The paperwork does not thank people back. I will note that you were willing to take it on when other applicants would not have. The registry will remember that longer than either of us will.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10482,7 +10482,7 @@
               "next_node_id": "timeline"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10520,7 +10520,7 @@
               "next_node_id": "cells"
             },
             {
-              "text": "[Nothing right now.]",
+              "text": "Nothing right now.",
               "next_node_id": null
             }
           ],
@@ -10532,7 +10532,7 @@
           "text": "Passage debt buyout. Emergency legal on the shift-supervisor writeups. A rotating meal fund for the ones the operators are trying to starve into signing back on. That is where the money goes. I do not spend it on flags and I do not spend it on speeches.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10544,7 +10544,7 @@
           "text": "The cells organize the walkouts, run the safety comms, and get the debt-buyouts to the right hands before the operator does. That is the whole of it. It is not glamorous. It is not fast. It is what keeps people alive on parcels that would otherwise chew through them.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10578,7 +10578,7 @@
           "text": "Cargo the cells vouch for gets carried. Passengers the cells vouch for get carried. Runners will find you where they will not find the operators. That is what the cell network is. It is not a favor list. It is people trusting each other's word. Break the word, lose the network.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10590,7 +10590,7 @@
           "text": "Good. Then we do not have to talk about this again until something goes wrong. Which it will. Call me when it does.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10612,7 +10612,7 @@
               "next_node_id": "call"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10654,7 +10654,7 @@
               "next_node_id": "succession"
             },
             {
-              "text": "[I understand. Another time.]",
+              "text": "I understand. Another time.",
               "next_node_id": null
             }
           ],
@@ -10666,7 +10666,7 @@
           "text": "The endowment accepts patron contributions on a thirty-year horizon. Your deposits go into the general research fund until they reach the naming threshold. The person who wrote the charter set the threshold high on purpose. The founding generation did not want the Institute sold to the loudest patron in the room. I did not change that policy.",
           "responses": [
             {
-              "text": "[Good to know.]",
+              "text": "Good to know.",
               "next_node_id": "wrap"
             }
           ],
@@ -10678,7 +10678,7 @@
           "text": "The wing dedication is a formal instrument. It requires the patron to reach the naming threshold and the standing committee to vote it in. At your current contribution rate, the committee would see your name on the next quarterly review. That review is in eleven days. I cannot tell you the outcome before the vote.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": "wrap"
             }
           ],
@@ -10690,7 +10690,7 @@
           "text": "The chair goes to whoever the standing committee selects. The criteria are on file. Long-horizon investment in the Institute's mission, demonstrated judgment, and a record the founding generation would recognize. I inherited this chair from someone I have never met. I do not make the succession rules. I apply them.",
           "responses": [
             {
-              "text": "[I see.]",
+              "text": "I see.",
               "next_node_id": "wrap"
             }
           ],
@@ -10736,7 +10736,7 @@
           "text": "It means your name appears on the quarterly research-direction memo and the committee is required to note your input before it votes. You are not the chair. You are on the record as a voice the chair has to answer to. That is not a small thing in an institution that has been running for forty years without one.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10770,7 +10770,7 @@
               "next_node_id": "tevek_detail"
             },
             {
-              "text": "[I understand.]",
+              "text": "I understand.",
               "next_node_id": null
             }
           ],
@@ -10816,7 +10816,7 @@
           "text": "I have no idea. He asked once and then went back to his console. Priya sat through the whole transition too. She does not usually. She had readings to finish and she finished them there instead of in her bunk. I think that is what it looks like when the ship is different. I am not used to seeing it.",
           "responses": [
             {
-              "text": "[That is something.]",
+              "text": "That is something.",
               "next_node_id": "wrap"
             }
           ],
@@ -10828,7 +10828,7 @@
           "text": "Cap... yes. I think it is. I am still calibrating the evidence, but yes.",
           "responses": [
             {
-              "text": "[Good to hear.]",
+              "text": "Good to hear.",
               "next_node_id": "wrap"
             }
           ],
@@ -10840,7 +10840,7 @@
           "text": "I should get back to the heading. We have a routing window in forty minutes. I just wanted to log it. For the record.",
           "responses": [
             {
-              "text": "[Go ahead.]",
+              "text": "Go ahead.",
               "next_node_id": null
             }
           ],
@@ -10862,7 +10862,7 @@
               "next_node_id": "nothing_else"
             },
             {
-              "text": "[Understood. Thank you.]",
+              "text": "Understood. Thank you.",
               "next_node_id": null
             }
           ],
@@ -10900,7 +10900,7 @@
               "next_node_id": "alone"
             },
             {
-              "text": "[Nothing right now.]",
+              "text": "Nothing right now.",
               "next_node_id": null
             }
           ],
@@ -10916,7 +10916,7 @@
               "next_node_id": "logbook"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10928,7 +10928,7 @@
           "text": "Names. Dates. What they were carrying and where they thought they were going. That is all a logbook is. It is enough.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -10940,7 +10940,7 @@
           "text": "Mostly. Two surveyors come through on rotation. Otherwise it is me and the site log. The dock lights need someone to keep them on or the hulks become hazards to navigation.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10974,7 +10974,7 @@
           "text": "Development inside the archival boundary requires a catalogue review before any equipment goes in. That is a long enough window to document what is there before it is gone. That is what I needed.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -10986,7 +10986,7 @@
           "text": "The site was here before either of us. It will probably be here after. I am just keeping the record while I can.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11008,7 +11008,7 @@
               "next_node_id": "loss"
             },
             {
-              "text": "[I understand.]",
+              "text": "I understand.",
               "next_node_id": null
             }
           ],
@@ -11020,7 +11020,7 @@
           "text": "Roughly a third of the outer ring. The inner hulks are still outside the perimeter. I kept working. The record is smaller than it was, but it is still a record.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11054,7 +11054,7 @@
           "text": "They go into the development record. If there was cataloguing underway, that work is superseded by the production filing. The registry does not maintain both a production claim and an archival designation on the same parcel. It files one or the other.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11066,7 +11066,7 @@
           "text": "The paperwork moves when the filing is in order. That one was in order.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11088,7 +11088,7 @@
               "next_node_id": "filer"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11100,7 +11100,7 @@
           "text": "The filing is public record. You can look it up. I do not provide commentary on other applicants claims. I file parcels. The parcel is filed. That is the whole of it.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11126,7 +11126,7 @@
               "next_node_id": "role"
             },
             {
-              "text": "[Maybe another time.]",
+              "text": "Maybe another time.",
               "next_node_id": null
             }
           ],
@@ -11142,7 +11142,7 @@
               "next_node_id": "wrong"
             },
             {
-              "text": "[I see.]",
+              "text": "I see.",
               "next_node_id": null
             }
           ],
@@ -11154,7 +11154,7 @@
           "text": "Cargo shifts. Equipment failures at two in the morning when there is nobody to call. People who are tired enough that their judgment goes before they notice it is gone. It is mostly small things. The small things are the ones that matter if you catch them early.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11170,7 +11170,7 @@
               "next_node_id": "same"
             },
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11182,7 +11182,7 @@
           "text": "Both of them are about paying attention. That is all. If you are paying attention, you notice when something is wrong. The rest follows from that.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11216,7 +11216,7 @@
           "text": "The shift workers come in before dawn. Some of them need someone to stand with them for a few minutes before they can go home. That is the whole of it. You stand there and you pay attention. That is what the rotation is.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11228,7 +11228,7 @@
           "text": "The network across the dock knows you are vouched for now. That is how it works. Nobody files paperwork for it. You just show up, and the other people who show up will know.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11250,7 +11250,7 @@
               "next_node_id": "anything"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11262,7 +11262,7 @@
           "text": "The chapel is still open three mornings a week. Anyone can come in. You chose to stop looking in this direction. That is your business. The door is not locked.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11288,7 +11288,7 @@
               "next_node_id": "qualifying"
             },
             {
-              "text": "[Not interested right now.]",
+              "text": "Not interested right now.",
               "next_node_id": null
             }
           ],
@@ -11304,7 +11304,7 @@
               "next_node_id": "personal"
             },
             {
-              "text": "[I understand.]",
+              "text": "I understand.",
               "next_node_id": null
             }
           ],
@@ -11316,7 +11316,7 @@
           "text": "I had a contract that required full hand mobility. A cargo bay door took that mobility from me three years ago. The procedure restored clinical function. Not the same function. Different function. I filed the authorization for myself and then I filed it as a research record because both things were true at the same time.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11328,7 +11328,7 @@
           "text": "Demonstrated cost-acceptance in the applicant's operational history. The ethics committee reviews the record. If the record shows the pattern, authorization follows. Your record is close to showing the pattern.",
           "responses": [
             {
-              "text": "[I see.]",
+              "text": "I see.",
               "next_node_id": null
             }
           ],
@@ -11362,7 +11362,7 @@
           "text": "The research materials the committee had held back from private applicants are now accessible through the institute's standard review process. The authorization opens that channel. Use it or do not. The access does not expire.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11374,7 +11374,7 @@
           "text": "The institute authorized it on the basis of your record. I filed the paperwork. That is all either of us did here.",
           "responses": [
             {
-              "text": "[Noted.]",
+              "text": "Noted.",
               "next_node_id": null
             }
           ],
@@ -11396,7 +11396,7 @@
               "next_node_id": "other"
             },
             {
-              "text": "[I understand.]",
+              "text": "I understand.",
               "next_node_id": null
             }
           ],
@@ -11408,7 +11408,7 @@
           "text": "Applicant records are confidential. What I can tell you is that they demonstrated cost-acceptance at the level the ethics committee required. The institute proceeded on that basis. There was someone who chose to stay whole. The authorization went to someone who did not make that choice.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11447,7 +11447,7 @@
               "next_node_id": "cost"
             },
             {
-              "text": "[Noted. I will think on it.]",
+              "text": "Noted. I will think on it.",
               "next_node_id": null
             }
           ],
@@ -11459,7 +11459,7 @@
           "text": "You stop running routes that read against the ledger. That is the inheritance that comes with the account. The debts in here were not mine when I took them on. The routes that kept them settled are still the routes that keep them settled.",
           "responses": [
             {
-              "text": "[Understood. I will be back.]",
+              "text": "Understood. I will be back.",
               "next_node_id": null
             }
           ],
@@ -11494,7 +11494,7 @@
           "text": "Override for the freight dock manifests. The paperwork routes through the bonded broker account on the Understair ledger instead of the surface floor. Authority reads it as standard transit. The brokers at Kettlebridge will know you are inside the ledger now. You do not need introduction paperwork anymore.",
           "responses": [
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],
@@ -11516,7 +11516,7 @@
               "next_node_id": "reopen"
             },
             {
-              "text": "[Understood.]",
+              "text": "Understood.",
               "next_node_id": null
             }
           ],

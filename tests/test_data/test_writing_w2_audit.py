@@ -13,6 +13,7 @@ import pytest
 from tools.writing import w2_audit
 
 DONE_FILES: tuple[str, ...] = (
+    "data/dialogue/dialogues.json",
     "data/encounters/campaign.json",
     "data/encounters/ce4_pressure.json",
     "data/encounters/ce4_variety.json",
