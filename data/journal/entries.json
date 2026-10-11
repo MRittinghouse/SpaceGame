@@ -44,7 +44,7 @@
     },
     {
       "entry_id": "auto_m07_tomas_accepted",
-      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs. Haven's Rest ran on handshakes and trust.",
+      "text": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs.",
       "trigger_flag": "accepted_drifter_deal",
       "system_id": "havens_rest",
       "mission_id": ""
@@ -338,7 +338,7 @@
     },
     {
       "entry_id": "auto_p5_first_reach_arbitration",
-      "text": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. The Reach ran on informal consensus. The arbitration floor was where the informal got written down.",
+      "text": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved.",
       "trigger_flag": "first_reach_arbitration",
       "system_id": "crimson_reach",
       "mission_id": ""

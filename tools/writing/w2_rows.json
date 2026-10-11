@@ -13175,7 +13175,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_m07_tomas_accepted].text",
    "old": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade. Rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust.",
-   "new": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs. Haven's Rest ran on handshakes and trust.",
+   "new": "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs.",
    "disposition": "draft",
    "owner": "",
    "flags": [
@@ -13446,7 +13446,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p5_first_reach_arbitration].text",
    "old": "First session at the Guild arbitration floor. Malia runs it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. I walked out with a cleaner picture of what the Guild holds and what it does not. The Reach runs on informal consensus. The arbitration floor is where the informal gets written down.",
-   "new": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved. The Reach ran on informal consensus. The arbitration floor was where the informal got written down.",
+   "new": "First session at the Guild arbitration floor. Malia ran it like a transaction: no drama, just position and record. The delegates came in knowing what they wanted. Two of them had been in the same room before. The vote resolved.",
    "disposition": "draft",
    "owner": "",
    "flags": [
