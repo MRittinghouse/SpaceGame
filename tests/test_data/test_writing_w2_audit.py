@@ -57,6 +57,19 @@ def test_the_worklist_holds_every_open_audit_row() -> None:
     assert len({entry.id for entry in entries}) == len(entries)
 
 
+def test_the_worklist_holds_every_named_line() -> None:
+    entries = w2_audit.load_worklist()
+    for named in w2_audit.NAMED:
+        held = [
+            entry.why
+            for entry in entries
+            if all(part in entry.gate_path for part in named.parts)
+            and entry.gate_path.endswith(named.suffix)
+            and (not named.text or entry.old == named.text)
+        ]
+        assert held == [named.why], named
+
+
 @pytest.mark.parametrize("file", DONE_FILES)
 def test_every_entry_of_a_done_file_landed(file: str) -> None:
     assert w2_audit.check(w2_audit.load_worklist(), {file}) == []

@@ -3,7 +3,7 @@
     {
       "id": "reinforcement_arrival",
       "name": "Reinforcement Arrival",
-      "description": "A second ship warps in on the enemy's flank at round 3.",
+      "description": "A second ship jumps in on the enemy's flank at round 3.",
       "trigger_type": "turn_counter",
       "trigger_params": { "turn": 3 },
       "effect_type": "spawn_reinforcement",

@@ -83,6 +83,18 @@
   },
   {
    "file": "data/combat/complications.json",
+   "gate_path": ".complications[id=reinforcement_arrival].description",
+   "old": "A second ship warps in on the enemy's flank at round 3.",
+   "new": "A second ship jumps in on the enemy's flank at round 3.",
+   "disposition": "draft",
+   "owner": "",
+   "flags": [],
+   "rows": [],
+   "gates": [],
+   "why": "the words ruling: 'warps in', a travel warp G11's whole word misses"
+  },
+  {
+   "file": "data/combat/complications.json",
    "gate_path": ".complications[id=reinforcement_arrival].narration",
    "old": "A contact lights up the long-range scanner. One more ship just dropped out of warp. The fight just got bigger.",
    "new": "A contact lights up the long-range scanner. One more ship just jumped in. The fight just got bigger.",

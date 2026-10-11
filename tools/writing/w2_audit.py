@@ -76,9 +76,10 @@ _SHARED_WORDS = 5
 
 @dataclass(frozen=True)
 class Named:
-    """A line the hand-offs or the impact inventory name with no audit row: the gate path parts it
-    holds, the suffix its path ends with (the record's id and field, so an objective's own
-    description never matches), and its exact text where the path alone is not enough."""
+    """A line the hand-offs, the impact inventory or a plan W2-S ruling names with no audit row:
+    the gate path parts it holds, the suffix its path ends with (the record's id and field, so an
+    objective's own description never matches), and its exact text where the path alone is not
+    enough."""
 
     parts: tuple[str, ...]
     suffix: str
@@ -96,6 +97,12 @@ NAMED: tuple[Named, ...] = (
         "the last sentence states Marcus's inner state (hand-offs)",
     ),
     Named((), "[id=marcus_steel_holds].description", "", "impact 7.58"),
+    Named(
+        (),
+        "[id=reinforcement_arrival].description",
+        "",
+        "the words ruling: 'warps in', a travel warp G11's whole word misses",
+    ),
     Named(("[id=arna_post_completion]",), "[id=retire_early].subtext", "", "impact 7.75"),
     Named(("[id=arna_post_ore_tip]",), "[id=about_site].subtext", "", "impact 7.77"),
     Named(("[id=arna_post_refining]",), "[id=start].subtext", "", "impact 7.80"),
