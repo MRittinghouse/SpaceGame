@@ -617,7 +617,7 @@ class TestSmugglingContract:
         """Contract is expired if current day exceeds start + deadline."""
         contract = SmugglingContract(
             id="smuggle_002",
-            client_name="Dex Halloran",
+            client_name="Glyn Quintela",
             commodity_id="combat_stims",
             quantity=3,
             source_system="nova_research",

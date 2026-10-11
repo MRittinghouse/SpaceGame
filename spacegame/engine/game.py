@@ -67,6 +67,7 @@ from spacegame.engine.screen_effects import ScreenShake, Vignette
 from spacegame.engine.startup_timer import StartupTimer
 from spacegame.engine.state_manager import StateManager
 from spacegame.engine.transitions import TransitionManager, TransitionType
+from spacegame.models.captain_tokens import Pronouns, captain_line
 from spacegame.models.event import EventGenerator
 from spacegame.models.faction import generate_faction_assignments
 from spacegame.models.market import Market
@@ -597,7 +598,7 @@ class Game:
                 crew_id, text = result
                 template = roster.get_template(crew_id)
                 name = template.name if template else crew_id
-                return (name, text)
+                return (name, captain_line(text, self._player))
             return None
 
         return _get_line
@@ -615,12 +616,16 @@ class Game:
                 self.player.make_news_context(detail, commodity, amount)
             )
 
-    def initialize_new_game(self, player_name: str = "Captain", ship_name: str = "") -> None:
+    def initialize_new_game(
+        self, player_name: str = "Captain", ship_name: str = "", pronouns: Pronouns = Pronouns.THEY
+    ) -> None:
         """Initialize a new game with starting conditions.
 
         Args:
             player_name: Name chosen by the player.
             ship_name: Player-chosen ship name (empty = use ship type name).
+            pronouns: The captain's pronouns (writing discipline spec 2.5); SP6's creator
+                passes the player's pick.
         """
         logger.info("Initializing new game...")
 
@@ -648,6 +653,7 @@ class Game:
             current_system_id="nexus_prime",
             ship=starting_ship,
             ship_name=ship_name,
+            pronouns=pronouns,
         )
 
         logger.info(f"Player created: {self.player.name} at {self.player.current_system_id}")
@@ -1178,6 +1184,7 @@ class Game:
                 def _do():
                     # Always start fresh — clear existing player if loaded
                     self._player = None
+                    self.dialogue_manager.clear_player()
                     self._start_intro_narration(return_state=GameState.NAME_INPUT)
 
                 self._start_transition(TransitionType.FADE, 0.5, _do)
@@ -6721,6 +6728,13 @@ class Game:
         line_surf.fill((Colors.GOLD[0], Colors.GOLD[1], Colors.GOLD[2], alpha))
         screen.blit(line_surf, (line_x, WINDOW_HEIGHT // 2 - 18))
 
+    def _next_mission_notification(self) -> str:
+        """Pop the next banner line, the captain's tokens rendered (spec 2.7).
+
+        The banner prints every queued line: crew talk, banter, thread narration, telegraphs.
+        """
+        return captain_line(self._mission_notifications.pop(0), self._player)
+
     def _render_mission_notification(self, screen: pygame.Surface) -> None:
         """Render mission notification banner at top of screen."""
         if not self._mission_notifications and self._mission_notify_timer <= 0:
@@ -6728,7 +6742,7 @@ class Game:
 
         if self._mission_notify_timer <= 0:
             if self._mission_notifications:
-                self._current_mission_msg = self._mission_notifications.pop(0)
+                self._current_mission_msg = self._next_mission_notification()
                 self._mission_notify_timer = 4.0
 
         if self._mission_notify_timer <= 0:

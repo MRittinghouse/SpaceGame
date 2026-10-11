@@ -17,6 +17,7 @@ from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH, GameState, scale_x, sc
 from spacegame.engine.backgrounds import AnimatedBackground
 from spacegame.engine.draw_utils import draw_panel
 from spacegame.engine.fonts import FONT_BODY, FONT_LG, FONT_TITLE, get_font
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.encounter import (
     EncounterChoice,
     EncounterDefinition,
@@ -120,13 +121,17 @@ class EncounterView(BaseView):
             if self._effective_dialogue is not None
             else encounter_def.description
         )
-        self.display_description = base_description.format_map(_SafeFormatMap(subs))
-        self.display_name = (
+        # The captain's tokens render first: a verb token would break format_map (spec 2.7).
+        self.display_description = captain_line(base_description, player).format_map(
+            _SafeFormatMap(subs)
+        )
+        self.display_name = captain_line(
             self._effective_dialogue.display_name
             if self._effective_dialogue is not None
-            else encounter_def.name
+            else encounter_def.name,
+            player,
         )
-        self.display_choices = _substitute_choices(encounter_def.choices, subs)
+        self.display_choices = _substitute_choices(encounter_def.choices, subs, player)
 
         # UI element refs (created in _create_ui)
         self.choice_buttons: list[UIButton] = []
@@ -644,18 +649,22 @@ class _SafeFormatMap(dict):
 
 
 def _substitute_choices(
-    choices: list[EncounterChoice], subs: dict[str, str]
+    choices: list[EncounterChoice], subs: dict[str, str], player: Optional[Player] = None
 ) -> list[EncounterChoice]:
     """Create copies of choices with template strings substituted.
 
-    CE-4: passes ``skill_check``, ``failure_outcome``, and
-    ``requires_credits`` through unchanged.
+    CE-4: passes ``skill_check``, ``failure_outcome``, and ``requires_credits`` through
+    unchanged. The captain's tokens render before the substitution, which a verb token would
+    break (writing discipline spec 2.7).
     """
     fmt = _SafeFormatMap(subs)
 
+    def _text(text: str) -> str:
+        return captain_line(text, player).format_map(fmt)
+
     def _sub_outcome(o: EncounterOutcome) -> EncounterOutcome:
         return EncounterOutcome(
-            description=o.description.format_map(fmt),
+            description=_text(o.description),
             rewards=list(o.rewards),
             leads_to_combat=o.leads_to_combat,
             enemy_template_ids=list(o.enemy_template_ids),
@@ -666,8 +675,8 @@ def _substitute_choices(
         result.append(
             EncounterChoice(
                 id=c.id,
-                label=c.label.format_map(fmt),
-                description=c.description.format_map(fmt),
+                label=_text(c.label),
+                description=_text(c.description),
                 outcome=_sub_outcome(c.outcome),
                 skill_check=c.skill_check,
                 failure_outcome=(

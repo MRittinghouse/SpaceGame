@@ -19,6 +19,7 @@ from spacegame.engine.fonts import FONT_DISPLAY, FONT_HEADING, FONT_MD, get_font
 from spacegame.engine.particles import SCAN_PULSE, WARP_TRAIL, ParticlePool
 from spacegame.engine.procedural import generate_planet
 from spacegame.engine.sprites import AnimatedSprite, get_sprite_manager, res_scale
+from spacegame.models.captain_tokens import captain_line
 from spacegame.models.encounter import (
     ENCOUNTER_CHANCE_DANGEROUS,
     ENCOUNTER_CHANCE_MODERATE,
@@ -1283,11 +1284,15 @@ class GalaxyMapView(BaseView):
             (tx + pad_x, ty + pad_y + name_surf.get_height() + dist_surf.get_height()),
         )
 
+    def _ticker_headlines(self) -> list[str]:
+        """The ticker's next three headlines, the captain's tokens rendered (spec 2.7)."""
+        if not self.news_ticker:
+            return []
+        return [captain_line(h, self.player) for h in self.news_ticker.get_headlines(count=3)]
+
     def _draw_news_ticker(self, screen: pygame.Surface) -> None:
         """Render scrolling news ticker at the bottom of the map."""
-        if not self.news_ticker:
-            return
-        headlines = self.news_ticker.get_headlines(count=3)
+        headlines = self._ticker_headlines()
         if not headlines:
             return
 

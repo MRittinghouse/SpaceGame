@@ -280,7 +280,7 @@ class TestD2TelegraphAnchor:
         assert any(anchor in combined for anchor in anchors), (
             "At least one of Marcus's telegraph lines must contain one of "
             f"{anchors!r} to anchor the collision on the M05 wound "
-            "(requirements/act_one_reference.md:254). "
+            "(requirements/act_one_reference.md, the M05 Log example). "
             f"Got telegraph_lines: {d2_dilemma.telegraph_lines!r}"
         )
 

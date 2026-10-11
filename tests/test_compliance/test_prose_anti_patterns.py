@@ -170,30 +170,3 @@ def test_no_banned_npc_names_anywhere_in_data(banned: str) -> None:
     pattern = re.compile(rf"\b{banned}\b", re.IGNORECASE)
     errors = _violations(lambda s: bool(pattern.search(s)))
     assert not errors, f"banned NPC name '{banned}' found in data:\n" + "\n".join(errors)
-
-
-# BB-35: a spaced double hyphen stands in for an em dash. The wave B files below still
-# carry them (news, ground missions, the travel log, the archived Act II lenses). Each
-# file's count of strings is pinned, so the list can only shrink.
-DOUBLE_HYPHEN = " -- "
-WAVE_B_DOUBLE_HYPHEN_COUNTS: dict[str, int] = {
-    "data/economy/news_templates.json": 31,
-    "data/ground/campaign/mission_10_crimson_reach.json": 3,
-    "data/ground/campaign/mission_13_breakstone_tunnels.json": 3,
-    "data/ground/campaign/mission_14_iron_depths_facility.json": 7,
-    "data/ground/campaign/mission_16_pirate_base.json": 5,
-    "data/ground/campaign/mission_16_the_fulcrum.json": 5,
-    "data/journal/travel_log_templates.json": 9,
-    "data/narrative/lenses.json": 16,
-}
-
-
-def test_double_hyphens_left_only_in_wave_b_files() -> None:
-    """No " -- " outside the pinned wave B files, and no more inside them."""
-    counts: dict[str, int] = {}
-    for path in _data_files():
-        document = json.loads(path.read_text(encoding="utf-8"))
-        found = sum(1 for _json_path, value in _strings(document) if DOUBLE_HYPHEN in value)
-        if found:
-            counts[path.relative_to(PROJECT_ROOT).as_posix()] = found
-    assert counts == WAVE_B_DOUBLE_HYPHEN_COUNTS

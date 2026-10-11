@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
+  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
   "steps": [
     {
       "args": [
@@ -186,6 +186,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -378,6 +379,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -558,6 +560,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -750,6 +753,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -942,6 +946,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -1122,6 +1127,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -1314,6 +1320,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -1506,6 +1513,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -1680,6 +1688,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -1872,6 +1881,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2064,6 +2074,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2238,6 +2249,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2423,6 +2435,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2597,6 +2610,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2782,6 +2796,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -2962,6 +2977,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -3147,6 +3163,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -3321,6 +3338,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -3515,6 +3533,7 @@
           },
           "xp": 25
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -3699,6 +3718,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -3884,6 +3904,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4064,6 +4085,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4249,6 +4271,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4429,6 +4452,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4603,6 +4627,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4783,6 +4808,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -4963,6 +4989,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -5148,6 +5175,7 @@
           },
           "xp": 30
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -5322,6 +5350,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -5502,6 +5531,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -5676,6 +5706,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -5879,6 +5910,7 @@
           },
           "xp": 30
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6080,6 +6112,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6260,6 +6293,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6445,6 +6479,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6630,6 +6665,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6804,6 +6840,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -6996,6 +7033,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -7183,6 +7221,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -7357,6 +7396,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -7549,6 +7589,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -7736,6 +7777,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -7916,6 +7958,7 @@
           },
           "xp": 5
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -8108,6 +8151,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -8295,6 +8339,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -8469,6 +8514,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -8661,6 +8707,7 @@
           },
           "xp": 25
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -8853,6 +8900,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9027,6 +9075,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9219,6 +9268,7 @@
           },
           "xp": 20
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9406,6 +9456,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9580,6 +9631,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9765,6 +9817,7 @@
           },
           "xp": 10
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -9950,6 +10003,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -10124,6 +10178,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -10309,6 +10364,7 @@
           },
           "xp": 25
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -10489,6 +10545,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -10663,6 +10720,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -10855,6 +10913,7 @@
           },
           "xp": 25
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -11042,6 +11101,7 @@
           },
           "xp": 15
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200
@@ -11216,6 +11276,7 @@
           },
           "xp": 0
         },
+        "pronouns": "they/them",
         "ship": {
           "cargo_purchase_prices": {
             "food": 200

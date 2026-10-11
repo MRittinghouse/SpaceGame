@@ -12,8 +12,10 @@ from spacegame.models.encounter import (  # noqa: E402
     EncounterOutcome,
     EncounterRef,
 )
+from spacegame.models.captain_tokens import Pronouns  # noqa: E402
 from spacegame.models.mission import MissionReward  # noqa: E402
 from spacegame.views.encounter_view import EncounterPhase, EncounterView  # noqa: E402
+from tools.parity.snapshots import fresh_player  # noqa: E402
 
 
 # ============================================================================
@@ -312,4 +314,71 @@ class TestShakedownSubstitution:
         view = _make_view(definition=defn, encounter_ref=ref)
         # Check the displayed choice label has been substituted
         assert "175" in view.display_choices[0].label
+        view.on_exit()
+
+
+class TestCaptainTokens:
+    """Writing discipline spec 2.6: Szabo's {Son} and every token render for the choice."""
+
+    def _view(
+        self, choice: Pronouns, definition: EncounterDefinition, demand: int = 0
+    ) -> EncounterView:
+        player = fresh_player()
+        player.pronouns = choice
+        ref = _make_encounter_ref(
+            encounter_type="shakedown" if demand else "distress_signal", shakedown_demand=demand
+        )
+        view = EncounterView(
+            ui_manager=pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT)),
+            encounter_def=definition,
+            encounter_ref=ref,
+            player=player,
+        )
+        view.on_enter()
+        return view
+
+    @pytest.mark.parametrize(
+        ("choice", "word"), [(Pronouns.HE, "Son"), (Pronouns.SHE, "Girl"), (Pronouns.THEY, "Kid")]
+    )
+    def test_an_outcome_renders_the_address(self, choice: Pronouns, word: str) -> None:
+        outcome = _make_outcome("'{Son}, I been running this route.'")
+        report = _make_choice("report", "Report it", "Report it.", outcome)
+        view = self._view(choice, _make_definition(choices=[report]))
+        expected = f"'{word}, I been running this route.'"
+        assert view.display_choices[0].outcome.description == expected
+        view.on_exit()
+
+    def test_name_description_label_and_hint_render(self) -> None:
+        choice = _make_choice(
+            "log",
+            "Log it under {their} name",
+            "{They} {v:keeps|keep} the channel open.",
+            _make_outcome("Done."),
+        )
+        definition = _make_definition(
+            name="{Their} Hail", description="The hauler hails {them}.", choices=[choice]
+        )
+        view = self._view(Pronouns.HE, definition)
+        assert view.display_name == "His Hail"
+        assert view.display_description == "The hauler hails him."
+        assert view.display_choices[0].label == "Log it under his name"
+        assert view.display_choices[0].description == "He keeps the channel open."
+        view.on_exit()
+
+    def test_a_verb_token_beside_the_shakedown_demand(self) -> None:
+        """The tokens render before the demand's format_map, which a verb token would break."""
+        definition = _make_definition(
+            encounter_type="shakedown",
+            description="{They} {v:owes|owe} {shakedown_demand} credits.",
+        )
+        view = self._view(Pronouns.THEY, definition, demand=150)
+        assert view.display_description == "They owe 150 credits."
+        view.on_exit()
+
+    def test_the_chosen_outcome_keeps_the_rendered_text(self) -> None:
+        outcome = _make_outcome("'{Son}, go home.'")
+        report = _make_choice("report", "Report it", "Report it.", outcome)
+        view = self._view(Pronouns.SHE, _make_definition(choices=[report]))
+        view.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_1))
+        assert view.chosen_outcome.description == "'Girl, go home.'"
         view.on_exit()

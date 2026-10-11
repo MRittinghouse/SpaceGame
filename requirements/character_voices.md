@@ -33,7 +33,7 @@ Elena speaks like someone trained in Guild formality who's trying to unlearn it.
 She sounds like a competent officer who resigned and is still figuring out who she is without the uniform.
 
 ### Verbal Habits
-- Addresses the player as "Captain" — Guild training, but also genuine respect
+- **Address**: "Captain", from Guild training and from respect. Her slip is into "Chief", the title she called her old route chief by, and she corrects herself ("Standard rules of evasion apply, Chief. Sorry. Captain."). It takes no token, and `{sir}` is never hers (writing discipline spec 2.6).
 - Starts sentences with qualifiers when uncertain: "If I'm reading this right...", "Unless I'm wrong..."
 - Uses navigation metaphors without realizing: "We're drifting off course," "That's a dead heading"
 - Catches herself being formal and overcorrects: "The optimal route — sorry, the *best* route — is through..."
@@ -58,6 +58,7 @@ She sounds like a competent officer who resigned and is still figuring out who s
 - Emotional declarations ("I love this crew!" — she'd sooner space herself)
 - Imprecise directions ("somewhere over there" — she always knows exactly where)
 - Anything self-pitying about leaving the Guild (she made the choice, she owns it)
+- One listed exception: her one break per act, in her Vulnerable register (writing discipline spec 3.3). In Act I it lands at Koren's Approach, planted a chapter ahead.
 
 ### Sample Lines
 1. **Giving directions**: "Breakstone is three jumps from here. I'd recommend the Forge corridor — adds forty minutes but keeps us out of the debris field near Iron Depths."
@@ -107,6 +108,7 @@ He sounds like a foreman addressing a new hire: patient enough to explain once, 
 - Compliments that aren't earned ("good job" means nothing if you didn't earn it)
 - Anything defensive about the Union (he'll criticize it himself, but that's family business)
 - Your father's name in a sentimental context (he carries guilt, not nostalgia)
+- One listed exception: his one break per act, in his Guilt register (writing discipline spec 3.3). His polish slice places it, planted a chapter ahead.
 
 ### Sample Lines
 1. **Teaching**: "See that discoloration? That's iron sulfide. Worthless. But follow the vein left and you'll hit magnetite. That's money."
@@ -161,6 +163,7 @@ She sounds like a brilliant academic who has spent her entire career in labs and
 - Unqualified opinions ("This is bad" — she'd say "This falls below acceptable parameters")
 - Anything dismissive of someone's lived experience (she might frame it clinically, but she never dismisses it)
 - Collective criticism in public (in private, increasingly)
+- One listed exception: her one break per act, in her Moved register (writing discipline spec 3.3). Her polish slice places it, planted a chapter ahead.
 
 ### Sample Lines
 1. **Introducing herself**: "Dr. Priya Osei, Research Director, Materials Analysis Division, Axiom Research Institute. I study the economic structures underlying resource extraction. How do you do."
@@ -210,6 +213,7 @@ He sounds like someone who's genuinely warm but keeps a locked door behind the w
 - Anything about his past in direct, factual terms (always filtered through story or deflection)
 - Earnest declarations without immediately undermining them with humor
 - Cruel insults (Tomas is sharp but never deliberately hurtful — he's been hurt enough)
+- One listed exception: his one break per act, in his Genuine register (writing discipline spec 3.3). His polish slice places it, planted a chapter ahead.
 
 ### Sample Lines
 1. **Pitching a deal**: "Way I see it, there's two kinds of tariffs — the ones you pay, and the ones you pay smarter. This is the second kind."
@@ -233,9 +237,9 @@ Larsen is a career bureaucrat who's processed ten thousand docking permits and h
 He sounds like a government clerk who cares more than he's allowed to show.
 
 ### Verbal Habits
-- Addresses everyone as "sir," "ma'am," or "Captain" (regulation)
+- **Address**: `{sir}` for the captain: sir, ma'am, or Captain by the captain's pronouns (writing discipline spec 2.6). Regulation address, exempt from the earned-Captain rule.
 - Speaks in procedural language: "I'm afraid we'll be confiscating...", "You'll be able to reclaim..."
-- Practical advice framed as warnings: "Space doesn't care how young you are"
+- Practical advice framed as warnings: "Without a weapon, you're a target."
 - References specific regulations or forms by habit
 - Short, efficient sentences when processing paperwork; longer when giving advice
 - "One more thing" — always has one more thing
@@ -243,7 +247,7 @@ He sounds like a government clerk who cares more than he's allowed to show.
 ### Emotional Range
 - **Professional**: Flat, efficient, by-the-book. Processing mode.
 - **Concerned**: Breaks from script. Longer sentences. Makes eye contact. "Stick to the safe lanes."
-- **Firm**: Does not negotiate. "Those are the rules, sir."
+- **Firm**: Does not negotiate. "Those are the rules, {sir}."
 
 ### What He Never Says
 - Anything critical of the Guild (he *is* the Guild, institutionally)
@@ -253,7 +257,7 @@ He sounds like a government clerk who cares more than he's allowed to show.
 ### Sample Lines
 1. **Processing**: "Bill of landing, registration, and manifest, please. We'll have you processed within the hour."
 2. **Warning**: "Systems marked dangerous? Pirates don't ask questions. Without a weapon, you're a target. Fly smart."
-3. **Rare humanity**: "Good luck out there, Captain. Space doesn't care how young you are — it'll chew you up just the same."
+3. **Farewell**: "Good luck out there, {sir}. Fly smart."
 
 ---
 
@@ -332,7 +336,7 @@ She sounds like a good soldier in a bad army.
 
 ---
 
-## Dex Halloran — Information Broker
+## Glyn Quintela: Information Broker
 
 **Faction**: Unaligned
 **Age**: Indeterminate (30s-40s, hard to pin down)
@@ -340,7 +344,7 @@ She sounds like a good soldier in a bad army.
 **Tonal register**: Information-economy fluency -- every word priced, every question a counter-offer, every answer a negotiation.
 
 ### Core Voice
-Dex speaks like someone who knows exactly how much every word is worth and charges accordingly. Fast, fluid, always slightly amused. He trades in information the way other people trade in ore — buy low, sell high, never reveal your sources. He's not threatening; he's too useful to be threatening. But he's also not trustworthy. He frames everything as a transaction because transactions are the only relationships he understands.
+Glyn speaks like someone who knows exactly how much every word is worth and charges accordingly. Fast, fluid, always slightly amused. He trades in information the way other people trade in ore: buy low, sell high, never reveal your sources. He's not threatening; he's too useful to be threatening. But he's also not trustworthy. He frames everything as a transaction because transactions are the only relationships he understands.
 
 He sounds like a bartender who knows everyone's secrets and hasn't decided what to do with them yet.
 
@@ -400,7 +404,7 @@ She sounds like a mechanic who also runs a small criminal empire and somehow mak
 - Anything that sounds like she needs help
 
 ### Sample Lines
-1. **First meeting**: "You're the one Dex sent? Smaller than I expected. Well, you made it through the Reach in one piece. That counts for something."
+1. **First meeting**: "You're the one Glyn sent? Came through the Reach in that shuttle. Well, you made it in one piece. That counts for something."
 2. **Knowledge drop**: "Someone with serious resources is backing these pirates. Not frontier scrap — real money, real ships, real intel. That's not a raiding party. That's an operation."
 3. **Earned respect**: "You did good, kid. If you're looking for real work — not the scraps the factions throw you — come find me again."
 

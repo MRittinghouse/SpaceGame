@@ -49,7 +49,7 @@ ISSUE_FAMILIES: dict[str, set[str]] = {
     },
 }
 
-# Four canonical Congress speakers per character_voices.md:1060-1228.
+# Four canonical Congress speakers per character_voices.md's Alliance Congress voice sheets.
 CONGRESS_DELEGATE_IDS = {
     "councillor_wentworth",
     "councillor_shirane",

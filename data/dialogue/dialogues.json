@@ -315,7 +315,7 @@
         {
           "id": "recognition",
           "speaker_id": "marcus_jin",
-          "text": "You related to someone who worked the Nexus Prime orbital? Mining crew, maybe eight, nine years back?",
+          "text": "You related to someone who worked the Nexus Prime orbital? Mining crew?",
           "responses": [
             {
               "text": "That was my father.",
@@ -356,7 +356,7 @@
         {
           "id": "report_buried",
           "speaker_id": "marcus_jin",
-          "text": "Nothing. Got filed. Got buried. Six months later your father's dead and three other workers are in medical with lung damage. I've been carrying that for years.",
+          "text": "Nothing. Got filed. Came back stamped deferred. Every year, same stamp. Then the recyclers quit on your father's shift. He didn't come off it. Three others are still in medical with lung damage.",
           "responses": [
             {
               "text": "That's not your fault.",
@@ -844,7 +844,7 @@
         {
           "id": "intro_1",
           "speaker_id": "narrator",
-          "text": "You are the child of an assistant foreman for an asteroid mining operation in the orbit of Nexus Prime. You grew up in an impoverished community, bled dry by corporate greed and wage slavery. As a child, you watched your father pull 16 hour shifts consistently, working himself into an early grave.",
+          "text": "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring. The trading post buys the rest. What's left of his savings goes in the same pocket.",
           "responses": [
             {
               "text": "[Continue]",
@@ -856,43 +856,7 @@
         {
           "id": "intro_2",
           "speaker_id": "narrator",
-          "text": "Between the stress and the poor air conditioning systems in your colony ship, your father passed away six months ago, at the age of 43. You had only just celebrated your 16th birthday. You have nothing. No path forward, no schooling to fall back on, no family left, and no reason to think tomorrow will be different from today.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_3"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_3",
-          "speaker_id": "narrator",
-          "text": "You consider staying aboard the colony ship, taking on some menial position. But without anyone to take you in, you'd merely be sinking into the same wage slavery that killed your father. At night, as you toss and turn weighing your options, it torments you to know that nothing gets better. Nothing will improve.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_4"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_4",
-          "speaker_id": "narrator",
-          "text": "You spend a week cleaning out your father's bunk. Coveralls, a few tools, a wedding ring you don't remember him wearing. The trading post pays less than you'd hoped. What's left of his savings goes in the same pocket. Four thousand credits. Not enough for a working ship. Enough for a hull and a promise.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": "intro_5"
-            }
-          ],
-          "expression": "neutral"
-        },
-        {
-          "id": "intro_5",
-          "speaker_id": "narrator",
-          "text": "The scrapyard drydock smells like ozone and bad coolant. Your neighbor in maintenance, the mechanic he goes by, has a salvaged shuttle frame waiting under a tarp. He pulls it back, looks at you the way he used to look at your father. \"You count what you've got. I'll show you what fits. We don't waste a credit if we can help it.\"",
+          "text": "The scrapyard drydock smells like ozone and bad coolant. The mechanic from maintenance has a salvaged shuttle frame waiting under a tarp. He pulls it back and looks at you. \"You count what you've got. I'll show you what fits. We don't waste a credit if we can help it.\"",
           "responses": [],
           "expression": "neutral"
         }
@@ -905,7 +869,7 @@
         {
           "id": "greeting",
           "speaker_id": "officer_larsen",
-          "text": "I need your bill of landing, and your registration, sir.",
+          "text": "I need your bill of landing, and your registration, {sir}.",
           "responses": [
             {
               "text": "Here is my registration, but I don't have a bill of landing.",
@@ -1017,7 +981,7 @@
         {
           "id": "farewell",
           "speaker_id": "officer_larsen",
-          "text": "Good luck out there, Captain. Space doesn't care how young you are, it'll chew you up just the same. Fly smart.",
+          "text": "Good luck out there, {sir}. Fly smart.",
           "responses": [
             {
               "text": "[Leave]",
@@ -1706,7 +1670,7 @@
         {
           "id": "intro",
           "speaker_id": "dex_halloran",
-          "text": "Dex Halloran. I sell information. Buy it, too, when the price is right. I know every trader, smuggler, and customs officer between here and Crimson Reach. And I know you've been asking questions about missing convoys.",
+          "text": "Glyn Quintela. I sell information. Buy it, too, when the price is right. I know every trader, smuggler, and customs officer between here and Crimson Reach. And I know you've been asking questions about missing convoys.",
           "responses": [
             {
               "text": "How do you know what I've been asking about?",
@@ -1722,7 +1686,7 @@
         {
           "id": "why_me",
           "speaker_id": "dex_halloran",
-          "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Dex. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
           "responses": [
             {
               "text": "I'm listening.",
@@ -1815,7 +1779,7 @@
         {
           "id": "accept_path",
           "speaker_id": "dex_halloran",
-          "text": "Take the chip to Malia Torres at Crimson Reach. She runs salvage operations out of the lower decks. Tell her Dex sent you. She'll know what to do with it. And Captain, don't try to read it yourself. The encryption has a wipe trigger. Open it wrong and you lose everything.",
+          "text": "Take the chip to Malia Torres at Crimson Reach. She runs salvage operations out of the lower decks. Tell her Glyn sent you. She'll know what to do with it. And Captain, don't try to read it yourself. The encryption has a wipe trigger. Open it wrong and you lose everything.",
           "responses": [
             {
               "text": "I'll do it.",
@@ -1832,7 +1796,7 @@
         {
           "id": "accepted",
           "speaker_id": "dex_halloran",
-          "text": "Smart choice. I'll owe you one, and in this business, a favor from Dex Halloran is worth more than credits. Stay safe out there. The people behind this aren't amateurs.",
+          "text": "Smart choice. I'll owe you one, and in this business, a favor from Glyn Quintela is worth more than credits. Stay safe out there. The people behind this aren't amateurs.",
           "responses": [
             {
               "text": "I'll be careful.",
@@ -1862,7 +1826,7 @@
         {
           "id": "start",
           "speaker_id": "malia_torres",
-          "text": "You're the one Dex sent? Figured he'd send someone eventually. Come on, not here. Too many ears in the main bay. Follow me.",
+          "text": "You're the one Glyn sent? Figured he'd send someone eventually. Come on, not here. Too many ears in the main bay. Follow me.",
           "responses": [
             {
               "text": "[Follow her]",
@@ -1890,7 +1854,7 @@
         {
           "id": "trust",
           "speaker_id": "malia_torres",
-          "text": "You don't. But Dex does, and that's why you're here. I've lived on Crimson Reach for fifteen years. I know every bolt and weld on this station. If I wanted to screw you over, I'd have done it before you walked through that door.",
+          "text": "You don't. But Glyn does, and that's why you're here. I've lived on Crimson Reach for fifteen years. I know every bolt and weld on this station. If I wanted to screw you over, I'd have done it before you walked through that door.",
           "responses": [
             {
               "text": "[Hand over the data chip]",
@@ -2344,7 +2308,7 @@
           "text": "You're not Union. I can tell from the way you walk, no dust on your boots, no calluses. What do you want with an old tunneler?",
           "responses": [
             {
-              "text": "Dex Halloran sent me. He said you saw something in the deep tunnels.",
+              "text": "Glyn Quintela sent me. He said you saw something in the deep tunnels.",
               "next_node_id": "suspicious"
             },
             {
@@ -2371,7 +2335,7 @@
           "text": "Then pass through. I've got nothing to say to tourists.",
           "responses": [
             {
-              "text": "Actually. Dex sent me. About the tunnels near Iron Depths.",
+              "text": "Actually. Glyn sent me. About the tunnels near Iron Depths.",
               "next_node_id": "suspicious"
             },
             {
@@ -2385,7 +2349,7 @@
         {
           "id": "suspicious",
           "speaker_id": "oren_tak",
-          "text": "Dex. That name buys you thirty seconds. The tunnels are sealed for a reason, and I sealed my mouth about them for a reason too. Union brass made that very clear when they pensioned me off early.",
+          "text": "Glyn. That name buys you thirty seconds. The tunnels are sealed for a reason, and I sealed my mouth about them for a reason too. Union brass made that very clear when they pensioned me off early.",
           "responses": [
             {
               "text": "[Persuasion 2] \"Forty years in the tunnels. You sealed your mouth when the Union asked. Convoy crews are dying now and nobody's asked them to stay quiet. Flip the question.\"",
@@ -2407,7 +2371,7 @@
         {
           "id": "union_threat",
           "speaker_id": "oren_tak",
-          "text": "Threaten? Nothing so dramatic. They just made my pension conditional on my silence. Forty years in the tunnels, and my retirement depends on pretending I never saw what I saw. You think I'm going to throw that away for Dex Halloran?",
+          "text": "Threaten? Nothing so dramatic. They just made my pension conditional on my silence. Forty years in the tunnels, and my retirement depends on pretending I never saw what I saw. You think I'm going to throw that away for Glyn Quintela?",
           "responses": [
             {
               "text": "[Persuasion 2] \"Your pension buys what. Forty years in, you know what a Union promise is worth when the Union's falling apart. Talk.\"",
@@ -2825,7 +2789,7 @@
           "text": "The manifests reference a relay point, cargo is shipped to Iron Depths, processed, then forwarded to coordinates listed only as 'Fulcrum Station.' The name doesn't appear in any public registry. But the coordinate format is consistent with deep-space installations, beyond the standard trade lanes. Someone with the right contacts might be able to triangulate the exact position.",
           "responses": [
             {
-              "text": "Dex Halloran. He found the Iron Depths lead. He can find this.",
+              "text": "Glyn Quintela. He found the Iron Depths lead. He can find this.",
               "next_node_id": "dex_reference"
             }
           ],
@@ -2853,7 +2817,7 @@
         {
           "id": "start",
           "speaker_id": "dex_halloran",
-          "text": "Dex is already at your usual table when you walk into the cantina. He's not smiling. I heard what happened at Axiom Labs. The Guild blocked the emergency session before your scientist could open her mouth. That's not standard procedure, that's a cover-up at the highest level.",
+          "text": "Glyn is already at your usual table when you walk into the cantina. He's not smiling. I heard what happened at Axiom Labs. The Guild blocked the emergency session before your scientist could open her mouth. That's not standard procedure, that's a cover-up at the highest level.",
           "responses": [
             {
               "text": "I need to find Fulcrum Station.",
@@ -2928,7 +2892,7 @@
           "text": "He folds the chart and slides it across to you. There's a maintenance corridor on the station's lower ring, original colonial construction, never updated. If you can get past the perimeter patrols, that's your way in. I've loaded the coordinates and the approach vector onto this chip. He pauses. This is the end of the road for me. I deal in information, not suicide missions. Whatever happens at the Fulcrum, you're on your own.",
           "responses": [
             {
-              "text": "You've done enough. Thank you, Dex.",
+              "text": "You've done enough. Thank you, Glyn.",
               "next_node_id": "farewell"
             },
             {
@@ -3088,7 +3052,7 @@
         {
           "id": "looking_back",
           "speaker_id": "elena_reeves",
-          "text": "Through the rear sensors, the warp gate still glows. And beyond it, through the narrowing aperture, you can see the Aurelia Expanse for the last time. The star is gone. Where it burned for billions of years, there is a point of absolute darkness, a wound in space that swallows light. The stations, the trade lanes, the asteroid fields, Nexus Prime, Breakstone, Axiom Labs, Iron Depths, Crimson Reach, all of it spiraling inward. Hanna Voss. Officer Larsen. Oren Tak. Sienna Vek. Dex. Everyone who stayed. The gate flickers. Then closes.",
+          "text": "Through the rear sensors, the warp gate still glows. And beyond it, through the narrowing aperture, you can see the Aurelia Expanse for the last time. The star is gone. Where it burned for billions of years, there is a point of absolute darkness, a wound in space that swallows light. The stations, the trade lanes, the asteroid fields, Nexus Prime, Breakstone, Axiom Labs, Iron Depths, Crimson Reach, all of it spiraling inward. Hanna Voss. Officer Larsen. Oren Tak. Sienna Vek. Glyn. Everyone who stayed. The gate flickers. Then closes.",
           "responses": [
             {
               "text": "[Silence]",

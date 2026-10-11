@@ -1,41 +1,24 @@
-"""Sprint 5 — Writing Bible compliance across every UI text surface.
+"""The Writing Bible, enforced on every text surface (writing discipline spec 5.1).
 
-Existing voice tests (``test_tutorial_narrative_voice.py``,
-``test_cockpit_hud.py::TestHUDVoiceCompliance``) cover tutorials and the
-cockpit HUD. Sprint 5 generalises: scan every UI-surface text source
-against the Writing Bible rules.
+Two layers:
 
-Text surfaces audited:
+  A. The prose gates G1 to G11 and G13 (``tests/writing_gates``) run over every player-facing
+     string in ``data/``, and the gates whose scope is every string also over the strings built
+     in code under ``spacegame/views`` and ``spacegame/models``: dashes, paired negation,
+     tells, names, the captain's pronoun and address and tokens, filter verbs, body tells,
+     feelings and motives, option tags, "the player", the lexicon, and dialogue structure.
+     Each gate starts from a baseline allowlist of the offences shipped when the gates landed
+     (``tests/writing_gates/allowlist.json``), keyed by gate, rule, file and path (a JSON path,
+     or a code string's scope and text), each with a reason. A new offence fails, and a row
+     whose string no longer offends fails too, so the list only shrinks. Every surface fails
+     against the allowlist alike: dialogue and ambient lines get no softer treatment.
 
-  A. **View source literals** — string arguments to ``font.render()`` and
-     to pygame_gui element constructors in every file under
-     ``spacegame/views/``. These are the buttons, labels, headers, empty
-     states, error messages, and tooltips the player actually sees.
+  B. Two older checks on strings in code stay below: view source literals and the station
+     taglines are checked for dashes, the banned phrases, and paired negation (the spec's G2
+     regex), with the Crimson Reach tagline exempt by name.
 
-  B. **Dialogue content** — every node in every dialogue tree.
-
-  C. **Mission content** — every mission name, description, objective.
-
-  D. **Journal content** — every journal entry title and body.
-
-  E. **Ambient + chatter content** — NPC ambient lines and station chatter.
-
-  F. **News headlines** — ticker templates.
-
-Writing Bible rules enforced (per ``requirements/dialogue_writing_guide.md``):
-
-  - No em-dashes (``—``)
-  - No "couldn't help but"
-  - No "a testament to"
-  - No parallel-negation rhetoric ("no X, no Y")
-
-Violations in well-trafficked surfaces (view source, mission/journal
-content) fail the test. Violations in looser-register surfaces (NPC
-dialogue, ambient chatter) are reported via xfail so the catalog stays
-visible without breaking the suite — voice in faction-character dialogue
-follows its own calibration (see ``character_voices.md``).
-
-See ``requirements/ui_sprint_5_findings.md`` for the detailed catalog.
+The gates' rules are pinned on synthetic strings in
+``tests/test_compliance/test_writing_gates_engine.py``.
 """
 
 from __future__ import annotations
@@ -45,132 +28,94 @@ from pathlib import Path
 
 import pytest
 
+from tests.writing_gates import allowlist
+from tests.writing_gates.rules import G2_PAIRED_NEGATION, GATES, Offence, offences
+
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _VIEWS_DIR = _REPO_ROOT / "spacegame" / "views"
 
-
 # ---------------------------------------------------------------------------
-# Writing Bible patterns
+# Writing Bible patterns for strings in code
 # ---------------------------------------------------------------------------
 
-# Em-dash unicode code points. Some codebases use the regular "--" too.
-_EM_DASH = "\u2014"
-_EM_DASHES = {_EM_DASH, "\u2013", " -- "}  # em-dash, en-dash, double-hyphen
+_EM_DASH = "\N{EM DASH}"
+_EM_DASHES = {_EM_DASH, "\N{EN DASH}", " -- "}
 
 _BANNED_PHRASES = [
     "couldn't help but",
     "a testament to",
-    # AI register markers (see requirements/aurelia_voice_examples.md
-    # diagnostic #4). Almost always cuttable in player-facing content.
-    # If a future line genuinely needs one of these — earned moment, a
-    # specific character whose voice sheet permits it — add a per-string
-    # exemption to _BANNED_PHRASES_ALLOWLIST below.
+    # AI register markers (see requirements/aurelia_voice_examples.md diagnostic #4).
     "remarkable",
     "wonderful",
 ]
 
-# Strings explicitly exempted from the banned-phrase check. Each entry
-# requires a documented design rationale. Whole-string equality after
-# `.strip().lower()`, NOT substring — exemptions don't leak.
+# Strings exempted from the banned-phrase check, each with a documented rationale. Whole-string
+# equality after `.strip().lower()`, not substring, so exemptions do not leak.
 _BANNED_PHRASES_ALLOWLIST: frozenset[str] = frozenset()
 
-_PARALLEL_NEGATION = re.compile(r"\bno \w+\s*[,.\-—–]+\s*no \w+", re.IGNORECASE)
+# The spec's G2 regex: one rule for data and code.
+_PARALLEL_NEGATION = G2_PAIRED_NEGATION
 
-# Strings explicitly exempted from parallel-negation enforcement. Each entry
-# requires a documented design rationale in a requirements doc. The check is
-# whole-string equality after `.strip()`, not substring — exemptions don't
-# leak into other content that happens to contain the string.
-#
-# Note: the current `_PARALLEL_NEGATION` regex requires comma-separated
-# parallelism ("no X, no Y"). Period-separated forms ("No X. No Y.") slip
-# through today, so listed strings using period parallelism are forward-
-# defensive: they won't trip current tests, but if regex coverage tightens
-# (or if a future per-surface scanner reads taglines directly), the
-# exemption is already in place.
+# Strings exempted from paired-negation enforcement, by whole-string equality after `.strip()`.
 _PARALLEL_NEGATION_ALLOWLIST: frozenset[str] = frozenset(
     {
-        # Crimson Reach faction tagline. Exempted per
-        # requirements/station_legibility.md (2026-04-26): in-character outlaw
-        # bravado, intentional parallelism for atmospheric register. No other
-        # taglines or content receive this exemption.
+        # Crimson Reach faction tagline, exempted per requirements/station_legibility.md
+        # (2026-04-26): in-character outlaw bravado. No other tagline is exempt.
         "No laws. No mercy. No refunds.",
     }
 )
 
 
 def _find_violations(text: str) -> list[str]:
-    """Return list of violation descriptions for a single text block."""
+    """Return a description of every violation in one block of text."""
     violations: list[str] = []
     for dash in _EM_DASHES:
         if dash in text:
             violations.append(f"em-dash/en-dash ({dash!r})")
-            break  # One em-dash report per block is enough.
+            break
     lowered = text.lower()
-    is_phrase_allowlisted = lowered.strip() in _BANNED_PHRASES_ALLOWLIST
-    if not is_phrase_allowlisted:
+    if lowered.strip() not in _BANNED_PHRASES_ALLOWLIST:
         for phrase in _BANNED_PHRASES:
             if phrase in lowered:
                 violations.append(f"banned phrase {phrase!r}")
     if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST:
-        violations.append("parallel-negation rhetoric ('no X, no Y')")
+        violations.append("parallel-negation rhetoric")
     return violations
 
 
-# ---------------------------------------------------------------------------
-# Tests — _PARALLEL_NEGATION regex self-tests
-# ---------------------------------------------------------------------------
-
-
 class TestParallelNegationRegex:
-    """Unit tests for the _PARALLEL_NEGATION regex across all separator forms.
-
-    These tests pin the regex behavior and must be updated if the pattern changes.
-    """
+    """The spec's G2 regex across every separator form (spec 5.1, G2: keep these self-tests)."""
 
     def test_matches_comma_form(self) -> None:
-        """Comma-separated 'no X, no Y' is the original caught form."""
         assert _PARALLEL_NEGATION.search("No laws, no mercy.")
 
     def test_matches_period_form(self) -> None:
-        """Period-separated 'No X. No Y.' must also be caught."""
         assert _PARALLEL_NEGATION.search("No beacon. No transponder.")
 
     def test_matches_em_dash_form(self) -> None:
-        """Em-dash-separated 'No X — no Y' must be caught."""
-        assert _PARALLEL_NEGATION.search("No middlemen — no fees.")
+        assert _PARALLEL_NEGATION.search("No middlemen \N{EM DASH} no fees.")
 
     def test_matches_en_dash_form(self) -> None:
-        """En-dash-separated 'No X – no Y' must be caught."""
-        assert _PARALLEL_NEGATION.search("No signal – no response.")
+        assert _PARALLEL_NEGATION.search("No signal \N{EN DASH} no response.")
 
     def test_matches_double_hyphen_form(self) -> None:
-        """Double-hyphen-separated 'No X -- no Y' must be caught."""
         assert _PARALLEL_NEGATION.search("No power -- no heat.")
 
-    def test_does_not_match_unrelated_no_clauses(self) -> None:
-        """Two unrelated 'no X' clauses far apart must NOT match.
+    def test_matches_two_word_form(self) -> None:
+        """The spec's regex allows a second word after the first "no"."""
+        assert _PARALLEL_NEGATION.search("No mapped systems, no trade routes.")
 
-        The bounded gap in the regex prevents cross-sentence false positives
-        where two unrelated negations happen to appear in the same paragraph.
-        """
+    def test_does_not_match_unrelated_no_clauses(self) -> None:
         text = "There is no captain. The ship has no crew problems."
         assert not _PARALLEL_NEGATION.search(text)
 
 
 # ---------------------------------------------------------------------------
-# Text source extraction
+# Strings in code: view source literals and station taglines
 # ---------------------------------------------------------------------------
 
-
-# Matches strings inside UI-surface calls:
-#   .render("...")      — font rendering
-#   .set_text("...")    — pygame_gui element text updates
-#   text="..."          — pygame_gui element construction kwarg
-#   _show_message("...") — view-level transient message display
-#   _show_feedback("...") — view-level feedback message
-#
-# ``\s*`` between the call and the quoted string allows multi-line calls
-# where the string sits on a new line after the opening paren.
+# Strings inside UI-surface calls: .render("..."), .set_text("..."), text="...",
+# _show_message("..."), _show_feedback("..."). ``\s*`` lets the string sit on the next line.
 _RENDER_STRING = re.compile(
     r"""(?:
         \.render\(
@@ -185,198 +130,36 @@ _RENDER_STRING = re.compile(
 )
 
 
+def _looks_technical(text: str) -> bool:
+    """Heuristic: skip strings that are clearly not natural-language UI copy."""
+    if "/" in text or "\\" in text:
+        return True
+    if text.count("_") >= 2 and " " not in text:
+        return True
+    return text.startswith(("#_", "$"))
+
+
 def _extract_view_strings() -> list[tuple[str, str]]:
     """Return (file:line, text) for every likely user-facing string in a view."""
     entries: list[tuple[str, str]] = []
     for path in sorted(_VIEWS_DIR.glob("*.py")):
         if path.name == "__init__.py":
             continue
-        text = path.read_text(encoding="utf-8")
-        for lineno, line in enumerate(text.splitlines(), 1):
-            stripped = line.strip()
-            if stripped.startswith("#"):
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if line.strip().startswith("#"):
                 continue
             for match in _RENDER_STRING.finditer(line):
                 literal = match.group(1)
-                # Skip format-string templates (they'll be filled in at runtime).
                 if literal.startswith("{") or literal.endswith("}"):
                     continue
-                # Skip very short strings (single chars, whitespace, symbols).
-                if len(literal) < 3:
-                    continue
-                # Skip strings that are clearly not natural language.
-                if _looks_technical(literal):
+                if len(literal) < 3 or _looks_technical(literal):
                     continue
                 entries.append((f"{path.name}:{lineno}", literal))
     return entries
 
 
-def _looks_technical(text: str) -> bool:
-    """Heuristic: skip strings that are clearly not natural-language UI copy."""
-    # Path-like or identifier-like strings
-    if "/" in text or "\\" in text:
-        return True
-    if text.count("_") >= 2 and " " not in text:  # snake_case identifiers
-        return True
-    # All caps with no spaces (likely section headers — keep these actually)
-    # Keys, placeholders, format strings
-    if text.startswith(("#_", "$")):
-        return True
-    return False
-
-
-# ---------------------------------------------------------------------------
-# JSON content extraction (uses the real DataLoader)
-# ---------------------------------------------------------------------------
-
-
-def _load_dl():
-    """Load game data. Cached by DataLoader singleton."""
-    from spacegame.data_loader import get_data_loader
-
-    dl = get_data_loader()
-    dl.load_all()
-    return dl
-
-
-def _extract_mission_strings() -> list[tuple[str, str]]:
-    """Every mission name, description, objective text."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for m in dl.missions:
-        entries.append((f"mission:{m.id}:name", m.name))
-        entries.append((f"mission:{m.id}:description", m.description))
-        for i, obj in enumerate(m.objectives or []):
-            # Objective can be a dict or object; normalize.
-            desc = getattr(obj, "description", None)
-            if not desc and isinstance(obj, dict):
-                desc = obj.get("description")
-            if desc:
-                entries.append((f"mission:{m.id}:objective_{i}", desc))
-    return entries
-
-
-def _extract_journal_strings() -> list[tuple[str, str]]:
-    """Every journal entry text. ``journal_entries`` is a list of
-    ``JournalEntry`` records with ``entry_id`` and ``text`` fields."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for j in dl.journal_entries:
-        entries.append((f"journal:{j.entry_id}", j.text))
-    return entries
-
-
-def _extract_dialogue_strings() -> list[tuple[str, str]]:
-    """Every dialogue node's text and response text across all trees."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for dlg_id, dialogue in dl.dialogue_trees.items():
-        for node_id, node in dialogue.nodes.items():
-            if getattr(node, "text", None):
-                entries.append((f"dialogue:{dlg_id}:{node_id}:text", node.text))
-            for i, resp in enumerate(getattr(node, "responses", []) or []):
-                resp_text = getattr(resp, "text", None)
-                if resp_text:
-                    entries.append((f"dialogue:{dlg_id}:{node_id}:response_{i}", resp_text))
-    return entries
-
-
-def _extract_interjection_strings() -> list[tuple[str, str]]:
-    """CE-5: every authored crew interjection line."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for entry in dl.crew_interjections:
-        for i, line in enumerate(entry.lines):
-            entries.append(
-                (
-                    f"interjection:{entry.crew_id}:{entry.trigger}:{i}",
-                    line,
-                )
-            )
-    return entries
-
-
-def _extract_encounter_strings() -> list[tuple[str, str]]:
-    """Every encounter definition's name, description, choice labels,
-    choice descriptions, and outcome descriptions (success + failure)."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for defn in dl.encounter_definitions:
-        if defn.name:
-            entries.append((f"encounter:{defn.id}:name", defn.name))
-        if defn.description:
-            entries.append((f"encounter:{defn.id}:description", defn.description))
-        for choice in defn.choices:
-            entries.append((f"encounter:{defn.id}:choice_{choice.id}:label", choice.label))
-            if choice.description:
-                entries.append(
-                    (
-                        f"encounter:{defn.id}:choice_{choice.id}:desc",
-                        choice.description,
-                    )
-                )
-            if choice.outcome.description:
-                entries.append(
-                    (
-                        f"encounter:{defn.id}:choice_{choice.id}:outcome",
-                        choice.outcome.description,
-                    )
-                )
-            if choice.failure_outcome and choice.failure_outcome.description:
-                entries.append(
-                    (
-                        f"encounter:{defn.id}:choice_{choice.id}:failure_outcome",
-                        choice.failure_outcome.description,
-                    )
-                )
-    return entries
-
-
-def _extract_ambient_strings() -> list[tuple[str, str]]:
-    """Station chatter + NPC ambient lines."""
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for i, line in enumerate(dl.station_chatter_lines or []):
-        text = getattr(line, "text", "")
-        if text:
-            entries.append((f"chatter:{getattr(line, 'id', i)}", text))
-    for i, line in enumerate(dl.ambient_lines or []):
-        text = getattr(line, "text", "")
-        if text:
-            entries.append((f"ambient:{i}", text))
-    return entries
-
-
-def _extract_dilemma_strings() -> list[tuple[str, str]]:
-    """Every player-facing string on every loaded dilemma record (A2-12+).
-
-    Covers ``telegraph_lines`` and each :class:`DilemmaOutcome`'s
-    ``narration_summary`` and ``tier_unlocks`` entries. Registered here so
-    every future dilemma (A2-13 through A2-19) inherits the Writing Bible
-    scan without repeating the wiring. Outcome ``outcome_flag`` values are
-    flag-name identifiers and are deliberately excluded from the scan.
-    """
-    dl = _load_dl()
-    entries: list[tuple[str, str]] = []
-    for did, dilemma in dl.dilemmas.items():
-        for i, line in enumerate(dilemma.telegraph_lines):
-            entries.append((f"dilemma:{did}:telegraph_{i}", line))
-        for outcome in dilemma.outcomes:
-            pole = outcome.winning_lens_id
-            if outcome.narration_summary:
-                entries.append((f"dilemma:{did}:{pole}:narration", outcome.narration_summary))
-            for i, unlock in enumerate(outcome.tier_unlocks):
-                entries.append((f"dilemma:{did}:{pole}:tier_{i}", unlock))
-    return entries
-
-
 def _extract_tagline_strings() -> list[tuple[str, str]]:
-    """Return (loc, tagline) for every non-empty faction_tagline on a StationLayout subclass.
-
-    Importing ``spacegame.views.station_layouts`` registers all subclass definitions
-    so ``StationLayout.__subclasses__()`` returns the full faction set.
-    Empty or whitespace-only taglines (the base-class default) are skipped.
-    """
+    """Return (loc, tagline) for every non-empty faction_tagline on a StationLayout subclass."""
     import spacegame.views.station_layouts as _sl
 
     entries: list[tuple[str, str]] = []
@@ -387,392 +170,125 @@ def _extract_tagline_strings() -> list[tuple[str, str]]:
     return entries
 
 
-# ---------------------------------------------------------------------------
-# Tests — view source
-# ---------------------------------------------------------------------------
-
-
 class TestViewSourceWritingBible:
-    """UI strings in view source files must comply with the Writing Bible."""
+    """UI strings in view source files comply with the Writing Bible."""
+
+    def test_view_scanner_finds_strings(self) -> None:
+        entries = _extract_view_strings()
+        assert len(entries) > 50, f"View scanner found only {len(entries)} strings."
 
     def test_no_em_dashes_in_view_strings(self) -> None:
-        """No em-dashes in rendered text or pygame_gui element text."""
-        offenders: list[str] = []
-        for loc, text in _extract_view_strings():
-            for dash in _EM_DASHES:
-                if dash in text:
-                    offenders.append(f"{loc}: {text!r}")
-                    break
-        if offenders:
-            report = "\n  ".join(offenders[:30])
-            pytest.fail(f"Em-dashes in view-source UI strings (first 30):\n  {report}")
+        offenders = [
+            f"{loc}: {text!r}"
+            for loc, text in _extract_view_strings()
+            if any(dash in text for dash in _EM_DASHES)
+        ]
+        assert not offenders, "Dashes in view UI strings:\n  " + "\n  ".join(offenders[:30])
 
     def test_no_banned_phrases_in_view_strings(self) -> None:
-        """No 'couldn't help but' or 'a testament to' in view UI strings."""
-        offenders: list[str] = []
-        for loc, text in _extract_view_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text!r}")
+        offenders = [
+            f"{loc}: {phrase!r} in {text!r}"
+            for loc, text in _extract_view_strings()
+            for phrase in _BANNED_PHRASES
+            if phrase in text.lower()
+        ]
         assert not offenders, "Banned phrases in view UI strings:\n  " + "\n  ".join(offenders)
 
     def test_no_parallel_negation_in_view_strings(self) -> None:
-        """No 'no X, no Y' rhetoric in view UI strings."""
-        offenders: list[str] = []
-        for loc, text in _extract_view_strings():
-            if _PARALLEL_NEGATION.search(text):
-                offenders.append(f"{loc}: {text!r}")
-        assert not offenders, "Parallel-negation rhetoric in view UI strings:\n  " + "\n  ".join(
-            offenders
-        )
-
-
-# ---------------------------------------------------------------------------
-# Tests — mission + journal content (core narrative, strict)
-# ---------------------------------------------------------------------------
-
-
-class TestMissionAndJournalWritingBible:
-    """Mission and journal content is core narrative and held strict."""
-
-    def test_no_em_dashes_in_missions(self) -> None:
         offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_mission_strings()
-            if any(d in text for d in _EM_DASHES)
+            f"{loc}: {text!r}"
+            for loc, text in _extract_view_strings()
+            if _PARALLEL_NEGATION.search(text)
         ]
-        assert not offenders, "Em-dashes in mission content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_em_dashes_in_journal(self) -> None:
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_journal_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in journal content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_banned_phrases_in_missions(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_mission_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in mission content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_banned_phrases_in_journal(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_journal_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in journal content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_parallel_negation_in_missions(self) -> None:
-        """No parallel-negation rhetoric in mission content (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_mission_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in mission content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_parallel_negation_in_journal(self) -> None:
-        """No parallel-negation rhetoric in journal content (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_journal_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in journal content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-
-# ---------------------------------------------------------------------------
-# Tests — dialogue + ambient content (looser register, advisory)
-# ---------------------------------------------------------------------------
-
-
-class TestDialogueAndAmbientWritingBible:
-    """Dialogue and ambient lines enforce the same Writing Bible rules.
-
-    Sprint 5 cleanup removed the five real offenders (1 dialogue response,
-    4 ambient lines) so these tests now hold the line at zero tolerance.
-    Future content that introduces em-dashes will fail the test with a
-    clear per-offender report.
-    """
-
-    def test_no_em_dashes_in_dialogue(self) -> None:
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_dialogue_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in dialogue content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_em_dashes_in_ambient(self) -> None:
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_ambient_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in ambient/chatter content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_banned_phrases_in_ambient(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_ambient_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in ambient content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_parallel_negation_in_ambient(self) -> None:
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_ambient_strings()
-            if _PARALLEL_NEGATION.search(text) and text.strip() not in _PARALLEL_NEGATION_ALLOWLIST
-        ]
-        assert not offenders, "Parallel-negation in ambient content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_em_dashes_in_encounters(self) -> None:
-        """CE-4: encounter content held to the same Writing Bible rules."""
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_encounter_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in encounter content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_banned_phrases_in_encounters(self) -> None:
-        """CE-4: encounters can't use 'couldn't help but', 'a testament to', etc."""
-        offenders: list[str] = []
-        for loc, text in _extract_encounter_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in encounter content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_em_dashes_in_crew_interjections(self) -> None:
-        """CE-5: crew interjections held to the same Writing Bible bar."""
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_interjection_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in crew interjections:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_banned_phrases_in_crew_interjections(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_interjection_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in crew interjections:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_parallel_negation_in_dialogue(self) -> None:
-        """No parallel-negation rhetoric in dialogue content (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_dialogue_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in dialogue content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_parallel_negation_in_encounters(self) -> None:
-        """No parallel-negation rhetoric in encounter content (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_encounter_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in encounter content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-    def test_no_parallel_negation_in_crew_interjections(self) -> None:
-        """No parallel-negation rhetoric in crew interjection content (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_interjection_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in crew interjection content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
-
-
-# ---------------------------------------------------------------------------
-# Tests — structural invariants + catalog coverage sanity
-# ---------------------------------------------------------------------------
-
-
-class TestCoverageSanity:
-    """The scanner extracts the expected volume of content."""
-
-    def test_view_scanner_finds_strings(self) -> None:
-        """The view scanner finds a realistic number of UI strings."""
-        entries = _extract_view_strings()
-        assert len(entries) > 50, (
-            f"View scanner found only {len(entries)} strings. Regex may have drifted."
-        )
-
-    def test_mission_scanner_finds_content(self) -> None:
-        entries = _extract_mission_strings()
-        assert len(entries) > 30, f"Mission scanner found only {len(entries)} strings."
-
-    def test_journal_scanner_finds_content(self) -> None:
-        entries = _extract_journal_strings()
-        assert len(entries) > 10
-
-    def test_dialogue_scanner_finds_content(self) -> None:
-        entries = _extract_dialogue_strings()
-        assert len(entries) > 50
-
-
-# ---------------------------------------------------------------------------
-# Tests — station tagline content
-# ---------------------------------------------------------------------------
-
-
-class TestDilemmaContentWritingBible:
-    """A2-12+: dilemma content is core narrative and held strict.
-
-    Extended in A2-12 so every future dilemma (A2-13 through A2-19)
-    inherits the em-dash / banned-phrase / parallel-negation scan
-    without wiring anything per-sprint.
-    """
-
-    def test_dilemma_scanner_finds_content_once_authored(self) -> None:
-        """Scanner returns entries once at least one dilemma has been authored.
-
-        Skips while the registry is empty so the extension can land ahead
-        of dilemma content without failing the suite. Once A2-12+ populate
-        ``data/narrative/dilemmas/``, this converts silently to a pass.
-        """
-        entries = _extract_dilemma_strings()
-        if not entries:
-            pytest.skip("no dilemma content yet; A2-12..A2-19 will populate this")
-        assert len(entries) >= 4, (
-            f"Dilemma scanner found only {len(entries)} strings on a non-empty "
-            f"registry. Extractor may have broken."
-        )
-
-    def test_no_em_dashes_in_dilemmas(self) -> None:
-        offenders = [
-            f"{loc}: {text[:100]!r}"
-            for loc, text in _extract_dilemma_strings()
-            if any(d in text for d in _EM_DASHES)
-        ]
-        assert not offenders, "Em-dashes in dilemma content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_banned_phrases_in_dilemmas(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_dilemma_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text[:100]!r}")
-        assert not offenders, "Banned phrases in dilemma content:\n  " + "\n  ".join(offenders[:20])
-
-    def test_no_parallel_negation_in_dilemmas(self) -> None:
-        offenders: list[str] = []
-        for loc, text in _extract_dilemma_strings():
-            pn = [v for v in _find_violations(text) if "parallel-negation" in v]
-            if pn:
-                offenders.append(f"{loc}: {text[:100]!r}")
-        assert not offenders, "Parallel-negation in dilemma content:\n  " + "\n  ".join(
-            offenders[:20]
-        )
+        assert not offenders, "Paired negation in view UI strings:\n  " + "\n  ".join(offenders)
 
 
 class TestStationTaglineWritingBible:
-    """Station faction taglines must comply with the Writing Bible."""
+    """Station faction taglines comply with the Writing Bible."""
 
     def test_tagline_scanner_finds_content(self) -> None:
-        """Extractor must return >= 5 taglines (one per faction layout)."""
-        entries = _extract_tagline_strings()
-        assert len(entries) >= 5, (
-            f"Tagline scanner found only {len(entries)} taglines. "
-            "Extractor may have broken or subclasses failed to import."
-        )
+        assert len(_extract_tagline_strings()) >= 5
 
-    def test_no_em_dashes_in_taglines(self) -> None:
-        """No em-dashes, en-dashes, or double-hyphens in faction taglines."""
-        offenders: list[str] = []
-        for loc, text in _extract_tagline_strings():
-            for dash in _EM_DASHES:
-                if dash in text:
-                    offenders.append(f"{loc}: {text!r}")
-                    break
-        if offenders:
-            report = "\n  ".join(offenders)
-            pytest.fail(f"Em-dashes in faction taglines:\n  {report}")
-
-    def test_no_banned_phrases_in_taglines(self) -> None:
-        """No 'couldn't help but' or 'a testament to' in faction taglines."""
-        offenders: list[str] = []
-        for loc, text in _extract_tagline_strings():
-            lowered = text.lower()
-            for phrase in _BANNED_PHRASES:
-                if phrase in lowered:
-                    offenders.append(f"{loc}: {phrase!r} in {text!r}")
-        assert not offenders, "Banned phrases in faction taglines:\n  " + "\n  ".join(offenders)
-
-    def test_no_parallel_negation_in_taglines(self) -> None:
-        """No comma-form 'no X, no Y' rhetoric in faction taglines (allowlist honored)."""
-        offenders: list[str] = []
-        for loc, text in _extract_tagline_strings():
-            violations = _find_violations(text)
-            pn_violations = [v for v in violations if "parallel-negation" in v]
-            if pn_violations:
-                offenders.append(f"{loc}: {text!r}")
-        assert not offenders, "Parallel-negation in faction taglines:\n  " + "\n  ".join(offenders)
+    def test_taglines_comply(self) -> None:
+        offenders = [
+            f"{loc}: {text!r}: {_find_violations(text)}"
+            for loc, text in _extract_tagline_strings()
+            if _find_violations(text)
+        ]
+        assert not offenders, "Writing Bible violations in taglines:\n  " + "\n  ".join(offenders)
 
     def test_allowlist_suppresses_reach_tagline(self) -> None:
-        """Broadened regex matches Reach tagline (period form); allowlist still suppresses it.
-
-        After WB-2, the broadened _PARALLEL_NEGATION regex catches period-separated forms,
-        so 'No laws. No mercy. No refunds.' now matches the regex. The allowlist is what
-        prevents it from appearing as a violation. This test asserts all three properties:
-        (1) the regex matches, (2) the allowlist suppresses, (3) a non-allowlisted period-form
-        string IS flagged.
-        """
+        """The regex matches the Reach tagline; the allowlist suppresses it, and only it."""
         reach_tagline = "No laws. No mercy. No refunds."
+        assert _PARALLEL_NEGATION.search(reach_tagline)
+        assert not [v for v in _find_violations(reach_tagline) if "parallel-negation" in v]
+        assert [v for v in _find_violations("No power. No heat.") if "parallel-negation" in v]
 
-        # (1) The broadened regex now matches the Reach tagline's period form.
-        assert _PARALLEL_NEGATION.search(reach_tagline), (
-            "Broadened regex must match the Reach tagline period form 'No laws. No mercy. ...'"
+
+# ---------------------------------------------------------------------------
+# The prose gates over data/ and the strings built in code (spec 5.1)
+# ---------------------------------------------------------------------------
+
+GATE_IDS = sorted(GATES, key=lambda gate: int(gate[1:]))
+
+
+@pytest.fixture(scope="module")
+def live() -> dict[str, list[Offence]]:
+    """Today's offences, gate by gate, computed once for the module."""
+    return {gate: offences(gate) for gate in GATE_IDS}
+
+
+def _rows_of(gate: str) -> tuple[allowlist.Row, ...]:
+    return tuple(row for row in allowlist.rows() if row.gate == gate)
+
+
+class TestProseGates:
+    @pytest.mark.parametrize("gate", GATE_IDS)
+    def test_no_new_offence(self, gate: str, live: dict[str, list[Offence]]) -> None:
+        """Every offence of the gate has its allowlist row; a new one names its string."""
+        new = allowlist.unlisted(live[gate], _rows_of(gate))
+        report = "\n  ".join(
+            f"{o.rule} | {o.file} {o.path} | {o.match!r} in {o.text[:140]!r}" for o in new[:40]
+        )
+        assert not new, (
+            f"{gate}: {len(new)} new offences. Rewrite the line (spec 5.1); the baseline "
+            f"allowlist only shrinks:\n  {report}"
         )
 
-        # (2) The allowlist suppresses it — _find_violations returns no parallel-negation entry.
-        violations = _find_violations(reach_tagline)
-        pn_violations = [v for v in violations if "parallel-negation" in v]
-        assert not pn_violations, (
-            f"Allowlist should suppress Reach tagline but got: {pn_violations}"
+    @pytest.mark.parametrize("gate", GATE_IDS)
+    def test_every_allowlist_row_still_offends(
+        self, gate: str, live: dict[str, list[Offence]]
+    ) -> None:
+        """A row whose line was fixed fails until it leaves the list."""
+        gone = allowlist.stale(_rows_of(gate), live[gate])
+        report = "\n  ".join(f"{r.rule} | {r.file} {r.path}" for r in gone[:40])
+        assert not gone, (
+            f"{gate}: {len(gone)} allowlist rows no longer offend. Delete them "
+            f"(python -m tests.writing_gates.allowlist --prune):\n  {report}"
         )
 
-        # (3) A period-form synthetic NOT in the allowlist must be flagged.
-        synthetic = "No power. No heat."
-        synthetic_violations = _find_violations(synthetic)
-        synthetic_pn = [v for v in synthetic_violations if "parallel-negation" in v]
-        assert synthetic_pn, (
-            "Period-form parallel-negation 'No power. No heat.' should be flagged but wasn't."
-        )
+
+class TestTheAllowlist:
+    def test_every_row_names_a_known_gate_a_rule_and_a_reason(self) -> None:
+        for row in allowlist.rows():
+            assert row.gate in GATES, row
+            assert row.rule and row.path and row.reason.strip(), row
+            assert row.reason == allowlist.reason_for(Offence(*row.key, "", "")), row
+            assert not any(dash in row.reason for dash in _EM_DASHES), row
+
+    def test_rows_are_unique(self) -> None:
+        keys = [row.key for row in allowlist.rows()]
+        assert len(keys) == len(set(keys))
+
+    def test_a_fixed_line_is_reported_stale_and_a_new_one_unlisted(self) -> None:
+        """The shrink rule itself, on a synthetic row and offence."""
+        row = allowlist.Row("G2", "paired negation", "data/x.json", ".a", "old line", "test")
+        offence = Offence("G2", "paired negation", "data/x.json", ".b", "new line", "new line")
+        assert allowlist.stale((row,), [offence]) == [row]
+        assert allowlist.unlisted([offence], (row,)) == [offence]
+        assert allowlist.stale((row,), [Offence(*row.key, "old line", "old line")]) == []
+
+    def test_every_offence_has_a_baseline_reason(self, live: dict[str, list[Offence]]) -> None:
+        for found in live.values():
+            for offence in found:
+                assert allowlist.reason_for(offence)

@@ -11,8 +11,10 @@ from unittest.mock import MagicMock
 
 import pygame
 import pygame_gui
+import pytest
 
 from spacegame.config import WINDOW_HEIGHT, WINDOW_WIDTH
+from spacegame.models.captain_tokens import Pronouns
 from spacegame.models.combat import (
     CombatEffect,
     CombatEncounter,
@@ -373,4 +375,41 @@ class TestOutcomeSurfacing:
         view.engine.get_state().result = CombatResult.FLED
         view._maybe_surface_outcome_interjection()
         assert view._interjections_this_fight == 0
+        view.on_exit()
+
+
+class TestCaptainTokensInInterjections:
+    """Writing discipline spec 2.6: an interjection reads the address table."""
+
+    @pytest.mark.parametrize(
+        ("choice", "word"),
+        [(Pronouns.HE, "sir"), (Pronouns.SHE, "ma'am"), (Pronouns.THEY, "Captain")],
+    )
+    def test_the_line_renders_for_the_captains_choice(
+        self, monkeypatch, choice: Pronouns, word: str
+    ) -> None:
+        bank = [CrewInterjection("tomas_drifter", "first_turn", ["Evasion rules apply, {sir}."])]
+        _patch_data_loader_with(monkeypatch, bank)
+        player = _player_with_crew([("tomas_drifter", "Tomas")])
+        player.pronouns = choice
+        view = CombatView(_ui_manager(), _make_engine(), player)
+        view.on_enter()
+        view._maybe_surface_round_interjection()
+        # _player_with_crew's MagicMock(name=...) names the mock, so the speaker prints as a
+        # mock repr: pin the quoted line, which captain_line renders inside the whole line.
+        quoted = f'"Evasion rules apply, {word}."'
+        assert any(quoted in line for line in view.visible_log_lines), view.visible_log_lines
+        assert view.floating_texts[-1]["text"].endswith(quoted)
+        view.on_exit()
+
+    def test_a_stub_player_without_a_choice_hears_captain(self, monkeypatch) -> None:
+        """The MagicMock player these tests build holds no real choice: they/them."""
+        bank = [CrewInterjection("tomas_drifter", "first_turn", ["Evasion rules apply, {sir}."])]
+        _patch_data_loader_with(monkeypatch, bank)
+        view = CombatView(
+            _ui_manager(), _make_engine(), _player_with_crew([("tomas_drifter", "Tomas")])
+        )
+        view.on_enter()
+        view._maybe_surface_round_interjection()
+        assert any("apply, Captain." in line for line in view.visible_log_lines)
         view.on_exit()

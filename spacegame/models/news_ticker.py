@@ -7,6 +7,7 @@ Falls back to flavor text when nothing dramatic is happening.
 
 from __future__ import annotations
 
+import re
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
@@ -22,8 +23,8 @@ from spacegame.sim_rng import SimRng
 class HeadlineTemplate:
     """A template for a single news headline.
 
-    Placeholders in `template` are filled from event context dicts using
-    standard str.format_map(); unknown keys are silently left as-is.
+    Placeholders named in the context are filled by `_fill`; every other brace, a captain's
+    token included, is left as written.
     """
 
     id: str
@@ -39,16 +40,19 @@ class HeadlineTemplate:
 # ============================================================================
 
 
-class _SafeDict(dict):  # type: ignore[type-arg]
-    """dict subclass that returns the key placeholder for missing keys."""
-
-    def __missing__(self, key: str) -> str:
-        return "{" + key + "}"
+_PLACEHOLDER = re.compile(r"\{([A-Za-z_]+)\}")
 
 
 def _fill(template: str, ctx: dict[str, str]) -> str:
-    """Fill template placeholders from ctx, leaving unknown keys intact."""
-    return template.format_map(_SafeDict(ctx))
+    """Fill the placeholders ctx names, leaving every other brace as written.
+
+    A captain's token (writing discipline spec 2.5) survives to the galaxy map's ticker, which
+    renders it; ``str.format`` would raise on a verb token's ``{v:A|B}``.
+    """
+    return _PLACEHOLDER.sub(
+        lambda match: str(ctx[match.group(1)]) if match.group(1) in ctx else match.group(0),
+        template,
+    )
 
 
 # ============================================================================

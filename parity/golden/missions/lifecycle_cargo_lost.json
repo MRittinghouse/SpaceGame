@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "4637f3fe91a6f828b8155b5eefee7126e951347b",
+  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
   "steps": [
     {
       "args": [
@@ -165,6 +165,7 @@
             },
             "xp": 0
           },
+          "pronouns": "they/them",
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {},
@@ -335,6 +336,7 @@
             },
             "xp": 0
           },
+          "pronouns": "they/them",
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {
@@ -507,6 +509,7 @@
             },
             "xp": 0
           },
+          "pronouns": "they/them",
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {
@@ -682,6 +685,7 @@
             },
             "xp": 0
           },
+          "pronouns": "they/them",
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {
@@ -879,6 +883,7 @@
             },
             "xp": 100
           },
+          "pronouns": "they/them",
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {},

@@ -747,6 +747,196 @@ D-20, F-74 and A12 (polish design 8.1).
   `iron_job_done_replaced`) are the writing session's, and the port meets the same
   content once B2 ports the sensor.
 
+## Writing W1 (2026-10-01)
+
+The writing half's foundations (writing discipline spec, aurelia
+`docs/specs/2026-10-01-writing-discipline-design.md`, 9.2 rows 0 to 3), plan W1-S. The
+Godot port mirrors these after syncing this branch (plan W1-A). The goldens pin the renderer,
+the pronoun key and the data rows; unit tests are the spec for the rest.
+
+- The renderer (`spacegame/models/captain_tokens.py`; golden `dialogue/captain_tokens`).
+  `Pronouns` saves as "he/him", "she/her" or "they/them", and `Pronouns.parse` reads any
+  other value as they/them. `WORDS` maps each word token to its he/him, she/her and
+  they/them renders: `{they}` he/she/they, `{They}` He/She/They, `{them}` him/her/them,
+  `{their}` his/her/their, `{Their}` His/Her/Their, `{theirs}` his/hers/theirs,
+  `{themself}` himself/herself/themself, `{sir}` sir/ma'am/Captain, `{Sir}`
+  Sir/Ma'am/Captain, `{son}` son/girl/kid, `{Son}` Son/Girl/Kid (the she/her "girl" is the
+  author's ruling, 2026-10-02). `fill(text, pronouns, day=None)` replaces every
+  `\{v:([^|{}]*)\|([^{}]*)\}` first (the first form for he/him and she/her, the second for
+  they/them), then every `\{([A-Za-z]+)\}` that names a word token, then `{day}` with the day
+  when one is given; any other brace stays as written, so a surface's own fill can run after
+  it. Rendering twice changes nothing. `captain_line(text, player)` reads the player's choice
+  and game day (an int only) and renders they/them with no day when there is no player. The
+  golden records `fill` for six probes and every shipped line that carries a token (three:
+  Larsen's greeting and farewell, Szabo's outcome), for the three choices, with the day 61
+  and with none (`null`).
+- Where Python renders: at each surface's display edge, so every model and golden keeps the
+  raw line (the smuggler outcome golden records Szabo's
+  `{Son}`). The dialogue view (node text, replies, the Empathic Read line), the
+  inline dialogue panels of the deep shafts, Okafor and Wreckers views, the combat view
+  (interjections and captains' outcome lines, the whole formatted line), the encounter view
+  (name, description, labels, hints, outcomes, before its `{shakedown_demand}` fill, since a
+  verb token breaks `format_map`), the banner (`Game._next_mission_notification`, every
+  queued line), the crew's mini-game commentary, station chatter, and the galaxy map's news
+  ticker (`news_ticker._fill` now fills only the names its context holds and leaves every
+  other brace).
+- The registry (`tests/writing_gates/registry.py`): the captain's tokens may appear in
+  `dialogue/*.json`, `combat/crew_interjections.json`, `combat/captains.json`,
+  `combat/captain_variants.json`, `encounters/*.json`, `crew/ambient_dialogue.json`,
+  `crew/station_chatter.json` and `economy/news_templates.json`, and nowhere else; each
+  surface's own fill is listed beside it (news, the travel log, galaxy events, ground
+  contracts, post-capstone templates, auction voices, the encounters' shakedown demand).
+  `tests/test_compliance/test_captain_token_render_sites.py` names each print path. The
+  port's registry test mirrors the files the port prints. `{player}`, the captain's name,
+  stays the news fill's alone (spec 2.7).
+- The choice: the save key `pronouns` (`SaveManager._serialize_player`, beside
+  `ship_name`), wave A in `tools/parity/snapshots.py`, so every player snapshot in the
+  goldens holds `"pronouns": "they/them"` (157 files). `Player.pronouns` is keyword-only,
+  default they/them. `Game.initialize_new_game(..., pronouns=Pronouns.THEY)` takes the
+  pick; nothing passes it until SP6's creator.
+- The data: `intro_narration` has two nodes, `intro_1` (`[Continue]` to `intro_2`) and
+  `intro_2` (terminal); Larsen's greeting and farewell carry `{sir}`; Elena's `first_turn`
+  line 1 reads "...apply, Chief. Sorry. Captain." for every captain, with no token (the
+  author's ruling, 2026-10-02); Szabo's report outcome carries
+  `{Son}`; `the_foremans_son` is named "Deferred" and its description says "The one that came
+  back deferred."; `bill_of_landing` says "he"; `marcus_recognition.recognition` and
+  `.report_buried` and the Log's `auto_m05_marcus` carry the timeline of spec 4.3; the fixer
+  is "Glyn Quintela" ("Glyn" alone) in 28 strings, the three NPC records' names among them,
+  and the show "Mouthfeel" in two. No id changed.
+- The gates (`tests/writing_gates/`: `surfaces.py`, `rules.py`, `registry.py`,
+  `allowlist.py`, `allowlist.json`, `act_verbs.txt`) are pure Python over `data/` and the
+  source text of `spacegame/views` and `spacegame/models` (the strings built in code, read
+  with `ast`, and `capstone_view.py`'s `_TEMPLATE`, the capstone frame, a narration field of
+  spec 5.1). The baseline held 529 rows; this branch's fixes leave 519. The three G5
+  `vocative` rows left, Odalys's "sweetheart" and Tariq's "darling" (two lines), stay for
+  good: a habit the speaker uses with anyone (the author's ruling, 2026-10-02).
+
+### Records for plan W1-A
+
+What plan W1-A ports, syncs and records. The ids it allocates (deviations, register rows,
+hand-off entries) are its own.
+
+- Port: the renderer as `CaptainTokens` with the table, the order (verb tokens, then word
+  tokens, then `{day}`), the unknown-brace rule and the they/them fallback above, replaying
+  `dialogue/captain_tokens`; the choice on `PlayerIdentity`, saved under `pronouns` and added
+  to `PlayerSnapshot.KEYS` (`test_the_snapshot_holds_every_wave_a_key_from_its_owner` is the
+  check); rendering at the port's surface exits for the surfaces it prints (dialogue,
+  interjections, captains, encounters, ambient lines, station chatter), never inside a
+  parity-tested model; the news templates wait for a port news surface; the port's
+  per-surface brace tests extended to the captain's tokens on those surfaces
+  (`test/unit/galaxy_event_test.gd` keeps `{system}` alone).
+- Sync: `data/` and the goldens (the new case, the 157 snapshot goldens, `interjections`,
+  `outcomes_smuggler`, `lifecycle_the_foremans_son`, `tree_intro_narration`). The gates
+  package is not under `data/` or `parity/golden/`, so the cutover copies it by hand or
+  widens `tools/sync_data.py`'s trees.
+- Tests the sync breaks: B2's `test_the_dex_records_are_listed_one_at_a_time` filters on a
+  display name beginning "Dex", which no record carries after the sync, so beats 1, 2, 4
+  and 6 find no record where each expects one and the test fails: re-key it on the ids
+  `dex_halloran`, `dex_tunnel_contact`, `dex_final_lead`, keeping each beat's expected
+  list. No aurelia unit test pins M05's title (`test/unit/mission_manager_test.gd` uses
+  only the id `the_foremans_son`, which stays); the synced golden
+  `lifecycle_the_foremans_son` carries "Accepted: Deferred". A second test fails at Task 1
+  Step 4: `test/unit/dialogue_content_test.gd`'s `test_every_npc_and_tree_loads` pins the
+  dialogue totals (nodes, replies, skill checks, replies that set a flag, replies that end
+  the conversation) at plan B2's `[742, 1160, 59, 174, 288]`, and the intro's repair
+  (`intro_narration` from five nodes and four replies to two and one) makes them
+  `[739, 1157, 59, 174, 288]`: re-pin the first two (742 to 739, 1160 to 1157) in the sync
+  commit.
+- Where plan W1-A's text no longer matches this branch, for its controller to amend before
+  Task 1 runs:
+  - Koren stays "he" in `data/missions/crew_quests.json` (W2's, under Deferred below), so
+    Task 1's "Koren as 'she'" and Step 3's crew quests do not arrive by sync. The sync
+    changes nine data files (dialogues, crew interjections, the Alliance encounters,
+    missions, journal entries, NPCs, commodities, news templates, the humor encounters)
+    plus `SYNC.json`, ten in all, where Step 3 expects about eleven.
+  - B2's committed `test_the_dex_records_are_listed_one_at_a_time` pins each beat's exact
+    list, so after the sync it fails at beats 1, 2, 4 and 6, where Step 4 expects a pass
+    with nothing checked. It has no `for beat: Variant in beats:` loop or
+    `is_less_equal(1)` assertion for Step 5's `seen` guard to hang on, and its exact-list
+    pins already fail an empty listing, so the guard and Step 6's "no fixer record was
+    listed" are unnecessary: Step 10's re-key on the ids is the whole fix.
+  - G5's `token_names` (`tests/writing_gates/rules.py`) names a brace `v` only for the full
+    `{v:A|B}` form, two forms around exactly one pipe; any other body that begins `v:`
+    keeps its whole brace as its name and fails G5 as an unknown token. Task 6's
+    `TokenRegistry.names_in` names `v` for any body that begins `v:`, looser than the
+    function it cites, so Task 6 ports the full form. Nothing ships wrong meanwhile:
+    aurelia's `data/` is a copy this stricter G5 has passed.
+- The `change` and `romance` fields need no port code (the port reads named keys only);
+  G13's disposition half reads `change` once a tree marks a node.
+- `{player}` renders only in the news fill today (spec 2.7): a line that wants the
+  captain's name on another surface extends `captain_line`, the port's `CaptainTokens` and
+  both registries in one change across both builds.
+- For `docs/handoffs.md`'s writing-pass queue (spec 9.2 row 11), every line this branch
+  wrote or changed: the two intro cards; Larsen's greeting and farewell; Elena's slip;
+  Szabo's `{Son}`; "Deferred" and "The one that came back deferred."; `bill_of_landing`'s
+  "he"; Marcus's `recognition` and `report_buried`; `auto_m05_marcus`; the smuggling access
+  reason "(Meet Glyn Quintela)".
+- Open, for the hand-offs and the desk copy (row 12):
+  - The narrator audit's eight `intro_narration` rows (audit.md, dialogues.json rows 1 to
+    8), which this branch retired by repairing the intro in place: plan W1-A records that
+    W2 skips them (the chunk map's W2 row, or `docs/handoffs.md`'s "The writing pass");
+    audit.md stays as dated evidence.
+  - The intro is two cards (`intro_1`, `intro_2`) after W1: spec section 8's SP7 entry
+    ("replaces the five intro cards") should say two.
+  - Spec 2.5's contraction forms: this plan is the renderer's, which spec 2.5 lets change
+    the spelling, and it spells `{they} {v:doesn't|don't}` and `{they} {v:wasn't|weren't}`
+    with a space after the pronoun; both renderers' tests use the spaced forms. Plan W1-A
+    carries the spaced forms into spec 2.5's Contractions bullet and the regenerated desk
+    copy, so no writer meets the unspaced ones (which render "shedoesn't").
+  - F-016: 22 strings built in code, allowlisted under the gates with F-016 as their
+    reason; their rewrite is outside the narrator audit (spec 9.4), and chunk W2 owns it
+    (the controller's ruling, 2026-10-02).
+- Deferred, each with one owner: spec 7's data rows outside W1, and the allowlist reasons
+  that name a later owner.
+  - `the_collapse_sequence` (SP10, which rewrites the sequence): Elena's `gate_activation`
+    line retired (impact 5.1), the two G9 stage tags (`[Silence]`, `[End of Act One]`) and
+    the four G11 "warp" lines, each allowlisted with an SP10 reason.
+  - The other ten "warp" rows, and "naval facility" in
+    `campaign_pirate_weapons_01.salvage_evidence` (impact 10.8): W2. audit.md flags neither
+    word, so W2's list must name them.
+  - `merchant_delivery.betrayal_rant`'s three motive questions and the Science Collective
+    -5 (impact 8.8): W3, with the iron scenes (spec 9.3, choice 4).
+  - `ambient_lines[176]`, replaced by the key (impact 10.14): Tomas's slice.
+  - Koren's pronoun in `elena_old_charts` ("his last known position") and
+    `elena_charting_stars` ("before he died"; audit.md row 858): W2, whose found-on-the-way
+    list (spec 9.4) names Koren's pronoun drift beside the revenue officer in
+    `ransom_guild_audit_01`; impact 6.8 files it as polish design 3.2's canon fix.
+  - `the_foremans_son`'s last description sentence, "He's carrying something, and it's not
+    just guilt.", narration that states Marcus's inner state: W2, though audit.md lists no
+    row for it.
+  - The seven G9 `observation unquoted` replies (impact 7e): W2. `dialogue_writing_guide.md`
+    quotes `embassy_summit.observation_moment` in its Before/After gallery and its NV-7
+    Best-of gallery, as shipped; both rows follow that line when W2 rewrites it. The NV-7
+    entry's heading ("names what it means") and pattern note ("one synthesis") follow spec
+    2.2's edge 6 with it, and the Before/After gallery's last row quotes
+    `arna_post_refining.start`'s knowledge-gated reply (G9 `not an act`, W2), which it
+    follows the same way. Missing from plan W1-A's Task 12 hand-offs text, which names the
+    seven replies alone: W1-A adds the NV-7 heading and pattern note and the
+    `arna_post_refining.start` gallery row to W2's list in `docs/handoffs.md`.
+  - Spoken lines that pass G9 because their first word is an act verb:
+    "[Take care of yourself.]" in `arna_post_payback.what_now`,
+    `arna_last_freight_out_closeout.brother` and `.help_offer`, and "[Take care.]" in
+    `arna_stays_closeout.check`, farewells said to Arna; and "[Leave it.]" in
+    `merchant_delivery.odom_arna_branch_a` to `_c`, an act or a line beside the failing
+    "[Drop it. Run it.]": W2. G9 reads a tag's first word only (spec 5.1), so no allowlist
+    row carries them and audit.md lists none. Missing from plan W1-A's Task 12 hand-offs
+    text: W1-A adds the seven tags to W2's list in `docs/handoffs.md`, since W2's sweep
+    reads only the allowlist and audit.md.
+- Observations: until SP6's creator every player sees the they/them column; the gates'
+  "player-facing" set is every string under `data/` less the sprite manifest, `_` keys,
+  lowercase identifiers and six lens authoring keys, plus every string built in code under
+  `spacegame/views` and `spacegame/models` less docstrings, logger arguments, blank strings
+  and lowercase identifiers; G4 compares person records only; G13's count is 21 trees
+  because a skill check whose branches lead on is not an exit, and a reply with a skill
+  check leads only to its branches (both builds ignore its next_node_id), which the port's
+  gate keeps. G5's token rule checks a file against every name its renderers fill, so a
+  brace one news trigger fills and another does not passes it: `news_templates.json`'s
+  pm_01 to pm_03 write `{description}`, which the `player_milestone` fill (`{milestone}`
+  alone) never supplies; nothing passes milestones to `generate_headlines` today, and the
+  port's news surface settles it. Missing from plan W1-A's Task 12 hand-offs text: W1-A
+  adds it to `docs/handoffs.md` beside the news templates' entry among the token
+  registry's unported files.
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

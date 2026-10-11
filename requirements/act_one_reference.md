@@ -9,13 +9,13 @@
 **Title**: "New Horizons"
 **Setting**: The Aurelia Expanse, 2335 CE, a remote 10-system cluster at the edge of colonized space.
 
-The player is a 16-year-old orphan whose father, an assistant mining foreman, died from failing air recyclers on a Nexus Prime orbital. With a broken shuttle and 2,000 credits, the player arrives at Nexus Prime knowing nobody. Over the course of 17 missions across five chapters, they build a crew, develop faction relationships, and uncover a conspiracy called **The Ledger**: a rogue faction within the Commerce Guild working to monopolize the Expanse through manufactured pirate attacks.
+The captain is twenty, the age printed on the license. The Guild issues a provisional master's license until twenty-one, with a sponsor of record co-signing the ship's articles, and Customs Officer Larsen is the captain's sponsor of record. The captain left school a couple of years before the game and apprenticed under their father, an assistant mining foreman and the only surviving parent, on the Nexus Prime orbital; he died when the air recyclers failed. With a broken shuttle and 2,000 credits, the captain arrives at Nexus Prime knowing nobody. The world tells these facts (documents, objects, other people), never the captain's memory. Over the course of 17 missions across five chapters, the captain builds a crew, develops faction relationships, and uncovers a conspiracy called **The Ledger**: a rogue faction within the Commerce Guild working to monopolize the Expanse through manufactured pirate attacks.
 
 **Emotional arc**: Isolation, Curiosity, Belonging, Unease, Resolve
 
 **Central theme**: "You can't survive alone." The player's journey from isolated orphan to connected captain mirrors the political reality that the factions need cooperation to face the pirate threat but cannot agree on terms.
 
-**Opening state**: Nobody. Alone, broke, unskilled, grieving.
+**Opening state**: Nobody. Alone, broke.
 **Closing state**: Somebody. A known trader with crew, faction standing, evidence of a conspiracy, and a major choice about who to trust.
 
 ### The Ledger
@@ -47,7 +47,7 @@ The Act One ending neutralizes one pirate base but the leadership escapes. Recov
 | # | Title | Summary |
 |---|-------|---------|
 | 04 | Union Territory | Travel to Breakstone. Hanna Voss demands proof of good faith: deliver food to the commissary. Earn a Union trade permit. |
-| 05 | The Foreman's Son | Marcus Jin recognizes the player's surname. He filed a buried report about the air recyclers. Mining tutorial follows. |
+| 05 | Deferred | Marcus Jin recognizes the captain's surname. His team flagged the air recyclers on the Nexus Prime orbital, and the report came back deferred. Mining tutorial follows. |
 | 06 | The Scholar's Errand | Transport Dr. Priya Osei to Axiom Labs. She studies resource extraction economics and frames human suffering as data. |
 | 07 | The Drifter's Deal | Tomas Drifter at Haven's Rest proposes routing textiles past Guild tariffs. First moral gray area. Player can accept or decline. |
 
@@ -59,8 +59,8 @@ The Act One ending neutralizes one pirate base but the leadership escapes. Recov
 | # | Title | Summary |
 |---|-------|---------|
 | 08 | Cargo Lost | Distress signal from a raided freighter. Player chooses to help or press on. Meet Captain Reva Sato, who reveals coordinated attack patterns. |
-| 09 | Whispers at the Bar | Faction argument overheard at the cantina. Dex Halloran offers pirate intel in exchange for delivering a data chip to Crimson Reach. |
-| 10 | The Crimson Run | Deliver Dex's chip to Malia Torres at Crimson Reach. She reveals the pirates have Guild-grade military hardware. |
+| 09 | Whispers at the Bar | Faction argument overheard at the cantina. Glyn Quintela offers pirate intel in exchange for delivering a data chip to Crimson Reach. |
+| 10 | The Crimson Run | Deliver Glyn's chip to Malia Torres at Crimson Reach. She reveals the pirates have Guild-grade military hardware. |
 | 11 | Embassy Visit | Faction summit at Axiom Labs ends in deadlock. Player may spot a suspicious signal exchange between a Guild delegate and an unknown figure. |
 
 ### Chapter 4: Escalation (Missions 12-15)
@@ -96,13 +96,14 @@ All recruitment is optional. Solo play is always viable. Each companion requires
 **Elena Reeves** (Navigator, Commerce Guild background)
 - Met at: Nexus Prime, Mission 03
 - Recruitment effort: Low (single conversation)
-- Personality: Sharp, guarded, precise. Guild speech patterns she is trying to unlearn. Left the Guild after discovering route pilot underpayment. She needs a ship, not a friend.
+- Personality: Sharp, guarded, precise. Guild speech patterns she is trying to unlearn. Left the Guild two years ago over route pilot pay. She needs a ship, not a friend.
+- Fixed facts (polish design 3.2): her crew template is to read "Former Guild route planner" (her slice changes it from "Former Fleet navigator"); Koren, the pilot she flew second seat for on the *Low Water*, died flying her plan (writing discipline spec 4.3), and Koren is "she" everywhere; the *Low Water* replaces the Meridian.
 - Narrative role: Provides Guild insider perspective. Comments on pirate intel (M09), offers navigation expertise throughout.
 
 **Marcus Jin** (Engineer, Miners Union)
 - Met at: Breakstone, Mission 05
 - Recruitment effort: Medium (fetch quest + return trip)
-- Personality: Gruff, professional, principled. Carries guilt about the buried air recycler report. Hums mining shanties. Shares food instinctively.
+- Personality: Gruff, professional, principled. Carries guilt about the deferred air recycler report. Hums mining shanties. Shares food instinctively.
 - Narrative role: Personal connection to the player's backstory. Identifies Guild hardware on pirate ships (M12). Vouches for the player with Union contacts (M13).
 
 **Dr. Priya Osei** (Scientist, Science Collective)
@@ -124,7 +125,7 @@ All recruitment is optional. Solo play is always viable. Each companion requires
 | Officer Larsen | Customs officer | Commerce Guild | Nexus Prime |
 | Hanna Voss | Dock boss, scarred, prosthetic arm | Miners Union | Breakstone |
 | Captain Reva Sato | Convoy escort pilot | Commerce Guild | Roaming |
-| Dex Halloran | Information broker | Unaligned | Nexus Prime |
+| Glyn Quintela | Information broker | Unaligned | Nexus Prime |
 | "Wrench" Malia Torres | Salvager boss | Frontier Alliance | Crimson Reach |
 | Oren Tak | Retired miner, hidden in tunnels | Miners Union | Breakstone |
 
@@ -179,7 +180,7 @@ M17: act_one_complete, ledger_known, new_horizons_unlocked
 |-------|-------|
 | Drifter deal | `accepted_drifter_deal` / `declined_drifter_deal` |
 | Distress response | `helped_freighter` / `ignored_distress` |
-| Dex favor | `accepted_dex_favor` / `declined_dex_favor` |
+| Glyn favor | `accepted_dex_favor` / `declined_dex_favor` |
 | Faction path | `chose_guild_path` / `chose_union_path` / `chose_collective_path` / `chose_alliance_path` |
 | Per-crew state | `<npc>_recruited` / `<npc>_declined` (at any decision point) |
 
@@ -251,7 +252,7 @@ Auto-entries fire from mission completion, `set_flag` dialogue actions, and spec
 
 Example entries:
 
-- **M05** (Marcus): "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He filed an engineering report about the air recyclers on the Nexus Prime orbital. The report was buried. My father died six months later."
+- **M05** (Marcus): "Met Marcus Jin at Breakstone. Mining foreman, twenty years on station. He said his team flagged the air recyclers on the Nexus Prime orbital, and the report came back deferred." The Log records what Marcus said; the father's death is his to say, in the scene, and never the Log's.
 - **M07** (Tomas, accepted path): "Met Tomas Drifter at Haven's Rest. Accepted a gray-market trade: rerouting supplies past Guild tariffs to people who need them. Haven's Rest runs on handshakes and trust."
 - **M16** (The Ledger): "The pirate operation is funded by a rogue faction within the Commerce Guild. They call themselves The Ledger. Goal: destabilize shipping, monopolize security, control the Expanse. Evidence recovered. Base neutralized. Leaders escaped."
 
@@ -365,7 +366,7 @@ Player dialogue options should reveal character, not restate the same sentiment:
 | 02 Iron Delivery | Cargo delivery, interstellar travel |
 | 03 Footing the Bill | Core trade loop, price awareness, NPC conversation |
 | 04 Union Territory | Faction culture contrast, faction-specific permits |
-| 05 Foreman's Son | Mining mini-game, personal backstory |
+| 05 Deferred | Mining mini-game, personal backstory |
 | 06 Scholar's Errand | Passenger missions, Science Collective |
 | 07 Drifter's Deal | Tariffs, rule-bending (smuggling preview), persuasion |
 | 08 Cargo Lost | Random encounters, salvage, choice/consequence |

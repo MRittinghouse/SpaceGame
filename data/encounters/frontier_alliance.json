@@ -303,7 +303,7 @@
           "label": "Warn Him Off",
           "description": "Tell him he is going to get himself arrested running unregistered chemicals.",
           "outcome": {
-            "description": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+            "description": "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
             "rewards": [
               {
                 "reward_type": "xp",

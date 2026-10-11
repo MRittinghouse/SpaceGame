@@ -1,5 +1,5 @@
 """Dialogue goldens: every node of every tree, the ambient and chatter line pickers, crew
-interjections, and the Talk list.
+interjections, the Talk list, and the captain's tokens.
 
 Each response is selected from a fresh manager positioned on its node, so steps are
 independent. Every case builds its managers from its own setup, so the Godot adapter
@@ -19,10 +19,13 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+import json
+import re
 from typing import Any
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.ambient_dialogue import AmbientDialogueManager
+from spacegame.models.captain_tokens import TOKEN_NAMES, Pronouns, fill
 from spacegame.models.combat import CombatResult, CombatState
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
@@ -37,7 +40,7 @@ from spacegame.models.social import (
 )
 from spacegame.models.station_chatter import StationChatterManager
 from spacegame.sim_rng import SimRng, stable_seed
-from tools.parity.driver import Case
+from tools.parity.driver import REPO_ROOT, Case
 from tools.parity.drivers.combat import LOADOUTS, MAX_ROUNDS, build_fight, play_round
 
 COMPANIONS = ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter")
@@ -455,6 +458,53 @@ def _npcs_here() -> Case:
     return case
 
 
+# Writing discipline spec 2.5 to 2.7: the captain's tokens, rendered for the three choices. The
+# probes cover the spec's two worked lines, every token, the contractions, {day}, and braces the
+# renderer leaves for a surface's own fill; every shipped line that carries a token joins them.
+CAPTAIN_TOKEN_PROBES: tuple[str, ...] = (
+    "{They}{v:'s|'re} asleep in the pilot's chair again. Leave {them}.",
+    "Dock records list {player} as master of record. {They} {v:holds|hold} a provisional license.",
+    "{they} {They} {them} {their} {Their} {theirs} {themself} {sir} {Sir} {son} {Son}",
+    "{they}{v:'s|'ve} gone. {they} {v:doesn't|don't} know. {they} {v:wasn't|weren't}. {they}'ll",
+    "Day {day}. Fourteen-oh-six.",
+    "{system} and {shakedown_demand} wait for their own fill.",
+)
+CAPTAIN_TOKEN_DAY = 61
+_CAPTAIN_TOKEN = re.compile(r"\{v:[^{}]*\}|\{(?:" + "|".join(sorted(TOKEN_NAMES - {"v"})) + r")\}")
+
+
+def _shipped_token_lines() -> list[str]:
+    """Every string under data/ that carries a captain token, sorted."""
+    found: set[str] = set()
+    for path in sorted((REPO_ROOT / "data").rglob("*.json")):
+        stack: list[object] = [json.loads(path.read_text(encoding="utf-8"))]
+        while stack:
+            node = stack.pop()
+            if isinstance(node, str):
+                if _CAPTAIN_TOKEN.search(node):
+                    found.add(node)
+            elif isinstance(node, dict):
+                stack.extend(node.values())
+            elif isinstance(node, list):
+                stack.extend(node)
+    return sorted(found)
+
+
+def _captain_tokens() -> Case:
+    lines = [*CAPTAIN_TOKEN_PROBES, *_shipped_token_lines()]
+    setup: dict[str, Any] = {
+        "choices": [choice.value for choice in Pronouns],
+        "day": CAPTAIN_TOKEN_DAY,
+        "lines": lines,
+    }
+    case = Case("dialogue", "captain_tokens", setup)
+    for choice in Pronouns:
+        for line in lines:
+            for day in (CAPTAIN_TOKEN_DAY, None):
+                case.record("fill", [choice.value, line, day], fill(line, choice, day), {})
+    return case
+
+
 def build_cases() -> list[Case]:
     """Every dialogue case."""
     dl = get_data_loader()
@@ -465,4 +515,5 @@ def build_cases() -> list[Case]:
         _chatter(),
         _interjections(),
         _npcs_here(),
+        _captain_tokens(),
     ]

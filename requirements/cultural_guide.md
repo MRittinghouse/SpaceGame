@@ -373,7 +373,7 @@ Alliance stations are **eclectic, colorful, and unique**. No two look alike beca
 
 **Key laws**:
 - **The Breakstone Charter** (2267): The Union's founding document, ratified after the Uprising. Guarantees every worker the right to vote, the right to strike, the right to safe working conditions, and the right to a fair share of the value they produce. Amended 14 times, but the core rights have never changed.
-- **Safety Standard 7** (2289): Named after the Shaft 7 disaster — a tunnel collapse that killed 34 miners due to inadequate structural supports. SS7 mandates minimum safety standards for all Union mining operations: structural inspections, emergency egress, air quality monitoring, and mandatory rest periods. Compliance is enforced by elected safety officers. Violations can result in a mine being shut down by worker vote.
+- **Safety Standard 7** (2289): Named after the Shaft 7 disaster, a tunnel collapse that killed 34 miners due to inadequate structural supports. SS7 mandates minimum safety standards for all Union mining operations: structural inspections, emergency egress, air quality monitoring, and mandatory rest periods. Compliance is enforced by elected safety officers. Violations can result in a mine being shut down by worker vote. When a violation is heard, the worker who filed speaks first.
 
 **Current tensions**: The Union is under economic pressure. Ore prices have been depressed for two years — partly due to oversupply, partly due to Guild tariff manipulation. Pirate raids on Union convoys have increased shipping costs. The Workers' Council is divided between members who want to negotiate with the Guild for military protection (at the cost of autonomy) and members who'd rather arm their own convoy escorts. Marcus Jin's growing disillusionment with Union leadership reflects this broader crisis: the democratic process that once kept the Union nimble is struggling to respond to threats that move faster than committee votes.
 
@@ -583,7 +583,7 @@ Crimson Reach is the Expanse's wild edge — a system littered with debris from 
 
 **Regional character**: Crimson Reach is the Alliance at its most extreme. No government. No taxes. No permits. The Wrecker's Guild provides the only structure — safety standards for salvage operations, dispute mediation, and a shared database of derelict locations. Everything else is negotiated person to person. The station's market deals in salvaged parts, refurbished electronics, and goods of ambiguous origin. It's not a black market — it's a market that doesn't recognize the concept of contraband. "Wrench" Malia Torres runs the most respected salvage crew and serves as the Outpost's de facto leader, a role she exercises through competence and reputation rather than authority.
 
-**Current mood**: Watchful. Crimson Reach has always attracted trouble, but the pirate attacks are different — organized, well-funded, targeting specific routes. The Wreckers have noticed that some of the pirate-damaged ships they're salvaging were hit with military-grade weapons. Malia Torres knows more than she's saying. Dex Halloran passes through regularly, buying information and selling rumors.
+**Current mood**: Watchful. Crimson Reach has always attracted trouble, but the pirate attacks are different: organized, well-funded, targeting specific routes. The Wreckers have noticed that some of the pirate-damaged ships they're salvaging were hit with military-grade weapons. Malia Torres knows more than she's saying. Glyn Quintela passes through regularly, buying information and selling rumors.
 
 ---
 
@@ -787,7 +787,7 @@ Names in the Aurelia Expanse should reflect 143 years of cultural blending:
 | Tomas Drifter | Spanish/Portuguese/German + alias | Alliance — common, informal, chosen name |
 | Hanna Voss | German/Scandinavian | Union — functional, no-nonsense |
 | Reva Sato | Indian/Hebrew + Japanese | Guild military — blended authority |
-| Dex Halloran | English/Irish | Unaligned — spy name, ambiguous |
+| Glyn Quintela | Welsh + Portuguese/Galician | Unaligned: Union work-song tongues, answers to nobody |
 | Malia Torres | Hawaiian/Polynesian + Spanish | Alliance salvager — Pacific + Latin blend |
 | Oren Tak | Hebrew + Korean/SE Asian | Union miner — quiet, observant |
 | Sora Takahashi | Japanese | Union founder — historical, preserved |

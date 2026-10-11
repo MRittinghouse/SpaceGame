@@ -737,7 +737,7 @@
     },
     {
       "id": "flavor_54",
-      "template": "PERSONAL: Selling pre-Expansion star charts, provenance unverified. Serious inquiries only. Crimson Reach cantina, ask for Dex.",
+      "template": "PERSONAL: Selling pre-Expansion star charts, provenance unverified. Serious inquiries only. Crimson Reach cantina, ask for Glyn.",
       "trigger": "flavor",
       "priority": 2,
       "faction_id": ""
