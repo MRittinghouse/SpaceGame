@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import threading
 import time
 from pathlib import Path
@@ -26,6 +27,10 @@ from ralph.config import PROJECT_ROOT
 from ralph.proc import atomic_write
 
 HEARTBEAT_PATH: Path = PROJECT_ROOT / "ralph" / "heartbeat.json"
+
+# FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE (winnt.h). `_winapi`
+# exposes CreateFile but not the share flags.
+_FILE_SHARE_ALL = 0x1 | 0x2 | 0x4
 
 
 def write_heartbeat(sprint: Optional[str], phase: Optional[str]) -> None:
@@ -39,14 +44,50 @@ def write_heartbeat(sprint: Optional[str], phase: Optional[str]) -> None:
     atomic_write(HEARTBEAT_PATH, json.dumps(payload, indent=2))
 
 
+def _read_text_during_replace(path: Path) -> str:
+    """Read *path*, even while an `os.replace` is swapping a new file in.
+
+    On Windows the replace holds the destination open with DELETE access while
+    it swaps, and `open()` never grants FILE_SHARE_DELETE, so a plain read in
+    that window fails with PermissionError. Opening with every share flag lets
+    the read through. Elsewhere a plain read already does.
+    """
+    if sys.platform != "win32":
+        return path.read_text(encoding="utf-8")
+    import _winapi
+    import msvcrt
+
+    handle = _winapi.CreateFile(
+        str(path),
+        _winapi.GENERIC_READ,
+        _FILE_SHARE_ALL,
+        _winapi.NULL,
+        _winapi.OPEN_EXISTING,
+        0,
+        _winapi.NULL,
+    )
+    try:
+        fd = msvcrt.open_osfhandle(handle, os.O_RDONLY)
+    except OSError:
+        _winapi.CloseHandle(handle)
+        raise
+    with open(fd, encoding="utf-8") as f:
+        return f.read()
+
+
 def read_heartbeat() -> Optional[dict[str, object]]:
     """Return the heartbeat payload, or None if absent or unreadable.
 
     Never raises. The supervisor calls this in its main loop and must not die
     because a file was half-written or hand-edited.
+
+    A beat being replaced is neither absent nor unreadable, so the read must not
+    fail on the writer's `os.replace` (see `_read_text_during_replace`). It used
+    to, on Windows, and None past the first-beat grace is what makes the
+    supervisor kill a harness.
     """
     try:
-        data = json.loads(HEARTBEAT_PATH.read_text(encoding="utf-8"))
+        data = json.loads(_read_text_during_replace(HEARTBEAT_PATH))
     except (OSError, ValueError):
         return None
     if not isinstance(data, dict):

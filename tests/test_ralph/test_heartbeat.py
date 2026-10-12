@@ -8,6 +8,7 @@ what makes "alive but stuck" a detectable state.
 
 from __future__ import annotations
 
+import sys
 import time
 from pathlib import Path
 
@@ -55,6 +56,47 @@ class TestHeartbeat:
         hb.write_text("{not json", encoding="utf-8")
         monkeypatch.setattr(heartbeat, "HEARTBEAT_PATH", hb)
         assert heartbeat.read_heartbeat() is None
+
+    @pytest.mark.skipif(sys.platform != "win32", reason="Windows file-sharing semantics")
+    def test_a_read_during_a_replace_still_returns_the_beat(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A read that lands while `os.replace` swaps in a new beat returns a beat.
+
+        On Windows the replace holds the destination open with DELETE access
+        while it swaps. `open()` never grants FILE_SHARE_DELETE, so a read in
+        that window failed with PermissionError, and `read_heartbeat` reported
+        None: "no heartbeat" for a file that was there all along. Measured
+        2026-10-12, about 1 read in 80 failed against a writer looping
+        `atomic_write`. That made `test_thread_beats_repeatedly_then_stops`
+        fail "thread never wrote a beat" 0.13s after its first beat landed, and
+        the supervisor kills a harness whose beat reads None past the
+        first-beat grace.
+
+        The DELETE-access handle below is the state the replace creates, held
+        open so the collision is certain rather than lucky.
+        """
+        import _winapi
+
+        monkeypatch.setattr(heartbeat, "HEARTBEAT_PATH", tmp_path / "hb.json")
+        heartbeat.write_heartbeat("SH-2", "implement")
+        delete_access = 0x00010000
+        share_all = 0x1 | 0x2 | 0x4  # FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE
+        swap = _winapi.CreateFile(
+            str(heartbeat.HEARTBEAT_PATH),
+            delete_access,
+            share_all,
+            _winapi.NULL,
+            _winapi.OPEN_EXISTING,
+            0,
+            _winapi.NULL,
+        )
+        try:
+            data = heartbeat.read_heartbeat()
+        finally:
+            _winapi.CloseHandle(swap)
+        assert data is not None, "a beat being replaced read back as no heartbeat at all"
+        assert data["sprint"] == "SH-2"
 
     def test_thread_beats_repeatedly_then_stops(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
