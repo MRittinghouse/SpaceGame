@@ -243,6 +243,11 @@ class TestTheClock:
         assert not on_clock(manager, player, flags, 19)
         notice = on_clock(manager, player, flags, 20)
         assert notice.lines == (FAILED_LINE, "Odom's crew took back 4 Iron Ore", FILING_LINE)
+        assert notice.flags == (
+            iron_delivery_failed(),
+            iron_delivery_resolved(),
+            iron_delivery_moved_on(),
+        )
         assert manager.get_status(MISSION) == MissionStatus.FAILED
         assert player.ship.get_cargo_quantity("iron_ore") == 0
         assert player.get_reputation("commerce_guild") == -10
@@ -256,6 +261,7 @@ class TestTheClock:
         flags = {broker_ore_sold(): True, iron_delivery_moved_on(): True}
         notice = on_clock(_open(), _player(), flags, 25)
         assert notice.lines == (FAILED_LINE, FILING_LINE)
+        assert notice.flags == (iron_delivery_failed(), iron_delivery_resolved())
 
     def test_a_covered_sale_is_not_filed(self) -> None:
         manager = _open()
@@ -263,6 +269,24 @@ class TestTheClock:
         notice = on_clock(manager, _player(10), flags, 25)
         assert notice.lines == ()
         assert manager.get_status(MISSION) == MissionStatus.ACTIVE
+
+    @pytest.mark.parametrize(
+        ("held", "state"),
+        [(10, "iron_job_made_good"), (7, "iron_job_short_lost"), (0, "iron_job_gone_lost")],
+    )
+    def test_a_loss_on_record_is_never_filed(self, held: int, state: str) -> None:
+        manager = _open()
+        player = _player(held)
+        flags = {broker_ore_lost(): True}
+        assert state_of(manager, player, flags) == state
+        standing = player.get_reputation("commerce_guild")
+        notice = on_clock(manager, player, flags, 25)
+        assert notice.lines == ()
+        assert notice.flags == (iron_delivery_moved_on(),)
+        assert manager.get_status(MISSION) == MissionStatus.ACTIVE
+        assert player.ship.get_cargo_quantity("iron_ore") == held
+        assert player.get_reputation("commerce_guild") == standing
+        assert iron_delivery_failed() not in flags
 
 
 class TestTheClose:
@@ -274,6 +298,7 @@ class TestTheClose:
         flags = {iron_delivery_failed(): True}
         notice = close_on_exit(manager, player, flags)
         assert notice.lines == (FAILED_LINE, "Odom's crew took back 10 Iron Ore")
+        assert notice.flags == (iron_delivery_resolved(), iron_delivery_moved_on())
         assert manager.get_status(MISSION) == MissionStatus.FAILED
         assert player.ship.get_cargo_quantity("iron_ore") == 3
         assert flags[iron_delivery_resolved()] is True
@@ -312,6 +337,7 @@ class TestTheClose:
         assert notice.flags == (iron_delivery_moved_on(),)
         assert notice.lines == ()
         assert manager.get_status(MISSION) == MissionStatus.AVAILABLE
+        assert not close_on_exit(manager, _player(), flags)
 
 
 class TestWhoCanCloseIt:

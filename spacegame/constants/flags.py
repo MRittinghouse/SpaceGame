@@ -693,7 +693,8 @@ def iron_ore_signed_short() -> str:
 def iron_job_full() -> str:
     """The iron job's state: open, ten or more held, nothing sold or lost.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_full"
 
@@ -701,7 +702,8 @@ def iron_job_full() -> str:
 def iron_job_made_good() -> str:
     """The iron job's state: open, ten or more held, a loss on record and no sale.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_made_good"
 
@@ -709,7 +711,8 @@ def iron_job_made_good() -> str:
 def iron_job_replaced() -> str:
     """The iron job's state: open, ten or more held, a sale on record.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_replaced"
 
@@ -717,7 +720,8 @@ def iron_job_replaced() -> str:
 def iron_job_short_lost() -> str:
     """The iron job's state: open, one to nine held, a loss and no sale.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_short_lost"
 
@@ -725,7 +729,8 @@ def iron_job_short_lost() -> str:
 def iron_job_gone_lost() -> str:
     """The iron job's state: open, none held, a loss and no sale.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_gone_lost"
 
@@ -733,7 +738,8 @@ def iron_job_gone_lost() -> str:
 def iron_job_moved() -> str:
     """The iron job's state: open, fewer than ten held, a sale on record.
 
-    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies;
+    ``iron_consignment.closers`` (the quest marker).
     """
     return "iron_job_moved"
 

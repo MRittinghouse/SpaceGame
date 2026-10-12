@@ -90,7 +90,8 @@ DONE_STATES: tuple[str, ...] = (
 )
 STATE_FLAGS: tuple[str, ...] = OPEN_STATES + DONE_STATES
 
-# Flags only this module writes; the content scanners read this list (polish design 2.7).
+# Flags this module writes (``iron_delivery``'s reward also sets ``iron_delivery_moved_on``);
+# the content scanners read this list (polish design 2.7).
 ENGINE_FLAGS: tuple[str, ...] = (
     broker_ore_sold(),
     broker_ore_lost(),
@@ -223,8 +224,8 @@ def closers(flags: Mapping[str, bool]) -> frozenset[str]:
 def hidable(manager: Optional["MissionManager"], player: "Player", commodity_id: str) -> int:
     """How many units of a good in the main hold may move to the hidden compartment.
 
-    Odom's consigned ore stays in the main hold while the job is open, so the scale, the
-    state and ``deliver_cargo`` (which takes from the main hold) agree on what is aboard.
+    Odom's consigned ore stays in the main hold while the job is open: of the iron ore, only
+    the main hold's units above the reserved count may be hidden.
 
     Args:
         manager: The mission manager, or None.
