@@ -14,7 +14,7 @@ from spacegame.models.dialogue import (
 )
 
 
-def _tree() -> DialogueTree:
+def _tree(gain: int = 10) -> DialogueTree:
     start = DialogueNode(
         id="start",
         speaker_id="elena_reeves",
@@ -23,7 +23,7 @@ def _tree() -> DialogueTree:
             DialogueResponse(
                 text="Thank you.",
                 next_node_id=None,
-                crew_loyalty_changes={"elena_reeves": 10},
+                crew_loyalty_changes={"elena_reeves": gain},
             )
         ],
     )
@@ -72,4 +72,20 @@ class TestF45:
         manager.select_response(0)
         assert manager.get_flag("crew_loyalty_elena_reeves_50"), (
             "A loyalty gain made in dialogue that crosses 50 keeps its flag (F-45)"
+        )
+
+    def test_a_gain_that_crosses_two_marks_keeps_both_flags(self) -> None:
+        loader = get_data_loader()
+        loader.load_all()
+        roster = CrewRoster(loader.crew_templates)
+        ok, msg = roster.recruit("elena_reeves", 4)
+        assert ok, msg
+        roster.adjust_loyalty("elena_reeves", 35)  # 30 to 65
+        manager = DialogueManager()
+        manager.set_crew_roster(roster)
+        manager.start_dialogue(_tree(gain=25))
+        manager.select_response(0)
+        assert manager.get_flag("crew_loyalty_elena_reeves_70")
+        assert manager.get_flag("crew_loyalty_elena_reeves_85"), (
+            "A +25 reply from 65 crosses 70 and 85 and keeps both flags (SpaceGame F-015)"
         )
