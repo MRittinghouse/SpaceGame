@@ -45,9 +45,10 @@ class TestCrewQuestDataLoading:
             mission = next(m for m in loader.missions if m.id == mission_id)
             assert mission.required_flags == [f"{mission_id}_agreed"], mission_id
             assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 50, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 50, mission_id
 
     def test_stage2_quests_require_stage1_complete(self) -> None:
-        """Stage 2 quests should require the stage 1 completion flag."""
+        """Stage 2 quests require the stage 1 completion flag, opened at loyalty 70."""
         loader = _load_all()
         stage2_pairs = [
             ("elena_wreck_meridian", "elena_quest_stage1_complete"),
@@ -60,6 +61,8 @@ class TestCrewQuestDataLoading:
             assert required_flag in mission.required_flags, (
                 f"{mission_id} should require {required_flag}"
             )
+            assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 70, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 70, mission_id
 
     def test_stage3_quests_require_stage2_and_the_ask(self) -> None:
         """Stage 3 waits for stage 2's completion and its own ask, opened at loyalty 85."""
@@ -73,6 +76,7 @@ class TestCrewQuestDataLoading:
             mission = next(m for m in loader.missions if m.id == mission_id)
             assert mission.required_flags == [stage2_flag, f"{mission_id}_agreed"], mission_id
             assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 85, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 85, mission_id
 
     def test_a_declined_quest_can_be_raised_again(self) -> None:
         """A declined ask becomes the captain's topic; agreeing there accepts the quest."""
