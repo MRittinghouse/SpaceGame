@@ -49,6 +49,11 @@
             {
               "text": "And if it's just a dead end?",
               "next_node_id": "dead_end"
+            },
+            {
+              "text": "Leave Koren's logs in the archive.",
+              "next_node_id": "declined",
+              "set_flag": "elena_old_charts_declined"
             }
           ],
           "expression": "determined"
@@ -65,6 +70,11 @@
               "crew_loyalty_changes": {
                 "elena_reeves": 2
               }
+            },
+            {
+              "text": "Leave Koren's logs in the archive.",
+              "next_node_id": "declined",
+              "set_flag": "elena_old_charts_declined"
             }
           ],
           "expression": "neutral"
@@ -365,6 +375,11 @@
               "crew_loyalty_changes": {
                 "marcus_jin": 2
               }
+            },
+            {
+              "text": "We're not going back to Breakstone.",
+              "next_node_id": "declined",
+              "set_flag": "marcus_old_debts_declined"
             }
           ],
           "expression": "determined"
@@ -381,6 +396,11 @@
               "crew_loyalty_changes": {
                 "marcus_jin": 2
               }
+            },
+            {
+              "text": "We're not going back to Breakstone.",
+              "next_node_id": "declined",
+              "set_flag": "marcus_old_debts_declined"
             }
           ],
           "expression": "determined"
@@ -616,7 +636,7 @@
         {
           "id": "start",
           "speaker_id": "marcus_jin",
-          "text": "Word is Foreman Dask knows about the investigation. He's scrambling to destroy records at the yard. If we don't get back to Breakstone now, he'll burn the physical evidence and claim the digital copies were fabricated.",
+          "text": "Word is Foreman Dask knows about the investigation. He's scrambling to destroy records at the yard. If we don't get there now, he'll burn the physical evidence and claim the digital copies were fabricated.",
           "responses": [
             {
               "text": "Then we move. Now.",
@@ -721,6 +741,11 @@
               "crew_loyalty_changes": {
                 "dr_priya_osei": 2
               }
+            },
+            {
+              "text": "Let the Collective keep its archive.",
+              "next_node_id": "declined",
+              "set_flag": "priya_retracted_paper_declined"
             }
           ],
           "expression": "bitter"
@@ -1033,6 +1058,11 @@
               "crew_loyalty_changes": {
                 "tomas_drifter": 2
               }
+            },
+            {
+              "text": "Leave Castillo in the past.",
+              "next_node_id": "declined",
+              "set_flag": "tomas_name_from_past_declined"
             }
           ],
           "expression": "painful"

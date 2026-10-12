@@ -300,6 +300,32 @@ class TestCrewSceneContent:
         for flags, deferral in _walks(tree, "start"):
             assert deferral or {"elena_wreck_found", "elena_choice_made"} <= flags, flags
 
+    def test_every_ask_of_an_opener_can_be_declined(self) -> None:
+        loader = _loader()
+        misses: list[str] = []
+        asks = Counter[str]()
+        for scene in loader.crew_scenes.values():
+            if scene.beat != "opener" or scene.initiative != "crew":
+                continue
+            tree = loader.dialogue_trees[scene.dialogue_id]
+            agreed, declined = f"{scene.quest_id}_agreed", f"{scene.quest_id}_declined"
+            seen: set[str] = set()
+            todo = [scene.entry_node]
+            while todo:
+                node_id = todo.pop()
+                if node_id in seen:
+                    continue
+                seen.add(node_id)
+                node = tree.nodes[node_id]
+                flags = {r.set_flag for r in node.responses}
+                if agreed in flags:
+                    asks[scene.quest_id] += 1
+                    if declined not in flags:
+                        misses.append(f"{tree.id}.{node_id}")
+                todo.extend(r.next_node_id for r in node.responses if r.next_node_id)
+        assert len(asks) == 12, f"Openers with no ask node: {sorted(asks)}"
+        assert not misses, f"Ask nodes that cannot be declined: {sorted(misses)}"
+
     def test_the_twelve_quests_each_have_an_opener_a_raise_and_a_resolution(self) -> None:
         scenes = list(_loader().crew_scenes.values())
         assert len(scenes) == 36
