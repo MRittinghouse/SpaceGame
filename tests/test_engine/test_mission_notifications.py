@@ -350,6 +350,7 @@ class TestCB2WarpArrivalBanterWiring:
         game._last_visited_count = 0
         game._mission_notifications = []
         game._check_auto_triggers = MagicMock()
+        game._crew_landing = MagicMock()
 
         game._handle_state_transitions()
 
