@@ -258,7 +258,7 @@ class ShipBuilderView(BaseView):
         self.next_state: Optional[GameState] = None
 
         # Fonts — role-based
-        self.title_font = get_font("header", FONT_TITLE)  # "DRYDOCK — LARGE"
+        self.title_font = get_font("header", FONT_TITLE)  # "DRYDOCK: LARGE"
         self.header_font = get_font("header", FONT_XL)  # Section headers
         self.body_font = get_font("dialogue", FONT_BODY)  # Module names
         self.small_font = get_font("stats", FONT_MD)  # Stats, costs

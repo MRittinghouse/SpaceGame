@@ -119,7 +119,7 @@ class _EntryItem:
         pad_x = self.rect.x + 12
         cur_y = self.rect.y + 6
 
-        # Header line: "Day X — System — [tag/source]"
+        # Header line: "Day X · System · [tag/source]"
         header_parts = [f"Day {self.entry.game_day}"]
         if self.entry.system_id:
             system_display = self.entry.system_id.replace("_", " ").title()

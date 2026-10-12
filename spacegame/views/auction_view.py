@@ -966,7 +966,7 @@ class AuctionView(BaseView):
         y += scale_y(20)
         self._draw_text(screen, lot.headline, (x, y))
         y += scale_y(28)
-        # SA-B5: surface the "your lot — watching" banner when the player
+        # SA-B5: surface the "your lot: watching" banner when the player
         # owns this consignment so they aren't looking for a bid action.
         if lot.seller_id == "player":
             self._draw_text(

@@ -294,7 +294,7 @@ class StationHubView(BaseView):
             rng.shuffle(self._flavor_texts)
 
         # Fonts — role-based for narrative immersion
-        self.title_font = get_font("header", FONT_TITLE)  # "DOCKED — NEXUS PRIME"
+        self.title_font = get_font("header", FONT_TITLE)  # "DOCKED: NEXUS PRIME"
         self.subtitle_font = get_font("narration", FONT_LG)  # Station description
         self.flavor_font = get_font("narration", FONT_MD)  # Atmosphere text
         self.card_name_font = get_font("dialogue", FONT_XL)  # Location names
