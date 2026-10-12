@@ -350,7 +350,9 @@ class TestCB2WarpArrivalBanterWiring:
         game._last_visited_count = 0
         game._mission_notifications = []
         game._check_auto_triggers = MagicMock()
-        game._crew_landing = MagicMock()
+        game._crew_landing = MagicMock(  # type: ignore[method-assign]
+            side_effect=lambda: game._mission_notifications.append("crew landing")
+        )
 
         game._handle_state_transitions()
 
@@ -358,3 +360,8 @@ class TestCB2WarpArrivalBanterWiring:
         assert len(ca_msgs) == 1, (
             "Warp arrival must queue combat_after banter within the recency window"
         )
+        game._crew_landing.assert_called_once_with()
+        assert game._mission_notifications[-1] == "crew landing"
+        # The arrival message is consumed, so a second pass must not land the crew again.
+        game._handle_state_transitions()
+        game._crew_landing.assert_called_once_with()

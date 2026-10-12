@@ -75,6 +75,7 @@ def _game(*scenes: CrewScene, loyalty: int = 50) -> Game:
         systems=dl.systems,
         get_dialogue=dl.get_dialogue,
         get_npc=dl.get_npc,
+        factions=dl.factions,
     )
     game.data_loader = loader
     roster = CrewRoster(dl.crew_templates)
@@ -109,6 +110,37 @@ class TestTheTalk:
 
     def test_below_the_mark_there_is_nothing_to_raise(self) -> None:
         assert _game(OPENER, loyalty=49).crew_talk() == []
+
+
+class TestTheWiring:
+    def test_the_dialogue_exit_quiets_the_companion_and_rebuilds_the_roster(self) -> None:
+        game = _game(OPENER)
+        game._check_journal_triggers = MagicMock()  # type: ignore[method-assign]
+        game._load_auto_accept_cargo = MagicMock()  # type: ignore[method-assign]
+        game._ensure_crew_roster_view = MagicMock()  # type: ignore[method-assign]
+        assert game.start_crew_scene("test_opener", return_state=GameState.CREW_ROSTER) == (
+            True,
+            "",
+        )
+        game.dialogue_view.active = True
+        game.dialogue_view.get_next_state.return_value = GameState.CREW_ROSTER
+        game._start_transition.reset_mock()
+        game._route_from_dialogue()
+        assert game._crew_spoke == {"elena_reeves"}
+        assert game._last_crew_scene_id == ""
+        game._start_transition.call_args.args[2]()
+        game._ensure_crew_roster_view.assert_called_once_with()
+        game.state_manager.change_state.assert_called_with(GameState.CREW_ROSTER)
+
+    def test_the_rosters_talk_route_opens_the_scene(self) -> None:
+        game = _game(OPENER)
+        game.crew_roster_view = MagicMock(active=True, pending_talk_id="elena_reeves")
+        game.crew_roster_view.get_next_state.return_value = GameState.DIALOGUE
+        assert game._route_from_crew_roster() is False
+        assert game.crew_roster_view.next_state is None
+        assert game.crew_roster_view.pending_talk_id is None
+        assert game._last_crew_scene_id == "test_opener"
+        assert game.dialogue_view._return_state == GameState.CREW_ROSTER
 
 
 class TestStartingAScene:
