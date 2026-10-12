@@ -125,7 +125,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "The remote diagnostic times out. You can't tell from here. An armed ship pulls out from behind the rig.",
+            "description": "The remote diagnostic times out. An armed ship pulls out from behind the rig.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -748,7 +748,7 @@
           "label": "Mark and Move",
           "description": "Military wrecks bring scavenger crews. Crews bring trouble.",
           "outcome": {
-            "description": "You note the hulk and move on.",
+            "description": "You note the hulk and move on. Small finder's fee.",
             "rewards": [
               {
                 "reward_type": "credits",

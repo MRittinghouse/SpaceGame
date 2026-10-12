@@ -3,7 +3,7 @@
     {
       "id": "elena_old_charts",
       "name": "Old Charts",
-      "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, Koren's last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks. Or confirm what she already suspects.",
+      "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, Koren's last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks.",
       "hint": "Travel to Stellaris Port with Elena in your crew, then speak with her at the cantina to access the Guild navigation archives.",
       "mission_type": "crew",
       "available_at": [],
@@ -521,7 +521,7 @@
     {
       "id": "tomas_new_ledger",
       "name": "New Ledger",
-      "description": "Tomas got what he wanted from Ren Castillo, and now he's sitting in the cargo bay staring at his father's old manifest ledger. The family business is gone. The man who destroyed it is dealt with. What's left is the question Tomas has been avoiding: what kind of trader does he want to be when he's not chasing ghosts?",
+      "description": "Tomas got what he wanted from Ren Castillo, and now he's sitting in the cargo bay staring at his father's old manifest ledger. The family business is gone. The man who destroyed it is dealt with. What's left is the question: what kind of trader does Tomas want to be when he's not chasing ghosts?",
       "hint": "Help Tomas resolve his past and chart a new course.",
       "mission_type": "crew",
       "available_at": [],

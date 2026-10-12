@@ -8,7 +8,7 @@
       "trigger_params": { "turn": 3 },
       "effect_type": "spawn_reinforcement",
       "effect_params": { "template_ids": ["pirate_scout"] },
-      "narration": "A contact lights up the long-range scanner. One more ship just jumped in. The fight just got bigger."
+      "narration": "A contact lights up the long-range scanner. One more ship just jumped in."
     },
     {
       "id": "shield_harmonic",

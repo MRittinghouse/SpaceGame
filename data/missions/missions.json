@@ -247,7 +247,7 @@
         "late_multiplier": 0.5
       },
       "name": "The Scholar's Errand",
-      "description": "Dr. Priya Osei's chartered transport was quietly reassigned. She suspects political pressure, though she's too polite to say it outright. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride.",
+      "description": "Dr. Priya Osei's chartered transport was quietly reassigned. Her research samples degrade by the hour, and Axiom Labs is the only facility that can process them. She needs a ride.",
       "hint": "Transport Dr. Priya Osei to Axiom Labs. She's waiting at Nexus Prime.",
       "prerequisites": [
         "union_territory"
@@ -287,7 +287,7 @@
     {
       "id": "the_drifters_deal",
       "name": "The Drifter's Deal",
-      "description": "Tomas Drifter cornered you at Haven's Rest with a proposal involving Alliance textiles, Guild tariff loopholes, and what he calls 'creative commerce.' The profit margins are real. The legality is... interpretive.",
+      "description": "Tomas Drifter cornered you at Haven's Rest with a proposal involving Alliance textiles, Guild tariff loopholes, and what he calls 'creative commerce.' The profit margins are real.",
       "hint": "Meet Tomas Drifter at Haven's Rest. He has a proposition for you.",
       "prerequisites": [
         "union_territory"
@@ -432,7 +432,7 @@
     {
       "id": "recruit_scientist",
       "name": "Recruit Scientist",
-      "description": "Priya's lab at Axiom is pristine, well-funded, and slowly killing her curiosity. She needs field data, not simulations. A ship with cargo space is worth more to her than tenure.",
+      "description": "Priya's lab at Axiom is pristine and well-funded. She needs field data, not simulations. A ship with cargo space is worth more to her than tenure.",
       "hint": "Travel to Axiom Labs to recruit Dr. Priya Osei as your scientist.",
       "prerequisites": [
         "the_scholars_errand"

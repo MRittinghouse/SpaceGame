@@ -284,7 +284,7 @@
         {
           "id": "leave_it",
           "label": "Leave It Be",
-          "description": "Old rigs can be structurally unstable. Give it a wide berth.",
+          "description": "Give it a wide berth.",
           "outcome": {
             "description": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent, a monument to someone's abandoned ambitions.",
             "rewards": []
@@ -416,7 +416,7 @@
           "label": "Scoop Loose Ore",
           "description": "Collect the drifting ore for yourself.",
           "outcome": {
-            "description": "You grab what's drifted beyond Britt's recovery range. She watches on sensors but doesn't say anything. Union haulers will remember your transponder ID.",
+            "description": "You grab what's drifted beyond Britt's recovery range. She watches on sensors but doesn't say anything.",
             "rewards": [
               {
                 "reward_type": "credits",

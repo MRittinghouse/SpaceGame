@@ -153,17 +153,17 @@
         {
             "x": 17, "y": 15,
             "type": "atmosphere",
-            "text": "Crew quarters with military precision. A duty roster lists rotating shifts for 'Convergence Assembly Teams.' Status boards track array completion percentages: fourteen of sixteen read 100%. The last two show 94% and 97%. Days. Maybe hours."
+            "text": "Crew quarters with military precision. A duty roster lists rotating shifts for 'Convergence Assembly Teams.' Status boards track array completion percentages: fourteen of sixteen read 100%. The last two show 94% and 97%."
         },
         {
             "x": 17, "y": 12,
             "type": "atmosphere",
-            "text": "The corridor narrows beyond reinforced blast doors, amber warning lights pulsing. A console on the wall displays real-time telemetry: energy readings from the Aurelia star, gravitational field calculations, array positioning data. Everything is green. The system is ready. They're just waiting for the order."
+            "text": "The corridor narrows beyond reinforced blast doors, amber warning lights pulsing. A console on the wall displays real-time telemetry: energy readings from the Aurelia star, gravitational field calculations, array positioning data. Everything is green. The system is ready."
         },
         {
             "x": 17, "y": 3,
             "type": "atmosphere",
-            "text": "The command center opens into the assembly core's upper platform. Below, the arrays gleam under floodlights. On the far wall: the gate's frame, thirty meters across, already powered. Blue light pulses along its edges. This is the Ledger's escape route. When the star collapses, they walk through this gate and leave the Expanse behind. It's the only way out. And right now, it's yours."
+            "text": "The command center opens into the assembly core's upper platform. Below, the arrays gleam under floodlights. On the far wall: the gate's frame, thirty meters across, already powered. Blue light pulses along its edges. This is the Ledger's escape route. When the star collapses, they walk through this gate and leave the Expanse behind."
         }
     ]
 }

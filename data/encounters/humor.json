@@ -85,7 +85,7 @@
           "label": "Retrieve the Cat",
           "description": "Extend the cargo grapple and bring the carrier aboard.",
           "outcome": {
-            "description": "You reel in the carrier. The cat, a massive orange tabby, stares at you through the mesh with cold fury. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later. Apparently Dr. Vasquez changed her mind.",
+            "description": "You reel in the carrier. The cat, a massive orange tabby, stares at you through the mesh with cold fury. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice for the cat on the station boards later.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -103,7 +103,7 @@
           "label": "Broadcast for the Owner",
           "description": "Put out a call on local channels for whoever lost a cat.",
           "outcome": {
-            "description": "Three people respond. None of them are missing a cat. They all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee.",
+            "description": "Three people respond. None of them are missing a cat. They all want one. A bidding war breaks out on open comms. You broker the adoption to an ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -366,7 +366,7 @@
           "label": "Play Along",
           "description": "Answer as Rodriguez.",
           "outcome": {
-            "description": "You lean into it. 'Francine! It's been too long!' What follows is a twenty-minute conversation in which Francine lists what Rodriguez did: he owes her money, borrowed her compression coils, and never returned her favorite data pad. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you (Rodriguez) a care package of homemade ration supplements.",
+            "description": "You lean into it. 'Francine! It's been too long!' What follows is a twenty-minute conversation in which Francine lists what Rodriguez did: he owes her money, borrowed her compression coils, and never returned her favorite data pad. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you a care package of homemade ration supplements.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -384,7 +384,7 @@
           "label": "Cut the Channel",
           "description": "End the call.",
           "outcome": {
-            "description": "You kill the connection. Francine calls back twice. You don't answer.",
+            "description": "You kill the connection. Francine calls back twice.",
             "rewards": []
           }
         }
@@ -498,7 +498,7 @@
           "label": "Share a Drink First",
           "description": "Have a drink with the man first.",
           "outcome": {
-            "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser. He tells you stories: the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, Declan is laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
+            "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser. He tells you stories: the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, Declan is laughing. He gives you a crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
             "rewards": [
               {
                 "reward_type": "credits",

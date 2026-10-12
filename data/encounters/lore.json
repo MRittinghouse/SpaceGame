@@ -86,7 +86,7 @@
       "id": "lore_earth_broadcast_01",
       "encounter_type": "comm_intercept",
       "name": "Ghost Frequency",
-      "description": "Your comms array picks up an impossible signal: analogue, unencrypted, riding a frequency that hasn't been used in over a century. The source is diffuse, scattered by a gravitational lens in the region. As you tune in, the static resolves into sound: music. Strings and woodwinds playing something slow and achingly beautiful. Then voices: people laughing, talking over each other in a language your translator can parse. A child's voice rises above the rest, asking a question you can't quite make out. The signal is a fragment of an old Earth broadcast, stretched across light-years and bent by gravity.",
+      "description": "Your comms array picks up an impossible signal: analogue, unencrypted, riding a frequency that hasn't been used in over a century. The source is diffuse, scattered by a gravitational lens in the region. As you tune in, the static resolves into sound: music. Strings and woodwinds playing something slow. Then voices: people laughing, talking over each other in a language your translator can parse. A child's voice rises above the rest, asking a question you can't quite make out. The signal is a fragment of an old Earth broadcast, stretched across light-years and bent by gravity.",
       "icon_color": [
         140,
         180,
@@ -388,7 +388,7 @@
         {
           "id": "leave",
           "label": "Let It Work",
-          "description": "It's been at this longer than you've been alive. Alter course and give the probe space.",
+          "description": "Alter course and give the probe space.",
           "outcome": {
             "description": "You alter course to give the probe space. It doesn't acknowledge your presence. It never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled.",
             "rewards": [
@@ -468,7 +468,7 @@
           "label": "Transmit Coordinates to Authorities",
           "description": "Report the find and move on.",
           "outcome": {
-            "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent. Somewhere, families will learn what happened to the people they lost. Somewhere, the history books will add a footnote.",
+            "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -653,7 +653,7 @@
           "label": "Open the Capsule",
           "description": "Break the seal.",
           "outcome": {
-            "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, reads: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
+            "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, reads: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -739,7 +739,7 @@
           "label": "Full Scientific Analysis",
           "description": "Run every instrument you have.",
           "outcome": {
-            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. Your data will keep scientists arguing for decades. You store the analysis.",
+            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -762,7 +762,7 @@
           "label": "Copy the Unknown Systems",
           "description": "Overlay the map's uncharted systems onto your nav computer.",
           "outcome": {
-            "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. Whoever made this knew what they were doing. You file the coordinates. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
+            "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. You file the coordinates. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -781,7 +781,7 @@
           "label": "Document and Withdraw",
           "description": "Take images. Leave the object undisturbed.",
           "outcome": {
-            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. But you keep one image for yourself: the cluster of dots that represents your home system, marked by hands that were never human, under stars that have been burning since before your species learned to name them.",
+            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
             "rewards": [
               {
                 "reward_type": "xp",

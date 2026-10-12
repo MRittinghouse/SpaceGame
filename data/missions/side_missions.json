@@ -330,7 +330,7 @@
     {
       "id": "old_debts",
       "name": "Old Debts",
-      "description": "Tomasz Brennan hasn't spoken to his son in eleven years. The Forgeworks-Breakstone labor split put them on opposite sides of a picket line, and neither one bent. Now Tomasz is old and his hands shake, and he's wrapped a package he can't bring himself to mail. It's a simple delivery.",
+      "description": "Tomasz Brennan hasn't spoken to his son in eleven years. The Forgeworks-Breakstone labor split put them on opposite sides of a picket line, and neither one bent. Now Tomasz is old and his hands shake, and he's wrapped a package. It's a simple delivery.",
       "hint": "Talk to Tomasz Brennan at Forgeworks, then deliver his package to Breakstone.",
       "mission_type": "side",
       "available_at": [
@@ -1184,7 +1184,7 @@
     {
       "id": "the_informant",
       "name": "The Informant",
-      "description": "Callum Rhee paid double the standard passenger fare and didn't haggle. A simple transport run to Haven's Rest turns complicated when you find out your quiet passenger is a Ledger operative using your ship as a getaway ride. Now you're an accomplice, a witness, and the only person between him and a clean escape. Confront him, turn him in, or let him walk. Each option costs something.",
+      "description": "Callum Rhee paid double the standard passenger fare and didn't haggle. A simple transport run to Haven's Rest turns complicated when you find out your quiet passenger is a Ledger operative using your ship as a getaway ride. Now you're an accomplice, a witness, and the only person between him and a clean escape. Confront him, turn him in, or let him walk.",
       "hint": "Talk to Callum Rhee at The Fulcrum and transport him to Haven's Rest. Expect complications.",
       "mission_type": "side",
       "available_at": [

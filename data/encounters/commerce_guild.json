@@ -347,7 +347,7 @@
         {
           "id": "negotiate_fee",
           "label": "Demand Higher Fee",
-          "description": "Ask for a higher fee.",
+          "description": "Demand a higher fee.",
           "outcome": {
             "description": "Novik hesitates, then consults with his logistics team. \"Solari Logistics is authorized to increase the offer by forty percent, given the elevated threat assessment. Do we have an agreement?\" You accept, and the convoy proceeds under your watchful eye.",
             "rewards": [

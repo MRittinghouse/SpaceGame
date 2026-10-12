@@ -166,7 +166,7 @@
           "label": "Let Them Appraise Your Cargo",
           "description": "Dock with the yacht and let Tariq Voss poke through your hold.",
           "outcome": {
-            "description": "Tariq, a man in a velvet jacket who smells like sandalwood and money, spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. His credits clear.",
+            "description": "Tariq, a man in a velvet jacket who smells like sandalwood, spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. His credits clear.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -202,7 +202,7 @@
           "label": "Politely Decline",
           "description": "Decline the appraisal.",
           "outcome": {
-            "description": "You send a terse \"No thank you\" and continue on your way. Tariq's yacht peels off with a barrel roll.",
+            "description": "You send a polite \"No thank you\" and continue on your way. Tariq's yacht peels off with a barrel roll.",
             "rewards": []
           }
         }
@@ -251,7 +251,7 @@
           "label": "Escort Them Personally",
           "description": "Fly alongside and guide them back to the tourist docks.",
           "outcome": {
-            "description": "You spend half an hour escorting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'. Their words.",
+            "description": "You spend half an hour escorting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -524,7 +524,7 @@
           "label": "Transmit Settlement Coordinates",
           "description": "Send them the registration beacon frequency and a nav path to the intake center.",
           "outcome": {
-            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
+            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -562,7 +562,7 @@
           "label": "Continue On Your Way",
           "description": "Leave them to Haven's intake system.",
           "outcome": {
-            "description": "You leave the shuttle to navigate the beacon system on its own. Haven's Rest was built for people exactly like the Kaurs.",
+            "description": "You leave the shuttle to navigate the beacon system on its own.",
             "rewards": []
           }
         }
@@ -888,7 +888,7 @@
           "label": "Hold Position as Instructed",
           "description": "Hold position at two kilometers.",
           "outcome": {
-            "description": "You maintain position for forty minutes. The unclassified energy signature pulses twice more, then fades. The all-clear comes through with no further explanation. A Collective patrol ship sweeps past your position, sensors clearly scanning you, before moving on. Whatever happened in Theta-9, the Institute isn't talking.",
+            "description": "You maintain position for forty minutes. The unclassified energy signature pulses twice more, then fades. The all-clear comes through with no further explanation. A Collective patrol ship sweeps past your position, sensors clearly scanning you, before moving on.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1150,7 +1150,7 @@
         {
           "id": "move_on",
           "label": "Log It and Move On",
-          "description": "Breakstone has its own rescue infrastructure.",
+          "description": "Log the beacon coordinates and continue on your route.",
           "outcome": {
             "description": "You log the beacon coordinates and continue on your route.",
             "rewards": []
@@ -1484,7 +1484,7 @@
           "label": "Pay for 'Protection'",
           "description": "Transfer Vex's fee.",
           "outcome": {
-            "description": "You transfer the credits. Vex is surprisingly professional: they escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\"",
+            "description": "You transfer the credits. Vex escorts you through two debris fields and past a cluster of ships. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\"",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1502,7 +1502,7 @@
           "label": "Refuse and Hold Course",
           "description": "Refuse and hold course.",
           "outcome": {
-            "description": "You tell Vex where they can put their offer. There's a long pause, then a chuckle. \"Brave. Stupid, but brave. Your call, Captain.\" Vex breaks off and vanishes into the debris field. You spend the next thirty minutes with your weapons hot, but nothing happens. This time.",
+            "description": "You refuse Vex's offer. There's a long pause, then a chuckle. \"Brave. Stupid, but brave. Your call, Captain.\" Vex breaks off and vanishes into the debris field. You spend the next thirty minutes with your weapons hot, but nothing happens.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1578,7 +1578,7 @@
         {
           "id": "report",
           "label": "Report to the Frontier Alliance",
-          "description": "The Alliance lost people on that ship. Transmit its coordinates to the nearest Alliance relay.",
+          "description": "Transmit its coordinates to the nearest Alliance relay.",
           "outcome": {
             "description": "You transmit the Margrave's coordinates and transponder confirmation to the nearest Alliance relay. The response is immediate and tense: they're dispatching a recovery team. An Alliance officer asks you to maintain visual contact until they arrive, then thanks you with the careful formality of someone who just received very complicated news.",
             "rewards": [
@@ -1674,7 +1674,7 @@
           "label": "Purge Your Comms Log",
           "description": "Wipe the intercept from your logs.",
           "outcome": {
-            "description": "You wipe the intercept from your logs and adjust course away from the station core. The Fulcrum has secrets, and people who dig into those secrets tend to stop transmitting.",
+            "description": "You wipe the intercept from your logs and adjust course away from the station core.",
             "rewards": []
           }
         }
@@ -1719,7 +1719,7 @@
           "label": "Claim Guild Authorization",
           "description": "Name-drop the Commerce Guild.",
           "outcome": {
-            "description": "You transmit a confident Guild transit authorization, slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through.",
+            "description": "You transmit a confident Guild transit authorization. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1737,7 +1737,7 @@
           "label": "Reverse Course Immediately",
           "description": "Unmarked, armed, and already locked on? Time to leave.",
           "outcome": {
-            "description": "You don't argue. You throw your engines into reverse and back out of the sector. The patrol ship watches you go without comment. Whatever The Fulcrum is hiding, it has guards who take their job very seriously.",
+            "description": "You don't argue. You throw your engines into reverse and back out of the sector. The patrol ship watches you go without comment.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1774,7 +1774,7 @@
           "label": "Run a Full Spectrum Analysis",
           "description": "That energy signature could tell you what kind of weapon they're testing.",
           "outcome": {
-            "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis: the discharge profile doesn't match any known weapons system (Guild, Union, or Collective). It's something new. Something powerful. You encrypt the data and bury it deep in your secure logs. This is the kind of information that gets people killed.",
+            "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis: the discharge profile doesn't match any known weapons system (Guild, Union, or Collective). You encrypt the data and bury it deep in your secure logs.",
             "rewards": [
               {
                 "reward_type": "xp",

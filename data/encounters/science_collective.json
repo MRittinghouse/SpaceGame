@@ -490,7 +490,7 @@
         {
           "id": "side_christensen",
           "label": "Side With Christensen",
-          "description": "Back Christensen's model. Support the methodology.",
+          "description": "Back Christensen's model.",
           "outcome": {
             "description": "You weigh in on Christensen's behalf. Dr. Christensen beams: 'Thank you, Captain. Bayesian inference is perfectly valid with small samples given proper priors, as my colleague would know if they kept current with the literature.' Dr. Farouk goes silent. Christensen transfers a tip 'for restoring my faith in informed discourse.'",
             "rewards": [
@@ -857,7 +857,7 @@
           "label": "Request Full Specs",
           "description": "Ask for the complete technical specifications before agreeing to anything.",
           "outcome": {
-            "description": "Strand shares the test parameters with visible reluctance. The specs show the simulation was run only three times, the 'non-lethality' metric has a creative definition, and the fine print mentions 'acceptable hull micro-fracturing.' Strand shrugs before you can answer: 'Your loss, Captain. Science requires bold participants.' The Nova cruiser begins scanning for the next passing ship.",
+            "description": "Strand shares the test parameters with visible reluctance. The specs show the simulation was run only three times and the fine print mentions 'acceptable hull micro-fracturing.' Strand shrugs before you can answer: 'Your loss, Captain. Science requires bold participants.' The Nova cruiser begins scanning for the next passing ship.",
             "rewards": [
               {
                 "reward_type": "xp",

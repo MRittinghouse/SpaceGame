@@ -299,7 +299,7 @@
               "next_node_id": "recognition"
             },
             {
-              "text": "[Observation 2] \"Your hands stopped when you heard me talk. You knew my name before you asked.\"",
+              "text": "[Observation 2] \"You knew my name before you asked.\"",
               "next_node_id": "recognition",
               "skill_check": {
                 "skill": "observation",
@@ -2686,7 +2686,7 @@
         {
           "id": "start",
           "speaker_id": "dr_priya_osei",
-          "text": "Priya is waiting in her lab when you arrive. The holographic displays are dark except for one, cycling through structural diagrams from the facility. She looks like she hasn't slept. I've been running the numbers since you sent the preliminary data. Tell me you brought more.",
+          "text": "Priya is waiting in her lab when you arrive. The holographic displays are dark except for one, cycling through structural diagrams from the facility. I've been running the numbers since you sent the preliminary data. Tell me you brought more.",
           "responses": [
             {
               "text": "[Hand over the data chip]",
@@ -3124,7 +3124,7 @@
               ]
             },
             {
-              "text": "[Observation 2] \"Two exits in reach. Back to the wall. You weren't waiting for me. You were waiting for someone, and I'm just what showed up.\"",
+              "text": "[Observation 2] \"You weren't waiting for me. You were waiting for someone, and I'm just what showed up.\"",
               "next_node_id": "pitch",
               "excluded_flags": [
                 "price_of_info_accepted"
@@ -6694,7 +6694,7 @@
           "id": "catch",
           "speaker_id": "arna",
           "text": "Catch? Nothing you and a half-decent rig can't handle. Breakstone's moderate danger, bring weapons, keep your eyes up. Site has been picked over some, but I know the angles. Refining is off-books, yeah, but cheap and fast. Sale we will worry about when we get there. My contact is solid.",
-          "subtext": "She says 'my contact is solid' too fast. Too confident. Too specific.",
+          "subtext": "She says it too fast. Too confident. Too specific.",
           "responses": [
             {
               "text": "Fine. I am in.",
@@ -7637,7 +7637,7 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "You're early. Freighter doesn't pull out for another hour. But you came to see me off. Most people wouldn't have.",
-          "subtext": "She has a duffel bag at her feet. A small one. Dock rat's worth of things fits in one bag.",
+          "subtext": "She has a duffel bag at her feet. A small one.",
           "responses": [
             {
               "text": "Where are you going?",
@@ -7709,10 +7709,10 @@
           "id": "pendant",
           "speaker_id": "arna",
           "text": "Before I go. You have seen this.",
-          "subtext": "She pulls the silver pendant out from under her shirt. This time her eyes finally meet yours.",
+          "subtext": "She pulls the silver pendant out from under her shirt. Her eyes meet yours.",
           "responses": [
             {
-              "text": "I have. Three times.",
+              "text": "I have.",
               "next_node_id": "pendant_truth"
             }
           ],

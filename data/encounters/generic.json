@@ -1074,7 +1074,7 @@
           "label": "Ride the Gradient",
           "description": "Hold at the edge and let your instruments record. Twenty minutes of readings the Collective would kill for.",
           "outcome": {
-            "description": "You ride the gravity gradient for twenty minutes, the hull groaning, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body. The Collective will want this.",
+            "description": "You ride the gravity gradient for twenty minutes, the hull groaning, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1126,7 +1126,7 @@
           "label": "Dock Dark and Browse",
           "description": "Transponders dark, manifests blank. The prices are good because the provenance is bad.",
           "outcome": {
-            "description": "You dock in silence. Nobody exchanges names. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod.",
+            "description": "You dock in silence. Nobody exchanges names. The goods are quality. You pay a fraction of market rate and part ways with a nod.",
             "rewards": [
               {
                 "reward_type": "credits",

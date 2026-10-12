@@ -198,7 +198,7 @@
         {
           "id": "side_brannick",
           "label": "Back Brannick",
-          "description": "He says he was here first. Back his claim.",
+          "description": "Back Brannick's claim.",
           "outcome": {
             "description": "Tomoko spits a curse but peels off. Brannick docks with the wreck and tosses you a cut from the first crate. 'You got good instincts, friend. Drinks on me next time you're at Haven's Rest.'",
             "rewards": [
@@ -614,7 +614,7 @@
           "label": "Move On",
           "description": "Fly on.",
           "outcome": {
-            "description": "Nabil's voice fades behind you, still calling on the open channel. Somewhere, three stations will have a lean month.",
+            "description": "Nabil's voice fades behind you, still calling on the open channel.",
             "rewards": []
           }
         }
@@ -877,7 +877,7 @@
           "label": "Join the Party",
           "description": "Dock up and join the festival.",
           "outcome": {
-            "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices, generous to a fault. By the time you undock, your hold has a few new treasures picked up for cheap.",
+            "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. Traders swap goods at festival prices. By the time you undock, your hold has a few new treasures picked up for cheap.",
             "rewards": [
               {
                 "reward_type": "credits",

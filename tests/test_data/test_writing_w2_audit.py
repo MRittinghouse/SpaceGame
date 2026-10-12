@@ -1,9 +1,10 @@
-"""Plan W2-S's done-test (writing-discipline spec 9.4): the narrator audit's lines landed.
+"""Plan W2-S's residue check (writing-discipline spec 9.4, 11.2): W2's fixes hold after the merge.
 
-The gates prove the rows they read; this proves the rest. For each file in DONE_FILES, every
-worklist entry's string is its new line, every audit excerpt is gone, every brace is kept, and
-every skipped line (W3's, SP10's, the archive's) is exactly as shipped. Each rewrite task adds its
-files; Task 11 requires every file of the worklist to be here.
+The gates prove the rows they read; this guards the rest. For each file in DONE_FILES, no audit
+excerpt of a worklist entry is back in its string. Later chunks (W3 to W8, SP10) rewrite these
+lines freely: a string need not equal W2's new line, so long as the offending clause stays out.
+The worklist still holds every open audit row and every named line, and every file of the
+worklist is here.
 """
 
 from __future__ import annotations
@@ -72,8 +73,9 @@ def test_the_worklist_holds_every_named_line() -> None:
 
 
 @pytest.mark.parametrize("file", DONE_FILES)
-def test_every_entry_of_a_done_file_landed(file: str) -> None:
-    assert w2_audit.check(w2_audit.load_worklist(), {file}) == []
+def test_no_audit_excerpt_comes_back(file: str) -> None:
+    """After W2, W3 to W8 and SP10 may rewrite these lines; the audit's clauses stay out."""
+    assert w2_audit.residue(w2_audit.load_worklist(), {file}) == []
 
 
 def test_every_file_is_done() -> None:
