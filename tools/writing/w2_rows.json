@@ -11000,7 +11000,7 @@
    "file": "data/encounters/system_specific.json",
    "gate_path": ".encounters[id=sys_breakstone_ore_heist_01].choices[id=scavenge].outcome.description",
    "old": "You hold back and watch the pirates strip the hauler. When they warp out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. The silence speaks volumes. Titanium is titanium, but you won't be popular at Breakstone after this.",
-   "new": "You hold back and watch the pirates strip the hauler. When they jump out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. Breakstone will hear about it.",
+   "new": "You hold back and watch the pirates strip the hauler. When they jump out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing.",
    "disposition": "draft",
    "owner": "",
    "flags": [],
@@ -13480,7 +13480,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_p5_first_salvage_rights_concession].text",
    "old": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stay unchanged for now. What shifted was the delegate's position on the next case. I know what the concession cost and what it bought. Both were real.",
-   "new": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged for now. What shifted was the delegate's position on the next case.",
+   "new": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged. What shifted was the delegate's position on the next case.",
    "disposition": "draft",
    "owner": "",
    "flags": [

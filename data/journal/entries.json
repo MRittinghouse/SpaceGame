@@ -345,7 +345,7 @@
     },
     {
       "entry_id": "auto_p5_first_salvage_rights_concession",
-      "text": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged for now. What shifted was the delegate's position on the next case.",
+      "text": "Got the concession before the vote closed. The floor did not hold, but the work in the corridor moved one delegate enough to take it off the record. Malia wrote it neutral. The Guild field rights stayed unchanged. What shifted was the delegate's position on the next case.",
       "trigger_flag": "first_salvage_rights_concession",
       "system_id": "crimson_reach",
       "mission_id": ""

@@ -1206,7 +1206,7 @@
           "label": "Wait and Collect the Scraps",
           "description": "Let the pirates take what they want and grab whatever cargo pods they drop.",
           "outcome": {
-            "description": "You hold back and watch the pirates strip the hauler. When they jump out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. Breakstone will hear about it.",
+            "description": "You hold back and watch the pirates strip the hauler. When they jump out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing.",
             "rewards": [
               {
                 "reward_type": "credits",

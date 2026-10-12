@@ -1040,9 +1040,15 @@ Godot port by sync.
   - Every other line: none was refused or redirected, so each stands as W2 wrote it, apart
     from the flag cuts below.
   - The flags for the author: 208 flags in 14 themes, each with its ruling in the table
-    below. The author took every theme's recommended ruling. Of the 73 cuts the rulings
-    gave Task 12, it made 70, in 93 lines; the other three stand under their own theme's
+    below. The author took every theme's recommended ruling. Of the 74 cuts the rulings
+    gave Task 12, it made 71, in 94 lines; the other three stand under their own theme's
     ruling (a hint that repeats its label stands): T4-15, T4-16 and T6-36.
+    T3-29, raised in Task 3 and parked by the ledger until the author ruled on forecasts as a
+    class, follows that ruling: the final fix wave cut "Breakstone will hear about it." from
+    `sys_breakstone_ore_heist_01.scavenge`'s outcome, which now ends on "says nothing.". The
+    same wave cut "for now" from `auto_p5_first_salvage_rights_concession` ("The Guild field
+    rights stayed unchanged."), a W2 Log line no flag named, after T4-3's ruling that "For
+    now." is a forecast.
     Seven of the 70 are the ready cuts the themes 'Untouched lines in encounters W3 reads' and
     'Untouched encounter lines outside W3's queue' gave Task 12 in W2 lines: T5-7, T5-17, T6-15,
     T6-25, T6-33, T6-9 and T6-26.
@@ -1142,6 +1148,7 @@ Godot port by sync.
 | T3-24 | `data/encounters/system_specific.json, sys_fulcrum_patrol_01: description, retreat hint` | W3 |
 | T3-25 | `data/encounters/system_specific.json, sys_fulcrum_weapons_test_01.choices[id=scan].description` | the later writing chunk that owns the file |
 | T3-26 | `data/encounters/system_specific.json, sys_haven_newcomer_01.choices[id=give_credits] (hint, outcome); sys_haven_supply_run_01.choices[id=donate].outcome` | aurelia's findings register (plan W2-A registers it) |
+| T3-29 | `data/encounters/system_specific.json, sys_breakstone_ore_heist_01.choices[id=scavenge].outcome.description` | Task 12's final fix wave cuts it (a line W2 rewrote), under the author's ruling on forecasts |
 | T4-1 | `data/encounters/campaign.json .encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
 | T4-2 | `data/encounters/campaign.json .encounters[id=campaign_anomaly_deepens_01].choices[id=deep_scan].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
 | T4-3 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=comply].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
