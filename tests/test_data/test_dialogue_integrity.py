@@ -1208,6 +1208,8 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # journal trigger or a reply's excluded_flags, which this audit does not count ===
     "iron_ore_handed_back",
     "odom_wrote_off_the_ore",
+    # odom_caught_lie is read by nothing yet: polish design 2.5 names a Log entry and SP10's
+    # hooks, and 2.6 writes no entry for it; the author's Task 8 read rules on one.
     "odom_caught_lie",
     "odom_book_credit",
     "odom_noted_the_float",
