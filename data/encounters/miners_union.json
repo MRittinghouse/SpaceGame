@@ -632,7 +632,7 @@
           "label": "Offer a 'Tip'",
           "description": "Suggest the inspector might want to skip the paperwork.",
           "outcome": {
-            "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
+            "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly. You pass.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -686,7 +686,7 @@
           "label": "Navigate to Him",
           "description": "Plot a course through the asteroid field to reach Nils.",
           "outcome": {
-            "description": "You thread through the rocks and find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
+            "description": "You thread through the rocks and find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you.",
             "rewards": [
               {
                 "reward_type": "credits",

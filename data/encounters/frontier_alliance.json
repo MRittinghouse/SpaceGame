@@ -509,7 +509,7 @@
           "label": "Decline the Scan",
           "description": "Volunteers have no legal authority over your ship.",
           "outcome": {
-            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on. The frontier has a long memory.",
+            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",

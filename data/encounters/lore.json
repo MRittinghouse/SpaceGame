@@ -310,7 +310,7 @@
         {
           "id": "pass",
           "label": "Acknowledge and Continue",
-          "description": "A respectful flyby. Dip your running lights as you pass.",
+          "description": "Dip your running lights as you pass.",
           "outcome": {
             "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
             "rewards": [

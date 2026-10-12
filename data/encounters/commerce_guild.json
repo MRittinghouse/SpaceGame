@@ -546,7 +546,7 @@
           "label": "Submit to Inspection",
           "description": "Open your cargo bay and let them look.",
           "outcome": {
-            "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
+            "description": "Inspector Holloway's team scans every container and cross-references serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
             "rewards": [
               {
                 "reward_type": "xp",

@@ -352,7 +352,7 @@
           "label": "Sell Back to Nova",
           "description": "Contact Nova and let them know their comms leaked. They will pay for discretion.",
           "outcome": {
-            "description": "A Nova representative responds within minutes, unusually fast. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous.",
+            "description": "A Nova representative responds within minutes. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous.",
             "rewards": [
               {
                 "reward_type": "credits",
