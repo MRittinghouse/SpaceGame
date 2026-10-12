@@ -1,10 +1,10 @@
 """Cross-file content contracts the post-SP3 bug bash found broken (plan A1).
 
 Each check walks the loaded content and returns the ids that break it. Its PENDING_*
-set names the breaks a later task of plan A1 fixes, or, for the check gate, the later
-plan that takes BB-69. A test fails on any break outside the set and on any listed break
-that no longer happens, so each set only shrinks as its fix lands and cannot hide a new
-break.
+set names the breaks a later task of plan A1 fixes. The check gate's set is gone: BB-69's
+fail-forward landed with Oren's scenes (plan W3a-S), and its test asserts that no awaited
+flag is gated. A test fails on any break outside the set and on any listed break that no
+longer happens, so each set only shrinks as its fix lands and cannot hide a new break.
 """
 
 from __future__ import annotations
@@ -35,8 +35,6 @@ STARTING_SHIP_TYPE = "shuttle"
 DAY_ONE_JOBS = ("iron_delivery", "coolant_run", "the_price_of_information")
 
 PENDING_PRODUCER_CYCLES: set[str] = set()
-# The writing session (BB-69): Oren's fail-forward nodes set it. Plan B1 keeps him listed meanwhile.
-PENDING_CHECK_GATED_FLAGS: set[str] = {"oren_intel_received"}
 PENDING_UNPRODUCED_HIDE_FLAGS: set[str] = set()
 PENDING_SELF_LOOPING_CHECKS: set[str] = set()
 PENDING_UNKNOWN_FORCED_ENEMIES: set[str] = set()
@@ -383,7 +381,8 @@ class TestContentContracts:
 
     @pytest.mark.timeout(300)
     def test_no_awaited_flag_waits_on_a_passed_check(self) -> None:
-        assert check_gated_flags(_loader()) == PENDING_CHECK_GATED_FLAGS
+        gated = check_gated_flags(_loader())
+        assert gated == set(), sorted(gated)
 
     @pytest.mark.timeout(300)
     def test_every_hide_flag_has_a_producer(self) -> None:
