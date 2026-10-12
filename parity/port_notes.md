@@ -1523,7 +1523,11 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   plays it at Breakstone) and `data/characters/npcs.json` (`elena_archives_npc` deleted;
   `lira_feng`, `amara_okonkwo` and `ren_castillo` listed only after their stage's resolution and
   hidden after it until their slice gives them an after-tree, so W4 reaches each only through
-  its resolution scene). (plan W4-S Task 4)
+  its resolution scene). None of `lira_feng`, `amara_okonkwo` or `ren_castillo` is listed at any
+  point in W4 (each one's prerequisite and hide flag are the same resolution flag), so plan
+  W4-A's arc-test assertion `contains(["lira_feng"])` at Forgeworks (its plan :1673) and its
+  strangers record (its plan :1744) flip to match. (plan W4-S Task 4 and its preflight
+  ruling 13)
 - Goldens whose content changes: twelve of the sixteen crew trees' `dialogue/tree_*` goldens,
   all but `marcus_evidence_dialogue`, `marcus_inspector_dialogue`, `priya_paper_dialogue` and
   `tomas_lead_dialogue` (F-45's `crew_loyalty_*_70` and `_85` flags in every step whose gain
@@ -1537,8 +1541,12 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   `dialogue/tree_<quest>_ask_dialogue` and `crew/scenes_due`. (plan W4-S Task 5)
 - What to port: `CrewScene` read beside the missions in `MissionContent` (so `Mission`, the save
   and the mission goldens never see scenes), with the record's fields and defaults as
-  `spacegame/models/crew_scene.py` gives them; the gate's six rules in order with their four
-  refusals verbatim ("<Name> is not aboard.", "<Name> has nothing to say about that now.",
+  `spacegame/models/crew_scene.py` gives them; the gate's six rules in order (the `scenes_due`
+  golden pins only rule 1 first and rule 2 before rule 5: it cannot order rules 3 and 4 before
+  rule 5, or rules 2 to 5 before rule 6, and with no placed opener or middle in W4 it never sets
+  the place against the pace; Python pins the rest in `tests/test_models/test_crew_scenes.py`'s
+  five checked-before tests (:266-285), which `crew_scene_test.gd` should mirror) with their
+  four refusals verbatim ("<Name> is not aboard.", "<Name> has nothing to say about that now.",
   "<Name> wants to talk about that at <System>.", "<Name> will bring it up at the next port."),
   the name the crew template's and the system's; the talk rows (each companion's first due
   crew-initiative scene in roster order, then every due captain topic); a place scene's hook
@@ -1548,8 +1556,11 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   tests `is not None`, and no caller passes it, so no result differs); the companion joins the
   landing's spoken set at the close; F-45 in `DialogueManager._crew_loyalty`; the `scenes_due`
   replay; and content rules 1 to 12 in `crew_content_test.gd` with the same allowlist as
-  `tests/test_data/test_crew_scene_content.py`'s `ALLOWED`; the stage 1 openers' follow-up ask
-  nodes also offer the decline, pinned in Python by
+  `tests/test_data/test_crew_scene_content.py`'s `ALLOWED`, plus G12's money cap (rule 12's
+  `('12', 'money')` offence: the sum, over the crew quests, of each quest's largest
+  `outcome_rewards` entry in credits is at most `MONEY_CAP`, 5,900; plan W4-S's preflight
+  ruling 14), which plan W4-A's rule 12 lacks and `crew_content_test.gd` mirrors; the stage 1
+  openers' follow-up ask nodes also offer the decline, pinned in Python by
   `test_every_ask_of_an_opener_can_be_declined`, which `crew_content_test.gd` may mirror.
   (polish design 3.1, 8.1, 8.2 step 7.4)
 - A difference with no deviation: SpaceGame keeps the spoken set on `Game`, cleared when a
@@ -1563,7 +1574,7 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   `dialogue_manager_test.gd`'s unknown-skill pin on `tomas_fulcrum_dialogue` (con_plan is
   Deception now; the pin moves to a synthetic tree). (plan W4-S Tasks 2 and 4)
 - The writing pass's queue: `priya_peer_review_dialogue` start's Communication reply is F-34's
-  sixth check, rewritten here as "[Persuasion 3] Ask Dr. Rautio-Mensah to tell the board what
+  fourth check, rewritten here as "[Persuasion 3] Ask Dr. Rautio-Mensah to tell the board what
   happened in the lab."; W3 leaves it. (plan W4-S Task 4)
 - Left, each with its owner: each arc's own openers and middles, the strangers' after-trees,
   the rescaled loyalty amounts, `outcome_rewards` and the money routes, Tomas's story opening,
