@@ -378,9 +378,10 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         ("cargo_lost_complete", "larsen_permit_complete", "met_dex_halloran"),
         (("cargo_lost", "completed"), ("whispers_at_the_bar", "active")),
     ),
-    # Synthetic: Tomas's deferral (polish design 6) leaves his deal active with his scene spent, which
-    # tomas_thinking pins; this step stays the one where an available mission keeps a spent NPC
-    # (the keep rule's 'available' half).
+    # Synthetic: the_drifters_deal auto-accepts once Tomas is met, so play never leaves it
+    # available with his scene spent. Tomas's deferral (polish design 6) leaves his deal active
+    # with his scene spent, which tomas_thinking pins; this step stays the one where an
+    # available mission keeps a spent NPC (the keep rule's 'available' half).
     _TalkStep(
         "tomas_unresolved",
         "havens_rest",

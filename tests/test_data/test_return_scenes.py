@@ -9,6 +9,7 @@ awaited flag. The tier 2 echoes remember a refusal (writing-discipline spec 9.2 
 from __future__ import annotations
 
 from typing import Optional
+from unittest.mock import MagicMock
 
 from spacegame.data_loader import DataLoader, get_data_loader
 from spacegame.models.dialogue import DialogueManager
@@ -27,6 +28,7 @@ def _walk(
     prefixes: list[str],
     flags: Optional[dict[str, bool]] = None,
     social: Optional[SocialManager] = None,
+    politics: Optional[MagicMock] = None,
 ) -> DialogueManager:
     """Play a tree through the replies whose texts start with each prefix, in order.
 
@@ -36,6 +38,8 @@ def _walk(
     manager = DialogueManager()
     if social is not None:
         manager.set_social_manager(social)
+    if politics is not None:
+        manager.set_politics_manager(politics, MagicMock())
     manager.load_flags(dict(flags or {}))
     manager.start_dialogue(_dl().dialogue_trees[tree_id], npc_id=npc_id)
     for prefix in prefixes:
@@ -200,6 +204,19 @@ class TestOren:
         ).get_flags()
         assert flags == {"oren_intel_received": True}
         assert social.get_disposition("oren_tak") == _base("oren_tak") + 3
+
+    def test_the_dust_pays_the_union_one(self) -> None:
+        politics = MagicMock()
+        _walk(
+            "oren_tak_meeting",
+            "oren_tak",
+            [self.GLYN, "What did the Union", "I understand. I won't push.", "[Nod]"],
+            politics=politics,
+        )
+        recorded = [
+            (c.args[1], c.args[2]) for c in politics.apply_reputation_with_spillover.call_args_list
+        ]
+        assert recorded == [("miners_union", 1)]
 
     def test_a_captain_who_fails_still_learns_the_sublevel(self) -> None:
         flags = _walk(

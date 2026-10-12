@@ -283,3 +283,33 @@ def test_a_mission_complete_notice_is_followed_by_its_receipt() -> None:
     check = _function("check_missions")
     names = [n.attr for n in ast.walk(check) if isinstance(n, ast.Attribute)]
     assert "receipt" in names
+    appends = [
+        c
+        for c in _any_calls(check, "append")
+        if ast.unparse(c.func) == "self._mission_notifications.append"
+    ]
+
+    def _arg(call: ast.Call) -> ast.expr:
+        return call.args[0]
+
+    notices = [
+        c
+        for c in appends
+        if isinstance(_arg(c), ast.JoinedStr)
+        and isinstance(_arg(c).values[0], ast.Constant)
+        and str(_arg(c).values[0].value).startswith("Mission Complete")
+    ]
+    receipts = [c for c in appends if ast.unparse(_arg(c)) == "mission.receipt"]
+    timeliness = [c for c in appends if ast.unparse(_arg(c)) == "timeliness_comment"]
+    assert notices and timeliness
+    assert len(receipts) == 1
+    receipt = receipts[0]
+    assert max(c.lineno for c in notices) < receipt.lineno < min(c.lineno for c in timeliness)
+    guards = [
+        n
+        for n in ast.walk(check)
+        if isinstance(n, ast.If)
+        and "mission.receipt" in ast.unparse(n.test)
+        and any(receipt in ast.walk(stmt) for stmt in n.body)
+    ]
+    assert guards, "the receipt append must sit under an `if mission.receipt` guard"
