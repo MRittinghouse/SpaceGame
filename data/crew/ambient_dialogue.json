@@ -1986,6 +1986,14 @@
       "required_flags": [
         "d8_community_won"
       ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "\"Mind your own business.\" Your first words to me, Captain. I have minded it every day since. The fuel figures are on your console.",
+      "context": "flag_triggered",
+      "required_flags": [
+        "elena_walked_away"
+      ]
     }
   ]
 }

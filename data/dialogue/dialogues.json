@@ -55,7 +55,8 @@
             },
             {
               "text": "I'll figure it out myself.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "elena_walked_away"
             }
           ],
           "expression": "neutral"
@@ -75,7 +76,7 @@
         {
           "id": "lesson",
           "speaker_id": "elena_reeves",
-          "text": "See food listed at 80 here? Breakstone's a mining colony, workers burning four thousand calories a day underground. Food sells for 140 there on a quiet day. That's your margin. Buy here, sell there. Do it enough times, you can afford better cargo.",
+          "text": "See what food lists at on this board? Breakstone's a mining colony, workers burning four thousand calories a day underground, and every crate of it shipped in. Their board pays fifteen percent over base for food on a quiet day. That's your margin, before fuel. Buy here, sell there. Do it enough times, you can afford better cargo.",
           "responses": [
             {
               "text": "That's... actually straightforward.",
@@ -2306,7 +2307,17 @@
             },
             {
               "text": "Why are you talking to me?",
-              "next_node_id": "why_me"
+              "next_node_id": "why_me",
+              "required_flags": [
+                "helped_reva_sato"
+              ]
+            },
+            {
+              "text": "Why are you talking to me?",
+              "next_node_id": "why_me_watched",
+              "excluded_flags": [
+                "helped_reva_sato"
+              ]
             }
           ],
           "expression": "confident"
@@ -2331,6 +2342,18 @@
           "id": "why_me",
           "speaker_id": "dex_halloran",
           "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "responses": [
+            {
+              "text": "I'm listening.",
+              "next_node_id": "tension"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "why_me_watched",
+          "speaker_id": "dex_halloran",
+          "text": "Because you didn't stop for Reva Sato. *He shrugs.* Not a judgment. A captain who keeps flying is a captain nobody watches, and nobody watching is what I need right now. I'm Glyn. I deal in information. And I've got a problem that requires someone who isn't me.",
           "responses": [
             {
               "text": "I'm listening.",
@@ -2432,7 +2455,8 @@
             },
             {
               "text": "I don't want to get involved.",
-              "next_node_id": "declined"
+              "next_node_id": "declined",
+              "set_flag": "dex_favor_declined"
             }
           ],
           "expression": "stern"
@@ -2491,6 +2515,25 @@
             {
               "text": "How do I know I can trust you?",
               "next_node_id": "trust"
+            },
+            {
+              "text": "Glyn tell you anything about me?",
+              "next_node_id": "heard_no",
+              "required_flags": [
+                "dex_favor_declined"
+              ]
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "heard_no",
+          "speaker_id": "malia_torres",
+          "text": "Said you turned him down the first time. *She looks you over.* Kid who says no to Glyn on the spot counted something first. I'd take that over the yes. Now. The chip.",
+          "responses": [
+            {
+              "text": "[Hand over the data chip]",
+              "next_node_id": "analysis"
             }
           ],
           "expression": "confident"
@@ -12173,6 +12216,171 @@
           "responses": [
             {
               "text": "[Step off.]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "elena_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She speaks before she looks up.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+          "responses": [
+            {
+              "text": "Go ahead.",
+              "next_node_id": "short_version"
+            },
+            {
+              "text": "I said I'd figure it out. I haven't.",
+              "next_node_id": "admission"
+            },
+            {
+              "text": "Still working on it.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "admission",
+          "speaker_id": "elena_reeves",
+          "text": "Dead reckoning without a fix. It works until it does not, and it never tells you which. *She moves her slate to make room.* Sit. Four minutes.",
+          "responses": [
+            {
+              "text": "[Sit down]",
+              "next_node_id": "short_version",
+              "set_flag": "elena_gave_trading_tips",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "short_version",
+          "speaker_id": "elena_reeves",
+          "text": "Food. Check what it lists at here. Breakstone imports it: a mining colony, every crate shipped in, and their board pays fifteen percent over base on a quiet day. That is your margin, before fuel, so run the fuel against it before you load. Then the event feeds. A mining boom or a crop failure moves a price before the boards catch up. You want to be at that station when they do.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": "projections",
+              "set_flag": "elena_gave_trading_tips"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "projections",
+          "speaker_id": "elena_reeves",
+          "text": "*She turns the slate back toward herself. A freight projection is open on it, for a ship registered to someone else.* Three more of these to finish tonight, for a hull I will never set foot on, and the owner wants them... *She closes the slate.* Four minutes. As promised.",
+          "responses": [
+            {
+              "text": "Thanks, Elena.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        }
+      ]
+    },
+    {
+      "id": "dex_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dex_halloran",
+          "text": "*Third stool from the left. He doesn't turn around.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+          "responses": [
+            {
+              "text": "Why did you wait for me?",
+              "next_node_id": "priced"
+            },
+            {
+              "text": "Is the job still open?",
+              "next_node_id": "terms"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "priced",
+          "speaker_id": "dex_halloran",
+          "text": "Good question. What's it worth to you to know? Better one. What did you think your no was worth?",
+          "responses": [
+            {
+              "text": "I asked you a question.",
+              "next_node_id": "straight"
+            },
+            {
+              "text": "Is the job still open?",
+              "next_node_id": "terms"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "straight",
+          "speaker_id": "dex_halloran",
+          "text": "*The smile goes.* Now I know what you'll ask twice for. That's on the books. Last captain who said yes on the spot tried to sell me my own chip back inside a week. You said no. A no means you counted the cost.",
+          "responses": [
+            {
+              "text": "So. The job.",
+              "next_node_id": "terms"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "terms",
+          "speaker_id": "dex_halloran",
+          "text": "Chip's hotter than it was. Same job: Malia Torres, the lower decks at Crimson Reach. Tell her Glyn sent you. You'd still have a favor from Glyn Quintela at the end of it. A smaller one. That's what waiting cost.",
+          "responses": [
+            {
+              "text": "I'll do it.",
+              "next_node_id": "accepted_again",
+              "set_flag": "dex_favor_accepted",
+              "disposition_change": 3
+            },
+            {
+              "text": "Still no.",
+              "next_node_id": "still_no"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "accepted_again",
+          "speaker_id": "dex_halloran",
+          "text": "Smart. Same rules as before. Don't try to read it yourself. The wipe trigger hasn't gotten any friendlier.",
+          "responses": [
+            {
+              "text": "I'll be careful.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "still_no",
+          "speaker_id": "dex_halloran",
+          "text": "Your call. The price moves every day you wait. That's the market, not me.",
+          "responses": [
+            {
+              "text": "[Leave]",
               "next_node_id": null
             }
           ],

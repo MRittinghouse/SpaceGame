@@ -19,6 +19,16 @@
       "dialogue_music": "dialogue_intimate",
       "dialogue_states": [
         {
+          "state_id": "after_walkaway",
+          "dialogue_id": "elena_return",
+          "required_flags": [
+            "talked_to_elena_reeves"
+          ],
+          "excluded_flags": [
+            "elena_gave_trading_tips"
+          ]
+        },
+        {
           "state_id": "post_connection_won",
           "dialogue_id": "elena_connection_deepened",
           "required_flags": [
@@ -166,7 +176,19 @@
       "auto_trigger_prerequisites": [
         "cargo_lost_complete"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "after_decline",
+          "dialogue_id": "dex_return",
+          "required_flags": [
+            "talked_to_dex_halloran"
+          ],
+          "excluded_flags": [
+            "dex_favor_accepted"
+          ]
+        }
+      ]
     },
     {
       "id": "malia_torres",

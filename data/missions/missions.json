@@ -581,7 +581,7 @@
         {
           "type": "has_flag",
           "target_id": "dex_favor_accepted",
-          "description": "Decide whether to help Glyn"
+          "description": "Agree to carry Glyn's chip"
         }
       ],
       "rewards": [

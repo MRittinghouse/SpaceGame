@@ -16,7 +16,7 @@
     },
     {
       "entry_id": "auto_m03_elena",
-      "text": "Met Elena Reeves at Nexus Prime. Freelance navigator, ex-Commerce Guild. Offered to optimize routes in exchange for a berth on the ship.",
+      "text": "Met Elena Reeves at the Nexus Prime cantina, at a table facing the departure boards.",
       "trigger_flag": "talked_to_elena_reeves",
       "system_id": "nexus_prime",
       "mission_id": ""
@@ -608,6 +608,20 @@
       "trigger_flag": "odom_noted_the_float",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_elena_walked_away",
+      "text": "Told Elena Reeves to mind her own business. Left her table at the Nexus Prime cantina.",
+      "trigger_flag": "elena_walked_away",
+      "system_id": "nexus_prime",
+      "mission_id": ""
+    },
+    {
+      "entry_id": "auto_dex_declined",
+      "text": "Turned down Glyn Quintela's chip run to Crimson Reach. He said he would be at the same table, third stool from the left.",
+      "trigger_flag": "dex_favor_declined",
+      "system_id": "nexus_prime",
+      "mission_id": "whispers_at_the_bar"
     }
   ]
 }
