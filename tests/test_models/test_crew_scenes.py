@@ -1,4 +1,4 @@
-"""Crew scenes: the record, the parse, the gate's six rules and their refusals (polish design 3.1)."""
+"""Crew scenes: the record, the parse, the gate's six rules and refusals (polish design 3.1)."""
 
 from __future__ import annotations
 
@@ -263,6 +263,27 @@ class TestTheGate:
             "Elena Reeves will bring it up at the next port."
         )
 
+    def test_the_accept_is_checked_before_the_place(self) -> None:
+        assert refusal(_resolution(), _ctx()) == NOTHING_NOW.format(name="Elena Reeves")
+
+    def test_the_loyalty_mark_is_checked_before_the_place(self) -> None:
+        ctx = _ctx(statuses={"elena_old_charts": "active"})
+        assert refusal(_resolution(min_loyalty=60), ctx) == NOTHING_NOW.format(name="Elena Reeves")
+
+    def test_the_flags_are_checked_before_the_place(self) -> None:
+        ctx = _ctx(statuses={"elena_old_charts": "active"}, flags={"elena_archives_accessed": True})
+        assert refusal(_resolution(), ctx) == NOTHING_NOW.format(name="Elena Reeves")
+
+    def test_the_place_is_checked_before_the_pace(self) -> None:
+        ctx = _ctx(spoken=("elena_reeves",))
+        assert refusal(_opener(system_id="stellaris_port"), ctx) == WRONG_PLACE.format(
+            name="Elena Reeves", system="Stellaris Port"
+        )
+
+    def test_the_loyalty_mark_is_checked_before_the_pace(self) -> None:
+        ctx = _ctx(loyalty={"elena_reeves": 49}, spoken=("elena_reeves",))
+        assert refusal(_opener(), ctx) == NOTHING_NOW.format(name="Elena Reeves")
+
 
 class TestTheRows:
     def test_each_companion_raises_one_matter_then_the_captains_topics_follow(self) -> None:
@@ -288,6 +309,12 @@ class TestTheRows:
         assert rows == [
             CrewTalkRow("marcus_jin", "marcus_old_debts_opener", marcus.hook, "crew"),
             CrewTalkRow("elena_reeves", "elena_old_charts_opener", _opener().hook, "crew"),
+            CrewTalkRow("marcus_jin", "marcus_raise", "", "captain"),
+        ]
+        roster = talk_rows([raised, marcus, _opener(), second], ctx, ["elena_reeves", "marcus_jin"])
+        assert roster == [
+            CrewTalkRow("elena_reeves", "elena_old_charts_opener", _opener().hook, "crew"),
+            CrewTalkRow("marcus_jin", "marcus_old_debts_opener", marcus.hook, "crew"),
             CrewTalkRow("marcus_jin", "marcus_raise", "", "captain"),
         ]
 
