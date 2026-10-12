@@ -55,14 +55,14 @@
         "late_multiplier": 0.5
       },
       "timeliness_comments": {
-        "timely": "Intake clerk checks the count, nods once. \"On the clock. Clean haul. Pay's good.\"",
+        "timely": "Intake clerk nods once. \"On the clock. Pay's good.\"",
         "late": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
-        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. Had to source the last of it from the scrapyards. This is what's left of your pay.\""
+        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. This is what's left of your pay.\""
       },
       "name": "Iron Ore Delivery",
       "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
-      "hint": "Talk to the cargo broker at Nexus Prime, then fly the iron ore to the intake clerk at the Neutral Ground on Forgeworks.",
-      "discovery_text": "Overheard a cargo broker near the docks looking for someone to haul iron ore to Forgeworks. Sounded like steady work for a new permit holder.",
+      "hint": "Carry Odom's ten units of iron ore to Joaquim Kimura at the Neutral Ground on Forgeworks. If the load comes up short or can't be flown, settle it with Odom at Nexus Prime.",
+      "discovery_text": "A cargo broker near the docks was looking for someone to haul iron ore to Forgeworks.",
       "prerequisites": [
         "bill_of_landing"
       ],
@@ -113,6 +113,11 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "iron_delivery_moved_on"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "iron_delivery_resolved"
         }
       ]
     },

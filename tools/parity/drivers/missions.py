@@ -23,7 +23,9 @@ from tools.parity.driver import Case
 from tools.parity.snapshots import fresh_player, player_snapshot
 
 BOARD_DAYS = range(1, 7)
-DEADLINE_MISSION = "iron_delivery"  # 600 credits; full pay to day 14, 0.75 to day 18, then 0.5
+# 600 credits for ten units, paid on the units aboard; the driver meets the one-unit collect
+# objective, so 60 to day 14, 45 to day 18, then 30
+DEADLINE_MISSION = "iron_delivery"
 DEADLINE_DAYS = (5, 16, 25)
 PLAYER_NAME = "ParityPilot"
 

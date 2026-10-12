@@ -22,10 +22,16 @@ from tools.parity.driver import Case
 from tools.parity.drivers import dialogue
 
 # Neither profile can pick these: novice lacks required flags; expert's flags trip excluded ones.
+# Odom's six (plan W3a-S): polish design 2.2's authoring rule keeps every reply gated two ways
+# flagless.
 UNSELECTED_RESPONSES: frozenset[tuple[str, str, int]] = frozenset(
     {
-        ("merchant_delivery", "greet", 6),
-        ("merchant_delivery", "greet", 8),
+        ("merchant_delivery", "greet", 4),
+        ("merchant_delivery", "greet", 5),
+        ("merchant_delivery", "greet", 13),
+        ("merchant_delivery", "greet", 14),
+        ("merchant_delivery", "greet", 15),
+        ("merchant_delivery", "greet", 18),
         ("reva_distress", "greet", 0),
         ("reva_distress", "greet", 1),
         ("reva_distress", "greet", 3),

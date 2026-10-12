@@ -36,7 +36,7 @@ The Act One ending neutralizes one pirate base but the leadership escapes. Recov
 | # | Title | Summary |
 |---|-------|---------|
 | 01 | Bill of Landing | Customs Officer Larsen demands 250 credits for a trade permit. Establishes bureaucracy and the permit system. |
-| 02 | Iron Ore Delivery | Deliver 10 iron ore to Forgeworks for 500 credits. First cargo job. |
+| 02 | Iron Ore Delivery | Deliver 10 iron ore to Forgeworks for 600 credits. First cargo job. |
 | 03 | Footing the Bill | Elena Reeves offers trading advice at the cantina. Introduction to the trade loop and first crew opportunity. |
 
 ### Chapter 2: Making Connections (Missions 04-07)

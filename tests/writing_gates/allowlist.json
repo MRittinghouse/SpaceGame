@@ -254,14 +254,6 @@
       "gate": "G11",
       "rule": "price in speech",
       "file": "data/dialogue/dialogues.json",
-      "path": ".dialogues[id=merchant_delivery].nodes[id=offer].text",
-      "match": "500 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
-    },
-    {
-      "gate": "G11",
-      "rule": "price in speech",
-      "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=priya_stranded].nodes[id=agree_transport].text",
       "match": "350 credits",
       "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"

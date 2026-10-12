@@ -597,6 +597,19 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
                     full_flag = prefix
                 consumers[full_flag].add(f"code:{rel}")
 
+    # The iron job's engine flags (polish design 2.7): iron_consignment writes the state table
+    # through a loop the code scan cannot see.
+    from spacegame.models.iron_consignment import ENGINE_FLAGS
+
+    for flag in ENGINE_FLAGS:
+        producers[flag].add("engine:iron_consignment")
+    # The dialogue exit sets talked_to_<npc> for the NPC it closes (game.py,
+    # _route_from_dialogue); a return state keys on it (polish design 6).
+    npc_ids = set(loader.npcs)
+    for flag in list(consumers):
+        if flag.startswith("talked_to_") and flag.removeprefix("talked_to_") in npc_ids:
+            producers[flag].add("engine:dialogue_exit")
+
     return producers, consumers
 
 
@@ -943,9 +956,7 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # nothing until SP10 re-stages them. ===
     "held_back_until_sp10",
     # === W3a (plan W3a-S): read by spacegame/models/iron_consignment.py, produced by the
-    # iron content of Tasks 3 and 4. Task 3 removes the first two, Task 4 the third. ===
-    "iron_delivery_resolved",
-    "iron_delivery_closed",
+    # intake clerk's content of Task 4, which removes it here. ===
     "iron_ore_signed_short",
 }
 
@@ -1193,6 +1204,15 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # BB-2: point_of_no_return's reward still sets it for Act II; the objective that
     # waited on it is gone, so nothing reads it now.
     "warp_gate_discovered",
+    # === Writing W3a (plan W3a-S): Log-only and one-time flags (polish design 2.5): read by a
+    # journal trigger or a reply's excluded_flags, which this audit does not count ===
+    "iron_ore_handed_back",
+    "odom_wrote_off_the_ore",
+    "odom_caught_lie",
+    "odom_book_credit",
+    "odom_noted_the_float",
+    "read_odom_clause",
+    "odom_clause_tried",
 }
 
 

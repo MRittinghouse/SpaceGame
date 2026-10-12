@@ -9,10 +9,10 @@
     },
     {
       "entry_id": "auto_m02_delivery",
-      "text": "Delivered 10 units of iron ore to Forgeworks for a cargo broker at Nexus Prime. 500 credits earned. First completed contract.",
-      "trigger_flag": "talked_to_cargo_broker",
+      "text": "Delivered Odom's iron ore to the Main Foundry intake at Forgeworks. First completed contract.",
+      "trigger_flag": "iron_ore_delivered",
       "system_id": "nexus_prime",
-      "mission_id": "iron_ore_delivery"
+      "mission_id": "iron_delivery"
     },
     {
       "entry_id": "auto_m03_elena",
@@ -135,7 +135,7 @@
     },
     {
       "entry_id": "auto_iron_betrayal",
-      "text": "Sold the cargo broker's iron ore instead of delivering it to Forgeworks. Odom flagged my permit with a freight violation. Word will spread among the brokers. Not the reputation I wanted to build on my first week in the Expanse.",
+      "text": "Odom filed a freight violation against my permit over his iron ore. Guild standing dropped. His desk was closed to me after that. What did not come back to his lot is in his book.",
       "trigger_flag": "iron_delivery_failed",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
@@ -573,6 +573,41 @@
       "trigger_flag": "d8_community_won",
       "system_id": "havens_rest",
       "mission_id": ""
+    },
+    {
+      "entry_id": "auto_iron_short",
+      "text": "Kimura signed for what was on the scale, received short. The lane report covered the rest.",
+      "trigger_flag": "iron_ore_signed_short",
+      "system_id": "forgeworks",
+      "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_iron_made_good",
+      "text": "Bought iron ore off the floor to make Odom's count. Kimura weighed ten. Odom wrote what the floor charged on my side of his book.",
+      "trigger_flag": "odom_book_credit",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_iron_written_off",
+      "text": "Odom wrote off his iron ore: ten units, one hundred fifty credits. He called it the once.",
+      "trigger_flag": "odom_wrote_off_the_ore",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_iron_handed_back",
+      "text": "Handed Odom's iron ore job back. His dock crew took the ore off the ship. Nothing was owed either way.",
+      "trigger_flag": "iron_ore_handed_back",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_delivery"
+    },
+    {
+      "entry_id": "auto_iron_covered",
+      "text": "Odom paid the iron run in full. His screen showed the floor log for his ore beside Kimura's count.",
+      "trigger_flag": "odom_noted_the_float",
+      "system_id": "nexus_prime",
+      "mission_id": "iron_delivery"
     }
   ]
 }
