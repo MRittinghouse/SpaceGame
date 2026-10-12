@@ -1348,7 +1348,12 @@ class TradingView(BaseView):
             if self.mission_manager is not None:
                 from spacegame.models.iron_consignment import on_clock
 
-                on_clock(self.mission_manager, self.player.dialogue_flags, self.player.game_day)
+                on_clock(
+                    self.mission_manager,
+                    self.player,
+                    self.player.dialogue_flags,
+                    self.player.game_day,
+                )
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:

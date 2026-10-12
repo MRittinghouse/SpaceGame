@@ -1292,7 +1292,10 @@ class Game:
                     from spacegame.models.iron_consignment import on_clock
 
                     if on_clock(
-                        self.mission_manager, self.player.dialogue_flags, self.player.game_day
+                        self.mission_manager,
+                        self.player,
+                        self.player.dialogue_flags,
+                        self.player.game_day,
                     ):
                         self.dialogue_manager.set_flag(iron_delivery_moved_on())
 
@@ -1728,7 +1731,9 @@ class Game:
                         from spacegame.constants.flags import iron_delivery_moved_on
                         from spacegame.models.iron_consignment import close_on_exit
 
-                        if close_on_exit(self.mission_manager, self.player.dialogue_flags):
+                        if close_on_exit(
+                            self.mission_manager, self.player, self.player.dialogue_flags
+                        ):
                             self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
                             logger.info("Iron delivery mission failed: Odom's ore was sold")
                             self.dialogue_manager.set_flag(iron_delivery_moved_on())

@@ -646,6 +646,123 @@ def broker_ore_sold() -> str:
     return "broker_ore_sold"
 
 
+def broker_ore_lost() -> str:
+    """Flag set when a defeat's losses draw Odom's consigned ore while the job is open.
+
+    Producer: ``iron_consignment.note_defeat``, called after a lost fight.
+    Consumers: the job's state; Elena's lane reply (``elena_cantina``).
+    """
+    return "broker_ore_lost"
+
+
+def iron_delivery_resolved() -> str:
+    """Flag set when Odom's iron job is over, however it ended.
+
+    Producers: ``iron_delivery``'s reward; the close (``iron_consignment``); the reply in
+    ``merchant_delivery``'s ``declined``.
+    Consumers: Odom's offer reply (its exclusion) and his second look.
+    """
+    return "iron_delivery_resolved"
+
+
+def iron_delivery_closed() -> str:
+    """Flag set by a no-fault close of the iron job (a hand-back or a write-off).
+
+    Producers: the replies in ``merchant_delivery``'s ``hand_back`` and ``loss_closed``.
+    Consumer: ``iron_consignment.close_on_exit``.
+    """
+    return "iron_delivery_closed"
+
+
+def iron_ore_signed_short() -> str:
+    """Flag set when the intake clerk signs for a short load.
+
+    Producer: ``forgeworks_intake``'s "Sign for what's here."
+    Consumer: the job's done-short state.
+    """
+    return "iron_ore_signed_short"
+
+
+def iron_job_full() -> str:
+    """The iron job's state: open, ten or more held, nothing sold or lost.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_full"
+
+
+def iron_job_made_good() -> str:
+    """The iron job's state: open, ten or more held, a loss on record and no sale.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_made_good"
+
+
+def iron_job_replaced() -> str:
+    """The iron job's state: open, ten or more held, a sale on record.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_replaced"
+
+
+def iron_job_short_lost() -> str:
+    """The iron job's state: open, one to nine held, a loss and no sale.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_short_lost"
+
+
+def iron_job_gone_lost() -> str:
+    """The iron job's state: open, none held, a loss and no sale.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_gone_lost"
+
+
+def iron_job_moved() -> str:
+    """The iron job's state: open, fewer than ten held, a sale on record.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_moved"
+
+
+def iron_job_done_replaced() -> str:
+    """The iron job's state: completed with a sale on record.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_done_replaced"
+
+
+def iron_job_done_short() -> str:
+    """The iron job's state: completed, signed for short.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_done_short"
+
+
+def iron_job_done_made_good() -> str:
+    """The iron job's state: completed after a loss, no sale, not signed short.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_done_made_good"
+
+
+def iron_job_done_clean() -> str:
+    """The iron job's state: completed with neither a sale nor a loss.
+
+    Producer: ``iron_consignment.refresh_state``. Consumers: Odom's and the clerk's replies.
+    """
+    return "iron_job_done_clean"
+
+
 # ---------------------------------------------------------------------------
 # Politics venue (SA-P2)
 # ---------------------------------------------------------------------------
