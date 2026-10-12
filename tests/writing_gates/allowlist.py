@@ -75,8 +75,10 @@ _TAGLINE = (
 
 # The first match wins, so specific reasons come first. Every reason names the chunk or the
 # decision that removes its rows, or the ruling that keeps them (_AUTHOR, _TAGLINE), and a G5
-# pronoun row names its referent (spec 5.1, G5). Only the reasons of rows that remain are kept,
-# so an offence no row allows matches no reason either, and reason_for raises.
+# pronoun row names its referent (spec 5.1, G5). Only the reasons that rows still carry are kept:
+# a new offence of a kind one of them covers (such as a G13 tree, a G11 price, a G4 name or any
+# offence under data/narrative/) matches it, and any other new offence matches none, so
+# reason_for raises. test_no_new_offence fails every new offence either way.
 REASONS: tuple[Reason, ...] = (
     Reason("G5", "vocative", "data/combat/captains.json", "", _AUTHOR),
     Reason("G5", "vocative", "data/encounters/system_specific.json", "", _AUTHOR),
