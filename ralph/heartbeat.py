@@ -20,6 +20,7 @@ import os
 import sys
 import threading
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -106,11 +107,39 @@ def seconds_since_beat() -> Optional[float]:
     return max(0.0, time.time() - float(ts))
 
 
+@dataclass(frozen=True)
+class HeartbeatThread:
+    """A running heartbeat thread, and the way to stop it.
+
+    Stopping waits for the thread to exit. The loop checks its event before
+    each beat, so a beat already past that check carries on after the event is
+    set; setting the event alone left that beat to land at some later moment,
+    after the caller had moved on.
+    """
+
+    stop_event: threading.Event
+    thread: threading.Thread
+
+    def stop(self, timeout: Optional[float] = None) -> bool:
+        """Ask the thread to stop, then wait for any beat in flight to land.
+
+        Args:
+            timeout: Most seconds to wait for the thread to exit; None waits
+                as long as it takes.
+
+        Returns:
+            True if the thread has exited, False if *timeout* ran out first.
+        """
+        self.stop_event.set()
+        self.thread.join(timeout)
+        return not self.thread.is_alive()
+
+
 def start_heartbeat_thread(
     get_context: Callable[[], tuple[Optional[str], Optional[str]]],
     interval_seconds: float = 30.0,
-) -> threading.Event:
-    """Beat every *interval_seconds* until the returned event is set.
+) -> HeartbeatThread:
+    """Beat every *interval_seconds* until the returned thread is stopped.
 
     Args:
         get_context: Called each beat; returns (sprint_id, phase) so the
@@ -118,7 +147,7 @@ def start_heartbeat_thread(
         interval_seconds: Seconds between beats.
 
     Returns:
-        An Event; set it to stop the thread.
+        The running thread; call its `stop` to end it.
     """
     stop = threading.Event()
 
@@ -132,5 +161,6 @@ def start_heartbeat_thread(
                 pass
             stop.wait(interval_seconds)
 
-    threading.Thread(target=_loop, name="ralph-heartbeat", daemon=True).start()
-    return stop
+    thread = threading.Thread(target=_loop, name="ralph-heartbeat", daemon=True)
+    thread.start()
+    return HeartbeatThread(stop_event=stop, thread=thread)
