@@ -386,7 +386,7 @@ class WreckersGuildView(BaseView):
                     col_w,
                     scale_y(40),
                 ),
-                text=f"{name} — {title}",
+                text=f"{name} · {title}",
                 manager=self.ui_manager,
             )
             self._contact_buttons[speaker_id] = btn

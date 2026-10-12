@@ -3010,7 +3010,7 @@ class CombatView(BaseView):
         # Boss name + phase name
         phase_name = ""
         if boss.template.phases and boss.current_phase_idx < len(boss.template.phases):
-            phase_name = f" — {boss.template.phases[boss.current_phase_idx].name}"
+            phase_name = f" · {boss.template.phases[boss.current_phase_idx].name}"
         name_text = f"{boss.template.name}{phase_name}"
         name_surf = self.small_font.render(name_text, True, _COMBAT_COLORS["boss_header"])
         screen.blit(name_surf, (bar_x, bar_y - 14))

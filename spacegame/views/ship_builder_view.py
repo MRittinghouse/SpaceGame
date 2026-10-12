@@ -2752,7 +2752,7 @@ class ShipBuilderView(BaseView):
             self._render_tutorial_phase_strip(screen)
         else:
             title = self.title_font.render(
-                f"DRYDOCK \u2014 {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
+                f"DRYDOCK: {self.build.weight_class.upper()} ({self.build.canvas_w}×{self.build.canvas_h})",
                 True,
                 Colors.TEXT_HIGHLIGHT,
             )
@@ -4432,7 +4432,7 @@ class ShipBuilderView(BaseView):
             "cockpit_scout_pod": "Cockpit first. Select it on the left, place it on the grid.",
             "engine_small": "Engine next. Nothing leaves this bay without thrust.",
             "reactor_small": "Reactor in the core. Powers everything you've got.",
-            "fuel_small": "Fuel tank. No fuel, no jumps. Simple.",
+            "fuel_small": "Fuel tank. Every jump burns from it. Simple.",
             "cargo_small": "Cargo bay. Somewhere to stash whatever pays the bills.",
             "weapon_small": "Weapon mount. At least you won't fly unarmed.",
         }

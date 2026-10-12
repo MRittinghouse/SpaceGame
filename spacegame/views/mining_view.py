@@ -2489,9 +2489,9 @@ class MiningView(BaseView):
         draw_panel(screen, wholesale_rect, alpha=200, border_color=wholesale_color)
         perk_tag = self._get_wholesale_tag()
         if wholesale_units > 0:
-            ws_label = f"Sell Rest Wholesale — {wholesale_total:,} CR ({int(wholesale_rate * 100)}% value{perk_tag})"
+            ws_label = f"Sell Rest Wholesale: {wholesale_total:,} CR ({int(wholesale_rate * 100)}% value{perk_tag})"
         else:
-            ws_label = "Sell Rest Wholesale — nothing to sell"
+            ws_label = "Sell Rest Wholesale: nothing to sell"
         ws_text = self.small_font.render(ws_label, True, wholesale_color)
         screen.blit(ws_text, ws_text.get_rect(center=wholesale_rect.center))
 

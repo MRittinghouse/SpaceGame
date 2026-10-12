@@ -975,7 +975,7 @@ class SalvageView(BaseView):
         # Instruction text (above structural integrity bar)
         mode_label = "SCAN" if self.mode == "scan" else "EXTRACT"
         tip = self.small_font.render(
-            f"{mode_label} Mode — {self._get_instruction_text()}",
+            f"{mode_label} Mode: {self._get_instruction_text()}",
             True,
             theme_color,
         )

@@ -646,7 +646,7 @@ class AuctionView(BaseView):
 
     def player_seller_banner_text(self) -> str:
         """Return the BID_WINDOW banner shown over the player's own consigned lot."""
-        return "Your lot — watching the floor."
+        return "Your lot: watching the floor."
 
     def _lot_resolution_message_for_player_lot(self, *, sold: bool, sale_price: int) -> str:
         """Render the LOT_RESOLUTION line variant for player-seller lots."""
