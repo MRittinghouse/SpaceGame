@@ -6293,6 +6293,8 @@ class Game:
             name = mission.name if mission else mission_id
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
             self._mission_notifications.append(f"Mission Complete: {name}! {reward_text}")
+            if mission and mission.receipt:
+                self._mission_notifications.append(mission.receipt)
             if timeliness_comment:
                 # Separate notification line so it reads as NPC dialogue
                 # rather than a reward stat.

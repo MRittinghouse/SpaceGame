@@ -100,8 +100,8 @@
     },
     {
       "entry_id": "auto_m13_oren",
-      "text": "Found Oren Tak in Breakstone's mining tunnels. Retired miner, paranoid but observant. He has seen unmarked ships docking at a hidden facility near Iron Depths. Guild-class hulls.",
-      "trigger_flag": "oren_revealed_base",
+      "text": "Found Oren Tak in Breakstone's mining tunnels. Retired miner, Union pension. Came away with a location: Iron Depths, Sublevel 7.",
+      "trigger_flag": "oren_intel_received",
       "system_id": "breakstone",
       "mission_id": ""
     },

@@ -370,7 +370,8 @@
           "reward_type": "xp",
           "amount": 80
         }
-      ]
+      ],
+      "receipt": "Grand Bazaar, textile desk: Tomas Drifter's bales cleared under your license. Seller's share to his account at Haven's Rest. Carrier's share to yours."
     },
     {
       "id": "recruit_navigator",

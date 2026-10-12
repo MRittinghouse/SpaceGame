@@ -96,7 +96,19 @@
       "auto_trigger_prerequisites": [
         "breakstone_permit_earned"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "thinking_it_over",
+          "dialogue_id": "tomas_return",
+          "required_flags": [
+            "talked_to_tomas_drifter"
+          ],
+          "excluded_flags": [
+            "drifter_deal_resolved"
+          ]
+        }
+      ]
     },
     {
       "id": "hanna_voss",
@@ -258,7 +270,19 @@
       "auto_trigger_prerequisites": [
         "favor_ground_complete"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "after_walkaway",
+          "dialogue_id": "oren_return",
+          "required_flags": [
+            "talked_to_oren_tak"
+          ],
+          "excluded_flags": [
+            "oren_intel_received"
+          ]
+        }
+      ]
     },
     {
       "id": "sienna_vek",

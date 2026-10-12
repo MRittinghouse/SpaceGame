@@ -197,6 +197,9 @@ class Mission:
     # Authored per-mission so the delivering NPC reacts in voice to how
     # long the player took. Empty/None = no commentary.
     timeliness_comments: dict[str, str] = field(default_factory=dict)
+    # Polish design 6: a one-line receipt shown after the completion notice (the Grand
+    # Bazaar's for Drifter's Delivery). Content only: to_dict never writes it.
+    receipt: str = ""
     # BB-6: the last objective counts only when every earlier objective is met in the same
     # check, and never locks (a delivery's destination comes after its goods).
     ordered_final: bool = False

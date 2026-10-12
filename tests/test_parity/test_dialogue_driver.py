@@ -343,6 +343,7 @@ def test_the_talk_list_case_covers_every_clause() -> None:
     assert "elena_reeves" not in steps["elena_taught"]
     assert steps["dex_declined"]["dex_halloran"] == "whispers_at_the_bar"
     assert steps["tomas_unresolved"]["tomas_drifter"] == "the_drifters_deal"
+    assert steps["tomas_thinking"]["tomas_drifter"] == "the_drifters_deal"
     assert steps["oren_kept"]["oren_tak"] == "the_favor_returned"
     assert "reva_sato" not in steps["reva_waits"]
     assert steps["reva_reached"]["reva_sato"] == "cargo_lost"

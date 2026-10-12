@@ -163,11 +163,11 @@ M05: met_marcus_jin, completed_mining_tutorial
 M06: met_priya_osei, escorted_priya_axiom
 M07: met_tomas_drifter, (accepted or declined)_drifter_deal
 M08: encountered_distress_signal, met_reva_sato, pirate_conspiracy_awareness
-M09: met_dex_halloran, accepted_dex_favor
+M09: met_dex_halloran, dex_favor_accepted (dex_favor_declined on a no; dex_return offers the job again)
 M10: delivered_dex_chip, met_malia_torres, malia_pirate_intel
 M11: attended_summit, summit_deadlock, faction_positions_known
 M12: survived_pirate_attack, combat_tutorial_complete
-M13: met_oren_tak, oren_revealed_base
+M13: met_oren_tak, oren_intel_received (oren_full_account after the whole story)
 M14: scanned_pirate_base, pirate_base_confirmed, has_scan_data
 M15: m15_decision_made, (one path chosen)
 M16: completed_operation, ledger_discovered, base_neutralized
@@ -180,7 +180,7 @@ M17: act_one_complete, ledger_known, new_horizons_unlocked
 |-------|-------|
 | Drifter deal | `accepted_drifter_deal` / `declined_drifter_deal` |
 | Distress response | `helped_freighter` / `ignored_distress` |
-| Glyn favor | `accepted_dex_favor` / `declined_dex_favor` |
+| Glyn favor | `dex_favor_accepted` / `dex_favor_declined` |
 | Faction path | `chose_guild_path` / `chose_union_path` / `chose_collective_path` / `chose_alliance_path` |
 | Per-crew state | `<npc>_recruited` / `<npc>_declined` (at any decision point) |
 

@@ -276,3 +276,10 @@ def test_a_defeat_counts_the_ore_before_the_defeat_takes_it() -> None:
         for c in notes
         for a in [*c.args, *(k.value for k in c.keywords)]
     )
+
+
+def test_a_mission_complete_notice_is_followed_by_its_receipt() -> None:
+    """Polish design 6: the Grand Bazaar's receipt follows Drifter's Delivery's notice."""
+    check = _function("check_missions")
+    names = [n.attr for n in ast.walk(check) if isinstance(n, ast.Attribute)]
+    assert "receipt" in names

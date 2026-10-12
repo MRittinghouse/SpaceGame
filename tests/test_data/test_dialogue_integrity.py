@@ -1028,7 +1028,6 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "completed_mining_tutorial",
     "courier_was_followed",
     "crimson_neutral_status",
-    "declined_drifter_deal",
     "defied_ledger_shadow",
     "escaped_through_warp_gate",
     "escorted_priya_axiom",

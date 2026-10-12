@@ -184,3 +184,131 @@ class TestGlyn:
 
     def test_the_decline_has_a_log_entry(self) -> None:
         assert "dex_favor_declined" in {e.trigger_flag for e in _dl().journal_entries}
+
+
+class TestOren:
+    GLYN = "Glyn Quintela sent me."
+    PUSH = '[Persuasion 2] "Forty years'
+
+    def test_a_captain_who_will_not_push_reads_the_dust(self) -> None:
+        social = SocialManager()
+        flags = _walk(
+            "oren_tak_meeting",
+            "oren_tak",
+            [self.GLYN, "What did the Union", "I understand. I won't push.", "[Nod]"],
+            social=social,
+        ).get_flags()
+        assert flags == {"oren_intel_received": True}
+        assert social.get_disposition("oren_tak") == _base("oren_tak") + 3
+
+    def test_a_captain_who_fails_still_learns_the_sublevel(self) -> None:
+        flags = _walk(
+            "oren_tak_meeting",
+            "oren_tak",
+            [self.GLYN, self.PUSH, "[Stand to go.]", "[Walk away.]"],
+            social=SocialManager(),
+        ).get_flags()
+        assert flags == {"oren_intel_received": True}
+
+    def test_the_full_account_reaches_sienna(self) -> None:
+        flags = _walk(
+            "oren_tak_meeting",
+            "oren_tak",
+            [
+                self.GLYN,
+                self.PUSH,
+                "[Listen]",
+                "Guild crates",
+                "That's the connection.",
+                "Your secret's safe.",
+            ],
+        ).get_flags()
+        assert flags["oren_full_account"] is True
+        scale = _dl().dialogue_trees["sienna_vek_warning"].nodes["scale"]
+        codes = [r for r in scale.responses if r.required_flags == ["oren_full_account"]]
+        assert [r.next_node_id for r in codes] == ["share_data"]
+        assert codes[0].skill_check is None
+
+    def test_the_walk_away_waits_for_the_return(self) -> None:
+        flags = _walk(
+            "oren_tak_meeting", "oren_tak", ["I'm just passing through.", "[Leave]"]
+        ).get_flags()
+        assert "oren_intel_received" not in flags
+        assert _tree_for("oren_tak", {"talked_to_oren_tak": True}) == "oren_return"
+
+    def test_every_route_through_the_return_finds_the_sublevel(self) -> None:
+        routes = (
+            (["I didn't know who was listening.", "[Nod]"], None),
+            (["Glyn sent me.", "I didn't know who was listening.", "[Nod]"], None),
+            (['[Persuasion 2] "Same seat', "[Nod]"], None),
+            (['[Persuasion 2] "Same seat', "[Walk away.]"], SocialManager()),
+        )
+        for prefixes, social in routes:
+            flags = _walk("oren_return", "oren_tak", prefixes, social=social).get_flags()
+            assert flags == {"oren_intel_received": True}, prefixes
+
+    def test_the_log_follows_what_every_route_learns(self) -> None:
+        entry = next(e for e in _dl().journal_entries if e.entry_id == "auto_m13_oren")
+        assert entry.trigger_flag == "oren_intel_received"
+        assert "Sublevel 7" in entry.text
+        assert "paranoid" not in entry.text
+
+
+class TestTomas:
+    TO_THE_DEAL = ["[Sit down and eat]", "You mentioned you're a scout.", "What are you proposing?"]
+
+    def test_thinking_it_over_keeps_him_and_either_answer_resolves_it(self) -> None:
+        flags = _walk(
+            "tomas_havens",
+            "tomas_drifter",
+            [*self.TO_THE_DEAL, "Why should I trust you?", "I need to think about it.", "Thanks"],
+        ).get_flags()
+        assert flags == {}
+        assert _tree_for("tomas_drifter", {"talked_to_tomas_drifter": True}) == "tomas_return"
+        yes = _walk("tomas_return", "tomas_drifter", ["I'm in.", "I'll get it done."]).get_flags()
+        assert yes == {"accepted_drifter_deal": True, "drifter_deal_resolved": True}
+        no = _walk("tomas_return", "tomas_drifter", ["No. I don't bend", "Thanks"]).get_flags()
+        assert no == {"declined_drifter_deal": True, "drifter_deal_resolved": True}
+        assert _walk("tomas_return", "tomas_drifter", ["Not yet."]).get_flags() == {}
+
+    def test_an_answer_pays_three_once(self) -> None:
+        social = SocialManager()
+        _walk(
+            "tomas_return", "tomas_drifter", ["Whose cloth", "I'm in.", "I'll get"], social=social
+        )
+        assert social.get_disposition("tomas_drifter") == _base("tomas_drifter") + 3
+
+    def test_the_deal_flags_never_coexist_in_the_return(self) -> None:
+        for flag, hidden in (
+            ("accepted_drifter_deal", "No. I don't"),
+            ("declined_drifter_deal", "I'm in."),
+        ):
+            manager = _walk("tomas_return", "tomas_drifter", [], {flag: True})
+            assert not any(r.text.startswith(hidden) for r in manager.get_available_responses())
+
+    def test_the_captain_asks_whom_they_owe_for_the_stew(self) -> None:
+        texts = [r.text for r in _dl().dialogue_trees["tomas_havens"].nodes["start"].responses]
+        assert "Thanks. Who do I owe for the stew?" in texts
+        assert "Thanks. I'm Tomas?" not in texts
+
+    def test_the_decline_promises_no_return(self) -> None:
+        decline = _dl().dialogue_trees["tomas_havens"].nodes["decline"].text
+        assert "change your mind" not in decline
+
+    def test_the_turned_down_bales_have_a_crew_line(self) -> None:
+        lines = [
+            line
+            for line in _dl().ambient_lines
+            if line.crew_id == "tomas_drifter" and line.required_flags == ["declined_drifter_deal"]
+        ]
+        assert len(lines) == 1
+
+
+class TestTheReceipt:
+    def test_drifters_delivery_carries_the_grand_bazaars_receipt(self) -> None:
+        delivery = next(m for m in _dl().missions if m.id == "drifters_delivery")
+        assert delivery.receipt.startswith("Grand Bazaar, textile desk:")
+        assert "receipt" not in delivery.to_dict()
+
+    def test_a_mission_without_one_has_none(self) -> None:
+        assert next(m for m in _dl().missions if m.id == "iron_delivery").receipt == ""

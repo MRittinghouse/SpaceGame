@@ -710,7 +710,7 @@
               "next_node_id": "stories"
             },
             {
-              "text": "Thanks. I'm Tomas?",
+              "text": "Thanks. Who do I owe for the stew?",
               "next_node_id": "stories"
             }
           ],
@@ -846,11 +846,7 @@
             },
             {
               "text": "I need to think about it. Not right now.",
-              "next_node_id": "decline",
-              "set_flag": "declined_drifter_deal",
-              "excluded_flags": [
-                "accepted_drifter_deal"
-              ]
+              "next_node_id": "think_it_over"
             }
           ],
           "expression": "neutral"
@@ -882,7 +878,7 @@
         {
           "id": "accept",
           "speaker_id": "tomas_drifter",
-          "text": "Good. Take the textiles to Stellaris Port and sell them. Your cut will be waiting when it's done. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
           "responses": [
             {
               "text": "I'll get it done.",
@@ -895,7 +891,7 @@
         {
           "id": "decline",
           "speaker_id": "tomas_drifter",
-          "text": "Fair enough. You've got your own line. I respect that. Most people out here draw theirs in different places, doesn't make yours wrong. If you ever change your mind, you know where to find me.",
+          "text": "Fair enough. You've got your own line. I respect that. Most people out here draw theirs in different places, doesn't make yours wrong. *Slower.* I'd rather work with someone who tells me no than someone who tells everybody yes. *Then, quicker:* Bread's still yours, though. Don't make it awkward.",
           "responses": [
             {
               "text": "Thanks for the food, Tomas.",
@@ -904,6 +900,18 @@
             }
           ],
           "expression": "neutral"
+        },
+        {
+          "id": "think_it_over",
+          "speaker_id": "tomas_drifter",
+          "text": "Good. Anyone who signs before they sleep on it signs anything. *He pushes the bread toward you.* Bales'll keep. They're cloth. The stew keeps less well, so finish that. *Slower.* I'm here most nights, at the table by the Harvest Market. Ask anyone for Drifter.",
+          "responses": [
+            {
+              "text": "Thanks for the food, Tomas.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
         }
       ]
     },
@@ -3072,7 +3080,7 @@
             },
             {
               "text": "I understand. I won't push.",
-              "next_node_id": "refuse"
+              "next_node_id": "dust"
             }
           ],
           "expression": "angry"
@@ -3080,19 +3088,50 @@
         {
           "id": "refuse",
           "speaker_id": "oren_tak",
-          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out. Not yet. Maybe if things get worse... come find me again. I'm not going anywhere.",
+          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out. Not yet.",
           "responses": [
             {
-              "text": "I'll be back.",
-              "next_node_id": null,
-              "set_flag": "met_oren_tak"
+              "text": "[Stand to go.]",
+              "next_node_id": "parting"
             }
           ],
           "expression": "neutral"
         },
         {
-          "id": "trust_earned",
+          "id": "dust",
           "speaker_id": "oren_tak",
+          "text": "*A long silence. He wets a finger and writes a seven in the ore dust on the table. Beside it he draws the frame of a stamp, the one on Guild freight crates. Then he wipes the table with his sleeve.* I haven't said a word. Union's welcome to check.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received",
+              "disposition_change": 3,
+              "faction_reputation_changes": [
+                {
+                  "miners_union": 1
+                }
+              ]
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "parting",
+          "speaker_id": "oren_tak",
+          "text": "*He doesn't look at you.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+          "responses": [
+            {
+              "text": "[Walk away.]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "worried"
+        },
+        {
+          "id": "trust_earned",
+          "speaker_id": "narrator",
           "text": "Oren stares at the table for a long moment. His jaw works like he's chewing something bitter. Then he leans forward and lowers his voice.",
           "responses": [
             {
@@ -3142,12 +3181,12 @@
         {
           "id": "farewell",
           "speaker_id": "oren_tak",
-          "text": "Don't thank me. Just... be careful who you tell. The people running that facility has friends in high places, maybe in every faction. And if they find out I talked... He trails off and stares into his drink. Iron Depths, Sublevel 7. That's all I know.",
+          "text": "Don't thank me. Just... be careful who you tell. The people running that facility have friends in high places, maybe in every faction. And if they find out I talked... *He trails off and stares into his drink.* Iron Depths, Sublevel 7. That's all I know.",
           "responses": [
             {
               "text": "Your secret's safe.",
               "next_node_id": null,
-              "set_flag": "met_oren_tak"
+              "set_flag": "oren_full_account"
             }
           ],
           "expression": "angry"
@@ -3259,6 +3298,13 @@
             {
               "text": "Who authorized this? Who in Guild leadership signed off?",
               "next_node_id": "leadership"
+            },
+            {
+              "text": "Military procurement codes, stamped on Guild freight crates under Breakstone. I know that format. So do you.",
+              "next_node_id": "share_data",
+              "required_flags": [
+                "oren_full_account"
+              ]
             }
           ],
           "expression": "stern"
@@ -12382,6 +12428,191 @@
             {
               "text": "[Leave]",
               "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "oren_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "oren_tak",
+          "text": "The tourist's back. *Quiet.* Coming back is brave or stupid. Usually both.",
+          "responses": [
+            {
+              "text": "Glyn sent me. Same as before.",
+              "next_node_id": "glyn_again"
+            },
+            {
+              "text": "I didn't know who was listening.",
+              "next_node_id": "dust_again"
+            },
+            {
+              "text": "[Persuasion 2] \"Same seat, same hour, facing the door. That's how a man sits when he wants to be found.\"",
+              "next_node_id": "found",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 2,
+                "success_node_id": "found",
+                "failure_node_id": "found_not"
+              }
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "glyn_again",
+          "speaker_id": "oren_tak",
+          "text": "Glyn. That name bought you thirty seconds last time. *He checks the door.* It buys less now.",
+          "responses": [
+            {
+              "text": "I didn't know who was listening.",
+              "next_node_id": "dust_again"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "cautious"
+        },
+        {
+          "id": "dust_again",
+          "speaker_id": "oren_tak",
+          "text": "*He nods once. A finger in the ore dust: a seven, and the frame of a stamp. His sleeve wipes the table before you finish reading it.* Said nothing. Again.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "found",
+          "speaker_id": "oren_tak",
+          "text": "*He holds still. Then, very quiet:* Iron Depths. Seventh sublevel. Crates with Guild freight stamps, procurement format. That's what I sat here to say. *He watches the door.* Don't come back.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "found_not",
+          "speaker_id": "oren_tak",
+          "text": "*He shakes his head.* You read too much into a chair. *Then, lower, as you stand:* Iron Depths. Seventh sublevel. Seventh.",
+          "responses": [
+            {
+              "text": "[Walk away.]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "worried"
+        }
+      ]
+    },
+    {
+      "id": "tomas_return",
+      "start_node_id": "terms",
+      "nodes": [
+        {
+          "id": "terms",
+          "speaker_id": "tomas_drifter",
+          "text": "*He's ladling stew before you sit down.* Eat first. *Then:* Bales are where you left them. So. Slept on it?",
+          "responses": [
+            {
+              "text": "I'm in.",
+              "next_node_id": "in",
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
+            },
+            {
+              "text": "No. I don't bend rules.",
+              "next_node_id": "out",
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
+            },
+            {
+              "text": "Whose cloth is it?",
+              "next_node_id": "weaver"
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "weaver",
+          "speaker_id": "tomas_drifter",
+          "text": "*Slower.* Woman on Verdant. Prices her cloth by the hours of daylight it took to weave. A long bolt in winter costs more than the same bolt in summer. Guild tariff schedule's got a column for weight, a column for grade, a column for origin. Daylight isn't a column.",
+          "responses": [
+            {
+              "text": "I'm in.",
+              "next_node_id": "in",
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
+            },
+            {
+              "text": "No. I don't bend rules.",
+              "next_node_id": "out",
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "in",
+          "speaker_id": "tomas_drifter",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here.",
+          "responses": [
+            {
+              "text": "I'll get it done.",
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "out",
+          "speaker_id": "tomas_drifter",
+          "text": "Then you came back to tell me so. Most people just stop coming by. *Slower.* That counts for something here.",
+          "responses": [
+            {
+              "text": "Thanks for the food, Tomas.",
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved",
+              "disposition_change": 3
             }
           ],
           "expression": "neutral"
