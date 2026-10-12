@@ -726,22 +726,6 @@
       "gate": "G4",
       "rule": "near collision",
       "file": "(person names)",
-      "path": "deshi|desta",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "deshi|pesh",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
       "path": "desta|odessa",
       "match": "edit distance 2",
       "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"

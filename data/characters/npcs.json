@@ -536,8 +536,8 @@
     },
     {
       "id": "forgeworks_clerk",
-      "name": "Deshi Wren",
-      "title": "Intake Clerk, Cargo Broker",
+      "name": "Joaquim Kimura",
+      "title": "Intake Clerk, Main Foundry",
       "portrait_color": [
         100,
         140,
@@ -545,8 +545,7 @@
       ],
       "home_system_id": "forgeworks",
       "dialogue_id": "forgeworks_intake",
-      "faction_id": "",
-      "hide_after_flag": "iron_ore_delivered"
+      "faction_id": ""
     },
     {
       "id": "amara_okonkwo",

@@ -955,9 +955,6 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # === DELIBERATE HOLD-BACK (BB-17): read by two_calls and the_silent_shaft, set by
     # nothing until SP10 re-stages them. ===
     "held_back_until_sp10",
-    # === W3a (plan W3a-S): read by spacegame/models/iron_consignment.py, produced by the
-    # intake clerk's content of Task 4, which removes it here. ===
-    "iron_ore_signed_short",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.
@@ -1215,6 +1212,11 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "odom_noted_the_float",
     "read_odom_clause",
     "odom_clause_tried",
+    "intake_crucible_tried",
+    "intake_shop_talk_heard",
+    "elena_heard_carriage",
+    "elena_heard_lane",
+    "elena_heard_violation",
 }
 
 

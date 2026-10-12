@@ -8,6 +8,8 @@ campaign's flag, the betrayal's close sets it, and the job's clock sets it
 
 from __future__ import annotations
 
+import pytest
+
 from spacegame.constants.flags import iron_delivery_moved_on
 from spacegame.data_loader import DataLoader, get_data_loader
 from spacegame.models.dialogue import DialogueManager
@@ -54,8 +56,18 @@ CHANGES: dict[tuple[str, str, str], str] = {
         "thanks_replaced",
         "The count was right.",
     ): "sets odom_noted_the_float, which the reply excludes",
+    (
+        "forgeworks_intake",
+        "crucible",
+        "[Wait while he calls it in.]",
+    ): "behind the final crucible check",
+    (
+        "forgeworks_intake",
+        "shop_talk",
+        "Sounds like a living.",
+    ): "sets intake_shop_talk_heard, which the reply excludes",
 }
-CHANGE_TREES = ("merchant_delivery",)
+CHANGE_TREES = ("merchant_delivery", "forgeworks_intake")
 
 
 def _dl() -> DataLoader:
@@ -221,3 +233,47 @@ def test_the_longer_ledger_opens_on_odoms_word() -> None:
     ledger = _mission("sa_v_investment_intro")
     assert ledger.prerequisites == ["bill_of_landing"]
     assert ledger.required_flags == ["odom_ledger_open"]
+
+
+@pytest.mark.parametrize("state", OPEN_STATES)
+def test_every_open_state_has_a_closing_reply(state: str) -> None:
+    """Polish design 2.9: in every open state, someone who can close the job offers a way."""
+    from spacegame.models.iron_consignment import closers
+
+    who = closers({state: True})
+    assert who
+    for npc_id in who:
+        tree_id = _dl().npcs[npc_id].dialogue_id
+        greet = _dl().dialogue_trees[tree_id].nodes["greet"]
+        starts = [r.next_node_id for r in greet.responses if state in r.required_flags]
+        assert starts, (npc_id, state)
+        tree = _dl().dialogue_trees[tree_id]
+        closing = [
+            node_id
+            for start in starts
+            if start
+            for node_id in _walk_nodes(tree_id, start)
+            if any(r.set_flag in CLOSING_FLAGS for r in tree.nodes[node_id].responses)
+        ]
+        assert closing, (npc_id, state)
+
+
+def test_the_clerk_signs_only_what_the_scale_reads() -> None:
+    greet = _dl().dialogue_trees["forgeworks_intake"].nodes["greet"]
+    targets = {r.next_node_id: r.required_flags for r in greet.responses if r.required_flags}
+    assert targets["accept"] == ["iron_job_full"]
+    assert targets["accept_made_good"] == ["iron_job_made_good"]
+    assert targets["accept_floor_stock"] == ["iron_job_replaced"]
+    assert targets["no_sign"] == ["iron_job_moved"]
+    assert targets["weigh_short"] == ["iron_job_short_lost"]
+    assert targets["nothing_to_weigh"] == ["iron_job_gone_lost"]
+
+
+def test_elenas_iron_replies_are_one_time_each() -> None:
+    tips = _dl().dialogue_trees["elena_cantina"].nodes["trading_tips"]
+    gated = {r.next_node_id: (r.required_flags, r.excluded_flags) for r in tips.responses[:3]}
+    assert gated == {
+        "iron_carriage": (["iron_ore_delivered"], ["elena_heard_carriage"]),
+        "iron_lane": (["broker_ore_lost"], ["elena_heard_lane"]),
+        "iron_violation": (["iron_delivery_failed"], ["elena_heard_violation"]),
+    }

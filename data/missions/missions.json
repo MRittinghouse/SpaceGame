@@ -80,14 +80,14 @@
         {
           "type": "collect_cargo",
           "target_id": "iron_ore",
-          "target_quantity": 10,
-          "description": "Have 10 Iron Ore in cargo"
+          "target_quantity": 1,
+          "description": "Keep Odom's ore aboard"
         },
         {
-          "type": "talk_to_npc",
-          "target_id": "forgeworks_clerk",
+          "type": "has_flag",
+          "target_id": "iron_ore_handed_over",
           "target_quantity": 1,
-          "description": "Deliver the ore to the intake clerk at Forgeworks"
+          "description": "Hand the ore to Joaquim Kimura at the Neutral Ground, Forgeworks"
         }
       ],
       "rewards": [

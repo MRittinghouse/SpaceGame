@@ -96,6 +96,36 @@
           "text": "Watch the event feeds. A mining boom means ore prices drop, buy cheap, sell at stations that process it. A crop failure means food prices spike at the affected system. The boards tell you what's happening. Your job is to be where the demand is before everyone else.",
           "responses": [
             {
+              "text": "Odom paid six hundred to move ore worth a hundred and fifty.",
+              "next_node_id": "iron_carriage",
+              "required_flags": [
+                "iron_ore_delivered"
+              ],
+              "excluded_flags": [
+                "elena_heard_carriage"
+              ]
+            },
+            {
+              "text": "I lost part of Odom's load on the Forgeworks lane.",
+              "next_node_id": "iron_lane",
+              "required_flags": [
+                "broker_ore_lost"
+              ],
+              "excluded_flags": [
+                "elena_heard_lane"
+              ]
+            },
+            {
+              "text": "You heard about Odom.",
+              "next_node_id": "iron_violation",
+              "required_flags": [
+                "iron_delivery_failed"
+              ],
+              "excluded_flags": [
+                "elena_heard_violation"
+              ]
+            },
+            {
               "text": "You seem to know a lot. What's your story?",
               "next_node_id": "about_elena"
             },
@@ -105,6 +135,45 @@
             }
           ],
           "expression": "confident"
+        },
+        {
+          "id": "iron_carriage",
+          "speaker_id": "elena_reeves",
+          "text": "Carriage at four times the cargo's value. He wasn't paying for the ore to move. He was paying for the date it arrived. *A beat.* A full freight projection for someone else's ship pays me ninety credits. I did three last week.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_carriage"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "iron_lane",
+          "speaker_id": "elena_reeves",
+          "text": "Which leg? *She has the chart up before you answer.* Larsen tells every new permit the routes around Nexus Prime are safe enough. Forgeworks is one jump out, and the charts rate it moderate. If we ran it, we would want... *She stops.* If you run it again, read the rating first.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_lane"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "iron_violation",
+          "speaker_id": "elena_reeves",
+          "text": "The whole Exchange heard by the next shift. *A pause.* That's an interesting choice. A freight violation follows your permit onto every Guild board. Brokers read it before they read your name. Breakstone's docks don't read Guild paper.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_violation"
+            }
+          ],
+          "expression": "cautious"
         },
         {
           "id": "about_elena",
@@ -1765,22 +1834,59 @@
             {
               "text": "Odom sent me. Ten units of iron ore.",
               "next_node_id": "accept",
-              "excluded_flags": [
-                "iron_ore_delivered"
+              "required_flags": [
+                "iron_job_full"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "accept_made_good",
+              "required_flags": [
+                "iron_job_made_good"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "accept_floor_stock",
+              "required_flags": [
+                "iron_job_replaced"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "no_sign",
+              "required_flags": [
+                "iron_job_moved"
+              ]
+            },
+            {
+              "text": "Odom sent me. The count's light.",
+              "next_node_id": "weigh_short",
+              "required_flags": [
+                "iron_job_short_lost"
+              ]
+            },
+            {
+              "text": "Odom sent me. There's nothing left to weigh.",
+              "next_node_id": "nothing_to_weigh",
+              "required_flags": [
+                "iron_job_gone_lost"
               ]
             },
             {
               "text": "[Technical 2] \"Your crucible readout is running hot. Left-side bank, around the ninety-minute mark. Worth looking at before your next shift.\"",
-              "next_node_id": "accept",
+              "next_node_id": "crucible",
               "excluded_flags": [
-                "iron_ore_delivered"
+                "flagged_forge_crucible",
+                "intake_crucible_tried"
               ],
               "skill_check": {
                 "skill": "technical",
                 "difficulty": 2,
-                "success_node_id": "accept",
-                "failure_node_id": "accept",
-                "set_flag_on_success": "flagged_forge_crucible"
+                "success_node_id": "crucible",
+                "failure_node_id": "crucible_noted",
+                "set_flag_on_success": "flagged_forge_crucible",
+                "set_flag_on_failure": "intake_crucible_tried"
               }
             },
             {
@@ -1788,6 +1894,13 @@
               "next_node_id": "post_delivery",
               "required_flags": [
                 "iron_ore_delivered"
+              ]
+            },
+            {
+              "text": "What comes through here?",
+              "next_node_id": "shop_talk",
+              "excluded_flags": [
+                "intake_shop_talk_heard"
               ]
             },
             {
@@ -1800,7 +1913,7 @@
         {
           "id": "post_delivery",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He glances up from his datapad.* Oh, the pilot who ran Odom's iron. That shipment cleared fine, by the way. He was pleased. You ever need cargo work through Forgeworks, the board's right there. We always need reliable haulers.",
+          "text": "*He glances up from his datapad.* The pilot who ran Odom's iron. You ever need cargo work through Forgeworks, the board's right there. We always need haulers.",
           "responses": [
             {
               "text": "Good to know.",
@@ -1816,19 +1929,139 @@
           "responses": [
             {
               "text": "Appreciate it.",
-              "next_node_id": "advice"
+              "next_node_id": "advice",
+              "set_flag": "iron_ore_handed_over"
             }
           ],
           "expression": "neutral"
         },
         {
-          "id": "advice",
+          "id": "accept_made_good",
           "speaker_id": "forgeworks_clerk",
-          "text": "Clean run, pilot. He'll remember the favor. Odom was furious when he found out his regular hauler was full. Reputations are built and broken on reliability out here. Remember that.",
+          "text": "*The lane report is already on his datapad. The scale reads ten. The lot reader beeps twice: Odom's stamp, and floor stock beside it.* Ten iron, standard grade. Booked. The report and the stamps go to Odom with the weight. They always do.",
           "responses": [
             {
-              "text": "I will.",
+              "text": "Fine.",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "accept_floor_stock",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*The scale says ten. The lot reader takes longer, and comes back with two stamps.* Ten iron, standard grade. Weight's weight. Booked, and your credits go out. The stamps go to Odom with the weight. They always do.",
+          "responses": [
+            {
+              "text": "Fine.",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "cautious"
+        },
+        {
+          "id": "advice",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Ten on the scale, Odom's stamp on every unit. Board's by the door if you want more of this, pilot.",
+          "responses": [
+            {
+              "text": "Noted.",
               "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "weigh_short",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He runs the load onto the scale and reads it against Odom's manifest. The lane's incident report is on his datapad before you finish explaining.* Syndicate sends us their lane reports now they're paying for escorts. Yours isn't the first short load off that lane this month. Two ways, pilot. I sign for what's on the scale, report attached, and Odom pays on what I weigh. Or you bring it to ten off the Exchange floor. Standard grade is standard grade. Scale doesn't read names.",
+          "responses": [
+            {
+              "text": "Sign for what's here.",
+              "next_node_id": "receipt_short",
+              "set_flag": "iron_ore_signed_short"
+            },
+            {
+              "text": "I'll be back with ten.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "receipt_short",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He stamps it received short and keys the report number onto the receipt.* Settling's between you and Odom. The furnace takes it either way.",
+          "responses": [
+            {
+              "text": "[Take the receipt.]",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "no_sign",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He reads the scale against Odom's manifest, then checks the incident file. It comes up empty.* Manifest says ten. Scale says otherwise, and nothing on file says where the rest went. I don't sign for air. Bring me ten, or take it up with Odom.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "nothing_to_weigh",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Nothing on the scale, nothing to sign. Your report's on file. Whether Odom eats the loss is between you and Odom, and he's at Nexus Prime.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "crucible",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He pulls the left bank's readout onto his datapad and watches it for a full minute. Then he keys the floor.* Shift lead. Left bank's running hot. Get eyes on it before the ninety-minute mark. *To you:* Huh.",
+          "responses": [
+            {
+              "text": "[Wait while he calls it in.]",
+              "next_node_id": "greet",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "crucible_noted",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He writes it on the corner of a manifest.* Left bank. Noted. *His face gives nothing either way.*",
+          "responses": [
+            {
+              "text": "[Leave it with him.]",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "shop_talk",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Iron, coke, scrap, and paperwork. Guild paper comes in that door, Union crews take the loads out the other one, and I sit in the middle with a scale. Main Foundry runs three shifts. Everybody's arguing about the new furnace calibration. *He tips one hand, then the other.* I'm on both sides of that one. Most of us are.",
+          "responses": [
+            {
+              "text": "Sounds like a living.",
+              "next_node_id": "greet",
+              "set_flag": "intake_shop_talk_heard",
+              "disposition_change": 3
             }
           ],
           "expression": "neutral"

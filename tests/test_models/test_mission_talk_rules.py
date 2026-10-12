@@ -32,7 +32,7 @@ class TestTalkAfterAccept:
         player.ship.add_cargo("iron_ore", 10, 0)
         # The availability pass may accept other missions, so check this one by name.
         assert "iron_delivery" not in manager.check_objectives(player)
-        manager.record_conversation("forgeworks_clerk")
+        player.dialogue_flags["iron_ore_handed_over"] = True
         assert "iron_delivery" in manager.check_objectives(player)
 
     def test_a_chat_with_arna_before_the_run_does_not_count(self) -> None:
