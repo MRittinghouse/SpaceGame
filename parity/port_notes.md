@@ -953,9 +953,9 @@ Godot port by sync.
   registry holds; Szabo's report keeps its opening, so `captain_surfaces_test.gd` holds; 30
   data files change. (Plan W2-S)
 - What W2 fixed: 560 of the audit's 567 open rows, the lines the gates held for W2, the named
-  lines and F-016's 22 strings, with a travel "warp" made "jump", a "warp gate" made "the
-  gate", "naval facility" a Guild enforcement yard, Koren "she", and the Log's touched lines
-  in spec 2.4's form. (Plan W2-S)
+  lines and F-016's 22 strings (closed as F-C10), with a travel "warp" made "jump", a "warp
+  gate" made "the gate", "naval facility" a Guild enforcement yard, Koren "she", and the Log's
+  touched lines in spec 2.4's form. (Plan W2-S)
 - What W2 left, and to whom: the price rows and the figures in narration to W3 (record
   tokens, spec 3.7); `auto_m13_oren`, `auto_iron_betrayal` and `iron_delivery`'s discovery
   note to W3's scenes; the collapse sequence to SP10, which chooses its own words; the G13
@@ -967,8 +967,9 @@ Godot port by sync.
 - W3's queue: the strings of plan A1's list that W2 rewrote in the six encounters whose
   parallel-negation forms "The writing pass" names, listed below; every other W2 rewrite
   inside the 120 encounters of plan A1's list is recorded by path in
-  `tools/writing/w2_rows.json` and in the reading copy. The pass reads them all as W2 left
-  them. (Plan W2-S; aurelia `docs/handoffs.md`, "The writing pass")
+  `tools/writing/w2_rows.json` and in the reading copy. Outside those encounters, W2 rewrote
+  three strings plan A1 changed, listed last with their files. The pass reads them all as W2
+  left them. (Plan W2-S; aurelia `docs/handoffs.md`, "The writing pass")
   - `.encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description`
   - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].description`
   - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].outcome.description`
@@ -994,6 +995,9 @@ Godot port by sync.
   - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].description`
   - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].label`
   - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].outcome.description`
+  - `.dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[0].text` in `data/dialogue/dialogues.json`
+  - `.dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[1].text` in `data/dialogue/dialogues.json`
+  - `.missions[id=miners_plight].description` in `data/missions/side_missions.json`
 - After W2: `tests/test_data/test_writing_w2_audit.py` becomes the residue check in Task 12,
   so W3 to W8 and SP10 may rewrite any W2 line, but no audit excerpt may come back. (Plan
   W2-S)

@@ -297,3 +297,7 @@ class TestTheAllowlist:
         """Plan W2-S closes every row it owns; a row it leaves names its next owner."""
         waiting = [row.key for row in allowlist.rows() if "W2" in row.reason]
         assert waiting == []
+
+    def test_no_reason_names_w2(self) -> None:
+        """After plan W2-S, no reason in REASONS names W2, whether or not a row carries it."""
+        assert [reason.text for reason in allowlist.REASONS if "W2" in reason.text] == []

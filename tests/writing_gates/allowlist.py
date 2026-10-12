@@ -60,38 +60,14 @@ class Reason:
 
 
 _AUTHOR = "the author's ruling, 2026-10-02: a habit the speaker uses with anyone (spec 2.6)"
-_TABLE = (
-    "the captain's address, routed through the table or reworded by this plan (spec 2.6);"
-    " Task 9 prunes it"
-)
-_QUOTE = "a Read quoting Arna's words, not a feeling of the captain's; W2 restates it (impact 7c)"
 _COLLAPSE = "a stage tag in the collapse sequence; SP10 rewrites the sequence"
-_MOOD = "the tag names a mood; W2 makes it an act or the exact line (impact 7d)"
-_NOT_ACT = (
-    "bracketed speech or a tag that is not an act; W2 makes it the line or an act (impact 7d)"
-)
-_OBSERVATION = (
-    "an Observation check followed by unquoted speech or an unspoken insight; W2 quotes it or"
-    " makes it an act (impact 7e)"
-)
 _NAMES = "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-_NAVY = "naval facility becomes a Guild yard or an enforcement term (impact 10.8); W2"
 _COLLAPSE_WARP = "warp in the collapse sequence; SP10 rewrites the sequence (impact 5.1)"
-_WARP = "warp is out of the Expanse's lexicon; W2 rewrites the line"
 _MARCUS = "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
-_GESTURE = "without looking up is Marcus's gesture alone; W2 gives this speaker another"
 _PRICE = "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
 _EXITS = "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
 _PLAYER = "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
 _COLLAPSE_TEXT = "text in the collapse sequence; SP10 rewrites the sequence"
-_DASH = "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
-_NEGATION = "a paired negation; W2 rewrites it"
-_WORD = "an overused word (spec G3); W2 rewrites it"
-_AUDIT = "the narrator audit's finding (audit.md); W2 rewrites it"
-_CODE = (
-    "a dash or a paired negation in a string built in code, outside the narrator audit"
-    " (spec 9.4); register F-016 names its owner"
-)
 _TAGLINE = (
     "the Crimson Reach tagline, exempt by name as in character outlaw bravado"
     " (requirements/station_legibility.md, 2026-04-26)"
@@ -99,44 +75,27 @@ _TAGLINE = (
 
 # The first match wins, so specific reasons come first. Every reason names the chunk or the
 # decision that removes its rows, or the ruling that keeps them (_AUTHOR, _TAGLINE), and a G5
-# pronoun row names its referent (spec 5.1, G5). An offence no reason matches raises: the
-# narrator audit's reason covers G6 to G8 alone.
+# pronoun row names its referent (spec 5.1, G5). Only the reasons of rows that remain are kept,
+# so an offence no row allows matches no reason either, and reason_for raises.
 REASONS: tuple[Reason, ...] = (
     Reason("G5", "vocative", "data/combat/captains.json", "", _AUTHOR),
     Reason("G5", "vocative", "data/encounters/system_specific.json", "", _AUTHOR),
-    Reason("G5", "vocative", "*", "", _TABLE),
     Reason(
         "G5", "pronoun", "*", "ransom_pirate_corvette_01", "his: the corvette's captain, an NPC"
     ),
     Reason("G5", "pronoun", "*", "merchant_trader_01", "herself: the trader's captain, an NPC"),
     Reason("G5", "pronoun", "*", "refugee_transport_01", "she: the transport's captain, an NPC"),
     Reason("G5", "pronoun", "*", "sys_haven_supply_run_01", "her: Captain Okonkwo, an NPC"),
-    Reason("G8", "not your problem", "*", "arna_post_payback", _QUOTE),
     Reason("G9", "*", "*", "the_collapse_sequence", _COLLAPSE),
-    Reason("G9", "mood", "*", "", _MOOD),
-    Reason("G9", "not an act", "*", "", _NOT_ACT),
-    Reason("G9", "observation unquoted", "*", "", _OBSERVATION),
     Reason("G4", "near collision", "*", "", _NAMES),
     Reason("*", "*", "data/narrative/*", "", _PLAYER),
-    Reason("G11", "navy", "*", "", _NAVY),
     Reason("G11", "warp", "*", "the_collapse_sequence", _COLLAPSE_WARP),
     Reason("G2", "*", "*", "the_collapse_sequence", _COLLAPSE_TEXT),
     Reason("G11", "without looking up", "*", "the_collapse_sequence", _COLLAPSE_TEXT),
-    Reason("G11", "warp", "*", "", _WARP),
     Reason("G11", "captain from marcus", "*", "", _MARCUS),
-    Reason("G11", "without looking up", "*", "", _GESTURE),
     Reason("G11", "price in speech", "*", "", _PRICE),
     Reason("G13", "exits", "*", "", _EXITS),
-    Reason("G10", "the player", "*", "", _PLAYER),
     Reason("G2", "*", "spacegame/views/station_layouts.py", "No laws. No mercy.", _TAGLINE),
-    Reason("G1", "*", "spacegame/*", "", _CODE),
-    Reason("G2", "*", "spacegame/*", "", _CODE),
-    Reason("G1", "*", "data/*", "", _DASH),
-    Reason("G2", "*", "data/*", "", _NEGATION),
-    Reason("G3", "*", "data/*", "", _WORD),
-    Reason("G6", "*", "*", "", _AUDIT),
-    Reason("G7", "*", "*", "", _AUDIT),
-    Reason("G8", "*", "*", "", _AUDIT),
 )
 
 
