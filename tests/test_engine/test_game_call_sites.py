@@ -210,3 +210,69 @@ def test_opening_an_npc_sets_its_gate_before_its_tree_is_chosen() -> None:
     tree_picks = [c.lineno for c in _calls(start, "get_active_dialogue_id")]
     assert gate_reads and tree_picks
     assert min(gate_reads) < min(tree_picks)
+
+
+def test_the_trading_view_posts_the_rests_iron_notice_through_the_game() -> None:
+    call = _the_one_construction("_create_gameplay_views", "TradingView")
+    values = [ast.unparse(k.value) for k in call.keywords if k.arg == "on_iron_notice"]
+    assert values == ["self._after_iron_clock"]
+
+
+def test_a_filing_at_the_clock_writes_its_log_entry_straight_away() -> None:
+    """Polish 2.7: auto_iron_betrayal reads true after the filing, on that day and system."""
+    assert _any_calls(_function("_after_iron_clock"), "_check_journal_triggers")
+
+
+def _lines(node: ast.AST, name: str) -> list[int]:
+    return [c.lineno for c in _any_calls(node, name)]
+
+
+def test_a_dialogue_opening_refreshes_the_store_before_the_dialogue_loads_it() -> None:
+    """The refresh writes the player's store; load_flags copies that store into the dialogue."""
+    start = _function("start_dialogue")
+    loads, refreshes = _lines(start, "load_flags"), _lines(start, "refresh_state")
+    assert loads and refreshes
+    assert max(refreshes) < min(loads)
+
+
+def test_the_dialogue_exit_refreshes_after_the_close_and_mirrors_both() -> None:
+    route = _function("_route_from_dialogue")
+    closes, refreshes = _lines(route, "close_on_exit"), _lines(route, "refresh_state")
+    assert closes and refreshes
+    assert max(closes) < min(refreshes)
+    args = [ast.unparse(c.args[0]) for c in _any_calls(route, "_mirror_dialogue_flags") if c.args]
+    assert "notice.flags" in args
+    assert any(a.startswith("refresh_state(") for a in args), args
+
+
+def test_a_landing_hands_the_clock_notice_to_the_helper_after_the_clock() -> None:
+    route = _function("_route_from_galaxy_map")
+    clocks, helpers = _lines(route, "on_clock"), _lines(route, "_after_iron_clock")
+    assert clocks and helpers
+    assert min(helpers) > min(clocks)
+
+
+def test_the_clock_helper_posts_and_mirrors_the_notice_and_the_state() -> None:
+    helper = _function("_after_iron_clock")
+    extends = [ast.unparse(c.args[0]) for c in _any_calls(helper, "extend") if c.args]
+    assert "notice.lines" in extends or any("notice.lines" in e for e in extends), extends
+    assert any(
+        "_mission_notifications" in ast.unparse(c.func) for c in _any_calls(helper, "extend")
+    )
+    args = [ast.unparse(c.args[0]) for c in _any_calls(helper, "_mirror_dialogue_flags") if c.args]
+    assert "notice.flags" in args
+    assert any(a.startswith("refresh_state(") for a in args), args
+
+
+def test_a_defeat_counts_the_ore_before_the_defeat_takes_it() -> None:
+    apply = _function("_apply_combat_result")
+    held, defeats = _lines(apply, "held_units"), _lines(apply, "apply_combat_defeat")
+    notes = _any_calls(apply, "note_defeat")
+    assert held and defeats and notes
+    assert min(held) < min(defeats)
+    assert min(c.lineno for c in notes) > min(defeats)
+    assert any(
+        _any_calls(a, "held_units")
+        for c in notes
+        for a in [*c.args, *(k.value for k in c.keywords)]
+    )

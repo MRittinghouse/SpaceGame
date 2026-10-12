@@ -5,6 +5,7 @@ Buy and sell commodities at the current system's market.
 Features dimmed animated background, panel glow borders, and transaction particles.
 """
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Optional
 
 import pygame
@@ -37,6 +38,7 @@ from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
 
 if TYPE_CHECKING:
+    from spacegame.models.iron_consignment import IronNotice
     from spacegame.models.mission import MissionManager
 
 # BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
@@ -96,8 +98,10 @@ class TradingView(BaseView):
         smuggling_contract_manager=None,
         politics_manager=None,
         mission_manager: Optional["MissionManager"] = None,
+        on_iron_notice: Optional[Callable[["IronNotice"], None]] = None,
     ):
         super().__init__()
+        self.on_iron_notice = on_iron_notice
         self.ui_manager = ui_manager
         self.player = player
         self.systems = systems
@@ -1358,8 +1362,9 @@ class TradingView(BaseView):
                     self.player.dialogue_flags,
                     self.player.game_day,
                 )
-                if notice.lines:
-                    self._show_message(" ".join(notice.lines))
+                # The game's banner queue posts the notice (and mirrors its flags)
+                if self.on_iron_notice is not None:
+                    self.on_iron_notice(notice)
                 refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
             self._refresh_tables()
 

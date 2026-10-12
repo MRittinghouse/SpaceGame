@@ -2565,6 +2565,7 @@ class Game:
             smuggling_contract_manager=self.smuggling_contract_manager,
             politics_manager=self.politics_manager,
             mission_manager=self.mission_manager,
+            on_iron_notice=self._after_iron_clock,
         )
 
         self.state_manager.register_state(GameState.GALAXY_MAP, self.galaxy_map_view)
@@ -3687,7 +3688,7 @@ class Game:
             self.dialogue_manager.set_flag(name, self.player.dialogue_flags.get(name, False))
 
     def _after_iron_clock(self, notice: "IronNotice") -> None:
-        """Post a landing clock's notices, then mirror its flags and the state it leaves."""
+        """Post a landing's or a rest's clock notices, then mirror its flags and the state."""
         from spacegame.models.iron_consignment import refresh_state
 
         self._mission_notifications.extend(notice.lines)
@@ -3696,6 +3697,9 @@ class Game:
             self._mirror_dialogue_flags(
                 refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
             )
+        if notice.lines:
+            # Polish 2.7: a filing's Log entry is written on the day and in the system it fell
+            self._check_journal_triggers()
 
     def _start_intro_narration(self, return_state: GameState = GameState.GALAXY_MAP) -> None:
         """Start the intro backstory narration sequence.

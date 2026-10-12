@@ -74,6 +74,7 @@ def _make_trading_view_with_real_player(
     view.commodities = loader.commodities
     view.systems = loader.systems
     view.mission_manager = mission_manager
+    view.on_iron_notice = None
 
     # Stubbed market: every commodity sells for 50.
     # QF-8: TradingView.market is now a raising @property; set raw storage.
@@ -277,6 +278,12 @@ class TestRestRunsTheIronClock:
 
     def test_a_rest_files_a_sale_on_record(self) -> None:
         from spacegame.data_loader import get_data_loader
+        from spacegame.models.iron_consignment import (
+            FAILED_LINE,
+            FILING_LINE,
+            TAKEN_BACK_LINE,
+            IronNotice,
+        )
         from spacegame.models.mission import MissionManager
 
         dl = get_data_loader()
@@ -293,10 +300,15 @@ class TestRestRunsTheIronClock:
         player.dialogue_flags["broker_ore_sold"] = True
         player.dialogue_flags["iron_job_moved"] = True
         player.game_day = 19
+        posted: list[IronNotice] = []
+        view.on_iron_notice = posted.append
         view._execute_rest()
         assert manager.get_status("iron_delivery").value == "failed"
         assert player.ship.get_cargo_quantity("iron_ore") == 0
-        assert "Freight violation filed." in view.transaction_message
+        assert [n.lines for n in posted] == [
+            (FAILED_LINE, TAKEN_BACK_LINE.format(units=6), FILING_LINE)
+        ]
+        assert FILING_LINE not in view.transaction_message
         assert player.dialogue_flags["iron_job_moved"] is False
 
 
