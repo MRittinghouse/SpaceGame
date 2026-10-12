@@ -532,7 +532,11 @@
       ],
       "home_system_id": "forgeworks",
       "dialogue_id": "marcus_inspector_dialogue",
-      "faction_id": "miners_union"
+      "faction_id": "miners_union",
+      "auto_trigger_prerequisites": [
+        "marcus_inspector_resolved"
+      ],
+      "hide_after_flag": "marcus_inspector_resolved"
     },
     {
       "id": "forgeworks_clerk",
@@ -559,7 +563,11 @@
       ],
       "home_system_id": "nova_research",
       "dialogue_id": "priya_peer_review_dialogue",
-      "faction_id": "science_collective"
+      "faction_id": "science_collective",
+      "auto_trigger_prerequisites": [
+        "priya_confrontation_resolved"
+      ],
+      "hide_after_flag": "priya_confrontation_resolved"
     },
     {
       "id": "ren_castillo",
@@ -572,24 +580,11 @@
       ],
       "home_system_id": "the_fulcrum",
       "dialogue_id": "tomas_fulcrum_dialogue",
-      "faction_id": ""
-    },
-    {
-      "id": "elena_archives_npc",
-      "name": "Elena Reeves",
-      "title": "Navigator",
-      "portrait_color": [
-        100,
-        180,
-        255
-      ],
-      "home_system_id": "stellaris_port",
-      "dialogue_id": "elena_archives_dialogue",
       "faction_id": "",
       "auto_trigger_prerequisites": [
-        "crew_loyalty_elena_reeves_50"
+        "tomas_confrontation_resolved"
       ],
-      "hide_after_flag": "elena_archives_accessed"
+      "hide_after_flag": "tomas_confrontation_resolved"
     },
     {
       "id": "axiom_researcher",

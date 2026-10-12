@@ -11,11 +11,24 @@
           "responses": [
             {
               "text": "We'll set course for Stellaris Port.",
-              "next_node_id": "grateful"
+              "next_node_id": "grateful",
+              "set_flag": "elena_old_charts_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
             },
             {
               "text": "What do you expect to find?",
               "next_node_id": "explain"
+            },
+            {
+              "text": "Leave Koren's logs in the archive.",
+              "next_node_id": "declined",
+              "set_flag": "elena_old_charts_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
             }
           ],
           "expression": "serious"
@@ -27,7 +40,11 @@
           "responses": [
             {
               "text": "Sounds like it's worth investigating.",
-              "next_node_id": "grateful"
+              "next_node_id": "grateful",
+              "set_flag": "elena_old_charts_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
             },
             {
               "text": "And if it's just a dead end?",
@@ -43,7 +60,11 @@
           "responses": [
             {
               "text": "Let's find out. Setting course for Stellaris Port.",
-              "next_node_id": "grateful"
+              "next_node_id": "grateful",
+              "set_flag": "elena_old_charts_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
             }
           ],
           "expression": "neutral"
@@ -59,6 +80,38 @@
             }
           ],
           "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "elena_reeves",
+          "text": "Understood. I'll keep the chip in my pocket, then.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "elena_reeves",
+          "text": "Koren's logs are still in the Guild archive at Stellaris Port. Do we go for them, Captain?",
+          "responses": [
+            {
+              "text": "Set course for Stellaris Port.",
+              "next_node_id": "grateful",
+              "set_flag": "elena_old_charts_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
         }
       ]
     },
@@ -143,11 +196,13 @@
           "responses": [
             {
               "text": "The cargo, then. We need the credits.",
-              "next_node_id": "cargo_choice"
+              "next_node_id": "cargo_choice",
+              "set_flag": "elena_wreck_found"
             },
             {
               "text": "Koren's logs. That's what matters.",
-              "next_node_id": "logs_choice"
+              "next_node_id": "logs_choice",
+              "set_flag": "elena_wreck_found"
             }
           ],
           "expression": "tense"
@@ -224,15 +279,11 @@
           "text": "I need to run calibration passes through the corridor she mapped. It'll take precise timing, one miscalculation and we're off by light-minutes. Are you ready?",
           "responses": [
             {
-              "text": "[Attempt the calibration]",
+              "text": "[Piloting 3] Take the helm and hold the ship on Koren's corridor.",
               "next_node_id": null,
-              "set_flag": "elena_route_charted",
-              "crew_loyalty_changes": {
-                "elena_reeves": 25
-              },
               "skill_check": {
-                "skill": "acu",
-                "difficulty": 4,
+                "skill": "piloting",
+                "difficulty": 3,
                 "success_node_id": "success",
                 "failure_node_id": "partial"
               }
@@ -247,7 +298,10 @@
             {
               "text": "[Continue]",
               "next_node_id": null,
-              "set_flag": "elena_route_charted"
+              "set_flag": "elena_route_charted",
+              "crew_loyalty_changes": {
+                "elena_reeves": 25
+              }
             }
           ],
           "expression": "proud"
@@ -260,7 +314,10 @@
             {
               "text": "[Continue]",
               "next_node_id": null,
-              "set_flag": "elena_route_charted"
+              "set_flag": "elena_route_charted",
+              "crew_loyalty_changes": {
+                "elena_reeves": 25
+              }
             }
           ],
           "expression": "satisfied"
@@ -283,6 +340,15 @@
             {
               "text": "What do you want to do about it?",
               "next_node_id": "plan"
+            },
+            {
+              "text": "We're not going back to Breakstone.",
+              "next_node_id": "declined",
+              "set_flag": "marcus_old_debts_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
             }
           ],
           "expression": "angry"
@@ -294,7 +360,11 @@
           "responses": [
             {
               "text": "Then let's go get them.",
-              "next_node_id": "grateful"
+              "next_node_id": "grateful",
+              "set_flag": "marcus_old_debts_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
             }
           ],
           "expression": "determined"
@@ -306,7 +376,11 @@
           "responses": [
             {
               "text": "We'll get you there.",
-              "next_node_id": "grateful"
+              "next_node_id": "grateful",
+              "set_flag": "marcus_old_debts_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
             }
           ],
           "expression": "determined"
@@ -322,6 +396,38 @@
             }
           ],
           "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "marcus_jin",
+          "text": "Fine. The report stays buried, then.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "bitter"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "marcus_jin",
+          "text": "The records at Hargan Yards are still there. Do we go to Breakstone?",
+          "responses": [
+            {
+              "text": "We go to Breakstone.",
+              "next_node_id": "grateful",
+              "set_flag": "marcus_old_debts_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
         }
       ]
     },
@@ -525,15 +631,11 @@
           "text": "There he is. Dask, you cut every corner in this yard and three people paid for it. It stops today.",
           "responses": [
             {
-              "text": "[Back Marcus up, stand firm]",
+              "text": "[Intimidation 3] Stand at Marcus's shoulder and stare Dask down.",
               "next_node_id": null,
-              "set_flag": "marcus_confrontation_resolved",
-              "crew_loyalty_changes": {
-                "marcus_jin": 25
-              },
               "skill_check": {
-                "skill": "res",
-                "difficulty": 4,
+                "skill": "intimidation",
+                "difficulty": 3,
                 "success_node_id": "success",
                 "failure_node_id": "partial"
               }
@@ -548,7 +650,10 @@
             {
               "text": "[Continue]",
               "next_node_id": null,
-              "set_flag": "marcus_confrontation_resolved"
+              "set_flag": "marcus_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 25
+              }
             }
           ],
           "expression": "relieved"
@@ -561,7 +666,10 @@
             {
               "text": "[Continue]",
               "next_node_id": null,
-              "set_flag": "marcus_confrontation_resolved"
+              "set_flag": "marcus_confrontation_resolved",
+              "crew_loyalty_changes": {
+                "marcus_jin": 25
+              }
             }
           ],
           "expression": "resolved"
@@ -583,7 +691,20 @@
             },
             {
               "text": "We should get there before anyone else does.",
-              "next_node_id": "urgency"
+              "next_node_id": "urgency",
+              "set_flag": "priya_retracted_paper_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Let the Collective keep its archive.",
+              "next_node_id": "declined",
+              "set_flag": "priya_retracted_paper_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
             }
           ],
           "expression": "concerned"
@@ -595,7 +716,11 @@
           "responses": [
             {
               "text": "Then it's time to set the record straight.",
-              "next_node_id": "urgency"
+              "next_node_id": "urgency",
+              "set_flag": "priya_retracted_paper_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
             }
           ],
           "expression": "bitter"
@@ -611,6 +736,38 @@
             }
           ],
           "expression": "determined"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "dr_priya_osei",
+          "text": "Very well. I will stop watching the index.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "concerned"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "dr_priya_osei",
+          "text": "My paper is still listed in the Axiom Labs archive. Shall we go and copy it, Captain?",
+          "responses": [
+            {
+              "text": "Set course for Axiom Labs.",
+              "next_node_id": "urgency",
+              "set_flag": "priya_retracted_paper_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
         }
       ]
     },
@@ -660,25 +817,23 @@
           "text": "The review board is in session. Voss is here, and he's confident. He thinks his reputation will carry the day. I need to present the evidence clearly, but I could use help. Either we find hard proof of the timeline discrepancy, or we convince his research partner, Dr. Teodora Rautio-Mensah, to testify.",
           "responses": [
             {
-              "text": "[Examine the data timestamps for proof] (Acuity check)",
+              "text": "[Technical 3] Pull the metadata and put both timestamps in front of the board.",
               "next_node_id": null,
               "skill_check": {
-                "skill": "acu",
-                "difficulty": 4,
+                "skill": "technical",
+                "difficulty": 3,
                 "success_node_id": "data_success",
-                "failure_node_id": "data_fail",
-                "set_flag_on_success": "priya_confrontation_resolved"
+                "failure_node_id": "data_fail"
               }
             },
             {
-              "text": "[Convince Dr. Rautio-Mensah to speak up] (Communication check)",
+              "text": "[Persuasion 3] Ask Dr. Rautio-Mensah to tell the board what happened in the lab.",
               "next_node_id": null,
               "skill_check": {
-                "skill": "com",
+                "skill": "persuasion",
                 "difficulty": 3,
                 "success_node_id": "witness_success",
-                "failure_node_id": "witness_fail",
-                "set_flag_on_success": "priya_confrontation_resolved"
+                "failure_node_id": "witness_fail"
               }
             }
           ],
@@ -788,14 +943,13 @@
           "text": "Calibrating now. I need precise instrument adjustments during the scan window. Captain, can you handle the secondary controls?",
           "responses": [
             {
-              "text": "[Assist with calibration] (Ingenuity check)",
+              "text": "[Technical 3] Trim the scanner array by hand while Priya calls the figures.",
               "next_node_id": null,
               "skill_check": {
-                "skill": "ing",
-                "difficulty": 4,
+                "skill": "technical",
+                "difficulty": 3,
                 "success_node_id": "success",
-                "failure_node_id": "partial",
-                "set_flag_on_success": "priya_theorem_validated"
+                "failure_node_id": "partial"
               }
             }
           ]
@@ -849,7 +1003,20 @@
             },
             {
               "text": "Want to check it out?",
-              "next_node_id": "lets_go"
+              "next_node_id": "lets_go",
+              "set_flag": "tomas_name_from_past_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Leave Castillo in the past.",
+              "next_node_id": "declined",
+              "set_flag": "tomas_name_from_past_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
             }
           ],
           "expression": "tense"
@@ -861,7 +1028,11 @@
           "responses": [
             {
               "text": "I'm sorry. Let's go find them.",
-              "next_node_id": "lets_go"
+              "next_node_id": "lets_go",
+              "set_flag": "tomas_name_from_past_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
             }
           ],
           "expression": "painful"
@@ -877,6 +1048,38 @@
             }
           ],
           "expression": "determined"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "tomas_drifter",
+          "text": "The past doesn't stay put. But fine.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "bitter"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "tomas_drifter",
+          "text": "Castillo's trail still starts at Haven's Rest. Do we follow it?",
+          "responses": [
+            {
+              "text": "We follow it.",
+              "next_node_id": "lets_go",
+              "set_flag": "tomas_name_from_past_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
         }
       ]
     },
@@ -961,11 +1164,10 @@
           "text": "We set up a shell cargo contract. Castillo takes the bait, commits their own credits, and we pull the rug. Poetic, right? The void provides.",
           "responses": [
             {
-              "text": "[Execute the con]",
-              "next_node_id": "con_result",
-              "set_flag": "tomas_confrontation_resolved",
+              "text": "[Deception 3] Sell Castillo the shell contract with a straight face.",
+              "next_node_id": null,
               "skill_check": {
-                "skill": "com",
+                "skill": "deception",
                 "difficulty": 3,
                 "success_node_id": "con_success",
                 "failure_node_id": "con_fail"
@@ -1005,18 +1207,6 @@
             }
           ],
           "expression": "frustrated"
-        },
-        {
-          "id": "con_result",
-          "speaker_id": "tomas_drifter",
-          "text": "It's done.",
-          "responses": [
-            {
-              "text": "[Continue]",
-              "next_node_id": null,
-              "set_flag": "tomas_confrontation_resolved"
-            }
-          ]
         },
         {
           "id": "direct",
@@ -1116,14 +1306,13 @@
           "text": "I want to use my contacts, the real ones, the network I've built on this crew, to establish a legitimate trade route. Something that puts good faith credits in people's pockets. I know the margins, I know the ports. I just need someone to vouch for me.",
           "responses": [
             {
-              "text": "[Vouch for Tomas, help negotiate] (Synergy check)",
+              "text": "[Persuasion 3] Vouch for Tomas to every trader at the table.",
               "next_node_id": null,
               "skill_check": {
-                "skill": "syn",
+                "skill": "persuasion",
                 "difficulty": 3,
                 "success_node_id": "success",
-                "failure_node_id": "partial",
-                "set_flag_on_success": "tomas_past_resolved"
+                "failure_node_id": "partial"
               }
             }
           ]
@@ -1156,6 +1345,606 @@
               "crew_loyalty_changes": {
                 "tomas_drifter": 25
               }
+            }
+          ],
+          "expression": "hopeful"
+        }
+      ]
+    },
+    {
+      "id": "elena_wreck_meridian_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "Koren's last heading runs into the mining corridors at Iron Depths. If the Meridian went down, it went down there. I want to find her, Captain.",
+          "responses": [
+            {
+              "text": "We'll fly to Iron Depths and look.",
+              "next_node_id": "agreed",
+              "set_flag": "elena_wreck_meridian_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
+            },
+            {
+              "text": "The wreck can stay lost.",
+              "next_node_id": "declined",
+              "set_flag": "elena_wreck_meridian_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "elena_reeves",
+          "text": "I'll have the approach plotted before we leave the dock.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "elena_reeves",
+          "text": "Then I'll stop rerunning the heading.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "elena_reeves",
+          "text": "The heading to Iron Depths is still in the nav log. Do we go and look for the Meridian?",
+          "responses": [
+            {
+              "text": "We go.",
+              "next_node_id": "agreed",
+              "set_flag": "elena_wreck_meridian_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "hopeful"
+        }
+      ]
+    },
+    {
+      "id": "elena_charting_stars_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "Koren's calculations are complete enough to fly. I want to chart her route and file it under her name, Captain.",
+          "responses": [
+            {
+              "text": "Chart it. I'll fly it with you.",
+              "next_node_id": "agreed",
+              "set_flag": "elena_charting_stars_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
+            },
+            {
+              "text": "Leave the route unfiled.",
+              "next_node_id": "declined",
+              "set_flag": "elena_charting_stars_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "elena_reeves",
+          "text": "Thank you. I'll set up the calibration passes.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "elena_reeves",
+          "text": "Understood. Her notes go back in the drawer.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "elena_reeves",
+          "text": "Koren's route is still waiting to be charted. Shall we file it, Captain?",
+          "responses": [
+            {
+              "text": "File it.",
+              "next_node_id": "agreed",
+              "set_flag": "elena_charting_stars_agreed",
+              "crew_loyalty_changes": {
+                "elena_reeves": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "hopeful"
+        }
+      ]
+    },
+    {
+      "id": "marcus_the_inspector_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "The records from Hargan Yards show every shortcut Dask took. Forgeworks has a Union safety inspector. I want the evidence on the inspector's desk.",
+          "responses": [
+            {
+              "text": "Then we take it to Forgeworks.",
+              "next_node_id": "agreed",
+              "set_flag": "marcus_the_inspector_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
+            },
+            {
+              "text": "Let someone else carry this to Forgeworks.",
+              "next_node_id": "declined",
+              "set_flag": "marcus_the_inspector_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "marcus_jin",
+          "text": "Good. I'll pack the drives.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "marcus_jin",
+          "text": "Nobody else will. But fine.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "frustrated"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "marcus_jin",
+          "text": "The drives are still in my locker. Do we take them to Forgeworks?",
+          "responses": [
+            {
+              "text": "We take them.",
+              "next_node_id": "agreed",
+              "set_flag": "marcus_the_inspector_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        }
+      ]
+    },
+    {
+      "id": "marcus_steel_holds_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "marcus_jin",
+          "text": "A Union contact sent word. Dask has been at the yard after hours. I want to be standing in that yard when the inspectors arrive.",
+          "responses": [
+            {
+              "text": "We'll be at Breakstone.",
+              "next_node_id": "agreed",
+              "set_flag": "marcus_steel_holds_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
+            },
+            {
+              "text": "Let the inspectors handle Dask.",
+              "next_node_id": "declined",
+              "set_flag": "marcus_steel_holds_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "angry"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "marcus_jin",
+          "text": "Good. I'll be ready.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "marcus_jin",
+          "text": "They'll need someone who knows where he hides things. Your call.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "bitter"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "marcus_jin",
+          "text": "Dask is still at Hargan Yards. Do we go and stand in that yard?",
+          "responses": [
+            {
+              "text": "We go.",
+              "next_node_id": "agreed",
+              "set_flag": "marcus_steel_holds_agreed",
+              "crew_loyalty_changes": {
+                "marcus_jin": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        }
+      ]
+    },
+    {
+      "id": "priya_peer_review_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "The review board at Nova Research will hear the case against Voss. I would like to present my evidence in person, and I would like you there, Captain.",
+          "responses": [
+            {
+              "text": "We'll be at Nova Research.",
+              "next_node_id": "agreed",
+              "set_flag": "priya_peer_review_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Send the board your files and leave it there.",
+              "next_node_id": "declined",
+              "set_flag": "priya_peer_review_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "dr_priya_osei",
+          "text": "Thank you. I will prepare the timeline tonight.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "dr_priya_osei",
+          "text": "Then Voss will speak and I will not.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "dr_priya_osei",
+          "text": "The review board has not closed the case. Shall we go to Nova Research?",
+          "responses": [
+            {
+              "text": "We go.",
+              "next_node_id": "agreed",
+              "set_flag": "priya_peer_review_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "hopeful"
+        }
+      ]
+    },
+    {
+      "id": "priya_the_theorem_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dr_priya_osei",
+          "text": "My research points somewhere new. If the synthesis holds, the ship's scanners could resolve far finer detail. I need a field test to know. Will you fly it with me?",
+          "responses": [
+            {
+              "text": "Let's run the test.",
+              "next_node_id": "agreed",
+              "set_flag": "priya_the_theorem_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Keep the theory on paper.",
+              "next_node_id": "declined",
+              "set_flag": "priya_the_theorem_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "hopeful"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "dr_priya_osei",
+          "text": "Thank you. I will draft the calibration plan.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "dr_priya_osei",
+          "text": "Then it stays a theory.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "dr_priya_osei",
+          "text": "The field test is still waiting. Shall we run it, Captain?",
+          "responses": [
+            {
+              "text": "Run it.",
+              "next_node_id": "agreed",
+              "set_flag": "priya_the_theorem_agreed",
+              "crew_loyalty_changes": {
+                "dr_priya_osei": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        }
+      ]
+    },
+    {
+      "id": "tomas_fulcrum_job_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "Castillo was asking about freight contracts at The Fulcrum. Same trick as before, I'd bet. I want to be there when they try it.",
+          "responses": [
+            {
+              "text": "Then we go to The Fulcrum.",
+              "next_node_id": "agreed",
+              "set_flag": "tomas_fulcrum_job_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Let Castillo go.",
+              "next_node_id": "declined",
+              "set_flag": "tomas_fulcrum_job_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "determined"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "tomas_drifter",
+          "text": "Thanks. I'll start working out the play.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "tomas_drifter",
+          "text": "Easy to say when it wasn't your family. Fine.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "frustrated"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "tomas_drifter",
+          "text": "Castillo's still at The Fulcrum. Do we go?",
+          "responses": [
+            {
+              "text": "We go.",
+              "next_node_id": "agreed",
+              "set_flag": "tomas_fulcrum_job_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        }
+      ]
+    },
+    {
+      "id": "tomas_new_ledger_ask_dialogue",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "tomas_drifter",
+          "text": "I've got contacts, real ones, traders who'd sign honest contracts if someone vouched for them. I want to try, and I'd like you at the table.",
+          "responses": [
+            {
+              "text": "I'll sit at the table with you.",
+              "next_node_id": "agreed",
+              "set_flag": "tomas_new_ledger_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Keep running cargo with us instead.",
+              "next_node_id": "declined",
+              "set_flag": "tomas_new_ledger_declined"
+            },
+            {
+              "text": "Not now.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "agreed",
+          "speaker_id": "tomas_drifter",
+          "text": "Thanks. I'll start making calls.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "grateful"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "tomas_drifter",
+          "text": "Maybe you're right. Maybe.",
+          "responses": [
+            {
+              "text": "[Continue]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "sad"
+        },
+        {
+          "id": "ask_again",
+          "speaker_id": "tomas_drifter",
+          "text": "The traders are still willing to meet. Do we sit down with them?",
+          "responses": [
+            {
+              "text": "We sit down.",
+              "next_node_id": "agreed",
+              "set_flag": "tomas_new_ledger_agreed",
+              "crew_loyalty_changes": {
+                "tomas_drifter": 2
+              }
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
             }
           ],
           "expression": "hopeful"

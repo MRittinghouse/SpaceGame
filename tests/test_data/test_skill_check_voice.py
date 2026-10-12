@@ -42,7 +42,12 @@ from typing import Iterator, Optional
 # ---------------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DIALOGUES_PATH = PROJECT_ROOT / "data" / "dialogue" / "dialogues.json"
+# The crew quests' trees too (polish design 3.6): their checks survived at grade D because
+# this scan read only dialogues.json.
+DIALOGUES_PATHS = (
+    PROJECT_ROOT / "data" / "dialogue" / "dialogues.json",
+    PROJECT_ROOT / "data" / "dialogue" / "crew_quest_dialogues.json",
+)
 
 # Registered skill_check skills as of NV-6.5. Keep in sync with
 # ``spacegame.models.social.SOCIAL_SKILL_DEFINITIONS``.
@@ -108,8 +113,11 @@ class _Scanned:
 
 
 def _load_dialogues() -> dict:
-    with open(DIALOGUES_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    trees: list[dict] = []
+    for path in DIALOGUES_PATHS:
+        with open(path, "r", encoding="utf-8") as f:
+            trees.extend(json.load(f)["dialogues"])
+    return {"dialogues": trees}
 
 
 def _parse_prefix(text: str) -> tuple[Optional[str], Optional[int], str]:
