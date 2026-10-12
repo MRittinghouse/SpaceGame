@@ -620,19 +620,25 @@ def iron_delivery_moved_on() -> str:
     """Flag set when the campaign stops waiting on Odom's iron delivery.
 
     Producers: ``iron_delivery``'s reward; ``iron_consignment.close_on_exit`` at a
-    dialogue's exit after the betrayal; ``iron_consignment.on_clock`` at a landing or a
-    rest from the late tier's first day.
+    dialogue's exit, after the betrayal, a no-fault close or a decline at the offer;
+    ``iron_consignment.on_clock`` at a landing or a rest from the late tier's first day, or
+    from day 20 for a captain who holds the bill of landing and never took the job, and when
+    it files a sale on record.
     Consumers: ``elena_reeves.auto_trigger_prerequisites``; ``footing_the_bill`` and
-    ``the_dead_ledger`` required flags.
+    ``the_dead_ledger`` required flags; Odom's drifted reply (``merchant_delivery``,
+    ``waiting_drifted``).
     """
     return "iron_delivery_moved_on"
 
 
 def iron_delivery_failed() -> str:
-    """Flag set by Odom's betrayal reply (``merchant_delivery``, ``betrayal_end``).
+    """Flag set when Odom's iron job fails over a sale: the betrayal, or the clock's filing.
 
+    Producers: Odom's betrayal reply (``merchant_delivery``, ``betrayal_end``);
+    ``iron_consignment.on_clock`` when it files a sale on record (polish design 2.2 rule 6).
     Consumers: ``iron_consignment.close_on_exit``, which fails the open job;
-    ``odom_broker.hide_after_flag``.
+    ``odom_broker.hide_after_flag``; the journal's ``auto_iron_betrayal``; Odom's ledger
+    reply (its exclusion); Elena's violation reply (``elena_cantina``).
     """
     return "iron_delivery_failed"
 
@@ -641,7 +647,8 @@ def broker_ore_sold() -> str:
     """Flag set when a sale draws Odom's consigned ore while the job is open.
 
     Producer: ``iron_consignment.note_sale``, called by the trading view's Sell.
-    Consumer: ``merchant_delivery``'s "About that iron ore..." reply.
+    Consumer: the job's state (``iron_consignment.state_of``), which Odom's and the intake
+    clerk's replies read and the clock's filing checks.
     """
     return "broker_ore_sold"
 
