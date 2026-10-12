@@ -1529,6 +1529,8 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   `tomas_lead_dialogue` (F-45's `crew_loyalty_*_70` and `_85` flags in every step whose gain
   crosses a mark from the driver's 60; the stage 1 trees' new replies and nodes; F-34's checks,
   which now pass and fail on registered skills; rule 8's moved flags and loyalty;
+  `elena_wreck_dialogue`'s four take-both steps now set `elena_wreck_found`;
+  `tomas_fulcrum_dialogue`'s two `con_result` steps (novice and expert) gone with the node;
   `elena_archives_dialogue`'s `npc_id` null now that its NPC is gone), `dialogue/npcs_here` and
   `missions/availability`; no `missions/lifecycle_*` golden changes, since the lifecycle driver
   forces 'available' and never reads the gate. The new goldens are the eight
