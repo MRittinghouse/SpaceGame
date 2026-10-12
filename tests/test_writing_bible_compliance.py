@@ -292,3 +292,8 @@ class TestTheAllowlist:
         for found in live.values():
             for offence in found:
                 assert allowlist.reason_for(offence)
+
+    def test_no_row_waits_on_w2(self) -> None:
+        """Plan W2-S closes every row it owns; a row it leaves names its next owner."""
+        waiting = [row.key for row in allowlist.rows() if "W2" in row.reason]
+        assert waiting == []

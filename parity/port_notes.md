@@ -937,6 +937,70 @@ hand-off entries) are its own.
   adds it to `docs/handoffs.md` beside the news templates' entry among the token
   registry's unported files.
 
+## Writing W2 (2026-10-11)
+
+Plan W2-S, the narrator audit's pass (writing discipline spec, aurelia
+`docs/specs/2026-10-01-writing-discipline-design.md`, 9.2 row 4 and 9.4), rewrote the shipped
+lines its worklist (`tools/writing/w2_rows.json`) names, and plan W2-A brings them to the
+Godot port by sync.
+
+### Records for plan W2-A
+
+- What the sync brings: the outcome text of the encounters W2 rewrote, so the encounter
+  goldens' content changes (up to 16 `encounters/outcomes_*` files), `dialogue/chatter.json`
+  and `dialogue/captain_tokens.json`; no node, reply or record is added or removed, so
+  aurelia's `test/unit/dialogue_content_test.gd` totals hold; no brace is added, so the token
+  registry holds; Szabo's report keeps its opening, so `captain_surfaces_test.gd` holds; 30
+  data files change. (Plan W2-S)
+- What W2 fixed: 560 of the audit's 567 open rows, the lines the gates held for W2, the named
+  lines and F-016's 22 strings, with a travel "warp" made "jump", a "warp gate" made "the
+  gate", "naval facility" a Guild enforcement yard, Koren "she", and the Log's touched lines
+  in spec 2.4's form. (Plan W2-S)
+- What W2 left, and to whom: the price rows and the figures in narration to W3 (record
+  tokens, spec 3.7); `auto_m13_oren`, `auto_iron_betrayal` and `iron_delivery`'s discovery
+  note to W3's scenes; the collapse sequence to SP10, which chooses its own words; the G13
+  exit trees to each tree's rewrite (W3 to W8, SP10); the names to the naming pass; the Act
+  II v1 archive to SP11 if it returns (the d1 and d3 capstone narration, the lens's core
+  fantasy, the 8 G10 rows, the lens file's double hyphens, and `capstone_view.py`'s frame);
+  the `not_rich` condition and its `RICH_THRESHOLD` to SP5; the Log lines W2 did not touch to
+  the writing pass. (Plan W2-S's rulings)
+- W3's queue: the strings of plan A1's list that W2 rewrote in the six encounters whose
+  parallel-negation forms "The writing pass" names, listed below; every other W2 rewrite
+  inside the 120 encounters of plan A1's list is recorded by path in
+  `tools/writing/w2_rows.json` and in the reading copy. The pass reads them all as W2 left
+  them. (Plan W2-S; aurelia `docs/handoffs.md`, "The writing pass")
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description`
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].description`
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].outcome.description`
+  - `.encounters[id=campaign_larsen_warning_01].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=document].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=move_on].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=move_on].outcome.description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=provide_aid].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=provide_aid].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=ignore].description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=ignore].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=run_diagnostics].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].description`
+  - `.encounters[id=derelict_freighter_01].choices[id=pass].description`
+  - `.encounters[id=derelict_freighter_01].choices[id=pass].outcome.description`
+  - `.encounters[id=derelict_freighter_01].choices[id=salvage].description`
+  - `.encounters[id=derelict_freighter_01].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].outcome.description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=board].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=report].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=alert_union].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].label`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].outcome.description`
+- After W2: `tests/test_data/test_writing_w2_audit.py` becomes the residue check in Task 12,
+  so W3 to W8 and SP10 may rewrite any W2 line, but no audit excerpt may come back. (Plan
+  W2-S)
+- The author's read: the reading copy (`python -m tools.writing.w2_audit read --out <file>`)
+  is the record of every line, with the twelve edge rows and the sensation flagged; the
+  author's rulings follow (Task 12 adds them). (Chunk map; spec 11.2)
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

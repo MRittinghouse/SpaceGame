@@ -8,7 +8,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=connection].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -16,7 +16,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=crime].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -24,7 +24,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=discovery].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -32,7 +32,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=legacy].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -40,7 +40,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=preservation].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -48,7 +48,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=revolution].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -56,7 +56,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=transcendence].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G1",
@@ -64,7 +64,7 @@
       "file": "data/narrative/lenses.json",
       "path": ".lenses[id=truth].core_fantasy",
       "match": "--",
-      "reason": "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -72,7 +72,7 @@
       "file": "data/narrative/dilemmas/d1_vengeance_justice.json",
       "path": ".dilemmas[id=d1_vengeance_justice].outcomes[1].tier_unlocks[0]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -80,7 +80,7 @@
       "file": "data/narrative/dilemmas/d2_wealth_community.json",
       "path": ".dilemmas[id=d2_wealth_community].outcomes[0].tier_unlocks[0]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -88,7 +88,7 @@
       "file": "data/narrative/dilemmas/d2_wealth_community.json",
       "path": ".dilemmas[id=d2_wealth_community].outcomes[0].tier_unlocks[1]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -96,7 +96,7 @@
       "file": "data/narrative/dilemmas/d5_legacy_connection.json",
       "path": ".dilemmas[id=d5_legacy_connection].outcomes[0].tier_unlocks[0]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -104,7 +104,7 @@
       "file": "data/narrative/dilemmas/d5_legacy_connection.json",
       "path": ".dilemmas[id=d5_legacy_connection].outcomes[0].tier_unlocks[1]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -112,7 +112,7 @@
       "file": "data/narrative/dilemmas/d6_preservation_empire.json",
       "path": ".dilemmas[id=d6_preservation_empire].outcomes[0].narration_summary",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -120,7 +120,7 @@
       "file": "data/narrative/dilemmas/d6_preservation_empire.json",
       "path": ".dilemmas[id=d6_preservation_empire].outcomes[1].tier_unlocks[0]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G10",
@@ -128,7 +128,7 @@
       "file": "data/narrative/dilemmas/d6_preservation_empire.json",
       "path": ".dilemmas[id=d6_preservation_empire].outcomes[1].tier_unlocks[1]",
       "match": "the player",
-      "reason": "Act II v1 archive text, the flag off; W2 rewrites it"
+      "reason": "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
     },
     {
       "gate": "G11",
@@ -192,7 +192,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_destination].responses[0].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -200,7 +200,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_smooth].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -208,7 +208,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].responses[3].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -216,7 +216,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -224,7 +224,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].responses[0].text",
       "match": "500 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -232,7 +232,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].text",
       "match": "500 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -240,7 +240,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].responses[0].text",
       "match": "250 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -248,7 +248,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].text",
       "match": "250 credit",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -256,7 +256,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=merchant_delivery].nodes[id=offer].text",
       "match": "500 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -264,7 +264,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=priya_stranded].nodes[id=agree_transport].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -272,7 +272,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].responses[0].text",
       "match": "400 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -280,7 +280,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].text",
       "match": "400 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -288,7 +288,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=tomas_havens].nodes[id=tariff_pitch].text",
       "match": "30 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -296,7 +296,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=yuki_signal_deep].nodes[id=compensation].text",
       "match": "350 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
+      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
     },
     {
       "gate": "G11",
@@ -336,7 +336,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=priya_calibrates].text",
       "match": "without looking up",
-      "reason": "without looking up is Marcus's gesture alone; W2 gives this speaker another"
+      "reason": "text in the collapse sequence; SP10 rewrites the sequence"
     },
     {
       "gate": "G13",
@@ -344,7 +344,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=arna_last_freight_out_closeout]",
       "match": "7 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -352,7 +352,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=arna_post_ambush]",
       "match": "13 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -360,7 +360,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=cassian_velo_main]",
       "match": "a loop",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -368,7 +368,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=dex_assembly_intel]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -376,7 +376,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=dex_cantina]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -384,7 +384,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=elena_cantina]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -392,7 +392,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=embassy_summit]",
       "match": "10 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -400,7 +400,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=jez_okafor_dialogue]",
       "match": "5 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -408,7 +408,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=larsen_customs]",
       "match": "8 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -416,7 +416,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=marcus_recognition]",
       "match": "8 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -424,7 +424,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=oren_tak_meeting]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -432,7 +432,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=petra_vance_whistleblower]",
       "match": "5 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -440,7 +440,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=priya_convergence_analysis]",
       "match": "7 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -448,7 +448,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=priya_stranded]",
       "match": "5 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -456,7 +456,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=reach_floor_manager_main]",
       "match": "a loop",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -464,7 +464,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=sienna_vek_warning]",
       "match": "9 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -472,7 +472,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=tev_refining_intro]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -480,7 +480,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence]",
       "match": "11 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -488,7 +488,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=tomas_havens]",
       "match": "6 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -496,7 +496,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=tomasz_brennan_old_debts]",
       "match": "5 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G13",
@@ -504,7 +504,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=torres_underground]",
       "match": "8 nodes",
-      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
+      "reason": "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
     },
     {
       "gate": "G2",
@@ -512,7 +512,7 @@
       "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=the_collapse_sequence].nodes[id=new_horizon].text",
       "match": "No mapped systems, no trade",
-      "reason": "a paired negation; W2 rewrites it"
+      "reason": "text in the collapse sequence; SP10 rewrites the sequence"
     },
     {
       "gate": "G2",

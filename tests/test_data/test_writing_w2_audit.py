@@ -74,3 +74,7 @@ def test_the_worklist_holds_every_named_line() -> None:
 @pytest.mark.parametrize("file", DONE_FILES)
 def test_every_entry_of_a_done_file_landed(file: str) -> None:
     assert w2_audit.check(w2_audit.load_worklist(), {file}) == []
+
+
+def test_every_file_is_done() -> None:
+    assert set(DONE_FILES) == {entry.file for entry in w2_audit.load_worklist()}

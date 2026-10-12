@@ -8,6 +8,7 @@ whose string no longer offends, so a fixed line must leave the list in the same 
 Usage, from the repo root:
     python -m tests.writing_gates.allowlist --write   # the baseline; refuses an existing file
     python -m tests.writing_gates.allowlist --prune   # drop rows that no longer offend
+    python -m tests.writing_gates.allowlist --rereason # restamp every row's reason
     python -m tests.writing_gates.allowlist --counts  # rows by gate and rule
 """
 
@@ -79,9 +80,10 @@ _COLLAPSE_WARP = "warp in the collapse sequence; SP10 rewrites the sequence (imp
 _WARP = "warp is out of the Expanse's lexicon; W2 rewrites the line"
 _MARCUS = "Marcus never says Captain (polish design 3.1, content rule 7); his slice, W4 to W8"
 _GESTURE = "without looking up is Marcus's gesture alone; W2 gives this speaker another"
-_PRICE = "a literal price in speech becomes a record token (spec 3.7, 2.7); W2 or W3"
-_EXITS = "more than four nodes without an exit; the tree's rewrite restructures it (W2 to W8, SP10)"
-_PLAYER = "Act II v1 archive text, the flag off; W2 rewrites it"
+_PRICE = "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
+_EXITS = "more than four nodes without an exit; the tree's rewrite restructures it (W3 to W8, SP10)"
+_PLAYER = "Act II v1 archive text, the flag off; SP11 rewrites it if the archive returns"
+_COLLAPSE_TEXT = "text in the collapse sequence; SP10 rewrites the sequence"
 _DASH = "a double hyphen used as a dash (BB-35's wave B files); W2 rewrites it"
 _NEGATION = "a paired negation; W2 rewrites it"
 _WORD = "an overused word (spec G3); W2 rewrites it"
@@ -115,8 +117,11 @@ REASONS: tuple[Reason, ...] = (
     Reason("G9", "not an act", "*", "", _NOT_ACT),
     Reason("G9", "observation unquoted", "*", "", _OBSERVATION),
     Reason("G4", "near collision", "*", "", _NAMES),
+    Reason("*", "*", "data/narrative/*", "", _PLAYER),
     Reason("G11", "navy", "*", "", _NAVY),
     Reason("G11", "warp", "*", "the_collapse_sequence", _COLLAPSE_WARP),
+    Reason("G2", "*", "*", "the_collapse_sequence", _COLLAPSE_TEXT),
+    Reason("G11", "without looking up", "*", "the_collapse_sequence", _COLLAPSE_TEXT),
     Reason("G11", "warp", "*", "", _WARP),
     Reason("G11", "captain from marcus", "*", "", _MARCUS),
     Reason("G11", "without looking up", "*", "", _GESTURE),
@@ -192,12 +197,23 @@ def counts(found: tuple[Row, ...] | list[Row]) -> Counter[tuple[str, str]]:
     return Counter((row.gate, row.rule) for row in found)
 
 
+def rereason() -> list[Row]:
+    """Every row with its reason restamped from REASONS; rows may only shrink, so this adds none."""
+    return [
+        Row(
+            row.gate, row.rule, row.file, row.path, row.match, reason_for(Offence(*row.key, "", ""))
+        )
+        for row in rows()
+    ]
+
+
 def main(argv: list[str] | None = None) -> int:
-    """Write the baseline, prune fixed rows, or print the counts."""
+    """Write the baseline, prune fixed rows, restamp the reasons, or print the counts."""
     parser = argparse.ArgumentParser(description=__doc__)
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--write", action="store_true")
     action.add_argument("--prune", action="store_true")
+    action.add_argument("--rereason", action="store_true")
     action.add_argument("--counts", action="store_true")
     args = parser.parse_args(argv)
     if args.write:
@@ -211,6 +227,9 @@ def main(argv: list[str] | None = None) -> int:
         gone = set(stale(rows(), live))
         result = [row for row in rows() if row not in gone]
         print(f"pruned {len(gone)} rows")
+        _write(result)
+    elif args.rereason:
+        result = rereason()
         _write(result)
     else:
         result = list(rows())
