@@ -1,7 +1,6 @@
 """Tests for crew personal quest data and gating."""
 
 from spacegame.data_loader import DataLoader
-from spacegame.models.crew import CrewRoster, LoyaltyTier
 from spacegame.models.crew_scene import SceneContext, refusal
 from spacegame.models.mission import MissionManager, MissionStatus
 
