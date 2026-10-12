@@ -80,7 +80,7 @@
     },
     "tree_id": "priya_peer_review_dialogue"
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -96,13 +96,15 @@
         ],
         "check": [
           false,
-          "Unknown skill: acu"
+          "Technical check failed."
         ],
         "next_node": "data_fail",
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "amara_okonkwo": 48
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -126,13 +128,15 @@
         ],
         "check": [
           false,
-          "Unknown skill: com"
+          "Persuasion check failed."
         ],
         "next_node": "witness_fail",
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "amara_okonkwo": 48
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -160,6 +164,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -188,6 +193,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -216,6 +222,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -244,6 +251,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -267,14 +275,16 @@
           1
         ],
         "check": [
-          false,
-          "Unknown skill: acu"
+          true,
+          "Technical check passed!"
         ],
-        "next_node": "data_fail",
+        "next_node": "data_success",
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "amara_okonkwo": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -297,14 +307,16 @@
           1
         ],
         "check": [
-          false,
-          "Unknown skill: com"
+          true,
+          "Persuasion check passed!"
         ],
-        "next_node": "witness_fail",
+        "next_node": "witness_success",
         "response": 1
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "amara_okonkwo": 53
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -332,6 +344,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -360,6 +373,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -388,6 +402,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {
@@ -416,6 +431,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_dr_priya_osei_70",
           "priya_confrontation_resolved"
         ],
         "loyalty": {

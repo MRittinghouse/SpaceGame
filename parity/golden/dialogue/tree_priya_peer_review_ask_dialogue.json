@@ -1,0 +1,479 @@
+{
+  "case": "tree_priya_peer_review_ask_dialogue",
+  "format": 1,
+  "setup": {
+    "crew": [
+      {
+        "crew_id": "elena_reeves",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "marcus_jin",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "dr_priya_osei",
+        "loyalty_delta": 30
+      },
+      {
+        "crew_id": "tomas_drifter",
+        "loyalty_delta": 30
+      }
+    ],
+    "crew_slots": 4,
+    "npc_id": null,
+    "profiles": {
+      "expert": {
+        "flags": {},
+        "social": {
+          "disposition": {},
+          "skills": {
+            "deception": {
+              "id": "deception",
+              "level": 5,
+              "name": "Deception",
+              "xp": 100
+            },
+            "intimidation": {
+              "id": "intimidation",
+              "level": 5,
+              "name": "Intimidation",
+              "xp": 100
+            },
+            "leadership": {
+              "id": "leadership",
+              "level": 5,
+              "name": "Leadership",
+              "xp": 100
+            },
+            "observation": {
+              "id": "observation",
+              "level": 5,
+              "name": "Observation",
+              "xp": 100
+            },
+            "persuasion": {
+              "id": "persuasion",
+              "level": 5,
+              "name": "Persuasion",
+              "xp": 100
+            },
+            "piloting": {
+              "id": "piloting",
+              "level": 5,
+              "name": "Piloting",
+              "xp": 100
+            },
+            "technical": {
+              "id": "technical",
+              "level": 5,
+              "name": "Technical",
+              "xp": 100
+            }
+          }
+        }
+      },
+      "novice": {
+        "flags": {},
+        "social": {}
+      }
+    },
+    "tree_id": "priya_peer_review_ask_dialogue"
+  },
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "steps": [
+    {
+      "args": [
+        "novice",
+        "start",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "agreed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_agreed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 62,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "start",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "declined",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_declined"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "start",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "agreed",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "declined",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "ask_again",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "agreed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_agreed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 62,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "ask_again",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "start",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "agreed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_agreed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 62,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "start",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "declined",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_declined"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "start",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "agreed",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "declined",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "ask_again",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "agreed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "priya_peer_review_agreed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 62,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "ask_again",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    }
+  ],
+  "subsystem": "dialogue"
+}

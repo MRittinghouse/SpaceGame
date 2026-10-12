@@ -1,0 +1,779 @@
+{
+  "case": "scenes_due",
+  "format": 1,
+  "setup": {
+    "scene_ids": [
+      "elena_old_charts_opener",
+      "elena_old_charts_raise",
+      "elena_old_charts_resolution",
+      "elena_wreck_meridian_opener",
+      "elena_wreck_meridian_raise",
+      "elena_wreck_meridian_resolution",
+      "elena_charting_stars_opener",
+      "elena_charting_stars_raise",
+      "elena_charting_stars_resolution",
+      "marcus_old_debts_opener",
+      "marcus_old_debts_raise",
+      "marcus_old_debts_resolution",
+      "marcus_the_inspector_opener",
+      "marcus_the_inspector_raise",
+      "marcus_the_inspector_resolution",
+      "marcus_steel_holds_opener",
+      "marcus_steel_holds_raise",
+      "marcus_steel_holds_resolution",
+      "priya_retracted_paper_opener",
+      "priya_retracted_paper_raise",
+      "priya_retracted_paper_resolution",
+      "priya_peer_review_opener",
+      "priya_peer_review_raise",
+      "priya_peer_review_resolution",
+      "priya_the_theorem_opener",
+      "priya_the_theorem_raise",
+      "priya_the_theorem_resolution",
+      "tomas_name_from_past_opener",
+      "tomas_name_from_past_raise",
+      "tomas_name_from_past_resolution",
+      "tomas_fulcrum_job_opener",
+      "tomas_fulcrum_job_raise",
+      "tomas_fulcrum_job_resolution",
+      "tomas_new_ledger_opener",
+      "tomas_new_ledger_raise",
+      "tomas_new_ledger_resolution"
+    ]
+  },
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "steps": [
+    {
+      "args": [
+        "fresh",
+        {
+          "flags": [],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 30,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Elena at the mark",
+        {
+          "flags": [],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 50,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Legend",
+        {
+          "flags": [],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 30,
+            "marcus_jin": 40,
+            "tomas_drifter": 30
+          },
+          "offset": 10,
+          "spoken": [],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Elena spoke this landing",
+        {
+          "flags": [],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 50,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [
+            "elena_reeves"
+          ],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves will bring it up at the next port.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "agreed, away",
+        {
+          "flags": [
+            "elena_old_charts_agreed"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 55,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {
+            "elena_old_charts": "active"
+          },
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves wants to talk about that at Stellaris Port.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "agreed, there",
+        {
+          "flags": [
+            "elena_old_charts_agreed"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 55,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [
+            "elena_reeves"
+          ],
+          "statuses": {
+            "elena_old_charts": "active"
+          },
+          "system_id": "stellaris_port"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "declined",
+        {
+          "flags": [
+            "elena_old_charts_declined"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 50,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "stage 2",
+        {
+          "flags": [
+            "elena_quest_stage1_complete"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 70,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {
+            "elena_old_charts": "completed"
+          },
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Elena dismissed",
+        {
+          "flags": [
+            "elena_quest_stage1_complete",
+            "elena_wreck_meridian_agreed"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {
+            "elena_old_charts": "completed",
+            "elena_wreck_meridian": "active"
+          },
+          "system_id": "iron_depths"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves is not aboard.",
+        "elena_charting_stars_raise": "Elena Reeves is not aboard.",
+        "elena_charting_stars_resolution": "Elena Reeves is not aboard.",
+        "elena_old_charts_opener": "Elena Reeves is not aboard.",
+        "elena_old_charts_raise": "Elena Reeves is not aboard.",
+        "elena_old_charts_resolution": "Elena Reeves is not aboard.",
+        "elena_wreck_meridian_opener": "Elena Reeves is not aboard.",
+        "elena_wreck_meridian_raise": "Elena Reeves is not aboard.",
+        "elena_wreck_meridian_resolution": "Elena Reeves is not aboard.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Elena rehired",
+        {
+          "flags": [
+            "elena_quest_stage1_complete",
+            "elena_wreck_meridian_agreed"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 72,
+            "marcus_jin": 30,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {
+            "elena_old_charts": "completed",
+            "elena_wreck_meridian": "active"
+          },
+          "system_id": "iron_depths"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "Tomas at the mark",
+        {
+          "flags": [],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 30,
+            "marcus_jin": 30,
+            "tomas_drifter": 50
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {},
+          "system_id": "nexus_prime"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "Marcus Jin has nothing to say about that now.",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    },
+    {
+      "args": [
+        "the inspector's stage",
+        {
+          "flags": [
+            "marcus_quest_stage1_complete",
+            "marcus_the_inspector_agreed"
+          ],
+          "loyalty": {
+            "dr_priya_osei": 30,
+            "elena_reeves": 30,
+            "marcus_jin": 75,
+            "tomas_drifter": 30
+          },
+          "offset": 0,
+          "spoken": [],
+          "statuses": {
+            "marcus_old_debts": "completed",
+            "marcus_the_inspector": "active"
+          },
+          "system_id": "forgeworks"
+        }
+      ],
+      "call": "due",
+      "result": {
+        "elena_charting_stars_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_charting_stars_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_old_charts_resolution": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_opener": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_raise": "Elena Reeves has nothing to say about that now.",
+        "elena_wreck_meridian_resolution": "Elena Reeves has nothing to say about that now.",
+        "marcus_old_debts_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_old_debts_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_steel_holds_resolution": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_opener": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_raise": "Marcus Jin has nothing to say about that now.",
+        "marcus_the_inspector_resolution": "",
+        "priya_peer_review_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_peer_review_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_retracted_paper_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_opener": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_raise": "Dr. Priya Osei has nothing to say about that now.",
+        "priya_the_theorem_resolution": "Dr. Priya Osei has nothing to say about that now.",
+        "tomas_fulcrum_job_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_fulcrum_job_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_name_from_past_resolution": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_opener": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_raise": "Tomas Drifter has nothing to say about that now.",
+        "tomas_new_ledger_resolution": "Tomas Drifter has nothing to say about that now."
+      },
+      "state": {}
+    }
+  ],
+  "subsystem": "crew"
+}
