@@ -299,7 +299,7 @@ class DialogueManager:
                 crew_whisperer_bonus = self._player.progression.get_bonus("crew_whisperer")
             for crew_id, amount in response.crew_loyalty_changes.items():
                 adjusted = int(amount * (1.0 + crew_whisperer_bonus)) if amount > 0 else amount
-                # F-45 (SpaceGame F-015, polish design 3.1): keep the threshold flags a crossing
+                # F-45 (SpaceGame F-C11, polish design 3.1): keep the threshold flags a crossing
                 # returns, as the trade and mission payouts do, so a latched mark stays honest.
                 for flag in self._crew_roster.adjust_loyalty(crew_id, adjusted):
                     self.set_flag(flag)

@@ -1501,7 +1501,7 @@ Godot port by sync.
 | T11-3 | 12 | `data/journal/entries.json auto_iron_betrayal and auto_m13_oren; data/missions/missions.json iron_delivery.discovery_text` | W3 |
 | T11-4 | 14 | `SpaceGame parity/port_notes.md, this section's 'What W2 fixed' bullet` | closed, no action |
 
-## Writing W4 (2026-10-12)
+## Writing W4 (2026-10-11)
 
 Writing plan W4-S landed the SpaceGame half of the crew quests' wiring slice (writing-discipline
 spec 9.2 row 7; polish design 3.1 and 3.6): the crew-scene mechanism, the twelve crew quests
@@ -1518,10 +1518,12 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   `data/dialogue/crew_quest_dialogues.json` (eight new trees `<quest>_ask_dialogue`; the four
   stage 1 trees gain an ask, a decline, a deferral and the nodes `declined` and `ask_again`;
   F-34's seven check replies; the take-both replies set `elena_wreck_found`;
-  `tomas_fulcrum_dialogue`'s `con_result` node deleted) and `data/characters/npcs.json`
-  (`elena_archives_npc` deleted; `lira_feng`, `amara_okonkwo` and `ren_castillo` listed only
-  after their stage's resolution and hidden after it until their slice gives them an
-  after-tree, so W4 reaches each only through its resolution scene). (plan W4-S Task 4)
+  `tomas_fulcrum_dialogue`'s `con_result` node deleted; `marcus_confrontation_dialogue`'s start
+  line says "get there" for "get back to Breakstone", since `marcus_steel_holds_resolution`
+  plays it at Breakstone) and `data/characters/npcs.json` (`elena_archives_npc` deleted;
+  `lira_feng`, `amara_okonkwo` and `ren_castillo` listed only after their stage's resolution and
+  hidden after it until their slice gives them an after-tree, so W4 reaches each only through
+  its resolution scene). (plan W4-S Task 4)
 - Goldens whose content changes: twelve of the sixteen crew trees' `dialogue/tree_*` goldens,
   all but `marcus_evidence_dialogue`, `marcus_inspector_dialogue`, `priya_paper_dialogue` and
   `tomas_lead_dialogue` (F-45's `crew_loyalty_*_70` and `_85` flags in every step whose gain

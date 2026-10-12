@@ -1,4 +1,4 @@
-"""The dialogue manager's entry node and F-45 (polish design 3.1; SpaceGame register F-015)."""
+"""The dialogue manager's entry node and F-45 (polish design 3.1; SpaceGame register F-C11)."""
 
 from __future__ import annotations
 
@@ -87,5 +87,5 @@ class TestF45:
         manager.select_response(0)
         assert manager.get_flag("crew_loyalty_elena_reeves_70")
         assert manager.get_flag("crew_loyalty_elena_reeves_85"), (
-            "A +25 reply from 65 crosses 70 and 85 and keeps both flags (SpaceGame F-015)"
+            "A +25 reply from 65 crosses 70 and 85 and keeps both flags (SpaceGame F-C11)"
         )
