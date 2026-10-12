@@ -112,7 +112,7 @@ class TestObservationCheckAtTev:
         )
 
     def test_baseline_response_never_sets_flag(self, dl) -> None:
-        """The '[Noted. Run it.]' response (no skill check) must never grant
+        """The 'Noted. Run it.' response (no skill check) must never grant
         knows_tev_skims on its own. NV-2/3 moved the flag to skill_check path
         so this baseline response is a graceful skip-without-catch."""
         mgr = _manager_with_levels(persuasion=1, intimidation=1, observation=5)
@@ -122,11 +122,11 @@ class TestObservationCheckAtTev:
         _walk_to_node(dm, "weigh_output")
 
         idx = _find_response_index(
-            dm, lambda r: r.skill_check is None and r.text.startswith("[Noted")
+            dm, lambda r: r.skill_check is None and r.text.startswith("Noted")
         )
         dm.select_response(idx)
         assert not dm.get_flag("knows_tev_skims"), (
-            "Even an Observation specialist who picks '[Noted. Run it.]' should "
+            "Even an Observation specialist who picks 'Noted. Run it.' should "
             "not automatically gain the knowledge — catching the skim requires "
             "actively choosing the Observation read"
         )
@@ -200,7 +200,7 @@ class TestKnowledgeFlagGating:
         _walk_to_node(dm, "start")
 
         available = dm.get_available_responses()
-        accusation = [r for r in available if r.text.startswith("[Observation]")]
+        accusation = [r for r in available if r.text.startswith("[Observation")]
         assert len(accusation) == 1, (
             "Players who caught the skim should see the [Observation] accusation response"
         )
@@ -215,7 +215,7 @@ class TestKnowledgeFlagGating:
         _walk_to_node(dm, "start")
 
         available = dm.get_available_responses()
-        accusation = [r for r in available if r.text.startswith("[Observation]")]
+        accusation = [r for r in available if r.text.startswith("[Observation")]
         assert len(accusation) == 0, (
             "Players without the flag should NOT see the accusation — the "
             "insight must be earned through the Observation check"

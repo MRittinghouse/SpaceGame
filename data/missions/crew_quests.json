@@ -3,7 +3,7 @@
     {
       "id": "elena_old_charts",
       "name": "Old Charts",
-      "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, his last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks. Or confirm what she already suspects.",
+      "description": "Elena hasn't talked about Captain Koren in years. But she kept the coordinates, Koren's last known position scrawled on a nav chip she carries everywhere. The Guild archives at Stellaris Port might fill in the blanks.",
       "hint": "Travel to Stellaris Port with Elena in your crew, then speak with her at the cantina to access the Guild navigation archives.",
       "mission_type": "crew",
       "available_at": [],
@@ -102,7 +102,7 @@
     {
       "id": "elena_charting_stars",
       "name": "Charting New Stars",
-      "description": "The Meridian's nav data was corrupted but not destroyed. Elena's been working through it every night shift, piecing together a route that Captain Koren started charting before he died. Finishing his work won't bring him back. But it might mean he didn't die for nothing.",
+      "description": "The Meridian's nav data was corrupted but not destroyed. Elena's been working through it every night shift, piecing together a route that Captain Koren started charting before she died.",
       "hint": "Help Elena chart and test the new navigation route.",
       "mission_type": "crew",
       "available_at": [],
@@ -238,7 +238,7 @@
     {
       "id": "marcus_steel_holds",
       "name": "Steel Holds",
-      "description": "Word travels fast in mining towns. The shipyard owner knows about the investigation, and he's burning files, reassigning witnesses, and making threats that don't sound like threats until you think about them later. Marcus has one window to confront the man who covered up the deaths before the evidence disappears for good.",
+      "description": "Word travels fast in mining towns. The shipyard owner knows about the investigation, and he's burning files, reassigning witnesses, and making threats that don't sound like threats. Marcus has one window to confront the man who covered up the deaths before the evidence disappears for good.",
       "hint": "Return to Breakstone and help Marcus confront the shipyard owner.",
       "mission_type": "crew",
       "available_at": [],
@@ -521,7 +521,7 @@
     {
       "id": "tomas_new_ledger",
       "name": "New Ledger",
-      "description": "The thing about revenge is that it doesn't fill the hole. Tomas got what he wanted from Ren Castillo, and now he's sitting in the cargo bay staring at his father's old manifest ledger. The family business is gone. The man who destroyed it is dealt with. What's left is the question Tomas has been avoiding: what kind of trader does he want to be when he's not chasing ghosts?",
+      "description": "Tomas got what he wanted from Ren Castillo, and now he's sitting in the cargo bay staring at his father's old manifest ledger. The family business is gone. The man who destroyed it is dealt with. What's left is the question: what kind of trader does Tomas want to be when he's not chasing ghosts?",
       "hint": "Help Tomas resolve his past and chart a new course.",
       "mission_type": "crew",
       "available_at": [],

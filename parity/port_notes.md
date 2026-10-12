@@ -937,6 +937,570 @@ hand-off entries) are its own.
   adds it to `docs/handoffs.md` beside the news templates' entry among the token
   registry's unported files.
 
+## Writing W2 (2026-10-11)
+
+Plan W2-S, the narrator audit's pass (writing discipline spec, aurelia
+`docs/specs/2026-10-01-writing-discipline-design.md`, 9.2 row 4 and 9.4), rewrote the shipped
+lines its worklist (`tools/writing/w2_rows.json`) names, and plan W2-A brings them to the
+Godot port by sync.
+
+### Records for plan W2-A
+
+- What the sync brings: the outcome text of the encounters W2 rewrote, so the encounter
+  goldens' content changes (up to 16 `encounters/outcomes_*` files), `dialogue/chatter.json`
+  and `dialogue/captain_tokens.json`; no node, reply or record is added or removed, so
+  aurelia's `test/unit/dialogue_content_test.gd` totals hold; no brace is added, so the token
+  registry holds; Szabo's report keeps its opening, so `captain_surfaces_test.gd` holds; 30
+  data files change. (Plan W2-S)
+- What W2 fixed: 560 of the audit's 567 open rows, the lines the gates held for W2, the named
+  lines and F-016's 22 strings (closed as F-C10), with a travel "warp" made "jump"
+  (`ransom_pirate_corvette_01`'s description in `data/encounters/ce4_pressure.json`, 'A pirate
+  corvette warps onto your tail.', keeps 'warps', because G11's whole-word match misses the
+  inflection; it waits for the later writing chunk that owns the file, which makes the
+  one-word 'jumps' swap: T4-29, the author's ruling of 2026-10-11), a "warp
+  gate" made "the gate", "naval facility" a Guild enforcement yard, Koren "she", and the Log's
+  touched lines in spec 2.4's form. (Plan W2-S)
+- What W2 left, and to whom: the price rows and the figures in narration to W3 (record
+  tokens, spec 3.7); `auto_m13_oren`, `auto_iron_betrayal` and `iron_delivery`'s discovery
+  note to W3's scenes; the collapse sequence to SP10, which chooses its own words; the G13
+  exit trees to each tree's rewrite (W3 to W8, SP10); the names to the naming pass; the Act
+  II v1 archive to SP11 if it returns (the d1 and d3 capstone narration, the lens's core
+  fantasy, the 8 G10 rows, the lens file's double hyphens, and `capstone_view.py`'s frame);
+  the `not_rich` condition and its `RICH_THRESHOLD` to SP5; the Log lines W2 did not touch to
+  the writing pass. (Plan W2-S's rulings) The reading copy tags the archive's 19
+  `data/narrative/` entries "skip, archive", the owner `tools/writing/w2_audit.py` gives
+  them: that owner is SP11, as the plan's review ruled. Task 11 meant to put the difference
+  to the author as a flag, and none of the ruled flags carries it.
+- W3's queue: the strings of plan A1's list that W2 rewrote in the six encounters whose
+  parallel-negation forms "The writing pass" names, listed below; every other W2 rewrite
+  inside the 120 encounters of plan A1's list is recorded by path in
+  `tools/writing/w2_rows.json` and in the reading copy. Outside those encounters, W2 rewrote
+  three strings plan A1 changed, listed last with their files. The pass reads them all as W2
+  left them. (Plan W2-S; aurelia `docs/handoffs.md`, "The writing pass")
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description`
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].description`
+  - `.encounters[id=campaign_larsen_warning_01].choices[id=ignore_warning].outcome.description`
+  - `.encounters[id=campaign_larsen_warning_01].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=document].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=move_on].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=move_on].outcome.description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=provide_aid].description`
+  - `.encounters[id=campaign_refugee_testimony_01].choices[id=provide_aid].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=ignore].description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=ignore].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].choices[id=run_diagnostics].outcome.description`
+  - `.encounters[id=campaign_sato_ghost_01].description`
+  - `.encounters[id=derelict_freighter_01].choices[id=pass].description`
+  - `.encounters[id=derelict_freighter_01].choices[id=pass].outcome.description`
+  - `.encounters[id=derelict_freighter_01].choices[id=salvage].description`
+  - `.encounters[id=derelict_freighter_01].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=avoid].outcome.description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=board].description`
+  - `.encounters[id=sys_crimson_ghost_ship_01].choices[id=report].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=alert_union].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].description`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].label`
+  - `.encounters[id=sys_iron_deep_signal_01].choices[id=ignore].outcome.description`
+  - `.dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[0].text` in `data/dialogue/dialogues.json`
+  - `.dialogues[id=arna_post_completion].nodes[id=catch_unread].responses[1].text` in `data/dialogue/dialogues.json`
+  - `.missions[id=miners_plight].description` in `data/missions/side_missions.json`
+- After W2: `tests/test_data/test_writing_w2_audit.py` becomes the residue check in Task 12,
+  so W3 to W8 and SP10 may rewrite any W2 line, but no audit excerpt may come back. (Plan
+  W2-S)
+- Where plan W2-A's text no longer matches this branch, for its controller to amend before
+  Task 1 runs:
+  - Task 2 Step 1 expects 798 `###` headings in the reading copy. It renders 799, one per
+    worklist entry: Task 9's fix round added the named line
+    `.complications[id=reinforcement_arrival].description` (`data/combat/complications.json`)
+    to the worklist.
+  - The rulings send 16 flags to aurelia's findings register (`docs/findings_register.md`),
+    each with its finding under "The findings for aurelia's findings register" below, but no
+    step of plan W2-A writes a register row, and Task 2's file list does not name the
+    register. Its controller adds that step (one row per finding) or names the plan that
+    files them.
+  - Task 2 Step 3's hand-off entry says what W2 left by the plan's rulings alone. The flags
+    leave work too: to W3 (66 ruled flags and the remainders the table names), the later
+    writing chunks (41), SP10 (3) and the naming pass (4), and the unruled flags below go to
+    the owners named beside them. The entry carries them, by theme or by pointing to this
+    section's table.
+  - Task 2 Step 2's word swaps and Step 3's entry say a travel "warp" became "jump";
+    `ransom_pirate_corvette_01`'s description keeps "warps onto your tail" for the later
+    writing chunk that owns `data/encounters/ce4_pressure.json` (T4-29), so both say that one
+    waits.
+  - Task 2 Step 2 asks for a bullet for "each flag the run raised": the run raised 209 ruled
+    flags in 14 themes and the unruled flags listed below, so a bullet per theme, naming its
+    flags, covers them.
+- The author's read: the reading copy (`python -m tools.writing.w2_audit read --out <file>`)
+  is the record of every line, with the twelve edge rows and the sensation flagged. The
+  author read it on 2026-10-11 and approved every proposal ("I accept the changes on all
+  fronts."); the rulings follow. (Chunk map; spec 11.2)
+  - The edge rows (spec 11.2): all twelve accepted as drafted. Five of them then took a cut
+    under a flag's ruling in Task 12: the tourist escort (T3-9), the cat's rescue (T5-1),
+    the pendant's Read (T7-5), `the_drifters_deal` (T9-3) and `tomas_new_ledger` (T9-4).
+    - `data/crew/crew_members.json` `.crew_templates[id=sable_trent].description`
+    - `data/dialogue/dialogues.json`
+      `.dialogues[id=arna_last_freight_out_closeout].nodes[id=pendant].subtext`
+    - `data/encounters/campaign.json` `.encounters[id=campaign_pirate_weapons_01].description`
+    - `data/encounters/humor.json`
+      `.encounters[id=humor_space_cat_01].choices[id=rescue].outcome.description`
+    - `data/encounters/humor.json` `.encounters[id=humor_wrong_number_01].description`
+    - `data/encounters/miners_union.json`
+      `.encounters[id=union_strike_fund_01].choices[id=decline].outcome.description`
+    - `data/encounters/system_specific.json`
+      `.encounters[id=sys_forge_factory_fire_01].choices[id=avoid].outcome.description`
+    - `data/encounters/system_specific.json`
+      `.encounters[id=sys_stellaris_tourist_01].choices[id=escort].outcome.description`
+    - `data/missions/crew_quests.json` `.missions[id=elena_charting_stars].description`
+    - `data/missions/crew_quests.json` `.missions[id=tomas_new_ledger].description`
+    - `data/missions/missions.json` `.missions[id=the_drifters_deal].description`
+    - `data/ships/modules.json` `.modules[id=legendary_phantom_shroud].description`
+  - The sensation (spec 2.2 edge 1): refused. Spec 2.3's provisional After stands ("at a
+    frequency that rattles in your teeth"), and no sensation is written back in:
+    `data/encounters/campaign.json`
+    `.encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description`.
+    Task 12's cut T4-1 then ended the line on the timestamp.
+  - The plan review's rulings (the author, 2026-10-11, aurelia 869afde): the Act II v1
+    archive goes to SP11; the Log takes the past tense (spec 2.4's form); the word swaps
+    stand (a travel warp becomes a jump or the gate, the naval words as ruled).
+  - Every other line: none was refused or redirected, so each stands as W2 wrote it, apart
+    from the flag cuts below. A few of those cuts also added words, each shown old beside new
+    in the final reading copy: T4-24 borrows the sibling civilian wreck's "Small finder's fee."
+    to give the hulk's 60 credits a source; T5-1 adds "for the cat" to the reward notice;
+    T6-9's submit outcome reflows its verbs ("scans every container and cross-references
+    serial numbers"); and the words around a cut were composed for T3-3 ("Vex escorts you
+    through two debris fields"), T6-6 ("Demand a higher fee."), T7-12 ("She says it too
+    fast."), T8-9 ("the inside of anyone's lungs if they stayed long enough") and T9-4 ("the
+    question: what kind of trader does Tomas want to be").
+  - The flags for the author: 209 flags. The author ruled 208 of them at the read, in 14
+    themes, taking each theme's recommended ruling, and T3-29 follows theme 1's ruling. The
+    table after these notes gives each flag's theme by number and its owner; the themes
+    follow, each with its ruling, then the findings the rulings send to aurelia's findings
+    register. Of the 74 cuts the rulings gave Task 12, it made 71, in 94 lines; the other
+    three stand under their own theme's ruling (a hint that repeats its label stands): T4-15,
+    T4-16 and T6-36.
+    T3-29, raised in Task 3 and parked by the ledger until the author ruled on forecasts as a
+    class, follows that ruling: the final fix wave cut "Breakstone will hear about it." from
+    `sys_breakstone_ore_heist_01.scavenge`'s outcome, which now ends on "says nothing.". The
+    same wave cut "for now" from `auto_p5_first_salvage_rights_concession` ("The Guild field
+    rights stayed unchanged."), a W2 Log line no flag named, after T4-3's ruling that "For
+    now." is a forecast.
+    Seven of the 71 are the ready cuts the themes 'Untouched lines in encounters W3 reads' and
+    'Untouched encounter lines outside W3's queue' gave Task 12 in W2 lines: T5-7, T5-17, T6-15,
+    T6-25, T6-33, T6-9 and T6-26.
+    T8-4 is made in
+    full: `auto_sa_v_longer_ledger` also loses "He named one person at the end: Ilse Vey at
+    Meridian. Did not elaborate.". The entry fires on `investment_introduced`, and Odom names
+    Meridian and Ilse Vey for the first time in `graduation_pointer`, which that flag opens
+    (SA-V's design, ROADMAP item 7). The SA-V scenario test's AC-9 check now asserts that the
+    entry does not name them. A Log line for the name would be a new entry on a new flag,
+    outside W2.
+    - The themes, each with the author's ruling and the flags inside it that went to another
+      owner. Where a ruling states a rule, the chunks that next rewrite these lines keep it: a
+      forecast or remark after the image goes (theme 1); a hint names the act and nothing
+      more, and a hint that repeats its label stands (theme 2); the contract holds over the
+      audit's choices (theme 3); a line recalls only what every path to it shows (theme 4);
+      and the news ticker is the world's press (theme 13).
+      - Theme 1, shipped narrator remarks kept inside lines W2 rewrote (41, with T3-29): Task 12
+        makes the named cut or one-word swap in each W2 line, so it ends on the image before
+        the remark, and adds no new writing. The remarks are kickers, asides, guesses at
+        someone's mind and forecasts after the image.
+      - Theme 2, W2 hints that carry a reason, or only repeat their label (14): a hint names
+        the act and nothing more. Task 12 cuts the reason, risk or set-up from each W2 hint
+        here (taking the outcome's own words where a hint has no act), and a hint that repeats
+        its label stands. T2-17 goes to W3, since recasting thirteen world-fact hints as acts
+        is new writing; `anomaly_gravity_01.study`'s hint alone has a ready swap.
+      - Theme 3, clauses the audit passed or chose that the contract may still fail (8): hold
+        these fields to the contract over the audit's choices. Task 12 cuts each named clause
+        in the W2 lines, and the untouched lines inside the same flags go to their encounters'
+        owners. T6-19 goes to W3, since six of its seven inner-state lines are untouched in
+        encounters on plan A1's list. T7-7 goes to the later writing chunk, since the whole
+        Read is a past fact and a cut would leave Arna's node without a Read.
+      - Theme 4, lines that recall what the captain's path may not have shown (9): a line may
+        recall only what every path to it shows. Task 12 cuts or swaps the W2 lines here, and
+        the two triggers no cut can fix (T8-1, T8-3) go to the findings register. T7-2 goes to
+        the later writing chunk, since both Arna Reads are untouched and belong to her trees'
+        rewrite.
+      - Theme 5, text that promises what the code does not do (12): each goes to the findings
+        register as a defect of words against systems, and Task 12 changes only the military
+        hulk's pay line (T4-24). T5-6 goes to W3, whose record tokens make the pirate's spoken
+        200 credits read the real 50 CR charge.
+      - Theme 6, content the game never shows, or shows with raw ids (4): each goes to the
+        findings register as a code or data defect, and the wording stays as W2 drafted it;
+        the port's journal and news work inherit the register's decisions.
+      - Theme 7, questions for Act I's ending and the held-back missions (3): all three go to
+        SP10, and no W2 text changes. The intervene hint's reason clause in
+        `distress_pirate_attack_01`, "Two against two changes the odds.", goes with W3's read
+        of that encounter. T2-10's choice is marked as a fight and starts none, which is
+        already finding F-51.
+      - Theme 8, the same name or signature used for several people, and words the gates miss
+        (6): the names go to the naming pass, and the gesture and the stray "warps" to the
+        chunks that rewrite those trees and `ce4_pressure.json`, with no Task 12 change. T7-8
+        is open: Marcus's "without looking up", reworded as "does not look up" for Arna, Odom,
+        Mossa and Wulan, waits for the author's ruling on the gesture, which each tree's
+        rewrite then applies, and Arna's W2 Read needs a new observable. T4-29's one-word
+        "jumps" swap waits for the later writing chunk that owns `ce4_pressure.json`.
+      - Theme 9, untouched lines in encounters W3 reads (62): W3, which restyles these
+        encounters under spec 9.2 row 11, takes every line, and Task 12 made only the ready
+        cuts in the five W2 lines these flags also name (T5-7, T5-17, T6-15, T6-25, T6-33).
+      - Theme 10, untouched encounter lines outside W3's queue (28): each goes to the later
+        writing chunk for its file, and Task 12 made only the ready cuts in the two W2 lines
+        T6-9 and T6-26 name.
+      - Theme 11, dialogue tree lines W2 did not touch (7): each goes to the later writing
+        chunk that rewrites its tree; the Observation failure branches (T7-14) need structure
+        as well as words, and that chunk owns both.
+      - Theme 12, Log entries outside W2 still in the old form (3): the later writing chunk
+        applies spec 2.4's past-tense, acts-only Log form to them, and Task 12 changed none.
+        T11-3 goes to W3, since the plan's overlaps ruling gives its three scenes to W3, whose
+        rewrite spec 2.4's form binds.
+      - Theme 13, records and docs plan W2-A should carry (4): the bullet "Plan W2-A's
+        records" below notes each item, ruling the news ticker the world's press so its wry
+        tags stand, and Task 12 changed no game text for them.
+      - Theme 14, flags already fixed or answered (8): each is closed with no action.
+    - The findings for aurelia's findings register (`docs/findings_register.md`): 16 flags,
+      each needing a code or data decision that a text-only pass cannot make, and none has a
+      register row yet. Data checked at this branch's head.
+      - T3-20, `sys_crimson_wreck_claim_01`: steal_it's outcome ends "You leave with a full
+        hold and two new enemies.", while the choice pays 250 CR and 15 XP and leaves the hold
+        and every standing as they were. Its watch outcome also ends on the kicker "Nobody
+        wins.".
+      - T3-26, `sys_haven_newcomer_01.give_credits` and `sys_haven_supply_run_01.donate`: two
+        gifts cost the player nothing. The care package transfers "a small credit bundle and a
+        crate of nutri-packs" and deducts neither (20 XP, +10 Frontier Alliance); the donation
+        hands over "a crate of supplies", takes no cargo and pays 75 CR. The give_credits
+        hint's "to help them get started" reads as a reason (spec 2.2 edge 9).
+      - T4-30, `ransom_pirate_corvette_01.pay`: the hint's "Your reputation does not." promises
+        a lasting cost, but paying costs 200 CR, gives 5 XP and moves no standing.
+      - T5-5, `humor_bureaucracy_01.bribe`: the certificate "gets you a 5% discount at Guild
+        administrative offices", which no system grants; the choice costs 30 CR and gives 20
+        XP.
+      - T5-12, `humor_ai_existential_01.console`: the course correction "saves you an hour of
+        travel time", but nothing changes; the choice gives 15 XP.
+      - T5-28, outcomes in eleven humor and lore encounters (the table names them): each pays
+        credits the text does not explain, such as Declan's keepsake crate paying 60 CR, or
+        powering the miners' memorial buoy paying 25 CR where it would cost.
+      - T6-14, `guild_contract_01.counter`: Sable offers "an improved rate on your first three
+        deliveries", but the choice pays 120 CR, 10 XP and +5 Commerce Guild at once, and
+        nothing sets up deliveries.
+      - T6-23, `alliance_patrol_volunteer_01.intel`: the hint offers "the suspicious contacts
+        in your sensor log", but the choice appears whether or not the captain has logged any.
+      - T6-24, `alliance_moonshine_01.buy`, `alliance_smuggler_medicine_01.buy_some`,
+        `alliance_festival_01.trade_only` and `union_mutual_aid_01.take_rations`: each outcome
+        describes buying or receiving goods (coolant drums, medicine, festival cargo, rations),
+        yet each pays the captain 60 to 100 CR and puts nothing in the hold.
+      - T6-29, `union_strike_fund_01.donate_big`: the outcome ends "It opens doors in
+        Breakstone." about a pin the game never records. The +10 Miners' Union standing is
+        real and can unlock perks, so the line is half true.
+      - T8-1, `auto_p3_first_dispute_attended`: the entry describes a Verdant council session,
+        but its flag fires on the first dispute anywhere, so a captain whose first dispute is
+        elsewhere reads a session that never happened. The same holds for
+        `auto_p4_first_alliance_congress_attended`, which compares its room with Verdant's. A
+        venue-neutral line would drop every delegate, so the fix is a Verdant-only trigger.
+      - T8-3, `auto_arna_brother_reveal`: the brother story fires when The Buyer completes, but
+        Arna tells it only if the captain asks "What about your brother?", so otherwise the Log
+        tells a story the captain never heard. The trigger has to move to the brother node.
+      - T8-6, `data/journal/travel_log_templates.json` and `spacegame/models/travel_log.py`:
+        only first-visit Log lines are ever written. The trade, encounter and event generators
+        have no caller, so 15 of the 26 templates never show, and if called, they would print
+        raw ids.
+      - T8-7, `first_visit.nexus_prime`: every captain starts at Nexus Prime and the visit
+        count starts at one, so this rewritten line never fires; "First visit" also contradicts
+        the captain's apprenticeship there.
+      - T10-1, `data/economy/news_templates.json`'s ge_* and me_* templates
+        (`spacegame/engine/game.py` 5874 to 5918): the news ticker fills faction and system
+        names with raw ids, so headlines read "commerce_guild imposes trade embargo" or name
+        "nexus_prime"; the embargo headline also repeats its description.
+      - T10-2, pe_03, pe_04 and pm_03: these templates would run the event text into the next
+        sentence without a full stop, but nothing feeds the ticker those events today.
+      - Unruled, for the register's owner to weigh: T9-6's check found
+        `data/ground/campaign/mission_16_pirate_base.json` named by no mission's
+        `ground_mission_id`.
+  - Plan W2-A's records, which the author's ruling of 2026-10-11 on the 'Records and docs'
+    theme asks to note each item, ruling the news ticker in-world press so its wry tags stand:
+    - T10-3: the news ticker (`data/economy/news_templates.json`) is the world's press, an
+      in-world document in third-person bulletins, not narration. Spec 2.2 edge 5's
+      narrator-joke test does not bind it, and its wry tags stand (ge_festival_04 'unpaid,
+      naturally.', flavor_42 'And your reputation.', pm_02 'One more name the sector won't
+      forget.', ge_embargo_03 'As usual.', ge_festival_05 'Almost works.', pe_04 'Again.').
+      Plan W2-A carries the classification into the writing decisions log beside spec 5.1's
+      narration-fields table.
+    - T4-52: the plan's ruling on narration that decides for the player (spec 2.2 edge 8)
+      fixed the audit's seven outcomes, but those were not every case. `ce4_variety.json`'s
+      `bait_patrol_officer_01.decline` outcome, `bait_civilian_lure_01.scan_first`'s failure
+      and `bait_comm_relay_01.decode`'s failure also decide for the player, and their lines
+      carry owners in the table (T4-17, T4-18, T4-19).
+    - T7-13: `requirements/dialogue_writing_guide.md` contradicts the spec and the gates
+      outside NV-7. Section 8's Observation Checks GOOD example uses the filter verb 'You
+      notice' (spec 2.2 edge 2) and a double hyphen. Canonical Format says to omit N on a
+      knowledge-flag-gated reply, which G9 fails. It lists three valid skills where its
+      infrastructure note lists seven. NV-7's other headings and several rows keep em dashes.
+      The guide's next edit fixes them.
+    - T10-5: `requirements/overhaul/42_ui_chrome_components.md:114` still gives the docked
+      header with an em dash as its FONT_HEADING example, while the game renders 'DOCKED:
+      NEXUS PRIME'. The two archive docs (`requirements/archive/journal_system.md:155`,
+      `requirements/archive/shipyard_overhaul.md:507`) quote old forms as history and need
+      nothing.
+  - Flags the author's table does not carry, all unruled, for plan W2-A to carry to their
+    owners: Task 12's own, raised after the read, and earlier ones that ledger rulings or
+    reviewer minors raised but that never reached the table.
+    - `data/dialogue/dialogues.json` `arna_last_freight_out_closeout.pendant_truth`: after
+      T7-5's cut, Arna's "You got three of them, I think." answers the reply "I have."; the
+      chunk that rewrites her tree takes it with T7-5's remainder.
+    - Narrator inferences left in W2 lines outside their named cuts, each for the chunk that
+      next rewrites its file: `mission_16_pirate_base` story_triggers[1] ("Someone spent a
+      fortune building this place."); `mission_16_the_fulcrum` story_triggers[3] ("The system
+      is ready.") and [4] ("When the star collapses, they walk through this gate ...");
+      `campaign_old_allies_01` ("The pieces are falling into place.");
+      `campaign_pirate_weapons_01.mark_and_leave` ("By the time anyone responds, the debris
+      will be scattered ..."); `lore_star_map_01.analyze` ("The disc is either impossibly old
+      or impossibly precise.").
+    - `sys_crimson_ghost_ship_01.report`: the hint now opens on "Transmit its coordinates",
+      and its "its" depends on the encounter text; a later pass may name the Margrave.
+    - T4-7's fragment "For the last three jumps: ..." and T5-24's "your home system" stand,
+      since the theme adds no new writing; the chunk that next rewrites each line reads them.
+    - T3-27: `sys_haven_newcomer_01.guide`'s outcome (`data/encounters/system_specific.json`)
+      keeps audit row 18's "The young voice (a teenager's) thanks you", a possessive with its
+      noun left out; the ledger offered "The teenager on the comms thanks you three times
+      before signing off.". Owner: W3, whose queue holds the encounter.
+    - T3-28: two adopted hints repeat their labels, `sys_crimson_outlaw_offer_01.refuse`'s
+      "Refuse and hold course." and `distress_already_saved_01.continue`'s "Resume your
+      route.". Closed under theme 2's ruling: a hint that repeats its label stands.
+    - T8-12: `first_visit.crimson_reach` (`data/journal/travel_log_templates.json`) ends "No
+      questions asked here.", which can read as a generalization about the place; the ledger
+      offered "No questions asked." or a cut ending on "then looked away.". Owner: the later
+      writing chunk that owns the file.
+    - T8-13: `auto_p5_first_reach_arbitration` (`data/journal/entries.json`) keeps "The
+      delegates came in knowing what they wanted.", another character's state of mind in the
+      Log (spec 2.4, 6.2). A plain cut would leave "Two of them" without an antecedent, so the
+      ledger offered "Two of the delegates had been in the same room before.". Owner: the
+      later writing chunk that owns the file.
+    - From Task 5's review: `humor_wrong_number_01.play_along`'s outcome
+      (`data/encounters/humor.json`), a W2 draft, keeps "Francine is so touched by Rodriguez's
+      sudden emotional growth", the narrator reading an NPC's feeling with irony (spec 2.2
+      edge 5); T5-3 covered only "(Rodriguez)". Owner: W3, whose queue holds the encounter.
+    - From Task 7's review: two Observation replies W2 made into speech now meet a seam in
+      their trees, and they join T7-14 with the later writing chunk that rewrites each tree.
+      `keren_meet.start`'s reply fails to `inspect`, where Keren carries on as if nothing was
+      said; `oren_tak_meeting.start`'s reply leads on both branches to `suspicious`, which
+      answers "Glyn" though the captain never said the name on that path.
+    - From Task 2's review: `comm_intercept_static_01.log`'s outcome
+      (`data/encounters/generic.json`), a W2 draft, ends on the maxim "The Expanse is full of
+      ghosts on dead frequencies." after the image. It is the audit's chosen end point, the
+      class the author cut in T3-6. Owner: W3, whose queue holds the encounter; a cut also
+      regenerates the goldens.
+
+| Flag | Theme | Where | The author's ruling (2026-10-11) |
+|---|---|---|---|
+| T2-1 | 1 | `data/encounters/generic.json .encounters[id=anomaly_gravity_01].choices[id=study].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T2-2 | 9 | `data/encounters/generic.json .encounters[id=anomaly_gravity_01].choices[id=flee] (description and outcome.description)` | W3 |
+| T2-3 | 9 | `data/encounters/generic.json .encounters[id=cargo_lost_distress].choices[id=press_on].outcome.description` | W3 |
+| T2-4 | 10 | `data/encounters/generic.json .encounters[id=cargo_stowaway].choices[id=work].outcome.description` | the later writing chunk that owns the file |
+| T2-5 | 9 | `data/encounters/generic.json .encounters[id=comm_ghost_signal_01].choices[id=trace].outcome.description` | W3 |
+| T2-6 | 9 | `data/encounters/generic.json .encounters[id=derelict_cargo_log_01].choices[id=download] (description and outcome.description)` | W3 |
+| T2-7 | 9 | `data/encounters/generic.json .encounters[id=debris_graveyard_01].choices[id=search].description and .choices[id=avoid].description` | W3 |
+| T2-8 | 9 | `data/encounters/generic.json .encounters[id=derelict_micro_story_01].choices[id=scan].outcome.description` | W3 |
+| T2-9 | 9 | `data/encounters/generic.json .encounters[id=distress_oxygen_01].choices[id=rescue].description` | W3 |
+| T2-10 | 7 | `data/encounters/generic.json .encounters[id=distress_pirate_attack_01].choices[id=intervene]` | SP10; the intervene hint's reason clause, 'Two against two changes the odds.', goes to W3 |
+| T2-11 | 10 | `data/encounters/generic.json .encounters[id=legendary_corsair_king].choices[id=fight].outcome.description and .choices[id=flee].outcome.description` | the later writing chunk that owns the file |
+| T2-12 | 10 | `data/encounters/generic.json .encounters[id=legendary_the_collector].choices[id=fight].outcome.description and .choices[id=flee].outcome.description` | the later writing chunk that owns the file |
+| T2-13 | 10 | `data/encounters/generic.json .encounters[id=legendary_void_leviathan].choices[id=flee].outcome.description; .encounters[id=escape_pod_adrift].choices[id=salvage].outcome.description` | the later writing chunk that owns the file |
+| T2-14 | 9 | `data/encounters/generic.json .encounters[id=shakedown_pirate_01].choices[id=fight].outcome.description` | W3 |
+| T2-15 | 1 | `data/encounters/generic.json .encounters[id=smuggler_offer_01].choices[id=buy] (outcome.description and description)` | Task 12 cut its W2 line (the outcome); the buy hint, untouched, goes to the later writing chunk that owns the file |
+| T2-16 | 9 | `data/encounters/generic.json .encounters[id=wildlife_swarm_01].choices[id=observe].outcome.description` | W3 |
+| T2-17 | 2 | `data/encounters/generic.json hints: cargo_stowaway.work, derelict_cargo_log_01.strip, derelict_micro_story_01.board, distress_cold_signal_01.investigate and .log_it, legendary_iron_maw.fight, merchant_trader_01.trade, patrol_warning_01.heed and .volunteer, anomaly_gravity_01.study` | W3 (`anomaly_gravity_01.study`'s hint alone has a ready swap) |
+| T2-18 | 8 | `data/encounters/generic.json .encounters[id=distress_already_saved_01].choices[id=hail].outcome.description` | the naming pass |
+| T3-1 | 1 | `data/encounters/system_specific.json, sys_axiom_containment_01.choices[id=hold].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-2 | 1 | `data/encounters/system_specific.json, sys_crimson_outlaw_offer_01.choices[id=refuse].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-3 | 1 | `data/encounters/system_specific.json, sys_crimson_outlaw_offer_01.choices[id=pay].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-4 | 1 | `data/encounters/system_specific.json, sys_fulcrum_patrol_01.choices[id=retreat].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-5 | 1 | `data/encounters/system_specific.json, sys_fulcrum_weapons_test_01.choices[id=scan].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-6 | 3 | `data/encounters/system_specific.json, sys_fulcrum_encrypted_01.choices[id=ignore].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-7 | 1 | `data/encounters/system_specific.json, sys_fulcrum_patrol_01.choices[id=bluff].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-8 | 1 | `data/encounters/system_specific.json, sys_haven_newcomer_01.choices[id=guide].outcome.description and choices[id=pass].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-9 | 1 | `data/encounters/system_specific.json, sys_stellaris_tourist_01.choices[id=escort].outcome.description (EDGE)` | Task 12 cuts it (a line W2 rewrote) |
+| T3-10 | 3 | `data/encounters/system_specific.json, sys_stellaris_art_dealer_01.choices[id=accept_appraisal].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-11 | 2 | `data/encounters/system_specific.json, sys_breakstone_cave_in_02.choices[id=move_on].description and sys_crimson_ghost_ship_01.choices[id=report].description` | Task 12 cuts it (a line W2 rewrote) |
+| T3-12 | 1 | `data/encounters/system_specific.json, sys_stellaris_art_dealer_01.choices[id=decline].outcome.description; also sys_axiom_field_test_01.choices[id=decline].outcome.description` | Task 12 cut its W2 line (the art dealer's decline outcome); `sys_axiom_field_test_01.decline`'s outcome, untouched, goes to the later writing chunk that owns the file |
+| T3-13 | 10 | `data/encounters/system_specific.json, sys_verdant_tariff_protest_01: choices record (hint and outcome), support outcome, ignore outcome` | the later writing chunk that owns the file |
+| T3-14 | 9 | `data/encounters/system_specific.json, sys_haven_supply_run_01: choices escort (hint) and decline (outcome)` | W3 |
+| T3-15 | 10 | `data/encounters/system_specific.json, sys_forge_smuggle_parts_01: outcomes of buy, report, decline` | the later writing chunk that owns the file |
+| T3-16 | 10 | `data/encounters/system_specific.json, sys_forge_union_guild_01: outcomes of side_union and side_guild` | the later writing chunk that owns the file |
+| T3-17 | 10 | `data/encounters/system_specific.json, sys_nova_prototype_01: scan_drone hint, help_recover outcome` | the later writing chunk that owns the file |
+| T3-18 | 9 | `data/encounters/system_specific.json, sys_iron_deep_signal_01.choices[id=record].outcome.description` | W3 |
+| T3-19 | 9 | `data/encounters/system_specific.json, sys_iron_dcmc_patrol_01: description, negotiate outcome` | W3 |
+| T3-20 | 5 | `data/encounters/system_specific.json, sys_crimson_wreck_claim_01: steal_it outcome, watch outcome` | aurelia's findings register (its finding is listed above) |
+| T3-21 | 9 | `data/encounters/system_specific.json, sys_crimson_outlaw_offer_01: description, counter outcome` | W3 |
+| T3-22 | 9 | `data/encounters/system_specific.json, sys_crimson_ghost_ship_01.choices[id=board].outcome.description` | W3 |
+| T3-23 | 9 | `data/encounters/system_specific.json, sys_fulcrum_encrypted_01: intercept hint, intercept outcome, trace outcome` | W3 |
+| T3-24 | 9 | `data/encounters/system_specific.json, sys_fulcrum_patrol_01: description, retreat hint` | W3 |
+| T3-25 | 10 | `data/encounters/system_specific.json, sys_fulcrum_weapons_test_01.choices[id=scan].description` | the later writing chunk that owns the file |
+| T3-26 | 5 | `data/encounters/system_specific.json, sys_haven_newcomer_01.choices[id=give_credits] (hint, outcome); sys_haven_supply_run_01.choices[id=donate].outcome` | aurelia's findings register (its finding is listed above) |
+| T3-29 | 1 | `data/encounters/system_specific.json, sys_breakstone_ore_heist_01.choices[id=scavenge].outcome.description` | Task 12's final fix wave cuts it (a line W2 rewrote), under theme 1's ruling on a forecast after the image |
+| T4-1 | 1 | `data/encounters/campaign.json .encounters[id=campaign_anomaly_deepens_01].choices[id=approach].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-2 | 1 | `data/encounters/campaign.json .encounters[id=campaign_anomaly_deepens_01].choices[id=deep_scan].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-3 | 1 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=comply].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-4 | 1 | `data/encounters/campaign.json .encounters[id=campaign_larsen_warning_01].choices[id=heed_warning].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-5 | 1 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=mark_and_leave].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-6 | 1 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=salvage_evidence].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-7 | 1 | `data/encounters/campaign.json .encounters[id=campaign_guild_shadow_01].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-8 | 1 | `data/encounters/campaign.json .encounters[id=campaign_old_allies_01].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-9 | 1 | `data/encounters/campaign.json .encounters[id=campaign_refugee_testimony_01].choices[id=move_on].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-10 | 1 | `data/encounters/ce4_variety.json .encounters[id=bait_mining_rig_01].choices[id=scan_drive].failure_outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-11 | 2 | `data/encounters/campaign.json .encounters[id=campaign_ledger_courier_01].choices[id=refuse].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-12 | 2 | `data/encounters/campaign.json .encounters[id=campaign_refugee_testimony_01].choices[id=move_on].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-13 | 2 | `data/encounters/campaign.json .encounters[id=campaign_old_allies_01].choices[id=hold_back].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-14 | 2 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=comply].description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-15 | 2 | `data/encounters/campaign.json .encounters[id=campaign_black_market_intel_01].choices[id=decline].description` | stands: a hint that repeats its label stands (theme 2's ruling) |
+| T4-16 | 2 | `data/encounters/ce4_pressure.json .encounters[id=shakedown_food_blockade_01].choices[id=refuse].description` | stands: a hint that repeats its label stands (theme 2's ruling) |
+| T4-17 | 9 | `data/encounters/ce4_variety.json .encounters[id=bait_civilian_lure_01].choices[id=scan_first].failure_outcome.description` | W3 |
+| T4-18 | 10 | `data/encounters/ce4_variety.json .encounters[id=bait_comm_relay_01].choices[id=decode].failure_outcome.description` | the later writing chunk that owns the file |
+| T4-19 | 10 | `data/encounters/ce4_variety.json .encounters[id=bait_patrol_officer_01].choices[id=decline].outcome.description` | the later writing chunk that owns the file |
+| T4-20 | 10 | `data/encounters/ce4_variety.json .encounters[id=bait_patrol_officer_01].choices[id=verify_id].description` | the later writing chunk that owns the file |
+| T4-21 | 9 | `data/encounters/ce4_variety.json .encounters[id=bait_mining_rig_01].choices[id=scan_drive].description` | W3 |
+| T4-22 | 10 | `data/encounters/ce4_variety.json .encounters[id=trader_contraband_01].choices[id=verify].description` | the later writing chunk that owns the file |
+| T4-23 | 10 | `data/encounters/ce4_variety.json .encounters[id=derelict_military_hulk_01].choices[id=pass].description` | the later writing chunk that owns the file |
+| T4-24 | 5 | `data/encounters/ce4_variety.json .encounters[id=derelict_military_hulk_01].choices[id=pass].outcome.description` | Task 12 adds the sibling civilian wreck's 'Small finder's fee.', giving the 60 credits a source (a line W2 rewrote) |
+| T4-25 | 10 | `data/encounters/ce4_variety.json .encounters[id=derelict_military_hulk_01].choices[id=board_blind].outcome.description` | the later writing chunk that owns the file |
+| T4-26 | 10 | `data/encounters/ce4_variety.json .encounters[id=derelict_military_hulk_01].choices[id=spot_threats].failure_outcome.description` | the later writing chunk that owns the file |
+| T4-27 | 10 | `data/encounters/ce4_variety.json .encounters[id=derelict_military_hulk_01].description` | the later writing chunk that owns the file |
+| T4-28 | 10 | `data/encounters/ce4_variety.json .encounters[id=trader_contraband_01].description` | the later writing chunk that owns the file |
+| T4-29 | 8 | `data/encounters/ce4_pressure.json .encounters[id=ransom_pirate_corvette_01].description` | the later writing chunk that owns the file, which makes the one-word 'jumps' swap |
+| T4-30 | 5 | `data/encounters/ce4_pressure.json .encounters[id=ransom_pirate_corvette_01].choices[id=pay].description` | aurelia's findings register (its finding is listed above) |
+| T4-31 | 10 | `data/encounters/ce4_pressure.json .encounters[id=ransom_pirate_corvette_01].choices[id=threaten].failure_outcome.description` | the later writing chunk that owns the file |
+| T4-32 | 10 | `data/encounters/ce4_pressure.json .encounters[id=shakedown_medical_strongarm_01].choices[id=give].description` | the later writing chunk that owns the file |
+| T4-33 | 10 | `data/encounters/ce4_pressure.json .encounters[id=shakedown_food_blockade_01].choices[id=give].outcome.description` | the later writing chunk that owns the file |
+| T4-34 | 9 | `data/encounters/campaign.json .encounters[id=campaign_sato_ghost_01].choices[id=run_diagnostics].description` | W3 |
+| T4-35 | 9 | `data/encounters/campaign.json .encounters[id=campaign_sato_ghost_01].choices[id=investigate].description` | W3 |
+| T4-36 | 9 | `data/encounters/campaign.json .encounters[id=campaign_sato_ghost_01].choices[id=investigate].outcome.description` | W3 |
+| T4-37 | 9 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=salvage_evidence].description` | W3 |
+| T4-38 | 9 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=strip_parts].description` | W3 |
+| T4-39 | 9 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=strip_parts].outcome.description` | W3 |
+| T4-40 | 9 | `data/encounters/campaign.json .encounters[id=campaign_pirate_weapons_01].choices[id=mark_and_leave].description` | W3 |
+| T4-41 | 9 | `data/encounters/campaign.json .encounters[id=campaign_guild_shadow_01].choices[id=defy].outcome.description` | W3 |
+| T4-42 | 9 | `data/encounters/campaign.json .encounters[id=campaign_guild_shadow_01].choices[id=scan_shadow].outcome.description` | W3 |
+| T4-43 | 9 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=double_down].outcome.description` | W3 |
+| T4-44 | 9 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=set_trap].description` | W3 |
+| T4-45 | 14 | `data/encounters/campaign.json .encounters[id=campaign_final_warning_01].choices[id=comply].description and choices[id=double_down].outcome.description` | closed, no action |
+| T4-46 | 9 | `data/encounters/campaign.json .encounters[id=campaign_old_allies_01].choices[id=coordinate].outcome.description` | W3 |
+| T4-47 | 9 | `data/encounters/campaign.json .encounters[id=campaign_old_allies_01].choices[id=hold_back].outcome.description` | W3 |
+| T4-48 | 7 | `data/encounters/campaign.json .encounters[id=campaign_old_allies_01].choices[id=go_public].outcome.description and choices[id=coordinate].outcome.description` | SP10 |
+| T4-49 | 9 | `data/encounters/campaign.json .encounters[id=campaign_larsen_warning_01].choices[id=trace_source].description` | W3 |
+| T4-50 | 9 | `data/encounters/campaign.json .encounters[id=campaign_sato_returns_01].choices[id=warn_her].description` | W3 |
+| T4-51 | 4 | `data/encounters/campaign.json .encounters[id=campaign_refugee_testimony_01].choices[id=provide_aid].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T4-52 | 13 | `data/encounters/ce4_variety.json bait_patrol_officer_01.decline, bait_civilian_lure_01.scan_first failure, bait_comm_relay_01.decode failure` | plan W2-A's records |
+| T5-1 | 1 | `data/encounters/humor.json .encounters[id=humor_space_cat_01].choices[id=rescue].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-2 | 1 | `data/encounters/humor.json .encounters[id=humor_space_cat_01].choices[id=hail].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-3 | 1 | `data/encounters/humor.json .encounters[id=humor_wrong_number_01].choices[id=play_along].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-4 | 1 | `data/encounters/humor.json .encounters[id=humor_wrong_number_01].choices[id=disconnect].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-5 | 5 | `data/encounters/humor.json .encounters[id=humor_bureaucracy_01].choices[id=bribe].outcome.description` | aurelia's findings register (its finding is listed above) |
+| T5-6 | 5 | `data/encounters/humor.json .encounters[id=humor_ghost_pirate_01].description (against choices[id=pay])` | W3 |
+| T5-7 | 9 | `data/encounters/humor.json .encounters[id=humor_ghost_pirate_01].description and .choices[id=pay].outcome.description` | W3; Task 12 cut its W2 line (`data/encounters/humor.json .encounters[id=humor_ghost_pirate_01].choices[id=pay].outcome.description`) |
+| T5-8 | 10 | `data/encounters/humor.json .encounters[id=humor_bureaucracy_01].description` | the later writing chunk that owns the file |
+| T5-9 | 10 | `data/encounters/humor.json .encounters[id=humor_cooking_show_01].choices[id=tip].outcome.description` | the later writing chunk that owns the file |
+| T5-10 | 9 | `data/encounters/humor.json .encounters[id=humor_retirement_01].choices[id=accept].outcome.description` | W3 |
+| T5-11 | 4 | `data/encounters/humor.json .encounters[id=humor_retirement_01].choices[id=drink].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-12 | 5 | `data/encounters/humor.json .encounters[id=humor_ai_existential_01].choices[id=console].outcome.description` | aurelia's findings register (its finding is listed above) |
+| T5-13 | 1 | `data/encounters/lore.json .encounters[id=lore_earth_broadcast_01].description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-14 | 10 | `data/encounters/lore.json .encounters[id=lore_charter_fragment_01].description` | the later writing chunk that owns the file |
+| T5-15 | 9 | `data/encounters/lore.json .encounters[id=lore_charter_fragment_01].choices[id=recover].outcome.description` | W3 |
+| T5-16 | 9 | `data/encounters/lore.json .encounters[id=lore_charter_fragment_01].choices[id=scan].outcome.description` | W3 |
+| T5-17 | 9 | `data/encounters/lore.json .encounters[id=lore_first_miners_01].choices[id=pass].outcome.description and .choices[id=pass].description` | W3; Task 12 cut its W2 line (`data/encounters/lore.json .encounters[id=lore_first_miners_01].choices[id=pass].description`) |
+| T5-18 | 9 | `data/encounters/lore.json .encounters[id=lore_pre_colony_probe_01].description and .encounters[id=lore_star_map_01].description` | W3 |
+| T5-19 | 9 | `data/encounters/lore.json .encounters[id=lore_pre_colony_probe_01].choices[id=intercept].outcome.description` | W3 |
+| T5-20 | 2 | `data/encounters/lore.json .encounters[id=lore_pre_colony_probe_01].choices[id=leave].description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-21 | 9 | `data/encounters/lore.json .encounters[id=lore_generation_ship_01].choices[id=scan].outcome.description` | W3 |
+| T5-22 | 1 | `data/encounters/lore.json .encounters[id=lore_generation_ship_01].choices[id=leave].outcome.description and .encounters[id=lore_star_map_01].choices[id=analyze].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-23 | 1 | `data/encounters/lore.json .encounters[id=lore_star_map_01].choices[id=chart].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-24 | 1 | `data/encounters/lore.json .encounters[id=lore_star_map_01].choices[id=leave].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-25 | 9 | `data/encounters/lore.json .encounters[id=lore_forgotten_station_01].description, .choices[id=explore].outcome.description, .choices[id=scan].outcome.description` | W3 |
+| T5-26 | 1 | `data/encounters/lore.json .encounters[id=lore_time_capsule_01].choices[id=open].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T5-27 | 9 | `data/encounters/lore.json .encounters[id=lore_aurelia_beacon_01].description and .encounters[id=lore_earth_song_01].choices[id=listen].outcome.description` | W3 |
+| T5-28 | 5 | `data/encounters/humor.json and lore.json: ghost_pirate hack, retirement accept and drink, wrong_number play_along, aurelia_beacon share, charter recover, first_miners maintain, earth_song hail, forgotten_station explore, time_capsule open and deliver, star_map analyze, earth_broadcast record` | aurelia's findings register (its finding is listed above) |
+| T5-29 | 8 | `data/encounters/humor.json humor_space_junk_art_01 and humor_space_cat_01; frontier_alliance.json alliance_wrecker_01; lore.json lore_first_miners_01` | the naming pass |
+| T6-1 | 2 | `data/encounters/miners_union.json .encounters[id=union_derelict_drill_01].choices[id=leave_it].description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-2 | 1 | `data/encounters/frontier_alliance.json .encounters[id=alliance_festival_01].choices[id=join].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-3 | 1 | `data/encounters/science_collective.json .encounters[id=collective_nova_test_01].choices[id=ask_details].outcome.description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-4 | 2 | `data/encounters/frontier_alliance.json .encounters[id=alliance_wrecker_01].choices[id=side_brannick].description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-5 | 2 | `data/encounters/science_collective.json .encounters[id=collective_peer_review_01].choices[id=side_christensen].description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-6 | 2 | `data/encounters/commerce_guild.json .encounters[id=guild_escort_01].choices[id=negotiate_fee].description` | Task 12 cuts it (a line W2 rewrote) |
+| T6-7 | 10 | `data/encounters/commerce_guild.json .encounters[id=guild_audit_01].choices[id=negotiate].outcome.description` | the later writing chunk that owns the file |
+| T6-8 | 9 | `data/encounters/commerce_guild.json .encounters[id=guild_tariff_01].choices[id=fight].description` | W3 |
+| T6-9 | 10 | `data/encounters/commerce_guild.json .encounters[id=guild_inspection_01]: .description; .choices[id=submit].outcome.description; .choices[id=bribe].outcome.description` | the later writing chunk that owns the file; Task 12 cut its W2 line (`data/encounters/commerce_guild.json .encounters[id=guild_inspection_01].choices[id=submit].outcome.description`) |
+| T6-10 | 9 | `data/encounters/commerce_guild.json .encounters[id=guild_blackmail_01]: .description; .choices[id=sell_to_director].description and .outcome.description` | W3 |
+| T6-11 | 10 | `data/encounters/commerce_guild.json .encounters[id=guild_escort_01]: .choices[id=escort].outcome.description; .choices[id=decline].outcome.description` | the later writing chunk that owns the file |
+| T6-12 | 9 | `data/encounters/commerce_guild.json .encounters[id=guild_distress_luxury_01]: .choices[id=sell_rations].description; .choices[id=help_repair].outcome.description; .choices[id=pass_by].outcome.description` | W3 |
+| T6-13 | 9 | `data/encounters/commerce_guild.json .encounters[id=guild_signal_encoded_01].choices[id=decode_further].outcome.description` | W3 |
+| T6-14 | 5 | `data/encounters/commerce_guild.json .encounters[id=guild_contract_01].choices[id=counter].outcome.description` | aurelia's findings register (its finding is listed above) |
+| T6-15 | 9 | `data/encounters/frontier_alliance.json outcomes of alliance_patrol_volunteer_01.refuse, alliance_barter_01.decline, alliance_storyteller_01.decline, alliance_smuggler_medicine_01.buy_some, alliance_salvage_claim_01.offer_help, alliance_community_01.decline` | W3; Task 12 cut its W2 line (`data/encounters/frontier_alliance.json .encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].outcome.description`) |
+| T6-16 | 9 | `data/encounters/frontier_alliance.json .encounters[id=alliance_salvage_claim_01].choices[id=contest].outcome.description` | W3 |
+| T6-17 | 9 | `data/encounters/frontier_alliance.json .encounters[id=alliance_barter_01].choices[id=haggle]: .description and .outcome.description` | W3 |
+| T6-18 | 3 | `frontier_alliance.json alliance_distress_crop_01.pass outcome; miners_union.json union_ore_spill_01.scoop_yourself, union_picket_01.honor_picket and union_picket_01.force_through outcomes` | Task 12 cut its two W2 lines (`alliance_distress_crop_01.pass`, `union_ore_spill_01.scoop_yourself`); `union_picket_01`'s honor_picket and force_through outcomes, untouched, go to W3 |
+| T6-19 | 3 | `frontier_alliance.json outcomes of alliance_harvest_01.pass, alliance_community_01.small_help and decline, alliance_refugee_family_01.supplies, alliance_wrecker_01.split; miners_union.json union_scab_01.convince_union, union_ore_spill_01.help_recover` | W3 |
+| T6-20 | 9 | `data/encounters/frontier_alliance.json .encounters[id=alliance_moonshine_01].choices[id=buy].outcome.description` | W3 |
+| T6-21 | 9 | `data/encounters/frontier_alliance.json .encounters[id=alliance_festival_01].choices[id=trade_only].outcome.description` | W3 |
+| T6-22 | 9 | `data/encounters/frontier_alliance.json .encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].description` | W3 |
+| T6-23 | 5 | `data/encounters/frontier_alliance.json .encounters[id=alliance_patrol_volunteer_01].choices[id=intel].description` | aurelia's findings register (its finding is listed above) |
+| T6-24 | 5 | `frontier_alliance.json outcomes of alliance_moonshine_01.buy, alliance_smuggler_medicine_01.buy_some, alliance_festival_01.trade_only; miners_union.json union_mutual_aid_01.take_rations outcome` | aurelia's findings register (its finding is listed above) |
+| T6-25 | 9 | `miners_union.json outcomes of union_lost_miner_01.rescue, union_equipment_swap_01.trade_parts, union_scab_01.help_hauler, union_derelict_drill_01.leave_it` | W3; Task 12 cut its W2 line (`data/encounters/miners_union.json .encounters[id=union_lost_miner_01].choices[id=rescue].outcome.description`) |
+| T6-26 | 10 | `data/encounters/miners_union.json .encounters[id=union_safety_patrol_01]: .choices[id=bribe].outcome.description; .choices[id=refuse].description; .choices[id=comply].outcome.description` | the later writing chunk that owns the file; Task 12 cut its W2 line (`data/encounters/miners_union.json .encounters[id=union_safety_patrol_01].choices[id=bribe].outcome.description`) |
+| T6-27 | 9 | `data/encounters/miners_union.json .encounters[id=union_derelict_drill_01].choices[id=salvage_drill].outcome.description` | W3 |
+| T6-28 | 9 | `data/encounters/miners_union.json .encounters[id=union_ore_spill_01].choices[id=fly_around].description` | W3 |
+| T6-29 | 5 | `data/encounters/miners_union.json .encounters[id=union_strike_fund_01].choices[id=donate_big].outcome.description` | aurelia's findings register (its finding is listed above) |
+| T6-30 | 9 | `data/encounters/miners_union.json .encounters[id=union_folk_song_01].choices[id=listen_along].outcome.description` | W3 |
+| T6-31 | 9 | `data/encounters/science_collective.json .encounters[id=collective_specimen_01]: .choices[id=collect_samples].outcome.description; .choices[id=sell_data].description; .choices[id=decline_specimen].description` | W3 |
+| T6-32 | 9 | `data/encounters/science_collective.json .encounters[id=collective_quarantine_01].choices[id=push_through].outcome.description` | W3 |
+| T6-33 | 9 | `data/encounters/science_collective.json .encounters[id=collective_ethics_01].choices[id=sell_nova]: .description and .outcome.description` | W3; Task 12 cut its W2 line (`data/encounters/science_collective.json .encounters[id=collective_ethics_01].choices[id=sell_nova].outcome.description`) |
+| T6-34 | 9 | `data/encounters/science_collective.json .encounters[id=collective_grant_01].choices[id=negotiate_grant].outcome.description` | W3 |
+| T6-35 | 9 | `data/encounters/science_collective.json .encounters[id=collective_nova_test_01].description` | W3 |
+| T6-36 | 2 | `hints of frontier_alliance.json alliance_community_01.decline; miners_union.json union_folk_song_01.fly_on and union_strike_fund_01.decline; science_collective.json collective_data_buy_01.decline_data` | stands: a hint that repeats its label stands (theme 2's ruling) |
+| T6-37 | 8 | `frontier_alliance.json alliance_community_01, alliance_refugee_family_01, alliance_wrecker_01; science_collective.json collective_artifact_01, collective_experiment_01; miners_union.json union_cave_in_01` | the naming pass |
+| T6-38 | 14 | `spacegame/views/combat_view.py:1341` | closed, no action |
+| T7-1 | 11 | `data/dialogue/dialogues.json .dialogues[id=arna_post_ore_tip].nodes[id=start].subtext` | the later writing chunk that owns the file |
+| T7-2 | 4 | `data/dialogue/dialogues.json .dialogues[id=arna_betray_followthrough].nodes[id=security].subtext; .dialogues[id=arna_last_freight_out_closeout].nodes[id=brother].subtext` | the later writing chunk that owns the file |
+| T7-3 | 11 | `data/dialogue/dialogues.json .dialogues[id=arna_betray_followthrough].nodes[id=reach].subtext` | the later writing chunk that owns the file |
+| T7-4 | 11 | `data/dialogue/dialogues.json .dialogues[id=arna_betray_followthrough].nodes[id=ask].subtext` | the later writing chunk that owns the file |
+| T7-5 | 4 | `data/dialogue/dialogues.json .dialogues[id=arna_last_freight_out_closeout].nodes[id=pendant].responses[0].text and .nodes[id=pendant_truth].text` | Task 12 cuts it (a line W2 rewrote) |
+| T7-6 | 1 | `data/dialogue/dialogues.json .dialogues[id=arna_last_freight_out_closeout].nodes[id=start].subtext` | Task 12 cuts it (a line W2 rewrote) |
+| T7-7 | 3 | `data/dialogue/dialogues.json .dialogues[id=arna_post_refining].nodes[id=whats_next].subtext` | the later writing chunk that owns the file |
+| T7-8 | 8 | `data/dialogue/dialogues.json arna_first_encounter.start subtext; merchant_delivery.odom_arna_branch_a and .graduation_pointer text; dead_ledger_investigation.greet text; wulan_default.start subtext` | the later writing chunk that owns the file, once the author rules on the gesture (open) |
+| T7-9 | 11 | `data/dialogue/dialogues.json embassy_summit nodes player_speaks, speech_fails, observation_moment, noticed_signal, missed_signal; oren_tak_meeting nodes trust_earned, farewell` | the later writing chunk that owns the file |
+| T7-10 | 11 | `data/dialogue/dialogues.json .dialogues[id=oren_tak_meeting].nodes[id=farewell].text` | the later writing chunk that owns the file |
+| T7-11 | 1 | `data/dialogue/dialogues.json .dialogues[id=cassiel_maren_forgery].nodes[id=start].text; .dialogues[id=priya_convergence_analysis].nodes[id=start].text` | Task 12 cut its W2 line (Priya's start text); `cassiel_maren_forgery`'s start text, untouched, goes to that tree's rewrite |
+| T7-12 | 3 | `data/dialogue/dialogues.json marcus_recognition.start, neve_osei_price_of_info.start, arna_post_completion.catch (subtext and Observation reply)` | Task 12 cuts it (a line W2 rewrote) |
+| T7-13 | 13 | `SpaceGame requirements/dialogue_writing_guide.md lines 342, 405 to 406, 460, 491 to 525` | plan W2-A's records |
+| T7-14 | 11 | `data/dialogue/dialogues.json .dialogues[id=embassy_summit].nodes[id=observation_moment].responses[0] with missed_signal; .dialogues[id=tev_refining_intro].nodes[id=weigh_output].responses[0]` | the later writing chunk that owns the file; the unruled seams in `keren_meet` and `oren_tak_meeting` (listed above) join it |
+| T7-15 | 14 | `SpaceGame tests/writing_gates/allowlist.json, the G11 'without looking up' row on .dialogues[id=the_collapse_sequence].nodes[id=priya_calibrates].text` | closed, no action |
+| T7-16 | 11 | `data/dialogue/dialogues.json .dialogues[id=cassiel_maren_forgery].nodes[id=in_progress].responses[0].text` | the later writing chunk that owns the file |
+| T7-17 | 14 | `SpaceGame requirements/nv_audit_findings.md rows 46 and 81` | closed, no action |
+| T8-1 | 4 | `data/journal/entries.json .journal_entries[id=auto_p3_first_dispute_attended].text (and auto_p4_first_alliance_congress_attended)` | aurelia's findings register (its finding is listed above) |
+| T8-2 | 4 | `data/journal/entries.json .journal_entries[id=auto_arna_branch_c].text` | Task 12 cuts it (a line W2 rewrote) |
+| T8-3 | 4 | `data/journal/entries.json .journal_entries[id=auto_arna_brother_reveal].text` | aurelia's findings register (its finding is listed above) |
+| T8-4 | 4 | `data/journal/entries.json .journal_entries[id=auto_sa_v_longer_ledger].text` | Task 12 cuts it (a line W2 rewrote) |
+| T8-5 | 4 | `data/journal/entries.json .journal_entries[id=auto_auction_first_velo_encounter].text` | Task 12 cuts it (a line W2 rewrote) |
+| T8-6 | 6 | `data/journal/travel_log_templates.json; spacegame/models/travel_log.py` | aurelia's findings register (its finding is listed above) |
+| T8-7 | 6 | `data/journal/travel_log_templates.json .first_visit.nexus_prime` | aurelia's findings register (its finding is listed above) |
+| T8-8 | 12 | `data/journal/travel_log_templates.json .first_visit.iron_depths, .first_visit.forgeworks, .major_trade[0], .major_trade[1]` | the later writing chunk that owns the file |
+| T8-9 | 1 | `data/journal/travel_log_templates.json .first_visit.breakstone, .first_visit.crimson_reach, .first_visit.axiom_labs` | Task 12 cuts it (a line W2 rewrote) |
+| T8-10 | 1 | `data/journal/entries.json .journal_entries[id=auto_m17_horizon].text` | Task 12 cuts it (a line W2 rewrote); SP10 may rewrite the entry again |
+| T8-11 | 12 | `data/journal/entries.json auto_m06_priya, auto_m08_helped, auto_m10_crimson, auto_m12_attack, auto_m14_scan, auto_arna_branch_b, auto_arna_departure, auto_wreckers_first_contract, auto_okafor_first_disposed, auto_okafor_legacy_profit_ending, auto_auction_first_session, _rivalry, _listing_created, and the d1, d3 (three), d5, d7, d8 entries` | the later writing chunk that owns the file; inside it, the five campaign entries are SP10's text (F-66), the dilemma entries fire only on the archived Act II flags, and `auto_arna_branch_b` is in W3's queue |
+| T9-1 | 14 | `data/combat/complications.json .complications[id=reinforcement_arrival].description` | closed, no action |
+| T9-2 | 1 | `data/combat/complications.json .complications[id=reinforcement_arrival].narration` | Task 12 cuts it (a line W2 rewrote) |
+| T9-3 | 1 | `data/missions/missions.json .missions[id=the_drifters_deal].description` | Task 12 cuts it (a line W2 rewrote) |
+| T9-4 | 3 | `crew_quests.json elena_old_charts and tomas_new_ledger; missions.json recruit_scientist and the_scholars_errand; side_missions.json old_debts (each .description)` | Task 12 cuts it (a line W2 rewrote) |
+| T9-5 | 1 | `data/missions/side_missions.json .missions[id=the_informant].description` | Task 12 cuts it (a line W2 rewrote) |
+| T9-6 | 3 | `data/ground/campaign/ mission_13 interactables[1], story_triggers[4]; mission_14 story_triggers[0], [2], [4]; mission_16_pirate_base interactables[0], [3], story_triggers[1]; mission_16_the_fulcrum story_triggers[2], [3], [4]` | Task 12 cuts it (a line W2 rewrote) |
+| T9-7 | 7 | `data/missions/side_missions.json .missions[id=two_calls].description` | SP10 |
+| T9-8 | 8 | `side_missions.json the_forgery and Maren Holt's mission; generic.json hauler captain Maren; npcs.json, dialogues.json, station_chatter.json` | the naming pass |
+| T10-1 | 6 | `data/economy/news_templates.json ge_* and me_* templates; spacegame/engine/game.py lines 5874 to 5918` | aurelia's findings register (its finding is listed above) |
+| T10-2 | 6 | `data/economy/news_templates.json pe_03, pe_04, pm_03` | aurelia's findings register (its finding is listed above) |
+| T10-3 | 13 | `data/economy/news_templates.json ge_festival_04, flavor_42, pm_02, ge_embargo_03, ge_festival_05, pe_04` | plan W2-A's records (ruled the world's press: its wry tags stand) |
+| T10-4 | 1 | `data/economy/news_templates.json .news_templates[id=flavor_15].template` | Task 12 cuts it (a line W2 rewrote) |
+| T10-5 | 13 | `SpaceGame requirements/overhaul/42_ui_chrome_components.md:114 (also requirements/archive/journal_system.md:155, requirements/archive/shipyard_overhaul.md:507)` | plan W2-A's records |
+| T11-1 | 14 | `SpaceGame tests/writing_gates/allowlist.py REASONS` | closed, no action |
+| T11-2 | 14 | `SpaceGame parity/port_notes.md, this section's W3-queue bullet` | closed, no action |
+| T11-3 | 12 | `data/journal/entries.json auto_iron_betrayal and auto_m13_oren; data/missions/missions.json iron_delivery.discovery_text` | W3 |
+| T11-4 | 14 | `SpaceGame parity/port_notes.md, this section's 'What W2 fixed' bullet` | closed, no action |
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

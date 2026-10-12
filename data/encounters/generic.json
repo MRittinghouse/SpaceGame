@@ -39,7 +39,7 @@
         {
           "id": "ignore",
           "label": "Log It for the Next Patrol",
-          "description": "Flag the coordinates and keep flying. Someone closer might reach them in time.",
+          "description": "Flag the coordinates and keep flying.",
           "outcome": {
             "description": "You log the distress coordinates for the next patrol and continue on your route. The signal fades behind you.",
             "rewards": []
@@ -70,7 +70,7 @@
           "label": "Tow Them",
           "description": "Burn extra fuel to tow the hauler to safety.",
           "outcome": {
-            "description": "The tow takes time and fuel, but the pilot's relief is palpable. They transfer payment the moment you reach the station.",
+            "description": "The tow takes time and fuel, but the pilot's relief is audible over the comm. They transfer payment the moment you reach the station.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -88,7 +88,7 @@
           "label": "Boost Their Beacon",
           "description": "Amplify the signal for local patrols. Faster than towing, but no guarantee anyone's listening.",
           "outcome": {
-            "description": "You amplify their signal to reach local patrols. It's the best you can do without losing time. Hopefully help arrives in time.",
+            "description": "You amplify their signal to reach local patrols.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -137,9 +137,9 @@
         {
           "id": "ignore",
           "label": "Let Them Sort It Out",
-          "description": "The lanes are charted. A pilot who can't read a star map has bigger problems than you can fix.",
+          "description": "The lanes are charted. Leave them to their own heading.",
           "outcome": {
-            "description": "You leave them to sort out their own heading. Space is big, but the lanes are well-charted. They'll manage.",
+            "description": "You leave them to sort out their own heading.",
             "rewards": []
           }
         }
@@ -149,7 +149,7 @@
       "id": "derelict_freighter_01",
       "encounter_type": "derelict",
       "name": "Abandoned Freighter",
-      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, no active transponder. The cargo bay appears partially intact. There could be salvageable goods aboard.",
+      "description": "Your sensors detect a derelict freighter drifting in the void. No life signs, and the transponder is silent. The cargo bay appears partially intact. There could be salvageable goods aboard.",
       "icon_color": [
         180,
         140,
@@ -166,7 +166,7 @@
         {
           "id": "salvage",
           "label": "Crack the Cargo Bay",
-          "description": "Dock with the wreck and see what the previous owner left behind. Dead ships don't file insurance claims.",
+          "description": "Dock with the wreck and see what the previous owner left behind.",
           "outcome": {
             "description": "You pick through the wreckage carefully. Most of the cargo is ruined, but you find a sealed crate of trade goods and some spare parts worth selling.",
             "rewards": [
@@ -198,9 +198,9 @@
         {
           "id": "pass",
           "label": "Give It a Wide Berth",
-          "description": "Dead ships mean dead crews. Whatever happened here, you don't need to know.",
+          "description": "Dead ships mean dead crews. Give the wreck a wide berth.",
           "outcome": {
-            "description": "You give the derelict a wide berth and continue on your route. Someone else can deal with it.",
+            "description": "You give the derelict a wide berth and continue on your route.",
             "rewards": []
           }
         }
@@ -228,7 +228,7 @@
           "label": "Risk Salvage",
           "description": "Board quickly and grab what you can.",
           "outcome": {
-            "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this. Today is your lucky day.",
+            "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -246,7 +246,7 @@
           "label": "Steer Clear",
           "description": "Fresh battle damage means trouble nearby.",
           "outcome": {
-            "description": "Discretion wins out. You alter course and put distance between yourself and whatever happened here. The wreck shrinks on your rear sensors.",
+            "description": "You alter course and put distance between yourself and whatever happened here. The wreck shrinks on your rear sensors.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -278,7 +278,7 @@
         {
           "id": "trade",
           "label": "See What She's Got",
-          "description": "Surplus runs between systems usually mean below-market prices. Worth a look.",
+          "description": "Surplus runs between systems usually mean below-market prices.",
           "outcome": {
             "description": "After a quick negotiation, you pick up some goods at well below market rate. The trader waves as she undocks and continues on her route.",
             "rewards": [
@@ -296,9 +296,9 @@
         {
           "id": "decline",
           "label": "Wave Her Off",
-          "description": "Your hold is full or your schedule is tight. Either way, not today.",
+          "description": "Decline and fly on.",
           "outcome": {
-            "description": "You exchange polite farewells and go your separate ways. Space is lonely enough without being rude about it.",
+            "description": "You exchange polite farewells and go your separate ways.",
             "rewards": []
           }
         }
@@ -324,9 +324,9 @@
         {
           "id": "accept",
           "label": "Top Off the Tanks",
-          "description": "Fuel at cost is fuel at cost. You don't turn down that kind of courtesy.",
+          "description": "Take the fuel at cost.",
           "outcome": {
-            "description": "The convoy docks briefly and transfers fuel to your tanks. The crew chief tips his cap as they disengage. Good people still fly these lanes.",
+            "description": "The convoy docks briefly and transfers fuel to your tanks. The crew chief tips his cap as they disengage.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -342,9 +342,9 @@
         {
           "id": "chat",
           "label": "Swap Route Intel Instead",
-          "description": "Credits come and go. Good navigation data pays dividends for weeks.",
+          "description": "Swap route intel and market tips instead of fuel.",
           "outcome": {
-            "description": "You swap navigation data and market tips. The convoy leader marks a few profitable routes on your charts. Knowledge is currency out here.",
+            "description": "You swap navigation data and market tips. The convoy leader marks a few profitable routes on your charts.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -359,7 +359,7 @@
       "id": "debris_cargo_01",
       "encounter_type": "debris",
       "name": "Scattered Cargo",
-      "description": "Your proximity sensors light up: a cargo container has broken apart, scattering crates across your flight path. Looks like someone lost a shipment. Finders keepers?",
+      "description": "Your proximity sensors light up: a cargo container has broken apart, scattering crates across your flight path. Looks like someone lost a shipment.",
       "icon_color": [
         160,
         160,
@@ -376,7 +376,7 @@
         {
           "id": "collect",
           "label": "Scoop What You Can",
-          "description": "Somebody's loss is your margin. The crates won't collect themselves.",
+          "description": "Snag the intact crates with the cargo grapple.",
           "outcome": {
             "description": "You maneuver through the debris field, snagging intact crates with your cargo grapple. A few are damaged, but most contain sellable goods.",
             "rewards": [
@@ -396,7 +396,7 @@
           "label": "Plot Around the Debris",
           "description": "Loose crates mean a rough breakup. Whatever scattered this cargo might still be nearby.",
           "outcome": {
-            "description": "You plot a course around the floating junk and continue on your way. Not every opportunity is worth the risk.",
+            "description": "You plot a course around the floating junk and continue on your way.",
             "rewards": []
           }
         }
@@ -423,9 +423,9 @@
         {
           "id": "investigate",
           "label": "Chase the Reading",
-          "description": "Burn twenty minutes tracking a phantom. Could be nothing. Could be the interesting kind of nothing.",
+          "description": "Burn twenty minutes tracking the reading.",
           "outcome": {
-            "description": "You spend time chasing the signal. Turns out it was a chunk of ice sublimating near a heat vent. Not exciting, but you learn to calibrate your sensors better.",
+            "description": "You spend time chasing the signal. Turns out it was a chunk of ice sublimating near a heat vent. The chase leaves your sensors better calibrated.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -437,7 +437,7 @@
         {
           "id": "ignore",
           "label": "File It Under 'Unexplained'",
-          "description": "Your sensor log is full of ghosts. One more won't change anything.",
+          "description": "Log the reading and fly on.",
           "outcome": {
             "description": "You log the anomaly and move on. Your nav computer files it under 'unexplained readings', a list that grows longer every week.",
             "rewards": []
@@ -484,9 +484,9 @@
         {
           "id": "distance",
           "label": "Leave It to the Specialists",
-          "description": "The research buoys are there for a reason. Log the coordinates and let someone with proper shielding handle it.",
+          "description": "Log the coordinates and let someone with proper shielding handle it.",
           "outcome": {
-            "description": "You log the coordinates and give the phenomenon a respectful berth. Some things are better left to the specialists.",
+            "description": "You log the coordinates and give the phenomenon a wide berth.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -523,7 +523,7 @@
           "label": "Pay the Toll",
           "description": "Hand over the credits and avoid a fight.",
           "outcome": {
-            "description": "You transfer the credits. The pirate grunts acknowledgment and peels away. Cheaper than repairs, you tell yourself.",
+            "description": "You transfer the credits. The pirate grunts acknowledgment and peels away.",
             "rewards": [
               {
                 "reward_type": "deduct_credits",
@@ -535,7 +535,7 @@
         {
           "id": "fight",
           "label": "Power Up Weapons",
-          "description": "The toll is your dignity. Today you're not paying.",
+          "description": "Refuse the toll and power up weapons.",
           "outcome": {
             "description": "You power up weapons and angle your shields. The pirate grins. They were hoping you'd say that.",
             "rewards": [],
@@ -622,7 +622,7 @@
         {
           "id": "answer_signal",
           "label": "Answer the Signal",
-          "description": "Divert from your route to assist the disabled escort. It will cost time and fuel, but someone's life is at stake.",
+          "description": "Divert from your route to assist the disabled escort. It will cost time and fuel.",
           "outcome": {
             "description": "You pull alongside the Heron and patch your fuel line into their auxiliary systems. Captain Sato's voice comes through, steady but exhausted: 'I owe you one, Captain. The raiders took everything: cargo, navigation data, even the crew manifests. This wasn't random. They knew exactly where we'd be.' She transfers a small credit bounty from the escort's emergency fund.",
             "rewards": [
@@ -645,7 +645,7 @@
         {
           "id": "press_on",
           "label": "Press On",
-          "description": "You have cargo to deliver and a schedule to keep. Someone else will answer the signal.",
+          "description": "Hold your course and leave the signal.",
           "outcome": {
             "description": "You silence the distress channel and continue on course. The signal fades behind you. Somewhere out there, Captain Sato is counting the hours on her life support.",
             "rewards": [
@@ -679,9 +679,9 @@
         {
           "id": "comply",
           "label": "Hand Over Your Papers",
-          "description": "Clean manifest, clean conscience. Let the bureaucracy do its thing.",
+          "description": "Transmit your registration and manifest.",
           "outcome": {
-            "description": "The officer scans your documents and nods to herself. 'Everything checks out. Safe travels, Captain.' The cruiser peels off and resumes its patrol route. A clean record has its perks.",
+            "description": "The officer scans your documents and nods to herself. 'Everything checks out. Safe travels, Captain.' The cruiser peels off and resumes its patrol route.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -693,7 +693,7 @@
         {
           "id": "chat",
           "label": "Comply and Ask About the Lanes",
-          "description": "A patrol officer who's chatty is worth more than ten nav updates. Buy goodwill with small talk.",
+          "description": "Comply, then ask the officer about the lanes.",
           "outcome": {
             "description": "The officer warms up once your papers clear. She mentions increased raider activity two systems over and flags a few safe waypoints on your chart. 'Watch yourself out there,' she says before signing off.",
             "rewards": [
@@ -710,7 +710,7 @@
       "id": "comm_intercept_static_01",
       "encounter_type": "comm_intercept",
       "name": "Encrypted Fragment",
-      "description": "Your comms array picks up a burst of encrypted traffic on a non-standard frequency. The signal is fragmented: repeating coordinates, a callsign you don't recognize, and what sounds like a countdown.",
+      "description": "Your comms array picks up a burst of encrypted traffic on a non-standard frequency. The signal is fragmented: repeating coordinates, a callsign in none of your ship's registries, and what sounds like a countdown.",
       "icon_color": [
         200,
         180,
@@ -745,9 +745,9 @@
         {
           "id": "log",
           "label": "Dump the Raw Data to Archive",
-          "description": "Log the frequency and move on. Maybe it's useful later. Maybe it's just another ghost on a dead channel.",
+          "description": "Log the frequency and move on.",
           "outcome": {
-            "description": "You dump the raw signal data to your ship's archive. Maybe you'll find a use for it later. Maybe it's nothing. The Expanse is full of ghosts on dead frequencies.",
+            "description": "You dump the raw signal data to your ship's archive. The Expanse is full of ghosts on dead frequencies.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -779,7 +779,7 @@
         {
           "id": "supply",
           "label": "Open Your Stores",
-          "description": "You have more than they do. It will cost you reserves, but those faces in the viewport are hard to forget.",
+          "description": "Hand over what you can spare. It will cost you reserves.",
           "outcome": {
             "description": "You dock and hand over what you can spare. The transport captain grips your hand through the airlock. 'We won't forget this.' A few passengers pool their remaining credits as thanks.",
             "rewards": [
@@ -797,9 +797,9 @@
         {
           "id": "directions",
           "label": "Point Them to the Nearest Aid Depot",
-          "description": "You can't feed sixty people, but you can give them a heading. Sometimes hope is enough fuel.",
+          "description": "Mark the nearest aid depot on their charts.",
           "outcome": {
-            "description": "You mark the nearest aid depot on their charts and boost their comms signal. It's not much, but it gives them a heading and a hope. The captain's voice breaks as she thanks you.",
+            "description": "You mark the nearest aid depot on their charts and boost their comms signal. The captain's voice breaks as she thanks you.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -811,9 +811,9 @@
         {
           "id": "ignore",
           "label": "Close the Channel",
-          "description": "Sixty refugees, one ship. The math doesn't work. It never does.",
+          "description": "Close the channel and adjust course.",
           "outcome": {
-            "description": "You close the channel and adjust course. The transport dwindles on your aft sensors. Out here, hard choices are the only kind.",
+            "description": "You close the channel and adjust course. The transport dwindles on your aft sensors.",
             "rewards": []
           }
         }
@@ -840,9 +840,9 @@
         {
           "id": "sell",
           "label": "Open the Manifest",
-          "description": "Let the rich man paw through your hold. His idea of 'junk' and yours might differ profitably.",
+          "description": "Open your manifest to the collector.",
           "outcome": {
-            "description": "The collector's eyes light up at a few items you'd considered junk. He pays handsomely, insisting they have 'tremendous provenance.' You pocket the credits and wonder if you've been undervaluing your cargo.",
+            "description": "The collector's eyes light up at a few items from the bottom of your manifest. He pays handsomely, insisting they have 'tremendous provenance.' You pocket the credits.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -876,7 +876,7 @@
         {
           "id": "decline",
           "label": "Not Selling Today",
-          "description": "Collectors pay well, but you know what your cargo is worth. Maybe more than he does.",
+          "description": "Keep your cargo off the table.",
           "outcome": {
             "description": "The collector shrugs with practiced grace. 'Another time, perhaps.' His yacht glides away, its engines humming with the quiet confidence of old money.",
             "rewards": []
@@ -904,7 +904,7 @@
         {
           "id": "navigate",
           "label": "Thread the Gaps at Quarter Thrust",
-          "description": "Slow and steady through a field of dormant ordnance. The map data alone is worth the sweat.",
+          "description": "Slow and steady through a field of dormant ordnance. Salvage teams pay for minefield maps.",
           "outcome": {
             "description": "You creep through at quarter thrust, sensors on full sweep. It takes the better part of an hour, but you emerge on the other side with hull intact and a detailed minefield map that salvage teams would pay for.",
             "rewards": [
@@ -922,9 +922,9 @@
         {
           "id": "detour",
           "label": "Burn Fuel on a Detour",
-          "description": "An hour of extra travel beats a mine through the hull. Your insurance doesn't cover relics.",
+          "description": "Arc around the field. It costs an hour.",
           "outcome": {
-            "description": "You plot a wide arc around the minefield. It costs you time, but your hull plating thanks you. Some shortcuts aren't worth taking.",
+            "description": "You plot a wide arc around the minefield. It costs you time.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -976,7 +976,7 @@
           "label": "Pump Power Into Their Beacon",
           "description": "Light up every receiver in the sector. Faster than docking, but someone else has to be close enough to care.",
           "outcome": {
-            "description": "You pump power into their beacon until it lights up every receiver in the sector. A mining barge responds within minutes. You move on, hoping two hours was a conservative estimate.",
+            "description": "You pump power into their beacon until it lights up every receiver in the sector. A mining barge responds within minutes. You move on.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1028,7 +1028,7 @@
           "label": "Scan Without Docking",
           "description": "Map the architecture from your cockpit. Less risk, less reward, but old stations have old problems.",
           "outcome": {
-            "description": "Your scan reveals the station's architecture in detail: pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
+            "description": "Your scan reveals the station's architecture in detail: pre-Expansion construction techniques, a century obsolete. You compile the data into a survey package worth a modest sum.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1044,7 +1044,7 @@
         {
           "id": "leave",
           "label": "Keep Flying",
-          "description": "It's been dark for a century. Whatever's inside can wait another century.",
+          "description": "Log the coordinates and keep flying.",
           "outcome": {
             "description": "You log the coordinates and continue on. The station's dark silhouette shrinks behind you, keeping its secrets for the next curious traveler.",
             "rewards": []
@@ -1072,9 +1072,9 @@
         {
           "id": "study",
           "label": "Ride the Gradient",
-          "description": "Hold at the edge and let your instruments record. Twenty minutes of harrowing readings the Collective would kill for.",
+          "description": "Hold at the edge and let your instruments record. Twenty minutes of readings the Collective would kill for.",
           "outcome": {
-            "description": "You ride the gravity gradient for twenty harrowing minutes, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body. The Collective will want this.",
+            "description": "You ride the gravity gradient for twenty minutes, the hull groaning, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1126,7 +1126,7 @@
           "label": "Dock Dark and Browse",
           "description": "Transponders dark, manifests blank. The prices are good because the provenance is bad.",
           "outcome": {
-            "description": "You dock in silence. Nobody exchanges names. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest does not show will not hurt it.",
+            "description": "You dock in silence. Nobody exchanges names. The goods are quality. You pay a fraction of market rate and part ways with a nod.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1156,9 +1156,9 @@
         {
           "id": "decline",
           "label": "Decline Silently",
-          "description": "Not worth the risk.",
+          "description": "Refuse the offer.",
           "outcome": {
-            "description": "You send a single character reply: 'N.' The freighter kills its tight-beam and drifts away without a sound. Clean conscience, empty pockets.",
+            "description": "You send a single character reply: 'N.' The freighter kills its tight-beam and drifts away without a sound.",
             "rewards": []
           }
         }
@@ -1221,9 +1221,9 @@
         {
           "id": "pass",
           "label": "Coast Through on Momentum",
-          "description": "Kill the engines and drift. For a few minutes, the void feels almost welcoming.",
+          "description": "Kill the engines and drift through.",
           "outcome": {
-            "description": "You cut engines and coast through the swarm on momentum alone. The drifters part around your hull like a luminous curtain. For a few minutes, the void feels almost welcoming.",
+            "description": "You cut engines and coast through the swarm on momentum alone. The drifters part around your hull like a luminous curtain.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1256,7 +1256,7 @@
           "label": "Haggle Over the Airlock",
           "description": "Goods for goods, skipping the banks and their fees. The old way of doing business out here.",
           "outcome": {
-            "description": "After twenty minutes of good-natured haggling, you swap cargo holds. You're not sure who got the better deal, but the hauler captain seems pleased. He seals it with a handshake through the airlock.",
+            "description": "After twenty minutes of good-natured haggling, you swap cargo holds. The hauler captain seems pleased. He seals it with a handshake through the airlock.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1272,7 +1272,7 @@
         {
           "id": "decline",
           "label": "Stick With Credits",
-          "description": "Barter is a gamble. You'd rather know exactly what you're getting.",
+          "description": "Tell him you deal in credits.",
           "outcome": {
             "description": "'Fair enough,' the captain shrugs. 'Can't blame a man for trying.' He tips an imaginary hat and fires up his engines. The hauler rumbles away, leaving a faint trail of exhaust.",
             "rewards": []
@@ -1322,9 +1322,9 @@
         {
           "id": "signal",
           "label": "Light Up Every Patrol Channel",
-          "description": "Broadcast the coordinates and pray someone's in range. Safer than fighting, but slower.",
+          "description": "Broadcast the coordinates on every patrol channel. Safer than fighting, but slower.",
           "outcome": {
-            "description": "You light up every patrol channel in range with the freighter's coordinates. A Guild corvette responds within minutes, but by the time it arrives, the raiders have stripped the freighter and fled. At least the crew survived.",
+            "description": "You light up every patrol channel in range with the freighter's coordinates. A Guild corvette responds within minutes, but by the time it arrives, the raiders have stripped the freighter and fled. The crew survived.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1336,9 +1336,9 @@
         {
           "id": "avoid",
           "label": "Alter Course",
-          "description": "Two raider skiffs against a freighter. Adding your ship to the body count doesn't help anyone.",
+          "description": "Two raider skiffs against a freighter. Alter course and give the fight a wide berth.",
           "outcome": {
-            "description": "You alter course and give the battle a wide berth. The weapons fire fades from your sensors. You tell yourself there was nothing you could have done. It almost sounds convincing.",
+            "description": "You alter course and give the battle a wide berth. The weapons fire fades from your sensors.",
             "rewards": []
           }
         }
@@ -1435,9 +1435,9 @@
         {
           "id": "listen",
           "label": "Just Listen",
-          "description": "Enjoy the music while it lasts.",
+          "description": "Stay on the frequency until it fades.",
           "outcome": {
-            "description": "You lean back and let the sonata wash over you. For a few minutes, the vastness outside your viewport feels less empty. The signal fades as you drift out of range, taking the music with it.",
+            "description": "You lean back. The sonata plays through. The signal fades as you drift out of range, taking the music with it.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1469,9 +1469,9 @@
         {
           "id": "heed",
           "label": "Ask for Tactical Data",
-          "description": "Raider positions, ship profiles, ambush points. This kind of intel saves lives.",
+          "description": "Raider positions, ship profiles, ambush points.",
           "outcome": {
-            "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
+            "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1483,7 +1483,7 @@
         {
           "id": "volunteer",
           "label": "Volunteer for the Sweep",
-          "description": "One more ship on a raider flush changes the math. Risky, but the bounty makes it worth considering.",
+          "description": "One more ship on a raider flush changes the math. The patrol pays a bounty.",
           "outcome": {
             "description": "The officer raises an eyebrow but doesn't refuse. You join a short-range sweep that flushes out a raider scout. The patrol commander logs your contribution and transfers a bounty payment.",
             "rewards": [
@@ -1502,9 +1502,9 @@
         {
           "id": "acknowledge",
           "label": "Log It and Tighten Your Route",
-          "description": "Forewarned is forearmed. Adjust your nav charts and keep your shields warm.",
+          "description": "Adjust your nav charts and keep your shields warm.",
           "outcome": {
-            "description": "You log the advisory and tighten your route planning. Forewarned is forearmed. The patrol frigate resumes its sweep as you push deeper into the lane.",
+            "description": "You log the advisory and tighten your route planning. The patrol frigate resumes its sweep as you push deeper into the lane.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1536,7 +1536,7 @@
         {
           "id": "investigate",
           "label": "Divert to the Beacon Source",
-          "description": "Eleven days is a long time. Whatever you find won't be a rescue. But someone should look.",
+          "description": "Eleven days is a long time. Whatever you find won't be a rescue.",
           "outcome": {
             "description": "You find debris. Not much: a sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
             "rewards": [
@@ -1550,7 +1550,7 @@
         {
           "id": "log_it",
           "label": "Flag It in the Sector Registry",
-          "description": "Somewhere an office will update a file. Somewhere else, a family is still waiting. That's not your fault.",
+          "description": "Somewhere an office will update a file. Somewhere else, a family is still waiting.",
           "outcome": {
             "description": "You flag the beacon in the sector registry. Somewhere, an office will update a file. Somewhere else, a family is still waiting for a ship that isn't coming back.",
             "rewards": [
@@ -1601,9 +1601,9 @@
         {
           "id": "leave",
           "label": "Move On",
-          "description": "You don't owe strangers your time. Or your nightmares.",
+          "description": "Cut the channel and adjust course.",
           "outcome": {
-            "description": "You cut the channel and adjust course. The signal fades. Whatever happened to the Sundog, it'll happen to someone else eventually. That's how corners get cut.",
+            "description": "You cut the channel and adjust course. The signal fades.",
             "rewards": []
           }
         }
@@ -1630,9 +1630,9 @@
         {
           "id": "hail",
           "label": "Open a Channel to the Hauler",
-          "description": "They beat you to it, but an extra pair of hands never hurts. At minimum, you get a name to remember.",
+          "description": "Hail the hauler and offer a hand.",
           "outcome": {
-            "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week. You see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
+            "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week. You see enough breakdowns, you keep a tow rig handy.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1644,9 +1644,9 @@
         {
           "id": "continue",
           "label": "Resume Your Route",
-          "description": "Someone else's good deed. The lane doesn't need two heroes today.",
+          "description": "Resume your route.",
           "outcome": {
-            "description": "You watch the hauler guide the shuttle toward the nearest station and resume your route. One less problem in the lane. Someone else's good deed.",
+            "description": "You watch the hauler guide the shuttle toward the nearest station and resume your route.",
             "rewards": []
           }
         }
@@ -1673,9 +1673,9 @@
         {
           "id": "board",
           "label": "Dock and Open the Cockpit",
-          "description": "The lights are still on. Intact hull, no weapons damage. Something happened to the pilot. You should find out what.",
+          "description": "The lights are still on. Intact hull, no weapons damage. Something happened to the pilot.",
           "outcome": {
-            "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
+            "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1687,7 +1687,7 @@
         {
           "id": "scan",
           "label": "Scan and Transmit a Notice",
-          "description": "Confirm the situation from your cockpit and notify the nearest station. Let someone else open that door.",
+          "description": "Confirm the situation from your cockpit and notify the nearest station.",
           "outcome": {
             "description": "Scans confirm one deceased occupant. No hazards. You log the coordinates and transmit a salvage notice to the nearest station. The cockpit lights will keep burning until the battery dies. Then the void takes another one.",
             "rewards": [
@@ -1701,9 +1701,9 @@
         {
           "id": "pass",
           "label": "Give It a Wide Berth",
-          "description": "Every pilot knows the numbers. Most of them choose not to think about it.",
+          "description": "Give the courier a wide berth.",
           "outcome": {
-            "description": "You give it a wide berth and keep moving. Every pilot knows the numbers. Most of them choose not to think about it.",
+            "description": "You give it a wide berth and keep moving.",
             "rewards": []
           }
         }
@@ -1748,9 +1748,9 @@
         {
           "id": "strip",
           "label": "Strip the Console for Parts",
-          "description": "A functional power cell and some wiring. The story in the logs is none of your business.",
+          "description": "A functional power cell and some wiring.",
           "outcome": {
-            "description": "You pull the flight recorder, some wiring, and a functional power cell. The story in the nav logs is none of your business. Most stories out here aren't.",
+            "description": "You pull the flight recorder, some wiring, and a functional power cell.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1766,9 +1766,9 @@
         {
           "id": "pass",
           "label": "Mark It and Keep Flying",
-          "description": "The lane is full of bones. You can't stop for all of them.",
+          "description": "Mark the hull on your chart and keep flying.",
           "outcome": {
-            "description": "You mark it on your chart and keep flying. The lane is full of bones. You can't stop for all of them.",
+            "description": "You mark it on your chart and keep flying.",
             "rewards": []
           }
         }
@@ -1809,9 +1809,9 @@
         {
           "id": "ignore",
           "label": "Flush the Buffer",
-          "description": "Six-month-old ghost on a dead frequency. The Expanse is full of echoes. Not all of them mean something.",
+          "description": "Six-month-old ghost on a dead frequency. Flush the buffer.",
           "outcome": {
-            "description": "You flush the comm buffer and the ghost disappears. Relay networks are old, poorly maintained, full of echoes. Not everything that beeps means something. That's what you tell yourself.",
+            "description": "You flush the comm buffer and the ghost disappears. Relay networks are old, poorly maintained, full of echoes.",
             "rewards": []
           }
         }
@@ -1857,7 +1857,7 @@
           "label": "Scan and Leave Quickly",
           "description": "Whoever did this might still be nearby. Get the data and go.",
           "outcome": {
-            "description": "You run a fast sweep: three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
+            "description": "You run a fast sweep: three ship IDs, weapon signature profiles, debris age estimates. Enough for a report. You don't linger.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1871,7 +1871,7 @@
           "label": "Plot a Wide Detour",
           "description": "Debris fields that used to be ships are a warning. Whoever did this might still be hunting.",
           "outcome": {
-            "description": "You plot a wide detour around the field. It costs time and fuel, but the alternative is joining the wreckage. Some savings aren't worth the risk.",
+            "description": "You plot a wide detour around the field. It costs time and fuel.",
             "rewards": []
           }
         }
@@ -1897,7 +1897,7 @@
         {
           "id": "fight",
           "label": "Defend Yourself",
-          "description": "If it wants a fight, it picked the wrong pilot.",
+          "description": "Power up weapons and engage.",
           "outcome": {
             "description": "The AI ship accelerates to attack speed. Its hull shimmers with adaptive plating.",
             "rewards": [],
@@ -1910,7 +1910,7 @@
         {
           "id": "flee",
           "label": "Break Contact",
-          "description": "An AI that talks to itself is not something you want to fight.",
+          "description": "Cut comms and burn hard.",
           "outcome": {
             "description": "You cut comms and burn hard. The AI vessel does not pursue. Its final transmission: \"NOTED. NEXT TIME.\"",
             "rewards": []
@@ -1940,7 +1940,7 @@
         {
           "id": "fight",
           "label": "Stand and Fight",
-          "description": "The King has terrorized these lanes long enough. If you can take that ship, you take the crown.",
+          "description": "Engage the flagship.",
           "outcome": {
             "description": "The Corsair King opens with a broadside that rocks your ship to its bolts. This is the fight of your life.",
             "rewards": [],
@@ -1953,7 +1953,7 @@
         {
           "id": "flee",
           "label": "Full Burn Away",
-          "description": "Fighting that thing is suicide. You can outrun it. Probably.",
+          "description": "Punch the engines and break away.",
           "outcome": {
             "description": "You punch the engines and break away. The King does not pursue. You were beneath notice.",
             "rewards": []
@@ -1982,7 +1982,7 @@
         {
           "id": "fight",
           "label": "Engage the Iron Maw",
-          "description": "That thing has swallowed ships whole. But whatever powers it must be extraordinary.",
+          "description": "That thing has swallowed ships whole.",
           "outcome": {
             "description": "The Iron Maw opens its jaws. The heat hits your shields before the weapons do.",
             "rewards": [],
@@ -1995,7 +1995,7 @@
         {
           "id": "flee",
           "label": "Reverse Course",
-          "description": "No cargo is worth dying for. Back away slowly.",
+          "description": "Back away slowly.",
           "outcome": {
             "description": "You cut engines and drift backward. The Iron Maw does not follow. It has other prey.",
             "rewards": []
@@ -2024,7 +2024,7 @@
         {
           "id": "fight",
           "label": "Lock On and Fire",
-          "description": "If you can hit something that is barely real, you deserve whatever it drops.",
+          "description": "Lock on and fire at the flicker.",
           "outcome": {
             "description": "The Phantom flickers. For one moment it is solid, and in that moment it fires.",
             "rewards": [],
@@ -2037,7 +2037,7 @@
         {
           "id": "flee",
           "label": "Cut Sensors and Run",
-          "description": "If you cannot see it, it cannot see you. Maybe.",
+          "description": "Kill active sensors and drift away on momentum.",
           "outcome": {
             "description": "You kill active sensors and drift away on momentum. The Phantom flickers once more and vanishes.",
             "rewards": []
@@ -2066,9 +2066,9 @@
         {
           "id": "fight",
           "label": "Attack the Leviathan",
-          "description": "Generations of pilots have run from this thing. You are not going to be one of them.",
+          "description": "Generations of pilots have run from this thing. Attack it.",
           "outcome": {
-            "description": "The Leviathan turns toward you. Your ship feels very, very small.",
+            "description": "The Leviathan turns toward you.",
             "rewards": [],
             "leads_to_combat": true,
             "enemy_template_ids": [
@@ -2079,7 +2079,7 @@
         {
           "id": "flee",
           "label": "Emergency Jump",
-          "description": "You cannot fight a force of nature. Get out. Now.",
+          "description": "Blind-jump to anywhere that is not here.",
           "outcome": {
             "description": "You blind-jump to anywhere that is not here. Your hull groans as the gravity well pulls, but you break free. Barely.",
             "rewards": []
@@ -2108,7 +2108,7 @@
         {
           "id": "fight",
           "label": "Refuse the Collection",
-          "description": "Your ship is not a trophy. Prove it.",
+          "description": "Engage before the tractor beams lock.",
           "outcome": {
             "description": "The Collector deploys weapons you have never seen before. This is what happens when one ship has everything.",
             "rewards": [],
@@ -2154,7 +2154,7 @@
           "label": "Report to Station Security",
           "description": "File the stowaway report at the next port. There's a small bounty for unauthorized passengers.",
           "outcome": {
-            "description": "You file the report at the next station. Security takes the kid into processing without a second glance. The bounty hits your account before they're through the door. You try not to think about where processing leads for someone with no ID and no story that holds together.",
+            "description": "You file the report at the next station. Security takes the kid into processing without a second glance. The bounty hits your account before they're through the door.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -2182,7 +2182,7 @@
           "label": "Divert to Haven's Rest",
           "description": "The refugee center at Haven's Rest takes in people with nowhere else to go. It's a detour, but they won't ask questions.",
           "outcome": {
-            "description": "Haven's Rest takes the kid in without paperwork or judgment. The intake coordinator gives you a look that's half gratitude, half exhaustion. On the way out, the kid stops at the door and says something too quiet to hear. The coordinator translates: 'They said thank you.' You pretend the detour was on your route anyway.",
+            "description": "Haven's Rest takes the kid in without paperwork or judgment. The intake coordinator gives you a look that's half gratitude, half exhaustion. On the way out, the kid stops at the door and says something too quiet to hear. The coordinator translates: 'They said thank you.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -2209,7 +2209,7 @@
         {
           "id": "work",
           "label": "Put Them to Work",
-          "description": "An extra pair of hands in the cargo hold. They eat less than they're worth, and they clearly know their way around a shipping crate.",
+          "description": "An extra pair of hands in the cargo hold. They clearly know their way around a shipping crate.",
           "outcome": {
             "description": "The kid works without complaint and without rest. Within a day they've reorganized the hold by weight distribution, something your loading algorithm missed. They don't talk about where they came from. You don't ask. It's a temporary arrangement, but temporary has a way of stretching out here.",
             "rewards": [
@@ -2311,7 +2311,7 @@
         {
           "id": "log_coords",
           "label": "Log Coordinates and Move On",
-          "description": "Someone closer might reach them. Or someone with more time. You flag the position for the next patrol.",
+          "description": "Flag the position for the next patrol.",
           "outcome": {
             "description": "You log the coordinates and transmit them on the emergency frequency. The pod shrinks in your rear sensors until it's just another point of light. The patrol frequency doesn't acknowledge.",
             "rewards": [

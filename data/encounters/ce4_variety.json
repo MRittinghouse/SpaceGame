@@ -25,7 +25,7 @@
         {
           "id": "approach_blind",
           "label": "Burn In to Help",
-          "description": "Don't think. Help.",
+          "description": "Close the gap and help.",
           "outcome": {
             "description": "You close the gap. The transport's beacon flickers off. An armed ship you didn't see drops out of stealth, and a second heat signature holds at the edge of your scope.",
             "rewards": [],
@@ -63,9 +63,9 @@
         {
           "id": "ignore",
           "label": "Mark It and Keep Going",
-          "description": "Log the coordinates. Trust the next ship to handle it.",
+          "description": "Log the coordinates and keep your heading.",
           "outcome": {
-            "description": "You log the coordinates and keep your heading. If she was real, she'll wait. If she wasn't, the next ship that passes will learn.",
+            "description": "You log the coordinates and keep your heading.",
             "rewards": []
           }
         }
@@ -95,7 +95,7 @@
         {
           "id": "approach_blind",
           "label": "Dock and Help",
-          "description": "Mining rigs don't lie. Or so you tell yourself.",
+          "description": "Dock and help fix the drive.",
           "outcome": {
             "description": "You dock. The pilot wasn't a pilot. The rig was a shell. An armed ship unhides from behind it, and another drive is warming up further out.",
             "rewards": [],
@@ -125,7 +125,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "The remote diagnostic times out. You can't tell from here. You commit and dock.",
+            "description": "The remote diagnostic times out. An armed ship pulls out from behind the rig.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -133,7 +133,7 @@
         {
           "id": "ignore",
           "label": "Pass By",
-          "description": "If the rig's real, he won't last anyway. If it's not, you saved your ship.",
+          "description": "Hold your line.",
           "outcome": {
             "description": "You hold your line. The rig fades behind you.",
             "rewards": []
@@ -164,7 +164,7 @@
         {
           "id": "escort",
           "label": "Escort Him",
-          "description": "Officers don't lie. Officers don't lie. Officers don't lie.",
+          "description": "Move into escort formation.",
           "outcome": {
             "description": "You move into formation. He flies clean for thirty seconds. Then his weapons rotate to your side, and somewhere behind him another ship drops its cloak.",
             "rewards": [],
@@ -194,7 +194,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "The check times out. You decide to trust the badge.",
+            "description": "The check times out. The cutter is already alongside.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -239,7 +239,7 @@
         {
           "id": "approach_blind",
           "label": "Approach to Investigate",
-          "description": "Maybe the relay's just damaged. Maybe.",
+          "description": "Close range and investigate the relay.",
           "outcome": {
             "description": "You close range. The relay's broadcast cuts. A masked transponder lights up behind it, and a second one pings far off your starboard, closing. Ambush.",
             "rewards": [],
@@ -279,7 +279,7 @@
           "label": "Skip It",
           "description": "Mark the relay and move.",
           "outcome": {
-            "description": "You log the relay's coordinates and burn past. Whatever it was, it isn't your problem this hour.",
+            "description": "You log the relay's coordinates and burn past.",
             "rewards": []
           }
         }
@@ -356,7 +356,7 @@
         {
           "id": "pass",
           "label": "Pass on the Deal",
-          "description": "Cargo space is for things you know will sell.",
+          "description": "Pass on the cinnamon.",
           "outcome": {
             "description": "She accepts the no with grace and pulls away.",
             "rewards": []
@@ -384,7 +384,7 @@
         {
           "id": "buy",
           "label": "Take the Coil",
-          "description": "Don't ask. Don't think.",
+          "description": "Pay his price and take the coil.",
           "requires_credits": 800,
           "outcome": {
             "description": "He transfers the part, signs off without his name, and his ship is gone before you've stowed the crate.",
@@ -410,7 +410,7 @@
             "set_flag_on_success": "ce4_dealer_settled"
           },
           "outcome": {
-            "description": "He settles. Tells you enough that you know the coil's clean. Knocks 200 off the price for the trust.",
+            "description": "He settles. Tells you the coil's history and sends the bill of sale. Knocks 200 off the price for the trust.",
             "rewards": [
               {
                 "reward_type": "deduct_credits",
@@ -434,7 +434,7 @@
         {
           "id": "pass",
           "label": "Decline",
-          "description": "Quiet deals on quiet ships are how careers end.",
+          "description": "Decline the coil.",
           "outcome": {
             "description": "He thanks you for the time and is gone.",
             "rewards": []
@@ -513,7 +513,7 @@
         {
           "id": "pass",
           "label": "Pass",
-          "description": "Antiques are for stations with display cases.",
+          "description": "Pass on the chronometer.",
           "outcome": {
             "description": "He bows from the cockpit and is gone.",
             "rewards": []
@@ -544,7 +544,7 @@
           "description": "Risky cargo. Risky resale.",
           "requires_credits": 500,
           "outcome": {
-            "description": "She transfers the crate without a word. The seal looks expensive. She's gone before you can ask anything you'd regret asking.",
+            "description": "She transfers the crate without a word. The seal looks expensive. She's gone before you can ask.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -588,14 +588,14 @@
             ]
           },
           "failure_outcome": {
-            "description": "You can't read her. Could be clean. Could be a setup. You don't bite.",
+            "description": "Her hands give nothing away. She waits, then cuts the channel and pulls away.",
             "rewards": []
           }
         },
         {
           "id": "pass",
           "label": "Pass",
-          "description": "Some doors stay closed.",
+          "description": "Decline the crate.",
           "outcome": {
             "description": "She nods once. The trader peels off.",
             "rewards": []
@@ -607,7 +607,7 @@
       "id": "derelict_civilian_wreck_01",
       "encounter_type": "derelict_encounter",
       "name": "Civilian Freighter, No Beacon",
-      "description": "A civilian freighter drifts dark. The beacon is offline. The transponder silent. Hails go unanswered. The hull is intact enough that the cargo bay might still be sealed. The cockpit has a smear across the viewport that you don't want to look at long.",
+      "description": "A civilian freighter drifts dark. The beacon is offline. The transponder silent. Hails go unanswered. The hull is intact enough that the cargo bay might still be sealed. The cockpit has a smear across the viewport.",
       "icon_color": [
         160,
         140,
@@ -748,7 +748,7 @@
           "label": "Mark and Move",
           "description": "Military wrecks bring scavenger crews. Crews bring trouble.",
           "outcome": {
-            "description": "You note the hulk and move on. Someone else's problem. Someone else's payday.",
+            "description": "You note the hulk and move on. Small finder's fee.",
             "rewards": [
               {
                 "reward_type": "credits",

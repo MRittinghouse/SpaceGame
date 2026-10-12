@@ -64,9 +64,9 @@
         {
           "id": "move_on",
           "label": "Continue On",
-          "description": "You can't stop for every distress call.",
+          "description": "Log the coordinates and keep flying.",
           "outcome": {
-            "description": "You log the coordinates and keep flying. The signal fades behind you, but Tomek's voice stays in your head longer than you'd like.",
+            "description": "You log the coordinates and keep flying. The signal fades behind you.",
             "rewards": []
           }
         }
@@ -94,7 +94,7 @@
         {
           "id": "honor_picket",
           "label": "Honor the Line",
-          "description": "Shut down engines and wait it out in solidarity.",
+          "description": "Shut down engines and wait with the picket.",
           "outcome": {
             "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
             "rewards": [
@@ -131,7 +131,7 @@
         {
           "id": "force_through",
           "label": "Push Through",
-          "description": "You've got deliveries to make, picket line or not.",
+          "description": "Gun the engines and thread through the formation.",
           "outcome": {
             "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.' The Union won't forget this insult easily.",
             "rewards": [
@@ -169,7 +169,7 @@
           "label": "Donate Supplies",
           "description": "Contribute credits toward the aid effort.",
           "outcome": {
-            "description": "Dev waves you in to dock. You transfer what you can afford. He claps you on the shoulder: 'We're all breathing the same recycled air, right? This'll keep folks fed for another week.' Word of your generosity spreads through Union channels.",
+            "description": "Dev waves you in to dock. You transfer what you can afford. He claps you on the shoulder: 'We're all breathing the same recycled air, right? This'll keep folks fed for another week.' Word of the donation spreads through Union channels.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -190,9 +190,9 @@
         {
           "id": "take_rations",
           "label": "Accept Rations",
-          "description": "Take what's offered. No shame in need.",
+          "description": "Take what's offered.",
           "outcome": {
-            "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Simple as that. Nothing gets written down. Just community.",
+            "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Nothing gets written down.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -208,9 +208,9 @@
         {
           "id": "pass_by",
           "label": "Wave and Go",
-          "description": "You're fine for now. Let someone who needs it more take the help.",
+          "description": "Wave and fly on.",
           "outcome": {
-            "description": "Dev gives you a nod through the viewport. 'Safe travels, friend.' You fly on past the cluster of aid ships, a little warmer for having seen them.",
+            "description": "Dev gives you a nod through the viewport. 'Safe travels, friend.' You fly on past the cluster of aid ships.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -284,7 +284,7 @@
         {
           "id": "leave_it",
           "label": "Leave It Be",
-          "description": "Old rigs can be structurally unstable. Not worth the risk.",
+          "description": "Give it a wide berth.",
           "outcome": {
             "description": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent, a monument to someone's abandoned ambitions.",
             "rewards": []
@@ -355,10 +355,10 @@
         },
         {
           "id": "stay_out",
-          "label": "Not Your Problem",
+          "label": "Fly On",
           "description": "Let them sort it out between themselves.",
           "outcome": {
-            "description": "You fly on, leaving the bickering behind. As you pull away, you hear Jess sigh and say, 'Fine. Warm up the tow line.' Some things work themselves out.",
+            "description": "You fly on, leaving the bickering behind. As you pull away, you hear Jess sigh and say, 'Fine. Warm up the tow line.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -414,9 +414,9 @@
         {
           "id": "scoop_yourself",
           "label": "Scoop Loose Ore",
-          "description": "Collect the drifting ore for yourself. It's already lost.",
+          "description": "Collect the drifting ore for yourself.",
           "outcome": {
-            "description": "You grab what's drifted beyond Britt's recovery range. Technically it's debris. She watches on sensors but doesn't say anything. The silence speaks volumes. Union haulers will remember your transponder ID.",
+            "description": "You grab what's drifted beyond Britt's recovery range. She watches on sensors but doesn't say anything.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -493,7 +493,7 @@
           "label": "Request a Song",
           "description": "Ask if he knows 'The Iron Depths Reel.'",
           "outcome": {
-            "description": "Gren barks a laugh. 'Haven't heard that one in years!' He launches into a foot-stomper about a drill operator who fell in love with a safety inspector. It's filthy, it's funny, and by the second chorus you're humming along. Gren signs off with a tip of an imaginary hat.",
+            "description": "Gren barks a laugh. 'Haven't heard that one in years!' He launches into a foot-stomper about a drill operator who fell in love with a safety inspector. It's filthy. Gren signs off with a tip of an imaginary hat.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -505,9 +505,9 @@
         {
           "id": "fly_on",
           "label": "Keep Flying",
-          "description": "Good voice, but you've got places to be.",
+          "description": "Keep flying.",
           "outcome": {
-            "description": "Gren's ballad fades as you pull away, swallowed by the static of deep space. Some songs are meant to be heard by the void.",
+            "description": "Gren's ballad fades as you pull away, swallowed by the static of deep space.",
             "rewards": []
           }
         }
@@ -581,9 +581,9 @@
         {
           "id": "decline",
           "label": "Decline Politely",
-          "description": "You can't afford to take sides right now.",
+          "description": "Decline politely.",
           "outcome": {
-            "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' No hard feelings: she's heard every excuse in the belt. The shuttle peels off to flag down the next ship.",
+            "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' She's heard it before. The shuttle peels off to flag down the next ship.",
             "rewards": []
           }
         }
@@ -611,7 +611,7 @@
         {
           "id": "comply",
           "label": "Submit to Inspection",
-          "description": "Let Cal do his job. What's the worst that could happen?",
+          "description": "Let Cal do his inspection.",
           "outcome": {
             "description": "Cal boards with a clipboard older than your ship and proceeds to find seventeen 'violations,' most of which are judgment calls at best. But he also catches a hairline crack in your secondary coolant line that could've blown next week. 'See? That's why we do this.' He waives the fines and patches the crack himself.",
             "rewards": [
@@ -632,7 +632,7 @@
           "label": "Offer a 'Tip'",
           "description": "Suggest the inspector might want to skip the paperwork.",
           "outcome": {
-            "description": "Cal stares at you for a long, uncomfortable moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
+            "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly. You pass.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -686,7 +686,7 @@
           "label": "Navigate to Him",
           "description": "Plot a course through the asteroid field to reach Nils.",
           "outcome": {
-            "description": "Threading through the rocks takes nerve, but you find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
+            "description": "You thread through the rocks and find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -726,7 +726,7 @@
         {
           "id": "pass",
           "label": "Mark and Move On",
-          "description": "Log the beacon. Someone closer will get to him.",
+          "description": "Log the beacon.",
           "outcome": {
             "description": "You tag the signal in your nav log and continue on course. Nils doesn't say anything else. The beacon keeps pulsing, small and steady, swallowed by the vastness of the field.",
             "rewards": []
@@ -797,7 +797,7 @@
         {
           "id": "pass",
           "label": "No Thanks",
-          "description": "Your hold's full or you don't have what they need.",
+          "description": "Decline the trade.",
           "outcome": {
             "description": "Suki waves you off with a good-natured shrug. 'No worries, Captain. Next time, yeah?' The barges drift back to their work, drill lights flickering in the dark.",
             "rewards": []
@@ -848,7 +848,7 @@
           "label": "Yield the Lane",
           "description": "Pull aside and let the convoy pass undisturbed.",
           "outcome": {
-            "description": "You cut engines and drift to the edge of the lane. The convoy passes in solemn silence, ship after ship, gold pennants catching the starlight. A few pilots flash their lights in acknowledgment as they pass. Some things are bigger than schedules.",
+            "description": "You cut engines and drift to the edge of the lane. The convoy passes in solemn silence, ship after ship, gold pennants catching the starlight. A few pilots flash their lights in acknowledgment as they pass.",
             "rewards": [
               {
                 "reward_type": "xp",

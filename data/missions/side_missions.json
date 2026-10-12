@@ -3,9 +3,9 @@
     {
       "id": "the_price_of_information",
       "name": "The Price of Information",
-      "description": "Neve Osei deals in the kind of information that makes powerful people nervous. She's got an internal audit proving Director Vey has been skimming tariff revenue, and she'll hand it over for free. All you have to do is deliver a sealed data chip to Stellaris Port. She won't say what's on it. You won't ask. That's how this works.",
+      "description": "Neve Osei deals in the kind of information that makes powerful people nervous. She's got an internal audit proving Director Vey has been skimming tariff revenue, and she'll hand it over for free. All you have to do is deliver a sealed data chip to Stellaris Port. She won't say what's on it.",
       "hint": "Speak with Neve Osei at Nexus Prime, then deliver the sealed data chip to Stellaris Port.",
-      "discovery_text": "A woman named Neve Osei caught my eye in the cantina. She looked like she was waiting for someone specific, or maybe just someone new enough to not know better.",
+      "discovery_text": "A woman named Neve Osei sat at a cantina table at Nexus Prime, waiting.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"
@@ -330,7 +330,7 @@
     {
       "id": "old_debts",
       "name": "Old Debts",
-      "description": "Tomasz Brennan hasn't spoken to his son in eleven years. The Forgeworks-Breakstone labor split put them on opposite sides of a picket line, and neither one bent. Now Tomasz is old and his hands shake, and he's wrapped a package he can't bring himself to mail. It's a simple delivery. The hardest kind.",
+      "description": "Tomasz Brennan hasn't spoken to his son in eleven years. The Forgeworks-Breakstone labor split put them on opposite sides of a picket line, and neither one bent. Now Tomasz is old and his hands shake, and he's wrapped a package. It's a simple delivery.",
       "hint": "Talk to Tomasz Brennan at Forgeworks, then deliver his package to Breakstone.",
       "mission_type": "side",
       "available_at": [
@@ -385,7 +385,7 @@
     {
       "id": "miners_plight",
       "name": "Miners' Plight",
-      "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can turn her down and sleep fine. Probably.",
+      "description": "Britt Vasara's daughter has a fever that won't break and medicine that won't come. Forgeworks slapped an embargo on Breakstone pharmaceuticals as leverage in a contract dispute that has nothing to do with a sick child. Britt needs five units smuggled past the blockade. You can help her, or you can turn her down.",
       "hint": "Talk to Britt Vasara at Breakstone. She needs 5 units of Medical Supplies delivered past the embargo.",
       "mission_type": "side",
       "available_at": [
@@ -657,7 +657,7 @@
     {
       "id": "two_calls",
       "name": "Two Calls",
-      "description": "Two distress calls. One frequency. A refugee transport limping toward Haven's Rest with failing life support, and a clinic at Verdant where the medicine ran out yesterday. You can reach one in time. Not both. Whoever you don't help, you'll hear about what happened to them. That's the part nobody warns you about.",
+      "description": "Two distress calls. One frequency. A refugee transport limping toward Haven's Rest with failing life support, and a clinic at Verdant where the medicine ran out yesterday. You can reach one in time. Not both. Whoever you don't help, you'll hear about what happened to them.",
       "hint": "Choose which distress call to answer: the refugee transport or the Verdant clinic. You cannot help both.",
       "mission_type": "side",
       "available_at": [
@@ -785,7 +785,7 @@
     {
       "id": "the_forgery",
       "name": "The Forgery",
-      "description": "Cassiel Maren has the most respected collection of pre-colony artifacts in the Expanse. She also has the steadiest hands you've ever seen on someone her age, which starts to make sense when you realize the artifacts are as real as her smile. Decades of forgeries, flawless technique, and a reputation built on beautiful lies. What you do with that knowledge is between you and your conscience.",
+      "description": "Cassiel Maren has the most respected collection of pre-colony artifacts in the Expanse. She also has the steadiest hands on Stellaris Port for someone her age. The artifacts are as real as her smile. Decades of forgeries, flawless technique, and a reputation built on beautiful lies.",
       "hint": "Talk to Cassiel Maren at Stellaris Port to begin the appraisal job.",
       "mission_type": "side",
       "available_at": [
@@ -1184,7 +1184,7 @@
     {
       "id": "the_informant",
       "name": "The Informant",
-      "description": "Callum Rhee paid double the standard passenger fare and didn't haggle. That should have been the first warning. A simple transport run to Haven's Rest turns complicated when you find out your quiet passenger is a Ledger operative using your ship as a getaway ride. Now you're an accomplice, a witness, and the only person between him and a clean escape. Confront him, turn him in, or let him walk. Each option costs something.",
+      "description": "Callum Rhee paid double the standard passenger fare and didn't haggle. A simple transport run to Haven's Rest turns complicated when you find out your quiet passenger is a Ledger operative using your ship as a getaway ride. Now you're an accomplice, a witness, and the only person between him and a clean escape. Confront him, turn him in, or let him walk.",
       "hint": "Talk to Callum Rhee at The Fulcrum and transport him to Haven's Rest. Expect complications.",
       "mission_type": "side",
       "available_at": [
@@ -1245,7 +1245,7 @@
     {
       "id": "the_stowaway",
       "name": "The Stowaway",
-      "description": "The cargo manifest said forty-two crates. There are forty-two crates and one teenager curled between them, half-starved, wearing clothes three sizes too big. They can't produce an ID or explain how they got aboard, and the story keeps changing every time you ask. Turn them in for the bounty, drop them at Haven's Rest with the other refugees, or put them to work. Every option changes a life. Including yours.",
+      "description": "The cargo manifest said forty-two crates. There are forty-two crates and one teenager curled between them, half-starved, wearing clothes three sizes too big. They can't produce an ID or explain how they got aboard, and the story keeps changing every time you ask. Turn them in for the bounty, drop them at Haven's Rest with the other refugees, or put them to work.",
       "hint": "Deal with the stowaway discovered in your cargo hold.",
       "mission_type": "side",
       "available_at": [],
@@ -1292,7 +1292,7 @@
     {
       "id": "adrift",
       "name": "Adrift",
-      "description": "An escape pod tumbles through your sensor range. The beacon is dead, the transponder gutted, and the life sign is fading. The slow spin says the occupant hasn't touched the controls in hours. You can match velocity and pull them in, or mark the coordinates and keep flying. Most people keep flying. The ones who don't sometimes hear things they wish they hadn't.",
+      "description": "An escape pod tumbles through your sensor range. The beacon is dead, the transponder gutted, and the life sign is fading. The slow spin says the occupant hasn't touched the controls in hours. You can match velocity and pull them in, or mark the coordinates and keep flying.",
       "hint": "Rescue the survivor from the damaged escape pod and deliver them to safety.",
       "mission_type": "side",
       "available_at": [],
@@ -1572,7 +1572,7 @@
       "name": "Clean Paper",
       "description": "Arna is still on Nexus, waiting for your call on the next move. She doesn't know you already made it. Walk back to the concourse and close the loop.",
       "hint": "Return to Arna at Nexus Prime. Make the call.",
-      "discovery_text": "Arna didn't argue when I said I was turning her in. She said 'fair read' and went back to her manifest terminal. She thinks I meant it as a question. I didn't.",
+      "discovery_text": "Arna didn't argue when I said I was turning her in. She said 'fair read' and went back to her manifest terminal.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"

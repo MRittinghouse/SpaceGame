@@ -17,10 +17,10 @@
       "{system} and {shakedown_demand} wait for their own fill.",
       "Good luck out there, {sir}. Fly smart.",
       "I need your bill of landing, and your registration, {sir}.",
-      "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly."
+      "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered."
     ]
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -185,21 +185,21 @@
     {
       "args": [
         "he/him",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         61
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     },
     {
       "args": [
         "he/him",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         null
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Son, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     },
     {
@@ -365,21 +365,21 @@
     {
       "args": [
         "she/her",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         61
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     },
     {
       "args": [
         "she/her",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         null
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Girl, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     },
     {
@@ -545,21 +545,21 @@
     {
       "args": [
         "they/them",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         61
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     },
     {
       "args": [
         "they/them",
-        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+        "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
         null
       ],
       "call": "fill",
-      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+      "result": "Szabo scratches his chin. 'Kid, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
       "state": {}
     }
   ],

@@ -282,7 +282,7 @@ class EncounterView(BaseView):
                 disabled = True
                 label = f"{label} ({choice.requires_credits}c)"
                 tooltip_lines.append(
-                    f"Need {choice.requires_credits} credits — short by "
+                    f"Need {choice.requires_credits} credits, short by "
                     f"{choice.requires_credits - self.player.credits}."
                 )
             else:

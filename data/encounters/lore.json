@@ -24,7 +24,7 @@
           "label": "Record the Full Transmission",
           "description": "Let the beacon cycle through its entire message. Every coordinate, every pause.",
           "outcome": {
-            "description": "You sit in silence as the voice reads thirty-seven coordinates. Some match modern settlements. Others point to empty space: sites that were surveyed and abandoned, or perhaps never reached at all. When the loop restarts, you notice something: the final coordinate doesn't correspond to any system on your charts. It points somewhere beyond the Expanse's mapped edge. The beacon offers no explanation. It simply begins again.",
+            "description": "You sit in silence as the voice reads thirty-seven coordinates. Some match modern settlements. Others point to empty space: sites that were surveyed and abandoned, or perhaps never reached at all. When the loop restarts, the final coordinate doesn't correspond to any system on your charts. It points somewhere beyond the Expanse's mapped edge. The beacon offers no explanation. It simply begins again.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -86,7 +86,7 @@
       "id": "lore_earth_broadcast_01",
       "encounter_type": "comm_intercept",
       "name": "Ghost Frequency",
-      "description": "Your comms array picks up an impossible signal: analogue, unencrypted, riding a frequency that hasn't been used in over a century. The source is diffuse, scattered by a gravitational lens in the region. As you tune in, the static resolves into sound: music. Strings and woodwinds playing something slow and achingly beautiful. Then voices: people laughing, talking over each other in a language your translator can parse but your heart barely can. A child's voice rises above the rest, asking a question you can't quite make out. The signal is a fragment of an old Earth broadcast, stretched across light-years and bent by gravity into something that sounds like a memory you never had.",
+      "description": "Your comms array picks up an impossible signal: analogue, unencrypted, riding a frequency that hasn't been used in over a century. The source is diffuse, scattered by a gravitational lens in the region. As you tune in, the static resolves into sound: music. Strings and woodwinds playing something slow. Then voices: people laughing, talking over each other in a language your translator can parse. A child's voice rises above the rest, asking a question you can't quite make out. The signal is a fragment of an old Earth broadcast, stretched across light-years and bent by gravity.",
       "icon_color": [
         140,
         180,
@@ -104,9 +104,9 @@
         {
           "id": "listen",
           "label": "Listen to the Full Fragment",
-          "description": "Sit with it. Let the broadcast play out.",
+          "description": "Let the broadcast play out.",
           "outcome": {
-            "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date: March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise. You sit in the silence that follows and realize your hands are shaking.",
+            "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date: March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -123,9 +123,9 @@
         {
           "id": "record",
           "label": "Archive the Signal",
-          "description": "Record every second. Someone should preserve this.",
+          "description": "Record every second.",
           "outcome": {
-            "description": "Your ship's memory banks capture the fragment in full fidelity: fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this, but it feels wrong to sell it. You file it under personal records instead. Some things aren't cargo.",
+            "description": "Your ship's memory banks capture the fragment in full fidelity: fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this. You file it under personal records. Before the file finishes indexing, the Collective's historical archive credits your account with its standing bounty on Earth-era signals.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -146,7 +146,7 @@
         {
           "id": "change_freq",
           "label": "Change Frequency",
-          "description": "You don't need to carry this weight right now.",
+          "description": "Switch channels.",
           "outcome": {
             "description": "You switch channels and the laughter cuts off mid-breath. Your comms array returns to the familiar hiss of deep space. The broadcast continues behind you, playing to an audience of dust and starlight.",
             "rewards": [
@@ -228,9 +228,9 @@
         {
           "id": "leave",
           "label": "Leave It Drifting",
-          "description": "It belongs to the void now.",
+          "description": "Let the fragment drift on.",
           "outcome": {
-            "description": "You watch the fragment rotate slowly away, the Charter's words catching starlight as it turns. It has traveled this far without help. Perhaps that's the point.",
+            "description": "You watch the fragment rotate slowly away, the Charter's words catching starlight as it turns. It has traveled this far without help.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -310,7 +310,7 @@
         {
           "id": "pass",
           "label": "Acknowledge and Continue",
-          "description": "A respectful flyby. You have a schedule to keep.",
+          "description": "Dip your running lights as you pass.",
           "outcome": {
             "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
             "rewards": [
@@ -388,9 +388,9 @@
         {
           "id": "leave",
           "label": "Let It Work",
-          "description": "It's been at this longer than you've been alive. Don't interfere.",
+          "description": "Alter course and give the probe space.",
           "outcome": {
-            "description": "You alter course to give the probe space. It doesn't acknowledge your presence. It never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled. There's something admirable in that.",
+            "description": "You alter course to give the probe space. It doesn't acknowledge your presence. It never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -410,7 +410,7 @@
       "id": "lore_generation_ship_01",
       "encounter_type": "derelict",
       "name": "The Ship That Never Arrived",
-      "description": "It emerges from the sensor haze like a cathedral: a generation ship, easily ten times the mass of anything currently flying the Expanse. The hull is intact but dark. Power signatures absent, hull temperature at void ambient, nothing moving inside. Your database returns no match for the vessel's configuration, but the general design is unmistakable: this was built to carry thousands of people across interstellar distances. It never reached its destination. The name on the bow, still legible beneath a patina of dust and radiation scarring, reads: COVENANT OF DAWN. You have never heard of it. No one in the Expanse has.",
+      "description": "It emerges from the sensor haze like a cathedral: a generation ship, easily ten times the mass of anything currently flying the Expanse. The hull is intact but dark. Power signatures absent, hull temperature at void ambient, nothing moving inside. Your database returns no match for the vessel's configuration, but the general design is unmistakable: this was built to carry thousands of people across interstellar distances. It never reached its destination. The name on the bow, still legible beneath a patina of dust and radiation scarring, reads: COVENANT OF DAWN. No registry in the Expanse lists it.",
       "icon_color": [
         140,
         120,
@@ -447,7 +447,7 @@
         {
           "id": "scan",
           "label": "Deep Scan from Outside",
-          "description": "Map the ship's interior without boarding. Some doors should stay closed.",
+          "description": "Map the ship's interior without boarding.",
           "outcome": {
             "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
             "rewards": [
@@ -466,9 +466,9 @@
         {
           "id": "leave",
           "label": "Transmit Coordinates to Authorities",
-          "description": "This is beyond you. Report the find and move on.",
+          "description": "Report the find and move on.",
           "outcome": {
-            "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent. Somewhere, families will learn what happened to the people they lost. Somewhere, the history books will add a footnote. It doesn't feel like enough.",
+            "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -548,9 +548,9 @@
         {
           "id": "move_on",
           "label": "Continue Your Route",
-          "description": "Beautiful, but you have places to be.",
+          "description": "Adjust course and let the song fade.",
           "outcome": {
-            "description": "You adjust course and let the song fade behind you. The melody stays in your head longer than you'd like to admit. Some frequencies are harder to tune out than others.",
+            "description": "You adjust course and let the song fade behind you.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -651,9 +651,9 @@
         {
           "id": "open",
           "label": "Open the Capsule",
-          "description": "They wrote these for someone. You're someone.",
+          "description": "Break the seal.",
           "outcome": {
-            "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, catches your eye: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
+            "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, reads: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -674,9 +674,9 @@
         {
           "id": "deliver",
           "label": "Deliver It Unopened",
-          "description": "Bring it to a settlement archive. Let it be opened properly, by everyone.",
+          "description": "Bring it to a settlement archive unopened.",
           "outcome": {
-            "description": "You secure the capsule in your cargo bay without breaking the seal. It belongs to the Expanse, not to you. The nearest settlement archive will know what to do with it: preserve it, share it, let the words reach the audience they were meant for. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
+            "description": "You secure the capsule in your cargo bay without breaking the seal. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -697,9 +697,9 @@
         {
           "id": "leave",
           "label": "Leave It Sealed",
-          "description": "It's survived this long in the dark. Maybe that's where it belongs.",
+          "description": "Log the coordinates and leave it to its drift.",
           "outcome": {
-            "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit: words from the dead, waiting for readers who may never come. There's a strange peace in that. Some messages don't need to arrive to mean something.",
+            "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit: words from the dead, waiting for readers who may never come.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -737,9 +737,9 @@
         {
           "id": "analyze",
           "label": "Full Scientific Analysis",
-          "description": "Run every instrument you have. This could change everything.",
+          "description": "Run every instrument you have.",
           "outcome": {
-            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. Your data will keep scientists arguing for decades. You store the analysis alongside a single note in your log: 'We are not the first to find this place interesting.'",
+            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -762,7 +762,7 @@
           "label": "Copy the Unknown Systems",
           "description": "Overlay the map's uncharted systems onto your nav computer.",
           "outcome": {
-            "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. Whoever made this knew what they were doing. You file the coordinates and wonder if anyone will ever follow them. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
+            "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. You file the coordinates. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -781,7 +781,7 @@
           "label": "Document and Withdraw",
           "description": "Take images. Leave the object undisturbed.",
           "outcome": {
-            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. Some discoveries are bigger than one pilot and one ship. You'll submit the images to the Collective and let people smarter than you figure out what it means. But you keep one image for yourself: the cluster of dots that represents your home system, marked by hands that were never human, under stars that have been burning since before your species learned to name them.",
+            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
             "rewards": [
               {
                 "reward_type": "xp",

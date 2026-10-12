@@ -3,12 +3,12 @@
     {
       "id": "reinforcement_arrival",
       "name": "Reinforcement Arrival",
-      "description": "A second ship warps in on the enemy's flank at round 3.",
+      "description": "A second ship jumps in on the enemy's flank at round 3.",
       "trigger_type": "turn_counter",
       "trigger_params": { "turn": 3 },
       "effect_type": "spawn_reinforcement",
       "effect_params": { "template_ids": ["pirate_scout"] },
-      "narration": "A contact lights up the long-range scanner. One more ship just dropped out of warp. The fight just got bigger."
+      "narration": "A contact lights up the long-range scanner. One more ship just jumped in."
     },
     {
       "id": "shield_harmonic",
@@ -28,12 +28,12 @@
       "trigger_params": { "turn": 2 },
       "effect_type": "environmental",
       "effect_params": { "player_evasion_modifier": -3 },
-      "narration": "The asteroid field is closing in. Your evasion window just got tighter. Fly straighter than you'd like to."
+      "narration": "The asteroid field is closing in. Your evasion window just got tighter."
     },
     {
       "id": "morale_shift",
       "name": "Morale Shift",
-      "description": "Player hull under 30%: a dramatic beat where the captain's tone shifts.",
+      "description": "Player hull under 30%: the enemy reads the damage.",
       "trigger_type": "hp_threshold",
       "trigger_params": { "target": "player", "hp_pct": 0.3 },
       "effect_type": "narration",

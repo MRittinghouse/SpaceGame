@@ -196,7 +196,7 @@ class GroundResultView(BaseView):
         elif outcome == MissionOutcome.EXTRACTED:
             if result.loot_credits > 0:
                 lines.append((f"Credits looted: +{result.loot_credits} CR", Colors.GREEN))
-            lines.append(("Objectives incomplete — no mission reward", Colors.YELLOW))
+            lines.append(("Objectives incomplete: no mission reward", Colors.YELLOW))
 
         # --- Failure penalties ---
         elif outcome.is_failure:

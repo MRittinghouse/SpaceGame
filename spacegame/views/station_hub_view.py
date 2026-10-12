@@ -294,7 +294,7 @@ class StationHubView(BaseView):
             rng.shuffle(self._flavor_texts)
 
         # Fonts — role-based for narrative immersion
-        self.title_font = get_font("header", FONT_TITLE)  # "DOCKED — NEXUS PRIME"
+        self.title_font = get_font("header", FONT_TITLE)  # "DOCKED: NEXUS PRIME"
         self.subtitle_font = get_font("narration", FONT_LG)  # Station description
         self.flavor_font = get_font("narration", FONT_MD)  # Atmosphere text
         self.card_name_font = get_font("dialogue", FONT_XL)  # Location names
@@ -769,7 +769,7 @@ class StationHubView(BaseView):
                     reward_text = ""
                     for r in mission.rewards:
                         if r.reward_type == "credits":
-                            reward_text = f" — {r.amount:,} CR"
+                            reward_text = f" · {r.amount:,} CR"
                             break
                     btn = pygame_gui.elements.UIButton(
                         relative_rect=pygame.Rect(
@@ -796,7 +796,7 @@ class StationHubView(BaseView):
                     # Store teaser text for rendering in render() pass
                     self._rep_teaser = {
                         "text": f"\u2605 {mission_name}",
-                        "req": f"Requires: {faction_name} \u2014 {tier_name}",
+                        "req": f"Requires: {faction_name} \u00b7 {tier_name}",
                         "y": teaser_y,
                     }
 
@@ -1097,7 +1097,7 @@ class StationHubView(BaseView):
         pygame.draw.rect(screen, fc, (card_x, card_y + card_h - 2, card_w, 2))
 
         # System name in faction color
-        title = self.title_font.render(f"DOCKED \u2014 {self.system.name.upper()}", True, fc)
+        title = self.title_font.render(f"DOCKED: {self.system.name.upper()}", True, fc)
         screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, card_y + 8))
 
         # Station description

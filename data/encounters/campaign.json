@@ -73,9 +73,9 @@
         {
           "id": "keep_distance",
           "label": "Stay Out of It",
-          "description": "Guild internal politics aren't your problem. Wish her well and cut the channel.",
+          "description": "Wish her well and cut the channel.",
           "outcome": {
-            "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it. Not everyone wants to poke the hive.' The channel closes. You fly on with the uncomfortable feeling that staying out of it might not be an option much longer.",
+            "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it. Not everyone wants to poke the hive.' The channel closes.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -90,7 +90,7 @@
       "id": "campaign_sato_ghost_01",
       "encounter_type": "debris",
       "name": "The Heron's Shadow",
-      "description": "Your sensors register a contact: a ship signature that matches the Guild escort Heron, Captain Sato's vessel. The one you left drifting when you ignored her distress call. The contact holds position for three seconds, then vanishes from your display. No debris field. No ion trail. Just empty space where a dead ship shouldn't be.",
+      "description": "Your sensors register a contact: a ship signature that matches the Guild escort Heron, Captain Sato's vessel. The one you left drifting when you ignored her distress call. The contact holds position for three seconds, then vanishes from your display. It leaves no debris field or ion trail. Just empty space where a dead ship shouldn't be.",
       "icon_color": [
         140,
         140,
@@ -133,7 +133,7 @@
           "label": "Run Sensor Diagnostics",
           "description": "Could be a glitch. Check your instruments before chasing phantoms.",
           "outcome": {
-            "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up. The ghost of the Heron lingers in your mind longer than it should.",
+            "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -145,9 +145,9 @@
         {
           "id": "ignore",
           "label": "Keep Flying",
-          "description": "You already made your choice about the Heron. No point dwelling on it.",
+          "description": "Adjust course and keep flying.",
           "outcome": {
-            "description": "You force your eyes back to the nav display and adjust course. The sensor ghost fades behind you, just like the distress signal did. Some debts follow you through the void.",
+            "description": "You adjust course. The sensor ghost fades behind you, just like the distress signal did.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -209,7 +209,7 @@
           "label": "Forward to Authorities",
           "description": "Send the coordinates to Frontier Alliance patrols. Let them handle it.",
           "outcome": {
-            "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate, but you know how slow the bureaucracy moves. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.' You're left wondering who in the Alliance is compromised. Or whether the leak is closer to home.",
+            "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -231,9 +231,9 @@
         {
           "id": "delete_message",
           "label": "Delete the Message",
-          "description": "This is getting too dangerous. Purge the transmission and pretend it never arrived.",
+          "description": "Purge the transmission and the decryption key.",
           "outcome": {
-            "description": "You wipe the decryption key and purge the comm logs. Whatever Torres found, it's not your fight. But as you clear the buffers, you notice the message was flagged with a secondary header: someone else intercepted it before it reached you. Torres may already be in danger, and you've just thrown away the evidence.",
+            "description": "You wipe the decryption key and purge the comm logs. As you clear the buffers, a secondary header on the message shows someone else intercepted it before it reached you.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -269,7 +269,7 @@
         {
           "id": "accept_manifest",
           "label": "Accept the Manifest",
-          "description": "Dock with the courier and take the data. This could be the break you need.",
+          "description": "Dock with the courier and take the data.",
           "outcome": {
             "description": "The docking sequence takes forty seconds. The courier's hands shake as they transfer a sealed data chip. The manifest lists weapons shipments across eight systems: quantities, dates, and authorization codes that trace back to a Guild department that officially doesn't exist. 'They call themselves The Ledger,' the courier whispers. 'That's all I know. Please. Don't let this disappear.' The freighter undocks and jumps before you can respond.",
             "rewards": [
@@ -292,7 +292,7 @@
         {
           "id": "demand_proof",
           "label": "Demand Verification",
-          "description": "This could be a trap. Make them prove the data is legitimate before you touch it.",
+          "description": "Make them prove the data is legitimate before you touch it.",
           "outcome": {
             "description": "The courier transmits a sample: three entries from the manifest with verifiable details. You cross-reference against public shipping records. The official logs show agricultural supplies. The manifest shows pulse rifles and shield generators. The discrepancy is undeniable. You accept the full data chip, but the delay costs precious minutes. The courier's ship departs at maximum burn, and you catch a brief sensor flash: another vessel was watching from the debris field nearby.",
             "rewards": [
@@ -316,7 +316,7 @@
         {
           "id": "refuse",
           "label": "Refuse the Handoff",
-          "description": "Too risky. If the Guild is involved, possessing stolen manifests makes you a target.",
+          "description": "Turn the courier away.",
           "outcome": {
             "description": "The courier stares at you through the display, desperation collapsing into defeat. 'Then it dies with me,' they say quietly. The freighter peels away and vanishes into transit. You never learn the courier's name. A week later, a Guild bulletin reports a light freighter lost to 'engine malfunction' in deep space. No survivors recovered.",
             "rewards": [
@@ -333,7 +333,7 @@
       "id": "campaign_larsen_warning_01",
       "encounter_type": "comm_intercept",
       "name": "Off the Books",
-      "description": "A tight-beam transmission punches through your comm filters. No sender ID or routing header, just raw encrypted audio. You recognize the clipped, precise diction immediately: Officer Larsen, Guild Security. 'Listen carefully. I'm using a personal encryption key, so we have maybe ninety seconds before their monitoring sweeps catch this. Your ship has been flagged for extended customs inspection at every Guild-controlled station. That's not standard procedure. That's surveillance. Someone with authority is tracking your movements and cargo. I can't tell you who. I can't tell you why. But I can tell you to vary your routes and avoid Guild docking priority lanes for the next few weeks. Larsen out.'",
+      "description": "A tight-beam transmission punches through your comm filters. No sender ID or routing header, just raw encrypted audio. The diction is clipped and precise: Officer Larsen, Guild Security. 'Listen carefully. I'm using a personal encryption key, so we have maybe ninety seconds before their monitoring sweeps catch this. Your ship has been flagged for extended customs inspection at every Guild-controlled station. That's not standard procedure. That's surveillance. Someone with authority is tracking your movements and cargo. I can't tell you who. I can't tell you why. But I can tell you to vary your routes and avoid Guild docking priority lanes for the next few weeks. Larsen out.'",
       "icon_color": [
         220,
         160,
@@ -357,7 +357,7 @@
           "label": "Heed the Warning",
           "description": "Take Larsen's advice. Adjust your routes and stay off Guild radar.",
           "outcome": {
-            "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey, but Larsen has never struck you as the paranoid type. Over the next few days, you notice Guild patrol ships lingering in systems you would have passed through on your old routes. Larsen wasn't guessing. Someone is actively hunting for you.",
+            "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey. Over the next few days, Guild patrol ships linger in systems you would have passed through on your old routes.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -397,9 +397,9 @@
         {
           "id": "ignore_warning",
           "label": "Ignore the Warning",
-          "description": "You won't let anyone dictate your flight plan. Business as usual.",
+          "description": "Keep your regular routes. Business as usual.",
           "outcome": {
-            "description": "You maintain your regular routes. Nothing changes immediately, but a week later you notice your customs clearance times have tripled. Inspectors are pulling apart your cargo bay with unusual thoroughness. If this is intimidation, it's working on your schedule if not your nerves.",
+            "description": "You maintain your regular routes. Nothing changes immediately, but a week later your customs clearance times have tripled. Inspectors are pulling apart your cargo bay with unusual thoroughness.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -414,7 +414,7 @@
       "id": "campaign_pirate_weapons_01",
       "encounter_type": "derelict",
       "name": "Military-Grade Wreckage",
-      "description": "Your sensors flag a debris field ahead: the remains of a pirate raider, torn apart by what looks like its own weapons overload. As you drift closer, the wreckage tells a disturbing story. The hull is standard pirate retrofit, but the weapons mounted on it are anything but: military-grade pulse arrays, factory-sealed targeting computers, and a shield generator that belongs on a Guild cruiser, not a raider skiff.",
+      "description": "Your sensors flag a debris field ahead: the remains of a pirate raider, torn apart by what looks like its own weapons overload. As you drift closer, the wreckage tells its story. The hull is standard pirate retrofit, but the weapons mounted on it are anything but: military-grade pulse arrays, factory-sealed targeting computers, and a shield generator that belongs on a Guild cruiser, not a raider skiff.",
       "icon_color": [
         180,
         100,
@@ -437,7 +437,7 @@
           "label": "Salvage the Weapons Data",
           "description": "Pull the serial numbers and targeting logs from the wreckage. Someone armed these pirates.",
           "outcome": {
-            "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild naval facility. Pirates don't have access to Guild calibration protocols. Someone handed them these weapons, ready to fire.",
+            "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild enforcement yard.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -483,7 +483,7 @@
           "label": "Log Coordinates and Leave",
           "description": "Tag the wreck for authorities and move on. Salvaging evidence makes you a witness.",
           "outcome": {
-            "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. It's the safe play. But as you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers. Evidence doesn't last long in space.",
+            "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -498,7 +498,7 @@
       "id": "campaign_guild_shadow_01",
       "encounter_type": "patrol",
       "name": "The Shadow on Your Six",
-      "description": "You've noticed it over the last three jumps: the same sensor contact, always at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions, just visible enough to be deliberate. They want you to know they're there. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
+      "description": "For the last three jumps: the same sensor contact, always at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
       "icon_color": [
         200,
         80,
@@ -520,7 +520,7 @@
         {
           "id": "defy",
           "label": "Defy the Threat",
-          "description": "Open a channel. Let them know you're not intimidated.",
+          "description": "Open a channel and answer them.",
           "outcome": {
             "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
             "rewards": [
@@ -539,7 +539,7 @@
         {
           "id": "scan_shadow",
           "label": "Try to Identify the Ship",
-          "description": "Run every scan you have. If they're going to threaten you, you're going to know who they are.",
+          "description": "Run every scan you have on the shadow vessel.",
           "outcome": {
             "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
             "rewards": [
@@ -562,9 +562,9 @@
         {
           "id": "comply",
           "label": "Go Dark for a While",
-          "description": "Maybe they're right. Maybe it's time to stop pushing.",
+          "description": "Lose yourself in commercial traffic and stick to routine runs.",
           "outcome": {
-            "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow. Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself, and the questions don't stop gnawing at you in the quiet hours between jumps.",
+            "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow. Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -600,9 +600,9 @@
         {
           "id": "deep_scan",
           "label": "Conduct a Full Spectrum Analysis",
-          "description": "Push your sensors to their limits. Whatever this is, it deserves proper documentation.",
+          "description": "Push your sensors to their limits.",
           "outcome": {
-            "description": "Your instruments record data that will keep the Science Collective arguing for decades. The pulse pattern resolves into a repeating mathematical sequence, neither natural nor random. Encoded within it, your computer isolates what appear to be navigational coordinates, pointing to a region of space that doesn't appear on any chart you've seen. Then, as suddenly as it started, the phenomenon contracts to a point of light and goes still. Your sensor logs are the only proof it was ever there.",
+            "description": "Your instruments record data. The pulse pattern resolves into a repeating mathematical sequence, neither natural nor random. Encoded within it, your computer isolates what appear to be navigational coordinates, pointing to a region of space that appears on no chart in your nav database. Then, as suddenly as it started, the phenomenon contracts to a point of light and goes still. Your sensor logs are the only proof it was ever there.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -628,9 +628,9 @@
         {
           "id": "approach",
           "label": "Move Closer",
-          "description": "If it's responding to you, maybe it has something to communicate.",
+          "description": "Edge into the outer boundary of the phenomenon.",
           "outcome": {
-            "description": "You edge your ship into the outer boundary of the phenomenon. Your hull vibrates at a frequency you feel in your teeth. The pulse pattern shifts (faster, more complex) and your nav computer begins receiving data it can't parse. Raw information, flooding your systems. You pull back before the input overwhelms your processors, but the fragment you captured contains coordinates and what might be a timestamp. Something is trying very hard to tell you where to go, and when.",
+            "description": "You edge your ship into the outer boundary of the phenomenon. Your hull vibrates at a frequency that rattles in your teeth. The pulse pattern shifts (faster, more complex) and your nav computer begins receiving data it can't parse. Raw information, flooding your systems. You pull back before the input overwhelms your processors, but the fragment you captured contains coordinates and what might be a timestamp.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -647,9 +647,9 @@
         {
           "id": "retreat",
           "label": "Withdraw to Safe Distance",
-          "description": "An energy phenomenon that responds to ships is not something you approach casually.",
+          "description": "Reverse thrust and put fifty kilometers between you and it.",
           "outcome": {
-            "description": "You reverse thrust and put fifty kilometers between you and the phenomenon. From this distance, you watch it pulse and shift for another hour before it settles into a slow, rhythmic glow. Your sensors record the pattern. Whatever it is, it seems content to wait. You file the observation and mark the coordinates. Some mysteries need more preparation before you face them.",
+            "description": "You reverse thrust and put fifty kilometers between you and the phenomenon. From this distance, you watch it pulse and shift for another hour before it settles into a slow, rhythmic glow. Your sensors record the pattern. Whatever it is, it seems content to wait. You file the observation and mark the coordinates.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -686,7 +686,7 @@
         {
           "id": "pay_for_intel",
           "label": "Pay for the Data",
-          "description": "Good intelligence is worth the price. Transfer the credits.",
+          "description": "Transfer the credits.",
           "outcome": {
             "description": "The data arrives in a compressed burst: months of shipping records, cross-referenced with Guild manifests and black market movement logs. The pattern is damning: every major weapons shipment to pirate groups in the last year was routed through three specific Guild logistics hubs, all managed by the same administrative department. Section Nine. The name keeps surfacing. Your contact adds a personal note: 'Burn this after you read it. These people make pirates look civilized.'",
             "rewards": [
@@ -711,7 +711,7 @@
           "label": "Trade Information Instead",
           "description": "Offer what you already know about The Ledger in exchange. Knowledge for knowledge.",
           "outcome": {
-            "description": "Your contact considers the offer, then agrees. You share the weapons serial data and courier manifest; they send you their shipping analysis. Both of you walk away knowing more and trusting less. The combined intelligence paints a picture of an operation far larger than a few corrupt officials: The Ledger has been running parallel supply chains across the entire Expanse for years. Your contact's parting words: 'We're both targets now. At least we're informed targets.'",
+            "description": "Your contact considers the offer, then agrees. You share the weapons serial data and courier manifest; they send you their shipping analysis. The combined intelligence paints a picture of an operation far larger than a few corrupt officials: The Ledger has been running parallel supply chains across the entire Expanse for years. Your contact's parting words: 'We're both targets now. At least we're informed targets.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -728,9 +728,9 @@
         {
           "id": "decline",
           "label": "Decline the Offer",
-          "description": "You can't afford to trust anyone completely. Not with stakes this high.",
+          "description": "Decline the offer.",
           "outcome": {
-            "description": "Your contact shrugs over the comm. 'Your call, Captain. But this data has a shelf life. Once they rotate their routes, and they will, it's worthless.' The channel closes. You're left weighing paranoia against opportunity, knowing that in this game, both have kept people alive.",
+            "description": "Your contact shrugs over the comm. 'Your call, Captain. But this data has a shelf life. Once they rotate their routes, and they will, it's worthless.' The channel closes.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -766,7 +766,7 @@
         {
           "id": "document",
           "label": "Record Their Testimony",
-          "description": "Get names, dates, and details on the record. This pattern needs documentation.",
+          "description": "Get names, dates, and details on the record.",
           "outcome": {
             "description": "You spend two hours conducting interviews across three ships. The stories are consistent and damning: Guild officials arriving with armed escorts, forty-eight-hour eviction notices, sealed habitation decks converted to something. The settlers don't know what. But one former dock worker describes cargo containers being loaded into the sealed sections: unmarked, heavy, and escorted by personnel wearing no insignia. You transmit fuel reserves and ration packs, and add twenty-seven sworn testimonies to your evidence file.",
             "rewards": [
@@ -794,9 +794,9 @@
         {
           "id": "provide_aid",
           "label": "Provide Supplies",
-          "description": "These people need fuel and food more than they need someone asking questions.",
+          "description": "Transfer fuel cells, water cartridges, and rations.",
           "outcome": {
-            "description": "You dock with the lead transport and transfer what you can spare: fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, the former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book, a symbol you've seen before.",
+            "description": "You dock with the lead transport and transfer what you can spare: fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, a former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -822,9 +822,9 @@
         {
           "id": "move_on",
           "label": "Wish Them Well",
-          "description": "You sympathize, but getting involved with displaced settlers will draw attention.",
+          "description": "Point them to the nearest independent station.",
           "outcome": {
-            "description": "You transmit the coordinates of the nearest independent station and wish them safe travels. The convoy drifts on, another footnote in the Expanse's growing list of displaced communities. You add Voss Station to your mental map of Guild operations that don't add up. The list is getting long.",
+            "description": "You transmit the coordinates of the nearest independent station and wish them safe travels. The convoy drifts on. You log Voss Station.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -861,7 +861,7 @@
         {
           "id": "double_down",
           "label": "Distribute Your Evidence",
-          "description": "If they're threatening you, you're close. Send copies of everything to every contact you have.",
+          "description": "Send copies of everything to every contact you have.",
           "outcome": {
             "description": "You spend the next hour transmitting encrypted copies of every document, scan, and testimony you've collected to every trusted contact in your network. Torres. Larsen. Your black market connections. Independent media outlets on three stations. If The Ledger comes for you now, the information survives. The screens return to normal, and your security sweep finds and purges the intrusion code. But the message is clear: the next move won't be digital.",
             "rewards": [
@@ -903,9 +903,9 @@
         {
           "id": "comply",
           "label": "Consider Their Terms",
-          "description": "They mentioned the people who helped you. Sato. Torres. Larsen. Can you risk their lives?",
+          "description": "Stop reaching out.",
           "outcome": {
-            "description": "You sit in the dark bridge for a long time, staring at the fading text. The weight of other people's safety presses down harder than any threat to yourself. You don't delete your files, but you stop reaching out. You stop asking questions. For now. The screens clear, your systems normalize, and the void outside your viewport looks exactly as empty as it always does. But it feels different now. Someone is watching, and they've made it personal.",
+            "description": "You sit in the dark bridge for a long time, staring at the fading text. You don't delete your files, but you stop reaching out. You stop asking questions. The screens clear, your systems normalize, and the void outside your viewport looks exactly as empty as it always does.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -920,7 +920,7 @@
       "id": "campaign_old_allies_01",
       "encounter_type": "comm_intercept",
       "name": "Convergence",
-      "description": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. The pieces are falling into place, and the picture they form is bigger than any of you imagined. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other. The question hanging in the silence is simple: what do you do with everything you know?",
+      "description": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. The pieces are falling into place. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other.",
       "icon_color": [
         140,
         180,
@@ -966,7 +966,7 @@
           "label": "Release Everything to the Public",
           "description": "No more secrets. Broadcast the evidence on every open channel in the Expanse.",
           "outcome": {
-            "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable, which is exactly the point. They can't silence everyone.",
+            "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -997,7 +997,7 @@
         {
           "id": "hold_back",
           "label": "Hold the Evidence in Reserve",
-          "description": "You have leverage now. Releasing everything removes that leverage. Wait for the right moment.",
+          "description": "Keep the evidence encrypted and distributed.",
           "outcome": {
             "description": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready: a weapon that grows more dangerous the longer The Ledger doesn't know exactly what you have. It's a gamble: every day you wait is another day they might find a way to discredit or destroy what you've built. But it's also another day to gather more, to identify the people at the very top. The channel signs off with a shared understanding: when the time comes, you move together. Not before.",
             "rewards": [

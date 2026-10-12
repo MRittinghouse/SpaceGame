@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your instruments record data that will keep the Science Collective arguing for decades. The pulse pattern resolves into a repeating mathematical sequence, neither natural nor random. Encoded within it, your computer isolates what appear to be navigational coordinates, pointing to a region of space that doesn't appear on any chart you've seen. Then, as suddenly as it started, the phenomenon contracts to a point of light and goes still. Your sensor logs are the only proof it was ever there.",
+          "description": "Your instruments record data. The pulse pattern resolves into a repeating mathematical sequence, neither natural nor random. Encoded within it, your computer isolates what appear to be navigational coordinates, pointing to a region of space that appears on no chart in your nav database. Then, as suddenly as it started, the phenomenon contracts to a point of light and goes still. Your sensor logs are the only proof it was ever there.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -242,7 +242,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You edge your ship into the outer boundary of the phenomenon. Your hull vibrates at a frequency you feel in your teeth. The pulse pattern shifts (faster, more complex) and your nav computer begins receiving data it can't parse. Raw information, flooding your systems. You pull back before the input overwhelms your processors, but the fragment you captured contains coordinates and what might be a timestamp. Something is trying very hard to tell you where to go, and when.",
+          "description": "You edge your ship into the outer boundary of the phenomenon. Your hull vibrates at a frequency that rattles in your teeth. The pulse pattern shifts (faster, more complex) and your nav computer begins receiving data it can't parse. Raw information, flooding your systems. You pull back before the input overwhelms your processors, but the fragment you captured contains coordinates and what might be a timestamp.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -430,7 +430,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reverse thrust and put fifty kilometers between you and the phenomenon. From this distance, you watch it pulse and shift for another hour before it settles into a slow, rhythmic glow. Your sensors record the pattern. Whatever it is, it seems content to wait. You file the observation and mark the coordinates. Some mysteries need more preparation before you face them.",
+          "description": "You reverse thrust and put fifty kilometers between you and the phenomenon. From this distance, you watch it pulse and shift for another hour before it settles into a slow, rhythmic glow. Your sensors record the pattern. Whatever it is, it seems content to wait. You file the observation and mark the coordinates.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -801,7 +801,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the coordinates and give the phenomenon a respectful berth. Some things are better left to the specialists.",
+          "description": "You log the coordinates and give the phenomenon a wide berth.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -984,7 +984,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You ride the gravity gradient for twenty harrowing minutes, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body. The Collective will want this.",
+          "description": "You ride the gravity gradient for twenty minutes, the hull groaning, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1355,7 +1355,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You sit in silence as the voice reads thirty-seven coordinates. Some match modern settlements. Others point to empty space: sites that were surveyed and abandoned, or perhaps never reached at all. When the loop restarts, you notice something: the final coordinate doesn't correspond to any system on your charts. It points somewhere beyond the Expanse's mapped edge. The beacon offers no explanation. It simply begins again.",
+          "description": "You sit in silence as the voice reads thirty-seven coordinates. Some match modern settlements. Others point to empty space: sites that were surveyed and abandoned, or perhaps never reached at all. When the loop restarts, the final coordinate doesn't correspond to any system on your charts. It points somewhere beyond the Expanse's mapped edge. The beacon offers no explanation. It simply begins again.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2310,7 +2310,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You alter course to give the probe space. It doesn't acknowledge your presence. It never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled. There's something admirable in that.",
+          "description": "You alter course to give the probe space. It doesn't acknowledge your presence. It never has acknowledged anything. Just the quiet, tireless work of mapping a frontier that no one told it had already been settled.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2500,7 +2500,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. Your data will keep scientists arguing for decades. You store the analysis alongside a single note in your log: 'We are not the first to find this place interesting.'",
+          "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2695,7 +2695,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. Whoever made this knew what they were doing. You file the coordinates and wonder if anyone will ever follow them. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
+          "description": "Seven new coordinates appear on your star charts, blinking in the margins where your maps end. You have no way to verify them: they're beyond the Expanse's explored border. But the map's known systems are accurate to within fractions of a degree. You file the coordinates. The disc continues its slow tumble as you pull away, carrying its secrets in the same patient silence that has kept them for longer than you can calculate.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2885,7 +2885,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You photograph every centimeter of the disc's surface and pull away without touching it. Some discoveries are bigger than one pilot and one ship. You'll submit the images to the Collective and let people smarter than you figure out what it means. But you keep one image for yourself: the cluster of dots that represents your home system, marked by hands that were never human, under stars that have been burning since before your species learned to name them.",
+          "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4388,7 +4388,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Strand shares the test parameters with visible reluctance. You notice the simulation was run only three times, the 'non-lethality' metric has a creative definition, and the fine print mentions 'acceptable hull micro-fracturing.' You pass. Strand shrugs: 'Your loss, Captain. Science requires bold participants.' The Nova cruiser begins scanning for the next passing ship.",
+          "description": "Strand shares the test parameters with visible reluctance. The specs show the simulation was run only three times and the fine print mentions 'acceptable hull micro-fracturing.' Strand shrugs before you can answer: 'Your loss, Captain. Science requires bold participants.' The Nova cruiser begins scanning for the next passing ship.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4939,7 +4939,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run a deep scan before the recovery team arrives. The drone's internal architecture is unusual: the autonomy core uses a design philosophy you've never seen in civilian tech. Nova's 'applied research' label is doing a lot of heavy lifting. You file the scan data away. Knowledge is leverage.",
+          "description": "You run a deep scan before the recovery team arrives. The drone's internal architecture is unusual: the autonomy core uses a design no civilian registry lists. You save the scan data.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5127,7 +5127,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You adjust course to avoid the drone's erratic flight path. It bounces off another asteroid as you pass. The Nova technician sounds increasingly desperate on the recovery channel. Not your circus, not your malfunctioning prototype.",
+          "description": "You adjust course to avoid the drone's erratic flight path. It bounces off another asteroid as you pass. The Nova technician sounds increasingly desperate on the recovery channel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5685,7 +5685,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You let the broadcast scroll past and clear your comms buffer. Deep-core mining has always produced strange readings. Probably just instrument error. Probably.",
+          "description": "You let the broadcast scroll past and clear your comms buffer.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5862,7 +5862,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis is disturbing: the discharge profile doesn't match any known weapons system (Guild, Union, or Collective). It's something new. Something powerful. You encrypt the data and bury it deep in your secure logs. This is the kind of information that gets people killed.",
+          "description": "Your sensors capture the residual energy pattern before it dissipates. The analysis: the discharge profile doesn't match any known weapons system (Guild, Union, or Collective). You encrypt the data and bury it deep in your secure logs.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6231,7 +6231,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You don't need to be told twice. Or even once, since your computer already said it. You plot the fastest course out of The Fulcrum's sensor range and don't look back. The shockwave echoes in your hull for minutes after you've cleared the sector. Whatever they're building in there, you want no part of it.",
+          "description": "You plot the fastest course out of The Fulcrum's sensor range and don't look back. The shockwave echoes in your hull for minutes after you've cleared the sector.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

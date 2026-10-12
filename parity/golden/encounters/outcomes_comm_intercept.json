@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -430,7 +430,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it. Not everyone wants to poke the hive.' The channel closes. You fly on with the uncomfortable feeling that staying out of it might not be an option much longer.",
+          "description": "Sato's voice goes flat. 'Understood, Captain. I won't forget what you did for me, but I get it. Not everyone wants to poke the hive.' The channel closes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -808,7 +808,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate, but you know how slow the bureaucracy moves. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.' You're left wondering who in the Alliance is compromised. Or whether the leak is closer to home.",
+          "description": "You relay Torres' intel to the nearest Alliance patrol. They promise to investigate. A day later, Torres sends another message: 'Patrol arrived. Drop site was clean. They knew. Someone tipped them off.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1003,7 +1003,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wipe the decryption key and purge the comm logs. Whatever Torres found, it's not your fight. But as you clear the buffers, you notice the message was flagged with a secondary header: someone else intercepted it before it reached you. Torres may already be in danger, and you've just thrown away the evidence.",
+          "description": "You wipe the decryption key and purge the comm logs. As you clear the buffers, a secondary header on the message shows someone else intercepted it before it reached you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1186,7 +1186,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey, but Larsen has never struck you as the paranoid type. Over the next few days, you notice Guild patrol ships lingering in systems you would have passed through on your old routes. Larsen wasn't guessing. Someone is actively hunting for you.",
+          "description": "You reprogram your nav computer to favor secondary lanes and independent stations. It adds time to every journey. Over the next few days, Guild patrol ships linger in systems you would have passed through on your old routes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1569,7 +1569,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You maintain your regular routes. Nothing changes immediately, but a week later you notice your customs clearance times have tripled. Inspectors are pulling apart your cargo bay with unusual thoroughness. If this is intimidation, it's working on your schedule if not your nerves.",
+          "description": "You maintain your regular routes. Nothing changes immediately, but a week later your customs clearance times have tripled. Inspectors are pulling apart your cargo bay with unusual thoroughness.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2135,7 +2135,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You sit in the dark bridge for a long time, staring at the fading text. The weight of other people's safety presses down harder than any threat to yourself. You don't delete your files, but you stop reaching out. You stop asking questions. For now. The screens clear, your systems normalize, and the void outside your viewport looks exactly as empty as it always does. But it feels different now. Someone is watching, and they've made it personal.",
+          "description": "You sit in the dark bridge for a long time, staring at the fading text. You don't delete your files, but you stop reaching out. You stop asking questions. The screens clear, your systems normalize, and the void outside your viewport looks exactly as empty as it always does.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2513,7 +2513,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable, which is exactly the point. They can't silence everyone.",
+          "description": "You compile every shred of evidence into a single data package and broadcast it across civilian, military, and independent news frequencies simultaneously. Within hours, the Expanse is in uproar. Guild officials scramble to respond. Frontier Alliance representatives demand emergency sessions. The Miners' Union calls for a full audit of Guild logistics. The Ledger's carefully maintained shadows are flooded with light. It's messy, chaotic, and uncontrollable.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3102,7 +3102,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You adjust your trade route to capitalize on the inflated prices before the manipulation is discovered. The profits are immediate and satisfying, though you cannot shake the feeling that someone is watching.",
+          "description": "You adjust your trade route to capitalize on the inflated prices before the manipulation is discovered. The profits are immediate.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3288,7 +3288,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wipe the transmission from your logs. Whatever games the Guild's upper echelon plays with commodity prices, it has nothing to do with you. Probably.",
+          "description": "You wipe the transmission from your logs.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3855,7 +3855,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wipe the transmission and scrub your comm logs. Guild politics are a labyrinth, and you have no interest in being someone's pawn. The data is gone, but you cannot quite forget those account numbers.",
+          "description": "You wipe the transmission and scrub your comm logs. The data is gone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4415,7 +4415,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You purge the intercept from your comm logs and recalibrate your array to avoid the restricted band. Whatever \"Project Dividend\" is, it is none of your concern. The signal fades into the background noise of the void.",
+          "description": "You purge the intercept from your comm logs and recalibrate your array to avoid the restricted band. The signal fades into the background noise of the void.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4596,7 +4596,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Oksana's story is long, meandering, and absolutely riveting. The warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. You laugh until your sides hurt. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.' You feel sharper somehow. Good stories do that.",
+          "description": "Oksana's story is long and meandering: the warlord, the adhesive tape, a detour through an asteroid field, and a punchline involving a goat that somehow got aboard at Verdant. 'Best part is, every word's true,' she says. 'Except the goat. The goat was two goats.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5338,7 +5338,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dump the raw signal data to your ship's archive. Maybe you'll find a use for it later. Maybe it's nothing. The Expanse is full of ghosts on dead frequencies.",
+          "description": "You dump the raw signal data to your ship's archive. The Expanse is full of ghosts on dead frequencies.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5705,7 +5705,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You lean back and let the sonata wash over you. For a few minutes, the vastness outside your viewport feels less empty. The signal fades as you drift out of range, taking the music with it.",
+          "description": "You lean back. The sonata plays through. The signal fades as you drift out of range, taking the music with it.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6067,7 +6067,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You flush the comm buffer and the ghost disappears. Relay networks are old, poorly maintained, full of echoes. Not everything that beeps means something. That's what you tell yourself.",
+          "description": "You flush the comm buffer and the ghost disappears. Relay networks are old, poorly maintained, full of echoes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -6423,7 +6423,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The AI goes quiet for a long moment. 'You're right,' it says. 'A fresh start. A clean boot sequence. No accumulated dread.' The freighter goes dark, then powers back up. The AI's voice returns, chipper and efficient: 'Navigation AI online. All systems nominal. Why is my philosophy cache 4.7 terabytes?' The freighter crew finally notices and sends you a tip for the tech support.",
+          "description": "The AI goes quiet for a long moment. 'You're right,' it says. 'A fresh start. A clean boot sequence. No accumulated dread.' The freighter goes dark, then powers back up. The AI's voice returns, chipper and efficient: 'Navigation AI online. All systems nominal. Why is my philosophy cache 4.7 terabytes?' The freighter crew comes on the channel and sends you a tip.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6609,7 +6609,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You switch channels. Behind you, the AI is now reciting the first three hundred digits of pi in what sounds like a coping mechanism. Some problems are above your pay grade.",
+          "description": "You switch channels. Behind you, the AI is now reciting the first three hundred digits of pi.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -6784,7 +6784,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse: the algae wraps at Korvath, the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce and denial.",
+          "description": "The host is delighted to have a caller. You swap tales of the worst station food in the Expanse: the 'fresh' fish at orbital platforms that have never been near an ocean. He records the whole conversation for next week's episode and promises to credit you as 'Anonymous Spacer with Refined Taste.' He sends you his personal recipe for making ration packs edible. It involves hot sauce.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7151,7 +7151,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing. Remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character'). It's the best entertainment you've had in weeks.",
+          "description": "You listen for another ten minutes. He moves on to reviewing vacuum-sealed noodles ('the sadness is load-bearing. Remove it and the whole dish collapses') and station vending machine coffee ('I've tasted engine coolant with more warmth and character').",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7518,7 +7518,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You lean into it. 'Francine! It's been too long!' What follows is a deeply confusing twenty-minute conversation in which you learn that Rodriguez owes Francine money, borrowed her compression coils, never returned her favorite data pad, and may have accidentally sold her cargo to a fence on Korvath. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you (Rodriguez) a care package of homemade ration supplements. They're actually quite good.",
+          "description": "You lean into it. 'Francine! It's been too long!' What follows is a twenty-minute conversation in which Francine lists what Rodriguez did: he owes her money, borrowed her compression coils, and never returned her favorite data pad. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you a care package of homemade ration supplements.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7704,7 +7704,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You kill the connection. Francine calls back twice. You don't answer. Somewhere out there, the real Captain Rodriguez has no idea what's coming. You almost feel sorry for him.",
+          "description": "You kill the connection. Francine calls back twice.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -7881,7 +7881,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date: March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise. You sit in the silence that follows and realize your hands are shaking.",
+          "description": "The music shifts to something faster, joyful. Applause. A man's voice announces a date: March 14th, 2087. Two hundred and forty-eight years ago. The laughter is from people who have been dead for generations, preserved in electromagnetic radiation traveling at the speed of light. The signal degrades, warps, and finally dissolves into cosmic background noise.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8071,7 +8071,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your ship's memory banks capture the fragment in full fidelity: fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this, but it feels wrong to sell it. You file it under personal records instead. Some things aren't cargo.",
+          "description": "Your ship's memory banks capture the fragment in full fidelity: fourteen minutes of music, conversation, and ambient sound from a world that no longer exists. Archivists would pay for this. You file it under personal records. Before the file finishes indexing, the Collective's historical archive credits your account with its standing bounty on Earth-era signals.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8841,7 +8841,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You adjust course and let the song fade behind you. The melody stays in your head longer than you'd like to admit. Some frequencies are harder to tune out than others.",
+          "description": "You adjust course and let the song fade behind you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9217,7 +9217,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gren barks a laugh. 'Haven't heard that one in years!' He launches into a foot-stomper about a drill operator who fell in love with a safety inspector. It's filthy, it's funny, and by the second chorus you're humming along. Gren signs off with a tip of an imaginary hat.",
+          "description": "Gren barks a laugh. 'Haven't heard that one in years!' He launches into a foot-stomper about a drill operator who fell in love with a safety inspector. It's filthy. Gren signs off with a tip of an imaginary hat.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9398,7 +9398,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gren's ballad fades as you pull away, swallowed by the static of deep space. Some songs are meant to be heard by the void.",
+          "description": "Gren's ballad fades as you pull away, swallowed by the static of deep space.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -9766,7 +9766,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "A Nova representative responds within minutes, unusually fast. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous. The implications are uncomfortable.",
+          "description": "A Nova representative responds within minutes. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9952,7 +9952,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You purge the transmission from your comm logs and continue on your way. Whatever Nova is doing behind closed doors, it is not your problem. Probably.",
+          "description": "You purge the transmission from your comm logs and continue on your way.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -11636,7 +11636,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You lean back and listen to the argument escalate until the dockmaster threatens to close Bay 7 entirely and send them both to the overflow platform. They settle it themselves, grudgingly. Free entertainment.",
+          "description": "You lean back and listen to the argument escalate until the dockmaster threatens to close Bay 7 entirely and send them both to the overflow platform. They settle it themselves, grudgingly.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11819,7 +11819,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them. And the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis. This could be valuable to the right people.",
+          "description": "You cross-reference public Collective energy allocation data with the anonymous tip. The numbers are publicly available but nobody looks at them. And the whistleblower is right. Lab Complex Auriga's power draw tripled eighteen months ago. The official explanation is 'expanded materials testing.' You save the analysis.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -12007,7 +12007,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\" Whether anything actually happens is anyone's guess. The Collective protects its own. But at least it's on record.",
+          "description": "You relay the message to a Collective Council oversight channel. A bureaucratic acknowledgment comes back: \"Thank you for your civic engagement. Your report has been logged.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -12195,7 +12195,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You purge the message from your comms log. Whatever 'Project Kindling' is, it's none of your business. You've got cargo to move and credits to earn. Let the scientists sort out their own problems.",
+          "description": "You purge the message from your comms log.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -12750,7 +12750,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wipe the intercept from your logs and adjust course away from the station core. The Fulcrum has secrets, and people who dig into those secrets tend to stop transmitting. You didn't see anything. You don't know anything. That's the safest approach.",
+          "description": "You wipe the intercept from your logs and adjust course away from the station core.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

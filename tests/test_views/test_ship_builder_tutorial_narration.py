@@ -109,7 +109,7 @@ def _part_narration():
         "cockpit_scout_pod": "Cockpit first. Select it on the left, place it on the grid.",
         "engine_small": "Engine next. Nothing leaves this bay without thrust.",
         "reactor_small": "Reactor in the core. Powers everything you've got.",
-        "fuel_small": "Fuel tank. No fuel, no jumps. Simple.",
+        "fuel_small": "Fuel tank. Every jump burns from it. Simple.",
         "cargo_small": "Cargo bay. Somewhere to stash whatever pays the bills.",
     }
 

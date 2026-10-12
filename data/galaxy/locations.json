@@ -259,7 +259,7 @@
         "name": "Engineering Department Bay",
         "location_type": "repair_bay",
         "description": "Collective engineers who treat ship repair like a research problem. Thorough but methodical.",
-        "flavor_text": "They'll scan your hull with instruments that cost more than your ship, then explain exactly what's wrong in terms you won't understand.",
+        "flavor_text": "They'll scan your hull with instruments that cost more than your ship, then explain exactly what's wrong in the lab's own vocabulary.",
         "repair_cost_per_hp": 10
       },
       {
@@ -311,7 +311,7 @@
         "name": "NAS Technical Services",
         "location_type": "repair_bay",
         "description": "Corporate repair facility. Professional, expensive, and they'll scan your ship while they fix it.",
-        "flavor_text": "The techs are polite and efficient. You try not to think about what their diagnostic scanners are recording.",
+        "flavor_text": "The techs are polite and efficient. Their diagnostic scanners record the whole time.",
         "repair_cost_per_hp": 12
       },
       {
@@ -533,8 +533,8 @@
         "id": "fulcrum_core",
         "name": "Assembly Core",
         "location_type": "unique",
-        "description": "The heart of The Fulcrum. Massive gravitational lensing arrays hang in zero-gravity assembly cradles, their curved surfaces gleaming under industrial floodlights. A warp gate frame dominates the far wall.",
-        "flavor_text": "The scale is breathtaking. Each array is larger than your ship. And the warp gate behind them glows with a faint blue light, already powered, already waiting."
+        "description": "The heart of The Fulcrum. Massive gravitational lensing arrays hang in zero-gravity assembly cradles, their curved surfaces gleaming under industrial floodlights. The gate's frame dominates the far wall.",
+        "flavor_text": "Each array is larger than your ship. And the gate behind them glows with a faint blue light, already powered, already waiting."
       }
     ]
   }

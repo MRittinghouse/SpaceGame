@@ -401,7 +401,7 @@ class SalvageSession:
                 return (True, f"Found: {cell.item_type.value.replace('_', ' ').title()}")
             else:
                 cell.adjacent_count = self.get_adjacent_item_count(grid_x, grid_y)
-                return (True, "Empty - nothing here")
+                return (True, "Empty: nothing here")
 
         if cell.state != CellState.HIDDEN:
             return (False, "Cell already scanned")
@@ -419,7 +419,7 @@ class SalvageSession:
             return (True, f"Found: {cell.item_type.value.replace('_', ' ').title()}")
         else:
             cell.adjacent_count = self.get_adjacent_item_count(grid_x, grid_y)
-            return (True, "Empty - nothing here")
+            return (True, "Empty: nothing here")
 
     def start_extract(self, grid_x: int, grid_y: int) -> Tuple[bool, str]:
         """

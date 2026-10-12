@@ -8,7 +8,7 @@
       "parity_chatter"
     ]
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -18,7 +18,7 @@
       ],
       "call": "get_chatter",
       "result": [
-        "A dock worker eats lunch on a cargo crate, staring at the holographic price tickers scrolling overhead. Different worlds, same station.",
+        "A dock worker eats lunch on a cargo crate, staring at the holographic price tickers scrolling overhead.",
         "Director Huang's quarterly address is tomorrow. Taking bets on how many times she says 'responsible growth.'",
         "Residential B-7 filed another air quality complaint. Management forwarded it to a subcommittee. The subcommittee meets quarterly."
       ],
@@ -295,7 +295,7 @@
       "call": "get_chatter",
       "result": [
         "The Guild renegotiated transport rates again. Up six percent. They call it inflation. We call it their second yacht.",
-        "Abundance here, scarcity two jumps away. The surplus crates are stamped FOR EXPORT. Not FOR THOSE WHO NEED IT.",
+        "Abundance here, scarcity two jumps away. The surplus crates are stamped FOR EXPORT.",
         "The modernization debate is heating up again. Half the council wants automated planters, the other half wants tradition."
       ],
       "state": {
@@ -346,7 +346,7 @@
       "result": [
         "A farmer stops to chat by the water recycler. 'Good season,' he says, and means it.",
         "Rain cycle starts at fourteen hundred. Actual rain, not mist. The kids go out and stand in it. They've never seen the real thing.",
-        "Dappled light from the grow-lamps filters through canopy leaves. It almost feels like standing under a real sky."
+        "Dappled light from the grow-lamps filters through canopy leaves."
       ],
       "state": {
         "retired": [],
@@ -2149,7 +2149,7 @@
       "call": "get_chatter",
       "result": [
         "The newcomer family from Iron Depths, their kid hasn't stopped coughing since they arrived. The medic says it'll pass. Eventually.",
-        "An old woman tends a single orchid in a cracked pot by the viewport. She talks to it like it understands. Maybe it does.",
+        "An old woman tends a single orchid in a cracked pot by the viewport. She talks to it like it understands.",
         "That trader at the corner table knows every back route in the sector. Buys everyone drinks, tells stories, never quite explains how he affords any of it. Charming, though. Dangerously charming."
       ],
       "state": {
@@ -2515,7 +2515,7 @@
       "result": [
         "The tomatoes came in early this cycle. Someone on the community council is already arguing about surplus allocation.",
         "COMMUNITY NOTICE: Town hall meeting this evening. Topic: water recycling upgrades. All welcome.",
-        "Wind chimes made from recycled hull plating sing in the ventilation currents. It's oddly beautiful."
+        "Wind chimes made from recycled hull plating sing in the ventilation currents."
       ],
       "state": {
         "retired": [],
@@ -4773,7 +4773,7 @@
       ],
       "call": "get_chatter",
       "result": [
-        "The station groans under pressure changes. Fluorescent lights flicker in the deeper corridors. You get used to it.",
+        "The station groans under pressure changes. Fluorescent lights flicker in the deeper corridors.",
         "A miner sits alone in the corridor, helmet off, staring at nothing. Thirty-minute break. Twenty-eight minutes left.",
         "Core temperature readings are climbing on Level 7. Safety board says it's 'within parameters.' Workers say otherwise."
       ],
@@ -5499,7 +5499,7 @@
       ],
       "call": "get_chatter",
       "result": [
-        "It's quiet down here. The kind of quiet that makes you check your oxygen readout twice."
+        "It's quiet down here."
       ],
       "state": {
         "retired": [],
@@ -6876,7 +6876,7 @@
       ],
       "call": "get_chatter",
       "result": [
-        "The observation deck faces open space. On a clear cycle, you can see the Expanse's edge. It looks like nothing. That's what makes it terrifying.",
+        "The observation deck faces open space. On a clear cycle, you can see the Expanse's edge. It looks like nothing.",
         "Someone brought a cat aboard last month. Station regulation says no pets. Nobody's enforcing it. The cat knows.",
         "A guard checks your credentials for the third time. Their expression suggests they'd rather you weren't here at all."
       ],
@@ -7736,7 +7736,7 @@
       "result": [
         "The corridors are too clean. Too quiet. Whatever happens here, they don't want witnesses.",
         "The few civilians here move quickly and don't make eye contact. This isn't a place for conversation.",
-        "Uniformed personnel move with rigid efficiency. No idle chatter. No lingering. Everything here has a purpose."
+        "Uniformed personnel move with rigid efficiency. Nobody stops to talk. Everything here has a purpose."
       ],
       "state": {
         "retired": [],

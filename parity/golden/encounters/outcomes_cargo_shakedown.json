@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -2751,7 +2751,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "His grief is real. You give him what you can spare and he's gone. The cost is 60 credits in supplies.",
+          "description": "He sends the clinic's fire report unasked. You give him what you can spare and he's gone. The cost is 60 credits in supplies.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2944,7 +2944,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You can't tell. He sees you hesitate. Decides you've already chosen.",
+          "description": "He watches the pause run long. Decides you've already chosen.",
           "enemy_template_ids": [
             "mercenary_ace"
           ],

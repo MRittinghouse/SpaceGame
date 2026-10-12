@@ -426,12 +426,12 @@ These rewrites ship in `dialogues.json`. Use them as templates for new skill-che
 | Before (grade) | After (grade) | Why |
 |----------------|---------------|-----|
 | `[Persuasion 3] What do you think is really going on?` (C) | `[Persuasion 3] "You pulled me in here because you've already made up your mind. Say it."` (B) | Reads Glyn's decision state; presses him to name what he already believes |
-| `[Observation] Watch the delegates carefully.` (D) | `[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows the clock runs out today.` (A) | Replaces meta-instruction with the specific read Observation reveals |
+| `[Observation] Watch the delegates carefully.` (D) | `[Observation 2] "The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once."` (A) | Replaces meta-instruction with the specific read Observation reveals |
 | `[Persuasion] May I address the delegates?` (C) | `[Persuasion] "One minute. Before the next person walks out of this room."` (B) | Reads room-collapse state; urgency + economy commands attention |
 | `[Persuasion] Whatever you saw, it's connected to the pirate attacks. People are dying on those convoy routes.` (B) | `[Persuasion] "Forty years in the tunnels. You sealed your mouth when the Union asked. Convoy crews are dying now and nobody's asked them to stay quiet. Flip the question."` (A) | Turns Oren's own silence-logic against him |
 | `[Persuasion 2] Any idea who's behind the leaks?` (C) | `[Persuasion 2] "You've run convoys for ten years. You know the difference between bad luck and inside information. You've already decided which this is."` (B) | Reads Reva's expertise and existing conclusion |
 | `[Persuasion] Give me the data. Schematics, authorization codes, everything. I'll make sure the right people see it.` (C) | `[Persuasion] "You've been carrying this alone for weeks. Hand it off. Let me be the one they come for when it leaks."` (B) | Reframes demand as burden-transfer offer — reads her actual weight |
-| `[Tev skimmed you.]` (D) | `[Observation] "His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to."` (A) | Voices the specific observation AND reads Arna's denial |
+| `[Tev skimmed you.]` (D) | `[Observation 2] "His second tap was for him, not the scale. Your friend skimmed you. You saw the same thing I did. You just didn't want to."` (A) | Voices the specific observation AND reads Arna's denial |
 
 ### Specialization authoring (NV-0)
 
@@ -492,10 +492,10 @@ Valid `skill_check.skill` values: `persuasion`, `intimidation`, `observation`, `
 
 These 7 examples ship in the game. Each demonstrates a specific voice pattern; use them as templates for future skill-check authoring.
 
-**Observation — reads a specific physical tell, names what it means.**
-> `[Observation] The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once. One of them knows this ends today.`
+**Observation: reads a specific physical tell and leaves the inference to the player.**
+> `[Observation 2] "The Guild rep keeps checking her chrono. The Alliance rep hasn't looked at her once."`
 >
-> *Pattern: two physical observations, one synthesis. The synthesis is the thing Observation reveals that baseline perception wouldn't.*
+> *Pattern: two physical observations, spoken as the captain's exact words. The observations are what Observation reveals that baseline perception wouldn't; what they mean is the player's to infer (writing discipline spec 2.2, edge 6).*
 
 **Intimidation — reads a weakness in the NPC's position and weaponizes it.**
 > `[Intimidation 3] "I read your dock security. You're three hands short on the rotation. You need traders more than traders need you. Make the deal real."`

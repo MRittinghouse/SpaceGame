@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
   "steps": [
     {
       "args": [
@@ -1558,7 +1558,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn. Frontier folk manage.",
+          "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -1926,7 +1926,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You split the flashfruit between both ships. Your hold can keep it cool enough. Half a harvest saved is better than none, and Nabil insists you sell your share. 'It's honest pay for honest help. That's how we do things.'",
+          "description": "You split the flashfruit between both ships. Your hold can keep it cool enough. Nabil insists you sell your share. 'It's honest pay for honest help. That's how we do things.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2119,7 +2119,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Nabil's voice fades behind you, still calling on the open channel. Somewhere, three stations will have a lean month. The frontier remembers who showed up and who kept flying.",
+          "description": "Nabil's voice fades behind you, still calling on the open channel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -2655,7 +2655,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The tow takes time and fuel, but the pilot's relief is palpable. They transfer payment the moment you reach the station.",
+          "description": "The tow takes time and fuel, but the pilot's relief is audible over the comm. They transfer payment the moment you reach the station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2841,7 +2841,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You amplify their signal to reach local patrols. It's the best you can do without losing time. Hopefully help arrives in time.",
+          "description": "You amplify their signal to reach local patrols.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3208,7 +3208,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You leave them to sort out their own heading. Space is big, but the lanes are well-charted. They'll manage.",
+          "description": "You leave them to sort out their own heading.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -3949,7 +3949,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pump power into their beacon until it lights up every receiver in the sector. A mining barge responds within minutes. You move on, hoping two hours was a conservative estimate.",
+          "description": "You pump power into their beacon until it lights up every receiver in the sector. A mining barge responds within minutes. You move on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4316,7 +4316,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You light up every patrol channel in range with the freighter's coordinates. A Guild corvette responds within minutes, but by the time it arrives, the raiders have stripped the freighter and fled. At least the crew survived.",
+          "description": "You light up every patrol channel in range with the freighter's coordinates. A Guild corvette responds within minutes, but by the time it arrives, the raiders have stripped the freighter and fled. The crew survived.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4497,7 +4497,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You alter course and give the battle a wide berth. The weapons fire fades from your sensors. You tell yourself there was nothing you could have done. It almost sounds convincing.",
+          "description": "You alter course and give the battle a wide berth. The weapons fire fades from your sensors.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5220,7 +5220,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cut the channel and adjust course. The signal fades. Whatever happened to the Sundog, it'll happen to someone else eventually. That's how corners get cut.",
+          "description": "You cut the channel and adjust course. The signal fades.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5395,7 +5395,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week. You see enough breakdowns, you keep a tow rig handy.' You're not the only one out here who stops. Good to remember.",
+          "description": "'Appreciate it, but we've got it handled,' the hauler captain replies. 'Name's Maren. We run this lane twice a week. You see enough breakdowns, you keep a tow rig handy.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5576,7 +5576,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You watch the hauler guide the shuttle toward the nearest station and resume your route. One less problem in the lane. Someone else's good deed.",
+          "description": "You watch the hauler guide the shuttle toward the nearest station and resume your route.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -6338,7 +6338,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You reel in the carrier. The cat, a massive orange tabby, stares at you through the mesh with the cold fury of a creature that has seen the void and found it personally offensive. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice on the station boards later. Apparently Dr. Vasquez changed her mind.",
+          "description": "You reel in the carrier. The cat, a massive orange tabby, stares at you through the mesh with cold fury. A tag on the carrier reads 'PROPERTY OF DR. VASQUEZ, BREAKSTONE STATION. IF FOUND, KEEP HIM. I'M DONE.' The cat immediately claims your pilot seat. You find a reward notice for the cat on the station boards later.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6524,7 +6524,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Three people respond. None of them are missing a cat. They all want one. A bidding war breaks out on open comms. You broker the adoption to a lonely ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee, and the cat seems to approve of someone who lives in a place as cold and inhospitable as space.",
+          "description": "Three people respond. None of them are missing a cat. They all want one. A bidding war breaks out on open comms. You broker the adoption to an ice miner who promises to name the cat 'Admiral.' The miner sends you a finder's fee.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6710,7 +6710,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You leave the carrier tumbling through space. The cat watches your ship recede with an expression that suggests it will remember this. Somehow, you believe it.",
+          "description": "You leave the carrier tumbling through space. The cat watches your ship recede.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -7266,7 +7266,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the coordinates and keep flying. The signal fades behind you, but Tomek's voice stays in your head longer than you'd like.",
+          "description": "You log the coordinates and keep flying. The signal fades behind you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -7822,7 +7822,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You fly on, leaving the bickering behind. As you pull away, you hear Jess sigh and say, 'Fine. Warm up the tow line.' Some things work themselves out.",
+          "description": "You fly on, leaving the bickering behind. As you pull away, you hear Jess sigh and say, 'Fine. Warm up the tow line.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8003,7 +8003,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Threading through the rocks takes nerve, but you find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you. Union prospectors pay their debts.",
+          "description": "You thread through the rocks and find Nils in a one-person prospector pod, running on fumes. He's gaunt but grinning when you dock. 'Three days on protein paste and bad air. Could've been worse. Could've been four.' He insists on splitting his last ore haul with you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9862,7 +9862,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend half an hour babysitting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'. Their words.",
+          "description": "You spend half an hour escorting the yacht back to Stellaris Port's tourist ring. The passengers treat it like an adventure, taking holographs of your ship from every angle. The port authority logs your assist and the tourists insist on paying for your docking fees plus a 'hazard bonus'.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10048,7 +10048,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You leave the yacht to its slow, confused orbit. Port Authority will pick them up eventually. Reginald is still pressing buttons as you fly away.",
+          "description": "You leave the yacht to its slow, confused orbit. Reginald is still pressing buttons as you fly away.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -10409,7 +10409,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station. You did your part. Sometimes the best help is getting the right people there faster.",
+          "description": "You pump power into your comms array and rebroadcast the distress call on every frequency. Two mining haulers with heavy shielding respond within minutes and head for the station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10590,7 +10590,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull back to a safe perimeter and watch the emergency unfold from a distance. Rescue shuttles eventually reach Delta Wing. The workers make it out, but it takes longer than it should have.",
+          "description": "You pull back to a safe perimeter and watch the emergency unfold from a distance. Rescue shuttles eventually reach Delta Wing. The workers make it out.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -10958,7 +10958,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes. You've done what you can from out here. The rest is on the people with the drilling equipment and the nerve to go underground.",
+          "description": "You amplify the distress beacon and broadcast it on Union priority channels. A rescue team acknowledges within minutes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11146,7 +11146,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the beacon coordinates and continue on your route. Shaft collapses happen in Breakstone. The Union has teams for this. You tell yourself that, anyway.",
+          "description": "You log the beacon coordinates and continue on your route.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

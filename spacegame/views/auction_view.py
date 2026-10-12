@@ -646,7 +646,7 @@ class AuctionView(BaseView):
 
     def player_seller_banner_text(self) -> str:
         """Return the BID_WINDOW banner shown over the player's own consigned lot."""
-        return "Your lot — watching the floor."
+        return "Your lot: watching the floor."
 
     def _lot_resolution_message_for_player_lot(self, *, sold: bool, sale_price: int) -> str:
         """Render the LOT_RESOLUTION line variant for player-seller lots."""
@@ -966,7 +966,7 @@ class AuctionView(BaseView):
         y += scale_y(20)
         self._draw_text(screen, lot.headline, (x, y))
         y += scale_y(28)
-        # SA-B5: surface the "your lot — watching" banner when the player
+        # SA-B5: surface the "your lot: watching" banner when the player
         # owns this consignment so they aren't looking for a bid action.
         if lot.seller_id == "player":
             self._draw_text(

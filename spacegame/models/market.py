@@ -395,13 +395,13 @@ class Market:
         is_specialty_import = commodity_id in self.system.economy.specialty_imports
 
         if is_specialty_export:
-            analysis = "Regional specialty - Excellent for buying"
+            analysis = "Regional specialty: Excellent for buying"
         elif is_produced:
-            analysis = "Local production - Good for buying"
+            analysis = "Local production: Good for buying"
         elif is_specialty_import:
-            analysis = "High local demand - Excellent for selling"
+            analysis = "High local demand: Excellent for selling"
         elif is_consumed:
-            analysis = "High demand - Good for selling"
+            analysis = "High demand: Good for selling"
         else:
             analysis = "No special factors"
 

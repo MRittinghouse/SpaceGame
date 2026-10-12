@@ -119,12 +119,12 @@ class _EntryItem:
         pad_x = self.rect.x + 12
         cur_y = self.rect.y + 6
 
-        # Header line: "Day X — System — [tag/source]"
+        # Header line: "Day X · System · [tag/source]"
         header_parts = [f"Day {self.entry.game_day}"]
         if self.entry.system_id:
             system_display = self.entry.system_id.replace("_", " ").title()
             header_parts.append(system_display)
-        header = " \u2014 ".join(header_parts)
+        header = " \u00b7 ".join(header_parts)
         header_surf = self.header_font.render(header, True, Colors.TEXT_SECONDARY)
         screen.blit(header_surf, (pad_x, cur_y))
 
@@ -718,10 +718,10 @@ class JournalView(BaseView):
         max_text_w = card_rect.width - 24
 
         # Header — truncate if needed
-        header = f"WHAT TO DO NEXT \u2014 {mission_name}"
+        header = f"WHAT TO DO NEXT: {mission_name}"
         header_surf = self._header_font.render(header, True, Colors.TEXT_HIGHLIGHT)
         if header_surf.get_width() > max_text_w:
-            header = f"NEXT \u2014 {mission_name}"
+            header = f"NEXT: {mission_name}"
             header_surf = self._header_font.render(header, True, Colors.TEXT_HIGHLIGHT)
         screen.blit(header_surf, (pad_x, card_rect.y + 6))
 

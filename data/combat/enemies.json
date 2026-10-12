@@ -2411,7 +2411,7 @@
     {
       "id": "ledger_vanguard",
       "name": "Ledger Vanguard",
-      "description": "The Ledger's elite interceptor. Purpose-built from Guild military prototypes, piloted by the Inner Ledger's most experienced operative. Fast, heavily armed, and utterly committed to preventing anyone from reaching the warp gate.",
+      "description": "The Ledger's elite interceptor. Purpose-built from Guild military prototypes, piloted by the Inner Ledger's most experienced operative. Fast, heavily armed, and utterly committed to preventing anyone from reaching the gate.",
       "behavior": "aggressive",
       "hull": 105,
       "shields": 54,
