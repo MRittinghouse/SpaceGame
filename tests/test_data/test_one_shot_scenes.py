@@ -14,7 +14,7 @@ import pytest
 
 from spacegame.constants.flags import talked_to_npc
 from spacegame.data_loader import DataLoader, get_data_loader
-from spacegame.models.dialogue import NPC, DialogueTree
+from spacegame.models.dialogue import NPC, DialogueResponse, DialogueTree
 from spacegame.models.mission import Mission, MissionManager, ObjectiveType
 from spacegame.models.npc_availability import is_listed, npc_tree_ids, settable_flags
 from tests.test_data.test_content_contracts import _dependents, _is_own_cycle, _producers
@@ -176,23 +176,51 @@ def test_a_kept_npc_has_a_way_back() -> None:
     assert gated == set(), sorted(gated)
 
 
-def _exit_paths(tree: DialogueTree, node_id: str, path: tuple = ()) -> list[tuple]:
-    """Every reply path from a node to an exit, taking both branches of a check."""
+def _after_reply(
+    tree: DialogueTree,
+    reply: DialogueResponse,
+    flags: frozenset[str],
+    on_path: frozenset[str],
+) -> list[frozenset[str]]:
+    """The flags each path from a chosen reply to an exit sets, taking both branches of a check.
+
+    The reply sets its own flag first and a check then sets its branch's flag, as
+    ``DialogueManager.select_response`` does.
+    """
+    own = (flags | {reply.set_flag}) if reply.set_flag else flags
+    check = reply.skill_check
+    if check is None:
+        if reply.next_node_id is None:
+            return [own]
+        return _exit_flags(tree, reply.next_node_id, own, on_path)
+    found: list[frozenset[str]] = []
+    for branch, won in (
+        (check.success_node_id, check.set_flag_on_success),
+        (check.failure_node_id, check.set_flag_on_failure),
+    ):
+        found += _exit_flags(tree, branch, (own | {won}) if won else own, on_path)
+    return found
+
+
+def _exit_flags(
+    tree: DialogueTree, node_id: str, flags: frozenset[str], on_path: frozenset[str]
+) -> list[frozenset[str]]:
+    """The flags each reply path from a node to an exit sets.
+
+    A missing node is an exit, and so is a node without replies, which the game closes with
+    "[Continue]" (``DialogueView._build_response_buttons``). A path that comes back to a node
+    it has passed stops there: a loop is not an exit, and that node's other replies are walked
+    from its first visit.
+    """
     node = tree.nodes.get(node_id)
-    if node is None:
-        return [path]
-    visited = {step.next_node_id for step in path}
-    paths: list[tuple] = []
+    if node is None or not node.responses:
+        return [flags]
+    if node_id in on_path:
+        return []
+    found: list[frozenset[str]] = []
     for reply in node.responses:
-        step = (*path, reply)
-        if reply.skill_check is not None:
-            for branch in (reply.skill_check.success_node_id, reply.skill_check.failure_node_id):
-                paths += _exit_paths(tree, branch, step)
-        elif reply.next_node_id is None:
-            paths.append(step)
-        elif reply.next_node_id not in visited:
-            paths += _exit_paths(tree, reply.next_node_id, step)
-    return paths
+        found += _after_reply(tree, reply, flags, on_path | {node_id})
+    return found
 
 
 def test_a_return_pays_once() -> None:
@@ -211,12 +239,10 @@ def test_a_return_pays_once() -> None:
                 for reply in node.responses:
                     if reply.disposition_change or reply.faction_reputation_changes:
                         assert reply.set_flag == awaited, (tree.id, node.id, reply.text)
-                    check = reply.skill_check
-                    if check is None:
+                    if reply.skill_check is None:
                         continue
-                    for branch in (check.success_node_id, check.failure_node_id):
-                        for path in _exit_paths(tree, branch):
-                            assert any(s.set_flag == awaited for s in path), (tree.id, branch)
+                    for flags in _after_reply(tree, reply, frozenset(), frozenset()):
+                        assert awaited in flags, (tree.id, node.id, reply.text)
     assert returns == 4
 
 
