@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -242,7 +242,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock with the lead transport and transfer what you can spare: fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, the former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book, a symbol you've seen before.",
+          "description": "You dock with the lead transport and transfer what you can spare: fuel cells, water recycler cartridges, two weeks of rations. The settlers' gratitude is quiet and heavy. As you prepare to undock, a former dock worker pulls you aside. 'I took pictures,' she says. 'Of the cargo they brought in after they kicked us out. I'll transmit them to your ship. Someone should see this.' The images show crates stamped with a stylized ledger book.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -442,7 +442,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit the coordinates of the nearest independent station and wish them safe travels. The convoy drifts on, another footnote in the Expanse's growing list of displaced communities. You add Voss Station to your mental map of Guild operations that don't add up. The list is getting long.",
+          "description": "You transmit the coordinates of the nearest independent station and wish them safe travels. The convoy drifts on. You log Voss Station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -623,7 +623,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You match speed with their limping ship and fly escort through the lane. Dara's kids wave at you through the viewport. At Haven's Rest, the community council logs your good deed. Dara shakes your hand at the dock. 'Way I see it, people who help strangers ain't really strangers.'",
+          "description": "You match speed with their limping ship and fly escort through the lane. Dara's kids wave at you through the viewport. At Haven's Rest, the community council logs your escort. Dara shakes your hand at the dock. 'Way I see it, people who help strangers ain't really strangers.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1004,7 +1004,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You beam over the safest route you know. Dara thanks you quietly and the patchwork ship putters onward. It is not much, but out here, a good heading is worth more than most realize.",
+          "description": "You beam over the safest route you know. Dara thanks you quietly and the patchwork ship putters onward.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1185,7 +1185,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not. Some folks prefer quiet giving. Either way, deck seven thanks you.' You feel good about this one.",
+          "description": "Priya logs your contribution with quiet gratitude. 'The council will post your name on the donor wall, if you like. Or not. Some folks prefer quiet giving. Either way, deck seven thanks you.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1932,7 +1932,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You mark the nearest aid depot on their charts and boost their comms signal. It's not much, but it gives them a heading and a hope. The captain's voice breaks as she thanks you.",
+          "description": "You mark the nearest aid depot on their charts and boost their comms signal. The captain's voice breaks as she thanks you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2113,7 +2113,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You close the channel and adjust course. The transport dwindles on your aft sensors. Out here, hard choices are the only kind.",
+          "description": "You close the channel and adjust course. The transport dwindles on your aft sensors.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -2291,7 +2291,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You file the report at the next station. Security takes the kid into processing without a second glance. The bounty hits your account before they're through the door. You try not to think about where processing leads for someone with no ID and no story that holds together.",
+          "description": "You file the report at the next station. Security takes the kid into processing without a second glance. The bounty hits your account before they're through the door.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2493,7 +2493,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Haven's Rest takes the kid in without paperwork or judgment. The intake coordinator gives you a look that's half gratitude, half exhaustion. On the way out, the kid stops at the door and says something too quiet to hear. The coordinator translates: 'They said thank you.' You pretend the detour was on your route anyway.",
+          "description": "Haven's Rest takes the kid in without paperwork or judgment. The intake coordinator gives you a look that's half gratitude, half exhaustion. On the way out, the kid stops at the door and says something too quiet to hear. The coordinator translates: 'They said thank you.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2891,7 +2891,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Dev waves you in to dock. You transfer what you can afford. He claps you on the shoulder: 'We're all breathing the same recycled air, right? This'll keep folks fed for another week.' Word of your generosity spreads through Union channels.",
+          "description": "Dev waves you in to dock. You transfer what you can afford. He claps you on the shoulder: 'We're all breathing the same recycled air, right? This'll keep folks fed for another week.' Word of the donation spreads through Union channels.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3084,7 +3084,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Simple as that. Nothing gets written down. Just community.",
+          "description": "Dev loads a crate of rations into your cargo bay without a second glance. 'That's what it's here for. Pass it on when you can.' Nothing gets written down.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3270,7 +3270,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Dev gives you a nod through the viewport. 'Safe travels, friend.' You fly on past the cluster of aid ships, a little warmer for having seen them.",
+          "description": "Dev gives you a nod through the viewport. 'Safe travels, friend.' You fly on past the cluster of aid ships.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3639,7 +3639,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cut engines and drift to the edge of the lane. The convoy passes in solemn silence, ship after ship, gold pennants catching the starlight. A few pilots flash their lights in acknowledgment as they pass. Some things are bigger than schedules.",
+          "description": "You cut engines and drift to the edge of the lane. The convoy passes in solemn silence, ship after ship, gold pennants catching the starlight. A few pilots flash their lights in acknowledgment as they pass.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4201,7 +4201,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You escort the Perseverance to Ring Seven without incident. The settlement crew waves from the docking platform as you peel off. Captain Okonkwo marks your ship as a 'friend of the Council' in their registry. It won't pay the fuel bill, but it feels right.",
+          "description": "You escort the Perseverance to Ring Seven without incident. The settlement crew waves from the docking platform as you peel off. Captain Okonkwo marks your ship as a 'friend of the Council' in their registry.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4570,7 +4570,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager, you realize) thanks you three times before signing off. Their shuttle wobbles toward the station with the careful precision of someone who learned to fly out of necessity.",
+          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4758,7 +4758,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on: rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\" You believe him.",
+          "description": "You transfer a small credit bundle and a crate of nutri-packs to the shuttle. The father's voice comes on: rough, quiet, dignified. \"We'll pay this forward when we're settled, Captain. That's a promise.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4946,7 +4946,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You leave the shuttle to navigate the beacon system on its own. Haven's Rest was built for people exactly like the Kaurs. They'll find their way.",
+          "description": "You leave the shuttle to navigate the beacon system on its own.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

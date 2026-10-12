@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild naval facility. Pirates don't have access to Guild calibration protocols. Someone handed them these weapons, ready to fire.",
+          "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild enforcement yard.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -428,7 +428,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. It's the safe play. But as you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers. Evidence doesn't last long in space.",
+          "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2119,7 +2119,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You give the derelict a wide berth and continue on your route. Someone else can deal with it.",
+          "description": "You give the derelict a wide berth and continue on your route.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -2294,7 +2294,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this. Today is your lucky day.",
+          "description": "You work fast, stripping the ship of its remaining weapons components and emergency fuel reserves. No sign of whoever did this.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2480,7 +2480,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Discretion wins out. You alter course and put distance between yourself and whatever happened here. The wreck shrinks on your rear sensors.",
+          "description": "You alter course and put distance between yourself and whatever happened here. The wreck shrinks on your rear sensors.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2847,7 +2847,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your scan reveals the station's architecture in detail: pre-Expansion construction techniques, obsolete but fascinating. You compile the data into a survey package worth a modest sum.",
+          "description": "Your scan reveals the station's architecture in detail: pre-Expansion construction techniques, a century obsolete. You compile the data into a survey package worth a modest sum.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3208,7 +3208,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station. Someone should know.",
+          "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3570,7 +3570,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You give it a wide berth and keep moving. Every pilot knows the numbers. Most of them choose not to think about it.",
+          "description": "You give it a wide berth and keep moving.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -3931,7 +3931,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull the flight recorder, some wiring, and a functional power cell. The story in the nav logs is none of your business. Most stories out here aren't.",
+          "description": "You pull the flight recorder, some wiring, and a functional power cell.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4117,7 +4117,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You mark it on your chart and keep flying. The lane is full of bones. You can't stop for all of them.",
+          "description": "You mark it on your chart and keep flying.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -4679,7 +4679,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You watch the fragment rotate slowly away, the Charter's words catching starlight as it turns. It has traveled this far without help. Perhaps that's the point.",
+          "description": "You watch the fragment rotate slowly away, the Charter's words catching starlight as it turns. It has traveled this far without help.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5249,7 +5249,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent. Somewhere, families will learn what happened to the people they lost. Somewhere, the history books will add a footnote. It doesn't feel like enough.",
+          "description": "You broadcast the Covenant of Dawn's position on official channels and pull away. The generation ship recedes on your aft display, vast and silent.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7312,7 +7312,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Every instinct you have says to stay away from the Margrave. You alter course and give it the widest berth your nav computer will allow. On your rear sensors, the ship continues its silent drift into the dark. Whatever happened to its crew, you'd rather not find out firsthand.",
+          "description": "You alter course and give the Margrave the widest berth your nav computer will allow. On your rear sensors, the ship continues its silent drift into the dark.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

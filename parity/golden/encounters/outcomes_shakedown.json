@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -38,7 +38,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer the credits. The pirate grunts acknowledgment and peels away. Cheaper than repairs, you tell yourself.",
+          "description": "You transfer the credits. The pirate grunts acknowledgment and peels away.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2339,7 +2339,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The Leviathan turns toward you. Your ship feels very, very small.",
+          "description": "The Leviathan turns toward you.",
           "enemy_template_ids": [
             "void_leviathan"
           ],
@@ -3043,7 +3043,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a great day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp. Four more robberies and you get one free.",
+          "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a great day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3410,7 +3410,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You hail the ship and ask it to rob itself. There's a long silence. Then: 'Processing... processing... ERROR: cannot rob self. Robbery requires distinct victim entity. But if I am both robber and victim... does the transaction net zero? Is all robbery ultimately self-defeating?' The weapons power down. The ship drifts away, its running lights blinking in what you choose to interpret as deep thought. You've weaponized philosophy.",
+          "description": "You hail the ship and ask it to rob itself. There's a long silence. Then: 'Processing... processing... ERROR: cannot rob self. Robbery requires distinct victim entity. But if I am both robber and victim... does the transaction net zero? Is all robbery ultimately self-defeating?' The weapons power down. The ship drifts away, its running lights blinking.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3596,7 +3596,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer the credits. Vex is surprisingly professional: they escort you through two debris fields and past a cluster of ships that definitely would have tried something. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\" Extortion with a smile. The Crimson Reach way.",
+          "description": "You transfer the credits. Vex escorts you through two debris fields and past a cluster of ships. At the beacon, Vex peels off with a wave. \"Pleasure doing business. Tell your friends.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3782,7 +3782,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You tell Vex where they can put their offer. There's a long pause, then a chuckle. \"Brave. Stupid, but brave. Your call, Captain.\" Vex breaks off and vanishes into the debris field. You spend the next thirty minutes with your weapons hot and your nerves frayed, but nothing happens. This time.",
+          "description": "You refuse Vex's offer. There's a long pause, then a chuckle. \"Brave. Stupid, but brave. Your call, Captain.\" Vex breaks off and vanishes into the debris field. You spend the next thirty minutes with your weapons hot, but nothing happens.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

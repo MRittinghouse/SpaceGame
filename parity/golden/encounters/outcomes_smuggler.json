@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -235,7 +235,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your contact considers the offer, then agrees. You share the weapons serial data and courier manifest; they send you their shipping analysis. Both of you walk away knowing more and trusting less. The combined intelligence paints a picture of an operation far larger than a few corrupt officials: The Ledger has been running parallel supply chains across the entire Expanse for years. Your contact's parting words: 'We're both targets now. At least we're informed targets.'",
+          "description": "Your contact considers the offer, then agrees. You share the weapons serial data and courier manifest; they send you their shipping analysis. The combined intelligence paints a picture of an operation far larger than a few corrupt officials: The Ledger has been running parallel supply chains across the entire Expanse for years. Your contact's parting words: 'We're both targets now. At least we're informed targets.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -423,7 +423,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your contact shrugs over the comm. 'Your call, Captain. But this data has a shelf life. Once they rotate their routes, and they will, it's worthless.' The channel closes. You're left weighing paranoia against opportunity, knowing that in this game, both have kept people alive.",
+          "description": "Your contact shrugs over the comm. 'Your call, Captain. But this data has a shelf life. Once they rotate their routes, and they will, it's worthless.' The channel closes.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -795,7 +795,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Szabo talks your ear off for twenty minutes about coolant chemistry, his grandmother's soup, and a fish he once caught on Verdant that was 'big as a shuttle, I swear it.' You learn nothing useful but somehow feel better about your day.",
+          "description": "Szabo talks your ear off for twenty minutes about coolant chemistry, his grandmother's soup, and a fish he once caught on Verdant that was 'big as a shuttle, I swear it.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -976,7 +976,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered. You get the feeling this conversation happens to him weekly.",
+          "description": "Szabo scratches his chin. '{Son}, I been running this route since before your ship was scrap metal. But I appreciate the concern.' He putters off, unbothered.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1157,7 +1157,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You match course with Reeta, broadcasting routine trade chatter. The patrol shadow loses interest in a two-ship convoy and peels off. Reeta exhales. 'People at Haven's Rest clinic needed this a week ago. You just helped more folks than you know.' She sends over a cut of her payment. Modest, but earned.",
+          "description": "You match course with Reeta, broadcasting routine trade chatter. The patrol shadow loses interest in a two-ship convoy and peels off. Reeta exhales. 'People at Haven's Rest clinic needed this a week ago. You just helped more folks than you know.' She sends over a cut of her payment.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1546,7 +1546,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Reeta nods curtly and accelerates away. 'Understood. No judgment. Everybody's got their own line.' Her ship vanishes into the lane traffic. You wonder if those supplies will reach Haven's Rest in time.",
+          "description": "Reeta nods curtly and accelerates away. 'Understood. No judgment. Everybody's got their own line.' Her ship vanishes into the lane traffic.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1727,7 +1727,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock in silence. Nobody exchanges names. The goods are quality, probably lifted from a Guild shipment. You pay a fraction of market rate and part ways with a nod. What the manifest does not show will not hurt it.",
+          "description": "You dock in silence. Nobody exchanges names. The goods are quality. You pay a fraction of market rate and part ways with a nod.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2094,7 +2094,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send a single character reply: 'N.' The freighter kills its tight-beam and drifts away without a sound. Clean conscience, empty pockets.",
+          "description": "You send a single character reply: 'N.' The freighter kills its tight-beam and drifts away without a sound.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -1298,7 +1298,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You note the hulk and move on. Someone else's problem. Someone else's payday.",
+          "description": "You note the hulk and move on. Small finder's fee.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

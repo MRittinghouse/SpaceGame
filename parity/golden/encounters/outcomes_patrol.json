@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -423,7 +423,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow. Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself, and the questions don't stop gnawing at you in the quiet hours between jumps.",
+          "description": "You alter course to a busy trade lane and lose yourself in commercial traffic. The shadow vessel doesn't follow. Or at least, you can't detect it anymore. For the next few days, you stick to routine trading runs and keep your head down. But the data you've collected doesn't delete itself.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1344,7 +1344,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed. For now.\" No credits change hands, but you sense this is not over.",
+          "description": "You cite corridor jurisdiction precedents from the Bureau's own charter. There is a long silence before the officer responds. \"Your objection has been noted and will be reviewed by the Bureau. You may proceed. For now.\" No credits change hands.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1715,7 +1715,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is almost palpable.",
+          "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2272,7 +2272,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gil's scanner sweeps your ship in seconds. 'Clean as creek water. Appreciate the cooperation, Captain.' His wingmate tips a salute. 'You see anything suspicious out there, broadcast on channel seven. We'll come running.' Good folks doing thankless work.",
+          "description": "Gil's scanner sweeps your ship in seconds. 'Clean as creek water. Appreciate the cooperation, Captain.' His wingmate tips a salute. 'You see anything suspicious out there, broadcast on channel seven. We'll come running.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2460,7 +2460,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol moves on, but you notice them logging your transponder ID. The frontier has a long memory.",
+          "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on. The frontier has a long memory.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2836,7 +2836,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The officer scans your documents and nods to herself. 'Everything checks out. Safe travels, Captain.' The cruiser peels off and resumes its patrol route. A clean record has its perks.",
+          "description": "The officer scans your documents and nods to herself. 'Everything checks out. Safe travels, Captain.' The cruiser peels off and resumes its patrol route.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3198,7 +3198,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors. This kind of intel saves lives.",
+          "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3565,7 +3565,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the advisory and tighten your route planning. Forewarned is forearmed. The patrol frigate resumes its sweep as you push deeper into the lane.",
+          "description": "You log the advisory and tighten your route planning. The patrol frigate resumes its sweep as you push deeper into the lane.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3746,7 +3746,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit every official document in your ship's database. The drone processes them for eleven minutes, then responds: 'Form 27-B/6 not found. However, your filing of seventeen unrelated forms has earned you Provisional Existence Status, valid for ninety days. Please file Form 27-B/6 before expiry to upgrade to Confirmed Existence. Have a productive cycle!' It flies away. You're not sure any of that was real, but you feel strangely validated.",
+          "description": "You transmit every official document in your ship's database. The drone processes them for eleven minutes, then responds: 'Form 27-B/6 not found. However, your filing of seventeen unrelated forms has earned you Provisional Existence Status, valid for ninety days. Please file Form 27-B/6 before expiry to upgrade to Confirmed Existence. Have a productive cycle!' It flies away.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3927,7 +3927,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The drone considers your offer. 'Expedited processing is available for a nominal fee of 30 credits.' You pay. The drone stamps your transponder signal with something called a 'Certificate of Probable Existence' and departs. You later discover the certificate actually gets you a 5% discount at Guild administrative offices. Bureaucracy works in mysterious ways.",
+          "description": "The drone considers your offer. 'Expedited processing is available for a nominal fee of 30 credits.' You pay. The drone stamps your transponder signal with something called a 'Certificate of Probable Existence' and departs. The certificate gets you a 5% discount at Guild administrative offices.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4113,7 +4113,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You hit the throttle. The drone pursues for exactly twelve seconds, broadcasting 'Your unauthorized existence has been noted!' before returning to its patrol route. You wonder, briefly, whether you actually exist. Then your stomach growls, and the question answers itself.",
+          "description": "You hit the throttle. The drone pursues for exactly twelve seconds, broadcasting 'Your unauthorized existence has been noted!' before returning to its patrol route.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -5033,7 +5033,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Cal stares at you for a long, uncomfortable moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
+          "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6161,7 +6161,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You catch fragments of an encrypted debate: something about tariff adjustments and a 'Forge Sector proposal.' Nothing actionable, but you file it away. A patrol vessel gives you a long look before moving on.",
+          "description": "You catch fragments of an encrypted debate: something about tariff adjustments and a 'Forge Sector proposal.' You log the fragments. A patrol vessel gives you a long look before moving on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6342,7 +6342,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You angle away from the restricted zone without a second thought. Whatever the Board is arguing about, you'll read about it in the trade bulletins tomorrow.",
+          "description": "You angle away from the restricted zone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -6517,7 +6517,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You maintain position for forty tense minutes. The unclassified energy signature pulses twice more, then fades. The all-clear comes through with no further explanation. A Collective patrol ship sweeps past your position, sensors clearly scanning you, before moving on. Whatever happened in Theta-9, the Institute isn't talking.",
+          "description": "You maintain position for forty minutes. The unclassified energy signature pulses twice more, then fades. The all-clear comes through with no further explanation. A Collective patrol ship sweeps past your position, sensors clearly scanning you, before moving on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6902,7 +6902,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You don't need to be told twice. 'Exceeded expected parameters' is scientist for 'something went wrong and we're not sure what.' You plot a course out of Axiom space and don't look back until the station is a dot on your rear sensors.",
+          "description": "You plot a course out of Axiom space and don't look back until the station is a dot on your rear sensors.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7083,7 +7083,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send your credentials, manifest, and destination without argument. The patrol officer reviews them with agonizing thoroughness, then: \"Credentials verified. You are cleared to transit Corridor 7-Alpha. Maintain heading and speed. Deviation will be treated as hostile intent.\" The drones peel off. You exhale.",
+          "description": "You send your credentials, manifest, and destination without argument. The patrol officer reviews them line by line, then: \"Credentials verified. You are cleared to transit Corridor 7-Alpha. Maintain heading and speed. Deviation will be treated as hostile intent.\" The drones peel off.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7452,7 +7452,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\" Corruption runs deep in Iron Depths. Sometimes the fastest route is through someone's wallet.",
+          "description": "You transfer a quiet credit bundle to the patrol officer's personal account. The targeting lock drops immediately. \"Cleared for transit. Have a productive day, Captain.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7638,7 +7638,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit your credentials and state you're passing through on a trade route. The synthesized voice processes this for an uncomfortable five seconds. \"Acknowledged. Maintain your declared heading. Do not deviate. Do not scan.\" The patrol ship holds position as you pass, its sensors tracking you until you're out of range. You feel watched long after it's gone.",
+          "description": "You transmit your credentials and state you're passing through on a trade route. The synthesized voice processes this for five seconds. \"Acknowledged. Maintain your declared heading. Do not deviate. Do not scan.\" The patrol ship holds position as you pass, its sensors tracking you until you're out of range.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7819,7 +7819,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit a confident Guild transit authorization, slightly embellished, but convincing. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through. Whether they bought it or simply decided you weren't worth the paperwork, you'll never know.",
+          "description": "You transmit a confident Guild transit authorization. The patrol ship pauses, then: \"Authorization noted. Proceed to Corridor 3. Do not access station approach vectors.\" They let you through.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8005,7 +8005,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You don't argue. You throw your engines into reverse and back out of the sector with your hands metaphorically raised. The patrol ship watches you go without comment. Your heart rate takes ten minutes to normalize. Whatever The Fulcrum is hiding, it has guards who take their job very seriously.",
+          "description": "You don't argue. You throw your engines into reverse and back out of the sector. The patrol ship watches you go without comment.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

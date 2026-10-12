@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -961,7 +961,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "He settles. Tells you enough that you know the coil's clean. Knocks 200 off the price for the trust.",
+          "description": "He settles. Tells you the coil's history and sends the bill of sale. Knocks 200 off the price for the trust.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2234,7 +2234,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "She transfers the crate without a word. The seal looks expensive. She's gone before you can ask anything you'd regret asking.",
+          "description": "She transfers the crate without a word. The seal looks expensive. She's gone before you can ask.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2621,7 +2621,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You can't read her. Could be clean. Could be a setup. You don't bite.",
+          "description": "Her hands give nothing away. She waits, then cuts the channel and pulls away.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []

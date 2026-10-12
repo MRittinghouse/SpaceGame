@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -228,7 +228,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up. The ghost of the Heron lingers in your mind longer than it should.",
+          "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -409,7 +409,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You force your eyes back to the nav display and adjust course. The sensor ghost fades behind you, just like the distress signal did. Some debts follow you through the void.",
+          "description": "You adjust course. The sensor ghost fades behind you, just like the distress signal did.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -776,7 +776,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You plot a course around the floating junk and continue on your way. Not every opportunity is worth the risk.",
+          "description": "You plot a course around the floating junk and continue on your way.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -951,7 +951,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend time chasing the signal. Turns out it was a chunk of ice sublimating near a heat vent. Not exciting, but you learn to calibrate your sensors better.",
+          "description": "You spend time chasing the signal. Turns out it was a chunk of ice sublimating near a heat vent. The chase leaves your sensors better calibrated.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1493,7 +1493,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You plot a wide arc around the minefield. It costs you time, but your hull plating thanks you. Some shortcuts aren't worth taking.",
+          "description": "You plot a wide arc around the minefield. It costs you time.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2227,7 +2227,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run a fast sweep: three ship IDs, weapon signature profiles, debris age estimates. Enough for a report, if you trust anyone enough to file one. You don't linger. Smart pilots learn from other pilots' mistakes.",
+          "description": "You run a fast sweep: three ship IDs, weapon signature profiles, debris age estimates. Enough for a report. You don't linger.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2408,7 +2408,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You plot a wide detour around the field. It costs time and fuel, but the alternative is joining the wreckage. Some savings aren't worth the risk.",
+          "description": "You plot a wide detour around the field. It costs time and fuel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -2583,7 +2583,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer credits to the collection box. A second recording activates: 'Thank you for supporting the arts. As a patron, you are entitled to name one piece in the collection. Please transmit your title now.' You look at a twisted spire of antenna fragments reaching toward distant stars and name it the first thing that comes to mind. The beacon logs your submission alongside hundreds of others. Apparently, seventeen different people have named pieces 'My Ex.' One is titled 'Tax Return.' You feel like you're part of something.",
+          "description": "You transfer credits to the collection box. A second recording activates: 'Thank you for supporting the arts. As a patron, you are entitled to name one piece in the collection. Please transmit your title now.' You look at a twisted spire of antenna fragments reaching toward distant stars and transmit a title. The beacon logs your submission alongside hundreds of others. Apparently, seventeen different people have named pieces 'My Ex.' One is titled 'Tax Return.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2769,7 +2769,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories: a children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone. T.W.' You emerge on the other side feeling like you've been somewhere important.",
+          "description": "You cut engines to a drift and weave through the installation. Up close, the pieces tell stories: a children's toy welded to a warship hull plate, a wedding ring fused into a navigation console, a row of boots from six different stations arranged in a line like they're walking somewhere together. Tucked in the center, you find a small plaque: 'Everything out here was something to someone. T.W.' You emerge on the other side.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2950,7 +2950,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You run a materials scan. Technically, there's a decent haul of recyclable alloys in there. Your hand hovers over the cargo grapple controls. Then you look at the sculpture again, at the way the light catches a child's drawing etched into a fuel cell casing, and you close the scan window. Some things are worth more intact. You mark the coordinates in your nav log instead. Maybe you'll come back someday.",
+          "description": "You run a materials scan. There's a decent haul of recyclable alloys in there. You mark the coordinates in your nav log. The light catches a child's drawing etched into a fuel cell casing.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3708,7 +3708,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, catches your eye: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it with more care than anything else in your hold.",
+          "description": "The seal breaks with a hiss of preserved atmosphere: air from Earth, a hundred and fifty years stale. Inside: letters, hundreds of them, handwritten on paper that crumbles at the edges. Drawings by children. Photographs printed on polymer sheets. A pressed flower, impossibly fragile, that disintegrates when the vacuum touches it. One letter, written in a steady hand, reads: 'We are sending you everything we couldn't carry. Not cargo. Memory. Remember rain. Remember birdsong. Remember that the sky was blue. Build something worthy of what we lost.' You seal the container and store it.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3903,7 +3903,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You secure the capsule in your cargo bay without breaking the seal. It belongs to the Expanse, not to you. The nearest settlement archive will know what to do with it: preserve it, share it, let the words reach the audience they were meant for. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
+          "description": "You secure the capsule in your cargo bay without breaking the seal. You file a recovery report and tag the capsule as historical material. The archivist who responds sounds like they might be crying. 'We've been looking for the missing pods for decades. Thank you. Thank you.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4098,7 +4098,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit: words from the dead, waiting for readers who may never come. There's a strange peace in that. Some messages don't need to arrive to mean something.",
+          "description": "You log the coordinates and leave the capsule to its drift. The letters inside will continue their long, silent orbit: words from the dead, waiting for readers who may never come.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4479,7 +4479,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You grab what's drifted beyond Britt's recovery range. Technically it's debris. She watches on sensors but doesn't say anything. The silence speaks volumes. Union haulers will remember your transponder ID.",
+          "description": "You grab what's drifted beyond Britt's recovery range. She watches on sensors but doesn't say anything.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5046,7 +5046,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You hold back and watch the pirates strip the hauler. When they warp out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. The silence speaks volumes. Titanium is titanium, but you won't be popular at Breakstone after this.",
+          "description": "You hold back and watch the pirates strip the hauler. When they jump out, you move in and collect three cargo pods they missed. The Solidarity's captain sees you on sensors and says nothing. Breakstone will hear about it.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5239,7 +5239,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away. Breakstone's lanes are dangerous for a reason, and discretion keeps you alive to fly another day.",
+          "description": "You adjust your heading to give the engagement a wide berth. The Solidarity's distress call echoes on your comms as you pull away.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

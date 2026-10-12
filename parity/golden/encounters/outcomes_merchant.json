@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "1baa3e91138a6eae85c3558e529461056b5fa06a",
+  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
   "steps": [
     {
       "args": [
@@ -804,7 +804,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Sable listens to your counter-proposal and consults his datapad. \"I am not authorized to modify the exclusivity clause, but I can offer an improved rate on your first three deliveries.\" The compromise leaves both sides satisfied, if not thrilled.",
+          "description": "Sable listens to your counter-proposal and consults his datapad. \"I am not authorized to modify the exclusivity clause, but I can offer an improved rate on your first three deliveries.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1369,7 +1369,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You review the manifest but nothing catches your eye at the right price point. The cargo master shrugs philosophically. \"No obligation, Captain. The Overstock will be in this corridor for another twelve hours if you change your mind.\"",
+          "description": "You review the manifest and buy nothing. The cargo master shrugs philosophically. \"No obligation, Captain. The Overstock will be in this corridor for another twelve hours if you change your mind.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1936,7 +1936,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Rhett accepts the refusal graciously. \"I understand, Captain. I will arrange alternative transport. Thank you for your time.\" Her courier vessel limps onward, and you wonder briefly if the drive will hold.",
+          "description": "Rhett accepts the refusal graciously. \"I understand, Captain. I will arrange alternative transport. Thank you for your time.\" Her courier vessel limps onward.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2503,7 +2503,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You propose they split the delivery route at the midpoint: Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you for your Solomonic wisdom.",
+          "description": "You propose they split the delivery route at the midpoint: Fenn takes the coreward leg, Dorr takes the rimward. Both captains stare at you, then at each other, then reluctantly agree. \"Fine. But I am filing a formal precedent objection,\" Dorr mutters. They each tip you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2696,7 +2696,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ines grins as the cargo grapples do their work. 'This is how trade ought to be. Two people, two holds, everybody walks away happy.' The goods she traded are genuinely worth more than what you gave. Honest dealing, Alliance style.",
+          "description": "Ines grins as the cargo grapples do their work. 'This is how trade ought to be. Two people, two holds, everybody walks away happy.' The goods she traded are genuinely worth more than what you gave.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3257,7 +3257,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. A kid challenges you to a zero-G somersault contest. You lose badly. Traders swap goods at festival prices, generous to a fault. By the time you undock, your spirits are high and your hold has a few new treasures picked up for cheap.",
+          "description": "You squeeze into the ring of ships and are immediately handed a bowl of Verdant stew and something fizzy in a tin cup. The music is homemade and loud. Traders swap goods at festival prices. By the time you undock, your hold has a few new treasures picked up for cheap.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3643,7 +3643,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying. No judgment. Just a little sadness.",
+          "description": "You wave politely through the viewport and continue on your route. The music fades behind you, replaced by the hum of your engines. Somewhere in the ring, someone raises a tin cup to the stranger who kept flying.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -4004,7 +4004,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You exchange polite farewells and go your separate ways. Space is lonely enough without being rude about it.",
+          "description": "You exchange polite farewells and go your separate ways.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -4179,7 +4179,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The convoy docks briefly and transfers fuel to your tanks. The crew chief tips his cap as they disengage. Good people still fly these lanes.",
+          "description": "The convoy docks briefly and transfers fuel to your tanks. The crew chief tips his cap as they disengage.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4365,7 +4365,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You swap navigation data and market tips. The convoy leader marks a few profitable routes on your charts. Knowledge is currency out here.",
+          "description": "You swap navigation data and market tips. The convoy leader marks a few profitable routes on your charts.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4546,7 +4546,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The collector's eyes light up at a few items you'd considered junk. He pays handsomely, insisting they have 'tremendous provenance.' You pocket the credits and wonder if you've been undervaluing your cargo.",
+          "description": "The collector's eyes light up at a few items from the bottom of your manifest. He pays handsomely, insisting they have 'tremendous provenance.' You pocket the credits.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5093,7 +5093,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "After twenty minutes of good-natured haggling, you swap cargo holds. You're not sure who got the better deal, but the hauler captain seems pleased. He seals it with a handshake through the airlock.",
+          "description": "After twenty minutes of good-natured haggling, you swap cargo holds. The hauler captain seems pleased. He seals it with a handshake through the airlock.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5640,7 +5640,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser filtered through regret. He tells you stories: the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, you're both laughing. He gives you the crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
+          "description": "You dock airlocks and share a bottle of something that Declan claims is whiskey but tastes like engine degreaser. He tells you stories: the time he accidentally robbed a Guild admiral's yacht ('fastest I ever ran'), the co-pilot who fell in love with a station customs officer and went straight ('betrayal of the highest order'), the haul that turned out to be six hundred crates of novelty hats ('try fencing that'). By the end, Declan is laughing. He gives you a crate and a firm handshake. 'Take care of yourself out there, Captain. The void doesn't care about any of us, but that's no reason not to care about each other.' He undocks and flies toward the nearest station, running lights blinking a farewell.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5826,7 +5826,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks, you never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy. Retirement speed.",
+          "description": "You tell Declan to keep his treasure. He's quiet for a moment, then laughs. 'You know what, you're right. This junk means nothing to anyone but me. And that's the point, isn't it?' He signs off with a wave. 'Fly safe, Captain. And if anyone asks, you never saw me.' His gunship turns toward the nearest station and drifts away, engines running low and easy.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6393,7 +6393,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' No hard feelings: she's heard every excuse in the belt. The shuttle peels off to flag down the next ship.",
+          "description": "Pia shrugs. 'Can't win 'em all. Fly safe, Captain.' She's heard it before. The shuttle peels off to flag down the next ship.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -8430,7 +8430,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Okoro hesitates, then relents: 'Preliminary analysis suggests it is a data storage medium of unknown design. We cannot read it. Yet. The materials are unlike any alloy in our database. That is all I can share before peer review.' The information is fascinating, but Okoro needs an answer. You pass on the job, filing away the details.",
+          "description": "Okoro hesitates, then relents: 'Preliminary analysis suggests it is a data storage medium of unknown design. We cannot read it. Yet. The materials are unlike any alloy in our database. That is all I can share before peer review.' Okoro needs an answer. Before you give one, another captain accepts the job, and Okoro signs off to oversee the transfer.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -9728,7 +9728,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You thread through the gridlocked exit lanes and leave the chaos behind. Nexus Prime's market will sort itself out. It always does.",
+          "description": "You thread through the gridlocked exit lanes and leave the chaos behind.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -9903,7 +9903,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Tariq, a man in a velvet jacket who smells like sandalwood and money, spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. You're not sure if he's joking, but his credits are real.",
+          "description": "Tariq, a man in a velvet jacket who smells like sandalwood, spends twenty minutes examining your cargo with a jeweler's loupe. He identifies a crate of industrial sealant as a 'brutalist sculpture in packaging form' and offers to buy it for triple its market value. His credits clear.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10089,7 +10089,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You describe a perfectly ordinary shipping crate as a 'pre-Expansion artifact container' with a straight face. Tariq's eyes light up. He pays you a finder's fee just for the story. \"Marvelous provenance, darling. Simply marvelous.\" You feel slightly guilty. Slightly.",
+          "description": "You describe a perfectly ordinary shipping crate as a 'pre-Expansion artifact container' with a straight face. Tariq's eyes light up. He pays you a finder's fee just for the story. \"Marvelous provenance, darling. Simply marvelous.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -10275,7 +10275,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send a terse \"No thank you\" and continue on your way. Tariq's yacht peels off with a dramatic barrel roll that screams 'I went to finishing school and I want you to know it.'",
+          "description": "You send a polite \"No thank you\" and continue on your way. Tariq's yacht peels off with a barrel roll.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -10829,7 +10829,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You pull to the outer lane and watch the convoy thunder past. Fourteen haulers loaded with the Lowlands' finest, racing against biology. There's something admirable about it.",
+          "description": "You pull to the outer lane and watch the convoy thunder past. Fourteen haulers loaded with the Lowlands' finest, racing against biology.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -11203,7 +11203,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables, genuinely useful nav data. Science and commerce find their equilibrium.",
+          "description": "Dr. Mak looks mildly offended, then pragmatic. After a brief negotiation, they agree to a higher rate plus a copy of their published calibration tables, genuinely useful nav data.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
