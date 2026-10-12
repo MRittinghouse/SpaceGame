@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
+  "source_commit": "7bc49ff84f58918989807062d980e51f3ade669d",
   "steps": [
     {
       "args": [
@@ -1715,7 +1715,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Inspector Holloway's team spends an unreasonable amount of time scanning every container and cross-referencing serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
+          "description": "Inspector Holloway's team scans every container and cross-references serial numbers. Eventually, he declares your cargo compliant. \"Everything appears to be in order. You may proceed.\" His disappointment is audible.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2460,7 +2460,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on. The frontier has a long memory.",
+          "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5033,7 +5033,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly out of spite. You pass. Barely.",
+          "description": "Cal stares at you for a long moment. 'I'm gonna pretend I didn't hear that, on account of you probably not knowing how things work out here. We don't do that.' He inspects your ship twice as thoroughly. You pass.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

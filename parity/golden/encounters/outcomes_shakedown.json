@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "305fe4ee28374d0742ee8b1d2146f75e2e1912e7",
+  "source_commit": "7bc49ff84f58918989807062d980e51f3ade669d",
   "steps": [
     {
       "args": [
@@ -3043,7 +3043,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a great day!' The ship cheerfully peels away to find its next victim. You stare at the receipt. It has a customer loyalty stamp.",
+          "description": "You transfer the credits. The autopilot responds: 'Thank you for your payment! A receipt has been transmitted to your comms. Please note: robbery satisfaction surveys are available at the following frequency. We value your feedback! Have a great day!' The ship cheerfully peels away. You stare at the receipt. It has a customer loyalty stamp.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
