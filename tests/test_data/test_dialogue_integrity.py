@@ -123,6 +123,10 @@ class TestDialogueReachability:
         queue: deque[str] = deque()
         if tree.start_node_id in tree.nodes:
             queue.append(tree.start_node_id)
+        # A crew scene opens its tree at its entry node (polish design 3.1).
+        for scene in loader.crew_scenes.values():
+            if scene.dialogue_id == tree_id and scene.entry_node in tree.nodes:
+                queue.append(scene.entry_node)
         while queue:
             node_id = queue.popleft()
             if node_id in visited:
@@ -502,6 +506,11 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
             consumers[flag].add(f"mission:{mission.id}:required")
         for flag in getattr(mission, "forbidden_flags", []) or []:
             consumers[flag].add(f"mission:{mission.id}:forbidden")
+
+    # --- Consumers: crew scenes (polish design 3.1) ---
+    for scene in loader.crew_scenes.values():
+        for flag in (*scene.required_flags, *scene.excluded_flags):
+            consumers[flag].add(f"crew_scene:{scene.id}")
 
     # --- Consumers: NPCs ---
     for npc in loader.npcs.values():
@@ -1188,6 +1197,21 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # BB-2: point_of_no_return's reward still sets it for Act II; the objective that
     # waited on it is gone, so nothing reads it now.
     "warp_gate_discovered",
+    # BB-16 (plan W4-S): the crew quests gate on their ask and read live loyalty, so the
+    # latched marks lost their quest readers. CrewRoster still writes them (the saves and
+    # chandra_osei's state read crew_loyalty_dr_priya_osei_50); the relationship model (W9)
+    # and M3 retire them.
+    "crew_loyalty_dr_priya_osei_70",
+    "crew_loyalty_dr_priya_osei_85",
+    "crew_loyalty_elena_reeves_50",
+    "crew_loyalty_elena_reeves_70",
+    "crew_loyalty_elena_reeves_85",
+    "crew_loyalty_marcus_jin_50",
+    "crew_loyalty_marcus_jin_70",
+    "crew_loyalty_marcus_jin_85",
+    "crew_loyalty_tomas_drifter_50",
+    "crew_loyalty_tomas_drifter_70",
+    "crew_loyalty_tomas_drifter_85",
 }
 
 

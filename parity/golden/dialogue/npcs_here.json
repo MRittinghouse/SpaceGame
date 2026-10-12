@@ -372,7 +372,7 @@
       }
     ]
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -440,10 +440,6 @@
         ],
         [
           "tomasz_brennan",
-          ""
-        ],
-        [
-          "lira_feng",
           ""
         ],
         [
@@ -632,12 +628,7 @@
         "day_one_nova_research"
       ],
       "call": "npcs_here",
-      "result": [
-        [
-          "amara_okonkwo",
-          ""
-        ]
-      ],
+      "result": [],
       "state": {}
     },
     {
@@ -646,10 +637,6 @@
       ],
       "call": "npcs_here",
       "result": [
-        [
-          "ren_castillo",
-          ""
-        ],
         [
           "aldric_senn",
           ""
@@ -903,12 +890,7 @@
         "reva_waits"
       ],
       "call": "npcs_here",
-      "result": [
-        [
-          "amara_okonkwo",
-          ""
-        ]
-      ],
+      "result": [],
       "state": {}
     },
     {
@@ -920,10 +902,6 @@
         [
           "reva_sato",
           "cargo_lost"
-        ],
-        [
-          "amara_okonkwo",
-          ""
         ]
       ],
       "state": {}
@@ -940,10 +918,6 @@
         ],
         [
           "tomasz_brennan",
-          ""
-        ],
-        [
-          "lira_feng",
           ""
         ],
         [
@@ -965,10 +939,6 @@
         ],
         [
           "tomasz_brennan",
-          ""
-        ],
-        [
-          "lira_feng",
           ""
         ],
         [

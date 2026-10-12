@@ -50,7 +50,7 @@ def test_every_mission_manager_knows_the_content_producers() -> None:
 
 
 def test_a_dialogue_starts_with_the_day() -> None:
-    starts = _calls(_function("start_dialogue"), "start_dialogue")
+    starts = _calls(_function("_begin_dialogue"), "start_dialogue")
     assert starts
     for call in starts:
         assert any(k.arg == "game_day" for k in call.keywords), ast.dump(call)

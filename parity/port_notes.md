@@ -1501,6 +1501,93 @@ Godot port by sync.
 | T11-3 | 12 | `data/journal/entries.json auto_iron_betrayal and auto_m13_oren; data/missions/missions.json iron_delivery.discovery_text` | W3 |
 | T11-4 | 14 | `SpaceGame parity/port_notes.md, this section's 'What W2 fixed' bullet` | closed, no action |
 
+## Writing W4 (2026-10-11)
+
+Writing plan W4-S landed the SpaceGame half of the crew quests' wiring slice (writing-discipline
+spec 9.2 row 7; polish design 3.1 and 3.6): the crew-scene mechanism, the twelve crew quests
+re-gated on an ask with a minimal opener each, F-34's seven checks repaired, F-45 fixed (this
+register's F-015, now F-C11), the take-both walk fixed, `elena_archives_npc` deleted, the three
+strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_scene_content.py`
+(spec 5.1's G12).
+
+### Records for plan W4-A
+
+- What the sync brings: `data/missions/crew_quests.json` (each quest's gate `["<quest>_agreed"]`
+  after its stage's predecessor, and a `scenes` list of three: `<quest>_opener`,
+  `<quest>_raise`, `<quest>_resolution`; `elena_old_charts`'s hint),
+  `data/dialogue/crew_quest_dialogues.json` (eight new trees `<quest>_ask_dialogue`; the four
+  stage 1 trees gain an ask, a decline, a deferral and the nodes `declined` and `ask_again`;
+  F-34's seven check replies; the take-both replies set `elena_wreck_found`;
+  `tomas_fulcrum_dialogue`'s `con_result` node deleted; `marcus_confrontation_dialogue`'s start
+  line says "get there" for "get back to Breakstone", since `marcus_steel_holds_resolution`
+  plays it at Breakstone) and `data/characters/npcs.json` (`elena_archives_npc` deleted;
+  `lira_feng`, `amara_okonkwo` and `ren_castillo` listed only after their stage's resolution and
+  hidden after it until their slice gives them an after-tree, so W4 reaches each only through
+  its resolution scene). None of `lira_feng`, `amara_okonkwo` or `ren_castillo` is listed at any
+  point in W4 (each one's prerequisite and hide flag are the same resolution flag), so plan
+  W4-A's arc-test assertion `contains(["lira_feng"])` at Forgeworks (its plan :1673) and its
+  strangers record (its plan :1744) flip to match. (plan W4-S Task 4 and its preflight
+  ruling 13)
+- Goldens whose content changes: twelve of the sixteen crew trees' `dialogue/tree_*` goldens,
+  all but `marcus_evidence_dialogue`, `marcus_inspector_dialogue`, `priya_paper_dialogue` and
+  `tomas_lead_dialogue` (F-45's `crew_loyalty_*_70` and `_85` flags in every step whose gain
+  crosses a mark from the driver's 60; the stage 1 trees' new replies and nodes; F-34's checks,
+  which now pass and fail on registered skills; rule 8's moved flags and loyalty;
+  `elena_wreck_dialogue`'s four take-both steps now set `elena_wreck_found`;
+  `tomas_fulcrum_dialogue`'s two `con_result` steps (novice and expert) gone with the node;
+  `elena_archives_dialogue`'s `npc_id` null now that its NPC is gone), `dialogue/npcs_here` and
+  `missions/availability`; no `missions/lifecycle_*` golden changes, since the lifecycle driver
+  forces 'available' and never reads the gate. The new goldens are the eight
+  `dialogue/tree_<quest>_ask_dialogue` and `crew/scenes_due`. (plan W4-S Task 5)
+- What to port: `CrewScene` read beside the missions in `MissionContent` (so `Mission`, the save
+  and the mission goldens never see scenes), with the record's fields and defaults as
+  `spacegame/models/crew_scene.py` gives them; the gate's six rules in order (the `scenes_due`
+  golden pins only rule 1 first and rule 2 before rule 5: it cannot order rules 3 and 4 before
+  rule 5, or rules 2 to 5 before rule 6, and with no placed opener or middle in W4 it never sets
+  the place against the pace; Python pins the rest in `tests/test_models/test_crew_scenes.py`'s
+  five checked-before tests (:266-285), which `crew_scene_test.gd` should mirror) with their
+  four refusals verbatim ("<Name> is not aboard.", "<Name> has nothing to say about that now.",
+  "<Name> wants to talk about that at <System>.", "<Name> will bring it up at the next port."),
+  the name the crew template's and the system's; the talk rows (each companion's first due
+  crew-initiative scene in roster order, then every due captain topic); a place scene's hook
+  announced after the crew's arrival lines as `<Name>: "<hook>"`; a scene opened at its entry
+  node with its `with_npc_id` (disposition, then `talked_to_<npc>` at the close), the port's ""
+  for no entry node opening at the start node (D-2: Python refuses "" as an unknown node and
+  tests `is not None`, and no caller passes it, so no result differs); the companion joins the
+  landing's spoken set at the close; F-45 in `DialogueManager._crew_loyalty`; the `scenes_due`
+  replay; and content rules 1 to 12 in `crew_content_test.gd` with the same allowlist as
+  `tests/test_data/test_crew_scene_content.py`'s `ALLOWED`, plus G12's money cap (rule 12's
+  `('12', 'money')` offence: the sum, over the crew quests, of each quest's largest
+  `outcome_rewards` entry in credits is at most `MONEY_CAP`, 5,900; plan W4-S's preflight
+  ruling 14), which plan W4-A's rule 12 lacks and `crew_content_test.gd` mirrors; the stage 1
+  openers' follow-up ask nodes also offer the decline, pinned in Python by
+  `test_every_ask_of_an_opener_can_be_declined`, which `crew_content_test.gd` may mirror.
+  (polish design 3.1, 8.1, 8.2 step 7.4)
+- A difference with no deviation: SpaceGame keeps the spoken set on `Game`, cleared when a
+  landing begins and on a new game or a load, and does not save it; the port saves
+  `Visit.crew_spoke`. They differ only for a save and load in the middle of a landing. (plan
+  W4-S's spoken set ruling)
+- Pins the sync moves in the port: `dialogue_parity_test.gd`'s case count (161 plus the eight
+  new trees), `dialogue_content_test.gd`'s NPC count (one fewer), tree count and totals,
+  `crew_parity_test.gd`'s count (4 to 5), `load_gate_test.gd`'s trade that crossed 50 and
+  accepted `elena_old_charts` (the quest now waits for its ask), and
+  `dialogue_manager_test.gd`'s unknown-skill pin on `tomas_fulcrum_dialogue` (con_plan is
+  Deception now; the pin moves to a synthetic tree). (plan W4-S Tasks 2 and 4)
+- The writing pass's queue: `priya_peer_review_dialogue` start's Communication reply is F-34's
+  fourth check, rewritten here as "[Persuasion 3] Ask Dr. Rautio-Mensah to tell the board what
+  happened in the lab."; W3 leaves it. (plan W4-S Task 4)
+- Left, each with its owner: each arc's own openers and middles, the strangers' after-trees,
+  the rescaled loyalty amounts, `outcome_rewards` and the money routes, Tomas's story opening,
+  and the stage 3 places (W5 to W8); the port's gates on the relationship model's tiers,
+  chapters and `crew_acts` (W9). (plan W4-S rulings)
+- The author's read: the twelve minimal openers and the twenty-four hooks are working text the
+  author reads with the plan (polish design 3.6); the author approved writing and running W4
+  overnight on 2026-10-11, the plan's review to follow. (plan W4-S rulings)
+- The register: this register's F-015 closes as F-C11. aurelia's F-34 and F-45 close, and its
+  new rows for BB-16 (closed at landing) and the Legend latch (a threshold flag never fires
+  when Legend is learned while loyalty sits in the ten points under a mark; owner the
+  relationship model, W9) take the next free ids in plan W4-A. (polish design 3.6 Records)
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

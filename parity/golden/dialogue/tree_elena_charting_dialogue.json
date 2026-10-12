@@ -80,7 +80,7 @@
     },
     "tree_id": "elena_charting_dialogue"
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -175,19 +175,17 @@
         ],
         "check": [
           false,
-          "Unknown skill: acu"
+          "Piloting check failed."
         ],
         "next_node": "partial",
         "response": 0
       },
       "state": {
         "disposition": {},
-        "flags": [
-          "elena_route_charted"
-        ],
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 85,
+          "elena_reeves": 60,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
@@ -211,11 +209,13 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
+          "crew_loyalty_elena_reeves_85",
           "elena_route_charted"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 60,
+          "elena_reeves": 85,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
@@ -239,11 +239,13 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
+          "crew_loyalty_elena_reeves_85",
           "elena_route_charted"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 60,
+          "elena_reeves": 85,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
@@ -341,20 +343,18 @@
           0
         ],
         "check": [
-          false,
-          "Unknown skill: acu"
+          true,
+          "Piloting check passed!"
         ],
-        "next_node": "partial",
+        "next_node": "success",
         "response": 0
       },
       "state": {
         "disposition": {},
-        "flags": [
-          "elena_route_charted"
-        ],
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 85,
+          "elena_reeves": 60,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
@@ -378,11 +378,13 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
+          "crew_loyalty_elena_reeves_85",
           "elena_route_charted"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 60,
+          "elena_reeves": 85,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
@@ -406,11 +408,13 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
+          "crew_loyalty_elena_reeves_85",
           "elena_route_charted"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
-          "elena_reeves": 60,
+          "elena_reeves": 85,
           "marcus_jin": 60,
           "tomas_drifter": 60
         }
