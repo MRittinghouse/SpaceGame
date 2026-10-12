@@ -1039,11 +1039,29 @@ Godot port by sync.
     below. The author took every theme's recommended ruling. Of the 66 cuts the rulings
     gave Task 12, it made 63, in 86 lines; the other three stand under their own theme's
     ruling (a hint that repeats its label stands): T4-15, T4-16 and T6-36. T8-4 is made in
-    part: `auto_sa_v_longer_ledger` keeps "He named one person at the end: Ilse Vey at
-    Meridian. Did not elaborate.", since the cut would lose the name the SA-V scenario test
-    (AC-9) pins; the entry still fires before `graduation_pointer` names her, a trigger fault
-    for the findings register beside T8-1 and T8-3. The 16 flags ruled to aurelia's findings
-    register are plan W2-A's to register.
+    full: `auto_sa_v_longer_ledger` also loses "He named one person at the end: Ilse Vey at
+    Meridian. Did not elaborate.". The entry fires on `investment_introduced`, and Odom names
+    Meridian and Ilse Vey for the first time in `graduation_pointer`, which that flag opens
+    (SA-V's design, ROADMAP item 7). The SA-V scenario test's AC-9 check now asserts that the
+    entry does not name them. A Log line for the name would be a new entry on a new flag,
+    outside W2. The 16 flags ruled to aurelia's findings register are plan W2-A's to register.
+  - Task 12's own flags, raised after the read and unruled, for plan W2-A to carry to their
+    owners:
+    - `data/dialogue/dialogues.json` `arna_last_freight_out_closeout.pendant_truth`: after
+      T7-5's cut, Arna's "You got three of them, I think." answers the reply "I have."; the
+      chunk that rewrites her tree takes it with T7-5's remainder.
+    - Narrator inferences left in W2 lines outside their named cuts, each for the chunk that
+      next rewrites its file: `mission_16_pirate_base` story_triggers[1] ("Someone spent a
+      fortune building this place."); `mission_16_the_fulcrum` story_triggers[3] ("The system
+      is ready.") and [4] ("When the star collapses, they walk through this gate ...");
+      `campaign_old_allies_01` ("The pieces are falling into place.");
+      `campaign_pirate_weapons_01.mark_and_leave` ("By the time anyone responds, the debris
+      will be scattered ..."); `lore_star_map_01.analyze` ("The disc is either impossibly old
+      or impossibly precise.").
+    - `sys_crimson_ghost_ship_01.report`: the hint now opens on "Transmit its coordinates",
+      and its "its" depends on the encounter text; a later pass may name the Margrave.
+    - T4-7's fragment "For the last three jumps: ..." and T5-24's "your home system" stand,
+      since the theme adds no new writing; the chunk that next rewrites each line reads them.
 
 | Flag | Where | The author's ruling (2026-10-11) |
 |---|---|---|

@@ -491,13 +491,18 @@ class TestJournalEntry:
         entry = next(e for e in dl.journal_entries if e.entry_id == "auto_sa_v_longer_ledger")
         assert entry.mission_id == "sa_v_investment_intro"
 
-    def test_journal_entry_names_ilse_vey(self) -> None:
-        """Journal text records Odom naming Ilse Vey (working-notebook register)."""
+    def test_journal_entry_does_not_name_ilse_vey(self) -> None:
+        """The entry records only what Odom has said when investment_introduced fires.
+
+        Odom names Meridian and Ilse Vey for the first time in graduation_pointer, which
+        ongoing_greet offers only once investment_introduced is set (AC-7), so the entry that
+        flag writes does not name them (the author's ruling on flag T8-4, 2026-10-11).
+        """
         dl = get_data_loader()
         dl.load_all()
         entry = next(e for e in dl.journal_entries if e.entry_id == "auto_sa_v_longer_ledger")
-        assert "Ilse Vey" in entry.text
-        assert "Meridian" in entry.text
+        assert "Ilse Vey" not in entry.text, "Odom names her only in graduation_pointer"
+        assert "Meridian" not in entry.text, "Odom names it only in graduation_pointer"
 
 
 # ---------------------------------------------------------------------------

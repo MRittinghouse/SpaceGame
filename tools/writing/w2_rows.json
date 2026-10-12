@@ -13502,7 +13502,7 @@
    "file": "data/journal/entries.json",
    "gate_path": ".journal_entries[id=auto_sa_v_longer_ledger].text",
    "old": "Odom finally cracked open the part of the ledger most pilots never see. Said I had cleared the floor. Talked about putting credits to work in places that pay back over time. There are stations in the expanse that run structured returns on parked capital. Terms on the card, he said. I am now one of the people who knows the card exists. He named one person at the end: Ilse Vey at Meridian. Did not elaborate. Will remember the name.",
-   "new": "Odom cracked open the part of the ledger most pilots never saw. Talked about putting credits to work in places that paid back over time. There were stations in the Expanse that ran structured returns on parked capital. He named one person at the end: Ilse Vey at Meridian. Did not elaborate.",
+   "new": "Odom cracked open the part of the ledger most pilots never saw. Talked about putting credits to work in places that paid back over time. There were stations in the Expanse that ran structured returns on parked capital.",
    "disposition": "draft",
    "owner": "",
    "flags": [
