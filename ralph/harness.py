@@ -2311,6 +2311,13 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+# How long `main()` waits on its way out for a heartbeat beat already in flight
+# to land. A beat is one small `atomic_write`; under a loaded full-suite run its
+# fsync took up to 0.21s (2026-10-12). Bounded so a wedged disk cannot hold the
+# exit, and the lock, forever.
+HEARTBEAT_STOP_TIMEOUT_SECONDS: float = 10.0
+
+
 def main() -> int:
     args = parse_args()
 
@@ -2337,9 +2344,9 @@ def main() -> int:
         return HARNESS_RC_LOCK_CONFLICT
 
     # Heartbeat (Task 5): started only once pre-flight has passed AND the lock
-    # is held, and stopped on every exit path below. A stale or absent
-    # heartbeat then always means "something is wrong" -- never "the harness
-    # hasn't decided whether to run yet."
+    # is held, and stopped and waited for on every exit path below. A stale or
+    # absent heartbeat then always means "something is wrong" -- never "the
+    # harness hasn't decided whether to run yet."
     #
     # AFTER the lock, not before (M3): `heartbeat._loop` beats immediately,
     # before its first `stop.wait()`, so starting it first meant an instance
@@ -2349,7 +2356,7 @@ def main() -> int:
     # read "no live run" while a healthy harness was working, so the
     # supervisor would double-launch, the new instance would lose the lock,
     # and each such rc 2 burns a strike off the 3-failure budget.
-    heartbeat_stop = heartbeat.start_heartbeat_thread(lambda: _current_context)
+    heartbeat_thread = heartbeat.start_heartbeat_thread(lambda: _current_context)
 
     # Declared before `try` (not at first use inside it) so `finally` can
     # always reference them, no matter how early an exception strikes --
@@ -2658,7 +2665,13 @@ def main() -> int:
             _push_after_sprint("harness-exit", Outcome.OK, push_enabled)
         except Exception as e:
             log(f"harness-exit: push failed: {e}")
-        heartbeat_stop.set()
+        # Waits for a beat already in flight, so none lands after the lock is
+        # released (a beat from an instance that no longer holds it).
+        if not heartbeat_thread.stop(timeout=HEARTBEAT_STOP_TIMEOUT_SECONDS):
+            log(
+                "harness-exit: heartbeat thread still writing after "
+                f"{HEARTBEAT_STOP_TIMEOUT_SECONDS:.0f}s; releasing the lock anyway"
+            )
         _release_lock()
 
 
