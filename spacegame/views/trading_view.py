@@ -943,11 +943,14 @@ class TradingView(BaseView):
         except ValueError:
             quantity = 1
 
-        # Check player has enough in main hold
+        # Check player has enough in main hold; Odom's consigned ore stays in it
+        from spacegame.models.iron_consignment import HIDE_REFUSED, hidable
+
         main_qty = self.player.ship.get_cargo_quantity(commodity_id)
-        quantity = min(quantity, main_qty)
+        free_qty = hidable(self.mission_manager, self.player, commodity_id)
+        quantity = min(quantity, free_qty)
         if quantity <= 0:
-            self._show_message("No cargo to hide")
+            self._show_message(HIDE_REFUSED if main_qty > 0 else "No cargo to hide")
             return
 
         success, msg = self.player.hidden_compartment.add_to_hidden(commodity_id, quantity)
@@ -1344,16 +1347,20 @@ class TradingView(BaseView):
         if success:
             self.market.update_day(self.player.game_day)
             self.market.regenerate_stock()
-            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does
+            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does, and a sale on
+            # record is filed here (polish design 2.2 rule 6)
             if self.mission_manager is not None:
-                from spacegame.models.iron_consignment import on_clock
+                from spacegame.models.iron_consignment import on_clock, refresh_state
 
-                on_clock(
+                notice = on_clock(
                     self.mission_manager,
                     self.player,
                     self.player.dialogue_flags,
                     self.player.game_day,
                 )
+                if notice.lines:
+                    self._show_message(" ".join(notice.lines))
+                refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:

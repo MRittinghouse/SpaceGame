@@ -404,7 +404,16 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         (("iron_delivery", "available"),),
     ),
     _TalkStep(
-        "wren_awaited", "forgeworks", ("talked_to_cargo_broker",), (("iron_delivery", "active"),)
+        "wren_awaited",
+        "forgeworks",
+        ("talked_to_cargo_broker", "iron_job_full"),
+        (("iron_delivery", "active"),),
+    ),
+    _TalkStep(
+        "odom_short_load",
+        "nexus_prime",
+        ("larsen_permit_complete", "talked_to_cargo_broker", "iron_job_short_lost"),
+        (("iron_delivery", "active"),),
     ),
     _TalkStep(
         "odom_gone",

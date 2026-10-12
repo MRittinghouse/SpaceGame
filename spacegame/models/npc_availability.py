@@ -9,10 +9,11 @@ played stays listed while an available or active mission waits on a flag one of 
 trees can set, or an active mission's unmet talk objective names it. A hide flag always
 wins, so the keep never brings back someone the story sent away.
 
-Until the writing session adds the return scenes, a kept NPC opens the tree its state
-machine picks, which is its first scene. The Godot port lists one clause more: the twelve
-Act II v1 NPCs are never listed there (deviation D-21). The station hub's Talk list, the
-cantina's list and its quest marker, and the ``dialogue/npcs_here`` golden read this.
+A kept NPC opens the tree its state machine picks; each kept NPC's first state is its return
+scene (polish design 6), so a second visit never replays the first. The iron job marks only
+the NPCs who can close it (polish design 6.1). The Godot port lists one clause more: the
+twelve Act II v1 NPCs are never listed there (deviation D-21). The station hub's Talk list,
+the cantina's list and its quest marker, and the ``dialogue/npcs_here`` golden read this.
 """
 
 from __future__ import annotations
@@ -21,6 +22,8 @@ from collections.abc import Collection, Iterable, Mapping
 from typing import TYPE_CHECKING, Optional
 
 from spacegame.models.flag_producers import tree_flags
+from spacegame.models.iron_consignment import MISSION as IRON_MISSION
+from spacegame.models.iron_consignment import closers as iron_closers
 from spacegame.models.mission import MissionStatus, ObjectiveType
 
 if TYPE_CHECKING:
@@ -68,7 +71,8 @@ def needed_by(
 
     The first mission in content order that is available or active with an unset has_flag
     objective one of the NPC's trees can set, or active with an unmet talk objective that
-    names the NPC. It drives the keep rule and the cantina's quest marker.
+    names the NPC; the iron job instead names the NPCs who can close it in its stored state
+    (``iron_consignment.closers``). It drives the keep rule and the cantina's quest marker.
 
     Args:
         npc_id: The NPC.
@@ -82,6 +86,12 @@ def needed_by(
     if manager is None:
         return ""
     for mission in manager.open_missions():
+        # Polish design 6.1: the iron job is marked only on the NPCs who can close it in its
+        # stored state, not on everyone whose tree could set its hand-over flag
+        if mission.id == IRON_MISSION:
+            if npc_id in iron_closers(flags):
+                return mission.id
+            continue
         active = manager.get_status(mission.id) == MissionStatus.ACTIVE
         progress = manager.get_objective_progress(mission.id)
         for index, objective in enumerate(mission.objectives):

@@ -75,13 +75,13 @@ def test_a_job_left_open_moves_the_campaign_on_and_still_pays() -> None:
     )
     ship = Ship(ship_type=dl.ship_types["shuttle"], current_fuel=40)
     player = Player("TestPilot", 5000, "nexus_prime", ship)
-    assert on_clock(manager, player.dialogue_flags, 20)
+    player.ship.add_cargo("iron_ore", 10, 0)
+    assert on_clock(manager, player, player.dialogue_flags, 20)
     player.dialogue_flags["talked_to_elena_cantina"] = True
     manager.update_availability(player.dialogue_flags, game_day=20)
     assert manager.get_status("footing_the_bill") == MissionStatus.ACTIVE
     assert manager.get_status("iron_delivery") == MissionStatus.ACTIVE
     player.game_day = 25
-    player.ship.add_cargo("iron_ore", 10, 0)
     manager.apply_rewards("iron_delivery", player)
     assert player.credits == 5000 + 300
 

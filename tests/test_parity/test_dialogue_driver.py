@@ -341,6 +341,7 @@ def test_the_talk_list_case_covers_every_clause() -> None:
     assert "reva_sato" not in steps["reva_waits"]
     assert steps["reva_reached"]["reva_sato"] == "cargo_lost"
     assert steps["wren_awaited"]["forgeworks_clerk"] == "iron_delivery"
+    assert steps["odom_short_load"]["odom_broker"] == "iron_delivery"
     assert "odom_broker" not in steps["odom_gone"]
     assert steps["elena_first_open"]["elena_reeves"] == ""
     assert "elena_reeves" not in steps["elena_lesson_landed"]

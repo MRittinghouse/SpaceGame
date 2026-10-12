@@ -139,6 +139,21 @@ def test_a_dialogue_exit_closes_the_iron_job_through_the_model() -> None:
     assert "iron_delivery_failed" not in literals
 
 
+def test_every_dialogue_opening_refreshes_the_iron_state() -> None:
+    """Polish design 2.2 rule 3: the state is written as any dialogue opens."""
+    assert _any_calls(_function("start_dialogue"), "refresh_state")
+
+
+def test_the_dialogue_exit_refreshes_the_iron_state_after_the_close() -> None:
+    route = _function("_route_from_dialogue")
+    assert _any_calls(route, "close_on_exit")
+    assert _any_calls(route, "refresh_state")
+
+
+def test_a_defeat_runs_the_iron_defeat_sensor() -> None:
+    assert _any_calls(_function("_apply_combat_result"), "note_defeat")
+
+
 def test_the_trading_view_gets_the_mission_manager() -> None:
     views = _function("_create_gameplay_views")
     built = [

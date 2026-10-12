@@ -88,6 +88,7 @@ if TYPE_CHECKING:
     from spacegame.models.event import MarketEvent
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
+    from spacegame.models.iron_consignment import IronNotice
     from spacegame.models.lens import Lens
     from spacegame.models.mission import MissionManager
     from spacegame.views.achievements_view import AchievementsView
@@ -1285,19 +1286,18 @@ class Game:
                 self._mission_notifications.append(arrival_message)
                 self.galaxy_map_view.arrival_message = None
 
-                # Bug bash BB-4: a landing runs the iron job's clock, before the
-                # auto-triggers read the flag it sets (Elena's)
+                # Bug bash BB-4: a landing runs the iron job's clock, before the auto-triggers
+                # read the flag it sets (Elena's); a sale on record is filed here (O7b)
                 if self.mission_manager and self._player is not None:
-                    from spacegame.constants.flags import iron_delivery_moved_on
                     from spacegame.models.iron_consignment import on_clock
 
-                    if on_clock(
+                    notice = on_clock(
                         self.mission_manager,
                         self.player,
                         self.player.dialogue_flags,
                         self.player.game_day,
-                    ):
-                        self.dialogue_manager.set_flag(iron_delivery_moved_on())
+                    )
+                    self._after_iron_clock(notice)
 
                 # Travel log: first visit entry
                 if self.travel_log and self.journal and self._player is not None:
@@ -1725,18 +1725,24 @@ class Game:
                         for mission_id in accepted:
                             self._load_auto_accept_cargo(mission_id)
 
-                    # Bug bash BB-4: the betrayal fails an open iron job and lets the
-                    # campaign move on (iron_consignment.close_on_exit)
+                    # Polish design 2.2 rule 6: the close hook fails an open job after the
+                    # betrayal or a no-fault close and takes back the consigned ore; a declined
+                    # offer moves the campaign on. Then the state is written again.
                     if self.mission_manager:
-                        from spacegame.constants.flags import iron_delivery_moved_on
-                        from spacegame.models.iron_consignment import close_on_exit
+                        from spacegame.models.iron_consignment import close_on_exit, refresh_state
 
-                        if close_on_exit(
+                        notice = close_on_exit(
                             self.mission_manager, self.player, self.player.dialogue_flags
-                        ):
-                            self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
-                            logger.info("Iron delivery mission failed: Odom's ore was sold")
-                            self.dialogue_manager.set_flag(iron_delivery_moved_on())
+                        )
+                        self._mission_notifications.extend(notice.lines)
+                        if notice.lines:
+                            logger.info(f"Iron delivery closed: {notice.lines[0]}")
+                        self._mirror_dialogue_flags(notice.flags)
+                        self._mirror_dialogue_flags(
+                            refresh_state(
+                                self.mission_manager, self.player, self.player.dialogue_flags
+                            )
+                        )
 
                 target = next_state
 
@@ -3636,6 +3642,13 @@ class Game:
             getattr(npc, "dialogue_music", "dialogue_neutral") or "dialogue_neutral"
         )
 
+        # Polish design 2.2 rule 3: the engine names the iron job's state as any dialogue
+        # opens, after the state machine has picked the tree (no NPC state reads it)
+        if self.mission_manager and self._player is not None:
+            from spacegame.models.iron_consignment import refresh_state
+
+            refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
+
         # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
@@ -3667,6 +3680,22 @@ class Game:
 
         self._start_transition(TransitionType.FADE, 0.3, _do)
         logger.info(f"Starting dialogue with {npc.name}")
+
+    def _mirror_dialogue_flags(self, names: tuple[str, ...]) -> None:
+        """Copy flags the iron job wrote into the player's store over to the dialogue's."""
+        for name in names:
+            self.dialogue_manager.set_flag(name, self.player.dialogue_flags.get(name, False))
+
+    def _after_iron_clock(self, notice: "IronNotice") -> None:
+        """Post a landing clock's notices, then mirror its flags and the state it leaves."""
+        from spacegame.models.iron_consignment import refresh_state
+
+        self._mission_notifications.extend(notice.lines)
+        self._mirror_dialogue_flags(notice.flags)
+        if self.mission_manager:
+            self._mirror_dialogue_flags(
+                refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
+            )
 
     def _start_intro_narration(self, return_state: GameState = GameState.GALAXY_MAP) -> None:
         """Start the intro backstory narration sequence.
@@ -4331,7 +4360,19 @@ class Game:
 
         elif result == CombatResult.DEFEAT:
             safe_system = self.player.current_system_id
+            from spacegame.models.iron_consignment import ORE, note_defeat
+            from spacegame.models.mission import held_units
+
+            ore_before = held_units(self.player, ORE)
             self.player.apply_combat_defeat(safe_system)
+            # BB-1: a defeat whose losses draw Odom's consigned ore is on the lane report
+            if self.mission_manager:
+                note_defeat(
+                    self.mission_manager,
+                    self.player.dialogue_flags,
+                    ore_before,
+                    held_units(self.player, ORE),
+                )
             logger.info("Combat defeat: cargo lost, retreated")
 
         elif result == CombatResult.FLED:

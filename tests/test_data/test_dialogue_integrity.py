@@ -942,6 +942,11 @@ KNOWN_CONSUMER_ONLY_ORPHANS: set[str] = {
     # === DELIBERATE HOLD-BACK (BB-17): read by two_calls and the_silent_shaft, set by
     # nothing until SP10 re-stages them. ===
     "held_back_until_sp10",
+    # === W3a (plan W3a-S): read by spacegame/models/iron_consignment.py, produced by the
+    # iron content of Tasks 3 and 4. Task 3 removes the first two, Task 4 the third. ===
+    "iron_delivery_resolved",
+    "iron_delivery_closed",
+    "iron_ore_signed_short",
 }
 
 # Net producer-only set, regenerated 2026-04-21 from current data state.

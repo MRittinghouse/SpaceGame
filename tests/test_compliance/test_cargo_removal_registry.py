@@ -45,6 +45,11 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "",
         "a confiscation is a loss the captain does not choose",
     ),
+    ("spacegame/models/iron_consignment.py", "take_back"): (
+        "",
+        "the iron job's close and filing take back Odom's consigned ore, at most ten units, "
+        "from the main hold (polish design 2.2 rule 6)",
+    ),
     ("spacegame/models/mission.py", "MissionManager.apply_rewards"): (
         "_delivery_share",
         "a hand-over takes its own mission's units and the captain's; a remove_cargo reward "
@@ -73,9 +78,10 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
         "a listing draws only free units",
     ),
     ("spacegame/views/trading_view.py", "TradingView._execute_hide_cargo"): (
-        "",
+        "hidable",
         "hiding moves units between the ship's two holds; held_units reads both, so the "
-        "reserved count, the seal and the sale sensor still see a hidden unit (plan B1 ruling)",
+        "reserved count, the seal and the sale sensor still see a hidden unit (plan B1 ruling), "
+        "and Odom's consigned ore stays in the main hold (iron_consignment.hidable)",
     ),
     ("spacegame/views/trading_view.py", "TradingView._execute_retrieve_cargo"): (
         "",
