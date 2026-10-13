@@ -24,7 +24,9 @@
     "npc_id": "sienna_vek",
     "profiles": {
       "expert": {
-        "flags": {},
+        "flags": {
+          "oren_full_account": true
+        },
         "social": {
           "disposition": {},
           "skills": {
@@ -80,7 +82,7 @@
     },
     "tree_id": "sienna_vek_warning"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -603,7 +605,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -630,7 +634,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -658,7 +664,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -692,6 +700,7 @@
           "sienna_vek": 53
         },
         "flags": [
+          "oren_full_account",
           "technical_named_convergence"
         ],
         "loyalty": {
@@ -721,7 +730,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -747,7 +758,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -774,7 +787,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -801,7 +816,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -827,7 +844,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -846,7 +865,8 @@
       "result": {
         "available": [
           0,
-          1
+          1,
+          2
         ],
         "check": [
           true,
@@ -859,7 +879,9 @@
         "disposition": {
           "sienna_vek": 53
         },
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -878,7 +900,8 @@
       "result": {
         "available": [
           0,
-          1
+          1,
+          2
         ],
         "check": null,
         "next_node": "leadership",
@@ -886,7 +909,39 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "scale",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "share_data",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -918,7 +973,9 @@
         "disposition": {
           "sienna_vek": 53
         },
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -945,7 +1002,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -971,7 +1030,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -998,7 +1059,8 @@
       "state": {
         "disposition": {},
         "flags": [
-          "facility_intel_gathered"
+          "facility_intel_gathered",
+          "oren_full_account"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1025,7 +1087,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "oren_full_account"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -1052,7 +1116,8 @@
       "state": {
         "disposition": {},
         "flags": [
-          "facility_intel_gathered"
+          "facility_intel_gathered",
+          "oren_full_account"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1080,7 +1145,8 @@
       "state": {
         "disposition": {},
         "flags": [
-          "met_sienna_vek"
+          "met_sienna_vek",
+          "oren_full_account"
         ],
         "loyalty": {
           "dr_priya_osei": 60,

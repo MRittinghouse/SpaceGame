@@ -274,6 +274,23 @@
       },
       {
         "flags": {
+          "breakstone_permit_earned": true,
+          "met_tomas_drifter": true,
+          "talked_to_tomas_drifter": true
+        },
+        "label": "tomas_thinking",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "the_drifters_deal": "active",
+            "union_territory": "completed"
+          }
+        },
+        "recruited": [],
+        "system_id": "havens_rest"
+      },
+      {
+        "flags": {
           "favor_ground_complete": true,
           "met_oren_tak": true
         },
@@ -315,7 +332,7 @@
         "flags": {
           "talked_to_cargo_broker": true
         },
-        "label": "wren_offered",
+        "label": "intake_offered",
         "mission_state": {
           "progress": {},
           "status": {
@@ -327,9 +344,10 @@
       },
       {
         "flags": {
+          "iron_job_full": true,
           "talked_to_cargo_broker": true
         },
-        "label": "wren_awaited",
+        "label": "intake_awaited",
         "mission_state": {
           "progress": {},
           "status": {
@@ -338,6 +356,22 @@
         },
         "recruited": [],
         "system_id": "forgeworks"
+      },
+      {
+        "flags": {
+          "iron_job_short_lost": true,
+          "larsen_permit_complete": true,
+          "talked_to_cargo_broker": true
+        },
+        "label": "odom_short_load",
+        "mission_state": {
+          "progress": {},
+          "status": {
+            "iron_delivery": "active"
+          }
+        },
+        "recruited": [],
+        "system_id": "nexus_prime"
       },
       {
         "flags": {
@@ -372,7 +406,7 @@
       }
     ]
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -866,6 +900,51 @@
     },
     {
       "args": [
+        "tomas_thinking"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "tomas_drifter",
+          "the_drifters_deal"
+        ],
+        [
+          "haven_refugee",
+          ""
+        ],
+        [
+          "dimi_torr",
+          ""
+        ],
+        [
+          "issa_kadeer",
+          ""
+        ],
+        [
+          "thuy_kallio",
+          ""
+        ],
+        [
+          "magistrate_odusanya",
+          ""
+        ],
+        [
+          "emiko_owusu",
+          ""
+        ],
+        [
+          "sorcha_deng",
+          ""
+        ],
+        [
+          "imre_solano",
+          ""
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
         "oren_kept"
       ],
       "call": "npcs_here",
@@ -908,7 +987,7 @@
     },
     {
       "args": [
-        "wren_offered"
+        "intake_offered"
       ],
       "call": "npcs_here",
       "result": [
@@ -929,7 +1008,7 @@
     },
     {
       "args": [
-        "wren_awaited"
+        "intake_awaited"
       ],
       "call": "npcs_here",
       "result": [
@@ -944,6 +1023,31 @@
         [
           "forgeworks_clerk",
           "iron_delivery"
+        ]
+      ],
+      "state": {}
+    },
+    {
+      "args": [
+        "odom_short_load"
+      ],
+      "call": "npcs_here",
+      "result": [
+        [
+          "odom_broker",
+          "iron_delivery"
+        ],
+        [
+          "neve_osei",
+          ""
+        ],
+        [
+          "arna",
+          ""
+        ],
+        [
+          "noor_castellano",
+          ""
         ]
       ],
       "state": {}

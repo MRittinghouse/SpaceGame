@@ -25,6 +25,12 @@
     "profiles": {
       "expert": {
         "flags": {
+          "iron_job_full": true,
+          "iron_job_gone_lost": true,
+          "iron_job_made_good": true,
+          "iron_job_moved": true,
+          "iron_job_replaced": true,
+          "iron_job_short_lost": true,
           "iron_ore_delivered": true
         },
         "social": {
@@ -82,7 +88,7 @@
     },
     "tree_id": "forgeworks_intake"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -93,17 +99,24 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1,
-          3
+          6,
+          8,
+          9
         ],
-        "check": null,
-        "next_node": "accept",
-        "response": 0
+        "check": [
+          false,
+          "Technical check failed."
+        ],
+        "next_node": "crucible_noted",
+        "response": 6
       },
       "state": {
-        "disposition": {},
-        "flags": [],
+        "disposition": {
+          "forgeworks_clerk": 48
+        },
+        "flags": [
+          "intake_crucible_tried"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -121,21 +134,16 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1,
-          3
+          6,
+          8,
+          9
         ],
-        "check": [
-          false,
-          "Technical check failed."
-        ],
-        "next_node": "accept",
-        "response": 1
+        "check": null,
+        "next_node": "shop_talk",
+        "response": 8
       },
       "state": {
-        "disposition": {
-          "forgeworks_clerk": 48
-        },
+        "disposition": {},
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -154,13 +162,13 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1,
-          3
+          6,
+          8,
+          9
         ],
         "check": null,
         "next_node": null,
-        "response": 3
+        "response": 9
       },
       "state": {
         "disposition": {},
@@ -216,7 +224,65 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "accept_made_good",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "accept_floor_stock",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_ore_handed_over"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -253,6 +319,226 @@
     },
     {
       "args": [
+        "novice",
+        "weigh_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "receipt_short",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_ore_signed_short"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "weigh_short",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "receipt_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "no_sign",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "nothing_to_weigh",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "crucible",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "forgeworks_clerk": 53
+        },
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "crucible_noted",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "shop_talk",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "forgeworks_clerk": 53
+        },
+        "flags": [
+          "intake_shop_talk_heard"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
         "expert",
         "greet",
         0
@@ -260,16 +546,30 @@
       "call": "select",
       "result": {
         "available": [
+          0,
+          1,
           2,
-          3
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
         ],
         "check": null,
-        "next_node": "post_delivery",
-        "response": 2
+        "next_node": "accept",
+        "response": 0
       },
       "state": {
         "disposition": {},
         "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "iron_ore_delivered"
         ],
         "loyalty": {
@@ -289,16 +589,380 @@
       "call": "select",
       "result": {
         "available": [
+          0,
+          1,
           2,
-          3
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
         ],
         "check": null,
-        "next_node": null,
+        "next_node": "accept_made_good",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "accept_floor_stock",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "no_sign",
         "response": 3
       },
       "state": {
         "disposition": {},
         "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        4
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "weigh_short",
+        "response": 4
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        5
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "nothing_to_weigh",
+        "response": 5
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        6
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": [
+          true,
+          "Technical check passed!"
+        ],
+        "next_node": "crucible",
+        "response": 6
+      },
+      "state": {
+        "disposition": {
+          "forgeworks_clerk": 53
+        },
+        "flags": [
+          "flagged_forge_crucible",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        7
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "post_delivery",
+        "response": 7
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        8
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": "shop_talk",
+        "response": 8
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        9
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 9
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "iron_ore_delivered"
         ],
         "loyalty": {
@@ -327,6 +991,12 @@
       "state": {
         "disposition": {},
         "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "iron_ore_delivered"
         ],
         "loyalty": {
@@ -355,7 +1025,84 @@
       "state": {
         "disposition": {},
         "flags": [
-          "iron_ore_delivered"
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered",
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "accept_made_good",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered",
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "accept_floor_stock",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered",
+          "iron_ore_handed_over"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -383,6 +1130,293 @@
       "state": {
         "disposition": {},
         "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "weigh_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "receipt_short",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered",
+          "iron_ore_signed_short"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "weigh_short",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "receipt_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered",
+          "iron_ore_handed_over"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "no_sign",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "nothing_to_weigh",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "crucible",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "forgeworks_clerk": 53
+        },
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "crucible_noted",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "shop_talk",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "greet",
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "forgeworks_clerk": 53
+        },
+        "flags": [
+          "intake_shop_talk_heard",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "iron_ore_delivered"
         ],
         "loyalty": {

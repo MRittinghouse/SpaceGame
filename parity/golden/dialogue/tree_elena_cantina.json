@@ -25,7 +25,10 @@
     "profiles": {
       "expert": {
         "flags": {
-          "has_special_dialogue": true
+          "broker_ore_lost": true,
+          "has_special_dialogue": true,
+          "iron_delivery_failed": true,
+          "iron_ore_delivered": true
         },
         "social": {
           "disposition": {},
@@ -82,7 +85,7 @@
     },
     "tree_id": "elena_cantina"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -250,7 +253,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "elena_walked_away"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -352,12 +357,12 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1
+          3,
+          4
         ],
         "check": null,
         "next_node": "about_elena",
-        "response": 0
+        "response": 3
       },
       "state": {
         "disposition": {},
@@ -379,16 +384,100 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1
+          3,
+          4
         ],
         "check": null,
         "next_node": "farewell",
-        "response": 1
+        "response": 4
       },
       "state": {
         "disposition": {},
         "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "iron_carriage",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "elena_heard_carriage"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "iron_lane",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "elena_heard_lane"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "iron_violation",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "elena_heard_violation"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -562,7 +651,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -599,7 +691,10 @@
           "elena_reeves": 53
         },
         "flags": [
+          "broker_ore_lost",
           "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered",
           "read_elena_navigator"
         ],
         "loyalty": {
@@ -632,7 +727,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -664,7 +762,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -698,7 +799,10 @@
           "elena_reeves": 55
         },
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -727,7 +831,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -756,7 +863,11 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "elena_walked_away",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -784,7 +895,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -813,8 +927,11 @@
       "state": {
         "disposition": {},
         "flags": [
+          "broker_ore_lost",
           "elena_gave_trading_tips",
-          "has_special_dialogue"
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -843,8 +960,11 @@
       "state": {
         "disposition": {},
         "flags": [
+          "broker_ore_lost",
           "elena_gave_trading_tips",
-          "has_special_dialogue"
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -864,16 +984,127 @@
       "result": {
         "available": [
           0,
-          1
+          1,
+          2,
+          3,
+          4
+        ],
+        "check": null,
+        "next_node": "iron_carriage",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "trading_tips",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "check": null,
+        "next_node": "iron_lane",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "trading_tips",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "check": null,
+        "next_node": "iron_violation",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "trading_tips",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3,
+          4
         ],
         "check": null,
         "next_node": "about_elena",
-        "response": 0
+        "response": 3
       },
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -887,22 +1118,124 @@
       "args": [
         "expert",
         "trading_tips",
-        1
+        4
       ],
       "call": "select",
       "result": {
         "available": [
           0,
-          1
+          1,
+          2,
+          3,
+          4
         ],
         "check": null,
         "next_node": "farewell",
-        "response": 1
+        "response": 4
       },
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "iron_carriage",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "elena_heard_carriage",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "iron_lane",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "elena_heard_lane",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "iron_violation",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "trading_tips",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "broker_ore_lost",
+          "elena_heard_violation",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -932,7 +1265,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -967,7 +1303,10 @@
           "elena_reeves": 53
         },
         "flags": [
+          "broker_ore_lost",
           "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered",
           "read_elena_grounded"
         ],
         "loyalty": {
@@ -998,7 +1337,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1026,7 +1368,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1054,7 +1399,10 @@
       "state": {
         "disposition": {},
         "flags": [
-          "has_special_dialogue"
+          "broker_ore_lost",
+          "has_special_dialogue",
+          "iron_delivery_failed",
+          "iron_ore_delivered"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
