@@ -80,7 +80,7 @@
     },
     "tree_id": "tomas_fulcrum_dialogue"
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -179,16 +179,16 @@
         ],
         "check": [
           false,
-          "Unknown skill: com"
+          "Deception check failed."
         ],
         "next_node": "con_fail",
         "response": 0
       },
       "state": {
-        "disposition": {},
-        "flags": [
-          "tomas_confrontation_resolved"
-        ],
+        "disposition": {
+          "ren_castillo": 48
+        },
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -215,6 +215,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
           "tomas_confrontation_resolved"
         ],
         "loyalty": {
@@ -250,34 +251,6 @@
           "elena_reeves": 60,
           "marcus_jin": 60,
           "tomas_drifter": 65
-        }
-      }
-    },
-    {
-      "args": [
-        "novice",
-        "con_result",
-        0
-      ],
-      "call": "select",
-      "result": {
-        "available": [
-          0
-        ],
-        "check": null,
-        "next_node": null,
-        "response": 0
-      },
-      "state": {
-        "disposition": {},
-        "flags": [
-          "tomas_confrontation_resolved"
-        ],
-        "loyalty": {
-          "dr_priya_osei": 60,
-          "elena_reeves": 60,
-          "marcus_jin": 60,
-          "tomas_drifter": 60
         }
       }
     },
@@ -355,6 +328,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
           "tomas_confrontation_resolved"
         ],
         "loyalty": {
@@ -489,17 +463,17 @@
           0
         ],
         "check": [
-          false,
-          "Unknown skill: com"
+          true,
+          "Deception check passed!"
         ],
-        "next_node": "con_fail",
+        "next_node": "con_success",
         "response": 0
       },
       "state": {
-        "disposition": {},
-        "flags": [
-          "tomas_confrontation_resolved"
-        ],
+        "disposition": {
+          "ren_castillo": 53
+        },
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -526,6 +500,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
           "tomas_confrontation_resolved"
         ],
         "loyalty": {
@@ -561,34 +536,6 @@
           "elena_reeves": 60,
           "marcus_jin": 60,
           "tomas_drifter": 65
-        }
-      }
-    },
-    {
-      "args": [
-        "expert",
-        "con_result",
-        0
-      ],
-      "call": "select",
-      "result": {
-        "available": [
-          0
-        ],
-        "check": null,
-        "next_node": null,
-        "response": 0
-      },
-      "state": {
-        "disposition": {},
-        "flags": [
-          "tomas_confrontation_resolved"
-        ],
-        "loyalty": {
-          "dr_priya_osei": 60,
-          "elena_reeves": 60,
-          "marcus_jin": 60,
-          "tomas_drifter": 60
         }
       }
     },
@@ -666,6 +613,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
           "tomas_confrontation_resolved"
         ],
         "loyalty": {

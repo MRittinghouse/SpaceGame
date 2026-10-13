@@ -50,7 +50,7 @@ def test_every_mission_manager_knows_the_content_producers() -> None:
 
 
 def test_a_dialogue_starts_with_the_day() -> None:
-    starts = _calls(_function("start_dialogue"), "start_dialogue")
+    starts = _calls(_function("_begin_dialogue"), "start_dialogue")
     assert starts
     for call in starts:
         assert any(k.arg == "game_day" for k in call.keywords), ast.dump(call)
@@ -140,8 +140,11 @@ def test_a_dialogue_exit_closes_the_iron_job_through_the_model() -> None:
 
 
 def test_every_dialogue_opening_refreshes_the_iron_state() -> None:
-    """Polish design 2.2 rule 3: the state is written as any dialogue opens."""
-    assert _any_calls(_function("start_dialogue"), "refresh_state")
+    """Polish design 2.2 rule 3: the state is written as any dialogue opens.
+
+    start_dialogue and a crew scene both open their picked tree through _begin_dialogue.
+    """
+    assert _any_calls(_function("_begin_dialogue"), "refresh_state")
 
 
 def test_the_dialogue_exit_refreshes_the_iron_state_after_the_close() -> None:
@@ -229,7 +232,7 @@ def _lines(node: ast.AST, name: str) -> list[int]:
 
 def test_a_dialogue_opening_refreshes_the_store_before_the_dialogue_loads_it() -> None:
     """The refresh writes the player's store; load_flags copies that store into the dialogue."""
-    start = _function("start_dialogue")
+    start = _function("_begin_dialogue")
     loads, refreshes = _lines(start, "load_flags"), _lines(start, "refresh_state")
     assert loads and refreshes
     assert max(refreshes) < min(loads)

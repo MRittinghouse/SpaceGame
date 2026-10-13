@@ -1,7 +1,8 @@
 """Tests for crew personal quest data and gating."""
 
 from spacegame.data_loader import DataLoader
-from spacegame.models.crew import CrewRoster, LoyaltyTier
+from spacegame.models.crew_scene import SceneContext, refusal
+from spacegame.models.mission import MissionManager, MissionStatus
 
 
 def _load_all() -> DataLoader:
@@ -31,25 +32,22 @@ class TestCrewQuestDataLoading:
                 f"Expected 3 quests for {prefix}, got {len(quests)}: {[m.id for m in quests]}"
             )
 
-    def test_stage1_quests_require_loyalty_50_flag(self) -> None:
-        """Stage 1 quests should require the loyalty 50 threshold flag."""
+    def test_stage1_quests_wait_for_the_ask(self) -> None:
+        """A stage 1 quest's gate is its ask (polish design 3.1); live loyalty gates the opener."""
         loader = _load_all()
-        stage1_ids = [
+        for mission_id in (
             "elena_old_charts",
             "marcus_old_debts",
             "priya_retracted_paper",
             "tomas_name_from_past",
-        ]
-        for mission_id in stage1_ids:
+        ):
             mission = next(m for m in loader.missions if m.id == mission_id)
-            loyalty_flags = [f for f in mission.required_flags if "loyalty" in f]
-            assert len(loyalty_flags) >= 1, f"{mission_id} should require a loyalty flag"
-            assert any("_50" in f for f in loyalty_flags), (
-                f"{mission_id} should require loyalty 50 flag"
-            )
+            assert mission.required_flags == [f"{mission_id}_agreed"], mission_id
+            assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 50, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 50, mission_id
 
     def test_stage2_quests_require_stage1_complete(self) -> None:
-        """Stage 2 quests should require the stage 1 completion flag."""
+        """Stage 2 quests require the stage 1 completion flag, opened at loyalty 70."""
         loader = _load_all()
         stage2_pairs = [
             ("elena_wreck_meridian", "elena_quest_stage1_complete"),
@@ -62,23 +60,44 @@ class TestCrewQuestDataLoading:
             assert required_flag in mission.required_flags, (
                 f"{mission_id} should require {required_flag}"
             )
+            assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 70, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 70, mission_id
 
-    def test_stage3_quests_require_stage2_complete_and_loyalty_85(self) -> None:
-        """Stage 3 quests should require stage 2 complete and loyalty 85 flag."""
+    def test_stage3_quests_require_stage2_and_the_ask(self) -> None:
+        """Stage 3 waits for stage 2's completion and its own ask, opened at loyalty 85."""
         loader = _load_all()
-        stage3_pairs = [
-            ("elena_charting_stars", "elena_quest_stage2_complete", "_85"),
-            ("marcus_steel_holds", "marcus_quest_stage2_complete", "_85"),
-            ("priya_the_theorem", "priya_quest_stage2_complete", "_85"),
-            ("tomas_new_ledger", "tomas_quest_stage2_complete", "_85"),
-        ]
-        for mission_id, stage2_flag, loyalty_suffix in stage3_pairs:
+        for mission_id, stage2_flag in (
+            ("elena_charting_stars", "elena_quest_stage2_complete"),
+            ("marcus_steel_holds", "marcus_quest_stage2_complete"),
+            ("priya_the_theorem", "priya_quest_stage2_complete"),
+            ("tomas_new_ledger", "tomas_quest_stage2_complete"),
+        ):
             mission = next(m for m in loader.missions if m.id == mission_id)
-            assert stage2_flag in mission.required_flags, (
-                f"{mission_id} should require {stage2_flag}"
-            )
-            loyalty_flags = [f for f in mission.required_flags if loyalty_suffix in f]
-            assert len(loyalty_flags) >= 1, f"{mission_id} should require loyalty 85 flag"
+            assert mission.required_flags == [stage2_flag, f"{mission_id}_agreed"], mission_id
+            assert loader.crew_scenes[f"{mission_id}_opener"].min_loyalty == 85, mission_id
+            assert loader.crew_scenes[f"{mission_id}_raise"].min_loyalty == 85, mission_id
+
+    def test_a_declined_quest_can_be_raised_again(self) -> None:
+        """A declined ask becomes the captain's topic; agreeing there accepts the quest."""
+        loader = _load_all()
+        names = {tid: t.name for tid, t in loader.crew_templates.items()}
+        systems = {sid: s.name for sid, s in loader.systems.items()}
+
+        def ctx(flags: dict[str, bool]) -> SceneContext:
+            return SceneContext(names, {"elena_reeves": 50}, 0, {}, flags, "nexus_prime", systems)
+
+        opener = loader.crew_scenes["elena_old_charts_opener"]
+        raised = loader.crew_scenes["elena_old_charts_raise"]
+        assert refusal(opener, ctx({})) == "" and refusal(raised, ctx({})) != ""
+        declined = {"elena_old_charts_declined": True}
+        assert refusal(opener, ctx(declined)) != "" and refusal(raised, ctx(declined)) == ""
+        agree = loader.dialogue_trees["elena_old_charts_dialogue"].nodes["ask_again"].responses[0]
+        assert agree.set_flag == "elena_old_charts_agreed"
+        agreed = {**declined, "elena_old_charts_agreed": True}
+        assert refusal(raised, ctx(agreed)) != ""
+        manager = MissionManager(list(loader.missions))
+        manager.update_availability(agreed)
+        assert manager.get_status("elena_old_charts") == MissionStatus.ACTIVE
 
     def test_quest_completion_sets_stage_flags(self) -> None:
         """Each quest stage should set a completion flag as reward."""
@@ -128,6 +147,14 @@ class TestCrewQuestDialogueLoading:
             "tomas_lead_dialogue",
             "tomas_fulcrum_dialogue",
             "tomas_new_ledger_dialogue",
+            "elena_wreck_meridian_ask_dialogue",
+            "elena_charting_stars_ask_dialogue",
+            "marcus_the_inspector_ask_dialogue",
+            "marcus_steel_holds_ask_dialogue",
+            "priya_peer_review_ask_dialogue",
+            "priya_the_theorem_ask_dialogue",
+            "tomas_fulcrum_job_ask_dialogue",
+            "tomas_new_ledger_ask_dialogue",
         ]
         for dialogue_id in crew_dialogue_ids:
             assert dialogue_id in loader.dialogue_trees, f"Dialogue tree {dialogue_id} not loaded"

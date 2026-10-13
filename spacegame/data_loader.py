@@ -19,6 +19,7 @@ from spacegame.models.combat import (
 )
 from spacegame.models.commodity import Commodity, CommodityCategory, Legality
 from spacegame.models.crew import CrewAbility, CrewTemplate
+from spacegame.models.crew_scene import CrewScene, parse_scenes
 from spacegame.models.dialogue import (
     NPC,
     DialogueNode,
@@ -108,6 +109,7 @@ class DataLoader:
         self.npcs: Dict[str, NPC] = {}
         self.dialogue_trees: Dict[str, DialogueTree] = {}
         self.missions: List[Mission] = []
+        self.crew_scenes: Dict[str, CrewScene] = {}
         self.crew_templates: Dict[str, CrewTemplate] = {}
         self.ambient_lines: List[AmbientLine] = []
         self.enemy_templates: Dict[str, EnemyShipTemplate] = {}
@@ -362,6 +364,25 @@ class DataLoader:
                             f"Dialogue '{tree.id}' node '{node.id}': "
                             f"next_node_id '{resp.next_node_id}' not in nodes"
                         )
+
+        # Crew scene references (polish design 3.1)
+        for scene in self.crew_scenes.values():
+            scene_tree = self.dialogue_trees.get(scene.dialogue_id)
+            if scene_tree is None:
+                warnings.append(
+                    f"Crew scene '{scene.id}': dialogue_id '{scene.dialogue_id}' not in trees"
+                )
+            elif scene.entry_node not in scene_tree.nodes:
+                warnings.append(
+                    f"Crew scene '{scene.id}': entry_node '{scene.entry_node}' not in "
+                    f"'{scene.dialogue_id}'"
+                )
+            if scene.system_id and scene.system_id not in system_ids:
+                warnings.append(f"Crew scene '{scene.id}': system_id '{scene.system_id}' unknown")
+            if scene.with_npc_id and scene.with_npc_id not in npc_ids:
+                warnings.append(
+                    f"Crew scene '{scene.id}': with_npc_id '{scene.with_npc_id}' not in NPCs"
+                )
 
         for w in warnings:
             logger.warning(f"Data validation: {w}")
@@ -1576,6 +1597,7 @@ class DataLoader:
         """
         missions_dir = self.data_dir / "missions"
         self.missions.clear()
+        self.crew_scenes.clear()
 
         for filename in [
             "missions.json",
@@ -1597,6 +1619,7 @@ class DataLoader:
             for mission_data in data.get("missions", []):
                 mission = self._parse_mission(mission_data)
                 self.missions.append(mission)
+                self.crew_scenes.update(parse_scenes([mission_data]))
 
         logger.info(f"Loaded {len(self.missions)} missions")
         return self.missions

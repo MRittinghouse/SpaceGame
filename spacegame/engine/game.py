@@ -68,6 +68,15 @@ from spacegame.engine.startup_timer import StartupTimer
 from spacegame.engine.state_manager import StateManager
 from spacegame.engine.transitions import TransitionManager, TransitionType
 from spacegame.models.captain_tokens import Pronouns, captain_line
+from spacegame.models.crew_scene import (
+    NO_SUCH_SCENE,
+    NOTHING_NOW,
+    CrewTalkRow,
+    SceneContext,
+    place_hooks,
+    refusal,
+    talk_rows,
+)
 from spacegame.models.event import EventGenerator
 from spacegame.models.faction import generate_faction_assignments
 from spacegame.models.market import Market
@@ -83,6 +92,7 @@ if TYPE_CHECKING:
     from spacegame.models.combat import CombatEncounter
     from spacegame.models.combat_engine import CombatEngine
     from spacegame.models.crew import CrewRoster
+    from spacegame.models.dialogue import NPC, DialogueTree
     from spacegame.models.dilemma import Dilemma
     from spacegame.models.encounter import EncounterDefinition, EncounterRef
     from spacegame.models.event import MarketEvent
@@ -447,6 +457,10 @@ class Game:
         self.social_manager = SocialManager()
         self.dialogue_manager.set_social_manager(self.social_manager)
         self._last_dialogue_npc_id: Optional[str] = None
+        # Polish design 3.1: the companions who had a crew scene this landing, and the scene
+        # under way. Cleared when a landing begins; not saved (the port's Visit saves its set).
+        self._crew_spoke: set[str] = set()
+        self._last_crew_scene_id: str = ""
         self.attribute_sheet = AttributeSheet()
 
         # Mission system
@@ -736,6 +750,8 @@ class Game:
         self._sync_crew_leadership_bonuses()
         self._crew_last_trades = 0
         self._dock_rep_stations: set[str] = set()  # Track dock_rep_bonus per visit
+        self._crew_spoke = set()
+        self._last_crew_scene_id = ""
 
         # Initialize ambient dialogue
         if self.data_loader.ambient_lines:
@@ -1309,64 +1325,9 @@ class Game:
                     self._last_visited_count = len(self.player.systems_visited)
 
                 # Trigger ambient crew dialogue on system arrival
-                if self.ambient_dialogue and self.crew_roster and self._player is not None:
-                    system_id = self.player.current_system_id
-                    system = self.data_loader.get_system(system_id)
-                    faction_id = system.faction if system else ""
-                    recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
-                    loyalty_map = {}
-                    for tid in recruited:
-                        state = self.crew_roster.get_member_state(tid)
-                        loyalty_map[tid] = state["loyalty"] if state else 0
-                        template = self.crew_roster.get_template(tid)
-                        if not template:
-                            continue
-                        # Check home system
-                        if template.home_system_id == system_id:
-                            line = self.ambient_dialogue.get_line(
-                                "home_system",
-                                tid,
-                                system_id=system_id,
-                                loyalty=loyalty_map[tid],
-                                player_flags=self.player.dialogue_flags,
-                            )
-                            if line:
-                                self._mission_notifications.append(f'{template.name}: "{line}"')
-                        # Check faction territory
-                        elif template.faction_id and template.faction_id == faction_id:
-                            line = self.ambient_dialogue.get_line(
-                                "faction_territory",
-                                tid,
-                                faction_id=faction_id,
-                                loyalty=loyalty_map[tid],
-                                player_flags=self.player.dialogue_flags,
-                            )
-                            if line:
-                                self._mission_notifications.append(f'{template.name}: "{line}"')
+                self._queue_arrival_banter()
 
-                    # CB-2: combat_after banter — fires within 3 days of last combat
-                    ca_result = self.ambient_dialogue.get_combat_after_line(
-                        recruited_ids=recruited,
-                        loyalty_map=loyalty_map,
-                        current_day=self.player.game_day,
-                    )
-                    if ca_result:
-                        ca_crew_id, ca_text = ca_result
-                        ca_template = self.crew_roster.get_template(ca_crew_id)
-                        ca_name = ca_template.name if ca_template else ca_crew_id
-                        self._mission_notifications.append(f'{ca_name}: "{ca_text}"')
-
-                    # CB-2: flag_triggered banter — fires once per flag per save
-                    ft_result = self.ambient_dialogue.check_flag_lines(
-                        player_flags=self.player.dialogue_flags,
-                        recruited_ids=recruited,
-                        loyalty_map=loyalty_map,
-                    )
-                    if ft_result:
-                        ft_crew_id, ft_text = ft_result
-                        ft_template = self.crew_roster.get_template(ft_crew_id)
-                        ft_name = ft_template.name if ft_template else ft_crew_id
-                        self._mission_notifications.append(f'{ft_name}: "{ft_text}"')
+                self._crew_landing()
 
             # Check for NPC auto-trigger dialogues at current system
             self._check_auto_triggers()
@@ -1520,6 +1481,67 @@ class Game:
                 self._start_transition(TransitionType.FADE, 0.3, _do)
         return False
 
+    def _queue_arrival_banter(self) -> None:
+        """Queue the crew's ambient lines for a system arrival: home, faction and CB-2 banter."""
+        if self.ambient_dialogue and self.crew_roster and self._player is not None:
+            system_id = self.player.current_system_id
+            system = self.data_loader.get_system(system_id)
+            faction_id = system.faction if system else ""
+            recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
+            loyalty_map = {}
+            for tid in recruited:
+                state = self.crew_roster.get_member_state(tid)
+                loyalty_map[tid] = state["loyalty"] if state else 0
+                template = self.crew_roster.get_template(tid)
+                if not template:
+                    continue
+                # Check home system
+                if template.home_system_id == system_id:
+                    line = self.ambient_dialogue.get_line(
+                        "home_system",
+                        tid,
+                        system_id=system_id,
+                        loyalty=loyalty_map[tid],
+                        player_flags=self.player.dialogue_flags,
+                    )
+                    if line:
+                        self._mission_notifications.append(f'{template.name}: "{line}"')
+                # Check faction territory
+                elif template.faction_id and template.faction_id == faction_id:
+                    line = self.ambient_dialogue.get_line(
+                        "faction_territory",
+                        tid,
+                        faction_id=faction_id,
+                        loyalty=loyalty_map[tid],
+                        player_flags=self.player.dialogue_flags,
+                    )
+                    if line:
+                        self._mission_notifications.append(f'{template.name}: "{line}"')
+
+            # CB-2: combat_after banter — fires within 3 days of last combat
+            ca_result = self.ambient_dialogue.get_combat_after_line(
+                recruited_ids=recruited,
+                loyalty_map=loyalty_map,
+                current_day=self.player.game_day,
+            )
+            if ca_result:
+                ca_crew_id, ca_text = ca_result
+                ca_template = self.crew_roster.get_template(ca_crew_id)
+                ca_name = ca_template.name if ca_template else ca_crew_id
+                self._mission_notifications.append(f'{ca_name}: "{ca_text}"')
+
+            # CB-2: flag_triggered banter — fires once per flag per save
+            ft_result = self.ambient_dialogue.check_flag_lines(
+                player_flags=self.player.dialogue_flags,
+                recruited_ids=recruited,
+                loyalty_map=loyalty_map,
+            )
+            if ft_result:
+                ft_crew_id, ft_text = ft_result
+                ft_template = self.crew_roster.get_template(ft_crew_id)
+                ft_name = ft_template.name if ft_template else ft_crew_id
+                self._mission_notifications.append(f'{ft_name}: "{ft_text}"')
+
     def _route_from_journal(self) -> bool:
         # Check journal view for transitions
         if self.journal_view and self.journal_view.active:
@@ -1537,6 +1559,10 @@ class Game:
         # Check crew roster view for transitions
         if self.crew_roster_view and self.crew_roster_view.active:
             next_state = self.crew_roster_view.get_next_state()
+            if next_state == GameState.DIALOGUE:
+                self.crew_roster_view.next_state = None
+                self._talk_from_roster()
+                return False
             if next_state == GameState.GALAXY_MAP:
                 self.crew_roster_view.next_state = None
 
@@ -1744,6 +1770,8 @@ class Game:
                             )
                         )
 
+                    self._close_crew_scene()
+
                 target = next_state
 
                 def _do():
@@ -1753,6 +1781,8 @@ class Game:
                         self._ensure_station_hub_view()
                     elif target == GameState.CANTINA:
                         self._ensure_cantina_view()
+                    elif target == GameState.CREW_ROSTER:
+                        self._ensure_crew_roster_view()
                     self.state_manager.change_state(target)
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
@@ -3637,12 +3667,25 @@ class Game:
 
         # Track NPC for mission talk_to_npc objectives
         self._last_dialogue_npc_id = npc_id
+        self._begin_dialogue(tree, npc, return_state)
 
-        # Select dialogue music based on NPC (default neutral, emotional NPCs get intimate)
-        self._dialogue_music = (
-            getattr(npc, "dialogue_music", "dialogue_neutral") or "dialogue_neutral"
-        )
+    def _begin_dialogue(
+        self,
+        tree: "DialogueTree",
+        npc: Optional["NPC"],
+        return_state: GameState,
+        entry_node_id: Optional[str] = None,
+    ) -> None:
+        """Open a tree: start_dialogue's tail, which crew scenes share (polish design 3.1).
 
+        Args:
+            tree: The tree to open.
+            npc: The NPC spoken to (its music and faction disposition apply), or None.
+            return_state: GameState to return to when the dialogue ends.
+            entry_node_id: The node to open at, or None for the tree's start.
+        """
+        music = getattr(npc, "dialogue_music", "dialogue_neutral") if npc is not None else ""
+        self._dialogue_music = music or "dialogue_neutral"
         # Polish design 2.2 rule 3: the engine names the iron job's state as any dialogue
         # opens, after the state machine has picked the tree (no NPC state reads it)
         if self.mission_manager and self._player is not None:
@@ -3650,27 +3693,26 @@ class Game:
 
             refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
 
-        # Sync flags and social state from player before starting
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
-
-        # Inject skill-tree-based dialogue flags
         if self.player.progression:
             if self.player.progression.get_bonus("npc_disposition_visible") > 0:
                 self.dialogue_manager.set_flag("empathic_read_active")
             if self.player.progression.get_bonus("special_dialogue") > 0:
                 self.dialogue_manager.set_flag("has_special_dialogue")
-
-        # Apply faction-based disposition modifier to NPC
-        if self.politics_manager and npc.faction_id:
+        if npc is not None and self.politics_manager and npc.faction_id:
             disp_mod = self.politics_manager.get_npc_disposition_modifier(
                 self.player, npc.faction_id
             )
             if disp_mod != 0:
-                self.social_manager.modify_disposition(npc_id, disp_mod)
-                logger.info(f"Applied faction disposition modifier to {npc_id}: {disp_mod:+d}")
-
-        self.dialogue_manager.start_dialogue(tree, npc_id=npc_id, game_day=self.player.game_day)
+                self.social_manager.modify_disposition(npc.id, disp_mod)
+                logger.info(f"Applied faction disposition modifier to {npc.id}: {disp_mod:+d}")
+        self.dialogue_manager.start_dialogue(
+            tree,
+            npc_id=npc.id if npc is not None else None,
+            game_day=self.player.game_day,
+            entry_node_id=entry_node_id,
+        )
         self._ensure_dialogue_view()
         dialogue_view = self.dialogue_view
         assert dialogue_view is not None  # _ensure_dialogue_view always creates it
@@ -3680,7 +3722,7 @@ class Game:
             self.state_manager.change_state(GameState.DIALOGUE)
 
         self._start_transition(TransitionType.FADE, 0.3, _do)
-        logger.info(f"Starting dialogue with {npc.name}")
+        logger.info(f"Starting dialogue {tree.id} with {npc.name if npc is not None else 'no one'}")
 
     def _mirror_dialogue_flags(self, names: tuple[str, ...]) -> None:
         """Copy flags the iron job wrote into the player's store over to the dialogue's."""
@@ -3731,6 +3773,106 @@ class Game:
 
         self._start_transition(TransitionType.FADE, 0.5, _do)
         logger.info("Starting intro narration")
+
+    # === Crew scenes (polish design 3.1) ===
+
+    def _scene_context(self) -> SceneContext:
+        """The game's state as the crew scenes' gate reads it."""
+        loyalty: dict[str, int] = {}
+        offset = 0
+        if self.crew_roster is not None:
+            offset = self.crew_roster.loyalty_flag_offset
+            for template, state in self.crew_roster.get_recruited_members():
+                if template.is_companion:
+                    loyalty[template.id] = int(state["loyalty"])
+        statuses: dict[str, str] = {}
+        if self.mission_manager is not None:
+            for scene in self.data_loader.crew_scenes.values():
+                status = self.mission_manager.get_status(scene.quest_id)
+                if status is not None:
+                    statuses[scene.quest_id] = status.value
+        return SceneContext(
+            crew_names={tid: t.name for tid, t in self.data_loader.crew_templates.items()},
+            loyalty=loyalty,
+            loyalty_offset=offset,
+            statuses=statuses,
+            flags=dict(self.player.dialogue_flags),
+            system_id=self.player.current_system_id,
+            system_names={sid: s.name for sid, s in self.data_loader.systems.items()},
+            spoken=frozenset(self._crew_spoke),
+        )
+
+    def crew_talk(self) -> list[CrewTalkRow]:
+        """What the crew would talk about now: each companion's matter, then the captain's topics.
+
+        Returns:
+            The rows, or [] before a game.
+        """
+        if self._player is None or self.crew_roster is None:
+            return []
+        order = [t.id for t, _ in self.crew_roster.get_recruited_members() if t.is_companion]
+        return talk_rows(self.data_loader.crew_scenes.values(), self._scene_context(), order)
+
+    def start_crew_scene(
+        self, scene_id: str, return_state: GameState = GameState.GALAXY_MAP
+    ) -> tuple[bool, str]:
+        """Open a due crew scene at its entry node, with its stranger.
+
+        Args:
+            scene_id: The scene.
+            return_state: GameState to return to when the scene ends.
+
+        Returns:
+            (True, "") when it opens, else (False, the gate's refusal).
+        """
+        scene = self.data_loader.crew_scenes.get(scene_id)
+        if scene is None or self._player is None:
+            return (False, NO_SUCH_SCENE)
+        reason = refusal(scene, self._scene_context())
+        if reason:
+            return (False, reason)
+        tree = self.data_loader.get_dialogue(scene.dialogue_id)
+        if tree is None:
+            return (False, NO_SUCH_SCENE)
+        npc = self.data_loader.get_npc(scene.with_npc_id) if scene.with_npc_id else None
+        self._last_crew_scene_id = scene.id
+        self._last_dialogue_npc_id = scene.with_npc_id or None
+        self._begin_dialogue(tree, npc, return_state, scene.entry_node)
+        return (True, "")
+
+    def _close_crew_scene(self) -> None:
+        """A crew scene's close: its companion has had their scene this landing."""
+        scene = self.data_loader.crew_scenes.get(self._last_crew_scene_id)
+        self._last_crew_scene_id = ""
+        if scene is not None:
+            self._crew_spoke.add(scene.crew_id)
+
+    def _crew_landing(self) -> None:
+        """A landing begins: each companion may raise one new matter, and each place scene due
+        here announces its hook as a notice."""
+        self._crew_spoke.clear()
+        if self._player is None or self.crew_roster is None:
+            return
+        for name, hook in place_hooks(self.data_loader.crew_scenes.values(), self._scene_context()):
+            self._mission_notifications.append(f'{name}: "{hook}"')
+
+    def _talk_from_roster(self) -> None:
+        """The roster's Talk button: open the selected companion's first due scene."""
+        view = self.crew_roster_view
+        crew_id = getattr(view, "pending_talk_id", None) if view is not None else None
+        if view is not None:
+            view.pending_talk_id = None
+        if not crew_id:
+            return
+        rows = [row for row in self.crew_talk() if row.crew_id == crew_id]
+        if not rows:
+            template = self.data_loader.crew_templates.get(crew_id)
+            name = template.name if template is not None else crew_id
+            self._mission_notifications.append(NOTHING_NOW.format(name=name))
+            return
+        ok, reason = self.start_crew_scene(rows[0].scene_id, return_state=GameState.CREW_ROSTER)
+        if not ok:
+            self._mission_notifications.append(reason)
 
     def _ensure_name_input_view(self) -> None:
         """Create or recreate name input view."""
@@ -5385,6 +5527,8 @@ class Game:
         self._crew_last_trades = self.player.trades_completed
         self._crew_last_jumps = self.player.jumps_traveled
         self._dock_rep_stations = set()
+        self._crew_spoke = set()
+        self._last_crew_scene_id = ""
         self._sync_crew_leadership_bonuses()
 
         # Restore attribute system

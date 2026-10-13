@@ -80,7 +80,7 @@
     },
     "tree_id": "elena_wreck_dialogue"
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -188,7 +188,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "elena_wreck_found"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -215,7 +217,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "elena_wreck_found"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -270,6 +274,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
           "elena_choice_made"
         ],
         "loyalty": {
@@ -386,7 +391,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "elena_wreck_found"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -413,7 +420,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "elena_wreck_found"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -468,6 +477,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_elena_reeves_70",
           "elena_choice_made"
         ],
         "loyalty": {

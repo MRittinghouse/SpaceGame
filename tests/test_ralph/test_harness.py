@@ -26,7 +26,7 @@ import threading
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -2708,6 +2708,58 @@ class TestHeartbeatIsWrittenOnlyByTheLockHolder:
         payload = json.loads(beat_path.read_text(encoding="utf-8"))
         assert payload["pid"] == os.getpid(), (
             "the heartbeat must carry the pid of the process that holds the lock"
+        )
+
+    def test_no_beat_lands_after_the_lock_is_released(
+        self, isolated_roadmap: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """`main()` waits for a beat in flight before it releases the lock.
+
+        Setting the stop event did not wait for it. A beat already past the
+        loop's stop check landed whenever its write finished, which could be
+        after `_release_lock()` and after `main()` had returned: a beat from an
+        instance that no longer holds the lock. It resolves `HEARTBEAT_PATH`
+        when it writes, so in the suite it could also land in a later test's
+        patched path.
+
+        The first beat is held until 0.2s after `main()` begins its exit, so
+        it is certainly in flight when the stop is requested.
+        """
+        in_flight: list[threading.Thread] = []
+        release = threading.Event()
+        real_write = harness.heartbeat.write_heartbeat
+
+        def held_write(sprint: Optional[str], phase: Optional[str]) -> None:
+            in_flight.append(threading.current_thread())
+            release.wait(10.0)
+            real_write(sprint, phase)
+
+        real_snapshot = harness._write_status_snapshot
+
+        def snapshot_then_release(*args: Any, **kwargs: Any) -> None:
+            threading.Timer(0.2, release.set).start()
+            real_snapshot(*args, **kwargs)
+
+        alive_at_release: list[bool] = []
+        real_release_lock = harness._release_lock
+
+        def release_lock() -> None:
+            alive_at_release.append(any(t.is_alive() for t in in_flight))
+            real_release_lock()
+
+        monkeypatch.setattr(harness.heartbeat, "write_heartbeat", held_write)
+        monkeypatch.setattr(harness, "_write_status_snapshot", snapshot_then_release)
+        monkeypatch.setattr(harness, "_release_lock", release_lock)
+        try:
+            rc, _beat_path = self._drive_main(isolated_roadmap, monkeypatch, lock_granted=True)
+        finally:
+            release.set()
+
+        assert rc == 0
+        assert in_flight, "the heartbeat thread never started a beat"
+        assert alive_at_release == [False], (
+            "main() released the lock while its heartbeat thread was still writing a "
+            "beat, so that beat lands from an instance that no longer holds the lock"
         )
 
 

@@ -161,6 +161,10 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
         queue: deque[str] = deque()
         if tree.start_node_id in tree.nodes:
             queue.append(tree.start_node_id)
+        # A crew scene opens its tree at its entry node (polish design 3.1).
+        for scene in loader.crew_scenes.values():
+            if scene.dialogue_id == tree.id and scene.entry_node in tree.nodes:
+                queue.append(scene.entry_node)
         while queue:
             nid = queue.popleft()
             if nid in visited:

@@ -2,7 +2,7 @@
 Crew roster view.
 
 Displays recruited crew members with their stats, abilities, and loyalty.
-Allows dismissing crew members from the roster.
+Allows dismissing crew members from the roster, and talking with a companion.
 """
 
 from typing import Optional
@@ -95,9 +95,10 @@ class _CrewItem:
 class _DismissButton:
     """Dismiss crew button shown in detail panel."""
 
-    def __init__(self, rect: pygame.Rect, font: pygame.font.Font) -> None:
+    def __init__(self, rect: pygame.Rect, font: pygame.font.Font, label: str = "DISMISS") -> None:
         self.rect = rect
         self.font = font
+        self.label = label
         self.hovered = False
         self.visible = False
         self.disabled = False
@@ -126,7 +127,7 @@ class _DismissButton:
             text_color = Colors.RED
         pygame.draw.rect(screen, bg, self.rect, border_radius=4)
         pygame.draw.rect(screen, border, self.rect, 1, border_radius=4)
-        text_surf = self.font.render("DISMISS", True, text_color)
+        text_surf = self.font.render(self.label, True, text_color)
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
 
@@ -158,6 +159,7 @@ class CrewRosterView(BaseView):
         # Selection state
         self._selected_crew_id: Optional[str] = None
         self.pending_dismiss_id: Optional[str] = None
+        self.pending_talk_id: Optional[str] = None
 
         # Scroll
         self._scroll_offset: int = 0
@@ -178,6 +180,7 @@ class CrewRosterView(BaseView):
         # Manual widgets
         self._crew_items: list[_CrewItem] = []
         self._dismiss_btn: Optional[_DismissButton] = None
+        self._talk_btn: Optional[_DismissButton] = None
         self._attr_plus_rects: dict[str, pygame.Rect] = {}
 
         # Sprite manager for crew portraits
@@ -217,6 +220,9 @@ class CrewRosterView(BaseView):
             pygame.Rect(detail_x + 20, dismiss_y, 140, 40),
             self._label_font,
         )
+        self._talk_btn = _DismissButton(
+            pygame.Rect(detail_x + 180, dismiss_y, 140, 40), self._label_font, label="TALK"
+        )
 
     def _destroy_ui(self) -> None:
         if self.back_button:
@@ -232,6 +238,8 @@ class CrewRosterView(BaseView):
             self._selected_crew_id = None
             if self._dismiss_btn:
                 self._dismiss_btn.visible = False
+            if self._talk_btn:
+                self._talk_btn.visible = False
             return
 
         members = self.crew_roster.get_recruited_members()
@@ -256,6 +264,8 @@ class CrewRosterView(BaseView):
         # Show dismiss button when crew is selected
         if self._dismiss_btn:
             self._dismiss_btn.visible = self._selected_crew_id is not None
+        if self._talk_btn:
+            self._talk_btn.visible = self._selected_crew_id is not None
 
     def _select_crew(self, crew_id: str) -> None:
         """Select a crew member by template ID."""
@@ -273,6 +283,8 @@ class CrewRosterView(BaseView):
                 self._dismiss_btn.disabled_reason = reason
             else:
                 self._dismiss_btn.disabled = False
+        if self._talk_btn:
+            self._talk_btn.visible = self._selected_crew_id is not None
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -284,6 +296,13 @@ class CrewRosterView(BaseView):
             if item.was_clicked(event):
                 self._select_crew(item.template.id)
                 return
+
+        # Talk button (polish design 3.1): the game opens the companion's due scene
+        if self._talk_btn and self._talk_btn.was_clicked(event):
+            if self._selected_crew_id:
+                self.pending_talk_id = self._selected_crew_id
+                self.next_state = GameState.DIALOGUE
+            return
 
         # Dismiss button
         if self._dismiss_btn and self._dismiss_btn.was_clicked(event):
@@ -330,6 +349,8 @@ class CrewRosterView(BaseView):
             item.update_hover(mouse_pos)
         if self._dismiss_btn:
             self._dismiss_btn.update_hover(mouse_pos)
+        if self._talk_btn:
+            self._talk_btn.update_hover(mouse_pos)
 
     def render(self, screen: pygame.Surface) -> None:
         self.background.render(screen)
@@ -382,6 +403,8 @@ class CrewRosterView(BaseView):
         # Dismiss button
         if self._dismiss_btn:
             self._dismiss_btn.render(screen)
+        if self._talk_btn:
+            self._talk_btn.render(screen)
 
     def _render_detail_panel(self, screen: pygame.Surface, x: int, y: int) -> None:
         """Render the selected crew member's details."""

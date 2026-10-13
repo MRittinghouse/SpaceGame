@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from typing import Any
+
 from spacegame.data_loader import get_data_loader
 from spacegame.models.crew import CrewRoster
+from spacegame.models.crew_scene import SceneContext, refusal
 from tools.parity.driver import Case
 
 COMPANIONS = ("elena_reeves", "marcus_jin", "dr_priya_osei", "tomas_drifter")
@@ -97,7 +101,123 @@ def _departures() -> Case:
     return case
 
 
+_AT_30: tuple[tuple[str, int], ...] = tuple((crew_id, 30) for crew_id in COMPANIONS)
+
+
+def _with(
+    loyalty: tuple[tuple[str, int], ...], crew_id: str, value: int
+) -> tuple[tuple[str, int], ...]:
+    return tuple((cid, value if cid == crew_id else held) for cid, held in loyalty)
+
+
+@dataclass(frozen=True)
+class _SceneStep:
+    """One state the scenes_due case reads the gate in (polish design 3.1)."""
+
+    label: str
+    loyalty: tuple[tuple[str, int], ...] = _AT_30
+    offset: int = 0
+    statuses: tuple[tuple[str, str], ...] = ()
+    flags: tuple[str, ...] = ()
+    system_id: str = "nexus_prime"
+    spoken: tuple[str, ...] = ()
+
+    def args(self) -> dict[str, Any]:
+        """The step's state as the golden records it."""
+        return {
+            "loyalty": dict(self.loyalty),
+            "offset": self.offset,
+            "statuses": dict(self.statuses),
+            "flags": list(self.flags),
+            "system_id": self.system_id,
+            "spoken": list(self.spoken),
+        }
+
+
+_ELENA_DONE = (("elena_old_charts", "completed"), ("elena_wreck_meridian", "active"))
+_SCENE_STEPS: tuple[_SceneStep, ...] = (
+    _SceneStep("fresh"),
+    _SceneStep("Elena at the mark", loyalty=_with(_AT_30, "elena_reeves", 50)),
+    _SceneStep("Legend", loyalty=_with(_AT_30, "marcus_jin", 40), offset=10),
+    _SceneStep(
+        "Elena spoke this landing",
+        loyalty=_with(_AT_30, "elena_reeves", 50),
+        spoken=("elena_reeves",),
+    ),
+    _SceneStep(
+        "agreed, away",
+        loyalty=_with(_AT_30, "elena_reeves", 55),
+        statuses=(("elena_old_charts", "active"),),
+        flags=("elena_old_charts_agreed",),
+    ),
+    _SceneStep(
+        "agreed, there",
+        loyalty=_with(_AT_30, "elena_reeves", 55),
+        statuses=(("elena_old_charts", "active"),),
+        flags=("elena_old_charts_agreed",),
+        system_id="stellaris_port",
+        spoken=("elena_reeves",),
+    ),
+    _SceneStep(
+        "declined",
+        loyalty=_with(_AT_30, "elena_reeves", 50),
+        flags=("elena_old_charts_declined",),
+    ),
+    _SceneStep(
+        "stage 2",
+        loyalty=_with(_AT_30, "elena_reeves", 70),
+        statuses=(("elena_old_charts", "completed"),),
+        flags=("elena_quest_stage1_complete",),
+    ),
+    _SceneStep(
+        "Elena dismissed",
+        loyalty=_AT_30[1:],
+        statuses=_ELENA_DONE,
+        flags=("elena_quest_stage1_complete", "elena_wreck_meridian_agreed"),
+        system_id="iron_depths",
+    ),
+    _SceneStep(
+        "Elena rehired",
+        loyalty=_with(_AT_30, "elena_reeves", 72),
+        statuses=_ELENA_DONE,
+        flags=("elena_quest_stage1_complete", "elena_wreck_meridian_agreed"),
+        system_id="iron_depths",
+    ),
+    _SceneStep("Tomas at the mark", loyalty=_with(_AT_30, "tomas_drifter", 50)),
+    _SceneStep(
+        "the inspector's stage",
+        loyalty=_with(_AT_30, "marcus_jin", 75),
+        statuses=(("marcus_old_debts", "completed"), ("marcus_the_inspector", "active")),
+        flags=("marcus_quest_stage1_complete", "marcus_the_inspector_agreed"),
+        system_id="forgeworks",
+    ),
+)
+
+
+def _scenes_due() -> Case:
+    """The crew scenes' gate (polish design 3.1): every scene read in each step's state."""
+    dl = get_data_loader()
+    scenes = list(dl.crew_scenes.values())
+    names = {tid: template.name for tid, template in dl.crew_templates.items()}
+    systems = {sid: system.name for sid, system in dl.systems.items()}
+    case = Case("crew", "scenes_due", {"scene_ids": [scene.id for scene in scenes]})
+    for step in _SCENE_STEPS:
+        ctx = SceneContext(
+            crew_names=names,
+            loyalty=dict(step.loyalty),
+            loyalty_offset=step.offset,
+            statuses=dict(step.statuses),
+            flags=dict.fromkeys(step.flags, True),
+            system_id=step.system_id,
+            system_names=systems,
+            spoken=frozenset(step.spoken),
+        )
+        result = {scene.id: refusal(scene, ctx) for scene in scenes}
+        case.record("due", [step.label, step.args()], result, {})
+    return case
+
+
 def build_cases() -> list[Case]:
     """Every crew case."""
     get_data_loader().load_all()
-    return [_companions(), _leadership(), _triggers(), _departures()]
+    return [_companions(), _leadership(), _triggers(), _departures(), _scenes_due()]

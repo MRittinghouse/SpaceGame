@@ -191,7 +191,11 @@ class DialogueManager:
         return self._current_tree is not None and self._current_node_id is not None
 
     def start_dialogue(
-        self, tree: DialogueTree, npc_id: Optional[str] = None, game_day: Optional[int] = None
+        self,
+        tree: DialogueTree,
+        npc_id: Optional[str] = None,
+        game_day: Optional[int] = None,
+        entry_node_id: Optional[str] = None,
     ) -> None:
         """Begin a new dialogue conversation.
 
@@ -199,10 +203,17 @@ class DialogueManager:
             tree: The dialogue tree to start.
             npc_id: Optional NPC ID for disposition tracking.
             game_day: The day of the conversation, for the once-a-day check XP (BB-73).
+            entry_node_id: The node to open at (a crew scene's entry node, polish design 3.1);
+                None opens at the tree's start node.
+
+        Raises:
+            ValueError: The tree has no node with that id.
         """
+        if entry_node_id is not None and entry_node_id not in tree.nodes:
+            raise ValueError(f"No node {entry_node_id} in {tree.id}")
         self._game_day = game_day
         self._current_tree = tree
-        self._current_node_id = tree.start_node_id
+        self._current_node_id = entry_node_id or tree.start_node_id
         self._current_npc_id = npc_id
         self._last_check_result = None
 
@@ -288,7 +299,10 @@ class DialogueManager:
                 crew_whisperer_bonus = self._player.progression.get_bonus("crew_whisperer")
             for crew_id, amount in response.crew_loyalty_changes.items():
                 adjusted = int(amount * (1.0 + crew_whisperer_bonus)) if amount > 0 else amount
-                self._crew_roster.adjust_loyalty(crew_id, adjusted)
+                # F-45 (SpaceGame F-C11, polish design 3.1): keep the threshold flags a crossing
+                # returns, as the trade and mission payouts do, so a latched mark stays honest.
+                for flag in self._crew_roster.adjust_loyalty(crew_id, adjusted):
+                    self.set_flag(flag)
 
         # Handle skill check
         if response.skill_check:

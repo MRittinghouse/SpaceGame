@@ -80,7 +80,7 @@
     },
     "tree_id": "tomas_new_ledger_dialogue"
   },
-  "source_commit": "be851459c3f31e20e4bfd7a3c55d19257fa9e34d",
+  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
   "steps": [
     {
       "args": [
@@ -175,7 +175,7 @@
         ],
         "check": [
           false,
-          "Unknown skill: syn"
+          "Persuasion check failed."
         ],
         "next_node": "partial",
         "response": 0
@@ -209,6 +209,8 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
+          "crew_loyalty_tomas_drifter_85",
           "tomas_past_resolved"
         ],
         "loyalty": {
@@ -237,6 +239,8 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
+          "crew_loyalty_tomas_drifter_85",
           "tomas_past_resolved"
         ],
         "loyalty": {
@@ -339,10 +343,10 @@
           0
         ],
         "check": [
-          false,
-          "Unknown skill: syn"
+          true,
+          "Persuasion check passed!"
         ],
-        "next_node": "partial",
+        "next_node": "success",
         "response": 0
       },
       "state": {
@@ -374,6 +378,8 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
+          "crew_loyalty_tomas_drifter_85",
           "tomas_past_resolved"
         ],
         "loyalty": {
@@ -402,6 +408,8 @@
       "state": {
         "disposition": {},
         "flags": [
+          "crew_loyalty_tomas_drifter_70",
+          "crew_loyalty_tomas_drifter_85",
           "tomas_past_resolved"
         ],
         "loyalty": {
