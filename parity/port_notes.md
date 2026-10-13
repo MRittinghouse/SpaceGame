@@ -1729,15 +1729,155 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
   settled by the same word. (plan W3a-S rulings)
 - The author's read: 2026-10-13. The author read the reading desk (82 nodes, the 22 planning
   rulings, 42 questions with defaults and 18 flags) and replied "Reading desk reviewed, looks
-  good.", accepting every recommended default and every planning ruling. The rulings, one entry
-  per question with the controller's picks marked, are `../w3-edits/author-rulings.md` (Q1 to
-  Q42); Task 9 applied them. In short: code, Q2 (both holds), Q3 (the filing split in two), Q4
-  (`iron_delivery_late_tier`), Q40 (Save greyed out in a conversation) and Q42 (the step
-  labels); lines, Q5, Q8 (`ongoing_greet` and The Longer Ledger's discovery note), Q11 to Q18,
-  Q21, Q23 to Q25, Q27 and Q28 (Glyn's why), Q30 to Q36, Q38 and Q39; gates and payments, Q4's
-  drifted reply, Q27's watched reply and Q30's first-visit yes (+3); a comment, Q7; no change,
-  Q1, Q6, Q9, Q10, Q19's objective and hint, Q20, Q22, Q26, Q29, Q37 and Q41. (the author's
-  read, 2026-10-13)
+  good.", accepting every recommended default and every planning ruling. The rulings file lives
+  outside the repo and is never committed, so the list below is the record, one sub-bullet per
+  question with the controller's picks and adjustments marked; Task 9 applied them.
+  - Q1. no change: `data/characters/npcs.json`'s `forgeworks_clerk` stays Joaquim Kimura, "Intake
+    Clerk, Main Foundry"; planning ruling 3 stands.
+  - Q2. (controller's pick, accepted: it keeps planning ruling H, held_units over both holds, and
+    changes two removals; the other fix would reverse ruling H across four readers.) Python only:
+    `MissionManager._delivery_share` counts `held_units` over both holds less the reserved units
+    (docstring says so; no golden moves); `apply_rewards`' `deliver_cargo` branch removes from the
+    main hold first, then the rest from `hidden_compartment`; `iron_consignment.take_back` does the
+    same (both docstrings follow); the REVIEWED reasons for `take_back` and `apply_rewards` in
+    `tests/test_compliance/test_cargo_removal_registry.py` now say "from both holds, the main hold
+    first"; two new tests, `test_a_hand_over_takes_the_hidden_compartment_too` and
+    `test_the_close_takes_back_from_both_holds`.
+  - Q3. Python: `iron_consignment.FILING_LINE` drops "ten units," (111 characters) and a new
+    `VIOLATION_LINE`, "Freight violation filed." (24), posts after it as its own banner (`on_clock`
+    returns both, so the landing and rest paths post six notice constants in all); the expected
+    tuples in `test_iron_consignment.py` and `test_trading_actions.py` follow, and
+    `test_the_filing_fits_the_banner` is new.
+  - Q4. (controller's pick, accepted: a clock flag set only while the job is open keeps
+    `waiting_drifted`'s figure-free text true for every captain who can reach it, one who took the
+    job after day 20 included; a rewrite for a late taker would take the late-tier captain's real
+    answer away.) New `iron_delivery_late_tier()` in `spacegame/constants/flags.py` (the moved-on
+    docstring loses the drifted reply as consumer); `iron_consignment` adds it to `ENGINE_FLAGS`,
+    adds `late_tier_due`, and `on_clock` writes it before `iron_delivery_moved_on` while the job is
+    open; the "Is it still six hundred?" reply in `merchant_delivery`'s `waiting` and
+    `waiting_count` now requires `iron_delivery_late_tier` instead of `iron_delivery_moved_on`;
+    tests: the clock tests in `test_iron_consignment.py` (new
+    `test_a_late_take_reaches_its_own_late_tier`), the reply gate in
+    `test_iron_delivery_outcomes.py`, and the helper's name in `test_flags.py`.
+  - Q5. `merchant_delivery` / `waiting_count`: "Your bay reads ten." gains "or better".
+  - Q6. no change, held for the T7-8 gesture ruling: `merchant_delivery`'s `waiting_drifted`,
+    `loss_closed`, `odom_arna_branch_a` and `graduation_pointer`.
+  - Q7. (controller's pick, accepted: wait for SP10's hooks; the default already writes no Log line
+    now, and waiting is the smallest change.) (adjusted: the note's last clause would be stale after
+    the read.) No data change; `odom_caught_lie` stays in the orphan list in
+    `tests/test_data/test_dialogue_integrity.py`, and its comment's last clause, "the author's Task
+    8 read rules on one", becomes "the author's read (2026-10-13) leaves it to SP10".
+  - Q8. `merchant_delivery` / `ongoing_greet` cuts "The Forgeworks run closed on my books. That
+    counts." and folds "He taps the stack of manifests in front of him." into the first narration;
+    `data/missions/sa_v_investment_intro.json`'s `discovery_text` cuts "after the iron ore job"
+    (both named in the records above).
+  - Q9. no change: `merchant_delivery` greet reply 18 ("Anything else you'd put in the ledger for
+    me?", into `second_look`) keeps its `excluded_flags`; (adjusted: Task 8's copy was already read,
+    so the note goes to the records) the SP10 note is in "What W3a leaves".
+  - Q10. no change to any line; (adjusted: Task 8's copy went to the author without Odom's lines
+    printed against his voice sheet) the voice-sheet check of every new or changed Odom line
+    (`requirements/character_voices.md`, lines 454 to 511) moves to the final review.
+  - Q11. `data/journal/entries.json`, `auto_m02_delivery`: cuts "First completed contract."
+  - Q12. `auto_iron_covered`: "paid the iron run in full" becomes "paid the iron run on the count".
+  - Q13. (controller's pick, accepted: the purchase premise does not stand, since combat loot,
+    mining and salvage also reach the made-good state, so the three lines are ruled together and
+    name the making-up, not a purchase.) `auto_iron_made_good` now reads "Made up Odom's count after
+    a fight took ore from his load." and "wrote the difference" for the floor's charge;
+    `merchant_delivery`'s `thanks_made_good` says "not all ten carry my stamp" and "You made up the
+    difference"; `made_good_book` says "the difference, to the credit" for "what the floor charged
+    you".
+  - Q14. `auto_iron_betrayal`: cuts "What did not come back to his lot is in his book."
+  - Q15. `forgeworks_intake` / `nothing_to_weigh`: "Nothing on the scale, nothing to sign." becomes
+    "Nothing on the scale means nothing to sign."
+  - Q16. `forgeworks_intake`: `accept_made_good` says "The incident report" for "The lane report"
+    and the lot reader "takes a while over the stamps" for "beeps twice: Odom's stamp, and floor
+    stock beside it"; `accept_floor_stock`'s reader "takes a while over the stamps" for "takes
+    longer, and comes back with two stamps"; (adjusted: the recommended "the floor's stamp is on the
+    count" is false for a captain who made up the count with looted, mined or salvaged ore) Odom's
+    line is applied in Q13 as "not all ten carry my stamp".
+  - Q17. `forgeworks_intake` / `no_sign`: cuts "It comes up empty." and "nothing on file says where
+    the rest went" becomes "the file doesn't cover the gap".
+  - Q18. (a) (adjusted: "The incident report is on his datapad" becomes "comes up beside it", since
+    Q19 already puts the reading on his datapad) `forgeworks_intake` / `weigh_short`: "runs the load
+    onto the scale" becomes "pulls the intake scale's reading onto his datapad", "The lane's
+    incident report is on his datapad" becomes "The incident report comes up beside it", and "off
+    that lane this month" loses "off that lane"; (b) `accept_made_good`, applied in Q16a; (c)
+    `elena_cantina` / `trading_tips` reply R1 (needs `broker_ore_lost`): "I lost part of Odom's load
+    on the Forgeworks lane." becomes "I lost Odom's ore in a fight."; (d) `merchant_delivery` /
+    `loss_short`: "The lane incident report" becomes "The incident report" and "Forgeworks lane." is
+    cut.
+  - Q19. (controller's pick, accepted: the scenes read the intake scale off his datapad; it is the
+    smaller change and matches crucible's "pulls the left bank's readout onto his datapad", where
+    meeting him off shift would leave "runs the load onto the scale" false.) The one line it changes
+    is applied in Q18a; `iron_delivery`'s objective and hint stay as they are.
+  - Q20. no change, held for the T7-8 gesture ruling: `data/missions/missions.json`,
+    `iron_delivery`'s `timeliness_comments.late`.
+  - Q21. `elena_cantina` / `trading_tips` reply R0: "Odom paid six hundred" becomes "Odom offered
+    six hundred"; `iron_carriage` stays.
+  - Q22. no change, held for the T7-8 gesture ruling: `elena_return` / `start`, "She speaks before
+    she looks up."; (adjusted: Task 8's copy is read, so the held list lives in these records,
+    beside `waiting_drifted` and `loss_closed`).
+  - Q23. (a) `elena_return` / `projections` opens "A freight projection is open on her slate now,
+    for a ship registered to someone else." and cuts "and the owner wants them..."; (b)
+    `elena_cantina` / `iron_lane` cuts "If we ran it, we would want... *She stops.*".
+  - Q24. applied in Q23a (`elena_return` / `projections`).
+  - Q25. (controller's pick, accepted: single quotes keep the line reading as the captain's quoted
+    words; with no marks it reads as Elena's own order.) `data/crew/ambient_dialogue.json`, the
+    `elena_reeves` line requiring `elena_walked_away`: the double quotes round "Mind your own
+    business." become single quotes; `TestElena.test_the_walk_away_has_a_log_entry_and_a_crew_line`
+    in `tests/test_data/test_return_scenes.py` follows.
+  - Q26. no change: `elena_reeves`' `dialogue_states` keep their order, since `after_walkaway`
+    cannot reach a D5 captain while `ACT_TWO_V1_ENABLED` is False.
+  - Q27. `dex_cantina` / `start`, reply R2 ("Why are you talking to me?", into `why_me_watched`):
+    gains `required_flags` [`ignored_distress_signal`] and keeps `excluded_flags`
+    [`helped_reva_sato`]; `TestGlyn.test_why_me_follows_reva_sato` loops the three cases.
+  - Q28. (a) `dex_cantina` / `why_me_watched` opens "What's that worth to you? ... Call it a sample.
+    You didn't stop for Reva Sato." for "Because you didn't stop for Reva Sato."; (b) (controller's
+    pick, accepted: the canon `why_me` deflects first the same way, since the voice sheet's rule
+    binds both, and the parallel wording is the smallest change) `why_me` opens "What's that worth
+    to you? Call it a sample. You helped Reva Sato," for "Because you helped Reva Sato,".
+  - Q29. no change, held for the T7-8 gesture ruling: `dex_return` / `start`, "He doesn't turn
+    around.", listed among the held lines in these records, which say the plan added the sentence
+    (the design names only the stool).
+  - Q30. (a) `dex_cantina` / `accept_path` reply R0 ("I'll do it.") gains `disposition_change` 3;
+    (b) `dex_return` / `terms`: "You'd still have a favor" becomes "You'd have a favor" and "A
+    smaller one." becomes "Smaller than a yes on the spot would have bought."; (c) (controller's
+    pick, accepted: "The price moves every day you wait" claims a cost nothing applies, and the new
+    line is in Glyn's information-economy voice and claims nothing about cost or time) `still_no`:
+    "The price moves every day you wait. That's the market, not me." becomes "A no is information
+    too, friend, and I never throw information away."; (d) new
+    `TestGlyn.test_the_first_yes_pays_three_too`.
+  - Q31. `oren_tak_meeting` / `refuse`: cuts "Not yet."
+  - Q32. `oren_return`: (a) `start` reply R0 "Same as before." becomes "I should have led with
+    that."; (b) `glyn_again`: "That name bought you thirty seconds last time." becomes "That name
+    buys thirty seconds." and "It buys less now." becomes "Fewer on a second visit."
+  - Q33. `oren_return` / `found`: cuts ", procurement format".
+  - Q34. (a) `oren_return` / `found_not`: "Then, lower, as you stand:" becomes "Then, lower:"; (b)
+    `tomas_return` / `terms`: "before you sit down" becomes "as you reach the table".
+  - Q35. `data/journal/entries.json`, `auto_m13_oren`: cuts "Union pension".
+  - Q36. (controller's pick, accepted: at Task 9, not W3b, since unmarked narration under Sienna's
+    speaker tag is a broken stage direction in a tree this plan changed, and the fix is two pairs of
+    asterisks.) `sienna_vek_warning` / `start` and `share_data`: the opening narration is wrapped in
+    asterisks (to "before speaking." and to "smaller than a thumbnail.").
+  - Q37. no change: `sienna_vek_warning` / `scale` reply R2 is true wherever it shows, since it
+    needs `oren_full_account`.
+  - Q38. `data/missions/missions.json`, `drifters_delivery.description`: "bolts" becomes "bales",
+    and "Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the
+    wrong answers for customs." becomes "Under Tomas's name the Guild tariff eats nearly the whole
+    sale."; "bill of landing" stays, the game's in-world document name in at least eight strings.
+  - Q39. `drifters_delivery.receipt`: the two share sentences become "Shares wired to Haven's Rest
+    and to you." (118 characters, from 150).
+  - Q40. Python UI rule: `PauseMenuView(ui_manager, save_allowed=True)` greys Save out and ignores
+    its press when False, and `Game._open_pause_menu` passes `save_allowed=False` in
+    `GameState.DIALOGUE`; the new tests are `tests/test_views/test_pause_menu_view.py` (two) and
+    `tests/test_engine/test_pause_save_gate.py`; the port's save screen needs its own rule.
+  - Q41. no change: `npc_availability.needed_by` keeps asking `IronConsignment.closers`, which its
+    test pins.
+  - Q42. `TALK_STEPS` in `tools/parity/drivers/dialogue.py`: `wren_offered` and `wren_awaited`
+    become `intake_offered` and `intake_awaited`, and `tests/test_parity/test_dialogue_driver.py`
+    follows; `parity/golden/dialogue/npcs_here.json` changes only through the regeneration, the
+    port's golden follows at W3a-A's sync, and `requirements/sa_audit_findings.md` stays as history.
+  - Planning rulings 1 to 22: confirmed as written. (the author's read, 2026-10-13)
 - What W3a leaves, and to whom:
   - Tier 3's `no_freight` and `no_freight_float` (W3b or SP10); record tokens and the price rows
     (W3b or SP10); `iron_delivery`'s description ("keeps your fuel tank full") against economy
