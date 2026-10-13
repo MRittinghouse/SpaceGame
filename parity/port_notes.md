@@ -1601,9 +1601,9 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
 
 ### Records for plan W3a-A
 
-- What the sync brings: six data files. `data/dialogue/dialogues.json` (Odom's
-  `merchant_delivery` in every state, the clerk's `forgeworks_intake`, Elena's three iron replies
-  in `elena_cantina`, the four return trees `elena_return`, `dex_return`, `oren_return` and
+- What the sync brings: six data files. `data/dialogue/dialogues.json` (Odom's `merchant_delivery`
+  in every state, the clerk's `forgeworks_intake`, Elena's three iron replies and the walk-away's
+  flag in `elena_cantina`, the four return trees `elena_return`, `dex_return`, `oren_return` and
   `tomas_return`, and the tier 2 echoes in `dex_cantina`, `torres_underground`,
   `oren_tak_meeting`, `tomas_havens` and `sienna_vek_warning`); `data/characters/npcs.json` (the
   four kept NPCs' return states; `forgeworks_clerk` is Joaquim Kimura, "Intake Clerk, Main
@@ -1611,8 +1611,8 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
   one-unit collect leg "Keep Odom's ore aboard", its hand-over flag `iron_ore_handed_over`,
   `iron_delivery_resolved` among its rewards, its hint, discovery note and timeliness lines;
   `whispers_at_the_bar`'s objective "Agree to carry Glyn's chip"; `drifters_delivery`'s
-  description and `receipt`); `data/missions/sa_v_investment_intro.json` (The Longer Ledger
-  after `bill_of_landing` on `odom_ledger_open`, its description and discovery note);
+  description and `receipt`); `data/missions/sa_v_investment_intro.json` (The Longer Ledger after
+  `bill_of_landing` on `odom_ledger_open`, its description and discovery note);
   `data/journal/entries.json` (`auto_m02_delivery` on `iron_ore_delivered` for `iron_delivery`,
   `auto_m13_oren` on `oren_intel_received`, `auto_iron_betrayal`, and seven new entries:
   `auto_iron_short`, `auto_iron_made_good`, `auto_iron_written_off`, `auto_iron_handed_back`,
@@ -1727,7 +1727,7 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
   `docs/design/economy-loops/standing-people.md`) and `docs/handoffs.md`'s Wren line ("Wren keeps
   the scale while the writing spec's rename waits on the author"); spec 9.3's last bullet is
   settled by the same word. (plan W3a-S rulings)
-- The author's read: 2026-10-13. The author read the reading desk (its lines, the 22 planning
+- The author's read: 2026-10-13. The author read the reading desk (82 nodes, the 22 planning
   rulings, 42 questions with defaults and 18 flags) and replied "Reading desk reviewed, looks
   good.", accepting every recommended default and every planning ruling. The rulings, one entry
   per question with the controller's picks marked, are `../w3-edits/author-rulings.md` (Q1 to
