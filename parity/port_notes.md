@@ -1602,23 +1602,36 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
 ### Records for plan W3a-A
 
 - What the sync brings: six data files. `data/dialogue/dialogues.json` (Odom's `merchant_delivery`
-  in every state, the clerk's `forgeworks_intake`, Elena's three iron replies and the walk-away's
-  flag in `elena_cantina`, the four return trees `elena_return`, `dex_return`, `oren_return` and
-  `tomas_return`, and the tier 2 echoes in `dex_cantina`, `torres_underground`,
-  `oren_tak_meeting`, `tomas_havens` and `sienna_vek_warning`); `data/characters/npcs.json` (the
-  four kept NPCs' return states; `forgeworks_clerk` is Joaquim Kimura, "Intake Clerk, Main
-  Foundry", and loses its `hide_after_flag`); `data/missions/missions.json` (`iron_delivery`'s
-  one-unit collect leg "Keep Odom's ore aboard", its hand-over flag `iron_ore_handed_over`,
-  `iron_delivery_resolved` among its rewards, its hint, discovery note and timeliness lines;
-  `whispers_at_the_bar`'s objective "Agree to carry Glyn's chip"; `drifters_delivery`'s
-  description and `receipt`); `data/missions/sa_v_investment_intro.json` (The Longer Ledger after
-  `bill_of_landing` on `odom_ledger_open`, its description and discovery note);
-  `data/journal/entries.json` (`auto_m02_delivery` on `iron_ore_delivered` for `iron_delivery`,
+  in every state, the clerk's `forgeworks_intake`, Elena's three iron replies, the walk-away's flag
+  and the rewritten `lesson` (a margin read off the boards, "fifteen percent over base", in place of
+  the fixed 80 and 140) in `elena_cantina`, the four return trees `elena_return`, `dex_return`,
+  `oren_return` and `tomas_return`, Oren's three-way grade in `oren_tak_meeting` (the new `dust` and
+  `parting` nodes, "I understand. I won't push." into `dust`, `refuse` into `parting` by
+  "[Stand to go.]", `trust_earned`'s speaker fixed to the narrator, and `farewell`'s closing
+  reply setting `oren_full_account`, the flag `sienna_vek_warning` reads), Tomas's deferral in
+  `tomas_havens` (the new `think_it_over`, `why_trust`'s deferral reply "I need to think about
+  it. Not right now." into it in place of `decline` and its flag, the `start` reply's new
+  "Thanks. Who do I owe for the stew?", and new text for `accept` and `decline`),
+  `dex_cantina`'s "Why are you talking to me?" split on `helped_reva_sato` into the canon
+  `why_me` and the new `why_me_watched` (which needs `ignored_distress_signal`), with the
+  decline's new flag `dex_favor_declined` and the first yes's +3, and the tier 2 echoes in
+  `torres_underground` (`heard_no`) and `sienna_vek_warning` (`scale`'s reply on
+  `oren_full_account`, and the narration marked in `start` and `share_data`));
+  `data/characters/npcs.json` (the four kept NPCs' return states; `forgeworks_clerk` is Joaquim
+  Kimura, "Intake Clerk, Main Foundry", and loses its `hide_after_flag`);
+  `data/missions/missions.json` (`iron_delivery`'s one-unit collect leg "Keep Odom's ore aboard",
+  its hand-over flag `iron_ore_handed_over`, `iron_delivery_resolved` among its rewards, its hint,
+  discovery note and timeliness lines; `whispers_at_the_bar`'s objective "Agree to carry Glyn's
+  chip"; `drifters_delivery`'s description and `receipt`);
+  `data/missions/sa_v_investment_intro.json` (The Longer Ledger after `bill_of_landing` on
+  `odom_ledger_open`, its description and discovery note); `data/journal/entries.json`
+  (`auto_m02_delivery` on `iron_ore_delivered` for `iron_delivery`, `auto_m03_elena`'s new text,
+  "Met Elena Reeves at the Nexus Prime cantina, at a table facing the departure boards.",
   `auto_m13_oren` on `oren_intel_received`, `auto_iron_betrayal`, and seven new entries:
   `auto_iron_short`, `auto_iron_made_good`, `auto_iron_written_off`, `auto_iron_handed_back`,
   `auto_iron_covered`, `auto_elena_walked_away`, `auto_dex_declined`); and
-  `data/crew/ambient_dialogue.json` (two crew lines: Elena's walk-away, Tomas's turned-down
-  bales). (plan W3a-S Tasks 3 to 6 and 9)
+  `data/crew/ambient_dialogue.json` (two crew lines: Elena's walk-away, Tomas's turned-down bales).
+  (plan W3a-S Tasks 3 to 6 and 9)
 - Goldens whose content changes, from the regeneration's diff: the dialogue goldens of the eight
   trees Tasks 3 to 6 changed (`dialogue/tree_merchant_delivery`, `tree_forgeworks_intake`,
   `tree_elena_cantina`, `tree_dex_cantina`, `tree_torres_underground`, `tree_oren_tak_meeting`,
@@ -1627,11 +1640,14 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
   `tomas_thinking` step, the Forgeworks steps relabelled `intake_offered` and `intake_awaited`
   at the author's read, `intake_awaited` holding `iron_job_full`, and a new `odom_short_load`
   step that lists Odom for `iron_delivery`); `missions/lifecycle_iron_delivery` and the three
-  soft-deadline cases `missions/soft_deadline_5`, `_16` and `_25`, which now pin 60, 45 and 30
-  credits with "(1 of 10 delivered)", since the collect objective is one unit and the drivers
-  meet it with one unit aboard (each now sets `iron_ore_handed_over` where it recorded the talk
-  with the clerk, `talked_to_forgeworks_clerk`, and adds "Progress: iron_delivery_resolved");
-  and
+  soft-deadline cases `missions/soft_deadline_5`, `_16` and `_25`, whose hand-over now carries one
+  unit, since the collect objective is one unit and the drivers meet it with one unit aboard:
+  `lifecycle_iron_delivery` and `soft_deadline_5` pay 60 for it where they paid 600 for ten
+  ("+60 Credits (1 of 10 delivered)", "Delivered 1 iron_ore", credits 5060 in place of 5600),
+  and the late cases read "+45 Credits (late, 75% of 600, 1 of 10 delivered)" and
+  "+30 Credits (late, 50% of 600, 1 of 10 delivered)" (credits 5045 and 5030); each case now
+  sets `iron_ore_handed_over` where it recorded the talk with the clerk,
+  `talked_to_forgeworks_clerk`, and adds "Progress: iron_delivery_resolved"; and
   `missions/availability`, whose every-gate flag set loses `iron_ore_delivered` and gains
   `odom_ledger_open` with The Longer Ledger's new gate. The dialogue goldens record each tree's
   structure (availability, next nodes, flags, dispositions), never its text, so the author's
@@ -1745,7 +1761,8 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
     `test_the_close_takes_back_from_both_holds`.
   - Q3. Python: `iron_consignment.FILING_LINE` drops "ten units," (111 characters) and a new
     `VIOLATION_LINE`, "Freight violation filed." (24), posts after it as its own banner (`on_clock`
-    returns both, so the landing and rest paths post six notice constants in all); the expected
+    returns both, so a filing posts failed, taken back, filing and violation, the take-back only
+    when ore was aboard; the module now holds six notice constants); the expected
     tuples in `test_iron_consignment.py` and `test_trading_actions.py` follow, and
     `test_the_filing_fits_the_banner` is new.
   - Q4. (controller's pick, accepted: a clock flag set only while the job is open keeps
@@ -1911,6 +1928,14 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
     `["dex_favor_accepted"]` on that reply (that mission's plan, Q30).
   - The Q40 rule meets aurelia `docs/handoffs.md`'s saves stance ("manual saves anywhere") for
     SP6, which now reads "anywhere outside a conversation" in Python.
+  - Task 9's author flag 1, for SP6: `Game._open_pause_menu` decides Save from
+    `state_manager.current_state`, and a conversation opens behind a 0.3 s fade whose midpoint
+    sets `GameState.DIALOGUE`, so a pause menu opened before that midpoint offers Save, and keeps
+    offering it while it stays open, since the fade runs on behind the menu. No reply can be
+    picked in that window (a paused game sends its events to the pause menu), so no half scene
+    is saved; a save there keeps only what the opening wrote first, the scene's gate flag and the
+    iron job's state flag. Python keeps the guard as Q40 words it. The port's save gate
+    should read the dialogue's own open state rather than the screen state.
   - The voice-sheet check of Odom's lines (`requirements/character_voices.md`, Odom's sheet)
     moves to the plan's final review (Q10); Task 9's own Odom lines (Q5, Q8a, Q13b, Q13c, Q18d)
     keep his register: counts, weights and the book, no motive read.
