@@ -1214,7 +1214,7 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "iron_ore_handed_back",
     "odom_wrote_off_the_ore",
     # odom_caught_lie is read by nothing yet: polish design 2.5 names a Log entry and SP10's
-    # hooks, and 2.6 writes no entry for it; the author's Task 8 read rules on one.
+    # hooks, and 2.6 writes no entry for it; the author's read (2026-10-13) leaves it to SP10.
     "odom_caught_lie",
     "odom_book_credit",
     "odom_noted_the_float",

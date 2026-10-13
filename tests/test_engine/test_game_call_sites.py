@@ -195,11 +195,15 @@ def test_the_sell_lot_view_gets_the_mission_manager() -> None:
 
 
 def test_odoms_opening_no_longer_counts_the_ore() -> None:
-    """BB-1: the sale sensor replaces the count test, which accused a fight's loser."""
-    start = _function("start_dialogue")
-    assert not _calls(start, "get_cargo_quantity")
-    literals = [n.value for n in ast.walk(start) if isinstance(n, ast.Constant)]
-    assert "broker_ore_sold" not in literals
+    """BB-1: the sale sensor replaces the count test, which accused a fight's loser.
+
+    start_dialogue and a crew scene both open their picked tree through _begin_dialogue.
+    """
+    for name in ("start_dialogue", "_begin_dialogue"):
+        opening = _function(name)
+        assert not _calls(opening, "get_cargo_quantity"), name
+        literals = [n.value for n in ast.walk(opening) if isinstance(n, ast.Constant)]
+        assert "broker_ore_sold" not in literals, name
 
 
 def test_opening_an_npc_sets_its_gate_before_its_tree_is_chosen() -> None:

@@ -405,13 +405,13 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         "reva_reached", "nova_research", ("cargo_lost_accepted",), (("cargo_lost", "active"),)
     ),
     _TalkStep(
-        "wren_offered",
+        "intake_offered",
         "forgeworks",
         ("talked_to_cargo_broker",),
         (("iron_delivery", "available"),),
     ),
     _TalkStep(
-        "wren_awaited",
+        "intake_awaited",
         "forgeworks",
         ("talked_to_cargo_broker", "iron_job_full"),
         (("iron_delivery", "active"),),

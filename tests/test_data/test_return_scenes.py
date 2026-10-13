@@ -112,7 +112,7 @@ class TestElena:
             if line.crew_id == "elena_reeves" and line.required_flags == ["elena_walked_away"]
         ]
         assert len(lines) == 1
-        assert lines[0].text.startswith('"Mind your own business."')
+        assert lines[0].text.startswith("'Mind your own business.'")
 
 
 class TestGlyn:
@@ -145,6 +145,24 @@ class TestGlyn:
         assert manager.get_flags() == {"dex_favor_accepted": True}
         assert social.get_disposition("dex_halloran") == _base("dex_halloran") + 3
 
+    def test_the_first_yes_pays_three_too(self) -> None:
+        """The author's read of W3a (2026-10-13): a yes on the first visit pays as the return's."""
+        social = SocialManager()
+        manager = _walk(
+            "dex_cantina",
+            "dex_halloran",
+            [
+                "Who are you?",
+                "What kind of information?",
+                "What does that have to do",
+                "What's on the chip?",
+                "I'll do it.",
+            ],
+            social=social,
+        )
+        assert manager.get_flags() == {"dex_favor_accepted": True}
+        assert social.get_disposition("dex_halloran") == _base("dex_halloran") + 3
+
     def test_the_push_sets_and_pays_nothing(self) -> None:
         straight = _dl().dialogue_trees["dex_return"].nodes["straight"]
         asked = [
@@ -167,14 +185,19 @@ class TestGlyn:
         assert social.get_disposition("dex_halloran") == _base("dex_halloran")
 
     def test_why_me_follows_reva_sato(self) -> None:
-        for flags, target in (({"helped_reva_sato": True}, "why_me"), ({}, "why_me_watched")):
+        cases: tuple[tuple[dict[str, bool], list[str]], ...] = (
+            ({"helped_reva_sato": True}, ["why_me"]),
+            ({"ignored_distress_signal": True}, ["why_me_watched"]),
+            ({}, []),
+        )
+        for flags, targets in cases:
             manager = _walk("dex_cantina", "dex_halloran", [], flags)
             whys = [
                 r.next_node_id
                 for r in manager.get_available_responses()
                 if r.text == "Why are you talking to me?"
             ]
-            assert whys == [target], flags
+            assert whys == targets, flags
 
     def test_malia_heard_about_the_no(self) -> None:
         for flags, shown in (({"dex_favor_declined": True}, True), ({}, False)):

@@ -97,7 +97,7 @@
           "text": "Watch the event feeds. A mining boom means ore prices drop, buy cheap, sell at stations that process it. A crop failure means food prices spike at the affected system. The boards tell you what's happening. Your job is to be where the demand is before everyone else.",
           "responses": [
             {
-              "text": "Odom paid six hundred to move ore worth a hundred and fifty.",
+              "text": "Odom offered six hundred to move ore worth a hundred and fifty.",
               "next_node_id": "iron_carriage",
               "required_flags": [
                 "iron_ore_delivered"
@@ -107,7 +107,7 @@
               ]
             },
             {
-              "text": "I lost part of Odom's load on the Forgeworks lane.",
+              "text": "I lost Odom's ore in a fight.",
               "next_node_id": "iron_lane",
               "required_flags": [
                 "broker_ore_lost"
@@ -153,7 +153,7 @@
         {
           "id": "iron_lane",
           "speaker_id": "elena_reeves",
-          "text": "Which leg? *She has the chart up before you answer.* Larsen tells every new permit the routes around Nexus Prime are safe enough. Forgeworks is one jump out, and the charts rate it moderate. If we ran it, we would want... *She stops.* If you run it again, read the rating first.",
+          "text": "Which leg? *She has the chart up before you answer.* Larsen tells every new permit the routes around Nexus Prime are safe enough. Forgeworks is one jump out, and the charts rate it moderate. If you run it again, read the rating first.",
           "responses": [
             {
               "text": "Noted.",
@@ -1378,7 +1378,7 @@
               "text": "Is it still six hundred?",
               "next_node_id": "waiting_drifted",
               "required_flags": [
-                "iron_delivery_moved_on"
+                "iron_delivery_late_tier"
               ]
             },
             {
@@ -1393,7 +1393,7 @@
         {
           "id": "waiting_count",
           "speaker_id": "odom_broker",
-          "text": "Forgeworks hasn't pinged me yet. Your bay reads ten. Ten is what Kimura weighs.",
+          "text": "Forgeworks hasn't pinged me yet. Your bay reads ten or better. Ten is what Kimura weighs.",
           "responses": [
             {
               "text": "It'll get there.",
@@ -1419,7 +1419,7 @@
               "text": "Is it still six hundred?",
               "next_node_id": "waiting_drifted",
               "required_flags": [
-                "iron_delivery_moved_on"
+                "iron_delivery_late_tier"
               ]
             },
             {
@@ -1471,7 +1471,7 @@
         {
           "id": "loss_short",
           "speaker_id": "odom_broker",
-          "text": "*The lane incident report is up beside the docking log before you finish the sentence.* Forgeworks lane. Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
+          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
           "responses": [
             {
               "text": "I'll run what's left.",
@@ -1578,7 +1578,7 @@
         {
           "id": "thanks_made_good",
           "speaker_id": "odom_broker",
-          "text": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and part of the ten carries a floor stamp next to mine. *He taps the second paper.* You bought the difference and didn't send me the bill.",
+          "text": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
           "responses": [
             {
               "text": "Standard grade is standard grade.",
@@ -1591,7 +1591,7 @@
         {
           "id": "made_good_book",
           "speaker_id": "odom_broker",
-          "text": "*He turns the screen so you can see the line he is writing: your side of his book, what the floor charged you, to the credit.* Run's paid. Credits are in your account already. *He goes back to the count.* Not bad.",
+          "text": "*He turns the screen so you can see the line he is writing: your side of his book, the difference, to the credit.* Run's paid. Credits are in your account already. *He goes back to the count.* Not bad.",
           "responses": [
             {
               "text": "You know where to find me.",
@@ -1751,7 +1751,7 @@
         {
           "id": "ongoing_greet",
           "speaker_id": "odom_broker",
-          "text": "*He glances up. The pause before going back to the manifest is slightly longer than usual.* The Forgeworks run closed on my books. That counts. *He taps the stack of manifests in front of him.* Most pilots who walk through here are working the same short list their whole career. There's a longer ledger. Depends on whether you want to know what's in it.",
+          "text": "*He glances up. The pause before going back to the manifest is slightly longer than usual. He taps the stack of manifests in front of him.* Most pilots who walk through here are working the same short list their whole career. There's a longer ledger. Depends on whether you want to know what's in it.",
           "responses": [
             {
               "text": "What's in the longer ledger?",
@@ -1947,7 +1947,7 @@
         {
           "id": "accept_made_good",
           "speaker_id": "forgeworks_clerk",
-          "text": "*The lane report is already on his datapad. The scale reads ten. The lot reader beeps twice: Odom's stamp, and floor stock beside it.* Ten iron, standard grade. Booked. The report and the stamps go to Odom with the weight. They always do.",
+          "text": "*The incident report is already on his datapad. The scale reads ten. The lot reader takes a while over the stamps.* Ten iron, standard grade. Booked. The report and the stamps go to Odom with the weight. They always do.",
           "responses": [
             {
               "text": "Fine.",
@@ -1960,7 +1960,7 @@
         {
           "id": "accept_floor_stock",
           "speaker_id": "forgeworks_clerk",
-          "text": "*The scale says ten. The lot reader takes longer, and comes back with two stamps.* Ten iron, standard grade. Weight's weight. Booked, and your credits go out. The stamps go to Odom with the weight. They always do.",
+          "text": "*The scale says ten. The lot reader takes a while over the stamps.* Ten iron, standard grade. Weight's weight. Booked, and your credits go out. The stamps go to Odom with the weight. They always do.",
           "responses": [
             {
               "text": "Fine.",
@@ -1985,7 +1985,7 @@
         {
           "id": "weigh_short",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He runs the load onto the scale and reads it against Odom's manifest. The lane's incident report is on his datapad before you finish explaining.* Syndicate sends us their lane reports now they're paying for escorts. Yours isn't the first short load off that lane this month. Two ways, pilot. I sign for what's on the scale, report attached, and Odom pays on what I weigh. Or you bring it to ten off the Exchange floor. Standard grade is standard grade. Scale doesn't read names.",
+          "text": "*He pulls the intake scale's reading onto his datapad and reads it against Odom's manifest. The incident report comes up beside it before you finish explaining.* Syndicate sends us their lane reports now they're paying for escorts. Yours isn't the first short load this month. Two ways, pilot. I sign for what's on the scale, report attached, and Odom pays on what I weigh. Or you bring it to ten off the Exchange floor. Standard grade is standard grade. Scale doesn't read names.",
           "responses": [
             {
               "text": "Sign for what's here.",
@@ -2015,7 +2015,7 @@
         {
           "id": "no_sign",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He reads the scale against Odom's manifest, then checks the incident file. It comes up empty.* Manifest says ten. Scale says otherwise, and nothing on file says where the rest went. I don't sign for air. Bring me ten, or take it up with Odom.",
+          "text": "*He reads the scale against Odom's manifest, then checks the incident file.* Manifest says ten. Scale says otherwise, and the file doesn't cover the gap. I don't sign for air. Bring me ten, or take it up with Odom.",
           "responses": [
             {
               "text": "[Leave]",
@@ -2027,7 +2027,7 @@
         {
           "id": "nothing_to_weigh",
           "speaker_id": "forgeworks_clerk",
-          "text": "Nothing on the scale, nothing to sign. Your report's on file. Whether Odom eats the loss is between you and Odom, and he's at Nexus Prime.",
+          "text": "Nothing on the scale means nothing to sign. Your report's on file. Whether Odom eats the loss is between you and Odom, and he's at Nexus Prime.",
           "responses": [
             {
               "text": "[Leave]",
@@ -2323,6 +2323,9 @@
             {
               "text": "Why are you talking to me?",
               "next_node_id": "why_me_watched",
+              "required_flags": [
+                "ignored_distress_signal"
+              ],
               "excluded_flags": [
                 "helped_reva_sato"
               ]
@@ -2349,7 +2352,7 @@
         {
           "id": "why_me",
           "speaker_id": "dex_halloran",
-          "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "text": "What's that worth to you? Call it a sample. You helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
           "responses": [
             {
               "text": "I'm listening.",
@@ -2361,7 +2364,7 @@
         {
           "id": "why_me_watched",
           "speaker_id": "dex_halloran",
-          "text": "Because you didn't stop for Reva Sato. *He shrugs.* Not a judgment. A captain who keeps flying is a captain nobody watches, and nobody watching is what I need right now. I'm Glyn. I deal in information. And I've got a problem that requires someone who isn't me.",
+          "text": "What's that worth to you? *He shrugs.* Call it a sample. You didn't stop for Reva Sato. Not a judgment. A captain who keeps flying is a captain nobody watches, and nobody watching is what I need right now. I'm Glyn. I deal in information. And I've got a problem that requires someone who isn't me.",
           "responses": [
             {
               "text": "I'm listening.",
@@ -2459,7 +2462,8 @@
             {
               "text": "I'll do it.",
               "next_node_id": "accepted",
-              "set_flag": "dex_favor_accepted"
+              "set_flag": "dex_favor_accepted",
+              "disposition_change": 3
             },
             {
               "text": "I don't want to get involved.",
@@ -3088,7 +3092,7 @@
         {
           "id": "refuse",
           "speaker_id": "oren_tak",
-          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out. Not yet.",
+          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out.",
           "responses": [
             {
               "text": "[Stand to go.]",
@@ -3200,7 +3204,7 @@
         {
           "id": "start",
           "speaker_id": "sienna_vek",
-          "text": "A woman in a Guild logistics uniform slides into the seat across from you. Her eyes are bloodshot and her hands are shaking. She glances at the cantina door before speaking. You came out of the sealed sections. I saw you on the security feeds before I wiped them. We need to talk.",
+          "text": "*A woman in a Guild logistics uniform slides into the seat across from you. Her eyes are bloodshot and her hands are shaking. She glances at the cantina door before speaking.* You came out of the sealed sections. I saw you on the security feeds before I wiped them. We need to talk.",
           "responses": [
             {
               "text": "Who are you?",
@@ -3346,7 +3350,7 @@
         {
           "id": "share_data",
           "speaker_id": "sienna_vek",
-          "text": "She slides a data chip across the table. It's smaller than a thumbnail. Encrypted schematics, energy calculations, shipping manifests, authorization seals. Everything I could pull without tripping the access logs. Project Convergence. Sixteen gravitational lensing arrays. An artificial singularity pointed at the heart of the Aurelia Expanse. Someone has to stop this.",
+          "text": "*She slides a data chip across the table. It's smaller than a thumbnail.* Encrypted schematics, energy calculations, shipping manifests, authorization seals. Everything I could pull without tripping the access logs. Project Convergence. Sixteen gravitational lensing arrays. An artificial singularity pointed at the heart of the Aurelia Expanse. Someone has to stop this.",
           "responses": [
             {
               "text": "I'll stop it.",
@@ -12323,7 +12327,7 @@
         {
           "id": "projections",
           "speaker_id": "elena_reeves",
-          "text": "*She turns the slate back toward herself. A freight projection is open on it, for a ship registered to someone else.* Three more of these to finish tonight, for a hull I will never set foot on, and the owner wants them... *She closes the slate.* Four minutes. As promised.",
+          "text": "*A freight projection is open on her slate now, for a ship registered to someone else.* Three more of these to finish tonight, for a hull I will never set foot on. *She closes the slate.* Four minutes. As promised.",
           "responses": [
             {
               "text": "Thanks, Elena.",
@@ -12393,7 +12397,7 @@
         {
           "id": "terms",
           "speaker_id": "dex_halloran",
-          "text": "Chip's hotter than it was. Same job: Malia Torres, the lower decks at Crimson Reach. Tell her Glyn sent you. You'd still have a favor from Glyn Quintela at the end of it. A smaller one. That's what waiting cost.",
+          "text": "Chip's hotter than it was. Same job: Malia Torres, the lower decks at Crimson Reach. Tell her Glyn sent you. You'd have a favor from Glyn Quintela at the end of it. Smaller than a yes on the spot would have bought. That's what waiting cost.",
           "responses": [
             {
               "text": "I'll do it.",
@@ -12423,7 +12427,7 @@
         {
           "id": "still_no",
           "speaker_id": "dex_halloran",
-          "text": "Your call. The price moves every day you wait. That's the market, not me.",
+          "text": "Your call. A no is information too, friend, and I never throw information away.",
           "responses": [
             {
               "text": "[Leave]",
@@ -12444,7 +12448,7 @@
           "text": "The tourist's back. *Quiet.* Coming back is brave or stupid. Usually both.",
           "responses": [
             {
-              "text": "Glyn sent me. Same as before.",
+              "text": "Glyn sent me. I should have led with that.",
               "next_node_id": "glyn_again"
             },
             {
@@ -12471,7 +12475,7 @@
         {
           "id": "glyn_again",
           "speaker_id": "oren_tak",
-          "text": "Glyn. That name bought you thirty seconds last time. *He checks the door.* It buys less now.",
+          "text": "Glyn. That name buys thirty seconds. *He checks the door.* Fewer on a second visit.",
           "responses": [
             {
               "text": "I didn't know who was listening.",
@@ -12500,7 +12504,7 @@
         {
           "id": "found",
           "speaker_id": "oren_tak",
-          "text": "*He holds still. Then, very quiet:* Iron Depths. Seventh sublevel. Crates with Guild freight stamps, procurement format. That's what I sat here to say. *He watches the door.* Don't come back.",
+          "text": "*He holds still. Then, very quiet:* Iron Depths. Seventh sublevel. Crates with Guild freight stamps. That's what I sat here to say. *He watches the door.* Don't come back.",
           "responses": [
             {
               "text": "[Nod]",
@@ -12513,7 +12517,7 @@
         {
           "id": "found_not",
           "speaker_id": "oren_tak",
-          "text": "*He shakes his head.* You read too much into a chair. *Then, lower, as you stand:* Iron Depths. Seventh sublevel. Seventh.",
+          "text": "*He shakes his head.* You read too much into a chair. *Then, lower:* Iron Depths. Seventh sublevel. Seventh.",
           "responses": [
             {
               "text": "[Walk away.]",
@@ -12532,7 +12536,7 @@
         {
           "id": "terms",
           "speaker_id": "tomas_drifter",
-          "text": "*He's ladling stew before you sit down.* Eat first. *Then:* Bales are where you left them. So. Slept on it?",
+          "text": "*He's ladling stew as you reach the table.* Eat first. *Then:* Bales are where you left them. So. Slept on it?",
           "responses": [
             {
               "text": "I'm in.",

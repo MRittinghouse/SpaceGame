@@ -17,6 +17,7 @@ from spacegame.constants.flags import (
     heard_nas_intelligence,
     investment_introduced,
     iron_delivery_closed,
+    iron_delivery_late_tier,
     iron_delivery_resolved,
     iron_job_done_clean,
     iron_job_done_made_good,
@@ -175,6 +176,7 @@ class TestIronDeliveryFlags:
         assert iron_delivery_resolved() == "iron_delivery_resolved"
         assert iron_delivery_closed() == "iron_delivery_closed"
         assert iron_ore_signed_short() == "iron_ore_signed_short"
+        assert iron_delivery_late_tier() == "iron_delivery_late_tier"
 
     def test_the_state_flags_return_their_own_names(self) -> None:
         assert iron_job_full() == "iron_job_full"

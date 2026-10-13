@@ -9,7 +9,7 @@
     },
     {
       "entry_id": "auto_m02_delivery",
-      "text": "Delivered Odom's iron ore to the Main Foundry intake at Forgeworks. First completed contract.",
+      "text": "Delivered Odom's iron ore to the Main Foundry intake at Forgeworks.",
       "trigger_flag": "iron_ore_delivered",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
@@ -100,7 +100,7 @@
     },
     {
       "entry_id": "auto_m13_oren",
-      "text": "Found Oren Tak in Breakstone's mining tunnels. Retired miner, Union pension. Came away with a location: Iron Depths, Sublevel 7.",
+      "text": "Found Oren Tak in Breakstone's mining tunnels. Retired miner. Came away with a location: Iron Depths, Sublevel 7.",
       "trigger_flag": "oren_intel_received",
       "system_id": "breakstone",
       "mission_id": ""
@@ -135,7 +135,7 @@
     },
     {
       "entry_id": "auto_iron_betrayal",
-      "text": "Odom filed a freight violation against my permit over his iron ore. Guild standing dropped. His desk was closed to me after that. What did not come back to his lot is in his book.",
+      "text": "Odom filed a freight violation against my permit over his iron ore. Guild standing dropped. His desk was closed to me after that.",
       "trigger_flag": "iron_delivery_failed",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
@@ -583,7 +583,7 @@
     },
     {
       "entry_id": "auto_iron_made_good",
-      "text": "Bought iron ore off the floor to make Odom's count. Kimura weighed ten. Odom wrote what the floor charged on my side of his book.",
+      "text": "Made up Odom's count after a fight took ore from his load. Kimura weighed ten. Odom wrote the difference on my side of his book.",
       "trigger_flag": "odom_book_credit",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"
@@ -604,7 +604,7 @@
     },
     {
       "entry_id": "auto_iron_covered",
-      "text": "Odom paid the iron run in full. His screen showed the floor log for his ore beside Kimura's count.",
+      "text": "Odom paid the iron run on the count. His screen showed the floor log for his ore beside Kimura's count.",
       "trigger_flag": "odom_noted_the_float",
       "system_id": "nexus_prime",
       "mission_id": "iron_delivery"

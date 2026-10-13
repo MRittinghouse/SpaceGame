@@ -11,6 +11,7 @@ from spacegame.constants.flags import (
     broker_ore_sold,
     iron_delivery_closed,
     iron_delivery_failed,
+    iron_delivery_late_tier,
     iron_delivery_moved_on,
     iron_delivery_resolved,
 )
@@ -23,6 +24,7 @@ from spacegame.models.iron_consignment import (
     FILING_LINE,
     MISSION,
     STATE_FLAGS,
+    VIOLATION_LINE,
     close_on_exit,
     closers,
     hidable,
@@ -214,7 +216,7 @@ class TestTheClock:
         assert not on_clock(manager, _player(10), flags, 21)
         assert iron_delivery_moved_on() not in flags
         notice = on_clock(manager, _player(10), flags, 22)
-        assert notice.flags == (iron_delivery_moved_on(),)
+        assert notice.flags == (iron_delivery_late_tier(), iron_delivery_moved_on())
         assert notice.lines == ()
         assert manager.get_status(MISSION) == MissionStatus.ACTIVE
 
@@ -228,8 +230,18 @@ class TestTheClock:
         assert not moved_on_due(_manager(bill_of_landing="active"), {}, 40)
 
     def test_the_clock_writes_once(self) -> None:
-        flags = {iron_delivery_moved_on(): True}
+        flags = {iron_delivery_moved_on(): True, iron_delivery_late_tier(): True}
         assert not on_clock(_open(), _player(10), flags, 30)
+
+    def test_a_late_take_reaches_its_own_late_tier(self) -> None:
+        """The author's read of W3a (2026-10-13): the drifted reply waits on the job's own tier."""
+        manager = _manager(accepted_day=21, bill_of_landing="completed", iron_delivery="active")
+        flags = {iron_delivery_moved_on(): True}
+        assert not on_clock(manager, _player(10), flags, 39)
+        assert iron_delivery_late_tier() not in flags
+        notice = on_clock(manager, _player(10), flags, 40)
+        assert notice.flags == (iron_delivery_late_tier(),)
+        assert notice.lines == ()
 
     def test_an_open_job_with_no_accept_day_counts_from_day_one(self) -> None:
         manager = _manager(bill_of_landing="completed", iron_delivery="active")
@@ -242,7 +254,12 @@ class TestTheClock:
         flags = {broker_ore_sold(): True}
         assert not on_clock(manager, player, flags, 19)
         notice = on_clock(manager, player, flags, 20)
-        assert notice.lines == (FAILED_LINE, "Odom's crew took back 4 Iron Ore", FILING_LINE)
+        assert notice.lines == (
+            FAILED_LINE,
+            "Odom's crew took back 4 Iron Ore",
+            FILING_LINE,
+            VIOLATION_LINE,
+        )
         assert notice.flags == (
             iron_delivery_failed(),
             iron_delivery_resolved(),
@@ -260,8 +277,14 @@ class TestTheClock:
     def test_a_filing_with_nothing_aboard_takes_nothing(self) -> None:
         flags = {broker_ore_sold(): True, iron_delivery_moved_on(): True}
         notice = on_clock(_open(), _player(), flags, 25)
-        assert notice.lines == (FAILED_LINE, FILING_LINE)
+        assert notice.lines == (FAILED_LINE, FILING_LINE, VIOLATION_LINE)
         assert notice.flags == (iron_delivery_failed(), iron_delivery_resolved())
+
+    def test_the_filing_fits_the_banner(self) -> None:
+        """The author's read of W3a (2026-10-13): each banner line fits; no unit count."""
+        assert len(FILING_LINE) <= 128
+        assert len(VIOLATION_LINE) <= 128
+        assert "ten units" not in FILING_LINE
 
     def test_a_covered_sale_is_not_filed(self) -> None:
         manager = _open()
@@ -282,7 +305,7 @@ class TestTheClock:
         standing = player.get_reputation("commerce_guild")
         notice = on_clock(manager, player, flags, 25)
         assert notice.lines == ()
-        assert notice.flags == (iron_delivery_moved_on(),)
+        assert notice.flags == (iron_delivery_late_tier(), iron_delivery_moved_on())
         assert manager.get_status(MISSION) == MissionStatus.ACTIVE
         assert player.ship.get_cargo_quantity("iron_ore") == held
         assert player.get_reputation("commerce_guild") == standing
@@ -312,6 +335,15 @@ class TestTheClose:
         assert notice.lines == (CLOSED_LINE, "Odom's crew took back 7 Iron Ore")
         assert manager.get_status(MISSION) == MissionStatus.FAILED
         assert notice.flags == (iron_delivery_resolved(), iron_delivery_moved_on())
+
+    def test_the_close_takes_back_from_both_holds(self) -> None:
+        """The author's read of W3a (2026-10-13): the main hold first, then the hidden one."""
+        player = _player(7, hidden=5)
+        notice = close_on_exit(_open(), player, {iron_delivery_closed(): True})
+        assert notice.lines == (CLOSED_LINE, "Odom's crew took back 10 Iron Ore")
+        assert player.ship.get_cargo_quantity("iron_ore") == 0
+        assert player.hidden_compartment is not None
+        assert player.hidden_compartment.hidden_cargo.get("iron_ore", 0) == 2
 
     def test_a_write_off_with_nothing_aboard_posts_only_the_close(self) -> None:
         notice = close_on_exit(_open(), _player(), {iron_delivery_closed(): True})

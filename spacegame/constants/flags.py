@@ -625,10 +625,20 @@ def iron_delivery_moved_on() -> str:
     from day 20 for a captain who holds the bill of landing and never took the job, and when
     it files a sale on record.
     Consumers: ``elena_reeves.auto_trigger_prerequisites``; ``footing_the_bill`` and
-    ``the_dead_ledger`` required flags; Odom's drifted reply (``merchant_delivery``,
-    ``waiting_drifted``).
+    ``the_dead_ledger`` required flags.
     """
     return "iron_delivery_moved_on"
+
+
+def iron_delivery_late_tier() -> str:
+    """Flag set when the open iron job's own late tier has begun (accept day + 19).
+
+    Producer: ``iron_consignment.on_clock`` at the first landing or rest on or after that day,
+    only while the job is open.
+    Consumer: Odom's drifted reply, "Is it still six hundred?" (``merchant_delivery``'s
+    ``waiting`` and ``waiting_count``).
+    """
+    return "iron_delivery_late_tier"
 
 
 def iron_delivery_failed() -> str:

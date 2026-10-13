@@ -282,6 +282,7 @@ class TestRestRunsTheIronClock:
             FAILED_LINE,
             FILING_LINE,
             TAKEN_BACK_LINE,
+            VIOLATION_LINE,
             IronNotice,
         )
         from spacegame.models.mission import MissionManager
@@ -306,9 +307,10 @@ class TestRestRunsTheIronClock:
         assert manager.get_status("iron_delivery").value == "failed"
         assert player.ship.get_cargo_quantity("iron_ore") == 0
         assert [n.lines for n in posted] == [
-            (FAILED_LINE, TAKEN_BACK_LINE.format(units=6), FILING_LINE)
+            (FAILED_LINE, TAKEN_BACK_LINE.format(units=6), FILING_LINE, VIOLATION_LINE)
         ]
         assert FILING_LINE not in view.transaction_message
+        assert VIOLATION_LINE not in view.transaction_message
         assert player.dialogue_flags["iron_job_moved"] is False
 
 

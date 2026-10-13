@@ -5164,7 +5164,10 @@ class Game:
 
         self.paused = True
         if not self.pause_menu_view:
-            pause_menu_view = PauseMenuView(self.ui_manager)
+            pause_menu_view = PauseMenuView(
+                self.ui_manager,
+                save_allowed=self.state_manager.current_state != GameState.DIALOGUE,
+            )
             pause_menu_view.on_enter()
             self.pause_menu_view = pause_menu_view
         self.audio_manager.pause_music()

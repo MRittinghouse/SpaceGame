@@ -269,6 +269,14 @@ def test_the_clerk_signs_only_what_the_scale_reads() -> None:
     assert targets["nothing_to_weigh"] == ["iron_job_gone_lost"]
 
 
+def test_the_drifted_reply_waits_on_the_jobs_own_late_tier() -> None:
+    """The author's read of W3a (2026-10-13): a late taker hears it from their own late tier."""
+    tree = _dl().dialogue_trees["merchant_delivery"]
+    for node_id in ("waiting", "waiting_count"):
+        drifted = [r for r in tree.nodes[node_id].responses if r.text == "Is it still six hundred?"]
+        assert [r.required_flags for r in drifted] == [["iron_delivery_late_tier"]], node_id
+
+
 def test_elenas_iron_replies_are_one_time_each() -> None:
     tips = _dl().dialogue_trees["elena_cantina"].nodes["trading_tips"]
     gated = {r.next_node_id: (r.required_flags, r.excluded_flags) for r in tips.responses[:3]}

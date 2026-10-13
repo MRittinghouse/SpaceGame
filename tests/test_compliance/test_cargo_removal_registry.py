@@ -48,14 +48,16 @@ REVIEWED: dict[tuple[str, str], tuple[str, str]] = {
     ("spacegame/models/iron_consignment.py", "take_back"): (
         "",
         "the iron job's close and filing take back Odom's consigned ore, at most ten units, "
-        "from the main hold (polish design 2.2 rule 6)",
+        "from both holds, the main hold first (polish design 2.2 rule 6; the author's read "
+        "2026-10-13)",
     ),
     ("spacegame/models/mission.py", "MissionManager.apply_rewards"): (
         "_delivery_share",
-        "a hand-over takes its own mission's units and the captain's; a remove_cargo reward "
-        "takes only what its mission's collect leg counted on free units in the same check "
-        "(pinned by test_each_remove_cargo_reward_has_its_collect_leg; the board, smuggling "
-        "and post-capstone generators build the same pair)",
+        "a hand-over takes its own mission's units and the captain's, from both holds, the main "
+        "hold first; a remove_cargo reward takes only what its mission's collect leg counted "
+        "on free units in the same check (pinned by "
+        "test_each_remove_cargo_reward_has_its_collect_leg; the board, smuggling and "
+        "post-capstone generators build the same pair)",
     ),
     ("spacegame/models/player.py", "Player.apply_combat_defeat"): (
         "",

@@ -4,7 +4,9 @@ The campaign never waits on the errand. ``iron_delivery_moved_on`` says it has m
 delivery's reward sets it, the close sets it, the exit after the offer's decline sets it, and
 ``on_clock`` sets it at the first landing or rest on or after the day the job's late tier
 begins (accept day + 19), or from day 20 for a captain who holds the bill of landing and never
-took the job. ``iron_delivery_resolved`` says the job itself is over.
+took the job. ``iron_delivery_late_tier`` says the open job's own late tier has begun;
+``on_clock`` sets it only while the job is open. ``iron_delivery_resolved`` says the job itself
+is over.
 
 Odom reads records, never motives. A sale that draws his consigned ore while the job is open
 sets ``broker_ore_sold`` (``note_sale``); a defeat whose losses draw it sets
@@ -17,8 +19,9 @@ clock files a sale on record from the late tier, without the captain present.
 Python keeps counts, so Odom's ten units are the job's accept cargo reserved through
 ``MissionManager.reserved_units``, and a sale or a defeat draws them when it leaves fewer than
 ten held (both holds). Hiding them is refused (``hidable``), so the state table's rule that an
-open job holds fewer than ten only after a sale or a loss holds here too. The Godot port
-mirrors these rules (plan W3a-A).
+open job holds fewer than ten only after a sale or a loss holds here too. The hand-over and
+the take-back read both holds too, the main hold first. The Godot port mirrors these rules
+(plan W3a-A).
 """
 
 from __future__ import annotations
@@ -32,6 +35,7 @@ from spacegame.constants.flags import (
     broker_ore_sold,
     iron_delivery_closed,
     iron_delivery_failed,
+    iron_delivery_late_tier,
     iron_delivery_moved_on,
     iron_delivery_resolved,
     iron_job_done_clean,
@@ -68,9 +72,10 @@ FAILED_LINE = "Mission Failed: Iron Ore Delivery"
 CLOSED_LINE = "Job Closed: Iron Ore Delivery"
 TAKEN_BACK_LINE = "Odom's crew took back {units} Iron Ore"
 FILING_LINE = (
-    "Nexus Prime cargo office, Odom's register: consigned iron ore, ten units, sold on a Guild "
-    "trading floor under your permit. Freight violation filed."
+    "Nexus Prime cargo office, Odom's register: consigned iron ore, sold on a Guild trading "
+    "floor under your permit."
 )
+VIOLATION_LINE = "Freight violation filed."
 HIDE_REFUSED = "Consigned ore stays in the main hold."
 
 # The ten state flags, open states first, in the table's order (polish design 2.2 rule 3).
@@ -96,6 +101,7 @@ ENGINE_FLAGS: tuple[str, ...] = (
     broker_ore_sold(),
     broker_ore_lost(),
     iron_delivery_moved_on(),
+    iron_delivery_late_tier(),
     *STATE_FLAGS,
 )
 
@@ -276,6 +282,30 @@ def moved_on_due(manager: "MissionManager", flags: Mapping[str, bool], game_day:
     return holds_permit and game_day >= FIRST_DAY + offset
 
 
+def late_tier_due(manager: "MissionManager", flags: Mapping[str, bool], game_day: int) -> bool:
+    """Whether the open job's own late tier has begun and its flag is still unset.
+
+    Unlike ``iron_delivery_moved_on``, which a captain who never took the job can hold from
+    day 20, this flag is written only while the job is open, counted from its own accept day
+    (from day 1 when none was recorded), so a late taker reaches it on their own clock.
+
+    Args:
+        manager: The mission manager.
+        flags: The player's dialogue flags.
+        game_day: The current game day.
+
+    Returns:
+        Whether to set ``iron_delivery_late_tier``.
+    """
+    if flags.get(iron_delivery_late_tier(), False):
+        return False
+    mission = manager.get_mission(MISSION)
+    if mission is None or manager.get_status(MISSION) != MissionStatus.ACTIVE:
+        return False
+    offset = late_tier_offset(mission)
+    return offset is not None and game_day >= _late_day(manager, offset)
+
+
 def filing_due(
     manager: "MissionManager", player: "Player", flags: Mapping[str, bool], game_day: int
 ) -> bool:
@@ -308,8 +338,9 @@ def on_clock(
     """Run the job's clock at a landing or a rest: file a sale on record, or move on.
 
     Filing fails the job (``iron_delivery_failed``), takes back the consigned ore still
-    aboard, costs Commerce Guild standing and posts the register's notice; it also settles
-    the job's two flags. Otherwise the clock sets ``iron_delivery_moved_on`` when it is due.
+    aboard, costs Commerce Guild standing and posts the register's notices; it also settles
+    the job's two flags. Otherwise the clock sets ``iron_delivery_late_tier`` once the open
+    job's late tier has begun, and ``iron_delivery_moved_on`` when it is due.
 
     Args:
         manager: The mission manager.
@@ -325,12 +356,16 @@ def on_clock(
         flags[iron_delivery_failed()] = True
         taken = take_back(player)
         player.modify_reputation(GUILD, FILING_STANDING)
-        lines = (FAILED_LINE, *_taken_lines(taken), FILING_LINE)
+        lines = (FAILED_LINE, *_taken_lines(taken), FILING_LINE, VIOLATION_LINE)
         return IronNotice(lines, (iron_delivery_failed(), *_settle(flags)))
+    written: list[str] = []
+    if late_tier_due(manager, flags, game_day):
+        flags[iron_delivery_late_tier()] = True
+        written.append(iron_delivery_late_tier())
     if moved_on_due(manager, flags, game_day):
         flags[iron_delivery_moved_on()] = True
-        return IronNotice((), (iron_delivery_moved_on(),))
-    return IronNotice()
+        written.append(iron_delivery_moved_on())
+    return IronNotice((), tuple(written))
 
 
 def close_on_exit(
@@ -367,7 +402,7 @@ def close_on_exit(
 
 
 def take_back(player: "Player") -> int:
-    """Odom's dock crew takes back up to ten iron ore from the main hold.
+    """Odom's dock crew takes back up to ten iron ore from both holds, the main hold first.
 
     Args:
         player: The player.
@@ -375,9 +410,12 @@ def take_back(player: "Player") -> int:
     Returns:
         The units taken.
     """
-    units = min(player.ship.get_cargo_quantity(ORE), CONSIGNED)
-    if units > 0:
-        player.ship.remove_cargo(ORE, units)
+    units = min(held_units(player, ORE), CONSIGNED)
+    from_main = min(units, player.ship.get_cargo_quantity(ORE))
+    if from_main > 0:
+        player.ship.remove_cargo(ORE, from_main)
+    if units > from_main and player.hidden_compartment is not None:
+        player.hidden_compartment.remove_from_hidden(ORE, units - from_main)
     return units
 
 

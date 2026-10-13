@@ -715,16 +715,18 @@ D-20, F-74 and A12 (polish design 8.1).
   "Progress: iron_ore_delivered"); "Progress: tomas_friendship" moved from Drifter's
   Delivery's Mission Complete notice to Recruit Trader's (the set_flag reward's existing
   "Progress: <flag>" form).
-- Content left for the writing session: the return scenes (`AWAITING_RETURN_SCENES` in
-  `tests/test_data/test_one_shot_scenes.py`: Dex, Elena, Oren; `CHECK_GATED_RETURNS`:
-  Oren; A1's `PENDING_CHECK_GATED_FLAGS` keeps `oren_intel_received`); the iron scenes,
-  states and sensors of design 2.6; the ten crew barks; `data/endings/endings.json`; the
-  journal's `auto_m13_oren`, whose trigger `oren_revealed_base` nothing sets and whose
-  text (unmarked ships, Guild-class hulls) does not match Oren's scene, to be re-keyed to
-  `oren_intel_received` and rewritten to what every route learns (design 6.3);
-  `tomas_havens`' start reply "Thanks. I'm Tomas?", where the captain speaks his name
-  before he gives it, to become a thank-you and a question about whom they owe for the
-  stew (design 6.3); the Forgeworks Compact lore behind the first-sale lines (choice 17).
+- Content left for the writing session, as plan W3a-S left it ("Writing W3a" below): the
+  return scenes landed, and the constants with them (`AWAITING_RETURN_SCENES` and
+  `CHECK_GATED_RETURNS` are gone from `tests/test_data/test_one_shot_scenes.py`, and A1's
+  `PENDING_CHECK_GATED_FLAGS` from `tests/test_data/test_content_contracts.py`, whose check
+  now asserts that no awaited flag is gated); the iron scenes, states and sensors of design
+  2.6 landed; the journal's `auto_m13_oren` is re-keyed to `oren_intel_received` and
+  rewritten to what every route learns; and `tomas_havens`' start reply reads "Thanks. Who
+  do I owe for the stew?" (design 6.3). The observations below on Wren's talk objective,
+  the hidden compartment and the O4 captain's greet are settled by the same plan. Still
+  open: the ten crew barks and the Forgeworks Compact lore behind the first-sale lines
+  (choice 17), plan W3b's (spec 9.2 row 10); and `data/endings/endings.json`, written in
+  SP6's paired dialogue session (aurelia `docs/handoffs.md`, SP6).
 - Observations: a captain holding The Heirloom Seeds' three food needs five more of their
   own for Union Territory until the seeds' job ends, since the seeds are never handed
   over (A1's SP10 record); Wren is marked needed while the iron job's talk objective is
@@ -1587,6 +1589,214 @@ strangers gated, and content rules 1 to 12 held by `tests/test_data/test_crew_sc
   new rows for BB-16 (closed at landing) and the Legend latch (a threshold flag never fires
   when Legend is learned while loyalty sits in the ten points under a mark; owner the
   relationship model, W9) take the next free ids in plan W4-A. (polish design 3.6 Records)
+
+## Writing W3a (2026-10-13)
+
+Plan W3a-S (aurelia `docs/plans/2026-10-12-writing-w3a-spacegame.md`) landed the SpaceGame half
+of the writing-discipline spec's 9.2 rows 5 and 6: Odom's iron job truthful in every state, with
+its states, sensors, clock, close and closers (polish design 2.2 and 2.6 to 2.9; spec 9.3's
+choices 1, 3, 4 and 5), Joaquim Kimura's and Elena's iron scenes, and the return scenes of polish
+choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read every new line on
+2026-10-13 and accepted the defaults; Task 9 applied the rulings and regenerated the goldens once.
+
+### Records for plan W3a-A
+
+- What the sync brings: six data files. `data/dialogue/dialogues.json` (Odom's
+  `merchant_delivery` in every state, the clerk's `forgeworks_intake`, Elena's three iron replies
+  in `elena_cantina`, the four return trees `elena_return`, `dex_return`, `oren_return` and
+  `tomas_return`, and the tier 2 echoes in `dex_cantina`, `torres_underground`,
+  `oren_tak_meeting`, `tomas_havens` and `sienna_vek_warning`); `data/characters/npcs.json` (the
+  four kept NPCs' return states; `forgeworks_clerk` is Joaquim Kimura, "Intake Clerk, Main
+  Foundry", and loses its `hide_after_flag`); `data/missions/missions.json` (`iron_delivery`'s
+  one-unit collect leg "Keep Odom's ore aboard", its hand-over flag `iron_ore_handed_over`,
+  `iron_delivery_resolved` among its rewards, its hint, discovery note and timeliness lines;
+  `whispers_at_the_bar`'s objective "Agree to carry Glyn's chip"; `drifters_delivery`'s
+  description and `receipt`); `data/missions/sa_v_investment_intro.json` (The Longer Ledger
+  after `bill_of_landing` on `odom_ledger_open`, its description and discovery note);
+  `data/journal/entries.json` (`auto_m02_delivery` on `iron_ore_delivered` for `iron_delivery`,
+  `auto_m13_oren` on `oren_intel_received`, `auto_iron_betrayal`, and seven new entries:
+  `auto_iron_short`, `auto_iron_made_good`, `auto_iron_written_off`, `auto_iron_handed_back`,
+  `auto_iron_covered`, `auto_elena_walked_away`, `auto_dex_declined`); and
+  `data/crew/ambient_dialogue.json` (two crew lines: Elena's walk-away, Tomas's turned-down
+  bales). (plan W3a-S Tasks 3 to 6 and 9)
+- Goldens whose content changes, from the regeneration's diff: the dialogue goldens of the eight
+  trees Tasks 3 to 6 changed (`dialogue/tree_merchant_delivery`, `tree_forgeworks_intake`,
+  `tree_elena_cantina`, `tree_dex_cantina`, `tree_torres_underground`, `tree_oren_tak_meeting`,
+  `tree_tomas_havens`, `tree_sienna_vek_warning`); four new goldens, `dialogue/tree_elena_return`,
+  `tree_dex_return`, `tree_oren_return` and `tree_tomas_return`; `dialogue/npcs_here` (a new
+  `tomas_thinking` step, the Forgeworks steps relabelled `intake_offered` and `intake_awaited`
+  at the author's read, `intake_awaited` holding `iron_job_full`, and a new `odom_short_load`
+  step that lists Odom for `iron_delivery`); `missions/lifecycle_iron_delivery` and the three
+  soft-deadline cases `missions/soft_deadline_5`, `_16` and `_25`, which now pin 60, 45 and 30
+  credits with "(1 of 10 delivered)", since the collect objective is one unit and the drivers
+  meet it with one unit aboard (each now sets `iron_ore_handed_over` where it recorded the talk
+  with the clerk, `talked_to_forgeworks_clerk`, and adds "Progress: iron_delivery_resolved");
+  and
+  `missions/availability`, whose every-gate flag set loses `iron_ore_delivered` and gains
+  `odom_ledger_open` with The Longer Ledger's new gate. The dialogue goldens record each tree's
+  structure (availability, next nodes, flags, dispositions), never its text, so the author's
+  rewordings move none of them; the read's structural changes show in
+  `tree_merchant_delivery` (the drifted reply's gate, `iron_delivery_late_tier`),
+  `tree_dex_cantina` (the watched reply's gate; the first visit's yes pays +3) and `npcs_here`.
+  The Longer Ledger's `missions/lifecycle_sa_v_investment_intro` does not change: the lifecycle
+  driver forces the mission available, so its new gate and discovery note never reach it. The
+  ambient case and `whispers_at_the_bar` do not move. The port's dialogue case count rises by
+  four (the return trees). (plan W3a-S Task 9)
+- The port's iron work (polish design 2.8, 2.2): `IronConsignment` gains the state table
+  (`state_of`, `refresh_state`, run from `DialogueActions._opening_flags` after the tree is
+  picked, after `at_exit` in `_close`, and after the clock), `note_defeat` (in `FightEnd`'s
+  defeat branch after `apply_defeat` and guard (a), from the job's owned lot before and after),
+  the close's take-back of up to ten ore through the reward path (replacing B2's
+  `lots.release`), the no-fault close (`iron_delivery_closed`, "Job Closed: Iron Ore Delivery"),
+  the decline's exit (`iron_delivery_resolved` with no job open moves the campaign on), the
+  clock's filing (the moved state from the late tier: fail, take back, Commerce Guild -10
+  applied directly under D-13, the register's notices) and `closers(flags)` in
+  `NpcAvailability.needed_by`. The clock also sets `iron_delivery_late_tier` at the first
+  landing or rest on or after the open job's own late-tier day (its accept day + 19), only
+  while the job is open and never on the filing's tick, because the synced "Is it still six
+  hundred?" reply in `merchant_delivery`'s `waiting` and `waiting_count` now requires it in
+  place of `iron_delivery_moved_on`, so a captain who took the job late hears it on their own
+  clock; when both fall due on one tick the notice's flags read `iron_delivery_late_tier`, then
+  `iron_delivery_moved_on` (the author's read, Q4). The notices verbatim, each its own banner,
+  in Task 1's constants as the read left them: `FAILED_LINE` "Mission Failed: Iron Ore
+  Delivery"; `CLOSED_LINE` "Job Closed: Iron Ore Delivery"; `TAKEN_BACK_LINE` "Odom's crew took
+  back {units} Iron Ore" (left out when nothing is taken); `FILING_LINE` "Nexus Prime cargo
+  office, Odom's register: consigned iron ore, sold on a Guild trading floor under your
+  permit." (its "ten units" and its last sentence gone at the read, Q3); the new
+  `VIOLATION_LINE` "Freight violation filed.", posted after it; and `HIDE_REFUSED` "Consigned ore
+  stays in the main hold.". A filing posts failed, taken back, filing, violation in that order;
+  a betrayal at the exit posts failed and taken back, a no-fault close closed and taken back.
+  The port has no hidden compartment, so the hide rule and `HIDE_REFUSED` are Python's alone.
+  (plan W3a-S Tasks 1, 2 and 9)
+- The receipt: the port reads a mission record's `receipt` beside the missions (as plan W4-A
+  reads crew scenes) and `MissionFlow._complete` posts it after "Mission Complete";
+  `Mission.to_dict` never writes it in Python, so no mission golden carries it. Drifter's
+  Delivery's receipt reads, at the read (Q39), "Grand Bazaar, textile desk: Tomas Drifter's
+  bales cleared under your license. Shares wired to Haven's Rest and to you." (118 characters).
+  (plan W3a-S Task 6, polish design 6)
+- Content rule 9 (a return tree pays once) is tested in SpaceGame now
+  (`tests/test_data/test_one_shot_scenes.py`, `test_a_return_pays_once`), and aurelia's
+  `test/unit/one_shot_content_test.gd` (its line 13 says rule 9 waits for the return trees)
+  should mirror it, since polish design 6.1 mirrors every rule in the port: read an exit as a
+  missing node, a node without replies or a reply without a next node; count a check's reply
+  flag and its branch flag (`set_flag_on_success` or `set_flag_on_failure`); and stop a path at
+  a node already on it. Plan W3a-A's row for that file adds no rule 9 yet. (plan W3a-S Task 7
+  and its ledger's ruling on the reviewer's flag b)
+- The port's tests the sync moves: `test/parity/dialogue_parity_test.gd` (`DIALOGUE_CASES` gains
+  the four return trees); `test/unit/dialogue_content_test.gd` (the tree count, +4, and the
+  totals, each read from the synced data; the NPC count holds); `test/unit/dialogue_manager_test.gd`
+  (the F-33 pins of `merchant_delivery`'s unselectable greet replies, now 4, 5, 13, 14, 15 and
+  18, and SpaceGame's `UNSELECTED_RESPONSES` also names `dex_cantina`'s start reply 2, the
+  watched reply, which the expert profile's `helped_reva_sato` excludes and the novice's empty
+  flags never open since the read gated it on `ignored_distress_signal` (Q27): with that flag
+  alone it is visible reply 1 and moves to `why_me_watched`);
+  `test/unit/mission_content_test.gd` (`iron_delivery`'s objectives, its six rewards and its
+  timeliness lines; the receipt's text if a case pins it);
+  `test/unit/mission_manager_test.gd` (the collect fall-back case takes the ore from ten to none,
+  the objective being one unit); `test/unit/npc_availability_test.gd` (the clerk's `needed_by`
+  holds only with an open state set); `test/unit/dialogue_actions_test.gd` (Odom's opening, what
+  the new greet offers; the exit's take-back in place of the release; the accept moved from
+  `offer` to `details`); `test/unit/one_shot_content_test.gd` (four kept NPCs, Elena, Glyn, Oren
+  and Tomas; none awaiting a return; Tomas's deferral exit resolving nothing; Elena's settable
+  pins gain `elena_walked_away`); `test/unit/story_content_test.gd` (`CHECK_GATE_ALLOWLIST`
+  emptied; its suite is at 499 lines, so no line may be added);
+  `test/unit/ambient_chatter_test.gd` (the ambient line count gains the two crew lines); and
+  `test/playthrough/one_shot_scenes_test.gd` (the second talks open the return trees, Elena's
+  `elena_return` and Glyn's `dex_return`; a first talk with Glyn by a captain who never met Reva
+  Sato's distress call, both of its flags unset, now offers only "Who are you?" at his start, so
+  a case that picked "Why are you talking to me?" there moves too). (plan W3a-A's sync table;
+  the author's read)
+- Python only, for the port's records beside deviation D-22: a sale of a top-up after a loss
+  reads as a sale of Odom's ore in Python (counts) and as the captain's own in the port (lots).
+  The hand-over (`deliver_cargo`, through `_delivery_share` and `apply_rewards`) and the
+  take-back read both holds, the main hold first (the author's read, Q2), so a captain's own
+  ore hidden beside Odom's counts on the scale, as it does in the job's state; the port has no
+  hidden compartment, so nothing follows there. Kimura's advice ("Ten on the scale, Odom's stamp
+  on every unit.") holds in the port only because its hand-over takes the mission's own lot
+  first, which plan W3a-A states only for the take-back: W3a-A should cite
+  `test/unit/cargo_lots_test.gd`'s line 40 and add one reward-path test with the captain's own
+  ore aboard. Saving is refused while a conversation is open (the pause menu greys Save out,
+  `PauseMenuView(save_allowed=...)`; the author's read, Q40): a Python UI rule, which the port's
+  save screen needs its own form of (SP6). (plan W3a-S Task 9)
+- Records in aurelia: F-75 (the iron scenes) and F-76 (the return scenes and BB-69's
+  fail-forward) close; F-66's `auto_m02_delivery` and `auto_m13_oren` items are fixed; F-86 stays
+  open for plan W3b (rows 10 and 11). The weigher's rename stands (the author's read, Q1:
+  Joaquim Kimura, "Intake Clerk, Main Foundry") and reaches the economy design's notes on Wren
+  (its 5.9 row "Wren | the Syndicate scale, Forgeworks" and the "Wren keeps the scale" note
+  under it, with Wren again in 5.10, 14.7 and Appendix A, and in
+  `docs/design/economy-loops/standing-people.md`) and `docs/handoffs.md`'s Wren line ("Wren keeps
+  the scale while the writing spec's rename waits on the author"); spec 9.3's last bullet is
+  settled by the same word. (plan W3a-S rulings)
+- The author's read: 2026-10-13. The author read the reading desk (its lines, the 22 planning
+  rulings, 42 questions with defaults and 18 flags) and replied "Reading desk reviewed, looks
+  good.", accepting every recommended default and every planning ruling. The rulings, one entry
+  per question with the controller's picks marked, are `../w3-edits/author-rulings.md` (Q1 to
+  Q42); Task 9 applied them. In short: code, Q2 (both holds), Q3 (the filing split in two), Q4
+  (`iron_delivery_late_tier`), Q40 (Save greyed out in a conversation) and Q42 (the step
+  labels); lines, Q5, Q8 (`ongoing_greet` and The Longer Ledger's discovery note), Q11 to Q18,
+  Q21, Q23 to Q25, Q27 and Q28 (Glyn's why), Q30 to Q36, Q38 and Q39; gates and payments, Q4's
+  drifted reply, Q27's watched reply and Q30's first-visit yes (+3); a comment, Q7; no change,
+  Q1, Q6, Q9, Q10, Q19's objective and hint, Q20, Q22, Q26, Q29, Q37 and Q41. (the author's
+  read, 2026-10-13)
+- What W3a leaves, and to whom:
+  - Tier 3's `no_freight` and `no_freight_float` (W3b or SP10); record tokens and the price rows
+    (W3b or SP10); `iron_delivery`'s description ("keeps your fuel tank full") against economy
+    design 7.4 (unowned, flagged).
+  - The T7-8 gesture ruling (spec 11.2) is still open and holds seven lines as they stand:
+    `merchant_delivery`'s `waiting_drifted`, `loss_closed`, `odom_arna_branch_a` and
+    `graduation_pointer`; `iron_delivery`'s late timeliness comment; `elena_return`'s `start`;
+    and `dex_return`'s `start`, whose not-turning sentence the plan added (polish design 6.3
+    names only the stool). Two more of the family were not on the desk: `oren_tak_meeting`'s
+    `parting` and `sienna_vek_warning`'s `farewell` (the author's T7-8 ruling, then W3b).
+  - `sienna_vek_warning`'s `refuse_data` and `farewell` keep narration unmarked under Sienna's
+    speaker tag (W3b's sweep); the read marked `start` and `share_data` (Q36).
+  - `odom_caught_lie` stays read by nothing until SP10's hooks (Q7; it stays in
+    `KNOWN_PRODUCER_ONLY_ORPHANS`). Any amends that brings Odom back after
+    `iron_delivery_failed` must add that flag to his greet's "Anything else you'd put in the
+    ledger for me?" reply's `excluded_flags` (SP10, Q9).
+  - The read's residuals, each for W3b's writing pass unless named: `iron_delivery`'s
+    `very_late` comment keeps "Intake clerk leans on the crate" (Q19); lane mentions that name
+    no lane stay in `thanks_made_good`, `thanks_short`, `auto_iron_short` and Odom's greet reply
+    10 (Q18); The Longer Ledger's "Odom flagged me down" though the captain goes to him on every
+    route (Q8); in the D-22 case above, the clerk's "the file doesn't cover the gap" is
+    arguable (Q17); Python's collect leg still reads the main hold (`free_units`), so a captain
+    whose main-hold ore is gone, with their own hidden, can be signed for but completes the run
+    only once ore is back in the main hold (Python only, Q2).
+  - "bill of landing" is the game's document name in at least eight strings (the mission
+    `bill_of_landing`, Larsen's tree, "Universal Bill of Landing", Odom's `no_permit`,
+    `tomas_havens` twice); a rename to "bill of lading" would be a ruling across those files
+    (the author, unowned).
+  - Glyn's first-visit yes pays +3 once only because `dex_favor_accepted` ends his keep: a later
+    mission that keeps him listed after the accept needs `excluded_flags`
+    `["dex_favor_accepted"]` on that reply (that mission's plan, Q30).
+  - The Q40 rule meets aurelia `docs/handoffs.md`'s saves stance ("manual saves anywhere") for
+    SP6, which now reads "anywhere outside a conversation" in Python.
+  - The voice-sheet check of Odom's lines (`requirements/character_voices.md`, Odom's sheet)
+    moves to the plan's final review (Q10); Task 9's own Odom lines (Q5, Q8a, Q13b, Q13c, Q18d)
+    keep his register: counts, weights and the book, no motive read.
+  - The run's other flags for the author, with owners: `iron_consignment.note_sale` and
+    `note_defeat` measure against every active mission's iron-ore accept cargo
+    (`MissionManager.reserved_units`), which only `iron_delivery` carries today (the plan that
+    authors a second iron-ore consignment); the iron section comment in
+    `spacegame/constants/flags.py` ("The iron ore delivery (bug bash BB-1, BB-4)") predates W3a
+    and says nothing of the state table (unowned, nothing false); older em dashes in comments of
+    `tests/test_constants/test_flags.py` (lines 88, 110, 123) and in
+    `requirements/roadmap/ROADMAP.md` line 1438, which no gate scans (a later prose-cleanup
+    pass); `test_known_orphan_lists_stay_meaningful`
+    (`tests/test_data/test_dialogue_integrity.py`, line 1283) lacks the 300 s timeout marker its
+    siblings carry and times out under load (after W3a; preflight ruling R18 covers it until
+    then); `test_a_return_pays_once` carries no marker and runs in 0.05 s (leave it); Elena's
+    lesson test (`tests/test_data/test_return_scenes.py`, line 103) checks "80" and "140" as
+    substrings (switch to a word-bounded match if an edit trips it); the call-site test's
+    `_arg(c).values[0]` (`tests/test_engine/test_game_call_sites.py`, lines 306 and 307) relies
+    on narrowing mypy would not apply (leave it unless mypy covers tests); rule 9's walker
+    ignores reply gates (revisit if a return tree gains a gated reply after a check); rule 6's
+    `self_looping_checks` (`tests/test_data/test_content_contracts.py`, line 236) catches only a
+    check that fails back to its own node (plan A1's owner); the global interpreter is Python
+    3.14 while the repo names 3.13, and every gate of the run passed under 3.14 (process).
+    Settled in the run and kept: the rest's notices go through `on_iron_notice` into the
+    banner queue, and a filing writes its Log entry at once (`Game._after_iron_clock`), both
+    Python-only departures from the plan's code (Task 2's fix round).
 
 ## Act II v1
 
