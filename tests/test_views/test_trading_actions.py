@@ -17,12 +17,17 @@ hiding behind a MagicMock that silently accepts any call shape.
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 
 import pygame
 import pytest
+
+if TYPE_CHECKING:
+    from spacegame.models.player import Player
+    from spacegame.views.trading_view import TradingView
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -69,6 +74,7 @@ def _make_trading_view_with_real_player(
     view.commodities = loader.commodities
     view.systems = loader.systems
     view.mission_manager = mission_manager
+    view.on_iron_notice = None
 
     # Stubbed market: every commodity sells for 50.
     # QF-8: TradingView.market is now a raising @property; set raw storage.
@@ -262,12 +268,92 @@ class TestRestRunsTheIronClock:
             }
         )
         view, player = _make_trading_view_with_real_player(mission_manager=manager)
+        player.ship.add_cargo("iron_ore", 10, 0)
         player.game_day = 18
         view._execute_rest()
         assert "iron_delivery_moved_on" not in player.dialogue_flags
         view._execute_rest()
         assert player.game_day == 20
         assert player.dialogue_flags["iron_delivery_moved_on"] is True
+
+    def test_a_rest_files_a_sale_on_record(self) -> None:
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.iron_consignment import (
+            FAILED_LINE,
+            FILING_LINE,
+            TAKEN_BACK_LINE,
+            VIOLATION_LINE,
+            IronNotice,
+        )
+        from spacegame.models.mission import MissionManager
+
+        dl = get_data_loader()
+        dl.load_all()
+        manager = MissionManager(dl.missions)
+        manager.load_state(
+            {
+                "status": {"bill_of_landing": "completed", "iron_delivery": "active"},
+                "accepted_day": {"iron_delivery": 1},
+            }
+        )
+        view, player = _make_trading_view_with_real_player(mission_manager=manager)
+        player.ship.add_cargo("iron_ore", 6, 0)
+        player.dialogue_flags["broker_ore_sold"] = True
+        player.dialogue_flags["iron_job_moved"] = True
+        player.game_day = 19
+        posted: list[IronNotice] = []
+        view.on_iron_notice = posted.append
+        view._execute_rest()
+        assert manager.get_status("iron_delivery").value == "failed"
+        assert player.ship.get_cargo_quantity("iron_ore") == 0
+        assert [n.lines for n in posted] == [
+            (FAILED_LINE, TAKEN_BACK_LINE.format(units=6), FILING_LINE, VIOLATION_LINE)
+        ]
+        assert FILING_LINE not in view.transaction_message
+        assert VIOLATION_LINE not in view.transaction_message
+        assert player.dialogue_flags["iron_job_moved"] is False
+
+
+def _give_hidden_compartment(player: Player) -> None:
+    """Install a hidden compartment with room for every hide these tests try."""
+    from spacegame.models.smuggling import HiddenCompartment
+
+    player.hidden_compartment = HiddenCompartment(total_cargo_capacity=50)
+
+
+def _select_cargo(view: TradingView, commodity_id: str, quantity: int) -> None:
+    """Select a cargo row and type a quantity, as the hide and sell buttons read them."""
+    view._get_selected_cargo_commodity = MagicMock(return_value=commodity_id)
+    # QF-8: quantity_input is a read-only property over _quantity_input
+    view._quantity_input = MagicMock()
+    view._quantity_input.get_text.return_value = str(quantity)
+    view._refresh_tables = MagicMock()
+
+
+class TestOdomsOreStaysInTheMainHold:
+    """Odom's consigned ore cannot be hidden while his job is open."""
+
+    def test_odoms_ore_cannot_be_hidden(self) -> None:
+        from spacegame.data_loader import get_data_loader
+        from spacegame.models.iron_consignment import HIDE_REFUSED
+        from spacegame.models.mission import MissionManager
+
+        dl = get_data_loader()
+        dl.load_all()
+        manager = MissionManager(dl.missions)
+        manager.load_state(
+            {"status": {"iron_delivery": "active"}, "accepted_day": {"iron_delivery": 1}}
+        )
+        view, player = _make_trading_view_with_real_player(mission_manager=manager)
+        player.ship.add_cargo("iron_ore", 12, 0)
+        _give_hidden_compartment(player)
+        _select_cargo(view, "iron_ore", quantity=5)
+        view._execute_hide_cargo()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        _select_cargo(view, "iron_ore", quantity=5)
+        view._execute_hide_cargo()
+        assert player.ship.get_cargo_quantity("iron_ore") == 10
+        assert view.transaction_message == HIDE_REFUSED
 
 
 class TestConsignedCargo:

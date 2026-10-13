@@ -9,12 +9,27 @@ a wrong return value here means the flag bus is broken.
 from __future__ import annotations
 
 from spacegame.constants.flags import (
+    broker_ore_lost,
     campaign_mission_milestone,
     dual_tech_revealed,
     encounter_seen,
     heard_dcmc_intelligence,
     heard_nas_intelligence,
     investment_introduced,
+    iron_delivery_closed,
+    iron_delivery_late_tier,
+    iron_delivery_resolved,
+    iron_job_done_clean,
+    iron_job_done_made_good,
+    iron_job_done_replaced,
+    iron_job_done_short,
+    iron_job_full,
+    iron_job_gone_lost,
+    iron_job_made_good,
+    iron_job_moved,
+    iron_job_replaced,
+    iron_job_short_lost,
+    iron_ore_signed_short,
     met_npc,
     odom_explained_investment,
     seen_faction_tip,
@@ -147,3 +162,30 @@ class TestSAVCargoBrokerFlags:
         """SA-V helpers are distinct from the pre-existing investment_introduced flag."""
         assert odom_explained_investment() != investment_introduced()
         assert seen_investment_tip() != investment_introduced()
+
+
+class TestIronDeliveryFlags:
+    """Plan W3a-S: the iron job's end flags, its loss and short-load records, and its states.
+
+    The ten state flags name the rows of polish design 2.2's table; the engine writes them and
+    Odom's and the intake clerk's replies read them, so each string is the one the data names.
+    """
+
+    def test_the_job_flags_return_their_own_names(self) -> None:
+        assert broker_ore_lost() == "broker_ore_lost"
+        assert iron_delivery_resolved() == "iron_delivery_resolved"
+        assert iron_delivery_closed() == "iron_delivery_closed"
+        assert iron_ore_signed_short() == "iron_ore_signed_short"
+        assert iron_delivery_late_tier() == "iron_delivery_late_tier"
+
+    def test_the_state_flags_return_their_own_names(self) -> None:
+        assert iron_job_full() == "iron_job_full"
+        assert iron_job_made_good() == "iron_job_made_good"
+        assert iron_job_replaced() == "iron_job_replaced"
+        assert iron_job_short_lost() == "iron_job_short_lost"
+        assert iron_job_gone_lost() == "iron_job_gone_lost"
+        assert iron_job_moved() == "iron_job_moved"
+        assert iron_job_done_replaced() == "iron_job_done_replaced"
+        assert iron_job_done_short() == "iron_job_done_short"
+        assert iron_job_done_made_good() == "iron_job_done_made_good"
+        assert iron_job_done_clean() == "iron_job_done_clean"

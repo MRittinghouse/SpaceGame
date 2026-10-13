@@ -28,11 +28,23 @@
           "arna_branch_a_complete": true,
           "arna_branch_b_complete": true,
           "arna_branch_c_complete": true,
-          "broker_ore_sold": true,
+          "first_delivery_complete": true,
           "investment_introduced": true,
-          "iron_ore_delivered": true,
+          "iron_delivery_late_tier": true,
+          "iron_delivery_resolved": true,
+          "iron_job_done_clean": true,
+          "iron_job_done_made_good": true,
+          "iron_job_done_replaced": true,
+          "iron_job_done_short": true,
+          "iron_job_full": true,
+          "iron_job_gone_lost": true,
+          "iron_job_made_good": true,
+          "iron_job_moved": true,
+          "iron_job_replaced": true,
+          "iron_job_short_lost": true,
+          "odom_ledger_open": true,
           "odom_taught_intro": true,
-          "talked_to_cargo_broker": true
+          "talked_to_officer_larsen": true
         },
         "social": {
           "disposition": {},
@@ -89,7 +101,7 @@
     },
     "tree_id": "merchant_delivery"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -101,7 +113,8 @@
       "result": {
         "available": [
           3,
-          5
+          6,
+          19
         ],
         "check": null,
         "next_node": "teach_intro",
@@ -128,11 +141,40 @@
       "result": {
         "available": [
           3,
-          5
+          6,
+          19
         ],
         "check": null,
-        "next_node": "offer",
-        "response": 5
+        "next_node": "no_permit",
+        "response": 6
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "greet",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          3,
+          6,
+          19
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 19
       },
       "state": {
         "disposition": {},
@@ -247,9 +289,7 @@
       },
       "state": {
         "disposition": {},
-        "flags": [
-          "talked_to_cargo_broker"
-        ],
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -271,14 +311,12 @@
           1
         ],
         "check": null,
-        "next_node": null,
+        "next_node": "details",
         "response": 1
       },
       "state": {
         "disposition": {},
-        "flags": [
-          "talked_to_cargo_broker"
-        ],
+        "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -305,7 +343,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "talked_to_cargo_broker"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -327,7 +367,7 @@
           1
         ],
         "check": null,
-        "next_node": null,
+        "next_node": "declined",
         "response": 1
       },
       "state": {
@@ -344,7 +384,591 @@
     {
       "args": [
         "novice",
+        "declined",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "iron_delivery_resolved"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "no_permit",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
         "waiting",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": [
+          false,
+          "Observation check failed."
+        ],
+        "next_node": "waiting_deflect",
+        "response": 1
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 48
+        },
+        "flags": [
+          "odom_clause_tried"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "iron_ore_handed_back"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_count",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_count",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": [
+          false,
+          "Observation check failed."
+        ],
+        "next_node": "waiting_deflect",
+        "response": 1
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 48
+        },
+        "flags": [
+          "odom_clause_tried"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_count",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "iron_ore_handed_back"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_clause",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_deflect",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "waiting_drifted",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_short",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "made_good_terms",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_short",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "loss_rate",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_short",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "iron_ore_handed_back"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_all",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "loss_closed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_wrote_off_the_ore"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_all",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "made_good_terms",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_closed",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_delivery_closed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "hand_back",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "iron_delivery_closed"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "made_good_terms",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "loss_rate",
         0
       ],
       "call": "select",
@@ -383,8 +1007,128 @@
         "response": 0
       },
       "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [
+          "odom_ledger_open"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "thanks_made_good",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "made_good_book",
+        "response": 0
+      },
+      "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "odom_book_credit"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "made_good_book",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 55
+        },
+        "flags": [
+          "odom_ledger_open"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "thanks_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_ledger_open"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "thanks_replaced",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "odom_noted_the_float"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -402,7 +1146,9 @@
       "call": "select",
       "result": {
         "available": [
-          0
+          0,
+          1,
+          2
         ],
         "check": null,
         "next_node": "betrayal_rant",
@@ -411,6 +1157,90 @@
       "state": {
         "disposition": {},
         "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "betrayal_lie",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "betrayal_rant",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "betrayal_lie",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_caught_lie"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -436,7 +1266,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "odom_broker": 45
+        },
         "flags": [],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -614,6 +1446,62 @@
     {
       "args": [
         "novice",
+        "second_look",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "investment_intro",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "odom_ledger_open"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "second_look",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
         "investment_intro",
         0
       ],
@@ -733,9 +1621,15 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
         "next_node": "odom_arna_branch_a",
@@ -747,11 +1641,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -773,9 +1679,15 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
         "next_node": "odom_arna_branch_b",
@@ -787,11 +1699,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -813,9 +1737,15 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
         "next_node": "odom_arna_branch_c",
@@ -827,11 +1757,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -853,13 +1795,19 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
-        "next_node": "teach_routes",
-        "response": 4
+        "next_node": "waiting",
+        "response": 7
       },
       "state": {
         "disposition": {},
@@ -867,11 +1815,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -893,13 +1853,19 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
-        "next_node": "thanks",
-        "response": 7
+        "next_node": "waiting_count",
+        "response": 8
       },
       "state": {
         "disposition": {},
@@ -907,11 +1873,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -933,12 +1911,18 @@
           0,
           1,
           2,
-          4,
           7,
-          9
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
         ],
         "check": null,
-        "next_node": "ongoing_greet",
+        "next_node": "waiting_count",
         "response": 9
       },
       "state": {
@@ -947,11 +1931,371 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        6
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": "loss_short",
+        "response": 10
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        7
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": "loss_all",
+        "response": 11
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        8
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": "betrayal",
+        "response": 12
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        9
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": "thanks_replaced",
+        "response": 16
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        10
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": "ongoing_greet",
+        "response": 17
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "greet",
+        11
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 19
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -983,11 +2327,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1019,11 +2375,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1054,11 +2422,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1090,11 +2470,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1117,7 +2509,7 @@
           1
         ],
         "check": null,
-        "next_node": null,
+        "next_node": "details",
         "response": 1
       },
       "state": {
@@ -1126,11 +2518,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1162,11 +2566,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_cargo_broker",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1189,7 +2606,7 @@
           1
         ],
         "check": null,
-        "next_node": null,
+        "next_node": "declined",
         "response": 1
       },
       "state": {
@@ -1198,11 +2615,119 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "declined",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "no_permit",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1221,6 +2746,473 @@
       "call": "select",
       "result": {
         "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": [
+          true,
+          "Observation check passed!"
+        ],
+        "next_node": "waiting_clause",
+        "response": 1
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "read_odom_clause",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "waiting_drifted",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_handed_back",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_count",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_count",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": [
+          true,
+          "Observation check passed!"
+        ],
+        "next_node": "waiting_clause",
+        "response": 1
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "read_odom_clause",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_count",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "waiting_drifted",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_count",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_handed_back",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_clause",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_deflect",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
           0
         ],
         "check": null,
@@ -1233,11 +3225,560 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "waiting_drifted",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_short",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "made_good_terms",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_short",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "loss_rate",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_short",
+        3
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "check": null,
+        "next_node": "hand_back",
+        "response": 3
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "iron_ore_handed_back",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_all",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "loss_closed",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "odom_wrote_off_the_ore",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_all",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "made_good_terms",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_closed",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_closed",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "hand_back",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_closed",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "made_good_terms",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "loss_rate",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1263,16 +3804,224 @@
         "response": 0
       },
       "state": {
+        "disposition": {
+          "odom_broker": 53
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "thanks_made_good",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "made_good_book",
+        "response": 0
+      },
+      "state": {
         "disposition": {},
         "flags": [
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_book_credit",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "made_good_book",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 55
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "thanks_short",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "thanks_replaced",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "odom_broker": 47
+        },
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_noted_the_float",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1291,7 +4040,9 @@
       "call": "select",
       "result": {
         "available": [
-          0
+          0,
+          1,
+          2
         ],
         "check": null,
         "next_node": "betrayal_rant",
@@ -1303,11 +4054,169 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "betrayal_lie",
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "betrayal_rant",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "betrayal_lie",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "betrayal_end",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_caught_lie",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1334,16 +4243,30 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "odom_broker": 45
+        },
         "flags": [
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1375,11 +4298,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1410,12 +4345,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
           "iron_delivery_failed",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1446,12 +4393,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_spoke_of_arna",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1482,12 +4441,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_spoke_of_arna",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1518,12 +4489,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_spoke_of_arna",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1554,11 +4537,119 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "second_look",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": "investment_intro",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "second_look",
+        1
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "arna_branch_a_complete",
+          "arna_branch_b_complete",
+          "arna_branch_c_complete",
+          "first_delivery_complete",
+          "investment_introduced",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
+          "odom_taught_intro",
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1590,12 +4681,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "odom_explained_investment",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1627,12 +4730,24 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
           "odom_explained_investment",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1663,11 +4778,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1698,11 +4825,23 @@
           "arna_branch_a_complete",
           "arna_branch_b_complete",
           "arna_branch_c_complete",
-          "broker_ore_sold",
+          "first_delivery_complete",
           "investment_introduced",
-          "iron_ore_delivered",
+          "iron_delivery_late_tier",
+          "iron_delivery_resolved",
+          "iron_job_done_clean",
+          "iron_job_done_made_good",
+          "iron_job_done_replaced",
+          "iron_job_done_short",
+          "iron_job_full",
+          "iron_job_gone_lost",
+          "iron_job_made_good",
+          "iron_job_moved",
+          "iron_job_replaced",
+          "iron_job_short_lost",
+          "odom_ledger_open",
           "odom_taught_intro",
-          "talked_to_cargo_broker"
+          "talked_to_officer_larsen"
         ],
         "loyalty": {
           "dr_priya_osei": 60,

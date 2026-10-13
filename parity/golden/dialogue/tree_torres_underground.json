@@ -24,7 +24,9 @@
     "npc_id": "malia_torres",
     "profiles": {
       "expert": {
-        "flags": {},
+        "flags": {
+          "dex_favor_declined": true
+        },
         "social": {
           "disposition": {},
           "skills": {
@@ -80,7 +82,7 @@
     },
     "tree_id": "torres_underground"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -150,6 +152,32 @@
         "check": null,
         "next_node": "trust",
         "response": 1
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "heard_no",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "analysis",
+        "response": 0
       },
       "state": {
         "disposition": {},
@@ -512,7 +540,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -531,7 +561,8 @@
       "result": {
         "available": [
           0,
-          1
+          1,
+          2
         ],
         "check": null,
         "next_node": "analysis",
@@ -539,7 +570,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -558,7 +591,8 @@
       "result": {
         "available": [
           0,
-          1
+          1,
+          2
         ],
         "check": null,
         "next_node": "trust",
@@ -566,7 +600,67 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "workshop",
+        2
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0,
+          1,
+          2
+        ],
+        "check": null,
+        "next_node": "heard_no",
+        "response": 2
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "dex_favor_declined"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "heard_no",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "analysis",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -593,7 +687,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -626,6 +722,7 @@
           "malia_torres": 53
         },
         "flags": [
+          "dex_favor_declined",
           "warned_torres"
         ],
         "loyalty": {
@@ -654,7 +751,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -681,7 +780,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -708,7 +809,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -735,7 +838,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -762,7 +867,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -789,7 +896,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -815,7 +924,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -843,6 +954,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "dex_favor_declined",
           "met_malia_torres"
         ],
         "loyalty": {
@@ -872,6 +984,7 @@
       "state": {
         "disposition": {},
         "flags": [
+          "dex_favor_declined",
           "met_malia_torres"
         ],
         "loyalty": {
@@ -900,7 +1013,8 @@
       "state": {
         "disposition": {},
         "flags": [
-          "crimson_underground_access"
+          "crimson_underground_access",
+          "dex_favor_declined"
         ],
         "loyalty": {
           "dr_priya_osei": 60,

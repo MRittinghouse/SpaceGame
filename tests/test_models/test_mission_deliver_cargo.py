@@ -79,6 +79,22 @@ class TestDeliverCargo:
         assert player.ship.get_cargo_quantity("iron_ore") == 2
         assert messages[:2] == ["+600 Credits", "Delivered 10 iron_ore"]
 
+    def test_a_hand_over_takes_the_hidden_compartment_too(self) -> None:
+        """The author's read of W3a (2026-10-13): both holds count, the main hold first."""
+        from spacegame.models.smuggling import HiddenCompartment
+
+        manager, player = _iron(), _player()
+        player.ship.add_cargo("iron_ore", 7, 0)
+        player.hidden_compartment = HiddenCompartment(total_cargo_capacity=50)
+        ok, message = player.hidden_compartment.add_to_hidden("iron_ore", 5)
+        assert ok, message
+        messages = manager.apply_rewards("iron_delivery", player)
+        assert player.credits == 5000 + 600
+        assert player.ship.get_cargo_quantity("iron_ore") == 0
+        assert player.hidden_compartment.hidden_cargo.get("iron_ore", 0) == 2
+        assert "+600 Credits" in messages
+        assert "Delivered 10 iron_ore" in messages
+
     def test_a_hand_over_leaves_another_missions_cargo_aboard(self) -> None:
         """Odom's ten stay aboard; a board delivery of iron ore takes only the captain's."""
         manager, player = _iron(), _player("verdant")

@@ -22,9 +22,19 @@ from spacegame.views.base_view import BaseView
 class PauseMenuView(BaseView):
     """Pause menu overlay with visual polish."""
 
-    def __init__(self, ui_manager: pygame_gui.UIManager):
+    def __init__(self, ui_manager: pygame_gui.UIManager, save_allowed: bool = True):
+        """Build the menu; its buttons are created on enter.
+
+        save_allowed is False while a conversation is open: a save between two replies would
+        keep half a scene (the author's read of W3a, 2026-10-13).
+
+        Args:
+            ui_manager: The UI manager the buttons belong to.
+            save_allowed: Whether the Save button is live.
+        """
         super().__init__()
         self.ui_manager = ui_manager
+        self.save_allowed = save_allowed
 
         self.next_state: Optional[str] = None
         self.show_save_dialog = False
@@ -80,6 +90,8 @@ class PauseMenuView(BaseView):
             text="SAVE GAME",
             manager=self.ui_manager,
         )
+        if not self.save_allowed:
+            self.save_button.disable()
         self.load_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 button_x, panel_y + 70 + spacing * 2, button_width, button_height
@@ -143,8 +155,9 @@ class PauseMenuView(BaseView):
                 logger.info("Resume game")
                 self.next_state = "resume"
             elif event.ui_element == self.save_button:
-                logger.info("Open save dialog")
-                self.show_save_dialog = True
+                if self.save_allowed:
+                    logger.info("Open save dialog")
+                    self.show_save_dialog = True
             elif event.ui_element == self.load_button:
                 logger.info("Open load dialog")
                 self.show_load_dialog = True

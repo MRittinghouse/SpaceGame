@@ -197,6 +197,9 @@ class Mission:
     # Authored per-mission so the delivering NPC reacts in voice to how
     # long the player took. Empty/None = no commentary.
     timeliness_comments: dict[str, str] = field(default_factory=dict)
+    # Polish design 6: a one-line receipt shown after the completion notice (the Grand
+    # Bazaar's for Drifter's Delivery). Content only: to_dict never writes it.
+    receipt: str = ""
     # BB-6: the last objective counts only when every earlier objective is met in the same
     # check, and never locks (a delivery's destination comes after its goods).
     ordered_final: bool = False
@@ -785,11 +788,16 @@ class MissionManager:
         """The units the mission's deliver_cargo will hand over, and the units it names.
 
         None when the mission has no deliver_cargo reward. The mission's own accept cargo
-        counts with the captain's units; another active mission's does not (BB-1).
+        counts with the captain's units; another active mission's does not (BB-1). The units
+        are counted in both holds (held_units), as the job's state and the scale count them.
         """
         for reward in mission.rewards:
             if reward.reward_type == "deliver_cargo":
-                mine = self.free_units(player, reward.target_id, except_mission=mission.id)
+                mine = max(
+                    0,
+                    held_units(player, reward.target_id)
+                    - self.reserved_units(reward.target_id, except_mission=mission.id),
+                )
                 return min(mine, reward.amount), reward.amount
         return None
 
@@ -1050,8 +1058,13 @@ class MissionManager:
                 messages.append(f"Delivered {reward.amount} {reward.target_id}")
             elif reward.reward_type == "deliver_cargo":
                 delivered = share[0] if share is not None else 0
-                if delivered > 0:
-                    player.ship.remove_cargo(reward.target_id, delivered)
+                from_main = min(delivered, player.ship.get_cargo_quantity(reward.target_id))
+                if from_main > 0:
+                    player.ship.remove_cargo(reward.target_id, from_main)
+                if delivered > from_main and player.hidden_compartment is not None:
+                    player.hidden_compartment.remove_from_hidden(
+                        reward.target_id, delivered - from_main
+                    )
                 messages.append(f"Delivered {delivered} {reward.target_id}")
             elif reward.reward_type == "route_fuel":
                 landing = (player.game_day, player.current_system_id)

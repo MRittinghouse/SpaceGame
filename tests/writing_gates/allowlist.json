@@ -254,14 +254,6 @@
       "gate": "G11",
       "rule": "price in speech",
       "file": "data/dialogue/dialogues.json",
-      "path": ".dialogues[id=merchant_delivery].nodes[id=offer].text",
-      "match": "500 credits",
-      "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
-    },
-    {
-      "gate": "G11",
-      "rule": "price in speech",
-      "file": "data/dialogue/dialogues.json",
       "path": ".dialogues[id=priya_stranded].nodes[id=agree_transport].text",
       "match": "350 credits",
       "reason": "a literal price in speech becomes a record token (spec 3.7, 2.7); W3"
@@ -727,22 +719,6 @@
       "rule": "near collision",
       "file": "(person names)",
       "path": "daro|zero",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "deshi|desta",
-      "match": "edit distance 2",
-      "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
-    },
-    {
-      "gate": "G4",
-      "rule": "near collision",
-      "file": "(person names)",
-      "path": "deshi|pesh",
       "match": "edit distance 2",
       "reason": "a near-collision of shipped names; the naming pass, or the author accepts it (spec 11.3)"
     },

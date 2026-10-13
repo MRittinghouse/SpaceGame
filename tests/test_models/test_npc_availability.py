@@ -220,3 +220,31 @@ class TestTheRealContent:
         assert listed["odom_broker"] == ""
         assert "noor_castellano" in listed
         assert "dex_halloran" not in listed
+
+
+def test_the_iron_job_marks_only_who_can_close_it() -> None:
+    """Polish design 6.1: the clerk while the ore can be weighed, Odom while he can close it."""
+    from spacegame.data_loader import get_data_loader
+    from spacegame.models.mission import MissionManager
+    from spacegame.models.npc_availability import needed_by, settable_index
+
+    dl = get_data_loader()
+    dl.load_all()
+    manager = MissionManager(dl.missions)
+    manager.load_state(
+        {
+            "status": {"bill_of_landing": "completed", "iron_delivery": "active"},
+            "accepted_day": {"iron_delivery": 1},
+        }
+    )
+    index = settable_index(dl.npcs.values(), dl.dialogue_trees)
+    clerk, odom = index["forgeworks_clerk"], index["odom_broker"]
+    full = {"iron_job_full": True}
+    assert needed_by("forgeworks_clerk", clerk, manager, full) == "iron_delivery"
+    assert needed_by("odom_broker", odom, manager, full) == ""
+    short = {"iron_job_short_lost": True}
+    assert needed_by("forgeworks_clerk", clerk, manager, short) == "iron_delivery"
+    assert needed_by("odom_broker", odom, manager, short) == "iron_delivery"
+    moved = {"iron_job_moved": True}
+    assert needed_by("forgeworks_clerk", clerk, manager, moved) == ""
+    assert needed_by("odom_broker", odom, manager, moved) == "iron_delivery"

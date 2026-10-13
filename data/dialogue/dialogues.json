@@ -55,7 +55,8 @@
             },
             {
               "text": "I'll figure it out myself.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "elena_walked_away"
             }
           ],
           "expression": "neutral"
@@ -75,7 +76,7 @@
         {
           "id": "lesson",
           "speaker_id": "elena_reeves",
-          "text": "See food listed at 80 here? Breakstone's a mining colony, workers burning four thousand calories a day underground. Food sells for 140 there on a quiet day. That's your margin. Buy here, sell there. Do it enough times, you can afford better cargo.",
+          "text": "See what food lists at on this board? Breakstone's a mining colony, workers burning four thousand calories a day underground, and every crate of it shipped in. Their board pays fifteen percent over base for food on a quiet day. That's your margin, before fuel. Buy here, sell there. Do it enough times, you can afford better cargo.",
           "responses": [
             {
               "text": "That's... actually straightforward.",
@@ -96,6 +97,36 @@
           "text": "Watch the event feeds. A mining boom means ore prices drop, buy cheap, sell at stations that process it. A crop failure means food prices spike at the affected system. The boards tell you what's happening. Your job is to be where the demand is before everyone else.",
           "responses": [
             {
+              "text": "Odom offered six hundred to move ore worth a hundred and fifty.",
+              "next_node_id": "iron_carriage",
+              "required_flags": [
+                "iron_ore_delivered"
+              ],
+              "excluded_flags": [
+                "elena_heard_carriage"
+              ]
+            },
+            {
+              "text": "I lost Odom's ore in a fight.",
+              "next_node_id": "iron_lane",
+              "required_flags": [
+                "broker_ore_lost"
+              ],
+              "excluded_flags": [
+                "elena_heard_lane"
+              ]
+            },
+            {
+              "text": "You heard about Odom.",
+              "next_node_id": "iron_violation",
+              "required_flags": [
+                "iron_delivery_failed"
+              ],
+              "excluded_flags": [
+                "elena_heard_violation"
+              ]
+            },
+            {
               "text": "You seem to know a lot. What's your story?",
               "next_node_id": "about_elena"
             },
@@ -105,6 +136,45 @@
             }
           ],
           "expression": "confident"
+        },
+        {
+          "id": "iron_carriage",
+          "speaker_id": "elena_reeves",
+          "text": "Carriage at four times the cargo's value. He wasn't paying for the ore to move. He was paying for the date it arrived. *A beat.* A full freight projection for someone else's ship pays me ninety credits. I did three last week.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_carriage"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "iron_lane",
+          "speaker_id": "elena_reeves",
+          "text": "Which leg? *She has the chart up before you answer.* Larsen tells every new permit the routes around Nexus Prime are safe enough. Forgeworks is one jump out, and the charts rate it moderate. If you run it again, read the rating first.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_lane"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "iron_violation",
+          "speaker_id": "elena_reeves",
+          "text": "The whole Exchange heard by the next shift. *A pause.* That's an interesting choice. A freight violation follows your permit onto every Guild board. Brokers read it before they read your name. Breakstone's docks don't read Guild paper.",
+          "responses": [
+            {
+              "text": "Noted.",
+              "next_node_id": "trading_tips",
+              "set_flag": "elena_heard_violation"
+            }
+          ],
+          "expression": "cautious"
         },
         {
           "id": "about_elena",
@@ -640,7 +710,7 @@
               "next_node_id": "stories"
             },
             {
-              "text": "Thanks. I'm Tomas?",
+              "text": "Thanks. Who do I owe for the stew?",
               "next_node_id": "stories"
             }
           ],
@@ -776,11 +846,7 @@
             },
             {
               "text": "I need to think about it. Not right now.",
-              "next_node_id": "decline",
-              "set_flag": "declined_drifter_deal",
-              "excluded_flags": [
-                "accepted_drifter_deal"
-              ]
+              "next_node_id": "think_it_over"
             }
           ],
           "expression": "neutral"
@@ -812,7 +878,7 @@
         {
           "id": "accept",
           "speaker_id": "tomas_drifter",
-          "text": "Good. Take the textiles to Stellaris Port and sell them. Your cut will be waiting when it's done. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
           "responses": [
             {
               "text": "I'll get it done.",
@@ -825,7 +891,7 @@
         {
           "id": "decline",
           "speaker_id": "tomas_drifter",
-          "text": "Fair enough. You've got your own line. I respect that. Most people out here draw theirs in different places, doesn't make yours wrong. If you ever change your mind, you know where to find me.",
+          "text": "Fair enough. You've got your own line. I respect that. Most people out here draw theirs in different places, doesn't make yours wrong. *Slower.* I'd rather work with someone who tells me no than someone who tells everybody yes. *Then, quicker:* Bread's still yours, though. Don't make it awkward.",
           "responses": [
             {
               "text": "Thanks for the food, Tomas.",
@@ -834,6 +900,18 @@
             }
           ],
           "expression": "neutral"
+        },
+        {
+          "id": "think_it_over",
+          "speaker_id": "tomas_drifter",
+          "text": "Good. Anyone who signs before they sleep on it signs anything. *He pushes the bread toward you.* Bales'll keep. They're cloth. The stew keeps less well, so finish that. *Slower.* I'm here most nights, at the table by the Harvest Market. Ask anyone for Drifter.",
+          "responses": [
+            {
+              "text": "Thanks for the food, Tomas.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
         }
       ]
     },
@@ -1053,7 +1131,19 @@
             {
               "text": "I heard you have a delivery job.",
               "next_node_id": "offer",
+              "required_flags": [
+                "talked_to_officer_larsen"
+              ],
               "excluded_flags": [
+                "talked_to_cargo_broker",
+                "iron_delivery_resolved"
+              ]
+            },
+            {
+              "text": "I heard you have a delivery job.",
+              "next_node_id": "no_permit",
+              "excluded_flags": [
+                "talked_to_officer_larsen",
                 "talked_to_cargo_broker"
               ]
             },
@@ -1061,39 +1151,111 @@
               "text": "Any word on the ore shipment?",
               "next_node_id": "waiting",
               "required_flags": [
-                "talked_to_cargo_broker"
-              ],
-              "excluded_flags": [
-                "iron_ore_delivered",
-                "broker_ore_sold"
+                "iron_job_full"
               ]
             },
             {
-              "text": "The iron ore's been delivered to Forgeworks.",
-              "next_node_id": "thanks",
+              "text": "Any word on the ore shipment?",
+              "next_node_id": "waiting_count",
               "required_flags": [
-                "iron_ore_delivered"
+                "iron_job_made_good"
+              ]
+            },
+            {
+              "text": "Any word on the ore shipment?",
+              "next_node_id": "waiting_count",
+              "required_flags": [
+                "iron_job_replaced"
+              ]
+            },
+            {
+              "text": "About the ore. I lost some on the lane.",
+              "next_node_id": "loss_short",
+              "required_flags": [
+                "iron_job_short_lost"
+              ]
+            },
+            {
+              "text": "About the ore. There's none left.",
+              "next_node_id": "loss_all",
+              "required_flags": [
+                "iron_job_gone_lost"
               ]
             },
             {
               "text": "About that iron ore...",
               "next_node_id": "betrayal",
               "required_flags": [
-                "broker_ore_sold"
+                "iron_job_moved"
+              ]
+            },
+            {
+              "text": "The iron ore's been delivered to Forgeworks.",
+              "next_node_id": "thanks",
+              "required_flags": [
+                "iron_job_done_clean"
               ],
               "excluded_flags": [
-                "iron_ore_delivered"
+                "odom_ledger_open"
+              ]
+            },
+            {
+              "text": "The iron ore's been delivered to Forgeworks.",
+              "next_node_id": "thanks_made_good",
+              "required_flags": [
+                "iron_job_done_made_good"
+              ],
+              "excluded_flags": [
+                "odom_ledger_open"
+              ]
+            },
+            {
+              "text": "Most of it reached Forgeworks.",
+              "next_node_id": "thanks_short",
+              "required_flags": [
+                "iron_job_done_short"
+              ],
+              "excluded_flags": [
+                "odom_ledger_open"
+              ]
+            },
+            {
+              "text": "The iron ore's been delivered to Forgeworks.",
+              "next_node_id": "thanks_replaced",
+              "required_flags": [
+                "iron_job_done_replaced"
+              ],
+              "excluded_flags": [
+                "odom_noted_the_float"
               ]
             },
             {
               "text": "Anything else you'd put in the ledger for me?",
               "next_node_id": "ongoing_greet",
               "required_flags": [
-                "iron_ore_delivered"
+                "odom_ledger_open"
               ],
               "excluded_flags": [
                 "iron_delivery_failed"
               ]
+            },
+            {
+              "text": "Anything else you'd put in the ledger for me?",
+              "next_node_id": "second_look",
+              "required_flags": [
+                "iron_delivery_resolved",
+                "first_delivery_complete"
+              ],
+              "excluded_flags": [
+                "odom_ledger_open",
+                "iron_job_done_clean",
+                "iron_job_done_made_good",
+                "iron_job_done_short"
+              ]
+            },
+            {
+              "text": "[Leave him to his manifests.]",
+              "next_node_id": null
             }
           ],
           "expression": "neutral"
@@ -1131,17 +1293,15 @@
         {
           "id": "offer",
           "speaker_id": "odom_broker",
-          "text": "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week.",
+          "text": "You there. Six hundred credits to ship ten units of iron ore to Forgeworks. I just bought it, and I've been told my carrier is full up. Full fee if it's on the Foundry's scale inside fourteen days.",
           "responses": [
             {
               "text": "Tell me more about the job.",
-              "next_node_id": "details",
-              "set_flag": "talked_to_cargo_broker"
+              "next_node_id": "details"
             },
             {
-              "text": "I'll consider it.",
-              "next_node_id": null,
-              "set_flag": "talked_to_cargo_broker"
+              "text": "What's the catch?",
+              "next_node_id": "details"
             }
           ],
           "expression": "confident"
@@ -1149,14 +1309,41 @@
         {
           "id": "details",
           "speaker_id": "odom_broker",
-          "text": "Ten units of iron ore to Forgeworks. My contact there is a clerk named Wren. Find him at the Neutral Ground when you land. Tell him Odom sent you and he'll handle the rest. I already had the ore put in your hold. Didn't figure you'd say no to easy money.",
+          "text": "Ten units of iron ore to Forgeworks. My contact there is a clerk named Kimura. Find him at the Neutral Ground when you land. Tell him Odom sent you and he'll handle the rest. I already had the ore put in your hold. Didn't figure you'd say no to easy money. *He holds up the manifest.* It's my ore until Kimura weighs it. Sell it on a floor under your permit and the floor log shows me. Lose some on the lane and that's mine to eat. Once.",
           "responses": [
             {
               "text": "Sounds straightforward enough.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "talked_to_cargo_broker"
             },
             {
-              "text": "I'll think about it.",
+              "text": "Have it taken back out. I'm not flying it.",
+              "next_node_id": "declined"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "declined",
+          "speaker_id": "odom_broker",
+          "text": "*He keys the dock crew.* Ten iron, back to my lot. *Then, to you, already counting again:* Your call. They're on the clock either way.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null,
+              "set_flag": "iron_delivery_resolved",
+              "disposition_change": -3
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "no_permit",
+          "speaker_id": "odom_broker",
+          "text": "You there. No bill of landing on file, so there's nothing on my docket for you. Customs is Larsen. Paper first.",
+          "responses": [
+            {
+              "text": "I'll see Larsen.",
               "next_node_id": null
             }
           ],
@@ -1170,9 +1357,209 @@
             {
               "text": "It'll get there.",
               "next_node_id": null
+            },
+            {
+              "text": "[Observation 2] \"Six hundred to move a hundred and fifty credits of ore. Somebody at the Foundry pays you by the day.\"",
+              "next_node_id": "waiting_clause",
+              "excluded_flags": [
+                "read_odom_clause",
+                "odom_clause_tried"
+              ],
+              "skill_check": {
+                "skill": "observation",
+                "difficulty": 2,
+                "success_node_id": "waiting_clause",
+                "failure_node_id": "waiting_deflect",
+                "set_flag_on_success": "read_odom_clause",
+                "set_flag_on_failure": "odom_clause_tried"
+              }
+            },
+            {
+              "text": "Is it still six hundred?",
+              "next_node_id": "waiting_drifted",
+              "required_flags": [
+                "iron_delivery_late_tier"
+              ]
+            },
+            {
+              "text": "Take it back. I'm not running it.",
+              "next_node_id": "hand_back",
+              "set_flag": "iron_ore_handed_back",
+              "disposition_change": -3
             }
           ],
           "expression": "concerned"
+        },
+        {
+          "id": "waiting_count",
+          "speaker_id": "odom_broker",
+          "text": "Forgeworks hasn't pinged me yet. Your bay reads ten or better. Ten is what Kimura weighs.",
+          "responses": [
+            {
+              "text": "It'll get there.",
+              "next_node_id": null
+            },
+            {
+              "text": "[Observation 2] \"Six hundred to move a hundred and fifty credits of ore. Somebody at the Foundry pays you by the day.\"",
+              "next_node_id": "waiting_clause",
+              "excluded_flags": [
+                "read_odom_clause",
+                "odom_clause_tried"
+              ],
+              "skill_check": {
+                "skill": "observation",
+                "difficulty": 2,
+                "success_node_id": "waiting_clause",
+                "failure_node_id": "waiting_deflect",
+                "set_flag_on_success": "read_odom_clause",
+                "set_flag_on_failure": "odom_clause_tried"
+              }
+            },
+            {
+              "text": "Is it still six hundred?",
+              "next_node_id": "waiting_drifted",
+              "required_flags": [
+                "iron_delivery_late_tier"
+              ]
+            },
+            {
+              "text": "Take it back. I'm not running it.",
+              "next_node_id": "hand_back",
+              "set_flag": "iron_ore_handed_back",
+              "disposition_change": -3
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "waiting_clause",
+          "speaker_id": "odom_broker",
+          "text": "*He stops writing.* The Main Foundry docks me by the day from day fifteen of the run. That's why my fee steps down the same day. A short count costs me their penalty on the whole lot, not the missing units. That's the number you're carrying.",
+          "responses": [
+            {
+              "text": "Then it'll be there.",
+              "next_node_id": null,
+              "disposition_change": 3
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "waiting_deflect",
+          "speaker_id": "odom_broker",
+          "text": "The ore goes to Forgeworks. That's the part you're paid for.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "waiting_drifted",
+          "speaker_id": "odom_broker",
+          "text": "*He reads the docket, not you.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "loss_short",
+          "speaker_id": "odom_broker",
+          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
+          "responses": [
+            {
+              "text": "I'll run what's left.",
+              "next_node_id": null
+            },
+            {
+              "text": "I'll make up the difference.",
+              "next_node_id": "made_good_terms"
+            },
+            {
+              "text": "Are you angry about it?",
+              "next_node_id": "loss_rate"
+            },
+            {
+              "text": "Take back what's left.",
+              "next_node_id": "hand_back",
+              "set_flag": "iron_ore_handed_back",
+              "disposition_change": -3
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "loss_all",
+          "speaker_id": "odom_broker",
+          "text": "*The incident report is on his screen, the docking log beside it.* Your bay is reading zero. *He types as he says it.* Ten units iron ore at fifteen. One hundred fifty. Written off. First time, I eat it.",
+          "responses": [
+            {
+              "text": "What happens now?",
+              "next_node_id": "loss_closed",
+              "set_flag": "odom_wrote_off_the_ore"
+            },
+            {
+              "text": "I'll buy ten and run it.",
+              "next_node_id": "made_good_terms"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "loss_closed",
+          "speaker_id": "odom_broker",
+          "text": "Job's closed. You don't owe me and I don't owe you. *He points at the board without turning to it.* Board's public.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null,
+              "set_flag": "iron_delivery_closed"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "hand_back",
+          "speaker_id": "odom_broker",
+          "text": "*He keys the dock crew mid-count.* Whatever's under my docket comes off your ship now. If my scale reads short, the difference is mine. Once. I'll find another carrier.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null,
+              "set_flag": "iron_delivery_closed"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "made_good_terms",
+          "speaker_id": "odom_broker",
+          "text": "Your credits, your call. Standard grade weighs the same wherever you bought it. I'll know what you did when Kimura's count comes in.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "loss_rate",
+          "speaker_id": "odom_broker",
+          "text": "*He pulls a rate card from under the manifests and reads two lines off it.* Loss allowance, bulk ore, Forgeworks lane: one load in nine comes in light. Syndicate escort, same lane, this quarter: two hundred a run. *He puts the card back.*",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
         },
         {
           "id": "thanks",
@@ -1181,43 +1568,131 @@
           "responses": [
             {
               "text": "You know where to find me.",
-              "next_node_id": null
+              "next_node_id": null,
+              "set_flag": "odom_ledger_open",
+              "disposition_change": 3
             }
           ],
           "expression": "neutral"
+        },
+        {
+          "id": "thanks_made_good",
+          "speaker_id": "odom_broker",
+          "text": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
+          "responses": [
+            {
+              "text": "Standard grade is standard grade.",
+              "next_node_id": "made_good_book",
+              "set_flag": "odom_book_credit"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "made_good_book",
+          "speaker_id": "odom_broker",
+          "text": "*He turns the screen so you can see the line he is writing: your side of his book, the difference, to the credit.* Run's paid. Credits are in your account already. *He goes back to the count.* Not bad.",
+          "responses": [
+            {
+              "text": "You know where to find me.",
+              "next_node_id": null,
+              "set_flag": "odom_ledger_open",
+              "disposition_change": 5,
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": 3
+                }
+              ]
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "thanks_short",
+          "speaker_id": "odom_broker",
+          "text": "*Kimura's receipt sits beside the lane report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": null,
+              "set_flag": "odom_ledger_open"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "thanks_replaced",
+          "speaker_id": "odom_broker",
+          "text": "*Two entries on his screen, one above the other.* Floor log says my lot sold under your permit. Kimura's intake says ten weighed. The count's right, so I paid on the count. Both entries stay in my book.",
+          "responses": [
+            {
+              "text": "The count was right.",
+              "next_node_id": null,
+              "set_flag": "odom_noted_the_float",
+              "disposition_change": -3
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "betrayal",
           "speaker_id": "odom_broker",
-          "text": "*Odom stops mid-count. His eyes drift to the cargo manifest on his terminal, then back to you. Something cold settles behind them.* Your hold's empty. I can see it right here on the docking log. Ten units of iron ore, consigned under my name, and your bay is reading zero.",
+          "text": "*Odom stops mid-count. He turns the terminal around so you can read it.* Floor log. My lot, consigned under my name. Sold under your permit.",
           "responses": [
             {
-              "text": "...",
+              "text": "I sold it.",
+              "next_node_id": "betrayal_rant"
+            },
+            {
+              "text": "It was taken on the lane.",
+              "next_node_id": "betrayal_lie"
+            },
+            {
+              "text": "[Say nothing.]",
               "next_node_id": "betrayal_rant"
             }
           ],
-          "expression": "neutral"
+          "expression": "serious"
+        },
+        {
+          "id": "betrayal_lie",
+          "speaker_id": "odom_broker",
+          "text": "*He reads the rest of the entry aloud: the floor, the price per unit, your permit number, one digit at a time.* That's the entry.",
+          "responses": [
+            {
+              "text": "...",
+              "next_node_id": "betrayal_end",
+              "set_flag": "odom_caught_lie",
+              "faction_reputation_changes": [
+                {
+                  "commerce_guild": -5
+                }
+              ]
+            }
+          ],
+          "expression": "stern"
         },
         {
           "id": "betrayal_rant",
           "speaker_id": "odom_broker",
-          "text": "You sold it. You actually sold my freight. Consigned cargo, with my name on the manifest, and you walked it over to the trading floor like it was yours to move. For what? Fifteen credits a unit? Twenty on a lucky day? I was paying you six hundred for that run. Six hundred credits, a clean entry on your shipping record, and a name that brokers actually return calls to. You traded all of that for scrap money.",
+          "text": "You sold my freight. Consigned cargo, with my name on the manifest, and you walked it over to the trading floor like it was yours to move. I was paying you six hundred for that run. Six hundred credits, a clean entry on your shipping record, and a name that brokers actually return calls to. You traded all of that for scrap money.",
           "responses": [
             {
-              "text": "Look, I can explain.",
-              "next_node_id": "betrayal_end"
+              "text": "It was just business.",
+              "next_node_id": "betrayal_end",
+              "disposition_change": -5
             },
             {
-              "text": "It was just business.",
+              "text": "I know.",
               "next_node_id": "betrayal_end"
             }
           ],
-          "expression": "neutral"
+          "expression": "stern"
         },
         {
           "id": "betrayal_end",
           "speaker_id": "odom_broker",
-          "text": "No. We're done talking. I've moved freight through this station for nineteen years, and I have never had a pilot sell consigned cargo out from under me. You are the first. Congratulations. I'm logging a freight violation against your permit, and every broker and dock clerk on Nexus Prime is going to hear about this by tomorrow. You just burned the easiest reputation you were ever going to build, and you did it for grocery money. Now get out of my face before I call station security.",
+          "text": "No. We're done talking. I've moved freight through this station for nineteen years, and I have never had a pilot sell consigned cargo out from under me. You are the first. Congratulations. A freight violation goes on your permit today. Whatever iron is still in your hold comes back to my lot now. What doesn't come back stays in my book, by the unit.",
           "responses": [
             {
               "text": "[Leave]",
@@ -1226,14 +1701,11 @@
               "faction_reputation_changes": [
                 {
                   "commerce_guild": -10
-                },
-                {
-                  "science_collective": -5
                 }
               ]
             }
           ],
-          "expression": "neutral"
+          "expression": "bitter"
         },
         {
           "id": "odom_arna_branch_a",
@@ -1279,7 +1751,7 @@
         {
           "id": "ongoing_greet",
           "speaker_id": "odom_broker",
-          "text": "*He glances up. The pause before going back to the manifest is slightly longer than usual.* Six hundred clean. You ran it inside the week. That counts. *He taps the stack of manifests in front of him.* Most pilots who walk through here are working the same short list their whole career. There's a longer ledger. Depends on whether you want to know what's in it.",
+          "text": "*He glances up. The pause before going back to the manifest is slightly longer than usual. He taps the stack of manifests in front of him.* Most pilots who walk through here are working the same short list their whole career. There's a longer ledger. Depends on whether you want to know what's in it.",
           "responses": [
             {
               "text": "What's in the longer ledger?",
@@ -1294,6 +1766,23 @@
               "required_flags": [
                 "investment_introduced"
               ]
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "second_look",
+          "speaker_id": "odom_broker",
+          "text": "Read Arna's manifest. Machinery to Verdant, signed for at the other end. That's a count I can use. *He taps the stack of manifests.* There's a longer ledger. Depends on whether you want to know what's in it.",
+          "responses": [
+            {
+              "text": "What's in the longer ledger?",
+              "next_node_id": "investment_intro",
+              "set_flag": "odom_ledger_open"
+            },
+            {
+              "text": "Not today.",
+              "next_node_id": null
             }
           ],
           "expression": "neutral"
@@ -1354,22 +1843,59 @@
             {
               "text": "Odom sent me. Ten units of iron ore.",
               "next_node_id": "accept",
-              "excluded_flags": [
-                "iron_ore_delivered"
+              "required_flags": [
+                "iron_job_full"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "accept_made_good",
+              "required_flags": [
+                "iron_job_made_good"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "accept_floor_stock",
+              "required_flags": [
+                "iron_job_replaced"
+              ]
+            },
+            {
+              "text": "Odom sent me. Ten units of iron ore.",
+              "next_node_id": "no_sign",
+              "required_flags": [
+                "iron_job_moved"
+              ]
+            },
+            {
+              "text": "Odom sent me. The count's light.",
+              "next_node_id": "weigh_short",
+              "required_flags": [
+                "iron_job_short_lost"
+              ]
+            },
+            {
+              "text": "Odom sent me. There's nothing left to weigh.",
+              "next_node_id": "nothing_to_weigh",
+              "required_flags": [
+                "iron_job_gone_lost"
               ]
             },
             {
               "text": "[Technical 2] \"Your crucible readout is running hot. Left-side bank, around the ninety-minute mark. Worth looking at before your next shift.\"",
-              "next_node_id": "accept",
+              "next_node_id": "crucible",
               "excluded_flags": [
-                "iron_ore_delivered"
+                "flagged_forge_crucible",
+                "intake_crucible_tried"
               ],
               "skill_check": {
                 "skill": "technical",
                 "difficulty": 2,
-                "success_node_id": "accept",
-                "failure_node_id": "accept",
-                "set_flag_on_success": "flagged_forge_crucible"
+                "success_node_id": "crucible",
+                "failure_node_id": "crucible_noted",
+                "set_flag_on_success": "flagged_forge_crucible",
+                "set_flag_on_failure": "intake_crucible_tried"
               }
             },
             {
@@ -1377,6 +1903,13 @@
               "next_node_id": "post_delivery",
               "required_flags": [
                 "iron_ore_delivered"
+              ]
+            },
+            {
+              "text": "What comes through here?",
+              "next_node_id": "shop_talk",
+              "excluded_flags": [
+                "intake_shop_talk_heard"
               ]
             },
             {
@@ -1389,7 +1922,7 @@
         {
           "id": "post_delivery",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He glances up from his datapad.* Oh, the pilot who ran Odom's iron. That shipment cleared fine, by the way. He was pleased. You ever need cargo work through Forgeworks, the board's right there. We always need reliable haulers.",
+          "text": "*He glances up from his datapad.* The pilot who ran Odom's iron. You ever need cargo work through Forgeworks, the board's right there. We always need haulers.",
           "responses": [
             {
               "text": "Good to know.",
@@ -1405,19 +1938,139 @@
           "responses": [
             {
               "text": "Appreciate it.",
-              "next_node_id": "advice"
+              "next_node_id": "advice",
+              "set_flag": "iron_ore_handed_over"
             }
           ],
           "expression": "neutral"
         },
         {
-          "id": "advice",
+          "id": "accept_made_good",
           "speaker_id": "forgeworks_clerk",
-          "text": "Clean run, pilot. He'll remember the favor. Odom was furious when he found out his regular hauler was full. Reputations are built and broken on reliability out here. Remember that.",
+          "text": "*The incident report is already on his datapad. The scale reads ten. The lot reader takes a while over the stamps.* Ten iron, standard grade. Booked. The report and the stamps go to Odom with the weight. They always do.",
           "responses": [
             {
-              "text": "I will.",
+              "text": "Fine.",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "accept_floor_stock",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*The scale says ten. The lot reader takes a while over the stamps.* Ten iron, standard grade. Weight's weight. Booked, and your credits go out. The stamps go to Odom with the weight. They always do.",
+          "responses": [
+            {
+              "text": "Fine.",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "cautious"
+        },
+        {
+          "id": "advice",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Ten on the scale, Odom's stamp on every unit. Board's by the door if you want more of this, pilot.",
+          "responses": [
+            {
+              "text": "Noted.",
               "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "weigh_short",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He pulls the intake scale's reading onto his datapad and reads it against Odom's manifest. The incident report comes up beside it before you finish explaining.* Syndicate sends us their lane reports now they're paying for escorts. Yours isn't the first short load this month. Two ways, pilot. I sign for what's on the scale, report attached, and Odom pays on what I weigh. Or you bring it to ten off the Exchange floor. Standard grade is standard grade. Scale doesn't read names.",
+          "responses": [
+            {
+              "text": "Sign for what's here.",
+              "next_node_id": "receipt_short",
+              "set_flag": "iron_ore_signed_short"
+            },
+            {
+              "text": "I'll be back with ten.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "receipt_short",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He stamps it received short and keys the report number onto the receipt.* Settling's between you and Odom. The furnace takes it either way.",
+          "responses": [
+            {
+              "text": "[Take the receipt.]",
+              "next_node_id": null,
+              "set_flag": "iron_ore_handed_over"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "no_sign",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He reads the scale against Odom's manifest, then checks the incident file.* Manifest says ten. Scale says otherwise, and the file doesn't cover the gap. I don't sign for air. Bring me ten, or take it up with Odom.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "nothing_to_weigh",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Nothing on the scale means nothing to sign. Your report's on file. Whether Odom eats the loss is between you and Odom, and he's at Nexus Prime.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "crucible",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He pulls the left bank's readout onto his datapad and watches it for a full minute. Then he keys the floor.* Shift lead. Left bank's running hot. Get eyes on it before the ninety-minute mark. *To you:* Huh.",
+          "responses": [
+            {
+              "text": "[Wait while he calls it in.]",
+              "next_node_id": "greet",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "crucible_noted",
+          "speaker_id": "forgeworks_clerk",
+          "text": "*He writes it on the corner of a manifest.* Left bank. Noted. *His face gives nothing either way.*",
+          "responses": [
+            {
+              "text": "[Leave it with him.]",
+              "next_node_id": "greet"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "shop_talk",
+          "speaker_id": "forgeworks_clerk",
+          "text": "Iron, coke, scrap, and paperwork. Guild paper comes in that door, Union crews take the loads out the other one, and I sit in the middle with a scale. Main Foundry runs three shifts. Everybody's arguing about the new furnace calibration. *He tips one hand, then the other.* I'm on both sides of that one. Most of us are.",
+          "responses": [
+            {
+              "text": "Sounds like a living.",
+              "next_node_id": "greet",
+              "set_flag": "intake_shop_talk_heard",
+              "disposition_change": 3
             }
           ],
           "expression": "neutral"
@@ -1662,7 +2315,20 @@
             },
             {
               "text": "Why are you talking to me?",
-              "next_node_id": "why_me"
+              "next_node_id": "why_me",
+              "required_flags": [
+                "helped_reva_sato"
+              ]
+            },
+            {
+              "text": "Why are you talking to me?",
+              "next_node_id": "why_me_watched",
+              "required_flags": [
+                "ignored_distress_signal"
+              ],
+              "excluded_flags": [
+                "helped_reva_sato"
+              ]
             }
           ],
           "expression": "confident"
@@ -1686,7 +2352,19 @@
         {
           "id": "why_me",
           "speaker_id": "dex_halloran",
-          "text": "Because you helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "text": "What's that worth to you? Call it a sample. You helped Reva Sato, and that puts you on a very short list of people in this system who actually give a damn. I'm Glyn. I deal in information. And right now, I've got a problem that requires someone who isn't me.",
+          "responses": [
+            {
+              "text": "I'm listening.",
+              "next_node_id": "tension"
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "why_me_watched",
+          "speaker_id": "dex_halloran",
+          "text": "What's that worth to you? *He shrugs.* Call it a sample. You didn't stop for Reva Sato. Not a judgment. A captain who keeps flying is a captain nobody watches, and nobody watching is what I need right now. I'm Glyn. I deal in information. And I've got a problem that requires someone who isn't me.",
           "responses": [
             {
               "text": "I'm listening.",
@@ -1784,11 +2462,13 @@
             {
               "text": "I'll do it.",
               "next_node_id": "accepted",
-              "set_flag": "dex_favor_accepted"
+              "set_flag": "dex_favor_accepted",
+              "disposition_change": 3
             },
             {
               "text": "I don't want to get involved.",
-              "next_node_id": "declined"
+              "next_node_id": "declined",
+              "set_flag": "dex_favor_declined"
             }
           ],
           "expression": "stern"
@@ -1847,6 +2527,25 @@
             {
               "text": "How do I know I can trust you?",
               "next_node_id": "trust"
+            },
+            {
+              "text": "Glyn tell you anything about me?",
+              "next_node_id": "heard_no",
+              "required_flags": [
+                "dex_favor_declined"
+              ]
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "heard_no",
+          "speaker_id": "malia_torres",
+          "text": "Said you turned him down the first time. *She looks you over.* Kid who says no to Glyn on the spot counted something first. I'd take that over the yes. Now. The chip.",
+          "responses": [
+            {
+              "text": "[Hand over the data chip]",
+              "next_node_id": "analysis"
             }
           ],
           "expression": "confident"
@@ -2385,7 +3084,7 @@
             },
             {
               "text": "I understand. I won't push.",
-              "next_node_id": "refuse"
+              "next_node_id": "dust"
             }
           ],
           "expression": "angry"
@@ -2393,19 +3092,50 @@
         {
           "id": "refuse",
           "speaker_id": "oren_tak",
-          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out. Not yet. Maybe if things get worse... come find me again. I'm not going anywhere.",
+          "text": "Look, I can see you mean well. But I'm not ready to stick my neck out.",
           "responses": [
             {
-              "text": "I'll be back.",
-              "next_node_id": null,
-              "set_flag": "met_oren_tak"
+              "text": "[Stand to go.]",
+              "next_node_id": "parting"
             }
           ],
           "expression": "neutral"
         },
         {
-          "id": "trust_earned",
+          "id": "dust",
           "speaker_id": "oren_tak",
+          "text": "*A long silence. He wets a finger and writes a seven in the ore dust on the table. Beside it he draws the frame of a stamp, the one on Guild freight crates. Then he wipes the table with his sleeve.* I haven't said a word. Union's welcome to check.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received",
+              "disposition_change": 3,
+              "faction_reputation_changes": [
+                {
+                  "miners_union": 1
+                }
+              ]
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "parting",
+          "speaker_id": "oren_tak",
+          "text": "*He doesn't look at you.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+          "responses": [
+            {
+              "text": "[Walk away.]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "worried"
+        },
+        {
+          "id": "trust_earned",
+          "speaker_id": "narrator",
           "text": "Oren stares at the table for a long moment. His jaw works like he's chewing something bitter. Then he leans forward and lowers his voice.",
           "responses": [
             {
@@ -2455,12 +3185,12 @@
         {
           "id": "farewell",
           "speaker_id": "oren_tak",
-          "text": "Don't thank me. Just... be careful who you tell. The people running that facility has friends in high places, maybe in every faction. And if they find out I talked... He trails off and stares into his drink. Iron Depths, Sublevel 7. That's all I know.",
+          "text": "Don't thank me. Just... be careful who you tell. The people running that facility have friends in high places, maybe in every faction. And if they find out I talked... *He trails off and stares into his drink.* Iron Depths, Sublevel 7. That's all I know.",
           "responses": [
             {
               "text": "Your secret's safe.",
               "next_node_id": null,
-              "set_flag": "met_oren_tak"
+              "set_flag": "oren_full_account"
             }
           ],
           "expression": "angry"
@@ -2474,7 +3204,7 @@
         {
           "id": "start",
           "speaker_id": "sienna_vek",
-          "text": "A woman in a Guild logistics uniform slides into the seat across from you. Her eyes are bloodshot and her hands are shaking. She glances at the cantina door before speaking. You came out of the sealed sections. I saw you on the security feeds before I wiped them. We need to talk.",
+          "text": "*A woman in a Guild logistics uniform slides into the seat across from you. Her eyes are bloodshot and her hands are shaking. She glances at the cantina door before speaking.* You came out of the sealed sections. I saw you on the security feeds before I wiped them. We need to talk.",
           "responses": [
             {
               "text": "Who are you?",
@@ -2572,6 +3302,13 @@
             {
               "text": "Who authorized this? Who in Guild leadership signed off?",
               "next_node_id": "leadership"
+            },
+            {
+              "text": "Military procurement codes, stamped on Guild freight crates under Breakstone. I know that format. So do you.",
+              "next_node_id": "share_data",
+              "required_flags": [
+                "oren_full_account"
+              ]
             }
           ],
           "expression": "stern"
@@ -2613,7 +3350,7 @@
         {
           "id": "share_data",
           "speaker_id": "sienna_vek",
-          "text": "She slides a data chip across the table. It's smaller than a thumbnail. Encrypted schematics, energy calculations, shipping manifests, authorization seals. Everything I could pull without tripping the access logs. Project Convergence. Sixteen gravitational lensing arrays. An artificial singularity pointed at the heart of the Aurelia Expanse. Someone has to stop this.",
+          "text": "*She slides a data chip across the table. It's smaller than a thumbnail.* Encrypted schematics, energy calculations, shipping manifests, authorization seals. Everything I could pull without tripping the access logs. Project Convergence. Sixteen gravitational lensing arrays. An artificial singularity pointed at the heart of the Aurelia Expanse. Someone has to stop this.",
           "responses": [
             {
               "text": "I'll stop it.",
@@ -11530,6 +12267,356 @@
             {
               "text": "[Step off.]",
               "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "elena_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "elena_reeves",
+          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She speaks before she looks up.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+          "responses": [
+            {
+              "text": "Go ahead.",
+              "next_node_id": "short_version"
+            },
+            {
+              "text": "I said I'd figure it out. I haven't.",
+              "next_node_id": "admission"
+            },
+            {
+              "text": "Still working on it.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "admission",
+          "speaker_id": "elena_reeves",
+          "text": "Dead reckoning without a fix. It works until it does not, and it never tells you which. *She moves her slate to make room.* Sit. Four minutes.",
+          "responses": [
+            {
+              "text": "[Sit down]",
+              "next_node_id": "short_version",
+              "set_flag": "elena_gave_trading_tips",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "short_version",
+          "speaker_id": "elena_reeves",
+          "text": "Food. Check what it lists at here. Breakstone imports it: a mining colony, every crate shipped in, and their board pays fifteen percent over base on a quiet day. That is your margin, before fuel, so run the fuel against it before you load. Then the event feeds. A mining boom or a crop failure moves a price before the boards catch up. You want to be at that station when they do.",
+          "responses": [
+            {
+              "text": "Understood.",
+              "next_node_id": "projections",
+              "set_flag": "elena_gave_trading_tips"
+            }
+          ],
+          "expression": "confident"
+        },
+        {
+          "id": "projections",
+          "speaker_id": "elena_reeves",
+          "text": "*A freight projection is open on her slate now, for a ship registered to someone else.* Three more of these to finish tonight, for a hull I will never set foot on. *She closes the slate.* Four minutes. As promised.",
+          "responses": [
+            {
+              "text": "Thanks, Elena.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "thoughtful"
+        }
+      ]
+    },
+    {
+      "id": "dex_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "dex_halloran",
+          "text": "*Third stool from the left. He doesn't turn around.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+          "responses": [
+            {
+              "text": "Why did you wait for me?",
+              "next_node_id": "priced"
+            },
+            {
+              "text": "Is the job still open?",
+              "next_node_id": "terms"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "priced",
+          "speaker_id": "dex_halloran",
+          "text": "Good question. What's it worth to you to know? Better one. What did you think your no was worth?",
+          "responses": [
+            {
+              "text": "I asked you a question.",
+              "next_node_id": "straight"
+            },
+            {
+              "text": "Is the job still open?",
+              "next_node_id": "terms"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "amused"
+        },
+        {
+          "id": "straight",
+          "speaker_id": "dex_halloran",
+          "text": "*The smile goes.* Now I know what you'll ask twice for. That's on the books. Last captain who said yes on the spot tried to sell me my own chip back inside a week. You said no. A no means you counted the cost.",
+          "responses": [
+            {
+              "text": "So. The job.",
+              "next_node_id": "terms"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "terms",
+          "speaker_id": "dex_halloran",
+          "text": "Chip's hotter than it was. Same job: Malia Torres, the lower decks at Crimson Reach. Tell her Glyn sent you. You'd have a favor from Glyn Quintela at the end of it. Smaller than a yes on the spot would have bought. That's what waiting cost.",
+          "responses": [
+            {
+              "text": "I'll do it.",
+              "next_node_id": "accepted_again",
+              "set_flag": "dex_favor_accepted",
+              "disposition_change": 3
+            },
+            {
+              "text": "Still no.",
+              "next_node_id": "still_no"
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "accepted_again",
+          "speaker_id": "dex_halloran",
+          "text": "Smart. Same rules as before. Don't try to read it yourself. The wipe trigger hasn't gotten any friendlier.",
+          "responses": [
+            {
+              "text": "I'll be careful.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "still_no",
+          "speaker_id": "dex_halloran",
+          "text": "Your call. A no is information too, friend, and I never throw information away.",
+          "responses": [
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        }
+      ]
+    },
+    {
+      "id": "oren_return",
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker_id": "oren_tak",
+          "text": "The tourist's back. *Quiet.* Coming back is brave or stupid. Usually both.",
+          "responses": [
+            {
+              "text": "Glyn sent me. I should have led with that.",
+              "next_node_id": "glyn_again"
+            },
+            {
+              "text": "I didn't know who was listening.",
+              "next_node_id": "dust_again"
+            },
+            {
+              "text": "[Persuasion 2] \"Same seat, same hour, facing the door. That's how a man sits when he wants to be found.\"",
+              "next_node_id": "found",
+              "skill_check": {
+                "skill": "persuasion",
+                "difficulty": 2,
+                "success_node_id": "found",
+                "failure_node_id": "found_not"
+              }
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "stern"
+        },
+        {
+          "id": "glyn_again",
+          "speaker_id": "oren_tak",
+          "text": "Glyn. That name buys thirty seconds. *He checks the door.* Fewer on a second visit.",
+          "responses": [
+            {
+              "text": "I didn't know who was listening.",
+              "next_node_id": "dust_again"
+            },
+            {
+              "text": "[Leave]",
+              "next_node_id": null
+            }
+          ],
+          "expression": "cautious"
+        },
+        {
+          "id": "dust_again",
+          "speaker_id": "oren_tak",
+          "text": "*He nods once. A finger in the ore dust: a seven, and the frame of a stamp. His sleeve wipes the table before you finish reading it.* Said nothing. Again.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "thoughtful"
+        },
+        {
+          "id": "found",
+          "speaker_id": "oren_tak",
+          "text": "*He holds still. Then, very quiet:* Iron Depths. Seventh sublevel. Crates with Guild freight stamps. That's what I sat here to say. *He watches the door.* Don't come back.",
+          "responses": [
+            {
+              "text": "[Nod]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "serious"
+        },
+        {
+          "id": "found_not",
+          "speaker_id": "oren_tak",
+          "text": "*He shakes his head.* You read too much into a chair. *Then, lower:* Iron Depths. Seventh sublevel. Seventh.",
+          "responses": [
+            {
+              "text": "[Walk away.]",
+              "next_node_id": null,
+              "set_flag": "oren_intel_received"
+            }
+          ],
+          "expression": "worried"
+        }
+      ]
+    },
+    {
+      "id": "tomas_return",
+      "start_node_id": "terms",
+      "nodes": [
+        {
+          "id": "terms",
+          "speaker_id": "tomas_drifter",
+          "text": "*He's ladling stew as you reach the table.* Eat first. *Then:* Bales are where you left them. So. Slept on it?",
+          "responses": [
+            {
+              "text": "I'm in.",
+              "next_node_id": "in",
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
+            },
+            {
+              "text": "No. I don't bend rules.",
+              "next_node_id": "out",
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
+            },
+            {
+              "text": "Whose cloth is it?",
+              "next_node_id": "weaver"
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "weaver",
+          "speaker_id": "tomas_drifter",
+          "text": "*Slower.* Woman on Verdant. Prices her cloth by the hours of daylight it took to weave. A long bolt in winter costs more than the same bolt in summer. Guild tariff schedule's got a column for weight, a column for grade, a column for origin. Daylight isn't a column.",
+          "responses": [
+            {
+              "text": "I'm in.",
+              "next_node_id": "in",
+              "set_flag": "accepted_drifter_deal",
+              "excluded_flags": [
+                "declined_drifter_deal"
+              ]
+            },
+            {
+              "text": "No. I don't bend rules.",
+              "next_node_id": "out",
+              "set_flag": "declined_drifter_deal",
+              "excluded_flags": [
+                "accepted_drifter_deal"
+              ]
+            },
+            {
+              "text": "Not yet.",
+              "next_node_id": null
+            }
+          ],
+          "expression": "neutral"
+        },
+        {
+          "id": "in",
+          "speaker_id": "tomas_drifter",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here.",
+          "responses": [
+            {
+              "text": "I'll get it done.",
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved",
+              "disposition_change": 3
+            }
+          ],
+          "expression": "happy"
+        },
+        {
+          "id": "out",
+          "speaker_id": "tomas_drifter",
+          "text": "Then you came back to tell me so. Most people just stop coming by. *Slower.* That counts for something here.",
+          "responses": [
+            {
+              "text": "Thanks for the food, Tomas.",
+              "next_node_id": null,
+              "set_flag": "drifter_deal_resolved",
+              "disposition_change": 3
             }
           ],
           "expression": "neutral"

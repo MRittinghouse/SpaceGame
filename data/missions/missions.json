@@ -55,14 +55,14 @@
         "late_multiplier": 0.5
       },
       "timeliness_comments": {
-        "timely": "Intake clerk checks the count, nods once. \"On the clock. Clean haul. Pay's good.\"",
+        "timely": "Intake clerk nods once. \"On the clock. Pay's good.\"",
         "late": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
-        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. Had to source the last of it from the scrapyards. This is what's left of your pay.\""
+        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. This is what's left of your pay.\""
       },
       "name": "Iron Ore Delivery",
       "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
-      "hint": "Talk to the cargo broker at Nexus Prime, then fly the iron ore to the intake clerk at the Neutral Ground on Forgeworks.",
-      "discovery_text": "Overheard a cargo broker near the docks looking for someone to haul iron ore to Forgeworks. Sounded like steady work for a new permit holder.",
+      "hint": "Carry Odom's ten units of iron ore to Joaquim Kimura at the Neutral Ground on Forgeworks. If the load comes up short or can't be flown, settle it with Odom at Nexus Prime.",
+      "discovery_text": "A cargo broker near the docks was looking for someone to haul iron ore to Forgeworks.",
       "prerequisites": [
         "bill_of_landing"
       ],
@@ -80,14 +80,14 @@
         {
           "type": "collect_cargo",
           "target_id": "iron_ore",
-          "target_quantity": 10,
-          "description": "Have 10 Iron Ore in cargo"
+          "target_quantity": 1,
+          "description": "Keep Odom's ore aboard"
         },
         {
-          "type": "talk_to_npc",
-          "target_id": "forgeworks_clerk",
+          "type": "has_flag",
+          "target_id": "iron_ore_handed_over",
           "target_quantity": 1,
-          "description": "Deliver the ore to the intake clerk at Forgeworks"
+          "description": "Hand the ore to Joaquim Kimura at the Neutral Ground, Forgeworks"
         }
       ],
       "rewards": [
@@ -113,6 +113,11 @@
           "reward_type": "set_flag",
           "amount": 0,
           "target_id": "iron_delivery_moved_on"
+        },
+        {
+          "reward_type": "set_flag",
+          "amount": 0,
+          "target_id": "iron_delivery_resolved"
         }
       ]
     },
@@ -322,7 +327,7 @@
     {
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
-      "description": "Five bolts of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Tomas can't sell there himself. He's got the wrong paperwork, the wrong reputation, and the wrong answers for customs. You're the clean hands in this arrangement. Sell the goods and split the take.",
+      "description": "Five bales of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Under Tomas's name the Guild tariff eats nearly the whole sale. You're the clean hands in this arrangement. Sell the goods and split the take.",
       "hint": "Travel to Stellaris Port with Tomas's textiles.",
       "prerequisites": [
         "the_drifters_deal"
@@ -365,7 +370,8 @@
           "reward_type": "xp",
           "amount": 80
         }
-      ]
+      ],
+      "receipt": "Grand Bazaar, textile desk: Tomas Drifter's bales cleared under your license. Shares wired to Haven's Rest and to you."
     },
     {
       "id": "recruit_navigator",
@@ -576,7 +582,7 @@
         {
           "type": "has_flag",
           "target_id": "dex_favor_accepted",
-          "description": "Decide whether to help Glyn"
+          "description": "Agree to carry Glyn's chip"
         }
       ],
       "rewards": [

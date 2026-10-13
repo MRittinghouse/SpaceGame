@@ -2,7 +2,7 @@
 
 Integration coverage for the full Odom / investment_introduced mission path:
 
-  iron_ore_delivered set
+  odom_ledger_open set (Odom's thanks after a clean, made-good or short run, or his second look)
   → odom_broker ongoing_greet branch available
   → investment_intro dialogue node → odom_explained_investment set
   → the_longer_ledger mission auto-completes → investment_introduced set
@@ -188,13 +188,13 @@ class TestDialogueBranchGating:
         ongoing_responses = [r for r in greet.responses if r.next_node_id == "ongoing_greet"]
         assert ongoing_responses, "greet node must have a response leading to ongoing_greet"
 
-    def test_ongoing_greet_gated_on_iron_ore_delivered(self) -> None:
+    def test_ongoing_greet_gated_on_the_ledger(self) -> None:
         tree = self._get_tree()
         greet = tree.nodes["greet"]
         for r in greet.responses:
             if r.next_node_id == "ongoing_greet":
-                assert "iron_ore_delivered" in (r.required_flags or []), (
-                    "ongoing_greet response must require iron_ore_delivered"
+                assert "odom_ledger_open" in (r.required_flags or []), (
+                    "ongoing_greet response must require odom_ledger_open"
                 )
                 assert "iron_delivery_failed" in (r.excluded_flags or []), (
                     "ongoing_greet response must exclude iron_delivery_failed"
@@ -273,11 +273,11 @@ class TestTheLongerLedgerMission:
 
     def test_mission_prerequisites(self) -> None:
         m = self._get_mission()
-        assert "iron_delivery" in (m.prerequisites or [])
+        assert m.prerequisites == ["bill_of_landing"]
 
     def test_mission_required_flags(self) -> None:
         m = self._get_mission()
-        assert "iron_ore_delivered" in (m.required_flags or [])
+        assert "odom_ledger_open" in (m.required_flags or [])
 
     def test_mission_objective_has_flag(self) -> None:
         m = self._get_mission()

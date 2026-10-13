@@ -5,7 +5,7 @@
     "player": null,
     "player_reputation": {}
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -112,7 +112,6 @@
           "hidden_facility_discovered",
           "informant_passenger_accepted",
           "iron_delivery_moved_on",
-          "iron_ore_delivered",
           "lab_rat_accepted",
           "learned_father_story",
           "marcus_old_debts_agreed",
@@ -127,6 +126,7 @@
           "met_priya_osei",
           "met_tomas_drifter",
           "miners_plight_accepted",
+          "odom_ledger_open",
           "okafor_legacy_heal_pattern_seen",
           "old_debts_accepted",
           "price_of_info_accepted",
@@ -272,7 +272,6 @@
           "hidden_facility_discovered",
           "informant_passenger_accepted",
           "iron_delivery_moved_on",
-          "iron_ore_delivered",
           "lab_rat_accepted",
           "learned_father_story",
           "marcus_old_debts_agreed",
@@ -287,6 +286,7 @@
           "met_priya_osei",
           "met_tomas_drifter",
           "miners_plight_accepted",
+          "odom_ledger_open",
           "okafor_legacy_heal_pattern_seen",
           "old_debts_accepted",
           "price_of_info_accepted",

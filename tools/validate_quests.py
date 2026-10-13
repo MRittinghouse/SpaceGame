@@ -22,6 +22,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from spacegame.data_loader import DataLoader  # noqa: E402
+from spacegame.models.iron_consignment import ENGINE_FLAGS  # noqa: E402
 from spacegame.models.mission import ObjectiveType  # noqa: E402
 
 
@@ -210,6 +211,7 @@ def validate(loader: DataLoader) -> tuple[list[str], list[str]]:
         "broker_ore_sold",
         "talked_to_officer_larsen",
         "escape_combat_survived",
+        *ENGINE_FLAGS,
     }
     for mission in loader.missions:
         for flag in mission.required_flags:

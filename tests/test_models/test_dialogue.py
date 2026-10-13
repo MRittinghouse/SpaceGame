@@ -54,7 +54,7 @@ class TestNPC:
         dl = get_data_loader()
         dl.load_all()
         clerk = dl.npcs["forgeworks_clerk"]
-        assert clerk.get_display_name() == "Deshi Wren (Intake Clerk, Cargo Broker)"
+        assert clerk.get_display_name() == "Joaquim Kimura (Intake Clerk, Main Foundry)"
 
     def test_display_name_without_title(self) -> None:
         npc = NPC(

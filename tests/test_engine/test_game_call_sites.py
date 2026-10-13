@@ -139,6 +139,24 @@ def test_a_dialogue_exit_closes_the_iron_job_through_the_model() -> None:
     assert "iron_delivery_failed" not in literals
 
 
+def test_every_dialogue_opening_refreshes_the_iron_state() -> None:
+    """Polish design 2.2 rule 3: the state is written as any dialogue opens.
+
+    start_dialogue and a crew scene both open their picked tree through _begin_dialogue.
+    """
+    assert _any_calls(_function("_begin_dialogue"), "refresh_state")
+
+
+def test_the_dialogue_exit_refreshes_the_iron_state_after_the_close() -> None:
+    route = _function("_route_from_dialogue")
+    assert _any_calls(route, "close_on_exit")
+    assert _any_calls(route, "refresh_state")
+
+
+def test_a_defeat_runs_the_iron_defeat_sensor() -> None:
+    assert _any_calls(_function("_apply_combat_result"), "note_defeat")
+
+
 def test_the_trading_view_gets_the_mission_manager() -> None:
     views = _function("_create_gameplay_views")
     built = [
@@ -177,11 +195,15 @@ def test_the_sell_lot_view_gets_the_mission_manager() -> None:
 
 
 def test_odoms_opening_no_longer_counts_the_ore() -> None:
-    """BB-1: the sale sensor replaces the count test, which accused a fight's loser."""
-    start = _function("start_dialogue")
-    assert not _calls(start, "get_cargo_quantity")
-    literals = [n.value for n in ast.walk(start) if isinstance(n, ast.Constant)]
-    assert "broker_ore_sold" not in literals
+    """BB-1: the sale sensor replaces the count test, which accused a fight's loser.
+
+    start_dialogue and a crew scene both open their picked tree through _begin_dialogue.
+    """
+    for name in ("start_dialogue", "_begin_dialogue"):
+        opening = _function(name)
+        assert not _calls(opening, "get_cargo_quantity"), name
+        literals = [n.value for n in ast.walk(opening) if isinstance(n, ast.Constant)]
+        assert "broker_ore_sold" not in literals, name
 
 
 def test_opening_an_npc_sets_its_gate_before_its_tree_is_chosen() -> None:
@@ -195,3 +217,106 @@ def test_opening_an_npc_sets_its_gate_before_its_tree_is_chosen() -> None:
     tree_picks = [c.lineno for c in _calls(start, "get_active_dialogue_id")]
     assert gate_reads and tree_picks
     assert min(gate_reads) < min(tree_picks)
+
+
+def test_the_trading_view_posts_the_rests_iron_notice_through_the_game() -> None:
+    call = _the_one_construction("_create_gameplay_views", "TradingView")
+    values = [ast.unparse(k.value) for k in call.keywords if k.arg == "on_iron_notice"]
+    assert values == ["self._after_iron_clock"]
+
+
+def test_a_filing_at_the_clock_writes_its_log_entry_straight_away() -> None:
+    """Polish 2.7: auto_iron_betrayal reads true after the filing, on that day and system."""
+    assert _any_calls(_function("_after_iron_clock"), "_check_journal_triggers")
+
+
+def _lines(node: ast.AST, name: str) -> list[int]:
+    return [c.lineno for c in _any_calls(node, name)]
+
+
+def test_a_dialogue_opening_refreshes_the_store_before_the_dialogue_loads_it() -> None:
+    """The refresh writes the player's store; load_flags copies that store into the dialogue."""
+    start = _function("_begin_dialogue")
+    loads, refreshes = _lines(start, "load_flags"), _lines(start, "refresh_state")
+    assert loads and refreshes
+    assert max(refreshes) < min(loads)
+
+
+def test_the_dialogue_exit_refreshes_after_the_close_and_mirrors_both() -> None:
+    route = _function("_route_from_dialogue")
+    closes, refreshes = _lines(route, "close_on_exit"), _lines(route, "refresh_state")
+    assert closes and refreshes
+    assert max(closes) < min(refreshes)
+    args = [ast.unparse(c.args[0]) for c in _any_calls(route, "_mirror_dialogue_flags") if c.args]
+    assert "notice.flags" in args
+    assert any(a.startswith("refresh_state(") for a in args), args
+
+
+def test_a_landing_hands_the_clock_notice_to_the_helper_after_the_clock() -> None:
+    route = _function("_route_from_galaxy_map")
+    clocks, helpers = _lines(route, "on_clock"), _lines(route, "_after_iron_clock")
+    assert clocks and helpers
+    assert min(helpers) > min(clocks)
+
+
+def test_the_clock_helper_posts_and_mirrors_the_notice_and_the_state() -> None:
+    helper = _function("_after_iron_clock")
+    extends = [ast.unparse(c.args[0]) for c in _any_calls(helper, "extend") if c.args]
+    assert "notice.lines" in extends or any("notice.lines" in e for e in extends), extends
+    assert any(
+        "_mission_notifications" in ast.unparse(c.func) for c in _any_calls(helper, "extend")
+    )
+    args = [ast.unparse(c.args[0]) for c in _any_calls(helper, "_mirror_dialogue_flags") if c.args]
+    assert "notice.flags" in args
+    assert any(a.startswith("refresh_state(") for a in args), args
+
+
+def test_a_defeat_counts_the_ore_before_the_defeat_takes_it() -> None:
+    apply = _function("_apply_combat_result")
+    held, defeats = _lines(apply, "held_units"), _lines(apply, "apply_combat_defeat")
+    notes = _any_calls(apply, "note_defeat")
+    assert held and defeats and notes
+    assert min(held) < min(defeats)
+    assert min(c.lineno for c in notes) > min(defeats)
+    assert any(
+        _any_calls(a, "held_units")
+        for c in notes
+        for a in [*c.args, *(k.value for k in c.keywords)]
+    )
+
+
+def test_a_mission_complete_notice_is_followed_by_its_receipt() -> None:
+    """Polish design 6: the Grand Bazaar's receipt follows Drifter's Delivery's notice."""
+    check = _function("check_missions")
+    names = [n.attr for n in ast.walk(check) if isinstance(n, ast.Attribute)]
+    assert "receipt" in names
+    appends = [
+        c
+        for c in _any_calls(check, "append")
+        if ast.unparse(c.func) == "self._mission_notifications.append"
+    ]
+
+    def _arg(call: ast.Call) -> ast.expr:
+        return call.args[0]
+
+    notices = [
+        c
+        for c in appends
+        if isinstance(_arg(c), ast.JoinedStr)
+        and isinstance(_arg(c).values[0], ast.Constant)
+        and str(_arg(c).values[0].value).startswith("Mission Complete")
+    ]
+    receipts = [c for c in appends if ast.unparse(_arg(c)) == "mission.receipt"]
+    timeliness = [c for c in appends if ast.unparse(_arg(c)) == "timeliness_comment"]
+    assert notices and timeliness
+    assert len(receipts) == 1
+    receipt = receipts[0]
+    assert max(c.lineno for c in notices) < receipt.lineno < min(c.lineno for c in timeliness)
+    guards = [
+        n
+        for n in ast.walk(check)
+        if isinstance(n, ast.If)
+        and "mission.receipt" in ast.unparse(n.test)
+        and any(receipt in ast.walk(stmt) for stmt in n.body)
+    ]
+    assert guards, "the receipt append must sit under an `if mission.receipt` guard"

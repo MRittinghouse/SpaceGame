@@ -239,6 +239,7 @@ class TestCB2CombatMarkerWiring:
             game = Game()
 
         game.ambient_dialogue = AmbientDialogueManager([])
+        game.mission_manager = None
         game._player = MagicMock()
         game.player.game_day = 3
         game.player.current_system_id = "nexus_prime"

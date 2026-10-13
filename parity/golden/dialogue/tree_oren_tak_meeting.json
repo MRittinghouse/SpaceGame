@@ -80,7 +80,7 @@
     },
     "tree_id": "oren_tak_meeting"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -331,7 +331,7 @@
           1
         ],
         "check": null,
-        "next_node": "refuse",
+        "next_node": "dust",
         "response": 1
       },
       "state": {
@@ -357,13 +357,69 @@
           0
         ],
         "check": null,
+        "next_node": "parting",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "dust",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "oren_tak": 53
+        },
+        "flags": [
+          "oren_intel_received"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "parting",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
         "next_node": null,
         "response": 0
       },
       "state": {
         "disposition": {},
         "flags": [
-          "met_oren_tak"
+          "oren_intel_received"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -499,7 +555,7 @@
       "state": {
         "disposition": {},
         "flags": [
-          "met_oren_tak"
+          "oren_full_account"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -760,7 +816,7 @@
           1
         ],
         "check": null,
-        "next_node": "refuse",
+        "next_node": "dust",
         "response": 1
       },
       "state": {
@@ -786,13 +842,69 @@
           0
         ],
         "check": null,
+        "next_node": "parting",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "dust",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": null,
+        "response": 0
+      },
+      "state": {
+        "disposition": {
+          "oren_tak": 53
+        },
+        "flags": [
+          "oren_intel_received"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "parting",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
         "next_node": null,
         "response": 0
       },
       "state": {
         "disposition": {},
         "flags": [
-          "met_oren_tak"
+          "oren_intel_received"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -928,7 +1040,7 @@
       "state": {
         "disposition": {},
         "flags": [
-          "met_oren_tak"
+          "oren_full_account"
         ],
         "loyalty": {
           "dr_priya_osei": 60,

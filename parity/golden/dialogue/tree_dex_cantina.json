@@ -24,7 +24,10 @@
     "npc_id": "dex_halloran",
     "profiles": {
       "expert": {
-        "flags": {},
+        "flags": {
+          "helped_reva_sato": true,
+          "ignored_distress_signal": true
+        },
         "social": {
           "disposition": {},
           "skills": {
@@ -80,7 +83,7 @@
     },
     "tree_id": "dex_cantina"
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -91,39 +94,11 @@
       "call": "select",
       "result": {
         "available": [
-          0,
-          1
+          0
         ],
         "check": null,
         "next_node": "intro",
         "response": 0
-      },
-      "state": {
-        "disposition": {},
-        "flags": [],
-        "loyalty": {
-          "dr_priya_osei": 60,
-          "elena_reeves": 60,
-          "marcus_jin": 60,
-          "tomas_drifter": 60
-        }
-      }
-    },
-    {
-      "args": [
-        "novice",
-        "start",
-        1
-      ],
-      "call": "select",
-      "result": {
-        "available": [
-          0,
-          1
-        ],
-        "check": null,
-        "next_node": "why_me",
-        "response": 1
       },
       "state": {
         "disposition": {},
@@ -194,6 +169,32 @@
       "args": [
         "novice",
         "why_me",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "tension",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "novice",
+        "why_me_watched",
         0
       ],
       "call": "select",
@@ -489,7 +490,9 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "dex_halloran": 53
+        },
         "flags": [
           "dex_favor_accepted"
         ],
@@ -519,7 +522,9 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -598,7 +603,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -625,7 +633,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -652,7 +663,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -679,7 +693,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -705,7 +722,39 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
+        "loyalty": {
+          "dr_priya_osei": 60,
+          "elena_reeves": 60,
+          "marcus_jin": 60,
+          "tomas_drifter": 60
+        }
+      }
+    },
+    {
+      "args": [
+        "expert",
+        "why_me_watched",
+        0
+      ],
+      "call": "select",
+      "result": {
+        "available": [
+          0
+        ],
+        "check": null,
+        "next_node": "tension",
+        "response": 0
+      },
+      "state": {
+        "disposition": {},
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -733,7 +782,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -767,6 +819,8 @@
           "dex_halloran": 53
         },
         "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal",
           "spotted_auditor_cover"
         ],
         "loyalty": {
@@ -801,7 +855,10 @@
         "disposition": {
           "dex_halloran": 53
         },
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -828,7 +885,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -855,7 +915,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -882,7 +945,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -909,7 +975,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -936,7 +1005,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -963,7 +1035,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -989,9 +1064,13 @@
         "response": 0
       },
       "state": {
-        "disposition": {},
+        "disposition": {
+          "dex_halloran": 53
+        },
         "flags": [
-          "dex_favor_accepted"
+          "dex_favor_accepted",
+          "helped_reva_sato",
+          "ignored_distress_signal"
         ],
         "loyalty": {
           "dr_priya_osei": 60,
@@ -1019,7 +1098,11 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "dex_favor_declined",
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -1045,7 +1128,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,
@@ -1071,7 +1157,10 @@
       },
       "state": {
         "disposition": {},
-        "flags": [],
+        "flags": [
+          "helped_reva_sato",
+          "ignored_distress_signal"
+        ],
         "loyalty": {
           "dr_priya_osei": 60,
           "elena_reeves": 60,

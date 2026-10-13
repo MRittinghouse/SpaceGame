@@ -606,6 +606,19 @@ def _collect_all_flag_uses() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
                     full_flag = prefix
                 consumers[full_flag].add(f"code:{rel}")
 
+    # The iron job's engine flags (polish design 2.7): iron_consignment writes the state table
+    # through a loop the code scan cannot see.
+    from spacegame.models.iron_consignment import ENGINE_FLAGS
+
+    for flag in ENGINE_FLAGS:
+        producers[flag].add("engine:iron_consignment")
+    # The dialogue exit sets talked_to_<npc> for the NPC it closes (game.py,
+    # _route_from_dialogue); a return state keys on it (polish design 6).
+    npc_ids = set(loader.npcs)
+    for flag in list(consumers):
+        if flag.startswith("talked_to_") and flag.removeprefix("talked_to_") in npc_ids:
+            producers[flag].add("engine:dialogue_exit")
+
     return producers, consumers
 
 
@@ -1024,7 +1037,6 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     "completed_mining_tutorial",
     "courier_was_followed",
     "crimson_neutral_status",
-    "declined_drifter_deal",
     "defied_ledger_shadow",
     "escaped_through_warp_gate",
     "escorted_priya_axiom",
@@ -1197,6 +1209,22 @@ KNOWN_PRODUCER_ONLY_ORPHANS: set[str] = {
     # BB-2: point_of_no_return's reward still sets it for Act II; the objective that
     # waited on it is gone, so nothing reads it now.
     "warp_gate_discovered",
+    # === Writing W3a (plan W3a-S): Log-only and one-time flags (polish design 2.5): read by a
+    # journal trigger or a reply's excluded_flags, which this audit does not count ===
+    "iron_ore_handed_back",
+    "odom_wrote_off_the_ore",
+    # odom_caught_lie is read by nothing yet: polish design 2.5 names a Log entry and SP10's
+    # hooks, and 2.6 writes no entry for it; the author's read (2026-10-13) leaves it to SP10.
+    "odom_caught_lie",
+    "odom_book_credit",
+    "odom_noted_the_float",
+    "read_odom_clause",
+    "odom_clause_tried",
+    "intake_crucible_tried",
+    "intake_shop_talk_heard",
+    "elena_heard_carriage",
+    "elena_heard_lane",
+    "elena_heard_violation",
     # BB-16 (plan W4-S): the crew quests gate on their ask and read live loyalty, so the
     # latched marks lost their quest readers. CrewRoster still writes them (the saves and
     # chandra_osei's state read crew_loyalty_dr_priya_osei_50); the relationship model (W9)

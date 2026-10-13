@@ -5,6 +5,7 @@ Buy and sell commodities at the current system's market.
 Features dimmed animated background, panel glow borders, and transaction particles.
 """
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Optional
 
 import pygame
@@ -37,6 +38,7 @@ from spacegame.views.cockpit_hud import HUD_BASE_HEIGHT
 from spacegame.views.table_widget import ColumnDef, TableWidget
 
 if TYPE_CHECKING:
+    from spacegame.models.iron_consignment import IronNotice
     from spacegame.models.mission import MissionManager
 
 # BB-74: a held port asks for its holder's permit, and the bill of landing does not grant
@@ -96,8 +98,10 @@ class TradingView(BaseView):
         smuggling_contract_manager=None,
         politics_manager=None,
         mission_manager: Optional["MissionManager"] = None,
+        on_iron_notice: Optional[Callable[["IronNotice"], None]] = None,
     ):
         super().__init__()
+        self.on_iron_notice = on_iron_notice
         self.ui_manager = ui_manager
         self.player = player
         self.systems = systems
@@ -943,11 +947,14 @@ class TradingView(BaseView):
         except ValueError:
             quantity = 1
 
-        # Check player has enough in main hold
+        # Check player has enough in main hold; Odom's consigned ore stays in it
+        from spacegame.models.iron_consignment import HIDE_REFUSED, hidable
+
         main_qty = self.player.ship.get_cargo_quantity(commodity_id)
-        quantity = min(quantity, main_qty)
+        free_qty = hidable(self.mission_manager, self.player, commodity_id)
+        quantity = min(quantity, free_qty)
         if quantity <= 0:
-            self._show_message("No cargo to hide")
+            self._show_message(HIDE_REFUSED if main_qty > 0 else "No cargo to hide")
             return
 
         success, msg = self.player.hidden_compartment.add_to_hidden(commodity_id, quantity)
@@ -1344,11 +1351,21 @@ class TradingView(BaseView):
         if success:
             self.market.update_day(self.player.game_day)
             self.market.regenerate_stock()
-            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does
+            # Bug bash BB-4: a rest runs the iron job's clock, as a landing does, and a sale on
+            # record is filed here (polish design 2.2 rule 6)
             if self.mission_manager is not None:
-                from spacegame.models.iron_consignment import on_clock
+                from spacegame.models.iron_consignment import on_clock, refresh_state
 
-                on_clock(self.mission_manager, self.player.dialogue_flags, self.player.game_day)
+                notice = on_clock(
+                    self.mission_manager,
+                    self.player,
+                    self.player.dialogue_flags,
+                    self.player.game_day,
+                )
+                # The game's banner queue posts the notice (and mirrors its flags)
+                if self.on_iron_notice is not None:
+                    self.on_iron_notice(notice)
+                refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
             self._refresh_tables()
 
     def _show_message(self, message: str) -> None:

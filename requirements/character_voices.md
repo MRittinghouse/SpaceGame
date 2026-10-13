@@ -471,7 +471,7 @@ His voice is flat in the way that busy people's voices are flat -- not from cold
 - "You there" as address until you earn a different one
 - States the deal before anything else; there are no pleasantries
 - References his own track record as authority: "I've moved freight through this station for nineteen years"
-- Specific quantities and destinations, never approximate: "ten units, Forgeworks, within the week"
+- Specific quantities and destinations, never approximate: "ten units, Forgeworks, inside fourteen days"
 - Keeps an audible running tally: "Credits are in your account already. You fly straight and you don't skim."
 - Records debts by amount, not by grievance: "She owed me seventy credits" -- never "She wronged me"
 - "I'll remember that" as both promise and warning, depending on context
@@ -497,7 +497,7 @@ His voice is flat in the way that busy people's voices are flat -- not from cold
 - Anything that implies a second chance where he has decided there is none
 
 ### Sample Lines
-1. **First contact**: "You there. I'll give you 500 credits to ship this iron ore off to Forgeworks. I just bought it, and I've been told that my carrier is full up. I need it there within the week."
+1. **First contact**: "You there. Six hundred credits to ship ten units of iron ore to Forgeworks. I just bought it, and I've been told my carrier is full up. Full fee if it's on the Foundry's scale inside fourteen days."
 2. **Teaching**: "Any port's board gets its listings from brokers. People like me. We see what moves. We track what pays. You want to know who to ask, it's the people standing at terminals, not the ones staring at the board."
 3. **On reliability**: "Forgeworks pinged me. All ten units, weighed and accepted. Credits are in your account already. You fly straight and you don't skim. I'll remember that."
 4. **Cold anger**: "You sold my freight. Consigned cargo, with my name on the manifest, and you walked it over to the trading floor like it was yours to move. I was paying you six hundred for that run. You traded all of that for scrap money."

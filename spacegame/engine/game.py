@@ -98,6 +98,7 @@ if TYPE_CHECKING:
     from spacegame.models.event import MarketEvent
     from spacegame.models.ground_mapgen import MapGenResult
     from spacegame.models.ground_mission import GroundMissionConfig, GroundMissionResult
+    from spacegame.models.iron_consignment import IronNotice
     from spacegame.models.lens import Lens
     from spacegame.models.mission import MissionManager
     from spacegame.views.achievements_view import AchievementsView
@@ -1301,16 +1302,18 @@ class Game:
                 self._mission_notifications.append(arrival_message)
                 self.galaxy_map_view.arrival_message = None
 
-                # Bug bash BB-4: a landing runs the iron job's clock, before the
-                # auto-triggers read the flag it sets (Elena's)
+                # Bug bash BB-4: a landing runs the iron job's clock, before the auto-triggers
+                # read the flag it sets (Elena's); a sale on record is filed here (O7b)
                 if self.mission_manager and self._player is not None:
-                    from spacegame.constants.flags import iron_delivery_moved_on
                     from spacegame.models.iron_consignment import on_clock
 
-                    if on_clock(
-                        self.mission_manager, self.player.dialogue_flags, self.player.game_day
-                    ):
-                        self.dialogue_manager.set_flag(iron_delivery_moved_on())
+                    notice = on_clock(
+                        self.mission_manager,
+                        self.player,
+                        self.player.dialogue_flags,
+                        self.player.game_day,
+                    )
+                    self._after_iron_clock(notice)
 
                 # Travel log: first visit entry
                 if self.travel_log and self.journal and self._player is not None:
@@ -1322,64 +1325,7 @@ class Game:
                     self._last_visited_count = len(self.player.systems_visited)
 
                 # Trigger ambient crew dialogue on system arrival
-                if self.ambient_dialogue and self.crew_roster and self._player is not None:
-                    system_id = self.player.current_system_id
-                    system = self.data_loader.get_system(system_id)
-                    faction_id = system.faction if system else ""
-                    recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
-                    loyalty_map = {}
-                    for tid in recruited:
-                        state = self.crew_roster.get_member_state(tid)
-                        loyalty_map[tid] = state["loyalty"] if state else 0
-                        template = self.crew_roster.get_template(tid)
-                        if not template:
-                            continue
-                        # Check home system
-                        if template.home_system_id == system_id:
-                            line = self.ambient_dialogue.get_line(
-                                "home_system",
-                                tid,
-                                system_id=system_id,
-                                loyalty=loyalty_map[tid],
-                                player_flags=self.player.dialogue_flags,
-                            )
-                            if line:
-                                self._mission_notifications.append(f'{template.name}: "{line}"')
-                        # Check faction territory
-                        elif template.faction_id and template.faction_id == faction_id:
-                            line = self.ambient_dialogue.get_line(
-                                "faction_territory",
-                                tid,
-                                faction_id=faction_id,
-                                loyalty=loyalty_map[tid],
-                                player_flags=self.player.dialogue_flags,
-                            )
-                            if line:
-                                self._mission_notifications.append(f'{template.name}: "{line}"')
-
-                    # CB-2: combat_after banter — fires within 3 days of last combat
-                    ca_result = self.ambient_dialogue.get_combat_after_line(
-                        recruited_ids=recruited,
-                        loyalty_map=loyalty_map,
-                        current_day=self.player.game_day,
-                    )
-                    if ca_result:
-                        ca_crew_id, ca_text = ca_result
-                        ca_template = self.crew_roster.get_template(ca_crew_id)
-                        ca_name = ca_template.name if ca_template else ca_crew_id
-                        self._mission_notifications.append(f'{ca_name}: "{ca_text}"')
-
-                    # CB-2: flag_triggered banter — fires once per flag per save
-                    ft_result = self.ambient_dialogue.check_flag_lines(
-                        player_flags=self.player.dialogue_flags,
-                        recruited_ids=recruited,
-                        loyalty_map=loyalty_map,
-                    )
-                    if ft_result:
-                        ft_crew_id, ft_text = ft_result
-                        ft_template = self.crew_roster.get_template(ft_crew_id)
-                        ft_name = ft_template.name if ft_template else ft_crew_id
-                        self._mission_notifications.append(f'{ft_name}: "{ft_text}"')
+                self._queue_arrival_banter()
 
                 self._crew_landing()
 
@@ -1534,6 +1480,67 @@ class Game:
 
                 self._start_transition(TransitionType.FADE, 0.3, _do)
         return False
+
+    def _queue_arrival_banter(self) -> None:
+        """Queue the crew's ambient lines for a system arrival: home, faction and CB-2 banter."""
+        if self.ambient_dialogue and self.crew_roster and self._player is not None:
+            system_id = self.player.current_system_id
+            system = self.data_loader.get_system(system_id)
+            faction_id = system.faction if system else ""
+            recruited = [t.id for t, _ in self.crew_roster.get_recruited_members()]
+            loyalty_map = {}
+            for tid in recruited:
+                state = self.crew_roster.get_member_state(tid)
+                loyalty_map[tid] = state["loyalty"] if state else 0
+                template = self.crew_roster.get_template(tid)
+                if not template:
+                    continue
+                # Check home system
+                if template.home_system_id == system_id:
+                    line = self.ambient_dialogue.get_line(
+                        "home_system",
+                        tid,
+                        system_id=system_id,
+                        loyalty=loyalty_map[tid],
+                        player_flags=self.player.dialogue_flags,
+                    )
+                    if line:
+                        self._mission_notifications.append(f'{template.name}: "{line}"')
+                # Check faction territory
+                elif template.faction_id and template.faction_id == faction_id:
+                    line = self.ambient_dialogue.get_line(
+                        "faction_territory",
+                        tid,
+                        faction_id=faction_id,
+                        loyalty=loyalty_map[tid],
+                        player_flags=self.player.dialogue_flags,
+                    )
+                    if line:
+                        self._mission_notifications.append(f'{template.name}: "{line}"')
+
+            # CB-2: combat_after banter — fires within 3 days of last combat
+            ca_result = self.ambient_dialogue.get_combat_after_line(
+                recruited_ids=recruited,
+                loyalty_map=loyalty_map,
+                current_day=self.player.game_day,
+            )
+            if ca_result:
+                ca_crew_id, ca_text = ca_result
+                ca_template = self.crew_roster.get_template(ca_crew_id)
+                ca_name = ca_template.name if ca_template else ca_crew_id
+                self._mission_notifications.append(f'{ca_name}: "{ca_text}"')
+
+            # CB-2: flag_triggered banter — fires once per flag per save
+            ft_result = self.ambient_dialogue.check_flag_lines(
+                player_flags=self.player.dialogue_flags,
+                recruited_ids=recruited,
+                loyalty_map=loyalty_map,
+            )
+            if ft_result:
+                ft_crew_id, ft_text = ft_result
+                ft_template = self.crew_roster.get_template(ft_crew_id)
+                ft_name = ft_template.name if ft_template else ft_crew_id
+                self._mission_notifications.append(f'{ft_name}: "{ft_text}"')
 
     def _route_from_journal(self) -> bool:
         # Check journal view for transitions
@@ -1744,16 +1751,24 @@ class Game:
                         for mission_id in accepted:
                             self._load_auto_accept_cargo(mission_id)
 
-                    # Bug bash BB-4: the betrayal fails an open iron job and lets the
-                    # campaign move on (iron_consignment.close_on_exit)
+                    # Polish design 2.2 rule 6: the close hook fails an open job after the
+                    # betrayal or a no-fault close and takes back the consigned ore; a declined
+                    # offer moves the campaign on. Then the state is written again.
                     if self.mission_manager:
-                        from spacegame.constants.flags import iron_delivery_moved_on
-                        from spacegame.models.iron_consignment import close_on_exit
+                        from spacegame.models.iron_consignment import close_on_exit, refresh_state
 
-                        if close_on_exit(self.mission_manager, self.player.dialogue_flags):
-                            self._mission_notifications.append("Mission Failed: Iron Ore Delivery")
-                            logger.info("Iron delivery mission failed: Odom's ore was sold")
-                            self.dialogue_manager.set_flag(iron_delivery_moved_on())
+                        notice = close_on_exit(
+                            self.mission_manager, self.player, self.player.dialogue_flags
+                        )
+                        self._mission_notifications.extend(notice.lines)
+                        if notice.lines:
+                            logger.info(f"Iron delivery closed: {notice.lines[0]}")
+                        self._mirror_dialogue_flags(notice.flags)
+                        self._mirror_dialogue_flags(
+                            refresh_state(
+                                self.mission_manager, self.player, self.player.dialogue_flags
+                            )
+                        )
 
                     self._close_crew_scene()
 
@@ -2580,6 +2595,7 @@ class Game:
             smuggling_contract_manager=self.smuggling_contract_manager,
             politics_manager=self.politics_manager,
             mission_manager=self.mission_manager,
+            on_iron_notice=self._after_iron_clock,
         )
 
         self.state_manager.register_state(GameState.GALAXY_MAP, self.galaxy_map_view)
@@ -3670,6 +3686,13 @@ class Game:
         """
         music = getattr(npc, "dialogue_music", "dialogue_neutral") if npc is not None else ""
         self._dialogue_music = music or "dialogue_neutral"
+        # Polish design 2.2 rule 3: the engine names the iron job's state as any dialogue
+        # opens, after the state machine has picked the tree (no NPC state reads it)
+        if self.mission_manager and self._player is not None:
+            from spacegame.models.iron_consignment import refresh_state
+
+            refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
+
         self.dialogue_manager.load_flags(self.player.dialogue_flags)
         self.social_manager.load_state(self.player.social_state)
         if self.player.progression:
@@ -3700,6 +3723,25 @@ class Game:
 
         self._start_transition(TransitionType.FADE, 0.3, _do)
         logger.info(f"Starting dialogue {tree.id} with {npc.name if npc is not None else 'no one'}")
+
+    def _mirror_dialogue_flags(self, names: tuple[str, ...]) -> None:
+        """Copy flags the iron job wrote into the player's store over to the dialogue's."""
+        for name in names:
+            self.dialogue_manager.set_flag(name, self.player.dialogue_flags.get(name, False))
+
+    def _after_iron_clock(self, notice: "IronNotice") -> None:
+        """Post a landing's or a rest's clock notices, then mirror its flags and the state."""
+        from spacegame.models.iron_consignment import refresh_state
+
+        self._mission_notifications.extend(notice.lines)
+        self._mirror_dialogue_flags(notice.flags)
+        if self.mission_manager:
+            self._mirror_dialogue_flags(
+                refresh_state(self.mission_manager, self.player, self.player.dialogue_flags)
+            )
+        if notice.lines:
+            # Polish 2.7: a filing's Log entry is written on the day and in the system it fell
+            self._check_journal_triggers()
 
     def _start_intro_narration(self, return_state: GameState = GameState.GALAXY_MAP) -> None:
         """Start the intro backstory narration sequence.
@@ -4464,7 +4506,19 @@ class Game:
 
         elif result == CombatResult.DEFEAT:
             safe_system = self.player.current_system_id
+            from spacegame.models.iron_consignment import ORE, note_defeat
+            from spacegame.models.mission import held_units
+
+            ore_before = held_units(self.player, ORE)
             self.player.apply_combat_defeat(safe_system)
+            # BB-1: a defeat whose losses draw Odom's consigned ore is on the lane report
+            if self.mission_manager:
+                note_defeat(
+                    self.mission_manager,
+                    self.player.dialogue_flags,
+                    ore_before,
+                    held_units(self.player, ORE),
+                )
             logger.info("Combat defeat: cargo lost, retreated")
 
         elif result == CombatResult.FLED:
@@ -5110,7 +5164,10 @@ class Game:
 
         self.paused = True
         if not self.pause_menu_view:
-            pause_menu_view = PauseMenuView(self.ui_manager)
+            pause_menu_view = PauseMenuView(
+                self.ui_manager,
+                save_allowed=self.state_manager.current_state != GameState.DIALOGUE,
+            )
             pause_menu_view.on_enter()
             self.pause_menu_view = pause_menu_view
         self.audio_manager.pause_music()
@@ -6383,6 +6440,8 @@ class Game:
             name = mission.name if mission else mission_id
             reward_text = ", ".join(reward_msgs) if reward_msgs else ""
             self._mission_notifications.append(f"Mission Complete: {name}! {reward_text}")
+            if mission and mission.receipt:
+                self._mission_notifications.append(mission.receipt)
             if timeliness_comment:
                 # Separate notification line so it reads as NPC dialogue
                 # rather than a reward stat.

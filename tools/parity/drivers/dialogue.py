@@ -378,14 +378,21 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         ("cargo_lost_complete", "larsen_permit_complete", "met_dex_halloran"),
         (("cargo_lost", "completed"), ("whispers_at_the_bar", "active")),
     ),
-    # Synthetic: since BB-71's repair every exit of Tomas's scene resolves his deal, which
-    # auto-accepts, so play never leaves it available with his scene spent. It stays as the
-    # one step where an available mission keeps a spent NPC (the keep rule's 'available' half).
+    # Synthetic: the_drifters_deal auto-accepts once Tomas is met, so play never leaves it
+    # available with his scene spent. Tomas's deferral (polish design 6) leaves his deal active
+    # with his scene spent, which tomas_thinking pins; this step stays the one where an
+    # available mission keeps a spent NPC (the keep rule's 'available' half).
     _TalkStep(
         "tomas_unresolved",
         "havens_rest",
         ("breakstone_permit_earned", "met_tomas_drifter"),
         (("union_territory", "completed"), ("the_drifters_deal", "available")),
+    ),
+    _TalkStep(
+        "tomas_thinking",
+        "havens_rest",
+        ("breakstone_permit_earned", "met_tomas_drifter", "talked_to_tomas_drifter"),
+        (("union_territory", "completed"), ("the_drifters_deal", "active")),
     ),
     _TalkStep(
         "oren_kept",
@@ -398,13 +405,22 @@ TALK_STEPS: tuple[_TalkStep, ...] = (
         "reva_reached", "nova_research", ("cargo_lost_accepted",), (("cargo_lost", "active"),)
     ),
     _TalkStep(
-        "wren_offered",
+        "intake_offered",
         "forgeworks",
         ("talked_to_cargo_broker",),
         (("iron_delivery", "available"),),
     ),
     _TalkStep(
-        "wren_awaited", "forgeworks", ("talked_to_cargo_broker",), (("iron_delivery", "active"),)
+        "intake_awaited",
+        "forgeworks",
+        ("talked_to_cargo_broker", "iron_job_full"),
+        (("iron_delivery", "active"),),
+    ),
+    _TalkStep(
+        "odom_short_load",
+        "nexus_prime",
+        ("larsen_permit_complete", "talked_to_cargo_broker", "iron_job_short_lost"),
+        (("iron_delivery", "active"),),
     ),
     _TalkStep(
         "odom_gone",

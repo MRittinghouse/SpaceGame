@@ -16,6 +16,12 @@ ACCEPT = [
     "I'll get it done.",
 ]
 DECLINE = [*ACCEPT[:3], "Sorry, I don't bend rules.", "Thanks for the food, Tomas."]
+DEFER = [
+    *ACCEPT[:3],
+    "Why should I trust you?",
+    "I need to think about it. Not right now.",
+    "Thanks for the food, Tomas.",
+]
 
 
 def _dl() -> DataLoader:
@@ -85,11 +91,14 @@ def test_declining_the_deal_resolves_it_too() -> None:
 
 def test_a_reopened_scene_never_sets_both_deal_flags() -> None:
     accepted = {**_opening(), "accepted_drifter_deal": True}
-    for node_id in ("is_it_legal", "why_trust", "what_if_caught"):
+    for node_id in ("is_it_legal", "what_if_caught"):
         node = _dl().dialogue_trees["tomas_havens"].nodes[node_id]
         for reply in node.responses:
             if reply.set_flag == "declined_drifter_deal":
                 assert any(accepted.get(f) for f in reply.excluded_flags), node_id
+    # why_trust's second reply is Tomas's deferral (polish design 6): walking it sets neither.
+    deferred = _walk(DEFER, _opening())
+    assert not deferred.get("accepted_drifter_deal") and not deferred.get("declined_drifter_deal")
 
 
 def _accepted_run() -> tuple[MissionManager, Player]:

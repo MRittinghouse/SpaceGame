@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from spacegame.data_loader import DataLoader
+from spacegame.models.iron_consignment import ENGINE_FLAGS
 from spacegame.models.mission import ObjectiveType
 
 # BB-17: two_calls and the_silent_shaft wait on this flag, which nothing sets until SP10
@@ -395,6 +396,8 @@ class TestFlagReachability:
             # close-handler — the scanner only detects string-literal assignments,
             # not variable-mediated ones.
             "okafor_legacy_heal_pattern_seen",
+            # Odom's iron job: its sensors, clock and state (iron_consignment)
+            *ENGINE_FLAGS,
         }
 
     def test_mission_required_flags_are_settable(self) -> None:
@@ -599,6 +602,7 @@ class TestDialogueStateFlagReachability:
             "broker_ore_sold",
             "talked_to_officer_larsen",
             "escape_combat_survived",
+            *ENGINE_FLAGS,
         }
 
         errors = []

@@ -2,8 +2,8 @@
 
 Rules 1 to 4, 8 and 10 live here (bug bash BB-38, BB-67, BB-68, BB-69, BB-71, BB-72).
 Rules 5 to 7 (no check gate, no self-looping check, no producer cycle) are plan A1's, in
-``test_content_contracts.py``. Rule 9 (a return tree pays once) lands with the return
-trees in the writing session, which also shrinks the two sets below.
+``test_content_contracts.py``. Rule 9 (a return tree pays once) is
+``test_a_return_pays_once``, with the return trees of the writing session (plan W3a-S).
 """
 
 from __future__ import annotations
@@ -12,19 +12,13 @@ import functools
 
 import pytest
 
+from spacegame.constants.flags import talked_to_npc
 from spacegame.data_loader import DataLoader, get_data_loader
-from spacegame.models.dialogue import NPC, DialogueTree
+from spacegame.models.dialogue import NPC, DialogueResponse, DialogueTree
 from spacegame.models.mission import Mission, MissionManager, ObjectiveType
 from spacegame.models.npc_availability import is_listed, npc_tree_ids, settable_flags
 from tests.test_data.test_content_contracts import _dependents, _is_own_cycle, _producers
 
-# NPCs whose kept exits replay their first scene, because their return scenes
-# (elena_return, dex_return, oren_return) are the writing session's.
-AWAITING_RETURN_SCENES = frozenset({"dex_halloran", "elena_reeves", "oren_tak"})
-# Kept NPCs whose next conversation reaches the awaited flag only through a passed check.
-# Oren's fail-forward is the writing session's; A1's PENDING_CHECK_GATED_FLAGS names the
-# same flag, oren_intel_received.
-CHECK_GATED_RETURNS = frozenset({"oren_tak"})
 # Flag pairs no reply may set one side of once the other is set (rule 3).
 EXCLUSIVE_PAIRS = (("accepted_drifter_deal", "declined_drifter_deal"),)
 # The most (node, flags) states one walk visits; the content stays far below it.
@@ -124,7 +118,9 @@ def _waits_on(
 def _kept_exits() -> tuple[tuple[NPC, Mission, str, frozenset[str]], ...]:
     """Every exit of a one-shot scene that leaves an awaited flag unset, with its flags.
 
-    Cached: A1's producer index scans the whole code base, so it is built once.
+    The flags hold the conversation's own talked_to flag, which the game sets when a
+    dialogue ends (``Game._route_from_dialogue``), so a test resolves the NPC's state as the
+    game would. Cached: A1's producer index scans the whole code base, so it is built once.
     """
     dl = _loader()
     real, dependents = _producers(dl), _dependents(dl)
@@ -135,15 +131,15 @@ def _kept_exits() -> tuple[tuple[NPC, Mission, str, frozenset[str]], ...]:
         for mission, flag in _waits_on(dl, npc, real, dependents):
             for gained in exits:
                 if flag not in gained:
-                    kept.append((npc, mission, flag, opening | gained))
+                    kept.append((npc, mission, flag, opening | gained | {talked_to_npc(npc.id)}))
     return tuple(kept)
 
 
 @pytest.mark.timeout(300)
-def test_the_stranding_exits_are_elenas_dexs_and_orens() -> None:
-    """Tomas's accept no longer strands his deal (BB-71); the other three are kept."""
+def test_the_kept_npcs_are_elena_glyn_oren_and_tomas() -> None:
+    """Elena's walk-away, Glyn's decline, Oren's walk-away and Tomas's deferral are kept."""
     names = {npc.id for npc, _mission, _flag, _flags in _kept_exits()}
-    assert names == {"dex_halloran", "elena_reeves", "oren_tak"}
+    assert names == {"dex_halloran", "elena_reeves", "oren_tak", "tomas_drifter"}
 
 
 @pytest.mark.timeout(300)
@@ -164,7 +160,8 @@ def test_an_exit_that_strands_a_mission_keeps_its_npc() -> None:
 
 @pytest.mark.timeout(300)
 def test_a_kept_npc_has_a_way_back() -> None:
-    """Rule 2, in B1's form: who replays a first scene, and whose way back passes a check."""
+    """Rule 2: after every kept exit the NPC opens a return tree, and a route through it
+    with every check failing sets the awaited flag."""
     dl = _loader()
     replaying: set[str] = set()
     gated: set[str] = set()
@@ -175,8 +172,78 @@ def test_a_kept_npc_has_a_way_back() -> None:
         routes = _exits(dl.dialogue_trees[tree_id], flags, passes=False)
         if not any(flag in route for route in routes):
             gated.add(npc.id)
-    assert replaying == AWAITING_RETURN_SCENES
-    assert gated == CHECK_GATED_RETURNS
+    assert replaying == set(), sorted(replaying)
+    assert gated == set(), sorted(gated)
+
+
+def _after_reply(
+    tree: DialogueTree,
+    reply: DialogueResponse,
+    flags: frozenset[str],
+    on_path: frozenset[str],
+) -> list[frozenset[str]]:
+    """The flags each path from a chosen reply to an exit sets, taking both branches of a check.
+
+    The reply sets its own flag first and a check then sets its branch's flag, as
+    ``DialogueManager.select_response`` does.
+    """
+    own = (flags | {reply.set_flag}) if reply.set_flag else flags
+    check = reply.skill_check
+    if check is None:
+        if reply.next_node_id is None:
+            return [own]
+        return _exit_flags(tree, reply.next_node_id, own, on_path)
+    found: list[frozenset[str]] = []
+    for branch, won in (
+        (check.success_node_id, check.set_flag_on_success),
+        (check.failure_node_id, check.set_flag_on_failure),
+    ):
+        found += _exit_flags(tree, branch, (own | {won}) if won else own, on_path)
+    return found
+
+
+def _exit_flags(
+    tree: DialogueTree, node_id: str, flags: frozenset[str], on_path: frozenset[str]
+) -> list[frozenset[str]]:
+    """The flags each reply path from a node to an exit sets.
+
+    A missing node is an exit, and so is a node without replies, which the game closes with
+    "[Continue]" (``DialogueView._build_response_buttons``). A path that comes back to a node
+    it has passed stops there: a loop is not an exit, and that node's other replies are walked
+    from its first visit.
+    """
+    node = tree.nodes.get(node_id)
+    if node is None or not node.responses:
+        return [flags]
+    if node_id in on_path:
+        return []
+    found: list[frozenset[str]] = []
+    for reply in node.responses:
+        found += _after_reply(tree, reply, flags, on_path | {node_id})
+    return found
+
+
+def test_a_return_pays_once() -> None:
+    """Rule 9: in a return tree every check, pass or fail, leads only to exits that set the
+    awaited flag, and every disposition or standing change sits on a reply that sets it."""
+    dl = _loader()
+    returns = 0
+    for npc in dl.npcs.values():
+        for state in npc.dialogue_states:
+            if talked_to_npc(npc.id) not in state.required_flags:
+                continue
+            returns += 1
+            (awaited,) = state.excluded_flags
+            tree = dl.dialogue_trees[state.dialogue_id]
+            for node in tree.nodes.values():
+                for reply in node.responses:
+                    if reply.disposition_change or reply.faction_reputation_changes:
+                        assert reply.set_flag == awaited, (tree.id, node.id, reply.text)
+                    if reply.skill_check is None:
+                        continue
+                    for flags in _after_reply(tree, reply, frozenset(), frozenset()):
+                        assert awaited in flags, (tree.id, node.id, reply.text)
+    assert returns == 4
 
 
 def test_no_reply_sets_one_side_of_an_exclusive_pair_once_the_other_is_set() -> None:

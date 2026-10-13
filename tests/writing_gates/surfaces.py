@@ -117,7 +117,9 @@ NARRATION: tuple[Surface, ...] = (
         "data/dialogue/*.json", rf"\.dialogues{_I}\.nodes{_I}\.text", ("speaker_id", "narrator")
     ),
     Surface("data/dialogue/*.json", rf"\.dialogues{_I}\.nodes{_I}\.subtext"),
-    Surface("data/missions/*.json", rf"\.missions{_I}\.(?:description|hint|discovery_text)"),
+    Surface(
+        "data/missions/*.json", rf"\.missions{_I}\.(?:description|hint|discovery_text|receipt)"
+    ),
     Surface("data/journal/entries.json", rf"\.journal_entries{_I}\.text"),
     Surface("data/journal/travel_log_templates.json", r".*"),
     Surface(

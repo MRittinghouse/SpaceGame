@@ -22,10 +22,18 @@ from tools.parity.driver import Case
 from tools.parity.drivers import dialogue
 
 # Neither profile can pick these: novice lacks required flags; expert's flags trip excluded ones.
+# Odom's six (plan W3a-S): polish design 2.2's authoring rule keeps every reply gated two ways
+# flagless. Glyn's watched reply (the author's read of W3a, 2026-10-13) requires
+# ignored_distress_signal and excludes helped_reva_sato.
 UNSELECTED_RESPONSES: frozenset[tuple[str, str, int]] = frozenset(
     {
-        ("merchant_delivery", "greet", 6),
-        ("merchant_delivery", "greet", 8),
+        ("dex_cantina", "start", 2),
+        ("merchant_delivery", "greet", 4),
+        ("merchant_delivery", "greet", 5),
+        ("merchant_delivery", "greet", 13),
+        ("merchant_delivery", "greet", 14),
+        ("merchant_delivery", "greet", 15),
+        ("merchant_delivery", "greet", 18),
         ("reva_distress", "greet", 0),
         ("reva_distress", "greet", 1),
         ("reva_distress", "greet", 3),
@@ -337,12 +345,14 @@ def test_the_talk_list_case_covers_every_clause() -> None:
     assert "elena_reeves" not in steps["elena_taught"]
     assert steps["dex_declined"]["dex_halloran"] == "whispers_at_the_bar"
     assert steps["tomas_unresolved"]["tomas_drifter"] == "the_drifters_deal"
+    assert steps["tomas_thinking"]["tomas_drifter"] == "the_drifters_deal"
     assert steps["oren_kept"]["oren_tak"] == "the_favor_returned"
     assert "reva_sato" not in steps["reva_waits"]
     assert steps["reva_reached"]["reva_sato"] == "cargo_lost"
-    assert steps["wren_awaited"]["forgeworks_clerk"] == "iron_delivery"
+    assert steps["intake_awaited"]["forgeworks_clerk"] == "iron_delivery"
+    assert steps["odom_short_load"]["odom_broker"] == "iron_delivery"
     assert "odom_broker" not in steps["odom_gone"]
     assert steps["elena_first_open"]["elena_reeves"] == ""
     assert "elena_reeves" not in steps["elena_lesson_landed"]
     assert steps["larsen_met"]["officer_larsen"] == ""
-    assert steps["wren_offered"]["forgeworks_clerk"] == ""
+    assert steps["intake_offered"]["forgeworks_clerk"] == ""

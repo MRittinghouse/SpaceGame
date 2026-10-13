@@ -1682,6 +1682,7 @@ class DataLoader:
             required_reputation=data.get("required_reputation", []),
             soft_deadline=soft_deadline,
             timeliness_comments=dict(data.get("timeliness_comments", {})),
+            receipt=data.get("receipt", ""),
         )
 
     def get_mission(self, mission_id: str) -> Optional[Mission]:

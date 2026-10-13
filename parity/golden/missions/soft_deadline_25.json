@@ -20,7 +20,7 @@
     },
     "reputation_spillover": false
   },
-  "source_commit": "36b27e94aaafa28b2e2858deb58597d795dce2ff",
+  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
   "steps": [
     {
       "args": [
@@ -339,7 +339,7 @@
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {
-              "iron_ore": 10
+              "iron_ore": 1
             },
             "current_fuel": 40,
             "current_hull": 60,
@@ -398,7 +398,7 @@
           "current_system_id": "nexus_prime",
           "dialogue_flags": {
             "iron_delivery_accepted": true,
-            "talked_to_forgeworks_clerk": true
+            "iron_ore_handed_over": true
           },
           "encounters_survived": 0,
           "faction_assignments": {},
@@ -514,7 +514,7 @@
           "ship": {
             "cargo_purchase_prices": {},
             "current_cargo": {
-              "iron_ore": 10
+              "iron_ore": 1
             },
             "current_fuel": 40,
             "current_hull": 60,
@@ -559,11 +559,12 @@
         "permits": [],
         "reputation_changes": [],
         "reward_messages": [
-          "+300 Credits (late, 50% of 600)",
-          "Delivered 10 iron_ore",
+          "+30 Credits (late, 50% of 600, 1 of 10 delivered)",
+          "Delivered 1 iron_ore",
           "+40 XP",
           "Progress: iron_ore_delivered",
-          "Progress: iron_delivery_moved_on"
+          "Progress: iron_delivery_moved_on",
+          "Progress: iron_delivery_resolved"
         ]
       },
       "state": {
@@ -580,7 +581,7 @@
           "combats_fled": 0,
           "combats_negotiated": 0,
           "combats_won": 0,
-          "credits": 5300,
+          "credits": 5030,
           "credits_earned_lifetime": 0,
           "credits_spent_lifetime": 0,
           "crew_quests_completed": 0,
@@ -589,8 +590,9 @@
           "dialogue_flags": {
             "iron_delivery_accepted": true,
             "iron_delivery_moved_on": true,
+            "iron_delivery_resolved": true,
             "iron_ore_delivered": true,
-            "talked_to_forgeworks_clerk": true
+            "iron_ore_handed_over": true
           },
           "encounters_survived": 0,
           "faction_assignments": {},
@@ -599,7 +601,7 @@
           "game_day": 25,
           "jumps_traveled": 0,
           "largest_single_profit": 0,
-          "max_credits_held": 5300,
+          "max_credits_held": 5030,
           "name": "ParityPilot",
           "previous_system_id": "",
           "price_memory": {

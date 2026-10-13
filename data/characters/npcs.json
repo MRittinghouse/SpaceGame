@@ -19,6 +19,16 @@
       "dialogue_music": "dialogue_intimate",
       "dialogue_states": [
         {
+          "state_id": "after_walkaway",
+          "dialogue_id": "elena_return",
+          "required_flags": [
+            "talked_to_elena_reeves"
+          ],
+          "excluded_flags": [
+            "elena_gave_trading_tips"
+          ]
+        },
+        {
           "state_id": "post_connection_won",
           "dialogue_id": "elena_connection_deepened",
           "required_flags": [
@@ -86,7 +96,19 @@
       "auto_trigger_prerequisites": [
         "breakstone_permit_earned"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "thinking_it_over",
+          "dialogue_id": "tomas_return",
+          "required_flags": [
+            "talked_to_tomas_drifter"
+          ],
+          "excluded_flags": [
+            "drifter_deal_resolved"
+          ]
+        }
+      ]
     },
     {
       "id": "hanna_voss",
@@ -166,7 +188,19 @@
       "auto_trigger_prerequisites": [
         "cargo_lost_complete"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "after_decline",
+          "dialogue_id": "dex_return",
+          "required_flags": [
+            "talked_to_dex_halloran"
+          ],
+          "excluded_flags": [
+            "dex_favor_accepted"
+          ]
+        }
+      ]
     },
     {
       "id": "malia_torres",
@@ -236,7 +270,19 @@
       "auto_trigger_prerequisites": [
         "favor_ground_complete"
       ],
-      "dialogue_music": "dialogue_intimate"
+      "dialogue_music": "dialogue_intimate",
+      "dialogue_states": [
+        {
+          "state_id": "after_walkaway",
+          "dialogue_id": "oren_return",
+          "required_flags": [
+            "talked_to_oren_tak"
+          ],
+          "excluded_flags": [
+            "oren_intel_received"
+          ]
+        }
+      ]
     },
     {
       "id": "sienna_vek",
@@ -540,8 +586,8 @@
     },
     {
       "id": "forgeworks_clerk",
-      "name": "Deshi Wren",
-      "title": "Intake Clerk, Cargo Broker",
+      "name": "Joaquim Kimura",
+      "title": "Intake Clerk, Main Foundry",
       "portrait_color": [
         100,
         140,
@@ -549,8 +595,7 @@
       ],
       "home_system_id": "forgeworks",
       "dialogue_id": "forgeworks_intake",
-      "faction_id": "",
-      "hide_after_flag": "iron_ore_delivered"
+      "faction_id": ""
     },
     {
       "id": "amara_okonkwo",
