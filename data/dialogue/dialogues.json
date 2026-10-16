@@ -763,7 +763,7 @@
         {
           "id": "deal_proposal",
           "speaker_id": "tomas_drifter",
-          "text": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a farmer on Verdant gets to feed her kids this month.",
+          "text": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a weaver on Verdant gets to feed her kids this month.",
           "responses": [
             {
               "text": "Is this legal?",
@@ -878,7 +878,7 @@
         {
           "id": "accept",
           "speaker_id": "tomas_drifter",
-          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a weaver gets to eat.",
           "responses": [
             {
               "text": "I'll get it done.",
@@ -1169,7 +1169,7 @@
               ]
             },
             {
-              "text": "About the ore. I lost some on the lane.",
+              "text": "About the ore. I lost some in a fight.",
               "next_node_id": "loss_short",
               "required_flags": [
                 "iron_job_short_lost"
@@ -1471,7 +1471,7 @@
         {
           "id": "loss_short",
           "speaker_id": "odom_broker",
-          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
+          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale and the fee's whatever the docket says that day.",
           "responses": [
             {
               "text": "I'll run what's left.",
@@ -1540,7 +1540,7 @@
         {
           "id": "made_good_terms",
           "speaker_id": "odom_broker",
-          "text": "Your credits, your call. Standard grade weighs the same wherever you bought it. I'll know what you did when Kimura's count comes in.",
+          "text": "Your hold, your call. Standard grade weighs the same wherever it came from. I'll know what you did when Kimura's count comes in.",
           "responses": [
             {
               "text": "Understood.",
@@ -1578,7 +1578,7 @@
         {
           "id": "thanks_made_good",
           "speaker_id": "odom_broker",
-          "text": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
+          "text": "*He has two papers side by side.* Incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
           "responses": [
             {
               "text": "Standard grade is standard grade.",
@@ -1610,7 +1610,7 @@
         {
           "id": "thanks_short",
           "speaker_id": "odom_broker",
-          "text": "*Kimura's receipt sits beside the lane report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
+          "text": "*Kimura's receipt sits beside the incident report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
           "responses": [
             {
               "text": "Understood.",
@@ -2015,7 +2015,7 @@
         {
           "id": "no_sign",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He reads the scale against Odom's manifest, then checks the incident file.* Manifest says ten. Scale says otherwise, and the file doesn't cover the gap. I don't sign for air. Bring me ten, or take it up with Odom.",
+          "text": "*He reads the scale against Odom's manifest.* Manifest says ten. Scale says otherwise. I don't sign for air. Bring me ten, or take it up with Odom.",
           "responses": [
             {
               "text": "[Leave]",

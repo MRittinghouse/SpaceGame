@@ -576,7 +576,7 @@
     },
     {
       "entry_id": "auto_iron_short",
-      "text": "Kimura signed for what was on the scale, received short. The lane report covered the rest.",
+      "text": "Kimura signed for what was on the scale, received short. The incident report covered the rest.",
       "trigger_flag": "iron_ore_signed_short",
       "system_id": "forgeworks",
       "mission_id": "iron_delivery"
