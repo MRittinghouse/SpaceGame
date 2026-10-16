@@ -288,6 +288,18 @@ class TestG10AndG11:
         assert own, "Marcus has no lines"
         assert all(file.startswith("data/") for file, _ in own)
         assert any(path.endswith(".text") for _, path in own)
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=marcus_recognition].nodes[id=start].subtext",
+        ) in own, "Marcus's one Read must be in the set (the Reads branch of marcus_lines)"
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=the_collapse_sequence].nodes[id=priya_calibrates].text",
+        ) not in own, "Priya's spoken line must not be Marcus's (the speaker filter on speech)"
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=arna_first_encounter].nodes[id=start].subtext",
+        ) not in own, "another speaker's Read must not be Marcus's (the speaker_id check on Reads)"
 
     def test_the_gesture_offends_outside_marcus_lines_only(
         self, monkeypatch: pytest.MonkeyPatch

@@ -400,8 +400,12 @@ def g10() -> list[Offence]:
 
 
 def g11() -> list[Offence]:
-    """G11, the lexicon: warp and navy, and Marcus's gesture in any form outside his own lines,
-    in every string; in speech, Marcus's "Captain" and prices."""
+    """G11, the lexicon, over every string and over speech.
+
+    In every string: warp, navy, and Marcus's gesture outside his own lines ("without looking
+    up", and "does not look up" with do, does or did, spelled out or contracted). In speech:
+    Marcus's "Captain" and prices.
+    """
     found: list[Offence] = []
     for row in _every_string():
         for rule, pattern in (("warp", G11_WARP), ("navy", G11_NAVY)):
