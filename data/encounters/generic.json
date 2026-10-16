@@ -137,7 +137,7 @@
         {
           "id": "ignore",
           "label": "Let Them Sort It Out",
-          "description": "The lanes are charted. Leave them to their own heading.",
+          "description": "Leave them to their own heading.",
           "outcome": {
             "description": "You leave them to sort out their own heading.",
             "rewards": []
@@ -198,7 +198,7 @@
         {
           "id": "pass",
           "label": "Give It a Wide Berth",
-          "description": "Dead ships mean dead crews. Give the wreck a wide berth.",
+          "description": "Give the wreck a wide berth.",
           "outcome": {
             "description": "You give the derelict a wide berth and continue on your route.",
             "rewards": []
@@ -278,7 +278,7 @@
         {
           "id": "trade",
           "label": "See What She's Got",
-          "description": "Surplus runs between systems usually mean below-market prices.",
+          "description": "Dock and look over her surplus.",
           "outcome": {
             "description": "After a quick negotiation, you pick up some goods at well below market rate. The trader waves as she undocks and continues on her route.",
             "rewards": [
@@ -537,7 +537,7 @@
           "label": "Power Up Weapons",
           "description": "Refuse the toll and power up weapons.",
           "outcome": {
-            "description": "You power up weapons and angle your shields. The pirate grins. They were hoping you'd say that.",
+            "description": "You power up weapons and angle your shields. The pirate grins.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -647,7 +647,7 @@
           "label": "Press On",
           "description": "Hold your course and leave the signal.",
           "outcome": {
-            "description": "You silence the distress channel and continue on course. The signal fades behind you. Somewhere out there, Captain Sato is counting the hours on her life support.",
+            "description": "You silence the distress channel and continue on course. The signal fades behind you.",
             "rewards": [
               {
                 "reward_type": "set_flag",
@@ -747,7 +747,7 @@
           "label": "Dump the Raw Data to Archive",
           "description": "Log the frequency and move on.",
           "outcome": {
-            "description": "You dump the raw signal data to your ship's archive. The Expanse is full of ghosts on dead frequencies.",
+            "description": "You dump the raw signal data to your ship's archive.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -904,7 +904,7 @@
         {
           "id": "navigate",
           "label": "Thread the Gaps at Quarter Thrust",
-          "description": "Slow and steady through a field of dormant ordnance. Salvage teams pay for minefield maps.",
+          "description": "Creep through the gaps at quarter thrust, sensors on full sweep.",
           "outcome": {
             "description": "You creep through at quarter thrust, sensors on full sweep. It takes the better part of an hour, but you emerge on the other side with hull intact and a detailed minefield map that salvage teams would pay for.",
             "rewards": [
@@ -956,7 +956,7 @@
         {
           "id": "rescue",
           "label": "Hard-Dock and Cycle Your Atmosphere",
-          "description": "Two hours of air from your reserves could mean the difference. You can smell recycled air for a while.",
+          "description": "Hard-dock and cycle fresh atmosphere into the prospector's cabin.",
           "outcome": {
             "description": "You hard-dock and cycle fresh atmosphere into the prospector's cabin. Color returns to her face as she gulps clean air. She insists on transferring her claim credits: 'Won't need them if I'm dead.'",
             "rewards": [
@@ -1072,7 +1072,7 @@
         {
           "id": "study",
           "label": "Ride the Gradient",
-          "description": "Hold at the edge and let your instruments record. Twenty minutes of readings the Collective would kill for.",
+          "description": "Hold at the edge for twenty minutes and let your instruments record.",
           "outcome": {
             "description": "You ride the gravity gradient for twenty minutes, the hull groaning, instruments drinking in data. The readings are extraordinary: spatial compression at a scale that shouldn't exist this far from a stellar body.",
             "rewards": [
@@ -1091,9 +1091,9 @@
         {
           "id": "flee",
           "label": "Slam the Throttle",
-          "description": "Your hull is groaning. Whatever this is, it's stronger than your ship. Get out while you still can.",
+          "description": "Slam the throttle and pull out of the distortion.",
           "outcome": {
-            "description": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades. You don't look back.",
+            "description": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1186,7 +1186,7 @@
           "label": "Cut Engines and Film",
           "description": "Drift among them with cameras rolling. Xenobiologists pay a fortune for behavioral footage.",
           "outcome": {
-            "description": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns: complex, almost rhythmic. Your footage will make some biologist's career.",
+            "description": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns: complex, almost rhythmic.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1303,7 +1303,7 @@
         {
           "id": "intervene",
           "label": "Burn Hard Toward the Fight",
-          "description": "Two against two changes the odds. The raiders might break off when they see you coming.",
+          "description": "Burn hard toward the firefight, weapons hot.",
           "outcome": {
             "description": "You burn hard toward the firefight, weapons hot. The raiders see you coming and break off: two against two isn't the odds they wanted. The freighter captain nearly weeps with relief and transfers every credit she can spare.",
             "rewards": [
@@ -1469,7 +1469,7 @@
         {
           "id": "heed",
           "label": "Ask for Tactical Data",
-          "description": "Raider positions, ship profiles, ambush points.",
+          "description": "Ask the officer for raider positions and ambush points.",
           "outcome": {
             "description": "The officer shares tactical data: raider positions, ship profiles, their preferred ambush points. You update your nav charts with safe corridors.",
             "rewards": [
@@ -1483,7 +1483,7 @@
         {
           "id": "volunteer",
           "label": "Volunteer for the Sweep",
-          "description": "One more ship on a raider flush changes the math. The patrol pays a bounty.",
+          "description": "Offer to join the patrol's sweep.",
           "outcome": {
             "description": "The officer raises an eyebrow but doesn't refuse. You join a short-range sweep that flushes out a raider scout. The patrol commander logs your contribution and transfers a bounty payment.",
             "rewards": [
@@ -1536,7 +1536,7 @@
         {
           "id": "investigate",
           "label": "Divert to the Beacon Source",
-          "description": "Eleven days is a long time. Whatever you find won't be a rescue.",
+          "description": "Divert to the beacon's coordinates.",
           "outcome": {
             "description": "You find debris. Not much: a sheared hull panel, frozen coolant, a cargo manifest floating in the void. The ship's name was the Perihelion. Crew of four. Nobody's coming for them anymore. You log the coordinates and move on.",
             "rewards": [
@@ -1550,7 +1550,7 @@
         {
           "id": "log_it",
           "label": "Flag It in the Sector Registry",
-          "description": "Somewhere an office will update a file. Somewhere else, a family is still waiting.",
+          "description": "Flag the beacon in the sector registry and keep flying.",
           "outcome": {
             "description": "You flag the beacon in the sector registry. Somewhere, an office will update a file. Somewhere else, a family is still waiting for a ship that isn't coming back.",
             "rewards": [
@@ -1673,7 +1673,7 @@
         {
           "id": "board",
           "label": "Dock and Open the Cockpit",
-          "description": "The lights are still on. Intact hull, no weapons damage. Something happened to the pilot.",
+          "description": "Dock with the courier and open the cockpit.",
           "outcome": {
             "description": "The pilot is still in the chair. Natural causes, the med-scanner says: heart failure. The nav computer shows a course for Haven's Rest. The cargo hold has a single crate: children's clothes, hand-sewn, carefully folded. A note on top reads: 'For Emi. See you Thursday.' You seal the ship and transmit the location to the nearest station.",
             "rewards": [
@@ -1689,7 +1689,7 @@
           "label": "Scan and Transmit a Notice",
           "description": "Confirm the situation from your cockpit and notify the nearest station.",
           "outcome": {
-            "description": "Scans confirm one deceased occupant. No hazards. You log the coordinates and transmit a salvage notice to the nearest station. The cockpit lights will keep burning until the battery dies. Then the void takes another one.",
+            "description": "Scans confirm one deceased occupant. No hazards. You log the coordinates and transmit a salvage notice to the nearest station. The cockpit lights are still burning.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1730,9 +1730,9 @@
         {
           "id": "download",
           "label": "Pull the Nav Logs",
-          "description": "The flight recorder tells a story. Data like this has value. Or consequences. Depends who reads it.",
+          "description": "Download the nav logs from the flight recorder.",
           "outcome": {
-            "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction: toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
+            "description": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction: toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1748,7 +1748,7 @@
         {
           "id": "strip",
           "label": "Strip the Console for Parts",
-          "description": "A functional power cell and some wiring.",
+          "description": "Pull the power cell and wiring from the console.",
           "outcome": {
             "description": "You pull the flight recorder, some wiring, and a functional power cell.",
             "rewards": [
@@ -1797,7 +1797,7 @@
           "label": "Follow the Relay Chain",
           "description": "Seven buoys, a route that doesn't exist on current charts. Someone was using dead infrastructure. Find out who.",
           "outcome": {
-            "description": "The signal bounced through seven relay buoys: a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
+            "description": "The signal bounced through seven relay buoys: a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1837,7 +1837,7 @@
         {
           "id": "search",
           "label": "Pick Through the Wreckage",
-          "description": "Three ships, weapons fire, no survivors. Whatever happened here left cargo behind. And maybe answers.",
+          "description": "Search the wreckage and take what you can.",
           "outcome": {
             "description": "No survivors. You find cargo containers stamped with Commerce Guild seals. All empty, contents transferred to whoever did this. One hull fragment still has a name visible: Patience of Kaur. A registered Guild freighter. The attack was recent enough that the metal is still warm in places. You take what you can and leave fast.",
             "rewards": [
@@ -1869,7 +1869,7 @@
         {
           "id": "avoid",
           "label": "Plot a Wide Detour",
-          "description": "Debris fields that used to be ships are a warning. Whoever did this might still be hunting.",
+          "description": "Plot a wide detour around the field.",
           "outcome": {
             "description": "You plot a wide detour around the field. It costs time and fuel.",
             "rewards": []
@@ -1982,7 +1982,7 @@
         {
           "id": "fight",
           "label": "Engage the Iron Maw",
-          "description": "That thing has swallowed ships whole.",
+          "description": "Power up weapons and engage the Iron Maw.",
           "outcome": {
             "description": "The Iron Maw opens its jaws. The heat hits your shields before the weapons do.",
             "rewards": [],
@@ -2209,7 +2209,7 @@
         {
           "id": "work",
           "label": "Put Them to Work",
-          "description": "An extra pair of hands in the cargo hold. They clearly know their way around a shipping crate.",
+          "description": "Keep them aboard and put them to work in the cargo hold.",
           "outcome": {
             "description": "The kid works without complaint and without rest. Within a day they've reorganized the hold by weight distribution, something your loading algorithm missed. They don't talk about where they came from. You don't ask. It's a temporary arrangement, but temporary has a way of stretching out here.",
             "rewards": [

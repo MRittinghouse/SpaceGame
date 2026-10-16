@@ -4,7 +4,7 @@
       "id": "lore_aurelia_beacon_01",
       "encounter_type": "anomaly",
       "name": "The Aurelia Beacon",
-      "description": "Your sensors lock onto a faint, repeating signal: old encoding, pre-settlement era. As you close the distance, the source resolves: a navigation beacon, scarred by micrometeorites and coated in a century of cosmic dust. It bears the faded emblem of the colony ship Aurelia. The transmission is automated, looping endlessly through the void. A woman's voice, calm and precise, reads coordinates: the original landing sites, one after another. Meridian. Breakstone. Veldt. Names that would become cities, read aloud before they were anything at all. The voice pauses between each entry as if waiting for confirmation that will never come. She has been speaking to no one for a hundred and fifty years.",
+      "description": "Your sensors lock onto a faint, repeating signal: old encoding, pre-settlement era. As you close the distance, the source resolves: a navigation beacon, scarred by micrometeorites and coated in a century of cosmic dust. It bears the faded emblem of the colony ship Aurelia. The transmission is automated, looping endlessly through the void. A woman's voice, calm and precise, reads coordinates: the original landing sites, one after another. Meridian. Breakstone. Veldt. The voice pauses between each entry. She has been speaking to no one for a hundred and fifty years.",
       "icon_color": [
         180,
         160,
@@ -188,7 +188,7 @@
           "label": "Bring It Aboard",
           "description": "Grapple the fragment and store it in your cargo bay.",
           "outcome": {
-            "description": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving: every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' It is unsigned and undated. Just the words and the void they were meant to survive.",
+            "description": "The hull segment barely fits through your cargo door. Up close, there is a line in smaller script beneath the Charter text: 'We forgot this once. We must not forget it again.' It is unsigned and undated.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -211,7 +211,7 @@
           "label": "Scan and Document",
           "description": "High-resolution imaging. Preserve the text without disturbing the artifact.",
           "outcome": {
-            "description": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. This was done by someone from the first generation, someone who lived through the landing and felt the Charter's promise slipping away even then. You store the scans and release the hull fragment back into its slow tumble through the dark.",
+            "description": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. You store the scans and release the hull fragment back into its slow tumble through the dark.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -312,7 +312,7 @@
           "label": "Acknowledge and Continue",
           "description": "Dip your running lights as you pass.",
           "outcome": {
-            "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
+            "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -332,7 +332,7 @@
       "id": "lore_pre_colony_probe_01",
       "encounter_type": "anomaly",
       "name": "The Unmanned Surveyor",
-      "description": "Your sensors flag an object on an unusual trajectory: slow, deliberate, following a survey pattern that predates every human settlement in the Expanse. It's a probe. Automated, solar-powered, still functional after what your instruments estimate to be at least two hundred years. Its design language is Earth-era but matches no known space agency's catalog. The probe is methodically scanning asteroid compositions and transmitting data to a relay point that no longer exists. It arrived here decades before the Aurelia. Someone, or something, was mapping the Expanse long before humanity decided to call it home.",
+      "description": "Your sensors flag an object on an unusual trajectory: slow, deliberate, following a survey pattern that predates every human settlement in the Expanse. It's a probe. Automated, solar-powered, still functional after what your instruments estimate to be at least two hundred years. Its design language is Earth-era but matches no known space agency's catalog. The probe is methodically scanning asteroid compositions and transmitting data to a relay point that no longer exists. It arrived here decades before the Aurelia.",
       "icon_color": [
         180,
         100,
@@ -352,7 +352,7 @@
           "label": "Intercept and Analyze",
           "description": "Match velocity and run a full diagnostic.",
           "outcome": {
-            "description": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118. Eighty years before the Aurelia launched. Earth sent this probe during an era of expansion that history barely remembers. The question isn't who sent it. The question is what they found, and whether anyone was listening when it reported back.",
+            "description": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -449,7 +449,7 @@
           "label": "Deep Scan from Outside",
           "description": "Map the ship's interior without boarding.",
           "outcome": {
-            "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
+            "description": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another, for eleven minutes.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -508,7 +508,7 @@
           "label": "Listen in Silence",
           "description": "Cut your engines and let the song play.",
           "outcome": {
-            "description": "The pilot sings three songs. The first is mournful: something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark. You sit with the silence for a long time after.",
+            "description": "The pilot sings three songs. The first is mournful: something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -570,7 +570,7 @@
       "id": "lore_forgotten_station_01",
       "encounter_type": "derelict",
       "name": "Station Zero",
-      "description": "Your sensors detect a structure that shouldn't be here: a space station, first-generation design, tucked into a stable Lagrange point between two minor bodies. It doesn't appear on any current chart. The station is small by modern standards: a central hub with four radiating arms, built for maybe two hundred residents. Power is negligible. Emergency lighting only. The hull is scarred but sound. This is one of the Expanse's first permanent habitats, built in the years after the Aurelia's landing, before the settlements grew large enough to make orbital stations obsolete. History forgot about it. But it's still here.",
+      "description": "Your sensors detect a structure that shouldn't be here: a space station, first-generation design, tucked into a stable Lagrange point between two minor bodies. It doesn't appear on any current chart. The station is small by modern standards: a central hub with four radiating arms, built for maybe two hundred residents. Power is negligible. Emergency lighting only. The hull is scarred but sound. This is one of the Expanse's first permanent habitats, built in the years after the Aurelia's landing, before the settlements grew large enough to make orbital stations obsolete.",
       "icon_color": [
         180,
         160,
@@ -590,7 +590,7 @@
           "label": "Dock and Explore",
           "description": "The docking clamps are ancient but functional. Go inside.",
           "outcome": {
-            "description": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere, on walls, doors, support beams: graffiti. Not vandalism. History. 'Ines Kato, born here, Year Three.' 'Water ration increased. We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
+            "description": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere, on walls, doors, support beams: graffiti. 'Ines Kato, born here, Year Three.' 'Water ration increased. We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -613,7 +613,7 @@
           "label": "External Survey Only",
           "description": "Document the station's structure and condition without boarding.",
           "outcome": {
-            "description": "Your scans reveal construction techniques that haven't been used in a century: hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. This station was built by people who had nothing except determination and whatever they could salvage. The engineering is crude by modern standards and astonishing by any other measure. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
+            "description": "Your scans reveal construction techniques that haven't been used in a century: hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -719,7 +719,7 @@
       "id": "lore_star_map_01",
       "encounter_type": "anomaly",
       "name": "The Cartographer's Stone",
-      "description": "Your sensors flag a metallic object tumbling through a region of otherwise empty space. As you approach, the reading becomes stranger: the object is a flat disc, roughly two meters across, composed of an alloy your instruments can't fully identify. Its surface is covered in precise engravings: circles, lines, clusters of dots. It takes your nav computer twelve seconds to recognize the pattern. It's a star map. The positions correspond to known systems in the Expanse and beyond, mapped with an accuracy that would require centuries of observation. The disc predates human presence in this region by an unknown margin. The alloy shows no signs of terrestrial manufacturing. Someone, or something, charted these stars before humanity ever looked up and wondered what was out there.",
+      "description": "Your sensors flag a metallic object tumbling through a region of otherwise empty space. As you approach, the reading becomes stranger: the object is a flat disc, roughly two meters across, composed of an alloy your instruments can't fully identify. Its surface is covered in precise engravings: circles, lines, clusters of dots. It takes your nav computer twelve seconds to recognize the pattern. It's a star map. The positions correspond to known systems in the Expanse and beyond, mapped with an accuracy that would require centuries of observation. The disc predates human presence in this region by an unknown margin. The alloy shows no signs of terrestrial manufacturing.",
       "icon_color": [
         220,
         180,
@@ -739,7 +739,7 @@
           "label": "Full Scientific Analysis",
           "description": "Run every instrument you have.",
           "outcome": {
-            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
+            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -781,7 +781,7 @@
           "label": "Document and Withdraw",
           "description": "Take images. Leave the object undisturbed.",
           "outcome": {
-            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
+            "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks Nexus Prime.",
             "rewards": [
               {
                 "reward_type": "xp",

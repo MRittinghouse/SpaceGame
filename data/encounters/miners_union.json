@@ -96,7 +96,7 @@
           "label": "Honor the Line",
           "description": "Shut down engines and wait with the picket.",
           "outcome": {
-            "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
+            "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. 'You're alright,' she says. The strike settles after a few hours.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -133,7 +133,7 @@
           "label": "Push Through",
           "description": "Gun the engines and thread through the formation.",
           "outcome": {
-            "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.' The Union won't forget this insult easily.",
+            "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.'",
             "rewards": [
               {
                 "reward_type": "modify_reputation",
@@ -245,7 +245,7 @@
           "label": "Salvage Components",
           "description": "Board the rig and strip what you can carry.",
           "outcome": {
-            "description": "The rig's interior is eerie: lunch trays still on the mess table, a mural of Breakstone's founding half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips. These'll fetch good money at any Union station.",
+            "description": "Inside the rig, lunch trays are still on the mess table and a mural of Breakstone's founding is half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips from the parts locker, Breakstone co-op price tags still on every piece.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -286,7 +286,7 @@
           "label": "Leave It Be",
           "description": "Give it a wide berth.",
           "outcome": {
-            "description": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent, a monument to someone's abandoned ambitions.",
+            "description": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent.",
             "rewards": []
           }
         }
@@ -316,7 +316,7 @@
           "label": "Help the Hauler",
           "description": "Assist the non-union hauler yourself.",
           "outcome": {
-            "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. He's sheepish about the whole thing. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Both sides grudgingly respect the call.",
+            "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Harlan wires you a tow fee. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -339,7 +339,7 @@
           "label": "Talk Union Into It",
           "description": "Remind the Union crew that solidarity doesn't come with conditions.",
           "outcome": {
-            "description": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates. She pretends not to smile.",
+            "description": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -393,7 +393,7 @@
           "label": "Help Recover Ore",
           "description": "Use your cargo grapple to help Britt reclaim her shipment.",
           "outcome": {
-            "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
+            "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -437,7 +437,7 @@
         {
           "id": "fly_around",
           "label": "Navigate Around",
-          "description": "Heeding Britt's warning, give the debris field a wide berth.",
+          "description": "Give the debris field a wide berth.",
           "outcome": {
             "description": "You plot a course around the glittering cloud. Britt's voice follows you out: 'Smart flying. Stay safe out there.' The titanium catches the starlight behind you like a scattered constellation.",
             "rewards": [
@@ -474,7 +474,7 @@
           "label": "Listen and Chat",
           "description": "Open a channel and keep the old miner company.",
           "outcome": {
-            "description": "You tune in and let Gren sing. He's got a surprisingly good voice under the gravel. When he finishes, you talk for a while about the old days, the price of titanium, and whether station coffee counts as a war crime. He shares some route tips only a lifer would know.",
+            "description": "You tune in and let Gren sing. He's got a good voice under the gravel. When he finishes, you talk for a while about the old days, the price of titanium, and whether station coffee counts as a war crime. He shares some route tips.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -758,7 +758,7 @@
           "label": "Trade Equipment",
           "description": "Swap machinery and spare parts for refined ore.",
           "outcome": {
-            "description": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted. Union miners don't cheat on weight.",
+            "description": "Suki runs a quick inventory of your spare parts and nods. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted.",
             "rewards": [
               {
                 "reward_type": "credits",

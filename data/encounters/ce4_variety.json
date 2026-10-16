@@ -55,7 +55,7 @@
             ]
           },
           "failure_outcome": {
-            "description": "The scans look fine. You commit. The trap closes.",
+            "description": "The scans look fine. The transport's beacon flickers off, and an armed ship drops out of stealth.",
             "rewards": [],
             "leads_to_combat": true
           }
@@ -105,7 +105,7 @@
         {
           "id": "scan_drive",
           "label": "Pulse the Drive Yourself",
-          "description": "Run a remote diagnostic on his drive. A real fault shows. A faked one doesn't.",
+          "description": "Run a remote diagnostic on his drive.",
           "skill_check": {
             "skill": "technical",
             "difficulty": 3,
