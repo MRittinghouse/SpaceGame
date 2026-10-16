@@ -84,4 +84,7 @@ def test_the_nine_barks_are_appended() -> None:
         assert line["context"] == "player_action", index
         assert line["action_type"] == action, index
         assert line.get("min_loyalty", 0) == loyalty, index
+        assert set(line) == {"crew_id", "text", "context", "action_type"} | (
+            {"min_loyalty"} if loyalty else set()
+        ), index
         assert line["text"].strip(), index
