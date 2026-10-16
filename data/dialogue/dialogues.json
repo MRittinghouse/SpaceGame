@@ -1459,7 +1459,7 @@
         {
           "id": "waiting_drifted",
           "speaker_id": "odom_broker",
-          "text": "*He reads the docket, not you.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
+          "text": "*He reads the day off the docket before he answers.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
           "responses": [
             {
               "text": "Understood.",
@@ -1514,7 +1514,7 @@
         {
           "id": "loss_closed",
           "speaker_id": "odom_broker",
-          "text": "Job's closed. You don't owe me and I don't owe you. *He points at the board without turning to it.* Board's public.",
+          "text": "Job's closed. You don't owe me and I don't owe you. *He thumbs at the board over his shoulder.* Board's public.",
           "responses": [
             {
               "text": "[Leave]",
@@ -1710,7 +1710,7 @@
         {
           "id": "odom_arna_branch_a",
           "speaker_id": "odom_broker",
-          "text": "*Odom does not look up from the manifest. Keeps muttering numbers for a beat, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
+          "text": "*Odom counts under his breath to the bottom of the column, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
           "subtext": "He goes back to the manifest without waiting for a response.",
           "responses": [
             {
@@ -1820,7 +1820,7 @@
         {
           "id": "graduation_pointer",
           "speaker_id": "odom_broker",
-          "text": "*He does not look up from the manifest.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
+          "text": "*He keeps a finger on the line he was counting.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
           "responses": [
             {
               "text": "Meridian. Ilse Vey.",
@@ -3123,7 +3123,7 @@
         {
           "id": "parting",
           "speaker_id": "oren_tak",
-          "text": "*He doesn't look at you.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+          "text": "*He checks over his shoulder.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
           "responses": [
             {
               "text": "[Walk away.]",
@@ -3371,7 +3371,7 @@
         {
           "id": "refuse_data",
           "speaker_id": "sienna_vek",
-          "text": "She hesitates, fingers tightening around the data chip in her pocket. I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. She pauses. I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
+          "text": "*Her fingers close around the data chip in her pocket.* I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. *A pause.* I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
           "responses": [
             {
               "text": "Tell me what you can.",
@@ -3404,7 +3404,7 @@
         {
           "id": "farewell",
           "speaker_id": "sienna_vek",
-          "text": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. She stands, straightens her uniform, and walks out of the cantina without looking back.",
+          "text": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. *She stands, straightens her uniform, and leaves by the service door.*",
           "responses": [
             {
               "text": "[Watch her go]",
@@ -3642,7 +3642,7 @@
         {
           "id": "farewell",
           "speaker_id": "dex_halloran",
-          "text": "He stands and straightens his jacket. For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. He walks out of the cantina without looking back. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.",
+          "text": "*He stands and straightens his jacket.* For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. *He's gone before you can answer. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.*",
           "responses": [
             {
               "text": "[Take the chip]",
@@ -5625,7 +5625,7 @@
         {
           "id": "greet",
           "speaker_id": "dock_investigator",
-          "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
+          "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She caps her pen.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
           "subtext": "The coffee rings overlap in layers. The evidence bags carry no labels anyone else could read.",
           "responses": [
             {
@@ -6037,7 +6037,7 @@
         {
           "id": "greet",
           "speaker_id": "torres_memorial",
-          "text": "*Torres is hunched over a workbench, carefully sorting salvaged components by serial number. She doesn't look up right away.* Need something?",
+          "text": "*Torres is hunched over a workbench, sorting salvaged components by serial number. She sorts two more before she answers.* Need something?",
           "responses": [
             {
               "text": "Just checking in.",
@@ -7291,7 +7291,7 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "Kid. Just built that rig?",
-          "subtext": "She doesn't look up from the manifest terminal.",
+          "subtext": "She types the whole time she talks. The manifest on her screen does not change.",
           "responses": [
             {
               "text": "Yeah. Off the line this hour.",
@@ -12161,7 +12161,7 @@
           "id": "start",
           "speaker_id": "wulan_doyle",
           "text": "You have been running product through the floor. I have seen the route numbers. The arrangement you are on now is visitor access, renegotiated each run. That works until the port authority pulls the manifest window, which it does on a schedule you cannot read from the outside.",
-          "subtext": "She does not look up from the ledger on her desk. The office is below the main trade floor, accessed through a freight hatch.",
+          "subtext": "She turns a page of the ledger on her desk and smooths it flat. The office is below the main trade floor, accessed through a freight hatch.",
           "responses": [
             {
               "text": "What is the alternative?",
@@ -12280,7 +12280,7 @@
         {
           "id": "start",
           "speaker_id": "elena_reeves",
-          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She speaks before she looks up.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She marks her place on it with one finger.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
           "responses": [
             {
               "text": "Go ahead.",
@@ -12345,7 +12345,7 @@
         {
           "id": "start",
           "speaker_id": "dex_halloran",
-          "text": "*Third stool from the left. He doesn't turn around.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+          "text": "*Third stool from the left. He hooks the next stool out with his boot.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
           "responses": [
             {
               "text": "Why did you wait for me?",

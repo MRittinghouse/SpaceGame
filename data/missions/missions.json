@@ -56,7 +56,7 @@
       },
       "timeliness_comments": {
         "timely": "Intake clerk nods once. \"On the clock. Pay's good.\"",
-        "late": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
+        "late": "Intake clerk taps the late column twice. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
         "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. This is what's left of your pay.\""
       },
       "name": "Iron Ore Delivery",

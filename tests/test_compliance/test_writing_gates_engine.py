@@ -262,6 +262,45 @@ class TestG10AndG11:
         assert rules.G11_PRICE.search("Sixty a unit is 60 CR.")
         assert not rules.G11_PRICE.search("Shaft 7 is closed.")
 
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "She does not look up from the ledger.",
+            "He doesn't look up right away.",
+            "They did not look up.",
+            "The researchers didn't look up.",
+            "The clerk stamped it without looking up.",
+        ],
+    )
+    def test_the_gesture_in_any_form(self, text: str) -> None:
+        assert rules.G11_LOOKING_UP.search(text), text
+
+    @pytest.mark.parametrize(
+        "text",
+        ["He looks up.", "She does not look at you.", "You don't look back.", "Look up the code."],
+    )
+    def test_other_gazes_pass(self, text: str) -> None:
+        assert not rules.G11_LOOKING_UP.search(text), text
+
+    def test_the_gesture_is_marcus_alone(self) -> None:
+        """Marcus's own lines are exempt; every other string is read (spec 4.7, 5.1)."""
+        own = rules.marcus_lines()
+        assert own, "Marcus has no lines"
+        assert all(file.startswith("data/") for file, _ in own)
+        assert any(path.endswith(".text") for _, path in own)
+
+    def test_the_gesture_offends_outside_marcus_lines_only(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The same gesture passes in a line of Marcus's own and offends in any other string."""
+        his = surfaces.Text("data/a.json", ".his", "He signs it without looking up.")
+        other = surfaces.Text("data/a.json", ".other", "The clerk signs it without looking up.")
+        monkeypatch.setattr(rules, "_every_string", lambda: (his, other))
+        monkeypatch.setattr(rules, "marcus_lines", lambda: frozenset({(his.file, his.path)}))
+        monkeypatch.setattr(surfaces, "speech", lambda: ())
+        found = [o for o in rules.g11() if o.rule == "without looking up"]
+        assert [(o.file, o.path) for o in found] == [(other.file, other.path)]
+
 
 def _tree(*nodes: dict[str, object]) -> dict[str, object]:
     return {"id": "t", "start_node_id": nodes[0]["id"], "nodes": list(nodes)}
