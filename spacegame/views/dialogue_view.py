@@ -265,7 +265,9 @@ class DialogueView(BaseView):
             self._current_npc = self.data_loader.get_npc(node.speaker_id)
 
         # Start typewriter effect
-        self._full_text = captain_line(node.text, self.dialogue_manager.player)
+        self._full_text = captain_line(
+            node.text, self.dialogue_manager.player, missions=self.data_loader.missions_by_id
+        )
         self._revealed_chars = 0
         self._text_timer = 0.0
         self._text_complete = DIALOGUE_TEXT_SPEED <= 0
@@ -316,7 +318,7 @@ class DialogueView(BaseView):
                     effective = self.social_manager.get_effective_level(sc.skill, npc_id)
                     can_pass = self.social_manager.can_pass_check(sc.skill, sc.difficulty, npc_id)
                     skill_name = sc.skill.capitalize()
-                    line = captain_line(r.text, player)
+                    line = captain_line(r.text, player, missions=self.data_loader.missions_by_id)
                     display_text = f"[{skill_name}: {effective}/{sc.difficulty}] {line}"
                     responses_text.append(display_text)
                     check_infos.append(
@@ -328,7 +330,9 @@ class DialogueView(BaseView):
                         }
                     )
                 else:
-                    responses_text.append(captain_line(r.text, player))
+                    responses_text.append(
+                        captain_line(r.text, player, missions=self.data_loader.missions_by_id)
+                    )
                     check_infos.append(None)
                 # read_the_room: track disposition change for this response
                 disposition_previews.append(r.disposition_change if has_read_the_room else 0)
@@ -769,7 +773,12 @@ class DialogueView(BaseView):
 
     def _subtext_line(self, node: DialogueNode) -> str:
         """The Empathic Read line under the node's text, the captain's tokens rendered."""
-        return f"* {captain_line(node.subtext, self.dialogue_manager.player)}"
+        line = captain_line(
+            node.subtext,
+            self.dialogue_manager.player,
+            missions=self.data_loader.missions_by_id,
+        )
+        return f"* {line}"
 
     def _render_subtext(self, screen: pygame.Surface) -> None:
         """Render Empathic Read subtext hint below dialogue text."""

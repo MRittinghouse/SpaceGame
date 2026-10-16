@@ -1692,6 +1692,11 @@ class DataLoader:
                 return m
         return None
 
+    @property
+    def missions_by_id(self) -> dict[str, Mission]:
+        """Every loaded mission by id, for the record tokens (writing spec 3.7)."""
+        return {mission.id: mission for mission in self.missions}
+
     def load_crew_templates(self) -> Dict[str, CrewTemplate]:
         """Load crew template definitions from JSON."""
         file_path = self.data_dir / "crew" / "crew_members.json"

@@ -590,7 +590,7 @@
         {
           "id": "agree_transport",
           "speaker_id": "dr_priya_osei",
-          "text": "Thank you. I can offer 350 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+          "text": "Thank you. I can offer {pay:the_scholars_errand} credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
           "responses": [
             {
               "text": "What kind of questions?",
@@ -751,7 +751,7 @@
         {
           "id": "tariff_pitch",
           "speaker_id": "tomas_drifter",
-          "text": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for 200 a bale at Stellaris Port, but after the tariff, I'd clear maybe 30 credits. That's not trade. That's charity. And I don't take charity.",
+          "text": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for two hundred a bale at Stellaris Port, but after the tariff, I'd clear maybe thirty credits. That's not trade. That's charity. And I don't take charity.",
           "responses": [
             {
               "text": "What are you proposing?",
@@ -983,10 +983,10 @@
         {
           "id": "personal_supplies",
           "speaker_id": "officer_larsen",
-          "text": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
+          "text": "You'll be able to reclaim those once you pay the {fee:bill_of_landing} credit fee to acquire your bill of landing.",
           "responses": [
             {
-              "text": "I'll pay the 250 credits.",
+              "text": "I'll pay the {fee:bill_of_landing} credits.",
               "next_node_id": "payment_accepted"
             }
           ],
@@ -4586,10 +4586,10 @@
         {
           "id": "the_offer",
           "speaker_id": "cassiel_maren",
-          "text": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous, 500 credits, plus expenses.",
+          "text": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: {pay:the_forgery} credits.",
           "responses": [
             {
-              "text": "500 credits for a delivery and an appraisal? That's good money.",
+              "text": "{pay:the_forgery} credits for a delivery and an appraisal? That's good money.",
               "next_node_id": "accept"
             },
             {
@@ -4741,7 +4741,7 @@
         {
           "id": "start",
           "speaker_id": "callum_rhee",
-          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 350 credits when we dock and stay out of your way the entire trip. I travel light.",
+          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay {pay:the_informant} credits when we dock and stay out of your way the entire trip. I travel light.",
           "responses": [
             {
               "text": "Why Haven's Rest?",
@@ -4772,7 +4772,7 @@
               ]
             },
             {
-              "text": "350 credits works. Welcome aboard.",
+              "text": "{pay:the_informant} credits works. Welcome aboard.",
               "next_node_id": "accept",
               "excluded_flags": [
                 "informant_passenger_accepted"
@@ -4813,7 +4813,7 @@
           "text": "Family. My cousin runs a supply shop there. I've been meaning to visit for months, but scheduled transports keep getting rerouted. You know how it is, the big carriers don't prioritize the frontier stations.",
           "responses": [
             {
-              "text": "Fair enough. 350 credits and you've got a ride.",
+              "text": "Fair enough. {pay:the_informant} credits and you've got a ride.",
               "next_node_id": "accept"
             },
             {
@@ -4826,7 +4826,7 @@
         {
           "id": "deflect_smooth",
           "speaker_id": "callum_rhee",
-          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 350 credits seems fair for the convenience.",
+          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and {pay:the_informant} credits seems fair for the convenience.",
           "responses": [
             {
               "text": "Alright. Grab your gear.",
@@ -5367,10 +5367,10 @@
         {
           "id": "payment",
           "speaker_id": "pirate_captain",
-          "text": "400 credits. Half now, half when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+          "text": "{pay:honor_among_thieves} credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
           "responses": [
             {
-              "text": "400 credits and a favor from a pirate captain. I'm in.",
+              "text": "{pay:honor_among_thieves} credits and a favor from a pirate captain. I'm in.",
               "next_node_id": "accept"
             },
             {
@@ -5549,7 +5549,7 @@
         {
           "id": "compensation",
           "speaker_id": "nova_researcher",
-          "text": "The Collective has authorized a research stipend, 350 credits, plus full repair coverage if your ship takes debris damage during deployment. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+          "text": "The Collective has authorized a research stipend of {pay:signal_from_the_deep} credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
           "responses": [
             {
               "text": "History and credits. I'm in.",

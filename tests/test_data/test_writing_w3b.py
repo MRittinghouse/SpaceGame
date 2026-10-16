@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import re
 
+from spacegame.data_loader import get_data_loader
+from spacegame.models.captain_tokens import RECORD_KINDS
 from tests.writing_gates import surfaces
 from tools.writing import w3b_rows
 
-APPLIED: tuple[str, ...] = ()
+APPLIED: tuple[str, ...] = ("price",)
 BRACE = re.compile(r"\{[^{}]*\}")
 RECORD = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
 
@@ -37,3 +39,18 @@ def test_a_row_keeps_its_braces_but_a_price_row_gains_a_record_token() -> None:
         assert now == kept, (row.file, row.path)
         if RECORD.search(row.new):
             assert row.group == "price", (row.file, row.path)
+
+
+def test_a_record_token_names_a_mission_that_pays_it() -> None:
+    missions = get_data_loader().missions_by_id
+    found = 0
+    for row in surfaces.player_facing():
+        for kind, mission_id in re.findall(r"\{(pay|fee):([a-z0-9_]+)\}", row.text):
+            found += 1
+            mission = missions.get(mission_id)
+            assert mission is not None, (row.file, row.path, mission_id)
+            assert any(r.reward_type == RECORD_KINDS[kind] for r in mission.rewards), (
+                row.file,
+                row.path,
+            )
+    assert found == (12 if "price" in APPLIED else 0)

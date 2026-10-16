@@ -180,6 +180,12 @@ class TestG5Address:
     def test_a_malformed_verb_token_is_named_by_its_whole_brace(self, body: str) -> None:
         assert rules.token_names("{" + body + "}") == ["{" + body + "}"]
 
+    def test_a_record_token_is_named_by_its_kind(self) -> None:
+        assert rules.token_names("{pay:the_informant} and {fee:bill_of_landing}") == ["pay", "fee"]
+        assert rules.token_names("{pay:Bad Id}") == ["pay:Bad Id"]
+        assert "pay" in tokens_for("data/dialogue/dialogues.json")
+        assert "pay" not in tokens_for("data/missions/missions.json")
+
 
 class TestG6ToG8Narration:
     def test_filter_verbs_fail_and_direct_perception_passes(self) -> None:

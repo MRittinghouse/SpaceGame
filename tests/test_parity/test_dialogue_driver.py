@@ -8,7 +8,7 @@ from typing import Any
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.ambient_dialogue import AmbientDialogueManager
-from spacegame.models.captain_tokens import Pronouns, fill
+from spacegame.models.captain_tokens import Pronouns, fill, fill_records
 from spacegame.models.combat import EnemyShip
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
@@ -20,6 +20,7 @@ from spacegame.models.station_chatter import StationChatterManager
 from spacegame.sim_rng import SimRng
 from tools.parity.driver import Case
 from tools.parity.drivers import dialogue
+from tools.writing import w3b_rows
 
 # Neither profile can pick these: novice lacks required flags; expert's flags trip excluded ones.
 # Odom's six (plan W3a-S): polish design 2.2's authoring rule keeps every reply gated two ways
@@ -278,6 +279,16 @@ def _replay_captain_tokens(case: Case) -> Case:
     return replay
 
 
+def _replay_record_tokens(case: Case) -> Case:
+    replay = Case("dialogue", "record_tokens", case.setup)
+    for step in case.steps:
+        (line,) = step["args"]
+        replay.record(
+            "fill_records", [line], fill_records(line, get_data_loader().missions_by_id), {}
+        )
+    return replay
+
+
 def test_the_captain_token_case_renders_every_line_for_every_choice() -> None:
     case = _named()["captain_tokens"]
     lines = case.setup["lines"]
@@ -301,6 +312,28 @@ def test_the_shipped_tokened_lines_join_the_captain_token_case() -> None:
     assert any(line.startswith("Szabo scratches his chin. '{Son},") for line in lines)
 
 
+def test_the_record_token_case_renders_the_missions_rewards() -> None:
+    """Writing spec 3.7: the probes and every shipped price line, rendered from the missions."""
+    case = _named()["record_tokens"]
+    lines = case.setup["lines"]
+    assert [step["args"] for step in case.steps] == [[line] for line in lines]
+    renders = {step["args"][0]: step["result"] for step in case.steps}
+    first, second, third = dialogue.RECORD_TOKEN_PROBES
+    assert renders[first] == "350 credits and the 250 credit fee."
+    assert renders[second] == second
+    assert renders[third] == "{They} {v:pays|pay} 500 at {system}."
+    shipped = sorted(
+        {
+            row.new
+            for row in w3b_rows.load_rows()
+            if row.group == "price" and ("{pay:" in row.new or "{fee:" in row.new)
+        }
+    )
+    assert lines == [first, second, third, *shipped]
+    for line in shipped:
+        assert "{pay:" not in renders[line] and "{fee:" not in renders[line], line
+
+
 def test_cases_replay_from_setup() -> None:
     for name, case in _named().items():
         if name.startswith("tree_"):
@@ -313,6 +346,8 @@ def test_cases_replay_from_setup() -> None:
             replay = _replay_npcs_here(case)
         elif name == "captain_tokens":
             replay = _replay_captain_tokens(case)
+        elif name == "record_tokens":
+            replay = _replay_record_tokens(case)
         else:
             assert name == "interjections", name
             replay = _replay_interjections(case)

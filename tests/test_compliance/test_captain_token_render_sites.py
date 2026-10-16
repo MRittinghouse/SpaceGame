@@ -12,7 +12,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from tests.writing_gates.registry import CAPTAIN_TOKENS, REGISTRY
+from tests.writing_gates.registry import CAPTAIN_TOKENS, RECORD_TOKENS, REGISTRY
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -71,12 +71,24 @@ def _function(file: str, dotted: str) -> ast.FunctionDef | None:
     return None
 
 
-def _calls_captain_line(function: ast.FunctionDef) -> bool:
-    return any(
-        isinstance(node, ast.Call)
+def _captain_line_calls(function: ast.FunctionDef) -> list[ast.Call]:
+    return [
+        node
+        for node in ast.walk(function)
+        if isinstance(node, ast.Call)
         and isinstance(node.func, ast.Name)
         and node.func.id == "captain_line"
-        for node in ast.walk(function)
+    ]
+
+
+def _calls_captain_line(function: ast.FunctionDef) -> bool:
+    return bool(_captain_line_calls(function))
+
+
+def _calls_with_missions(function: ast.FunctionDef) -> bool:
+    calls = _captain_line_calls(function)
+    return bool(calls) and all(
+        any(keyword.arg == "missions" for keyword in call.keywords) for call in calls
     )
 
 
@@ -95,3 +107,15 @@ def test_every_print_path_renders_the_captains_tokens() -> None:
 def test_every_captain_token_surface_names_its_print_paths() -> None:
     surfaces = {entry.files for entry in REGISTRY if CAPTAIN_TOKENS <= entry.tokens}
     assert surfaces == set(SURFACE_SITES)
+
+
+def test_every_dialogue_print_path_passes_the_missions() -> None:
+    """A record token (spec 3.7) renders only where the surface passes the missions."""
+    record_surfaces = {entry.files for entry in REGISTRY if RECORD_TOKENS <= entry.tokens}
+    assert record_surfaces == {"data/dialogue/*.json"}
+    missing = [
+        f"{file}: {dotted}"
+        for file, dotted in SURFACE_SITES["data/dialogue/*.json"]
+        if not _calls_with_missions(_function(file, dotted))  # type: ignore[arg-type]
+    ]
+    assert not missing, "\n".join(missing)
