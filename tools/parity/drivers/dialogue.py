@@ -527,12 +527,16 @@ def _captain_tokens() -> Case:
 
 
 # Writing spec 3.7 (the author's ruling of 2026-10-13): a mission's reward as a record token,
-# rendered from the missions. The probes cover both kinds, a sum, an unknown mission and a kind
-# the mission lacks; every shipped line that carries a record token joins them.
+# rendered from the missions. The probes cover both kinds, a thousands comma (a mission that pays
+# 1,000 or more), an unknown mission, a kind the mission lacks and the captain's tokens left for
+# their own fill; every shipped line that carries a record token joins them. No shipped mission
+# pays two rewards of one kind, so the sum is pinned only by
+# tests/test_models/test_captain_tokens.py (TestRecordTokens).
 RECORD_TOKEN_PROBES: tuple[str, ...] = (
     "{pay:the_informant} credits and the {fee:bill_of_landing} credit fee.",
     "{pay:no_such_mission} and {fee:the_informant} stay as written.",
     "{They} {v:pays|pay} {pay:the_forgery} at {system}.",
+    "{pay:okafor_legacy_clinic_run} credits for the clinic run.",
 )
 _RECORD_TOKEN = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
 

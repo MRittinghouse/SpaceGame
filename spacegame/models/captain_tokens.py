@@ -72,8 +72,10 @@ _VERB = re.compile(r"\{v:([^|{}]*)\|([^{}]*)\}")
 _WORD = re.compile(r"\{([A-Za-z]+)\}")
 
 # The record tokens (spec 3.7 and 2.7; the author's ruling of 2026-10-13, option (c)): each names a
-# kind of reward, read from the named mission's rewards as the base figure the mission log prints.
-# Market and floor figures stay spelled out in the line.
+# kind of reward, and fill_records sums the named mission's rewards of that kind as the records
+# hold them, before the turn-in scales the credits. ``pay`` counts the credits rewards only (route
+# fuel is its own kind); the mission log prints each credits reward on its own line and hides the
+# deduction that ``fee`` reads. Market and floor figures stay spelled out in the line.
 RECORD_KINDS: Mapping[str, str] = MappingProxyType({"pay": "credits", "fee": "deduct_credits"})
 _RECORD = re.compile(r"\{(pay|fee):([a-z0-9_]+)\}")
 
@@ -139,11 +141,11 @@ def fill(text: str, pronouns: Pronouns, day: Optional[int] = None) -> str:
 def captain_line(
     text: str, player: Optional["Player"], missions: Optional[Mapping[str, "Mission"]] = None
 ) -> str:
-    """Render a line for the player's pronouns and day, and its record tokens when the surface
-    passes the missions; they/them with no player yet.
+    """Render a line's record tokens, when given the missions, and its captain's tokens.
 
-    The intro narration plays before a player exists, and views built in tests may hold a
-    stub, so the choice and the day are read defensively.
+    The captain's tokens follow the player's pronouns and day, they/them with no player yet: the
+    intro narration plays before a player exists, and views built in tests may hold a stub, so
+    the choice and the day are read defensively.
 
     Args:
         text: A line that may hold tokens.

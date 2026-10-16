@@ -318,10 +318,11 @@ def test_the_record_token_case_renders_the_missions_rewards() -> None:
     lines = case.setup["lines"]
     assert [step["args"] for step in case.steps] == [[line] for line in lines]
     renders = {step["args"][0]: step["result"] for step in case.steps}
-    first, second, third = dialogue.RECORD_TOKEN_PROBES
+    first, second, third, fourth = dialogue.RECORD_TOKEN_PROBES
     assert renders[first] == "350 credits and the 250 credit fee."
     assert renders[second] == second
     assert renders[third] == "{They} {v:pays|pay} 500 at {system}."
+    assert renders[fourth] == "8,000 credits for the clinic run."
     shipped = sorted(
         {
             row.new
@@ -329,7 +330,7 @@ def test_the_record_token_case_renders_the_missions_rewards() -> None:
             if row.group == "price" and ("{pay:" in row.new or "{fee:" in row.new)
         }
     )
-    assert lines == [first, second, third, *shipped]
+    assert lines == [first, second, third, fourth, *shipped]
     for line in shipped:
         assert "{pay:" not in renders[line] and "{fee:" not in renders[line], line
 
