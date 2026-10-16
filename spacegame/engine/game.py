@@ -4511,7 +4511,7 @@ class Game:
 
             ore_before = held_units(self.player, ORE)
             self.player.apply_combat_defeat(safe_system)
-            # BB-1: a defeat whose losses draw Odom's consigned ore is on the lane report
+            # BB-1: a defeat whose losses draw Odom's consigned ore is on the incident report
             if self.mission_manager:
                 note_defeat(
                     self.mission_manager,
