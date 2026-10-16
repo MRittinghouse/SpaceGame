@@ -471,7 +471,7 @@ def _strings(node: object, path: str = "") -> Iterator[tuple[str, str]]:
             yield from _strings(item, f"{path}{segment}")
 
 
-def _swap_at(raw: str, path: str, old: str, new: str) -> str:
+def swap_at(raw: str, path: str, old: str, new: str) -> str:
     """raw with the string old at path replaced by new, however often old occurs in the file."""
     hits = [found for found, text in _strings(json.loads(raw)) if text == old]
     return swap(raw, old, new, hits.index(path), len(hits))
@@ -492,7 +492,7 @@ def apply_file(entries: list[Entry], file: str, root: Path = ROOT) -> int:
             continue
         held = surfaces.resolve(json.loads(raw), entry.gate_path)
         if isinstance(held, str) and held != entry.new:
-            raw = _swap_at(raw, entry.gate_path, held, entry.new)
+            raw = swap_at(raw, entry.gate_path, held, entry.new)
             swapped += 1
     target.write_bytes(raw.encode("utf-8"))
     return swapped
