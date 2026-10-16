@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 
+from tests.writing_gates import surfaces
 from tools.writing import w3b_rows
 
 APPLIED: tuple[str, ...] = ()
@@ -16,6 +17,17 @@ RECORD = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
 
 def test_every_applied_group_holds_its_new_lines() -> None:
     assert w3b_rows.problems(APPLIED) == []
+
+
+def test_every_group_not_applied_still_holds_its_old_lines() -> None:
+    for group in w3b_rows.GROUPS:
+        if group in APPLIED:
+            continue
+        rows = [row for row in w3b_rows.load_rows() if row.group == group]
+        for row in rows:
+            held = surfaces.resolve(surfaces.load(row.file), row.path)
+            assert held == row.old, (row.file, row.path)
+        assert len(w3b_rows.problems((group,))) == len(rows), group
 
 
 def test_a_row_keeps_its_braces_but_a_price_row_gains_a_record_token() -> None:
