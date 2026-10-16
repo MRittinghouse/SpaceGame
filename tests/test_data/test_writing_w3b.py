@@ -5,14 +5,16 @@ APPLIED lists the groups this branch has swapped in; each task that applies a gr
 
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.captain_tokens import RECORD_KINDS
 from tests.writing_gates import surfaces
 from tools.writing import w3b_rows
 
-APPLIED: tuple[str, ...] = ("price", "gesture", "truth", "residual")
+APPLIED: tuple[str, ...] = ("price", "gesture", "truth", "residual", "first_sale")
 BRACE = re.compile(r"\{[^{}]*\}")
 RECORD = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
 
@@ -54,3 +56,32 @@ def test_a_record_token_names_a_mission_that_pays_it() -> None:
                 row.path,
             )
     assert found == (12 if "price" in APPLIED else 0)
+
+
+AMBIENT = Path(__file__).resolve().parents[2] / "data" / "crew" / "ambient_dialogue.json"
+BARKS = [
+    ("elena_reeves", "opened_market", 0),
+    ("marcus_jin", "opened_market", 0),
+    ("dr_priya_osei", "opened_market", 0),
+    ("tomas_drifter", "opened_market", 40),
+    ("kai_torren", "opened_market", 0),
+    ("tomas_drifter", "sold_back", 0),
+    ("elena_reeves", "sold_back", 0),
+    ("marcus_jin", "sold_back", 0),
+    ("dr_priya_osei", "sold_back", 0),
+]
+
+
+def test_the_nine_barks_are_appended() -> None:
+    """Polish design 5.2 and 5.4's beats, nine by the ruling of 2026-10-13, appended so no index
+    moves (polish design 8.2 row 5.1); Kai's loyalty never moves, so his line takes no gate."""
+    lines = json.loads(AMBIENT.read_text(encoding="utf-8"))["ambient_lines"]
+    assert len(lines) == 339
+    assert lines[329]["crew_id"] == "tomas_drifter" and lines[329]["context"] == "flag_triggered"
+    for index, (crew_id, action, loyalty) in enumerate(BARKS, start=330):
+        line = lines[index]
+        assert line["crew_id"] == crew_id, index
+        assert line["context"] == "player_action", index
+        assert line["action_type"] == action, index
+        assert line.get("min_loyalty", 0) == loyalty, index
+        assert line["text"].strip(), index

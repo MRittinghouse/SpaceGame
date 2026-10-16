@@ -4,52 +4,52 @@
     {
       "system_id": "nexus_prime",
       "speaker": "Purchasing associate, Central Exchange",
-      "text": "New supplier on the register. File the form before your next load."
+      "text": "New supplier. Every field of the form before your next load. Field five asks your reason for entering this market. Leave it blank. Everyone does."
     },
     {
       "system_id": "verdant",
       "speaker": "Cooperative buyer",
-      "text": "The cooperative logs you as a supplier. Unload at the grain shed."
+      "text": "We pay over the Guild's transport rate. You're not the Guild. Unload at the grain shed."
     },
     {
       "system_id": "forgeworks",
       "speaker": "Intake counter",
-      "text": "Guild desk and Union desk both logged it. You're paid either way."
+      "text": "Guild desk and Union desk both want to be the one paying you. You're paid. They can settle the rest."
     },
     {
       "system_id": "breakstone",
       "speaker": "Shift foreman",
-      "text": "Unload at bay two. Day shift takes it from there."
+      "text": "First names on this deck. Bay two. Second shift breaks it down by morning."
     },
     {
       "system_id": "axiom_labs",
       "speaker": "Procurement officer",
-      "text": "Delivery accepted. A supplier record is open under your ship."
+      "text": "Office of Procurement, Materials Division. Delivery accepted. Compensation commensurate with first-supplier terms has been transferred."
     },
     {
       "system_id": "havens_rest",
       "speaker": "Stallholder",
-      "text": "First load from you here. Leave it at the stall."
+      "text": "Leave it by the stall. Your name? Tell me after. You eat first."
     },
     {
       "system_id": "crimson_reach",
       "speaker": "Wrecker",
-      "text": "Set it down by the breaking yard. You're paid at the gate."
+      "text": "Worth half what you think. Set it down by the breaking yard. The gate pays you over anyway."
     },
     {
       "system_id": "stellaris_port",
       "speaker": "Buyer, Grand Bazaar",
-      "text": "First lot from you. I'll want to know where the next one comes from."
+      "text": "First lot from you, so I pay over list. Next time, bring me where it came from. The story sells it here."
     },
     {
       "system_id": "iron_depths",
       "speaker": "Quartermaster",
-      "text": "Leave it by the lift. I'll log you as a supplier."
+      "text": "Leave it by the lift. You're the supplier now. The last one transferred out."
     },
     {
       "system_id": "nova_research",
       "speaker": "Buyer",
-      "text": "New supplier noted. Payment is off the open board."
+      "text": "No names. Payment comes off the open board, over list."
     }
   ]
 }
