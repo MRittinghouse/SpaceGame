@@ -106,6 +106,9 @@ def apply_group(group: str, root: Path = ROOT) -> int:
 
     Returns:
         How many lines changed.
+
+    Raises:
+        ValueError: The group is not one of GROUPS.
     """
     if group not in GROUPS:
         raise ValueError(f"no group {group}")
@@ -138,8 +141,14 @@ def problems(groups: Iterable[str], root: Path = ROOT) -> list[str]:
 
     Returns:
         The messages.
+
+    Raises:
+        ValueError: A group is not one of GROUPS.
     """
     wanted = set(groups)
+    unknown = sorted(wanted - set(GROUPS))
+    if unknown:
+        raise ValueError(f"no group {', '.join(unknown)}")
     return row_problems([row for row in load_rows() if row.group in wanted], root)
 
 

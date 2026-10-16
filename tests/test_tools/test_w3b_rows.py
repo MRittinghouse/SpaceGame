@@ -55,6 +55,11 @@ def test_problems_name_a_row_not_applied(tmp_path: Path) -> None:
     ]
 
 
+def test_problems_refuse_an_unknown_group() -> None:
+    with pytest.raises(ValueError, match="no group frist_sale"):
+        w3b_rows.problems(("price", "frist_sale"))
+
+
 def test_the_shipped_rows_are_well_formed() -> None:
     rows = w3b_rows.load_rows()
     assert rows, "no rows"
