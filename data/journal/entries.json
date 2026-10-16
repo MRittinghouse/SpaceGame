@@ -37,7 +37,7 @@
     },
     {
       "entry_id": "auto_m06_priya",
-      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise. Nothing like Breakstone.",
+      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studied resource extraction economics.",
       "trigger_flag": "met_priya_osei",
       "system_id": "axiom_labs",
       "mission_id": ""
@@ -58,7 +58,7 @@
     },
     {
       "entry_id": "auto_m08_helped",
-      "text": "Responded to a distress signal from a freighter under pirate attack. Met Captain Reva Sato, Guild military escort. Three convoy attacks this month, same pattern. Someone knows the patrol routes.",
+      "text": "Responded to a distress signal from a freighter under pirate attack. Met Captain Reva Sato, Guild military escort. Three convoy attacks this month, same pattern.",
       "trigger_flag": "helped_freighter",
       "system_id": "",
       "mission_id": ""
@@ -79,7 +79,7 @@
     },
     {
       "entry_id": "auto_m10_crimson",
-      "text": "Delivered a package to Malia Torres at Crimson Reach. She says whoever is backing the pirates has serious resources. Real money, real ships, real intelligence. This is not random raiding.",
+      "text": "Delivered a package to Malia Torres at Crimson Reach. She said whoever was backing the pirates had serious resources.",
       "trigger_flag": "delivered_dex_chip",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -93,7 +93,7 @@
     },
     {
       "entry_id": "auto_m12_attack",
-      "text": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped. Better than any frontier raiders should be.",
+      "text": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped.",
       "trigger_flag": "survived_pirate_attack",
       "system_id": "",
       "mission_id": ""
@@ -107,7 +107,7 @@
     },
     {
       "entry_id": "auto_m14_scan",
-      "text": "Located a pirate command base near Iron Depths. Scan data confirms it is an active operations center. Hard evidence.",
+      "text": "Located a pirate command base near Iron Depths. Scan data showed an active operations center.",
       "trigger_flag": "pirate_base_confirmed",
       "system_id": "iron_depths",
       "mission_id": ""
@@ -163,7 +163,7 @@
     },
     {
       "entry_id": "auto_arna_branch_b",
-      "text": "Clean pull at a derelict in Haven's Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time. When I got back she called it a fair trade for a scar and a lesson. She is not going to save her brother this way. She said so. She is staying anyway.",
+      "text": "Clean pull at a derelict in Haven's Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time.",
       "trigger_flag": "arna_branch_b_complete",
       "system_id": "nexus_prime",
       "mission_id": "arna_05b_clean_pull"
@@ -177,7 +177,7 @@
     },
     {
       "entry_id": "auto_arna_departure",
-      "text": "Said goodbye to Arna at the departure bay. She had a duffel bag at her feet. Not much else. She told me about the pendant before she went: it was her mother's, not any of the three stories she'd told me. She said she wanted one thing she'd said to me to be true. Then she walked toward the freighter bound for Port Kestrel and she did not look back. She never wrote the letter to her brother. He is still waiting.",
+      "text": "Said goodbye to Arna at the departure bay. She had a duffel bag at her feet. Not much else. She told me about the pendant before she went: it was her mother's. She said she wanted one thing she'd said to me to be true. Then she walked toward the freighter bound for Port Kestrel and she did not look back.",
       "trigger_flag": "arna_pendant_revealed",
       "system_id": "nexus_prime",
       "mission_id": ""
@@ -198,7 +198,7 @@
     },
     {
       "entry_id": "auto_wreckers_first_contract",
-      "text": "Turned in my first contract at the Wreckers' Guild Hall. Malia weighed the haul, logged it, paid me out. No ceremony. She said this is what the work looks like. Standing builds slow. Down here, slow counts.",
+      "text": "Turned in my first contract at the Wreckers' Guild Hall. Malia weighed the haul, logged it, paid me out. No ceremony.",
       "trigger_flag": "wreckers_contract_completed",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -247,7 +247,7 @@
     },
     {
       "entry_id": "auto_okafor_first_disposed",
-      "text": "First patent moved off held. The disposition is on file. Either the patent stays in circulation under license, or the lump sum is in the account. Either way, the work is done and the next cycle starts with the bench cleared.",
+      "text": "First patent moved off held. The disposition went on file. Either the patent stayed in circulation under license, or the lump sum went into the account.",
       "trigger_flag": "okafor_patent_disposed_first",
       "system_id": "axiom_labs",
       "mission_id": ""
@@ -359,7 +359,7 @@
     },
     {
       "entry_id": "auto_auction_first_session",
-      "text": "First session. Lot prices here move differently than the commodity floor. The ceiling is whatever the room will pay. Sable said two words the whole time. Both were correct.",
+      "text": "First session. Lot prices moved differently than on the commodity floor. The ceiling was whatever the room would pay. Sable said two words the whole time.",
       "trigger_flag": "auction_first_session_complete",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -373,7 +373,7 @@
     },
     {
       "entry_id": "auto_auction_first_rivalry",
-      "text": "A name showed up on the floor. They bid on the lot I wanted. Lost that one. I know what the lot was. I know who took it.",
+      "text": "A name showed up on the floor. They bid against me for a lot. Lost that one.",
       "trigger_flag": "auction_first_rivalry_formed",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -408,7 +408,7 @@
     },
     {
       "entry_id": "auto_auction_first_listing_created",
-      "text": "Filed my first consignment at the Stellaris floor. Paid the listing fee at the desk. The fee is gone whether the lot moves or not. The crate goes onto the catalogue under a number, not my name. That is the deal.",
+      "text": "Filed my first consignment at the Stellaris floor. Paid the listing fee at the desk. The fee was the floor's whether the lot moved or not. The crate went onto the catalogue under a number, not my name.",
       "trigger_flag": "auction_first_listing_created",
       "system_id": "stellaris_port",
       "mission_id": ""
@@ -450,7 +450,7 @@
     },
     {
       "entry_id": "auto_okafor_legacy_profit_ending",
-      "text": "Kweon named what the funding history looks like from her side. Commercial and industrial outcomes running ahead of clinical work over a long run. She did not say she regretted working with the resources available. She said: the pediatric cohort study sat unfunded for two cycles. The field clinic work was deferred once. That is the cost. She knows it by name.",
+      "text": "Kweon named what the funding history looked like from her side. Commercial and industrial outcomes running ahead of clinical work over a long run. She said: the pediatric cohort study sat unfunded for two cycles. The field clinic work was deferred once. That is the cost.",
       "trigger_flag": "okafor_legacy_profit_ending_seen",
       "system_id": "axiom_labs",
       "mission_id": ""
@@ -485,7 +485,7 @@
     },
     {
       "entry_id": "auto_d1_vengeance_won",
-      "text": "Chose the pursuit. Odusanya's circuit is closed to me now. The warrant-holding line is gone. Rendik Foss and Callan Vert are still on the open board. The people who can help reach them do not ask about jurisdiction. That is the file I am running.",
+      "text": "Chose the pursuit. Odusanya's circuit was closed to me after that. The warrant-holding line was gone. Rendik Foss and Callan Vert were still on the open board. The people who could help reach them did not ask about jurisdiction.",
       "trigger_flag": "d1_vengeance_won",
       "system_id": "crimson_reach",
       "mission_id": ""
@@ -499,28 +499,28 @@
     },
     {
       "entry_id": "auto_d3_political_power_won",
-      "text": "Chose the council seat. Owusu drafted it, the fourth-day quorum passed it, and it is mine. Deng's cells are running debt buyouts around this ship now, and Halvorsen's registry does not read my signature. The council calendar does. That is the trade I made.",
+      "text": "Chose the council seat. Owusu drafted it, the fourth-day quorum passed it, and it was mine. Deng's cells started running debt buyouts around this ship, and Halvorsen's registry did not read my signature. The council calendar did.",
       "trigger_flag": "d3_political_power_won",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_d3_revolution_won",
-      "text": "Chose the cells. Deng put the coordination across three settlements through this ship. Debt buyouts, safety comms, legal writs on the shift-supervisor writeups. Owusu will not seat me at the fourth-day quorum. Halvorsen will not file for me. The cells will move work no one else will carry. That is the trade I made.",
+      "text": "Chose the cells. Deng put the coordination across three settlements through this ship. Debt buyouts, safety comms, legal writs on the shift-supervisor writeups. Owusu would not seat me at the fourth-day quorum. Halvorsen would not file for me.",
       "trigger_flag": "d3_revolution_won",
       "system_id": "havens_rest",
       "mission_id": ""
     },
     {
       "entry_id": "auto_d3_empire_won",
-      "text": "Chose the parcel. Halvorsen signed the administrator-of-record filing at Crimson Reach Claims and the border ground is on the registry as mine. Owusu will not seat me. Deng is organizing around this ship specifically. Surveyors on Halvorsen's circuit route drift reports to my office now. That is the trade I made.",
+      "text": "Chose the parcel. Halvorsen signed the administrator-of-record filing at Crimson Reach Claims and the border ground went on the registry as mine. Owusu would not seat me. Deng organized around this ship specifically. Surveyors on Halvorsen's circuit started routing drift reports to my office.",
       "trigger_flag": "d3_empire_won",
       "system_id": "crimson_reach",
       "mission_id": ""
     },
     {
       "entry_id": "auto_d5_legacy_won",
-      "text": "Chose the Institute. Solheim filed the wing dedication and the standing authority on the same day. My name is on the Farrow Institute's thirty-year endowment record. The crew kept doing what crews do when the captain is somewhere else. That was the trade.",
+      "text": "Chose the Institute. Solheim filed the wing dedication and the standing authority on the same day. My name went on the Farrow Institute's thirty-year endowment record. The crew kept doing what crews do when the captain is somewhere else.",
       "trigger_flag": "d5_legacy_won",
       "system_id": "axiom_labs",
       "mission_id": ""
@@ -548,7 +548,7 @@
     },
     {
       "entry_id": "auto_d7_faith_won",
-      "text": "Chose the chapel. Solano filed the dawn-rotation invitation the same week and the Cradlepoint network acknowledged it without ceremony. The access is informal, which is how it works there. Marchetti filed the procedure authorization on another applicant. I was not in that record. Both things are true and both things are settled.",
+      "text": "Chose the chapel. Solano filed the dawn-rotation invitation the same week and the Cradlepoint network acknowledged it without ceremony. The access was informal, which was how it worked there. Marchetti filed the procedure authorization on another applicant. I was not in that record.",
       "trigger_flag": "d7_faith_won",
       "system_id": "havens_rest",
       "mission_id": ""
@@ -562,7 +562,7 @@
     },
     {
       "entry_id": "auto_d8_crime_won",
-      "text": "Chose the Understair. Wulan Doyle filed the standing access the same week, no per-run negotiation required. The Kettlebridge brokers have the ship inside the ledger now. Kallio's dock channels at Cradlepoint are closed. The list at Haven's Rest keeps its rotation without this name on the manifest. The ledger reads what it reads.",
+      "text": "Chose the Understair. Wulan Doyle filed the standing access the same week, no per-run negotiation required. The Kettlebridge brokers put the ship inside the ledger. Kallio's dock channels at Cradlepoint closed. The list at Haven's Rest kept its rotation without this name on the manifest.",
       "trigger_flag": "d8_crime_won",
       "system_id": "stellaris_port",
       "mission_id": ""

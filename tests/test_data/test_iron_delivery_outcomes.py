@@ -92,7 +92,8 @@ def test_footing_the_bill_waits_on_the_flag_not_a_completed_delivery() -> None:
     footing = _mission("footing_the_bill")
     assert footing.prerequisites == ["bill_of_landing"]
     assert footing.required_flags == [FLAG, "talked_to_elena_cantina"]
-    assert "settled or overdue" in footing.hint
+    # Plan W3b-S Task 7: BB-4's guard, the hint names Elena's advice at Nexus Prime.
+    assert "Elena Reeves's trading advice at Nexus Prime" in footing.hint
 
 
 def test_the_dead_ledger_waits_on_the_flag_not_a_completed_delivery() -> None:

@@ -312,7 +312,7 @@ class TestConsignedCargoStaysAboard:
         view.set_reserve_pct(0.70)
         _consign(missions, "axiom_circuit", 4)
         ok, msg = view.confirm_listing()
-        assert (ok, msg) == (False, "You do not have 1 of 'axiom_circuit' in inventory.")
+        assert (ok, msg) == (False, "You do not have 1 of 'axiom_circuit' to list.")
         assert player.ship.get_cargo_quantity("axiom_circuit") == 4
         # Two of the captain's own in the hidden hold: 6 held, 4 reserved, 2 free in main.
         player.hidden_compartment = HiddenCompartment(

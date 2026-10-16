@@ -752,7 +752,7 @@ class MissionLogView(BaseView):
                 rew_text = f"{sign}{reward.amount} {reward.target_id} rep"
                 color = Colors.GREEN if reward.amount > 0 else Colors.RED
             elif reward.reward_type == "route_fuel":
-                rew_text = f"+{reward.amount:,} Credits (route fuel)"
+                rew_text = f"+{reward.amount:,} Credits (route fuel, once per landing)"
                 color = Colors.YELLOW
             elif reward.reward_type in (
                 "set_flag",
@@ -840,7 +840,7 @@ class MissionLogView(BaseView):
                 )
             else:
                 current = self._player.ship.get_cargo_quantity(obj.target_id)
-            return f"\u2192 {current}/{obj.target_quantity} in cargo"
+            return f"\u2192 {current}/{obj.target_quantity} in cargo for this mission"
         return ""
 
     def _render_wrapped(

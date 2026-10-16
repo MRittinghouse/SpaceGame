@@ -168,7 +168,7 @@ class RefiningSession:
         if not recipe.can_craft(inventory):
             missing = recipe.get_missing_inputs(inventory)
             missing_str = ", ".join(f"{qty} {cid}" for cid, qty in missing.items())
-            return (False, f"Missing: {missing_str}")
+            return (False, f"Missing: {missing_str}, not counting mission cargo")
 
         # Consume inputs
         for commodity_id, qty in recipe.inputs.items():
@@ -206,7 +206,10 @@ class RefiningSession:
         # Check materials for full batch
         for cid, qty in recipe.inputs.items():
             if inventory.get(cid, 0) < qty * count:
-                return (False, f"Need {qty * count} {cid}, have {inventory.get(cid, 0)}")
+                return (
+                    False,
+                    f"Need {qty * count} {cid}, have {inventory.get(cid, 0)}, not counting mission cargo",
+                )
 
         # Consume all inputs atomically
         for cid, qty in recipe.inputs.items():

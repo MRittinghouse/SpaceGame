@@ -22,7 +22,7 @@ def test_a_recipe_never_draws_consigned_ore() -> None:
     cargo = {"iron_ore": 10}
     ok, msg = start_on_free_cargo(session, _recipe(), cargo, {}, 1)
     assert not ok
-    assert msg == "Missing: 4 iron_ore"
+    assert msg == "Missing: 4 iron_ore, not counting mission cargo"
     assert cargo == {"iron_ore": 10}
 
 
@@ -39,7 +39,7 @@ def test_a_batch_counts_the_free_hold() -> None:
     cargo = {"iron_ore": 18}
     ok, msg = start_on_free_cargo(session, _recipe(), cargo, {"iron_ore": 8}, 3)
     assert not ok
-    assert msg == "Need 12 iron_ore, have 8"
+    assert msg == "Need 12 iron_ore, have 8, not counting mission cargo"
     ok, _msg = start_on_free_cargo(session, _recipe(), cargo, {"iron_ore": 8}, 2)
     assert ok
     assert cargo == {"iron_ore": 10}

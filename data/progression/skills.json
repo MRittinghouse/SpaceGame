@@ -146,7 +146,7 @@
     {
       "id": "insurance",
       "name": "Insurance",
-      "description": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit).",
+      "description": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit)",
       "tree": "commerce",
       "max_level": 1,
       "cost_per_level": 1,
@@ -179,7 +179,7 @@
     {
       "id": "shield_mastery",
       "name": "Shield Mastery",
-      "description": "+10% max shields per level",
+      "description": "+10% of the hull's base shields per level, added to max and starting shields",
       "tree": "combat",
       "max_level": 3,
       "cost_per_level": 1,

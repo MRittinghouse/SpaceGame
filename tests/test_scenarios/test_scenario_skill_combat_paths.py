@@ -241,7 +241,9 @@ class TestShieldMasteryAppliesToBothPaths:
 
     def test_the_text_says_what_it_does(self) -> None:
         skill = PlayerProgression().skills["shield_mastery"]
-        assert skill.description == "+10% max shields per level"
+        assert skill.description == (
+            "+10% of the hull's base shields per level, added to max and starting shields"
+        )
 
 
 class TestFleeBonusAppliesToBothPaths:

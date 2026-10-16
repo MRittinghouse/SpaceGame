@@ -14,7 +14,18 @@ from spacegame.models.captain_tokens import RECORD_KINDS
 from tests.writing_gates import surfaces
 from tools.writing import w3b_rows
 
-APPLIED: tuple[str, ...] = ("price", "gesture", "truth", "residual", "first_sale", "flags")
+APPLIED: tuple[str, ...] = (
+    "price",
+    "gesture",
+    "truth",
+    "residual",
+    "first_sale",
+    "flags",
+    "log",
+    "surrender",
+    "skill",
+    "data",
+)
 BRACE = re.compile(r"\{[^{}]*\}")
 RECORD = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
 
