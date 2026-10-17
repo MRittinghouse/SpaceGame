@@ -1473,7 +1473,7 @@
   "new": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Harlan wires you a tow fee.",
   "group": "flags",
   "ref": "T6-25",
-  "why": "Cut the aphorism, which also read two crews' minds. Also cut \"He's sheepish about the whole thing.\", a read of Harlan of T6-19's kind that the triage missed. The line ends on Jess's joke. Harlan's tow fee pays the 100 CR (R8), and it comes after Jess's joke so it answers it (the author's read 2026-10-16, E-hauler)."
+  "why": "Cut the aphorism, which also read two crews' minds. Also cut \"He's sheepish about the whole thing.\", a read of Harlan of T6-19's kind that the triage missed. Harlan's tow fee pays the 100 CR (R8), and it comes after Jess's joke so it answers it (the author's read 2026-10-16, E-hauler)."
  },
  {
   "file": "data/encounters/miners_union.json",
@@ -1590,7 +1590,7 @@
   "new": "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to Axiom Labs had been reassigned, and her research samples were time-sensitive.",
   "group": "log",
   "ref": "auto_m06_priya",
-  "why": "Cut the closing verdict (\"clinical and precise. Nothing like Breakstone.\"), which is a conclusion (6.2). Cut \"Describes working conditions as data sets.\", the captain's summary of how she talks. \"studies\" becomes past tense (2.4). Campaign entry, so SP10 text; trigger flagged below. The entry fires on met_priya_osei, set as her scene opens (decline included), so it says only what is true then (the author's read 2026-10-16, L-m06; the trigger stays SP6's and SP10's, F-66 and F-80)."
+  "why": "Cut the closing verdict (\"clinical and precise. Nothing like Breakstone.\"), which is a conclusion (6.2). Cut \"Describes working conditions as data sets.\", the captain's summary of how she talks. Campaign entry, so SP10 text; trigger flagged below. The entry fires on met_priya_osei, set as her scene opens (decline included), so it says only what is true then (the author's read 2026-10-16, L-m06; the trigger stays SP6's and SP10's, F-66 and F-80)."
  },
  {
   "file": "data/journal/entries.json",

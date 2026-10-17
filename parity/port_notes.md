@@ -2191,10 +2191,6 @@ once.
   - The run's flags for the author, with owners:
     - the global interpreter is Python 3.14.0 while the repo names 3.13, and every gate of the run
       passed under 3.14 (process; C1);
-    - `tools/parity/drivers/dialogue.py`'s probe comment says "No shipped mission pays two rewards
-      of one kind", true only of the two record kinds: `the_scholars_errand` and
-      `honor_among_thieves` pay two `set_flag` rewards and `bill_of_landing` three `trade_permit`
-      (unowned, a comment);
     - the Fulcrum: the run's Task 5 ruling took as its default that the port plays no
       `opened_market` bark at the Fulcrum, which has no first-sale line and whose only trade is a
       seized cache (polish design 5.4); the desk did not put it to the author (plan W3b-A, for the
@@ -2224,11 +2220,9 @@ once.
       the current system (`Game._check_journal_triggers`), so it reads Nexus Prime, and the record's
       system shows only when a caller passes none (the plan that ports the Log, with the trigger's
       SP6 and SP10);
-    - two rows' reasons trail their re-ruled lines: T6-25's `help_hauler` reason still says "The
-      line ends on Jess's joke." though the fee now follows it, and `auto_m06_priya`'s still says
-      "studies" becomes past tense, which the new entry no longer says; the rows never ship, and
-      their files are the run's records (unowned). (plan W3b-S's ledger, Tasks 1 to 7; Task 9; the
-      author's read)
+    - `data/combat/captains.json`'s `juno_red_line_runner` is "Juno Okafor" (her `victory_line`),
+      a surname she shares with Jez Okafor of the Okafor arc (`okafor_legacy_clinic_run`) (the
+      naming pass). (plan W3b-S's ledger, Tasks 1 to 7; Task 9; the author's read)
 
 ## Act II v1
 

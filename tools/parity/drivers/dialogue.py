@@ -530,7 +530,7 @@ def _captain_tokens() -> Case:
 # rendered from the missions. The probes cover both kinds, a thousands comma (a mission that pays
 # 1,000 or more), an unknown mission, a kind the mission lacks and the captain's tokens left for
 # their own fill; every shipped line that carries a record token joins them. No shipped mission
-# pays two rewards of one kind, so the sum is pinned only by
+# pays two credits rewards or two deductions, so the sum is pinned only by
 # tests/test_models/test_captain_tokens.py (TestRecordTokens).
 RECORD_TOKEN_PROBES: tuple[str, ...] = (
     "{pay:the_informant} credits and the {fee:bill_of_landing} credit fee.",
