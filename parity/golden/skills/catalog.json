@@ -2,7 +2,7 @@
   "case": "catalog",
   "format": 1,
   "setup": {},
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [],
@@ -169,7 +169,7 @@
           "bonus_type": "insurance",
           "cost_per_level": 1,
           "current_level": 0,
-          "description": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit).",
+          "description": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit)",
           "id": "insurance",
           "max_level": 1,
           "name": "Insurance",
@@ -205,7 +205,7 @@
           "bonus_type": "shield_bonus",
           "cost_per_level": 1,
           "current_level": 0,
-          "description": "+10% max shields per level",
+          "description": "+10% of the hull's base shields per level, added to max and starting shields",
           "id": "shield_mastery",
           "max_level": 3,
           "name": "Shield Mastery",

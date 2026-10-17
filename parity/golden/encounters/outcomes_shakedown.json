@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -219,7 +219,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You power up weapons and angle your shields. The pirate grins. They were hoping you'd say that.",
+          "description": "You power up weapons and angle your shields. The pirate grins.",
           "enemy_template_ids": [],
           "leads_to_combat": true,
           "rewards": []
@@ -3963,7 +3963,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused, and a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
+          "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex hands over a detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

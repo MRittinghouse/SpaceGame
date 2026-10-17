@@ -20,7 +20,7 @@
       "fled_captain"
     ]
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -37,7 +37,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_defeated"
@@ -66,7 +66,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_defeated"
@@ -95,7 +95,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_defeated"
@@ -124,7 +124,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -153,7 +153,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -182,7 +182,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_wanderer"
@@ -211,7 +211,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_truce"
@@ -240,7 +240,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_truce"
@@ -269,7 +269,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_truce"
@@ -298,7 +298,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_bribed_off"
@@ -327,7 +327,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_bribed_off"
@@ -356,7 +356,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_bribed_off"
@@ -385,7 +385,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -414,7 +414,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -443,7 +443,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_wanderer"
@@ -472,7 +472,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -501,7 +501,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. The contract's still open. You knew that. I knew that. Let's not pretend either of us is surprised.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "return"
@@ -530,7 +530,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Anatolia Zbynek, formerly of Guild Collections, currently freelance. Your manifest number appears on a seven-year-old contract the Guild declined to honor. I'm making them honor it. Through you.",
           "retreat_line": "Withdrawing. The ledger stays open.",
-          "surrender_line": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+          "surrender_line": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
           "victory_line": "Contract 4412-C closed. Ledger balanced. Good afternoon."
         },
         "meeting_state": "post_wanderer"
@@ -1081,7 +1081,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_defeated"
@@ -1110,7 +1110,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_defeated"
@@ -1139,7 +1139,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_defeated"
@@ -1168,7 +1168,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1197,7 +1197,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1226,7 +1226,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_wanderer"
@@ -1255,7 +1255,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_truce"
@@ -1284,7 +1284,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_truce"
@@ -1313,7 +1313,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_truce"
@@ -1342,7 +1342,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_bribed_off"
@@ -1371,7 +1371,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_bribed_off"
@@ -1400,7 +1400,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_bribed_off"
@@ -1429,7 +1429,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1458,7 +1458,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1487,7 +1487,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_wanderer"
@@ -1516,7 +1516,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1545,7 +1545,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. We dance again. The Guild still strikes me from the registry. You still fly under their flag. You should know your role by now.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "return"
@@ -1574,7 +1574,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. I am the Dowager Vess-Renaud, formerly of the Guild High Chamber, currently of whatever remains after they struck my name from the registry. You fly under their flag? Then you fly under their debts. Present your cargo.",
           "retreat_line": "The Chamberlain's Regret will not forget this indignity.",
-          "surrender_line": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+          "surrender_line": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
           "victory_line": "The Guild struck me from the registry. Today I wrote myself back in. Rewriting hurts."
         },
         "meeting_state": "post_wanderer"
@@ -1603,7 +1603,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_defeated"
@@ -1632,7 +1632,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_defeated"
@@ -1661,7 +1661,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_defeated"
@@ -1690,7 +1690,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -1719,7 +1719,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -1748,7 +1748,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_wanderer"
@@ -1777,7 +1777,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_truce"
@@ -1806,7 +1806,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_truce"
@@ -1835,7 +1835,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_truce"
@@ -1864,7 +1864,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_bribed_off"
@@ -1893,7 +1893,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_bribed_off"
@@ -1922,7 +1922,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_bribed_off"
@@ -1951,7 +1951,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -1980,7 +1980,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -2009,7 +2009,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_wanderer"
@@ -2038,7 +2038,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -2067,7 +2067,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Through my claim again. Patience getting thinner.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "return"
@@ -2096,7 +2096,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Got a seat and a wrench. Don't have patience for boarders. You came through my claim. Back up or don't.",
           "retreat_line": "Pulling back. Claim's still mine.",
-          "surrender_line": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+          "surrender_line": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
           "victory_line": "Told you."
         },
         "meeting_state": "post_wanderer"
@@ -2647,7 +2647,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_defeated"
@@ -2676,7 +2676,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_defeated"
@@ -2705,7 +2705,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_defeated"
@@ -2734,7 +2734,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -2763,7 +2763,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -2792,7 +2792,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_wanderer"
@@ -2821,7 +2821,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Ink. The hospital still needs cargo. Last time we kept it civil. Let's again.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_truce"
@@ -2850,7 +2850,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Ink. The hospital still needs cargo. Last time we kept it civil. Let's again.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_truce"
@@ -2879,7 +2879,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. Ink. The hospital still needs cargo. Last time we kept it civil. Let's again.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_truce"
@@ -2908,7 +2908,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_bribed_off"
@@ -2937,7 +2937,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_bribed_off"
@@ -2966,7 +2966,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_bribed_off"
@@ -2995,7 +2995,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -3024,7 +3024,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -3053,7 +3053,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_wanderer"
@@ -3082,7 +3082,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -3111,7 +3111,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Ink. Again. The kids are still sick. The cargo's still needed. I wish you'd remember that.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "return"
@@ -3140,7 +3140,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Name's Harlowe. Call me Ink. I don't want to be here. You don't want to be here. Cargo to Amara's Children's Hospital covers your clean exit. I won't even look at your manifest.",
           "retreat_line": "Disengaging. I'm sorry. Take care out there.",
-          "surrender_line": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+          "surrender_line": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
           "victory_line": "I'll pay for your hull repairs. Silver, take the lead on the transfer."
         },
         "meeting_state": "post_wanderer"
@@ -3169,7 +3169,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_defeated"
@@ -3198,7 +3198,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_defeated"
@@ -3227,7 +3227,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_defeated"
@@ -3256,7 +3256,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3285,7 +3285,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3314,7 +3314,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_wanderer"
@@ -3343,7 +3343,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_truce"
@@ -3372,7 +3372,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_truce"
@@ -3401,7 +3401,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_truce"
@@ -3430,7 +3430,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_bribed_off"
@@ -3459,7 +3459,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_bribed_off"
@@ -3488,7 +3488,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_bribed_off"
@@ -3517,7 +3517,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3546,7 +3546,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3575,7 +3575,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_wanderer"
@@ -3604,7 +3604,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3633,7 +3633,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "You again. Still stealing. I'm getting better at this. You should be too. Heads up.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "return"
@@ -3662,7 +3662,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You, Guild freighter. You're stealing from my people. I'm about to steal right back. Heads up. Name's Juno. Red Line Runner.",
           "retreat_line": "Pulling out. I'll be back with more ship. And maybe a crew.",
-          "surrender_line": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+          "surrender_line": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
           "victory_line": "TELL THEM JUNO OKAFOR DID THIS. No wait, don't tell them. Actually yeah, tell them."
         },
         "meeting_state": "post_wanderer"
@@ -3691,7 +3691,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_defeated"
@@ -3720,7 +3720,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_defeated"
@@ -3749,7 +3749,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_defeated"
@@ -3778,7 +3778,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -3807,7 +3807,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -3836,7 +3836,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_wanderer"
@@ -3865,7 +3865,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain! My friend! Papa is so glad to see you. We had our talk, we had our peace. You drink with me at the dock when this is over, yes? But for now, the Union still has questions about your manifest.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_truce"
@@ -3894,7 +3894,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain! My friend! Papa is so glad to see you. We had our talk, we had our peace. You drink with me at the dock when this is over, yes? But for now, the Union still has questions about your manifest.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_truce"
@@ -3923,7 +3923,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain! My friend! Papa is so glad to see you. We had our talk, we had our peace. You drink with me at the dock when this is over, yes? But for now, the Union still has questions about your manifest.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_truce"
@@ -3952,7 +3952,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_bribed_off"
@@ -3981,7 +3981,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_bribed_off"
@@ -4010,7 +4010,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_bribed_off"
@@ -4039,7 +4039,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -4068,7 +4068,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -4097,7 +4097,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_wanderer"
@@ -4126,7 +4126,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -4155,7 +4155,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Papa Serik again. Old friend now, eh? Warm welcome for a returning face. Same Guild paper, same concerning conversation.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "return"
@@ -4184,7 +4184,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Captain. Papa Serik speaking. Warm welcome to Breakstone space. I see Guild paper on your manifest, that is concerning for us. Let's talk, you and me. Talk, or you know.",
           "retreat_line": "Papa is going home. You remember this day, captain. We're warm folks, but we remember.",
-          "surrender_line": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+          "surrender_line": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
           "victory_line": "Shame it came to this. Tell the Guild Papa Serik sends his regards. I mean it."
         },
         "meeting_state": "post_wanderer"
@@ -4735,7 +4735,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_defeated"
@@ -4764,7 +4764,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_defeated"
@@ -4793,7 +4793,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_defeated"
@@ -4822,7 +4822,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -4851,7 +4851,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -4880,7 +4880,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_wanderer"
@@ -4909,7 +4909,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. The kids remember your face. They asked if you'd come back. I told them to stop asking. Hand over what you can spare.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_truce"
@@ -4938,7 +4938,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. The kids remember your face. They asked if you'd come back. I told them to stop asking. Hand over what you can spare.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_truce"
@@ -4967,7 +4967,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Captain. The kids remember your face. They asked if you'd come back. I told them to stop asking. Hand over what you can spare.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_truce"
@@ -4996,7 +4996,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_bribed_off"
@@ -5025,7 +5025,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_bribed_off"
@@ -5054,7 +5054,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_bribed_off"
@@ -5083,7 +5083,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -5112,7 +5112,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -5141,7 +5141,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_wanderer"
@@ -5170,7 +5170,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -5199,7 +5199,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Captain. Hello again. The kids ate well last time. Or didn't. I don't always remember which. Today's another meal either way.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "return"
@@ -5228,7 +5228,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Hello, captain. I am Odalys. The crew calls me Mother. I'd like you to hand over your rations. My kids need them more than yours do. Please don't make this difficult.",
           "retreat_line": "Back to the kids. We'll eat lighter tonight.",
-          "surrender_line": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+          "surrender_line": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
           "victory_line": "The little ones ate. That is what mattered."
         },
         "meeting_state": "post_wanderer"
@@ -5779,7 +5779,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_defeated"
@@ -5808,7 +5808,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_defeated"
@@ -5837,7 +5837,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_defeated"
@@ -5866,7 +5866,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -5895,7 +5895,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -5924,7 +5924,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_wanderer"
@@ -5953,7 +5953,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_truce"
@@ -5982,7 +5982,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_truce"
@@ -6011,7 +6011,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_truce"
@@ -6040,7 +6040,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_bribed_off"
@@ -6069,7 +6069,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_bribed_off"
@@ -6098,7 +6098,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_bribed_off"
@@ -6127,7 +6127,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -6156,7 +6156,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -6185,7 +6185,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_wanderer"
@@ -6214,7 +6214,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -6243,7 +6243,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "The specimen returns. Interesting. Did you replace the Keller-Vos? No. Your ship is suboptimal but the cataloging value remains.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "return"
@@ -6272,7 +6272,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Your portside maneuvering thruster is a Keller-Vos model four, third production year. I have been looking for one of those. Your ship is a specimen. Surrender it to my collection, or I'll harvest the part after.",
           "retreat_line": "The specimen escapes. I'll find another.",
-          "surrender_line": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+          "surrender_line": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
           "victory_line": "The collection grows. Your ship will sing better in pieces than it did whole."
         },
         "meeting_state": "post_wanderer"
@@ -6301,7 +6301,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_defeated"
@@ -6330,7 +6330,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_defeated"
@@ -6359,7 +6359,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_defeated"
@@ -6388,7 +6388,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6417,7 +6417,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6446,7 +6446,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_wanderer"
@@ -6475,7 +6475,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_truce"
@@ -6504,7 +6504,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_truce"
@@ -6533,7 +6533,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_truce"
@@ -6562,7 +6562,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_bribed_off"
@@ -6591,7 +6591,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_bribed_off"
@@ -6620,7 +6620,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_bribed_off"
@@ -6649,7 +6649,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6678,7 +6678,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6707,7 +6707,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_wanderer"
@@ -6736,7 +6736,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6765,7 +6765,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Back through Verdant. Same paper, same answer. Or different paper, same answer. Your pick still.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "return"
@@ -6794,7 +6794,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You running Guild paper through Verdant airspace? No. Then we've got a talk or we've got a fight. Your pick, quick.",
           "retreat_line": "Pulling back to cover. You bought my field three more days.",
-          "surrender_line": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+          "surrender_line": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
           "victory_line": "Guild freight doesn't fly through Verdant. Tell whoever sent you."
         },
         "meeting_state": "post_wanderer"
@@ -6823,7 +6823,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_defeated"
@@ -6852,7 +6852,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_defeated"
@@ -6881,7 +6881,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_defeated"
@@ -6910,7 +6910,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -6939,7 +6939,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -6968,7 +6968,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_wanderer"
@@ -6997,7 +6997,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_truce"
@@ -7026,7 +7026,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_truce"
@@ -7055,7 +7055,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_truce"
@@ -7084,7 +7084,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_bribed_off"
@@ -7113,7 +7113,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_bribed_off"
@@ -7142,7 +7142,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_bribed_off"
@@ -7171,7 +7171,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -7200,7 +7200,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -7229,7 +7229,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_wanderer"
@@ -7258,7 +7258,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -7287,7 +7287,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Same contract. Same call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "return"
@@ -7316,7 +7316,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Contract. Target ship. You. Walk or fight. Your call.",
           "retreat_line": "Contract voided.",
-          "surrender_line": "Accepted. Transferring.",
+          "surrender_line": "Accepted. The hold is open.",
           "victory_line": "Paid."
         },
         "meeting_state": "post_wanderer"
@@ -7345,7 +7345,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_defeated"
@@ -7374,7 +7374,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_defeated"
@@ -7403,7 +7403,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_defeated"
@@ -7432,7 +7432,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7461,7 +7461,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7490,7 +7490,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_wanderer"
@@ -7519,7 +7519,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_truce"
@@ -7548,7 +7548,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_truce"
@@ -7577,7 +7577,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_truce"
@@ -7606,7 +7606,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_bribed_off"
@@ -7635,7 +7635,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_bribed_off"
@@ -7664,7 +7664,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_bribed_off"
@@ -7693,7 +7693,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7722,7 +7722,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7751,7 +7751,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_wanderer"
@@ -7780,7 +7780,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7809,7 +7809,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Subject Seventeen. Engagement two of a planned series. Your hull data has changed. Refining the model. Begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "return"
@@ -7838,7 +7838,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "You are, statistically, the least prepared ship I have registered in the last forty-three engagements. Surrender your hull data or demonstrate why the Collective's published evasion curves were, as I suspected, incomplete. Thayer Ngarrabal. Let us begin.",
           "retreat_line": "Inconclusive. The field trial requires reset. I will be rerunning your profile.",
-          "surrender_line": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+          "surrender_line": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
           "victory_line": "Prediction verified. The Collective Press Office will not print my paper, but the data is the data."
         },
         "meeting_state": "post_wanderer"
@@ -7867,7 +7867,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_defeated"
@@ -7896,7 +7896,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_defeated"
@@ -7925,7 +7925,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_defeated"
@@ -7954,7 +7954,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -7983,7 +7983,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -8012,7 +8012,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_wanderer"
@@ -8041,7 +8041,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_truce"
@@ -8070,7 +8070,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_truce"
@@ -8099,7 +8099,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_truce"
@@ -8128,7 +8128,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Wolf's Ear. Same toll as last time, spacer. You know the drill. Pay and we both go home happy.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_bribed_off"
@@ -8157,7 +8157,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Wolf's Ear. Same toll as last time, spacer. You know the drill. Pay and we both go home happy.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_bribed_off"
@@ -8186,7 +8186,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Wolf's Ear. Same toll as last time, spacer. You know the drill. Pay and we both go home happy.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_bribed_off"
@@ -8215,7 +8215,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -8244,7 +8244,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -8273,7 +8273,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_wanderer"
@@ -8302,7 +8302,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -8331,7 +8331,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Wolf's Ear again. Different cargo. Same list. Same clock.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "return"
@@ -8360,7 +8360,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "Wolf's Ear. Been tracking your wake for two jumps. Nothing personal, spacer. Your cargo's on my list. Pay, pass, or fight. Clock's running.",
           "retreat_line": "Wolf's Ear pulling out. Lean on the tracker if you want company. You'll see me again.",
-          "surrender_line": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+          "surrender_line": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
           "victory_line": "Tell your friends. Vela runs this stretch. Next spacer who thinks otherwise pays full."
         },
         "meeting_state": "post_wanderer"
@@ -8389,7 +8389,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_defeated"
@@ -8418,7 +8418,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_defeated"
@@ -8447,7 +8447,7 @@
           "meeting_state": "post_defeated",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_defeated"
@@ -8476,7 +8476,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8505,7 +8505,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8534,7 +8534,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_wanderer"
@@ -8563,7 +8563,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_truce"
@@ -8592,7 +8592,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_truce"
@@ -8621,7 +8621,7 @@
           "meeting_state": "post_truce",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_truce"
@@ -8650,7 +8650,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Wren. The arrangement's been profitable for both of us. Let's keep it going. Standard rate.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_bribed_off"
@@ -8679,7 +8679,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Wren. The arrangement's been profitable for both of us. Let's keep it going. Standard rate.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_bribed_off"
@@ -8708,7 +8708,7 @@
           "meeting_state": "post_bribed_off",
           "pre_combat_hail": "Captain. Wren. The arrangement's been profitable for both of us. Let's keep it going. Standard rate.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_bribed_off"
@@ -8737,7 +8737,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8766,7 +8766,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8795,7 +8795,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_wanderer"
@@ -8824,7 +8824,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8853,7 +8853,7 @@
           "meeting_state": "return",
           "pre_combat_hail": "Here we are. Again. I'm Wren, you remember. Good business doesn't require introductions twice. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "return"
@@ -8882,7 +8882,7 @@
           "meeting_state": "post_wanderer",
           "pre_combat_hail": "So here we are. I'm Wren Ostrovsky, Departure Angle, courier-for-hire who sometimes hires himself to pirate. Today is one of those days. Your cargo's on my ledger. Pay, or pay the hard way.",
           "retreat_line": "Calling it. Don't follow, I'm a bad shot on the run.",
-          "surrender_line": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+          "surrender_line": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
           "victory_line": "Good business. Worst part of this job's the paperwork."
         },
         "meeting_state": "post_wanderer"

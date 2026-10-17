@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
+          "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -230,7 +230,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
+          "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. You store the signature data alongside your growing evidence file.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2460,7 +2460,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+          "description": "Gil frowns but nods. 'It's your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4288,7 +4288,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
+          "description": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. 'You're alright,' she says. The strike settles after a few hours.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4662,7 +4662,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.' The Union won't forget this insult easily.",
+          "description": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5785,7 +5785,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
+          "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7264,7 +7264,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
+          "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

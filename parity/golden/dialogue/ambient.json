@@ -23,7 +23,7 @@
     ],
     "system_id": "nexus_prime"
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -1178,12 +1178,12 @@
     },
     {
       "args": [
-        "refine_complete"
+        "opened_market"
       ],
       "call": "get_player_action_line",
       "result": [
         "elena_reeves",
-        "Processing complete. I have updated the manifest. We should talk about margins when you have a moment."
+        "Article eleven of the Forgeworks Compact, the opening-rate provision. Which is to say: the first ship to bring them something new gets paid over the board for it."
       ],
       "state": {
         "last_combat_day": null,
@@ -1212,7 +1212,6 @@
           182,
           210,
           214,
-          223,
           265,
           280,
           300,
@@ -1220,7 +1219,57 @@
           302,
           303,
           308,
-          310
+          310,
+          330
+        ]
+      }
+    },
+    {
+      "args": [
+        "refine_complete"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "tomas_drifter",
+        "That output has a buyer at Stellaris Port. Just saying."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          143,
+          145,
+          161,
+          173,
+          182,
+          210,
+          214,
+          222,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310,
+          330
         ]
       }
     },
@@ -1261,7 +1310,7 @@
           210,
           214,
           218,
-          223,
+          222,
           265,
           280,
           300,
@@ -1269,7 +1318,8 @@
           302,
           303,
           308,
-          310
+          310,
+          330
         ]
       }
     },
@@ -1311,7 +1361,7 @@
           214,
           216,
           218,
-          223,
+          222,
           265,
           280,
           300,
@@ -1319,7 +1369,8 @@
           302,
           303,
           308,
-          310
+          310,
+          330
         ]
       }
     },
@@ -1329,8 +1380,8 @@
       ],
       "call": "get_player_action_line",
       "result": [
-        "elena_reeves",
-        "I told you the inspection schedules are posted publicly. You chose not to check."
+        "dr_priya_osei",
+        "Caught. I cannot say I am entirely unsympathetic to the inspectors on this one."
       ],
       "state": {
         "last_combat_day": null,
@@ -1347,12 +1398,12 @@
           118,
           121,
           122,
-          124,
           125,
           129,
           133,
           134,
           135,
+          142,
           143,
           145,
           161,
@@ -1362,7 +1413,7 @@
           214,
           216,
           218,
-          223,
+          222,
           265,
           280,
           300,
@@ -1370,7 +1421,8 @@
           302,
           303,
           308,
-          310
+          310,
+          330
         ]
       }
     },
@@ -1380,8 +1432,8 @@
       ],
       "call": "get_player_action_line",
       "result": [
-        "dr_priya_osei",
-        "I have concerns about what we just transported. I would like to discuss them when you have a moment."
+        "tomas_drifter",
+        "Smooth delivery. The kind nobody writes down."
       ],
       "state": {
         "last_combat_day": null,
@@ -1398,15 +1450,15 @@
           118,
           121,
           122,
-          124,
           125,
           129,
           133,
           134,
           135,
-          141,
+          142,
           143,
           145,
+          149,
           161,
           173,
           182,
@@ -1414,7 +1466,7 @@
           214,
           216,
           218,
-          223,
+          222,
           265,
           280,
           300,
@@ -1422,7 +1474,62 @@
           302,
           303,
           308,
-          310
+          310,
+          330
+        ]
+      }
+    },
+    {
+      "args": [
+        "sold_back"
+      ],
+      "call": "get_player_action_line",
+      "result": [
+        "marcus_jin",
+        "Same crates up the ramp and back down. That loader's only got so many cycles in her. Spend them on cargo that's going somewhere."
+      ],
+      "state": {
+        "last_combat_day": null,
+        "shown_indices": [
+          1,
+          3,
+          8,
+          11,
+          23,
+          77,
+          79,
+          80,
+          115,
+          118,
+          121,
+          122,
+          125,
+          129,
+          133,
+          134,
+          135,
+          142,
+          143,
+          145,
+          149,
+          161,
+          173,
+          182,
+          210,
+          214,
+          216,
+          218,
+          222,
+          265,
+          280,
+          300,
+          301,
+          302,
+          303,
+          308,
+          310,
+          330,
+          337
         ]
       }
     },
@@ -1451,15 +1558,15 @@
           118,
           121,
           122,
-          124,
           125,
           129,
           133,
           134,
           135,
-          141,
+          142,
           143,
           145,
+          149,
           161,
           173,
           182,
@@ -1467,7 +1574,7 @@
           214,
           216,
           218,
-          223,
+          222,
           265,
           280,
           300,
@@ -1475,7 +1582,9 @@
           302,
           303,
           308,
-          310
+          310,
+          330,
+          337
         ]
       }
     }

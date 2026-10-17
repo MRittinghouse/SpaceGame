@@ -1,0 +1,156 @@
+{
+  "case": "record_tokens",
+  "format": 1,
+  "setup": {
+    "lines": [
+      "{pay:the_informant} credits and the {fee:bill_of_landing} credit fee.",
+      "{pay:no_such_mission} and {fee:the_informant} stay as written.",
+      "{They} {v:pays|pay} {pay:the_forgery} at {system}.",
+      "{pay:okafor_legacy_clinic_run} credits for the clinic run.",
+      "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay {pay:the_informant} credits when we dock and stay out of your way the entire trip. I travel light.",
+      "Fair enough. {pay:the_informant} credits and you've got a ride.",
+      "I'll pay the {fee:bill_of_landing} credits.",
+      "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: {pay:the_forgery} credits.",
+      "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and {pay:the_informant} credits seems fair for the convenience.",
+      "Thank you. I can offer {pay:the_scholars_errand} credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+      "The Collective has authorized a research stipend of {pay:signal_from_the_deep} credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+      "You'll be able to reclaim those once you pay the {fee:bill_of_landing} credit fee to acquire your bill of landing.",
+      "{pay:honor_among_thieves} credits and a favor from a pirate captain. I'm in.",
+      "{pay:honor_among_thieves} credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+      "{pay:the_forgery} credits for a delivery and an appraisal? That's good money.",
+      "{pay:the_informant} credits works. Welcome aboard."
+    ]
+  },
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
+  "steps": [
+    {
+      "args": [
+        "{pay:the_informant} credits and the {fee:bill_of_landing} credit fee."
+      ],
+      "call": "fill_records",
+      "result": "350 credits and the 250 credit fee.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:no_such_mission} and {fee:the_informant} stay as written."
+      ],
+      "call": "fill_records",
+      "result": "{pay:no_such_mission} and {fee:the_informant} stay as written.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{They} {v:pays|pay} {pay:the_forgery} at {system}."
+      ],
+      "call": "fill_records",
+      "result": "{They} {v:pays|pay} 500 at {system}.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:okafor_legacy_clinic_run} credits for the clinic run."
+      ],
+      "call": "fill_records",
+      "result": "8,000 credits for the clinic run.",
+      "state": {}
+    },
+    {
+      "args": [
+        "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay {pay:the_informant} credits when we dock and stay out of your way the entire trip. I travel light."
+      ],
+      "call": "fill_records",
+      "result": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 350 credits when we dock and stay out of your way the entire trip. I travel light.",
+      "state": {}
+    },
+    {
+      "args": [
+        "Fair enough. {pay:the_informant} credits and you've got a ride."
+      ],
+      "call": "fill_records",
+      "result": "Fair enough. 350 credits and you've got a ride.",
+      "state": {}
+    },
+    {
+      "args": [
+        "I'll pay the {fee:bill_of_landing} credits."
+      ],
+      "call": "fill_records",
+      "result": "I'll pay the 250 credits.",
+      "state": {}
+    },
+    {
+      "args": [
+        "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: {pay:the_forgery} credits."
+      ],
+      "call": "fill_records",
+      "result": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: 500 credits.",
+      "state": {}
+    },
+    {
+      "args": [
+        "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and {pay:the_informant} credits seems fair for the convenience."
+      ],
+      "call": "fill_records",
+      "result": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 350 credits seems fair for the convenience.",
+      "state": {}
+    },
+    {
+      "args": [
+        "Thank you. I can offer {pay:the_scholars_errand} credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents."
+      ],
+      "call": "fill_records",
+      "result": "Thank you. I can offer 350 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+      "state": {}
+    },
+    {
+      "args": [
+        "The Collective has authorized a research stipend of {pay:signal_from_the_deep} credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain."
+      ],
+      "call": "fill_records",
+      "result": "The Collective has authorized a research stipend of 500 credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+      "state": {}
+    },
+    {
+      "args": [
+        "You'll be able to reclaim those once you pay the {fee:bill_of_landing} credit fee to acquire your bill of landing."
+      ],
+      "call": "fill_records",
+      "result": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:honor_among_thieves} credits and a favor from a pirate captain. I'm in."
+      ],
+      "call": "fill_records",
+      "result": "500 credits and a favor from a pirate captain. I'm in.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:honor_among_thieves} credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us."
+      ],
+      "call": "fill_records",
+      "result": "500 credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:the_forgery} credits for a delivery and an appraisal? That's good money."
+      ],
+      "call": "fill_records",
+      "result": "500 credits for a delivery and an appraisal? That's good money.",
+      "state": {}
+    },
+    {
+      "args": [
+        "{pay:the_informant} credits works. Welcome aboard."
+      ],
+      "call": "fill_records",
+      "result": "350 credits works. Welcome aboard.",
+      "state": {}
+    }
+  ],
+  "subsystem": "dialogue"
+}
