@@ -1972,11 +1972,12 @@ spec's 9.2 rows 10 and 11: the crew's nine barks and the restyled first-sale lin
 the T7-8 gesture sweep and G11's widening (spec 4.7 and 5.1); the truth fixes (the full-pay window,
 the made-good terms, Tomas's weaver) and W3a's residuals; and the writing pass's queue: the 65 open
 W3 flags and their remainders in the encounters, T8-11's twenty Log entries, the surrender lines,
-Shield Mastery's text, and B1's and A1's lines. Every changed data line is a row of
-`tools/writing/w3b_rows.json`, swapped in by `python -m tools.writing.w3b_rows apply`, which keeps
-each file's escaping and line endings. The author read every new line on 2026-10-16 and accepted
-every recommendation; Task 9 applied the seven calls that change a line and regenerated the goldens
-once.
+Shield Mastery's text, and B1's and A1's lines. Every changed data line outside
+`data/crew/ambient_dialogue.json` is a row of `tools/writing/w3b_rows.json`, swapped in by
+`python -m tools.writing.w3b_rows apply`, which keeps each file's escaping and line endings; in that
+file Task 5's script appended the nine barks, and the read's B-stamp edited `[336]` and `[338]` in
+place. The author read every new line on 2026-10-16 and accepted every recommendation; Task 9
+applied the seven calls that change a line and regenerated the goldens once.
 
 ### Records for plan W3b-A
 
@@ -2000,7 +2001,9 @@ once.
   moves to her new text, "They knew what they sold us and paid by it. It's a good system. I would
   know. I spent years keeping it." The rows file now holds 220 rows where aurelia's planned copy,
   `docs/plans/2026-10-14-writing-w3b-rows.json`, holds the plan's 215: the two differ by design, by
-  the read's seven calls below.
+  six of the read's calls below (all but B-stamp, which edits `ambient_lines[336]` and `[338]` in
+  place): E-starmap, E-gil with T6-22's reason, E-hauler, L-m06, L-surrender and L-sav, which add
+  five rows and change four.
   Goldens whose content changes, from the regeneration's diff: `dialogue/ambient` (48 steps to 50:
   the `opened_market` and `sold_back` action types join the walk and pick Elena's `[330]` and
   Marcus's `[337]`, so three later picks and six recorded states move with the stream); the new
@@ -2038,7 +2041,12 @@ once.
   and Tomas's stamp stays, a story about another desk. Elena's `opened_market` line keeps "Article
   eleven" at every opening, her Guild reflex (B-article). The four `sold_back` lines are the
   complicity key's lines (spec 3.5's loop trade, a buy and a sale back at one desk); the key in code
-  is W9's. (plan W3b-S Task 5; the author's read)
+  is W9's. Priya's `sold_back` line, `[338]`, says "same day" and "Result: null", which hold only
+  when the sale's quote has `same_day` true. The port's `sold_back` also fires on a later-day or
+  out-and-back sell-back: aurelia's `core/sim/actions/trade_sale.gd:78` sets it whenever the buyback
+  cap lowered every unit, with no `same_day` test, and `core/sim/flows/crew_flow.gd:27` plays it
+  once a stay. Plan W3b-A plays `[338]` only on a same-day sale, or puts a reword without "same
+  day" to the author. (plan W3b-S Task 5; the author's read; the final review)
 - The port's strings: none of this plan's (the port's own strings are plan W3b-A's). The read
   confirmed W3b-A's four (P-four: the premium's opening line, the teaching line, the reserve
   repayment and the second negotiation, voice only, their form SP6's), kept the sell-back receipt's
@@ -2158,7 +2166,8 @@ once.
     "It's your right, Captain." (a new row; T6-22's reason quotes it).
   - E-hauler: in `union_scab_01.help_hauler`, "Harlan wires you a tow fee." moves after Jess's "Tell
     Harlan his invoice is in the mail.", so the fee answers her joke, and the row's reason says the
-    tow fee pays the 100 CR (C4).
+    tow fee pays the 100 CR (C4). The reason also lost "The line ends on Jess's joke.", which the
+    ruling did not name and the moved fee made false (61e89257).
   - E-T6-30: Gren's route tips; no change, "Keep 'He shares some route tips.' as talk"
   - E-T6-35: Strand's entrance; no change, "Project Lead Strand comes on the channel:"
   - E-T2-10: The intervene hint; no change, "Burn hard toward the firefight, weapons hot."
@@ -2176,7 +2185,9 @@ once.
   - L-m06: `auto_m06_priya` reads "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to
     Axiom Labs had been reassigned, and her research samples were time-sensitive.", true when
     `met_priya_osei` fires as her scene opens, a decline included (the trigger stays SP6's and
-    SP10's, F-66 and F-80).
+    SP10's, F-66 and F-80). The row's reason gains the ruling's sentence on the trigger, and it also
+    lost '"studies" becomes past tense (2.4).', which the ruling did not name and the new entry,
+    holding no "studies", made false (61e89257).
   - L-branch-b: Arna's fair trade; no change, "Cut it"
   - L-departure: Arna's letter; no change, "Cut the letter"
   - L-sable: Sable at the first auction; no change, "Keep 'Sable said two words the whole time.'"
@@ -2269,8 +2280,11 @@ once.
     by `tests/test_scenarios/test_scenario_oblique_readout.py:56`), the count E-starmap corrects,
     found by the controller and unruled (SP10, flagged to the author).
   - Also left: the complicity key in code (W9); Tier 3's `no_freight` and `no_freight_float` (SP10);
-    and the scene-true drafts for `auto_m08`, `auto_m10`, `auto_m12` and `auto_m14`, whose flags
-    nothing sets (SP10's records, L-m06).
+    and the words of `auto_m08_helped`, `auto_m10_crimson`, `auto_m12_attack` and `auto_m14_scan`,
+    which wait for SP10 because nothing sets their flags (`helped_freighter`, `delivered_dex_chip`,
+    `survived_pirate_attack` and `pirate_base_confirmed`). They stand as T8-11's cuts left them, and
+    the run kept no scene-true drafts of them, so SP10 writes them against the scenes that come to
+    set those flags (L-m06).
   - The run's flags for the author, with owners:
     - the global interpreter is Python 3.14.0 while the repo names 3.13, and every gate of the run
       passed under 3.14 (process; C1);
@@ -2290,6 +2304,12 @@ once.
       apostrophe, and would flag the search sense ("Don't look up his record."); no shipped line
       holds either (the spec's G11 text, through plan W3b-A's records; a later plan that writes such
       a line);
+    - `tests/writing_gates/rules.py`'s `marcus_lines()` holds Marcus's speech and the Reads on his
+      nodes, but not his dilemma telegraph lines (the `telegraph_lines` of `d2_wealth_community` and
+      `d5_legacy_connection`, which `Game._deliver_telegraph` prints as `Marcus Jin: "..."`), so
+      G11's widened gesture check would flag the gesture there, though R3 exempts his spoken lines;
+      no shipped line holds it (spec 5.1's G11 text and any port of the gate, plan W3b-A; or the
+      plan that first writes such a line);
     - `tests/test_views/test_auction_view_reach.py:301`'s `player_won` prefix lost its period with
       Salko's gesture row, one character looser (it stays);
     - `tests/test_views/test_arna_campaign.py`'s AR-5 test, which guarded Arna's unwritten letter as
