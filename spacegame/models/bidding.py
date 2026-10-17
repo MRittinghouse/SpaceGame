@@ -1061,7 +1061,7 @@ class AuctionState:
         if held < quantity:
             return (
                 False,
-                f"You do not have {quantity} of '{item_id}' in inventory.",
+                f"You do not have {quantity} of '{item_id}' to list.",
                 None,
             )
         fee = compute_listing_fee(declared_appraisal)

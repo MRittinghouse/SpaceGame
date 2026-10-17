@@ -467,7 +467,7 @@
         {
           "id": "escort",
           "label": "Offer to Escort Them",
-          "description": "Fly alongside. A supply ship this vulnerable could attract trouble.",
+          "description": "Fly alongside.",
           "outcome": {
             "description": "You escort the Perseverance to Ring Seven without incident. The settlement crew waves from the docking platform as you peel off. Captain Okonkwo marks your ship as a 'friend of the Council' in their registry.",
             "rewards": [
@@ -488,7 +488,7 @@
           "label": "Wish Them Well",
           "description": "Send a message of goodwill and continue on your route.",
           "outcome": {
-            "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that, doing too much with too little.",
+            "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -524,7 +524,7 @@
           "label": "Transmit Settlement Coordinates",
           "description": "Send them the registration beacon frequency and a nav path to the intake center.",
           "outcome": {
-            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station.",
+            "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The teenager on the comms thanks you three times before signing off. Their shuttle wobbles toward the station.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1266,7 +1266,7 @@
           "label": "Record the Telemetry",
           "description": "Capture every byte of this unencrypted data before DCMC locks it down.",
           "outcome": {
-            "description": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. The Collective would pay well for this. The Union would want to know what DCMC found under their claims. Even the Guild might be interested. You encrypt the data and store it in your secure logs.",
+            "description": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. You encrypt the data and store it in your secure logs.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1318,7 +1318,7 @@
       "id": "sys_iron_dcmc_patrol_01",
       "encounter_type": "patrol",
       "name": "DCMC Security Checkpoint",
-      "description": "A heavy patrol cutter bearing Deep Core Mining Corporation markings drops out of cover and locks targeting sensors on your hull. The pilot's voice is flat, corporate, and brooks no argument: \"Unidentified vessel, you are entering a DCMC-secured extraction corridor. Transmit your credentials, cargo manifest, and intended destination. You have thirty seconds to comply before we escalate.\" Two more DCMC security drones flank your ship, weapons powered but not locked. Yet.",
+      "description": "A heavy patrol cutter bearing Deep Core Mining Corporation markings drops out of cover and locks targeting sensors on your hull. The pilot's voice is flat, corporate, and brooks no argument: \"Unidentified vessel, you are entering a DCMC-secured extraction corridor. Transmit your credentials, cargo manifest, and intended destination. You have thirty seconds to comply before we escalate.\" Two more DCMC security drones flank your ship, weapons powered but not locked.",
       "icon_color": [
         200,
         100,
@@ -1353,7 +1353,7 @@
           "label": "Push Back on the Scan",
           "description": "DCMC doesn't own this corridor. They lease it. Assert your transit rights.",
           "outcome": {
-            "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
+            "description": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1463,7 +1463,7 @@
       "id": "sys_crimson_outlaw_offer_01",
       "encounter_type": "shakedown",
       "name": "Protection Racket",
-      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
+      "description": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked.",
       "icon_color": [
         220,
         80,
@@ -1516,7 +1516,7 @@
           "label": "Counter-Offer: Hire Them as a Guide",
           "description": "Turn the shakedown into a legitimate business arrangement.",
           "outcome": {
-            "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused, and a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
+            "description": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex hands over a detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\"",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -1557,7 +1557,7 @@
           "label": "Board the Margrave",
           "description": "Three years missing and now it reappears. Board it.",
           "outcome": {
-            "description": "The Margrave's interior is pristine. Too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
+            "description": "The Margrave's interior is pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. You copy the nav logs and leave. The Margrave drifts on.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1634,9 +1634,9 @@
         {
           "id": "intercept",
           "label": "Attempt Partial Decryption",
-          "description": "Pre-Expansion encryption is old. Old means crackable. Maybe.",
+          "description": "Set your computer to work on the deprecated cipher.",
           "outcome": {
-            "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names (only numbers), and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
+            "description": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names (only numbers), and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1655,7 +1655,7 @@
           "label": "Track the Relay Buoy",
           "description": "Forget the message. Find out where it's going.",
           "outcome": {
-            "description": "You run a passive trace on the transmission's destination. The relay buoy is 40,000 kilometers out, hidden in an asteroid shadow. It's small, automated, and definitely not Guild infrastructure. You log its coordinates before it cycles to standby mode. Whoever placed it there doesn't want it found.",
+            "description": "You run a passive trace on the transmission's destination. The relay buoy is 40,000 kilometers out, hidden in an asteroid shadow. It's small, automated, and definitely not Guild infrastructure. You log its coordinates before it cycles to standby mode.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -1684,7 +1684,7 @@
       "id": "sys_fulcrum_patrol_01",
       "encounter_type": "patrol",
       "name": "Unmarked Patrol Vessel",
-      "description": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice, deliberately stripped of identifying characteristics, hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked. This isn't a checkpoint. This is a warning.",
+      "description": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice, deliberately stripped of identifying characteristics, hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked.",
       "icon_color": [
         180,
         80,
@@ -1735,7 +1735,7 @@
         {
           "id": "retreat",
           "label": "Reverse Course Immediately",
-          "description": "Unmarked, armed, and already locked on? Time to leave.",
+          "description": "Throw your engines into reverse and back out of the sector.",
           "outcome": {
             "description": "You don't argue. You throw your engines into reverse and back out of the sector. The patrol ship watches you go without comment.",
             "rewards": [

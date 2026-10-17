@@ -1104,7 +1104,8 @@ class WreckersGuildView(BaseView):
         body_x = PANEL_X + scale_x(20)
         body_y = panel_y + scale_y(40)
         body_w = PANEL_W - scale_x(180)
-        lines = word_wrap(captain_line(node.text, self.player), self.body_font, body_w)
+        text = captain_line(node.text, self.player, missions=get_data_loader().missions_by_id)
+        lines = word_wrap(text, self.body_font, body_w)
         line_h = self.body_font.get_linesize()
         for idx, line in enumerate(lines):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)

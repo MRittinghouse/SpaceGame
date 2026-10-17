@@ -320,7 +320,7 @@ class TestCreateListingValidation:
             current_day=1,
         )
         assert not ok
-        assert "inventory" in msg.lower() or "not enough" in msg.lower()
+        assert msg == "You do not have 99 of 'axiom_circuit' to list."
         assert _listing is None
 
     def test_appraisal_must_be_positive(self) -> None:
@@ -483,7 +483,7 @@ class TestCreateListingValidation:
         }
         ok, msg, _listing = state.create_listing(**kwargs, reserved=4)
         assert not ok
-        assert msg == "You do not have 1 of 'axiom_circuit' in inventory."
+        assert msg == "You do not have 1 of 'axiom_circuit' to list."
         ok, _msg, _listing = state.create_listing(**kwargs, reserved=3)
         assert ok
         assert player.ship.get_cargo_quantity("axiom_circuit") == 3

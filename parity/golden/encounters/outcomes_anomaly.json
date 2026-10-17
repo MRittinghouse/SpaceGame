@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -1172,7 +1172,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades. You don't look back.",
+          "description": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1930,7 +1930,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118. Eighty years before the Aurelia launched. Earth sent this probe during an era of expansion that history barely remembers. The question isn't who sent it. The question is what they found, and whether anyone was listening when it reported back.",
+          "description": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2500,7 +2500,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
+          "description": "Hours of scanning reveal layers of complexity. The map includes ten systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -2885,7 +2885,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
+          "description": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks Nexus Prime.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3073,7 +3073,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement. Or what passes for excitement among Axiom researchers. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
+          "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5304,7 +5304,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. The Collective would pay well for this. The Union would want to know what DCMC found under their claims. Even the Guild might be interested. You encrypt the data and store it in your secure logs.",
+          "description": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. You encrypt the data and store it in your secure logs.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

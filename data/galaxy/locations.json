@@ -162,7 +162,7 @@
         "name": "DCMC Maintenance Bay",
         "location_type": "repair_bay",
         "description": "DCMC maintenance facility built to service heavy mining rigs. They'll work on your ship the same way, whether you like it or not.",
-        "flavor_text": "The intake clerk assigns you a bay number without looking up. The queue board has twelve ships ahead of you. Nobody complains. Complaining doesn't move the queue.",
+        "flavor_text": "The intake clerk assigns you a bay number between two other calls. The queue board has twelve ships ahead of you. Nobody complains. Complaining doesn't move the queue.",
         "repair_cost_per_hp": 8
       },
       {

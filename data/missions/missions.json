@@ -56,11 +56,11 @@
       },
       "timeliness_comments": {
         "timely": "Intake clerk nods once. \"On the clock. Pay's good.\"",
-        "late": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
-        "very_late": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. This is what's left of your pay.\""
+        "late": "Intake clerk taps the late column twice. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
+        "very_late": "Intake clerk reads the weight off his datapad and keys in the late rate. \"Figured you'd forgotten. This is what's left of your pay.\""
       },
       "name": "Iron Ore Delivery",
-      "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
+      "description": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work. Every trader in the Expanse started with a run like this.",
       "hint": "Carry Odom's ten units of iron ore to Joaquim Kimura at the Neutral Ground on Forgeworks. If the load comes up short or can't be flown, settle it with Odom at Nexus Prime.",
       "discovery_text": "A cargo broker near the docks was looking for someone to haul iron ore to Forgeworks.",
       "prerequisites": [
@@ -125,7 +125,7 @@
       "id": "footing_the_bill",
       "name": "Footing the Bill",
       "description": "A woman named Elena Reeves flagged you down at the Nexus Prime cantina. Former Guild navigator, sharp eyes, sharper tongue. She offered trading advice.",
-      "hint": "Elena Reeves will appear at Nexus Prime once the iron delivery is settled or overdue. Listen to her trading advice.",
+      "hint": "Listen to Elena Reeves's trading advice at Nexus Prime.",
       "prerequisites": [
         "bill_of_landing"
       ],
@@ -327,7 +327,7 @@
     {
       "id": "drifters_delivery",
       "name": "Drifter's Delivery",
-      "description": "Five bales of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Under Tomas's name the Guild tariff eats nearly the whole sale. You're the clean hands in this arrangement. Sell the goods and split the take.",
+      "description": "Five bales of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Under Tomas's name the Guild tariff eats nearly the whole sale. You're the clean hands in this arrangement. Deliver the bales under your license and split the take.",
       "hint": "Travel to Stellaris Port with Tomas's textiles.",
       "prerequisites": [
         "the_drifters_deal"
@@ -376,7 +376,7 @@
     {
       "id": "recruit_navigator",
       "name": "Recruit Navigator",
-      "description": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. She's too good for dock work and she knows it. Return to Nexus Prime and offer her a berth before someone else does. If every berth is taken, she'll head home to Stellaris Port and wait for one to open.",
+      "description": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. Return to Nexus Prime and offer her a berth. If every berth is taken, she'll head home to Stellaris Port and wait for one to open.",
       "hint": "Return to Nexus Prime to recruit Elena Reeves as your navigator. If your crew is full, she waits at Stellaris Port.",
       "prerequisites": [
         "footing_the_bill"

@@ -211,7 +211,7 @@
         {
           "id": "fight",
           "label": "Refuse and Fight",
-          "description": "Power up weapons. You are not paying.",
+          "description": "Power up weapons.",
           "outcome": {
             "description": "The enforcement officer's tone shifts from bureaucratic to cold. \"Noncompliance noted. Enforcement protocols are now in effect.\" The frigate's weapon ports begin to glow.",
             "rewards": [
@@ -600,7 +600,7 @@
       "id": "guild_blackmail_01",
       "encounter_type": "comm_intercept",
       "name": "Compromising Transmission",
-      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career. Or make someone very grateful for your discretion.",
+      "description": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career.",
       "icon_color": [
         80,
         130,
@@ -641,9 +641,9 @@
         {
           "id": "sell_to_director",
           "label": "Contact the Director",
-          "description": "The director might pay handsomely for this to disappear.",
+          "description": "Reach out to the director through back channels.",
           "outcome": {
-            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend. Or a dangerous enemy.",
+            "description": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\"",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -791,7 +791,7 @@
           "label": "Assist with Repairs",
           "description": "Offer spare parts and technical know-how.",
           "outcome": {
-            "description": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you with the desperate generosity of a person whose job was on the line.",
+            "description": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -812,7 +812,7 @@
         {
           "id": "sell_rations",
           "label": "Sell Your Rations",
-          "description": "Your emergency rations are not gourmet, but they are hot.",
+          "description": "Heat up your emergency ration packs and shuttle them over.",
           "outcome": {
             "description": "You heat up your entire stock of emergency ration packs and shuttle them over. The executives eye the bland nutrient bars with undisguised horror, but hunger wins. The purser pays you triple the going rate and thanks you through gritted teeth. \"The passengers have been... adequately sustained.\"",
             "rewards": [
@@ -837,7 +837,7 @@
           "label": "Continue On",
           "description": "Log the signal and continue on your route.",
           "outcome": {
-            "description": "You log the distress signal, note that no lives are in danger, and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
+            "description": "You log the distress signal and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -872,7 +872,7 @@
           "label": "Attempt Full Decode",
           "description": "Devote processing power to cracking the encryption.",
           "outcome": {
-            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments: shipping manifests, personnel codes, a reference to \"controlled market correction\". But the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
+            "description": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments: shipping manifests, personnel codes, a reference to \"controlled market correction\".",
             "rewards": [
               {
                 "reward_type": "credits",

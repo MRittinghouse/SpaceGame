@@ -6,7 +6,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from spacegame.models.captain_tokens import TOKEN_NAMES, WORDS, Pronouns, captain_line, fill
+from spacegame.models.captain_tokens import (
+    RECORD_KINDS,
+    TOKEN_NAMES,
+    WORDS,
+    Pronouns,
+    captain_line,
+    fill,
+    fill_records,
+)
+from spacegame.models.mission import Mission, MissionReward
 from tests.writing_gates import rules
 from tests.writing_gates.registry import CAPTAIN_TOKENS
 
@@ -132,3 +141,57 @@ def test_the_gate_names_v_exactly_when_the_renderer_fills_it(body: str) -> None:
     renders = [fill(line, choice) for choice in (HE, SHE, THEY)]
     filled = not any("{" in r or "|" in r for r in renders)
     assert ("v" in rules.token_names(line)) == filled
+
+
+class TestRecordTokens:
+    """A mission's reward read from the records (spec 3.7, 2.7; the author's ruling of 2026-10-13)."""
+
+    @staticmethod
+    def _missions() -> dict[str, Mission]:
+        return {
+            "job": Mission(
+                id="job",
+                name="Job",
+                description="",
+                objectives=[],
+                rewards=[
+                    MissionReward("credits", 1200),
+                    MissionReward("credits", 300),
+                    MissionReward("xp", 80),
+                ],
+            ),
+            "permit": Mission(
+                id="permit",
+                name="Permit",
+                description="",
+                objectives=[],
+                rewards=[MissionReward("deduct_credits", 250)],
+            ),
+        }
+
+    def test_pay_reads_the_credits_and_fee_the_deduction(self) -> None:
+        line = "I'll pay {pay:job} credits after the {fee:permit} credit fee."
+        assert (
+            fill_records(line, self._missions())
+            == "I'll pay 1,500 credits after the 250 credit fee."
+        )
+
+    def test_an_unknown_mission_stays_as_written(self) -> None:
+        assert fill_records("{pay:nobody} credits", self._missions()) == "{pay:nobody} credits"
+
+    def test_a_kind_the_mission_does_not_pay_stays_as_written(self) -> None:
+        assert fill_records("{fee:job} credits", self._missions()) == "{fee:job} credits"
+
+    def test_captain_tokens_and_other_braces_are_left_for_their_fills(self) -> None:
+        line = "{They} {v:pays|pay} {pay:job} at {system}."
+        assert fill_records(line, self._missions()) == "{They} {v:pays|pay} 1,500 at {system}."
+
+    def test_captain_line_renders_records_only_with_the_missions(self) -> None:
+        player = SimpleNamespace(pronouns="she/her", game_day=5)
+        line = "{They} {v:owes|owe} {fee:permit} credits."
+        assert captain_line(line, player) == "She owes {fee:permit} credits."
+        assert captain_line(line, player, self._missions()) == "She owes 250 credits."
+
+    def test_the_record_kinds_are_frozen(self) -> None:
+        with pytest.raises(TypeError):
+            RECORD_KINDS["tip"] = "credits"  # type: ignore[index]

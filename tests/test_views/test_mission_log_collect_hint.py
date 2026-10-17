@@ -63,7 +63,7 @@ def test_another_missions_accept_cargo_is_not_counted_in_the_hint() -> None:
     player.ship.add_cargo("food", 7, 0)
     view = _log_view(manager, player)
     leg = _collect_leg(manager, "union_territory")
-    assert view._get_objective_detail(leg, "union_territory") == "→ 4/5 in cargo"
+    assert view._get_objective_detail(leg, "union_territory") == "→ 4/5 in cargo for this mission"
 
 
 def test_a_missions_own_accept_cargo_is_counted_in_its_hint() -> None:
@@ -72,4 +72,6 @@ def test_a_missions_own_accept_cargo_is_counted_in_its_hint() -> None:
     player.ship.add_cargo("iron_ore", 6, 0)
     view = _log_view(manager, player)
     leg = _collect_leg(manager, "iron_delivery")
-    assert view._get_objective_detail(leg, "iron_delivery") == f"→ 6/{leg.target_quantity} in cargo"
+    assert view._get_objective_detail(leg, "iron_delivery") == (
+        f"→ 6/{leg.target_quantity} in cargo for this mission"
+    )

@@ -70,7 +70,7 @@
           "label": "Wish Him Luck",
           "description": "Wish Fen luck and fly on.",
           "outcome": {
-            "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
+            "description": "Fen nods. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
             "rewards": []
           }
         }
@@ -119,7 +119,7 @@
           "label": "Share Supplies",
           "description": "Transfer some fuel and rations to help them on their way.",
           "outcome": {
-            "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport. A man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+            "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -223,7 +223,7 @@
           "label": "Suggest a Split",
           "description": "Tell them to share the wreck and stop wasting daylight.",
           "outcome": {
-            "description": "They both grumble, but neither wants to lose the whole haul over pride. They divide the wreck down the middle and each toss you a small cut for playing peacemaker. 'Guess that's fair enough,' Tomoko admits.",
+            "description": "They both grumble, but they divide the wreck down the middle and each toss you a small cut. 'Guess that's fair enough,' Tomoko admits.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -267,7 +267,7 @@
           "label": "Buy Some",
           "description": "Buy Szabo's homemade coolant.",
           "outcome": {
-            "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.' The coolant actually works surprisingly well.",
+            "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -359,9 +359,9 @@
         {
           "id": "haggle",
           "label": "Haggle Hard",
-          "description": "She is desperate. Push for a better deal.",
+          "description": "Push for a better deal.",
           "outcome": {
-            "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier. You got the better deal, but it may cost you later.",
+            "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -384,7 +384,7 @@
           "label": "Decline Trade",
           "description": "Not interested in barter right now.",
           "outcome": {
-            "description": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on to find another willing trader. Out here, persistence is survival.",
+            "description": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on.",
             "rewards": []
           }
         }
@@ -437,7 +437,7 @@
           "label": "Give a Little",
           "description": "Contribute what you can without stretching thin.",
           "outcome": {
-            "description": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
+            "description": "'Every bit counts,' Priya says. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -460,7 +460,7 @@
           "label": "Pass This Time",
           "description": "Pass this time.",
           "outcome": {
-            "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way: no one keeps score out loud.",
+            "description": "Priya nods. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.'",
             "rewards": []
           }
         }
@@ -507,9 +507,9 @@
         {
           "id": "refuse",
           "label": "Decline the Scan",
-          "description": "Volunteers have no legal authority over your ship.",
+          "description": "Tell Gil the scan is voluntary.",
           "outcome": {
-            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+            "description": "Gil frowns but nods. 'It's your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",
@@ -686,7 +686,7 @@
           "label": "Keep Flying",
           "description": "No time for stories tonight.",
           "outcome": {
-            "description": "Oksana chuckles. 'Suit yourself, friend. The brandy'll keep.' Her broadcast continues, drifting through the void for anyone willing to listen. Some nights the void talks back.",
+            "description": "Oksana chuckles. 'Suit yourself, friend. The brandy'll keep.' Her broadcast continues, drifting through the void for anyone willing to listen.",
             "rewards": []
           }
         }
@@ -743,7 +743,7 @@
           "label": "Buy Supplies",
           "description": "Purchase some of the medical supplies for yourself at her discount price.",
           "outcome": {
-            "description": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.' Practical goods at a practical price.",
+            "description": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -819,7 +819,7 @@
           "label": "Contest the Claim",
           "description": "Tell Haddek you were here first today.",
           "outcome": {
-            "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in. Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
+            "description": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",
@@ -834,7 +834,7 @@
           "label": "Offer to Help",
           "description": "His tug is small. Offer muscle for a cut.",
           "outcome": {
-            "description": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone. You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' The work is hard but the payout is honest.",
+            "description": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone. You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' You pull the engine block free. Haddek sends your share.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -900,7 +900,7 @@
           "label": "Browse the Market",
           "description": "Check out the festival traders but skip the festivities.",
           "outcome": {
-            "description": "You stick to the trading ships on the ring's edge. Festival pricing is real: these folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
+            "description": "You stick to the trading ships on the ring's edge. These folks sell at cost during the Gathering. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel.",
             "rewards": [
               {
                 "reward_type": "credits",

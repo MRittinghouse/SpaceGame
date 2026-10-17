@@ -4,8 +4,8 @@ Each gate is a function that returns today's offences. An offence is keyed by ga
 file and path, which is the key of its allowlist row (``tests/writing_gates/allowlist.json``).
 The regexes are the spec's, verbatim where it prints one. The gates whose scope is every
 player-facing string (G1 to G3, G4's banned names, G5's pronoun and address, G10, and G11's
-"warp" and "navy") read the strings built in code too; G5's token rule reads data only, since
-the registry names data files.
+"warp", "navy" and Marcus's gesture) read the strings built in code too; G5's token rule reads
+data only, since the registry names data files.
 """
 
 from __future__ import annotations
@@ -84,6 +84,8 @@ G5_VOCATIVE = re.compile(
 BRACE = re.compile(r"\{([^{}]*)\}")
 # A verb token's body is two forms around one pipe (spec 2.5); a BRACE body holds no brace.
 VERB_TOKEN = re.compile(r"v:[^|]*\|[^|]*")
+# A record token's body is a reward kind and a mission id (spec 3.7).
+RECORD_TOKEN = re.compile(r"(pay|fee):[a-z0-9_]+")
 G6_FILTER_VERBS = re.compile(
     r"(?i)\byou(?:'d|'ll|'ve| would| will| can't| could)? (?:\w+ly )?(?:notice|realize"
     r"|remember|recall|sense|feel|wonder|decide|see that|can't help)"
@@ -126,7 +128,7 @@ G10_THE_PLAYER = re.compile(r"(?i)\bthe player\b")
 G11_WARP = re.compile(r"(?i)\bwarp\b")
 G11_NAVY = re.compile(r"(?i)\b(?:navy|naval)\b")
 G11_CAPTAIN = re.compile(r"\bCaptain\b")
-G11_LOOKING_UP = re.compile(r"(?i)\bwithout looking up\b")
+G11_LOOKING_UP = re.compile(r"(?i)\b(?:without looking up|(?:does|do|did)(?: not|n't) look up)\b")
 G11_PRICE = re.compile(r"(?i)\b\d[\d,]*\s?(?:CR|credits?)\b")
 MARCUS = "marcus_jin"
 # G13: no run of more than this many consecutive nodes without an exit.
@@ -154,6 +156,19 @@ def act_verbs() -> frozenset[str]:
 def _every_string() -> tuple[surfaces.Text, ...]:
     """Every player-facing string: the data's, then the strings built in code."""
     return surfaces.player_facing() + surfaces.code_strings()
+
+
+@cache
+def marcus_lines() -> frozenset[tuple[str, str]]:
+    """Every string that is Marcus Jin's own: his spoken lines, and the Reads on his nodes."""
+    own = {(line.file, line.path) for line in surfaces.speech() if line.speaker == MARCUS}
+    for row in surfaces.narration():
+        if not row.path.endswith(".subtext"):
+            continue
+        node = surfaces.resolve(surfaces.load(row.file), surfaces.parent_path(row.path))
+        if isinstance(node, dict) and node.get("speaker_id") == MARCUS:
+            own.add((row.file, row.path))
+    return frozenset(own)
 
 
 def g1() -> list[Offence]:
@@ -261,7 +276,8 @@ def token_names(text: str) -> list[str]:
     around exactly one pipe (spec 2.5). A body whose part before the first colon is ``v`` but
     that lacks that form is named by the whole brace, braces kept (``{v:is}``), so it equals no
     registry name and fails G5 as an unknown token on every surface, as the renderer would
-    leave it unfilled (spec 2.7). Any other body is named as written.
+    leave it unfilled (spec 2.7). A record token (``pay:`` or ``fee:`` and a mission id) is
+    named by its kind. Any other body is named as written.
 
     Args:
         text: The string to scan.
@@ -275,6 +291,8 @@ def token_names(text: str) -> list[str]:
             names.append("v")
         elif body.split(":", 1)[0] == "v":
             names.append("{" + body + "}")
+        elif RECORD_TOKEN.fullmatch(body):
+            names.append(body.split(":", 1)[0])
         else:
             names.append(body)
     return names
@@ -382,7 +400,12 @@ def g10() -> list[Offence]:
 
 
 def g11() -> list[Offence]:
-    """G11, the lexicon: warp, navy, Marcus's "Captain", his gesture, and prices in speech."""
+    """G11, the lexicon, over every string and over speech.
+
+    In every string: warp, navy, and Marcus's gesture outside his own lines ("without looking
+    up", and "does not look up" with do, does or did, spelled out or contracted). In speech:
+    Marcus's "Captain" and prices.
+    """
     found: list[Offence] = []
     for row in _every_string():
         for rule, pattern in (("warp", G11_WARP), ("navy", G11_NAVY)):
@@ -390,15 +413,13 @@ def g11() -> list[Offence]:
                 found.append(
                     Offence("G11", rule, row.file, row.path, row.text, _first(pattern, row.text))
                 )
+        if (row.file, row.path) not in marcus_lines() and G11_LOOKING_UP.search(row.text):
+            match = _first(G11_LOOKING_UP, row.text)
+            found.append(Offence("G11", "without looking up", row.file, row.path, row.text, match))
     for line in surfaces.speech():
         if line.speaker == MARCUS and G11_CAPTAIN.search(line.text):
             found.append(
                 Offence("G11", "captain from marcus", line.file, line.path, line.text, "Captain")
-            )
-        if line.speaker != MARCUS and G11_LOOKING_UP.search(line.text):
-            match = _first(G11_LOOKING_UP, line.text)
-            found.append(
-                Offence("G11", "without looking up", line.file, line.path, line.text, match)
             )
         if G11_PRICE.search(line.text):
             match = _first(G11_PRICE, line.text)

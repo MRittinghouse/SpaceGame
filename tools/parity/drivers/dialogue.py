@@ -1,5 +1,5 @@
 """Dialogue goldens: every node of every tree, the ambient and chatter line pickers, crew
-interjections, the Talk list, and the captain's tokens.
+interjections, the Talk list, the captain's tokens, and the record tokens.
 
 Each response is selected from a fresh manager positioned on its node, so steps are
 independent. Every case builds its managers from its own setup, so the Godot adapter
@@ -25,7 +25,7 @@ from typing import Any
 
 from spacegame.data_loader import get_data_loader
 from spacegame.models.ambient_dialogue import AmbientDialogueManager
-from spacegame.models.captain_tokens import TOKEN_NAMES, Pronouns, fill
+from spacegame.models.captain_tokens import TOKEN_NAMES, Pronouns, fill, fill_records
 from spacegame.models.combat import CombatResult, CombatState
 from spacegame.models.crew import CrewRoster
 from spacegame.models.crew_interjection import CrewInterjectionResolver, InterjectionEvent
@@ -489,21 +489,26 @@ CAPTAIN_TOKEN_DAY = 61
 _CAPTAIN_TOKEN = re.compile(r"\{v:[^{}]*\}|\{(?:" + "|".join(sorted(TOKEN_NAMES - {"v"})) + r")\}")
 
 
-def _shipped_token_lines() -> list[str]:
-    """Every string under data/ that carries a captain token, sorted."""
+def _shipped_lines(pattern: re.Pattern[str]) -> list[str]:
+    """Every string under data/ that the pattern finds a match in, sorted."""
     found: set[str] = set()
     for path in sorted((REPO_ROOT / "data").rglob("*.json")):
         stack: list[object] = [json.loads(path.read_text(encoding="utf-8"))]
         while stack:
             node = stack.pop()
             if isinstance(node, str):
-                if _CAPTAIN_TOKEN.search(node):
+                if pattern.search(node):
                     found.add(node)
             elif isinstance(node, dict):
                 stack.extend(node.values())
             elif isinstance(node, list):
                 stack.extend(node)
     return sorted(found)
+
+
+def _shipped_token_lines() -> list[str]:
+    """Every string under data/ that carries a captain token, sorted."""
+    return _shipped_lines(_CAPTAIN_TOKEN)
 
 
 def _captain_tokens() -> Case:
@@ -521,6 +526,35 @@ def _captain_tokens() -> Case:
     return case
 
 
+# Writing spec 3.7 (the author's ruling of 2026-10-13): a mission's reward as a record token,
+# rendered from the missions. The probes cover both kinds, a thousands comma (a mission that pays
+# 1,000 or more), an unknown mission, a kind the mission lacks and the captain's tokens left for
+# their own fill; every shipped line that carries a record token joins them. No shipped mission
+# pays two credits rewards or two deductions, so the sum is pinned only by
+# tests/test_models/test_captain_tokens.py (TestRecordTokens).
+RECORD_TOKEN_PROBES: tuple[str, ...] = (
+    "{pay:the_informant} credits and the {fee:bill_of_landing} credit fee.",
+    "{pay:no_such_mission} and {fee:the_informant} stay as written.",
+    "{They} {v:pays|pay} {pay:the_forgery} at {system}.",
+    "{pay:okafor_legacy_clinic_run} credits for the clinic run.",
+)
+_RECORD_TOKEN = re.compile(r"\{(?:pay|fee):[a-z0-9_]+\}")
+
+
+def _record_token_lines() -> list[str]:
+    """Every string under data/ that carries a record token, sorted."""
+    return _shipped_lines(_RECORD_TOKEN)
+
+
+def _record_tokens() -> Case:
+    lines = [*RECORD_TOKEN_PROBES, *_record_token_lines()]
+    case = Case("dialogue", "record_tokens", {"lines": lines})
+    by_id = get_data_loader().missions_by_id
+    for line in lines:
+        case.record("fill_records", [line], fill_records(line, by_id), {})
+    return case
+
+
 def build_cases() -> list[Case]:
     """Every dialogue case."""
     dl = get_data_loader()
@@ -532,4 +566,5 @@ def build_cases() -> list[Case]:
         _interjections(),
         _npcs_here(),
         _captain_tokens(),
+        _record_tokens(),
     ]

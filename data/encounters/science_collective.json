@@ -24,7 +24,7 @@
           "label": "Collect Specimens",
           "description": "Navigate the debris field and gather biological samples for the research team.",
           "outcome": {
-            "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement. Or what passes for excitement among Axiom researchers. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
+            "description": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -45,7 +45,7 @@
         {
           "id": "sell_data",
           "label": "Sell Scan Data",
-          "description": "Run your own scans and offer the data instead. Less risk, less reward.",
+          "description": "Run your own scans and offer the data instead.",
           "outcome": {
             "description": "You transmit your sensor readings of the debris field. Dr. Vasik accepts the data with a curt nod. 'Secondary source material. Useful for corroboration, though not a substitute for direct sampling. We will compensate you at the standard consultation rate.'",
             "rewards": [
@@ -68,7 +68,7 @@
         {
           "id": "decline_specimen",
           "label": "Decline",
-          "description": "Debris fields are hazardous. Pass on this one.",
+          "description": "Pass on this one.",
           "outcome": {
             "description": "Dr. Vasik accepts your refusal with clinical detachment. 'Understood. Risk-averse behavior is statistically rational given the mortality rates in uncharted debris fields. We will source alternative assistance.' The research vessel resumes its holding pattern.",
             "rewards": []
@@ -293,7 +293,7 @@
           "label": "Push Through",
           "description": "Try to slip past the quarantine perimeter.",
           "outcome": {
-            "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
+            "description": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",
@@ -350,7 +350,7 @@
         {
           "id": "sell_nova",
           "label": "Sell Back to Nova",
-          "description": "Contact Nova and let them know their comms leaked. They will pay for discretion.",
+          "description": "Contact Nova and let them know their comms leaked.",
           "outcome": {
             "description": "A Nova representative responds within minutes. 'We appreciate your... discretion, Captain. Communications security is a priority for all Collective affiliates. Please accept this consulting fee for your assistance in identifying our encryption vulnerability.' The credits are generous.",
             "rewards": [
@@ -781,7 +781,7 @@
           "label": "Ask for More",
           "description": "Ask for a higher stipend for the use of your sensor array.",
           "outcome": {
-            "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+            "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.'",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -814,7 +814,7 @@
       "id": "collective_nova_test_01",
       "encounter_type": "anomaly",
       "name": "Nova Shield Harmonics Test",
-      "description": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand speaks with the enthusiasm of someone spending someone else's money: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising: 94 percent confidence interval on non-lethality.'",
+      "description": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand comes on the channel: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising: 94 percent confidence interval on non-lethality.'",
       "icon_color": [
         180,
         120,

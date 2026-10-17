@@ -15,11 +15,11 @@
     "fenn_salko": {
       "rival_won": [
         "Salko picks up his catalogue. He logs the price. That is all.",
-        "Salko marks the lot. He closes the book without looking up.",
+        "Salko marks the lot and closes the book.",
         "He won what he came for. He does not acknowledge it."
       ],
       "player_won": [
-        "Salko sets the catalogue down. He files it. He does not look up.",
+        "Salko sets the catalogue down and files it.",
         "Salko crosses out the lot. He keeps the pen moving.",
         "He watched the close. He says nothing."
       ],

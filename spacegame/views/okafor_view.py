@@ -1009,7 +1009,8 @@ class OkaforView(BaseView):
         screen.blit(header, (x, y))
         y += scale_y(28)
         body_w = LEFT_W - scale_x(32)
-        for line in word_wrap(captain_line(node.text, self.player), self.body_font, body_w):
+        text = captain_line(node.text, self.player, missions=get_data_loader().missions_by_id)
+        for line in word_wrap(text, self.body_font, body_w):
             surf = self.body_font.render(line, True, Colors.TEXT_PRIMARY)
             screen.blit(surf, (x, y))
             y += self.body_font.get_linesize()

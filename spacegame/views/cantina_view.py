@@ -473,7 +473,9 @@ class CantinaView(BaseView):
             elif r.reward_type == "reputation":
                 lines.append((f"  {r.amount:+d} Reputation ({r.target_id})", (100, 200, 100)))
             elif r.reward_type == "route_fuel":
-                lines.append((f"  {r.amount:,} Credits (route fuel)", (200, 200, 100)))
+                lines.append(
+                    (f"  {r.amount:,} Credits (route fuel, once per landing)", (200, 200, 100))
+                )
             elif r.reward_type in ("deliver_cargo", "remove_cargo"):
                 continue
             else:

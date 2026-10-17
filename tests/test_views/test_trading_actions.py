@@ -430,7 +430,7 @@ class TestConsignedCargo:
         view._get_selected_cargo_commodity = MagicMock(return_value="iron_ore")
         view._execute_sell_max()
         assert player.ship.get_cargo_quantity("iron_ore") == 10
-        assert view.transaction_message == "No cargo to sell"
+        assert view.transaction_message == "That cargo is held for a mission."
 
     def test_naming_odoms_ore_sells_it_and_records_the_sale(self) -> None:
         view, player = self._view({"iron_ore": 10})
@@ -458,7 +458,9 @@ class TestConsignedCargo:
         view, player = self._view({"iron_ore": 10})
         view._execute_sell_all()
         assert player.ship.get_cargo_quantity("iron_ore") == 10
-        assert view.transaction_message == "No cargo to sell"
+        assert view.transaction_message == (
+            "Nothing to sell: the cargo aboard is held for missions."
+        )
 
     def test_the_seal_holds_at_the_black_market(self) -> None:
         from spacegame.views.trading_view import SEALED_CARGO

@@ -875,13 +875,12 @@ class TestAR5JournalEntries:
         e = next(x for x in self._entries() if x["entry_id"] == "auto_arna_departure")
         assert e["trigger_flag"] == "arna_pendant_revealed"
 
-    def test_departure_entry_mentions_brother_still_waiting(self) -> None:
-        """The gut-punch line: the brother Arna was trying to save is still
-        waiting. She never wrote the letter. Journal captures it."""
+    def test_departure_entry_ends_on_her_last_act(self) -> None:
+        """Plan W3b-S Task 7 (T8-11): the entry ends on the last act the captain saw, and the
+        brother's present state ("He is still waiting.") is cut, since no scene shows it."""
         e = next(x for x in self._entries() if x["entry_id"] == "auto_arna_departure")
-        text = e["text"].lower()
-        assert "brother" in text
-        assert "waiting" in text
+        assert e["text"].endswith("she did not look back.")
+        assert "still waiting" not in e["text"]
 
 
 class TestWritingBibleCompliance:

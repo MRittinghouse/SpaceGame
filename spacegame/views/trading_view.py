@@ -1245,7 +1245,7 @@ class TradingView(BaseView):
         if self.mission_manager is not None:
             quantity = self.mission_manager.free_units(self.player, commodity_id)
         if quantity <= 0:
-            self._show_message("No cargo to sell")
+            self._show_message("That cargo is held for a mission.")
             return
 
         price_per_unit = self._get_adjusted_sell_price(commodity_id)
@@ -1332,7 +1332,7 @@ class TradingView(BaseView):
                 self._show_message(m)
             self._refresh_tables()
         else:
-            self._show_message("No cargo to sell")
+            self._show_message("Nothing to sell: the cargo aboard is held for missions.")
 
     def _execute_rest(self) -> None:
         current_system = self.systems[self.player.current_system_id]

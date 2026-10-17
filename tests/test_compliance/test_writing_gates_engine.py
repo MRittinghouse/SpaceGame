@@ -180,6 +180,12 @@ class TestG5Address:
     def test_a_malformed_verb_token_is_named_by_its_whole_brace(self, body: str) -> None:
         assert rules.token_names("{" + body + "}") == ["{" + body + "}"]
 
+    def test_a_record_token_is_named_by_its_kind(self) -> None:
+        assert rules.token_names("{pay:the_informant} and {fee:bill_of_landing}") == ["pay", "fee"]
+        assert rules.token_names("{pay:Bad Id}") == ["pay:Bad Id"]
+        assert "pay" in tokens_for("data/dialogue/dialogues.json")
+        assert "pay" not in tokens_for("data/missions/missions.json")
+
 
 class TestG6ToG8Narration:
     def test_filter_verbs_fail_and_direct_perception_passes(self) -> None:
@@ -255,6 +261,57 @@ class TestG10AndG11:
         assert rules.G11_PRICE.search("I'll pay the 250 credits.")
         assert rules.G11_PRICE.search("Sixty a unit is 60 CR.")
         assert not rules.G11_PRICE.search("Shaft 7 is closed.")
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "She does not look up from the ledger.",
+            "He doesn't look up right away.",
+            "They did not look up.",
+            "The researchers didn't look up.",
+            "The clerk stamped it without looking up.",
+        ],
+    )
+    def test_the_gesture_in_any_form(self, text: str) -> None:
+        assert rules.G11_LOOKING_UP.search(text), text
+
+    @pytest.mark.parametrize(
+        "text",
+        ["He looks up.", "She does not look at you.", "You don't look back.", "Look up the code."],
+    )
+    def test_other_gazes_pass(self, text: str) -> None:
+        assert not rules.G11_LOOKING_UP.search(text), text
+
+    def test_the_gesture_is_marcus_alone(self) -> None:
+        """Marcus's own lines are exempt; every other string is read (spec 4.7, 5.1)."""
+        own = rules.marcus_lines()
+        assert own, "Marcus has no lines"
+        assert all(file.startswith("data/") for file, _ in own)
+        assert any(path.endswith(".text") for _, path in own)
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=marcus_recognition].nodes[id=start].subtext",
+        ) in own, "Marcus's one Read must be in the set (the Reads branch of marcus_lines)"
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=the_collapse_sequence].nodes[id=priya_calibrates].text",
+        ) not in own, "Priya's spoken line must not be Marcus's (the speaker filter on speech)"
+        assert (
+            "data/dialogue/dialogues.json",
+            ".dialogues[id=arna_first_encounter].nodes[id=start].subtext",
+        ) not in own, "another speaker's Read must not be Marcus's (the speaker_id check on Reads)"
+
+    def test_the_gesture_offends_outside_marcus_lines_only(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The same gesture passes in a line of Marcus's own and offends in any other string."""
+        his = surfaces.Text("data/a.json", ".his", "He signs it without looking up.")
+        other = surfaces.Text("data/a.json", ".other", "The clerk signs it without looking up.")
+        monkeypatch.setattr(rules, "_every_string", lambda: (his, other))
+        monkeypatch.setattr(rules, "marcus_lines", lambda: frozenset({(his.file, his.path)}))
+        monkeypatch.setattr(surfaces, "speech", lambda: ())
+        found = [o for o in rules.g11() if o.rule == "without looking up"]
+        assert [(o.file, o.path) for o in found] == [(other.file, other.path)]
 
 
 def _tree(*nodes: dict[str, object]) -> dict[str, object]:

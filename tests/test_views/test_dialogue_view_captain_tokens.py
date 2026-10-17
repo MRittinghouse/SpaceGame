@@ -42,11 +42,22 @@ def _tree() -> DialogueTree:
     return DialogueTree(id="tokens", start_node_id="greeting", nodes={"greeting": node})
 
 
-def _view(player: Optional[Player]) -> DialogueView:
+def _record_tree() -> DialogueTree:
+    node = DialogueNode(
+        id="fare",
+        speaker_id="officer_larsen",
+        text="{They} {v:owes|owe} the {fee:bill_of_landing} credit fee.",
+        responses=[DialogueResponse(text="{pay:the_informant} credits works.", next_node_id=None)],
+        subtext="{fee:bill_of_landing} credits is a day's trade.",
+    )
+    return DialogueTree(id="records", start_node_id="fare", nodes={"fare": node})
+
+
+def _view(player: Optional[Player], tree: Optional[DialogueTree] = None) -> DialogueView:
     manager = DialogueManager()
     if player is not None:
         manager.set_politics_manager(MagicMock(), player)
-    manager.start_dialogue(_tree())
+    manager.start_dialogue(tree if tree is not None else _tree())
     view = DialogueView(
         ui_manager=pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT)),
         dialogue_manager=manager,
@@ -126,3 +137,18 @@ def test_the_manager_exposes_the_player_it_addresses() -> None:
     player = fresh_player()
     manager.set_politics_manager(MagicMock(), player)
     assert manager.player is player
+
+
+def test_the_record_tokens_render_from_the_loaders_missions() -> None:
+    """Writing spec 3.7: the node text, the replies and the subtext print a mission's reward."""
+    player = fresh_player()
+    player.pronouns = Pronouns.SHE
+    view = _view(player, _record_tree())
+    try:
+        assert view._full_text == "She owes the 250 credit fee."
+        assert [button.text for button in view._response_buttons] == ["350 credits works."]
+        node = view.dialogue_manager.get_current_node()
+        assert node is not None
+        assert view._subtext_line(node) == "* 250 credits is a day's trade."
+    finally:
+        view.on_exit()

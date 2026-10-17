@@ -590,7 +590,7 @@
         {
           "id": "agree_transport",
           "speaker_id": "dr_priya_osei",
-          "text": "Thank you. I can offer 350 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+          "text": "Thank you. I can offer {pay:the_scholars_errand} credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
           "responses": [
             {
               "text": "What kind of questions?",
@@ -751,7 +751,7 @@
         {
           "id": "tariff_pitch",
           "speaker_id": "tomas_drifter",
-          "text": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for 200 a bale at Stellaris Port, but after the tariff, I'd clear maybe 30 credits. That's not trade. That's charity. And I don't take charity.",
+          "text": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for two hundred a bale at Stellaris Port, but after the tariff, I'd clear maybe thirty credits. That's not trade. That's charity. And I don't take charity.",
           "responses": [
             {
               "text": "What are you proposing?",
@@ -763,7 +763,7 @@
         {
           "id": "deal_proposal",
           "speaker_id": "tomas_drifter",
-          "text": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a farmer on Verdant gets to feed her kids this month.",
+          "text": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a weaver on Verdant gets to feed her kids this month.",
           "responses": [
             {
               "text": "Is this legal?",
@@ -878,7 +878,7 @@
         {
           "id": "accept",
           "speaker_id": "tomas_drifter",
-          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
+          "text": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a weaver gets to eat.",
           "responses": [
             {
               "text": "I'll get it done.",
@@ -983,10 +983,10 @@
         {
           "id": "personal_supplies",
           "speaker_id": "officer_larsen",
-          "text": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
+          "text": "You'll be able to reclaim those once you pay the {fee:bill_of_landing} credit fee to acquire your bill of landing.",
           "responses": [
             {
-              "text": "I'll pay the 250 credits.",
+              "text": "I'll pay the {fee:bill_of_landing} credits.",
               "next_node_id": "payment_accepted"
             }
           ],
@@ -1169,7 +1169,7 @@
               ]
             },
             {
-              "text": "About the ore. I lost some on the lane.",
+              "text": "About the ore. I lost some in a fight.",
               "next_node_id": "loss_short",
               "required_flags": [
                 "iron_job_short_lost"
@@ -1459,7 +1459,7 @@
         {
           "id": "waiting_drifted",
           "speaker_id": "odom_broker",
-          "text": "*He reads the docket, not you.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
+          "text": "*He reads the day off the docket before he answers.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
           "responses": [
             {
               "text": "Understood.",
@@ -1471,7 +1471,7 @@
         {
           "id": "loss_short",
           "speaker_id": "odom_broker",
-          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
+          "text": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale and the fee's whatever the docket says that day.",
           "responses": [
             {
               "text": "I'll run what's left.",
@@ -1514,7 +1514,7 @@
         {
           "id": "loss_closed",
           "speaker_id": "odom_broker",
-          "text": "Job's closed. You don't owe me and I don't owe you. *He points at the board without turning to it.* Board's public.",
+          "text": "Job's closed. You don't owe me and I don't owe you. *He thumbs at the board over his shoulder.* Board's public.",
           "responses": [
             {
               "text": "[Leave]",
@@ -1540,7 +1540,7 @@
         {
           "id": "made_good_terms",
           "speaker_id": "odom_broker",
-          "text": "Your credits, your call. Standard grade weighs the same wherever you bought it. I'll know what you did when Kimura's count comes in.",
+          "text": "Your hold, your call. Standard grade weighs the same wherever it came from. I'll know what you did when Kimura's count comes in.",
           "responses": [
             {
               "text": "Understood.",
@@ -1578,7 +1578,7 @@
         {
           "id": "thanks_made_good",
           "speaker_id": "odom_broker",
-          "text": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
+          "text": "*He has two papers side by side.* Incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
           "responses": [
             {
               "text": "Standard grade is standard grade.",
@@ -1610,7 +1610,7 @@
         {
           "id": "thanks_short",
           "speaker_id": "odom_broker",
-          "text": "*Kimura's receipt sits beside the lane report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
+          "text": "*Kimura's receipt sits beside the incident report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
           "responses": [
             {
               "text": "Understood.",
@@ -1710,7 +1710,7 @@
         {
           "id": "odom_arna_branch_a",
           "speaker_id": "odom_broker",
-          "text": "*Odom does not look up from the manifest. Keeps muttering numbers for a beat, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
+          "text": "*Odom counts under his breath to the bottom of the column, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
           "subtext": "He goes back to the manifest without waiting for a response.",
           "responses": [
             {
@@ -1820,7 +1820,7 @@
         {
           "id": "graduation_pointer",
           "speaker_id": "odom_broker",
-          "text": "*He does not look up from the manifest.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
+          "text": "*He keeps a finger on the line he was counting.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
           "responses": [
             {
               "text": "Meridian. Ilse Vey.",
@@ -2015,7 +2015,7 @@
         {
           "id": "no_sign",
           "speaker_id": "forgeworks_clerk",
-          "text": "*He reads the scale against Odom's manifest, then checks the incident file.* Manifest says ten. Scale says otherwise, and the file doesn't cover the gap. I don't sign for air. Bring me ten, or take it up with Odom.",
+          "text": "*He reads the scale against Odom's manifest.* Manifest says ten. Scale says otherwise. I don't sign for air. Bring me ten, or take it up with Odom.",
           "responses": [
             {
               "text": "[Leave]",
@@ -3123,7 +3123,7 @@
         {
           "id": "parting",
           "speaker_id": "oren_tak",
-          "text": "*He doesn't look at you.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+          "text": "*He checks over his shoulder.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
           "responses": [
             {
               "text": "[Walk away.]",
@@ -3371,7 +3371,7 @@
         {
           "id": "refuse_data",
           "speaker_id": "sienna_vek",
-          "text": "She hesitates, fingers tightening around the data chip in her pocket. I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. She pauses. I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
+          "text": "*Her fingers close around the data chip in her pocket.* I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. *A pause.* I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
           "responses": [
             {
               "text": "Tell me what you can.",
@@ -3404,7 +3404,7 @@
         {
           "id": "farewell",
           "speaker_id": "sienna_vek",
-          "text": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. She stands, straightens her uniform, and walks out of the cantina without looking back.",
+          "text": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. *She stands, straightens her uniform, and leaves by the service door.*",
           "responses": [
             {
               "text": "[Watch her go]",
@@ -3642,7 +3642,7 @@
         {
           "id": "farewell",
           "speaker_id": "dex_halloran",
-          "text": "He stands and straightens his jacket. For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. He walks out of the cantina without looking back. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.",
+          "text": "*He stands and straightens his jacket.* For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. *He's gone before you can answer. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.*",
           "responses": [
             {
               "text": "[Take the chip]",
@@ -4586,10 +4586,10 @@
         {
           "id": "the_offer",
           "speaker_id": "cassiel_maren",
-          "text": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous, 500 credits, plus expenses.",
+          "text": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: {pay:the_forgery} credits.",
           "responses": [
             {
-              "text": "500 credits for a delivery and an appraisal? That's good money.",
+              "text": "{pay:the_forgery} credits for a delivery and an appraisal? That's good money.",
               "next_node_id": "accept"
             },
             {
@@ -4741,7 +4741,7 @@
         {
           "id": "start",
           "speaker_id": "callum_rhee",
-          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 350 credits when we dock and stay out of your way the entire trip. I travel light.",
+          "text": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay {pay:the_informant} credits when we dock and stay out of your way the entire trip. I travel light.",
           "responses": [
             {
               "text": "Why Haven's Rest?",
@@ -4772,7 +4772,7 @@
               ]
             },
             {
-              "text": "350 credits works. Welcome aboard.",
+              "text": "{pay:the_informant} credits works. Welcome aboard.",
               "next_node_id": "accept",
               "excluded_flags": [
                 "informant_passenger_accepted"
@@ -4813,7 +4813,7 @@
           "text": "Family. My cousin runs a supply shop there. I've been meaning to visit for months, but scheduled transports keep getting rerouted. You know how it is, the big carriers don't prioritize the frontier stations.",
           "responses": [
             {
-              "text": "Fair enough. 350 credits and you've got a ride.",
+              "text": "Fair enough. {pay:the_informant} credits and you've got a ride.",
               "next_node_id": "accept"
             },
             {
@@ -4826,7 +4826,7 @@
         {
           "id": "deflect_smooth",
           "speaker_id": "callum_rhee",
-          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 350 credits seems fair for the convenience.",
+          "text": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and {pay:the_informant} credits seems fair for the convenience.",
           "responses": [
             {
               "text": "Alright. Grab your gear.",
@@ -5367,10 +5367,10 @@
         {
           "id": "payment",
           "speaker_id": "pirate_captain",
-          "text": "400 credits. Half now, half when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+          "text": "{pay:honor_among_thieves} credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
           "responses": [
             {
-              "text": "400 credits and a favor from a pirate captain. I'm in.",
+              "text": "{pay:honor_among_thieves} credits and a favor from a pirate captain. I'm in.",
               "next_node_id": "accept"
             },
             {
@@ -5549,7 +5549,7 @@
         {
           "id": "compensation",
           "speaker_id": "nova_researcher",
-          "text": "The Collective has authorized a research stipend, 350 credits, plus full repair coverage if your ship takes debris damage during deployment. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+          "text": "The Collective has authorized a research stipend of {pay:signal_from_the_deep} credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
           "responses": [
             {
               "text": "History and credits. I'm in.",
@@ -5625,7 +5625,7 @@
         {
           "id": "greet",
           "speaker_id": "dock_investigator",
-          "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
+          "text": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She caps her pen.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
           "subtext": "The coffee rings overlap in layers. The evidence bags carry no labels anyone else could read.",
           "responses": [
             {
@@ -6037,7 +6037,7 @@
         {
           "id": "greet",
           "speaker_id": "torres_memorial",
-          "text": "*Torres is hunched over a workbench, carefully sorting salvaged components by serial number. She doesn't look up right away.* Need something?",
+          "text": "*Torres is hunched over a workbench, sorting salvaged components by serial number. She sorts two more before she answers.* Need something?",
           "responses": [
             {
               "text": "Just checking in.",
@@ -7291,7 +7291,7 @@
           "id": "start",
           "speaker_id": "arna",
           "text": "Kid. Just built that rig?",
-          "subtext": "She doesn't look up from the manifest terminal.",
+          "subtext": "She types the whole time she talks. The manifest on her screen does not change.",
           "responses": [
             {
               "text": "Yeah. Off the line this hour.",
@@ -12161,7 +12161,7 @@
           "id": "start",
           "speaker_id": "wulan_doyle",
           "text": "You have been running product through the floor. I have seen the route numbers. The arrangement you are on now is visitor access, renegotiated each run. That works until the port authority pulls the manifest window, which it does on a schedule you cannot read from the outside.",
-          "subtext": "She does not look up from the ledger on her desk. The office is below the main trade floor, accessed through a freight hatch.",
+          "subtext": "She turns a page of the ledger on her desk and smooths it flat. The office is below the main trade floor, accessed through a freight hatch.",
           "responses": [
             {
               "text": "What is the alternative?",
@@ -12280,7 +12280,7 @@
         {
           "id": "start",
           "speaker_id": "elena_reeves",
-          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She speaks before she looks up.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+          "text": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She marks her place on it with one finger.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
           "responses": [
             {
               "text": "Go ahead.",
@@ -12345,7 +12345,7 @@
         {
           "id": "start",
           "speaker_id": "dex_halloran",
-          "text": "*Third stool from the left. He doesn't turn around.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+          "text": "*Third stool from the left. He hooks the next stool out with his boot.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
           "responses": [
             {
               "text": "Why did you wait for me?",

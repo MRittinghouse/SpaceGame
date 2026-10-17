@@ -6,7 +6,7 @@
     "iron_depths": "First visit to Iron Depths. The station groans under pressure shifts you can feel in your teeth. Fluorescent lights flicker in the deeper corridors and nobody fixes them. DCMC logos on every surface, but the faces underneath tell a different story than the quarterly reports.",
     "forgeworks": "Docked at Forgeworks. The heat hits before the airlock finishes cycling. The air tastes like ozone and ambition and the sweat of people working twelve-hour shifts in thermal suits. Foundry sparks arc overhead like brief, doomed stars. Guild inspectors and Union foremen eye each other across the canteen and neither blinks first.",
     "axiom_labs": "Arrived at Axiom Labs. Synthesized coffee. Color-coded lab coats crowded every corridor, arguing in shorthand. The Okafor Institute's reputation preceded it.",
-    "nova_research": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors were soundproofed and the researchers walked fast and didn't look up. The cafeteria served three meals.",
+    "nova_research": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors were soundproofed and the researchers walked fast with their eyes on their slates. The cafeteria served three meals.",
     "havens_rest": "Arrived at Haven's Rest. The air smelled like soil and basil. Real basil, not the synthesized kind. Children running between planting beds. Wind chimes made from recycled hull plating.",
     "verdant": "Docked at Verdant. Rows of green stretched through observation windows as far as I could see. The light was too even, too perfect, the grow-lamps mimicking a sun that never existed here.",
     "crimson_reach": "Arrived at Crimson Reach. Dim lighting, exposed pipes, and the smell of coolant. Half the overhead panels were dark. The other half flickered on a schedule nobody had posted. A woman at the bar watched me dock through a porthole, then looked away. No questions asked here.",
@@ -18,7 +18,7 @@
     "{profit} CR on {commodity} at {system}. The buyer didn't haggle.",
     "Sold {commodity} at {system} for {profit} CR over purchase. Watched the crates disappear into the cargo bay.",
     "Major haul at {system}: {profit} CR on {commodity}. Filed the receipt.",
-    "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it without looking up."
+    "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it and called the next ship."
   ],
   "encounter_survived": [
     "Hostile contact near {system}. Hull took hits. The ship held.",

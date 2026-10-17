@@ -2,8 +2,9 @@
 
 Python keeps its own rules: the first sale's 1.5x bonus (game.py, trading_view.py) and
 Emergency Reserves' 1-fuel floor (``travel.fuel_after_jump``). The port reads the
-new-market premium's numbers, the stations' first-sale lines, and a skill text that
-describes its sealed reserve cell.
+new-market premium's numbers, the stations' first-sale lines, a skill text that
+describes its sealed reserve cell, and the crew's ``opened_market`` and ``sold_back``
+barks, whose two action types Python never fires.
 """
 
 from __future__ import annotations
@@ -64,3 +65,13 @@ def test_python_reads_neither_file_section() -> None:
         text = path.read_text(encoding="utf-8")
         assert "new_market_premium" not in text, path
         assert "first_sale_lines" not in text, path
+
+
+def test_python_never_fires_the_ports_bark_actions() -> None:
+    """The opened_market and sold_back barks are the port's (writing plan W3b; F-014)."""
+    for path in (ROOT / "spacegame").rglob("*.py"):
+        text = path.read_text(encoding="utf-8")
+        assert "opened_market" not in text and "sold_back" not in text, path
+    lines = json.loads((ROOT / "data" / "crew" / "ambient_dialogue.json").read_text("utf-8"))
+    actions = [line.get("action_type") for line in lines["ambient_lines"]]
+    assert actions.count("opened_market") == 5 and actions.count("sold_back") == 4

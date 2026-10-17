@@ -48,4 +48,4 @@ def test_a_salvage_lists_its_route_fuel() -> None:
     salvage = _generator().generate_salvage("nexus_prime", game_day=10)
     fuel = next(r.amount for r in salvage.rewards if r.reward_type == "route_fuel")
     assert fuel > 0
-    assert _texts(salvage)[-1] == f"  {fuel:,} Credits (route fuel)"
+    assert _texts(salvage)[-1] == f"  {fuel:,} Credits (route fuel, once per landing)"

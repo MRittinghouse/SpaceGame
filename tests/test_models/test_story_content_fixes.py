@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from spacegame.constants.flags import talked_to_npc
+from spacegame.models.captain_tokens import fill_records
 from spacegame.models.mission import MissionStatus
 from spacegame.models.npc_availability import is_listed
 from tests.test_models.test_mission_return_legs import _dl, _player
@@ -216,9 +217,14 @@ class TestLinesMatchTheGame:
         assert "2000" not in texts and "Two thousand" not in texts
 
     def test_quoted_fares_match_the_pay(self) -> None:
-        assert "350 credits" in " ".join(_texts("priya_stranded"))
+        """A quoted fare is the mission's reward, read from the records (spec 3.7)."""
+        missions = _dl().missions_by_id
+        priya = " ".join(_texts("priya_stranded"))
         callum = " ".join(_texts("callum_rhee_informant"))
-        assert "350 credits" in callum and "200 credits" not in callum
+        assert "{pay:the_scholars_errand} credits" in priya
+        assert "{pay:the_informant} credits" in callum and "200 credits" not in callum
+        assert fill_records("{pay:the_scholars_errand}", missions) == "350"
+        assert fill_records("{pay:the_informant}", missions) == "350"
 
     def test_odom_names_real_places_and_goods(self) -> None:
         # Only the route tip: "the coolant run I fronted her" elsewhere names Arna's job.

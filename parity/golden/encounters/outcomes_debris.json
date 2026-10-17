@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -40,7 +40,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You sweep the area with every sensor you have. The results come back empty. Not a scrap of wreckage, not a residual energy reading, nothing to explain what you saw. But your nav computer logs a curious detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code. Someone is either using her identity or her ship survived. Either way, someone wants you to notice.",
+          "description": "You sweep the area with every sensor you have. The results come back empty. But your nav computer logs one detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3518,7 +3518,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
+          "description": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4286,7 +4286,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
+          "description": "You spend an hour scooping titanium clusters back into Britt's remaining bays. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

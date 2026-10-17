@@ -1503,7 +1503,7 @@
       "id": "arna_05b_clean_pull",
       "name": "The Clean Pull",
       "description": "Arna's sitting this one out. Her side's still bleeding and her plan fell apart. But she's had coordinates on a derelict in Haven's Rest for a year. Nobody's worked it. No factions are watching. Small score, clean paper, nothing follows you out.",
-      "hint": "Jump to Haven's Rest. Salvage what you can. Return to Arna at Nexus.",
+      "hint": "Jump to Haven's Rest. Salvage scrap metal from the derelict. Return to Arna at Nexus Prime.",
       "discovery_text": "Arna walked me to the dock and handed me a data chip with coordinates on it. 'This one's clean,' she said. 'Small. But clean.' She didn't come aboard.",
       "mission_type": "side",
       "available_at": [
@@ -1787,7 +1787,7 @@
       "name": "The Ore Tip",
       "description": "Arna has coordinates for a marginal mining site in Breakstone's outer belt. She claims the enforcement presence is thin and the rare metals are worth enough to make the run profitable. You're the rig she's been waiting for. Pull a load, bring it back.",
       "hint": "Travel to Breakstone. Mine at least 5 units of rare metals and return to Arna at Nexus Prime.",
-      "discovery_text": "Arna pitched me a rare-metal run at Breakstone's outer belt. Says the site is marginal, enforcement is thin, and the margin is better than she let on with the machinery run. She had coordinates ready before I said yes.",
+      "discovery_text": "Arna pitched me a rare-metal run at Breakstone's outer belt. Said the site was marginal, enforcement was thin, and the cut would pay for more than a pallet of machinery. She had coordinates ready before I said yes.",
       "mission_type": "side",
       "available_at": [
         "nexus_prime"

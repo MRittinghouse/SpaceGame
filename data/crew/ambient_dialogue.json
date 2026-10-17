@@ -2002,6 +2002,61 @@
       "required_flags": [
         "declined_drifter_deal"
       ]
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "Article eleven of the Forgeworks Compact, the opening-rate provision. Which is to say: the first ship to bring them something new gets paid over the board for it.",
+      "context": "player_action",
+      "action_type": "opened_market"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "I was eight the year Breakstone rationed air. We counted breaths in the bunks.",
+      "context": "player_action",
+      "action_type": "opened_market"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "What did this station use before today? Either someone was doing without, or someone was making do. I would like to know which.",
+      "context": "player_action",
+      "action_type": "opened_market"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "First market I ever opened, I was nineteen and my hold leaked. The buyer asked what name to put on his ledger, and I told him. Anyway. That's a long story.",
+      "context": "player_action",
+      "action_type": "opened_market",
+      "min_loyalty": 40
+    },
+    {
+      "crew_id": "kai_torren",
+      "text": "New customer in the book. Want me to keep space in the hold for their next load?",
+      "context": "player_action",
+      "action_type": "opened_market"
+    },
+    {
+      "crew_id": "tomas_drifter",
+      "text": "Knew a fellow who tried that once. Bought in the morning, sold it back to the same desk after lunch. Clerk read his own stamp and paid it to the credit. My friend never tried it twice.",
+      "context": "player_action",
+      "action_type": "sold_back"
+    },
+    {
+      "crew_id": "elena_reeves",
+      "text": "They knew what they sold us and paid by it. It's a good system. I would know. I spent years keeping it.",
+      "context": "player_action",
+      "action_type": "sold_back"
+    },
+    {
+      "crew_id": "marcus_jin",
+      "text": "Same crates up the ramp and back down. That loader's only got so many cycles in her. Spend them on cargo that's going somewhere.",
+      "context": "player_action",
+      "action_type": "sold_back"
+    },
+    {
+      "crew_id": "dr_priya_osei",
+      "text": "A controlled trial, then. Purchase, then resale to the seller, same day. Result: null. They knew their own goods. I would not repeat it without a new hypothesis.",
+      "context": "player_action",
+      "action_type": "sold_back"
     }
   ]
 }

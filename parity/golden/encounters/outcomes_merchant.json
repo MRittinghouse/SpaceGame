@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -2889,7 +2889,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier. You got the better deal, but it may cost you later.",
+          "description": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -3082,7 +3082,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on to find another willing trader. Out here, persistence is survival.",
+          "description": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -3450,7 +3450,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You stick to the trading ships on the ring's edge. Festival pricing is real: these folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
+          "description": "You stick to the trading ships on the ring's edge. These folks sell at cost during the Gathering. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -5454,7 +5454,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired. Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots. Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
+          "description": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired. Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots. Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -6568,7 +6568,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted. Union miners don't cheat on weight.",
+          "description": "Suki runs a quick inventory of your spare parts and nods. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -8979,7 +8979,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+          "description": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

@@ -5,7 +5,8 @@ it; G5 fails any other. Each surface's own fill is listed with its file. The cap
 (spec 2.5 and 2.6, with ``{day}``) are filled by ``spacegame.models.captain_tokens.captain_line``
 where a surface prints its lines; an entry joins this table with ``CAPTAIN_TOKENS`` in the same
 commit that wires its print path, and ``tests/test_compliance/test_captain_token_render_sites.py``
-names those paths.
+names those paths. The record tokens (``{pay:<mission id>}``, ``{fee:<mission id>}``) are filled
+on the dialogue surface only, where every print path passes the missions.
 
 ``{player}``, the captain's name, is filled only by the news fill today (spec 2.7). A line that
 wants the name on another surface extends ``captain_line``, the port's ``CaptainTokens`` and
@@ -20,6 +21,9 @@ from fnmatch import fnmatch
 CAPTAIN_TOKENS = frozenset(
     "they They them their Their theirs themself v sir Sir son Son day".split()
 )
+# The record tokens (spec 3.7; the author's ruling of 2026-10-13): a mission's reward, filled by
+# captain_tokens.fill_records where a dialogue print path passes the missions.
+RECORD_TOKENS = frozenset({"pay", "fee"})
 
 
 @dataclass(frozen=True)
@@ -32,7 +36,11 @@ class Renders:
 
 
 REGISTRY: tuple[Renders, ...] = (
-    Renders("data/dialogue/*.json", CAPTAIN_TOKENS, "dialogue_view; the inline dialogue panels"),
+    Renders(
+        "data/dialogue/*.json",
+        CAPTAIN_TOKENS | RECORD_TOKENS,
+        "dialogue_view; the inline dialogue panels",
+    ),
     Renders("data/combat/crew_interjections.json", CAPTAIN_TOKENS, "combat_view interjections"),
     Renders("data/combat/captains.json", CAPTAIN_TOKENS, "encounter_view hail; combat_view line"),
     Renders("data/combat/captain_variants.json", CAPTAIN_TOKENS, "as captains.json"),

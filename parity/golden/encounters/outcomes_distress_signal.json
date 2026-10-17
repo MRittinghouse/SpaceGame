@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -605,7 +605,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you with the desperate generosity of a person whose job was on the line.",
+          "description": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -991,7 +991,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You log the distress signal, note that no lives are in danger, and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
+          "description": "You log the distress signal and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1558,7 +1558,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
+          "description": "Fen nods. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -3580,7 +3580,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You silence the distress channel and continue on course. The signal fades behind you. Somewhere out there, Captain Sato is counting the hours on her life support.",
+          "description": "You silence the distress channel and continue on course. The signal fades behind you.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7441,7 +7441,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. He's sheepish about the whole thing. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Both sides grudgingly respect the call.",
+          "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Harlan wires you a tow fee.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -7634,7 +7634,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates. She pretends not to smile.",
+          "description": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

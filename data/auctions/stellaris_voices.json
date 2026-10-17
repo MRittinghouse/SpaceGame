@@ -24,7 +24,7 @@
       ],
       "player_won": [
         "Prentiss does not congratulate you. He marks the lot in his catalogue and moves on.",
-        "Prentiss reads the next entry. He does not look up.",
+        "Prentiss is already reading the next entry.",
         "Prentiss accepts the result. The recalibration is internal."
       ],
       "no_overlap": [

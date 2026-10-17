@@ -298,7 +298,7 @@ class TestSalkoBucketExpansion:
         salko = self._salko_post()
         sa_b4_first = {
             "rival_won": "Salko picks up his catalogue.",
-            "player_won": "Salko sets the catalogue down.",
+            "player_won": "Salko sets the catalogue down",
             "no_overlap": "Salko sat through the session.",
             "absent_retired": "Salko was not in the room today.",
         }

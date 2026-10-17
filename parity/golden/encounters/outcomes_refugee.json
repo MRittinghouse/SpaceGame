@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -811,7 +811,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport. A man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+          "description": "You send over fuel cells and food packs. Dara's brother nods through the viewport. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1378,7 +1378,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
+          "description": "'Every bit counts,' Priya says. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1571,7 +1571,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way: no one keeps score out loud.",
+          "description": "Priya nods. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": []
@@ -4389,7 +4389,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that, doing too much with too little.",
+          "description": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -4570,7 +4570,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station.",
+          "description": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The teenager on the comms thanks you three times before signing off. Their shuttle wobbles toward the station.",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

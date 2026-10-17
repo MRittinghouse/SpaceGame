@@ -1,0 +1,1982 @@
+[
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].text",
+  "old": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay 350 credits when we dock and stay out of your way the entire trip. I travel light.",
+  "new": "*A man in a clean jacket approaches from the docking corridor. He's been watching you refuel for ten minutes.* Captain. I need transport to Haven's Rest. I'll pay {pay:the_informant} credits when we dock and stay out of your way the entire trip. I travel light.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_informant pays 350"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=callum_rhee_informant].nodes[id=start].responses[3].text",
+  "old": "350 credits works. Welcome aboard.",
+  "new": "{pay:the_informant} credits works. Welcome aboard.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_informant"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_destination].responses[0].text",
+  "old": "Fair enough. 350 credits and you've got a ride.",
+  "new": "Fair enough. {pay:the_informant} credits and you've got a ride.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_informant"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=callum_rhee_informant].nodes[id=deflect_smooth].text",
+  "old": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and 350 credits seems fair for the convenience.",
+  "new": "Nothing dramatic, I promise. I'm just a traveler who'd rather not spend three days waiting for a scheduled transport. Your ship is here, I'm here, and {pay:the_informant} credits seems fair for the convenience.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_informant"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].text",
+  "old": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous, 500 credits, plus expenses.",
+  "new": "I've acquired a collection of pre-colony artifacts, ceramics, metalwork, navigational instruments from the founding era. A buyer at Haven's Rest wants an independent appraisal before committing to purchase. I need you to transport the collection and oversee the appraisal. The fee is generous: {pay:the_forgery} credits.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_forgery pays 500; no expenses reward exists"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=cassiel_maren_forgery].nodes[id=the_offer].responses[0].text",
+  "old": "500 credits for a delivery and an appraisal? That's good money.",
+  "new": "{pay:the_forgery} credits for a delivery and an appraisal? That's good money.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_forgery"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].text",
+  "old": "You'll be able to reclaim those once you pay the 250 credit fee to acquire your bill of landing.",
+  "new": "You'll be able to reclaim those once you pay the {fee:bill_of_landing} credit fee to acquire your bill of landing.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "bill_of_landing's deduct_credits 250"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=larsen_customs].nodes[id=personal_supplies].responses[0].text",
+  "old": "I'll pay the 250 credits.",
+  "new": "I'll pay the {fee:bill_of_landing} credits.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "bill_of_landing"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=priya_stranded].nodes[id=agree_transport].text",
+  "old": "Thank you. I can offer 350 credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+  "new": "Thank you. I can offer {pay:the_scholars_errand} credits upon arrival. The Collective values fair compensation for services rendered. Shall we depart? I should mention. I may have questions during the transit. Your lived experience constitutes a primary data source that peer-reviewed literature consistently underrepresents.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "the_scholars_errand pays 350 (its base, before the soft deadline)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].text",
+  "old": "400 credits. Half now, half when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+  "new": "{pay:honor_among_thieves} credits when you bring it back. And I'll owe you a favor, which, out here in the Reach, is worth more than credits. My crew doesn't forget who helps us.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "honor_among_thieves pays 500 at the close; nothing is paid at the accept"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=rook_honor_thieves].nodes[id=payment].responses[0].text",
+  "old": "400 credits and a favor from a pirate captain. I'm in.",
+  "new": "{pay:honor_among_thieves} credits and a favor from a pirate captain. I'm in.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "honor_among_thieves"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=yuki_signal_deep].nodes[id=compensation].text",
+  "old": "The Collective has authorized a research stipend, 350 credits, plus full repair coverage if your ship takes debris damage during deployment. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+  "new": "The Collective has authorized a research stipend of {pay:signal_from_the_deep} credits. And if this signal turns out to be what I think it is, your name goes on the discovery paper. You'd be part of history, Captain.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "signal_from_the_deep pays 500; no repair reward exists"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=tomas_havens].nodes[id=tariff_pitch].text",
+  "old": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for 200 a bale at Stellaris Port, but after the tariff, I'd clear maybe 30 credits. That's not trade. That's charity. And I don't take charity.",
+  "new": "Here's the thing. The Guild raised tariffs on Alliance goods, again. My textiles would sell for two hundred a bale at Stellaris Port, but after the tariff, I'd clear maybe thirty credits. That's not trade. That's charity. And I don't take charity.",
+  "group": "price",
+  "ref": "G11 price",
+  "why": "a market figure, spelled out (the ruling)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=arna_first_encounter].nodes[id=start].subtext",
+  "old": "She doesn't look up from the manifest terminal.",
+  "new": "She types the whole time she talks. The manifest on her screen does not change.",
+  "group": "gesture",
+  "ref": "T7-8 Arna's Read",
+  "why": "Arna's W2 Read: the observable fact, the inference left (spec 2.2 edge 6)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=odom_arna_branch_a].text",
+  "old": "*Odom does not look up from the manifest. Keeps muttering numbers for a beat, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
+  "new": "*Odom counts under his breath to the bottom of the column, then stops.* Your friend cleared out. Owed me seventy credits for a coolant run I fronted her last year. Figured she would. That kind does.",
+  "group": "gesture",
+  "ref": "T7-8 Odom",
+  "why": "Odom's own habit, the running tally (voice sheet)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=graduation_pointer].text",
+  "old": "*He does not look up from the manifest.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
+  "new": "*He keeps a finger on the line he was counting.* You've seen what the standard board looks like. There's a venue called Meridian. Runs a different class of financial product. The contact there is Ilse Vey. I don't make introductions, but I'm telling you the name.",
+  "group": "gesture",
+  "ref": "T7-8 Odom",
+  "why": "Odom's tally"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=waiting_drifted].text",
+  "old": "*He reads the docket, not you.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
+  "new": "*He reads the day off the docket before he answers.* Past the window and past the step-down. The Foundry's been docking me since day fifteen. Job's still open and still mine. Kimura weighs what arrives, and the fee is whatever the docket says on the day he weighs it.",
+  "group": "gesture",
+  "ref": "T7-8 Odom",
+  "why": "Odom reads the record; the day is the subject"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=loss_closed].text",
+  "old": "Job's closed. You don't owe me and I don't owe you. *He points at the board without turning to it.* Board's public.",
+  "new": "Job's closed. You don't owe me and I don't owe you. *He thumbs at the board over his shoulder.* Board's public.",
+  "group": "gesture",
+  "ref": "T7-8 Odom",
+  "why": "an act, not an averted gaze"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=dead_ledger_investigation].nodes[id=greet].text",
+  "old": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She doesn't look up.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
+  "new": "*A woman in dock security blues sits behind a terminal cluttered with evidence bags and coffee rings. She caps her pen.* Pull up a crate. Reshad Patel, shipping clerk, found dead in Loading Bay C. Pressure seal failure, supposedly. Except pressure seals don't fail on occupied docks. Station brass wants this closed yesterday. I need someone outside the dock's gossip. You fly in, you fly out. That's why you.",
+  "group": "gesture",
+  "ref": "T7-8 Mossa",
+  "why": "Mossa's pen (her case_closed and interview beats)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=wulan_default].nodes[id=start].subtext",
+  "old": "She does not look up from the ledger on her desk. The office is below the main trade floor, accessed through a freight hatch.",
+  "new": "She turns a page of the ledger on her desk and smooths it flat. The office is below the main trade floor, accessed through a freight hatch.",
+  "group": "gesture",
+  "ref": "T7-8 Wulan",
+  "why": "Wulan's ledger; an act of her own"
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=iron_delivery].timeliness_comments.late",
+  "old": "Intake clerk thumbs through the docket, doesn't look up. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
+  "new": "Intake clerk taps the late column twice. \"Ran long. Pay's docked, not blocked. Don't make a habit of it.\"",
+  "group": "gesture",
+  "ref": "T7-8 the clerk",
+  "why": "Kimura's taps (forgeworks_intake)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=elena_return].nodes[id=start].text",
+  "old": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She speaks before she looks up.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+  "new": "*The cantina is full, and the chair across from her is the only one nobody has taken. The departure boards are open on her slate. She marks her place on it with one finger.* You stopped at the same panel on your way in, Captain. The short version takes four minutes. I have timed it.",
+  "group": "gesture",
+  "ref": "T7-8 Elena",
+  "why": "Elena's slate and precision"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=dex_return].nodes[id=start].text",
+  "old": "*Third stool from the left. He doesn't turn around.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+  "new": "*Third stool from the left. He hooks the next stool out with his boot.* Friend. You walked back in here on your own. That's the first free thing anyone's handed me all week. *He waits.*",
+  "group": "gesture",
+  "ref": "T7-8 Glyn",
+  "why": "Glyn's indirect welcome"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=oren_tak_meeting].nodes[id=parting].text",
+  "old": "*He doesn't look at you.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+  "new": "*He checks over his shoulder.* Don't come back. Second visit's the one people notice. *Lower.* Iron Depths. Seventh sublevel. *Lower still.* Seventh sublevel.",
+  "group": "gesture",
+  "ref": "T7-8 Oren",
+  "why": "Oren's habit (voice sheet: checks over his shoulder)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=sienna_vek_warning].nodes[id=farewell].text",
+  "old": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. She stands, straightens her uniform, and walks out of the cantina without looking back.",
+  "new": "Be careful. The Ledger has people in every faction, that's how they built this facility on Union territory without anyone asking questions. Don't assume anyone is clean. *She stands, straightens her uniform, and leaves by the service door.*",
+  "group": "gesture",
+  "ref": "T7-8 Sienna",
+  "why": "an observable of her own; narration marked (Q36)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=sienna_vek_warning].nodes[id=refuse_data].text",
+  "old": "She hesitates, fingers tightening around the data chip in her pocket. I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. She pauses. I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
+  "new": "*Her fingers close around the data chip in her pocket.* I want to trust you. But if this gets intercepted, I'm dead. The people running this project don't leave witnesses. *A pause.* I'll tell you what I know. But the raw data stays with me until I'm sure you can actually do something with it.",
+  "group": "gesture",
+  "ref": "Q36 Sienna",
+  "why": "narration marked (Q36); narration marked (Q36)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=dex_assembly_intel].nodes[id=farewell].text",
+  "old": "He stands and straightens his jacket. For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. He walks out of the cantina without looking back. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.",
+  "new": "*He stands and straightens his jacket.* For what it's worth. I hope you stop them. The Expanse isn't perfect, but it's home. *He's gone before you can answer. On the table, the navigation chip blinks with coordinates to a station that doesn't officially exist.*",
+  "group": "gesture",
+  "ref": "the twin of Sienna's",
+  "why": "narration marked; an act of his own; narration marked"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=wrench_request_dialogue].nodes[id=greet].text",
+  "old": "*Torres is hunched over a workbench, carefully sorting salvaged components by serial number. She doesn't look up right away.* Need something?",
+  "new": "*Torres is hunched over a workbench, sorting salvaged components by serial number. She sorts two more before she answers.* Need something?",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "the widened G11 catches it; Torres's own act"
+ },
+ {
+  "file": "data/auctions/crimson_reach_voices.json",
+  "path": ".post_session.fenn_salko.rival_won[1]",
+  "old": "Salko marks the lot. He closes the book without looking up.",
+  "new": "Salko marks the lot and closes the book.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "Marcus's phrase in another's line"
+ },
+ {
+  "file": "data/auctions/crimson_reach_voices.json",
+  "path": ".post_session.fenn_salko.player_won[0]",
+  "old": "Salko sets the catalogue down. He files it. He does not look up.",
+  "new": "Salko sets the catalogue down and files it.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "the widened G11"
+ },
+ {
+  "file": "data/auctions/stellaris_voices.json",
+  "path": ".post_session.aldous_prentiss.player_won[1]",
+  "old": "Prentiss reads the next entry. He does not look up.",
+  "new": "Prentiss is already reading the next entry.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "Prentiss's own habit (voice sheet: already reading the next lot)"
+ },
+ {
+  "file": "data/galaxy/locations.json",
+  "path": ".locations.iron_depths[id=iron_depths_repair].flavor_text",
+  "old": "The intake clerk assigns you a bay number without looking up. The queue board has twelve ships ahead of you. Nobody complains. Complaining doesn't move the queue.",
+  "new": "The intake clerk assigns you a bay number between two other calls. The queue board has twelve ships ahead of you. Nobody complains. Complaining doesn't move the queue.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "Marcus's phrase in another's line"
+ },
+ {
+  "file": "data/journal/travel_log_templates.json",
+  "path": ".major_trade[5]",
+  "old": "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it without looking up.",
+  "new": "{commodity} moved at {system} for {profit} CR profit. The manifest clerk stamped it and called the next ship.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "Marcus's phrase in another's line"
+ },
+ {
+  "file": "data/journal/travel_log_templates.json",
+  "path": ".first_visit.nova_research",
+  "old": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors were soundproofed and the researchers walked fast and didn't look up. The cafeteria served three meals.",
+  "new": "First visit to Nova Research. Three badge checks before I reached the public concourse. The corridors were soundproofed and the researchers walked fast with their eyes on their slates. The cafeteria served three meals.",
+  "group": "gesture",
+  "ref": "G11 widened",
+  "why": "the widened G11"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=loss_short].text",
+  "old": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale inside the window and the full fee stands.",
+  "new": "*The incident report is up beside the docking log before you finish the sentence.* Kimura weighs what arrives and I pay on what he weighs. What went out the lock, I eat. This time. Put ten on his scale and the fee's whatever the docket says that day.",
+  "group": "truth",
+  "ref": "loss_short",
+  "why": "true after the full-pay window (soft deadline 14/18)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=made_good_terms].text",
+  "old": "Your credits, your call. Standard grade weighs the same wherever you bought it. I'll know what you did when Kimura's count comes in.",
+  "new": "Your hold, your call. Standard grade weighs the same wherever it came from. I'll know what you did when Kimura's count comes in.",
+  "group": "truth",
+  "ref": "made_good_terms",
+  "why": "made good by loot, mining or ore aboard, not only a purchase (Q13)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=tomas_havens].nodes[id=deal_proposal].text",
+  "old": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a farmer on Verdant gets to feed her kids this month.",
+  "new": "You've got a bill of landing. Guild rate on the tariff. Take my textiles to Stellaris Port, sell them under your license. We split the profits. Fair deal, and a weaver on Verdant gets to feed her kids this month.",
+  "group": "truth",
+  "ref": "Tomas's cloth",
+  "why": "one maker, the weaver of tomas_return and the walk-away line (commodities canon: Verdant's looms)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=tomas_havens].nodes[id=accept].text",
+  "old": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a farmer gets to eat.",
+  "new": "Good. Five bales, loading now. Take them to the Grand Bazaar at Stellaris Port. The textile desk clears them under your license and wires my cut back here. Nobody gets hurt. The Guild still gets their tariff, just less of it. And a weaver gets to eat.",
+  "group": "truth",
+  "ref": "Tomas's cloth",
+  "why": "one maker"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=thanks_made_good].text",
+  "old": "*He has two papers side by side.* Lane incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
+  "new": "*He has two papers side by side.* Incident report says units went out your lock. Kimura weighed ten, and not all ten carry my stamp. *He taps the second paper.* You made up the difference and didn't send me the bill.",
+  "group": "residual",
+  "ref": "lane",
+  "why": "names no lane (W3a's read)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=thanks_short].text",
+  "old": "*Kimura's receipt sits beside the lane report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
+  "new": "*Kimura's receipt sits beside the incident report.* Paid on what Kimura weighed. The rest I ate. That was the once. I'll remember that.",
+  "group": "residual",
+  "ref": "lane",
+  "why": "names no lane"
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_iron_short].text",
+  "old": "Kimura signed for what was on the scale, received short. The lane report covered the rest.",
+  "new": "Kimura signed for what was on the scale, received short. The incident report covered the rest.",
+  "group": "residual",
+  "ref": "lane",
+  "why": "names no lane"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=merchant_delivery].nodes[id=greet].responses[10].text",
+  "old": "About the ore. I lost some on the lane.",
+  "new": "About the ore. I lost some in a fight.",
+  "group": "residual",
+  "ref": "lane",
+  "why": "the loss is a defeat (broker_ore_lost)"
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=iron_delivery].timeliness_comments.very_late",
+  "old": "Intake clerk leans on the crate and sighs. \"Figured you'd forgotten. This is what's left of your pay.\"",
+  "new": "Intake clerk reads the weight off his datapad and keys in the late rate. \"Figured you'd forgotten. This is what's left of your pay.\"",
+  "group": "residual",
+  "ref": "very_late",
+  "why": "the scale is read off his datapad (W3a's read)"
+ },
+ {
+  "file": "data/missions/sa_v_investment_intro.json",
+  "path": ".missions[id=sa_v_investment_intro].discovery_text",
+  "old": "Odom flagged me down. Said he had something to show me. Not freight. The other side of the book.",
+  "new": "Odom said he had something to show me. Not freight. The other side of the book.",
+  "group": "residual",
+  "ref": "Longer Ledger",
+  "why": "the ledger opens in conversation (odom_ledger_open)"
+ },
+ {
+  "file": "data/dialogue/dialogues.json",
+  "path": ".dialogues[id=forgeworks_intake].nodes[id=no_sign].text",
+  "old": "*He reads the scale against Odom's manifest, then checks the incident file.* Manifest says ten. Scale says otherwise, and the file doesn't cover the gap. I don't sign for air. Bring me ten, or take it up with Odom.",
+  "new": "*He reads the scale against Odom's manifest.* Manifest says ten. Scale says otherwise. I don't sign for air. Bring me ten, or take it up with Odom.",
+  "group": "residual",
+  "ref": "no_sign",
+  "why": "true in deviation D-22's case"
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=iron_delivery].description",
+  "old": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work, the kind that keeps your fuel tank full and your name on the reliable list. Every trader in the Expanse started with a run like this.",
+  "new": "A cargo broker at Nexus Prime needs ten units of iron ore moved to Forgeworks. Straightforward hauling work. Every trader in the Expanse started with a run like this.",
+  "group": "residual",
+  "ref": "iron description",
+  "why": "no reliable list exists; the fuel is a forecast (economy design 7.4)"
+ },
+ {
+  "file": "data/missions/sa_v_investment_intro.json",
+  "path": ".missions[id=sa_v_investment_intro].description",
+  "old": "The cargo broker at Nexus Prime called you back. Not for another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
+  "new": "The cargo broker at Nexus Prime has more for you than another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
+  "group": "residual",
+  "ref": "Longer Ledger",
+  "why": "The summons premise went with the discovery text's \"Odom flagged me down\"; the ledger opens in conversation (the author's read 2026-10-16, L-sav)."
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[0].text",
+  "old": "New supplier on the register. File the form before your next load.",
+  "new": "New supplier. Every field of the form before your next load. Field five asks your reason for entering this market. Leave it blank. Everyone does.",
+  "group": "first_sale",
+  "ref": "nexus_prime",
+  "why": "polish design 5.4's beat for nexus_prime"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[1].text",
+  "old": "The cooperative logs you as a supplier. Unload at the grain shed.",
+  "new": "We pay over the Guild's transport rate. You're not the Guild. Unload at the grain shed.",
+  "group": "first_sale",
+  "ref": "verdant",
+  "why": "polish design 5.4's beat for verdant"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[2].text",
+  "old": "Guild desk and Union desk both logged it. You're paid either way.",
+  "new": "Guild desk and Union desk both want to be the one paying you. You're paid. They can settle the rest.",
+  "group": "first_sale",
+  "ref": "forgeworks",
+  "why": "polish design 5.4's beat for forgeworks"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[3].text",
+  "old": "Unload at bay two. Day shift takes it from there.",
+  "new": "First names on this deck. Bay two. Second shift breaks it down by morning.",
+  "group": "first_sale",
+  "ref": "breakstone",
+  "why": "polish design 5.4's beat for breakstone"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[4].text",
+  "old": "Delivery accepted. A supplier record is open under your ship.",
+  "new": "Office of Procurement, Materials Division. Delivery accepted. Compensation commensurate with first-supplier terms has been transferred.",
+  "group": "first_sale",
+  "ref": "axiom_labs",
+  "why": "polish design 5.4's beat for axiom_labs"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[5].text",
+  "old": "First load from you here. Leave it at the stall.",
+  "new": "Leave it by the stall. Your name? Tell me after. You eat first.",
+  "group": "first_sale",
+  "ref": "havens_rest",
+  "why": "polish design 5.4's beat for havens_rest"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[6].text",
+  "old": "Set it down by the breaking yard. You're paid at the gate.",
+  "new": "Worth half what you think. Set it down by the breaking yard. The gate pays you over anyway.",
+  "group": "first_sale",
+  "ref": "crimson_reach",
+  "why": "polish design 5.4's beat for crimson_reach"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[7].text",
+  "old": "First lot from you. I'll want to know where the next one comes from.",
+  "new": "First lot from you, so I pay over list. Next time, bring me where it came from. The story sells it here.",
+  "group": "first_sale",
+  "ref": "stellaris_port",
+  "why": "polish design 5.4's beat for stellaris_port"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[8].text",
+  "old": "Leave it by the lift. I'll log you as a supplier.",
+  "new": "Leave it by the lift. You're the supplier now. The last one transferred out.",
+  "group": "first_sale",
+  "ref": "iron_depths",
+  "why": "polish design 5.4's beat for iron_depths"
+ },
+ {
+  "file": "data/economy/first_sale_lines.json",
+  "path": ".first_sale_lines[9].text",
+  "old": "New supplier noted. Payment is off the open board.",
+  "new": "No names. Payment comes off the open board, over list.",
+  "group": "first_sale",
+  "ref": "nova_research",
+  "why": "polish design 5.4's beat for nova_research"
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=anomaly_gravity_01].choices[id=flee].description",
+  "old": "Your hull is groaning. Whatever this is, it's stronger than your ship. Get out while you still can.",
+  "new": "Slam the throttle and pull out of the distortion.",
+  "group": "flags",
+  "ref": "T2-2 (:1094)",
+  "why": "The hull fact, the reason and the urgency go (\"stronger than your ship\", \"while you still can\"). The hint now names the act that the label and the outcome describe. Theme 2; spec 2.2 edge 9."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=anomaly_gravity_01].choices[id=flee].outcome.description",
+  "old": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades. You don't look back.",
+  "new": "You slam the throttle and fight free of the distortion's grip. Your hull groans but holds. Behind you, the lensing effect pulses once and fades.",
+  "group": "flags",
+  "ref": "T2-2 (:1096)",
+  "why": "Cut \"You don't look back.\", an act the player did not pick (edge 8). Ends on the lensing image. Theme 9."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=cargo_lost_distress].choices[id=press_on].outcome.description",
+  "old": "You silence the distress channel and continue on course. The signal fades behind you. Somewhere out there, Captain Sato is counting the hours on her life support.",
+  "new": "You silence the distress channel and continue on course. The signal fades behind you.",
+  "group": "flags",
+  "ref": "T2-3 (:650)",
+  "why": "Cut the kicker: Sato counting her hours is a scene the captain cannot see. Ends on the signal fading. Theme 9; spec 2.1. The choice still sets `ignored_distress_signal`."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=comm_ghost_signal_01].choices[id=trace].outcome.description",
+  "old": "The signal bounced through seven relay buoys: a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum. There's nothing there. Officially.",
+  "new": "The signal bounced through seven relay buoys: a route that doesn't exist on current charts. Someone was using decommissioned infrastructure. The origin coordinates point to deep space between Crimson Reach and The Fulcrum.",
+  "group": "flags",
+  "ref": "T2-5 (:1800)",
+  "why": "Cut the punchline \"There's nothing there. Officially.\" Ends on the coordinates. Theme 9."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_cargo_log_01].choices[id=download].description",
+  "old": "The flight recorder tells a story. Data like this has value. Or consequences. Depends who reads it.",
+  "new": "Download the nav logs from the flight recorder.",
+  "group": "flags",
+  "ref": "T2-6 (:1733)",
+  "why": "The reason, the aside and the thought go. The act names the label's nav logs and the description's flight recorder. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_cargo_log_01].choices[id=download].outcome.description",
+  "old": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction: toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners. The data might interest someone. Or it might get you in trouble.",
+  "new": "The manifest tells a story: medical supplies, purchased legally at Axiom Labs, bound for Breakstone. The last entry is a course correction: toward Crimson Reach. Someone rerouted the shipment. The medical supplies never reached the miners.",
+  "group": "flags",
+  "ref": "T2-6 (:1735)",
+  "why": "Cut the thought \"The data might interest someone. Or it might get you in trouble.\" Ends on the manifest's last fact. Theme 9. The 80 CR now has no source in the text (flag 4)."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=debris_graveyard_01].choices[id=search].description",
+  "old": "Three ships, weapons fire, no survivors. Whatever happened here left cargo behind. And maybe answers.",
+  "new": "Search the wreckage and take what you can.",
+  "group": "flags",
+  "ref": "T2-7 (:1840)",
+  "why": "The recap and \"And maybe answers.\" go. \"Left cargo behind\" also overstated the outcome, whose containers are empty. The act takes the outcome's \"You take what you can\". Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=debris_graveyard_01].choices[id=avoid].description",
+  "old": "Debris fields that used to be ships are a warning. Whoever did this might still be hunting.",
+  "new": "Plot a wide detour around the field.",
+  "group": "flags",
+  "ref": "T2-7 (:1872)",
+  "why": "The warning and the reason go. The act is the outcome's first sentence. The outcome's \"It costs time and fuel.\" is not carried into the hint, since the data charges neither (flag 9). Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_micro_story_01].choices[id=scan].outcome.description",
+  "old": "Scans confirm one deceased occupant. No hazards. You log the coordinates and transmit a salvage notice to the nearest station. The cockpit lights will keep burning until the battery dies. Then the void takes another one.",
+  "new": "Scans confirm one deceased occupant. No hazards. You log the coordinates and transmit a salvage notice to the nearest station. The cockpit lights are still burning.",
+  "group": "flags",
+  "ref": "T2-8 (:1692)",
+  "why": "Cut the kicker \"Then the void takes another one.\" and the forecast \"will keep burning until the battery dies\". The line's own image stays, in the present tense. Themes 1 and 9 (flag 3)."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=distress_oxygen_01].choices[id=rescue].description",
+  "old": "Two hours of air from your reserves could mean the difference. You can smell recycled air for a while.",
+  "new": "Hard-dock and cycle fresh atmosphere into the prospector's cabin.",
+  "group": "flags",
+  "ref": "T2-9 (:959)",
+  "why": "The reason and the stray smell go. The act is in the outcome's own words. \"The prospector's\" also avoids a \"her\" that only the outcome establishes. Theme 2; edge 1."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=shakedown_pirate_01].choices[id=fight].outcome.description",
+  "old": "You power up weapons and angle your shields. The pirate grins. They were hoping you'd say that.",
+  "new": "You power up weapons and angle your shields. The pirate grins.",
+  "group": "flags",
+  "ref": "T2-14 (:540)",
+  "why": "Cut the punchline: the captain said nothing, because the act was powering up. Ends on the grin. Theme 9; edge 8."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=wildlife_swarm_01].choices[id=observe].outcome.description",
+  "old": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns: complex, almost rhythmic. Your footage will make some biologist's career.",
+  "new": "You drift among them for half an hour, cameras rolling. The organisms seem to communicate through light patterns: complex, almost rhythmic.",
+  "group": "flags",
+  "ref": "T2-16 (:1189)",
+  "why": "Cut the aside and forecast. No system pays for the footage (`void_drifters_observed` has no reader). Theme 9."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=cargo_stowaway].choices[id=work].description",
+  "old": "An extra pair of hands in the cargo hold. They clearly know their way around a shipping crate.",
+  "new": "Keep them aboard and put them to work in the cargo hold.",
+  "group": "flags",
+  "ref": "T2-17 (:2212)",
+  "why": "The inference (\"They clearly know their way around a shipping crate\") goes. The hint names the act the outcome shows. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_cargo_log_01].choices[id=strip].description",
+  "old": "A functional power cell and some wiring.",
+  "new": "Pull the power cell and wiring from the console.",
+  "group": "flags",
+  "ref": "T2-17 (:1751)",
+  "why": "The parts list becomes the act, using the outcome's power cell and wiring. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_micro_story_01].choices[id=board].description",
+  "old": "The lights are still on. Intact hull, no weapons damage. Something happened to the pilot.",
+  "new": "Dock with the courier and open the cockpit.",
+  "group": "flags",
+  "ref": "T2-17 (:1676)",
+  "why": "The recap of the description and the set-up \"Something happened to the pilot.\" go. The act comes from the label. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=distress_cold_signal_01].choices[id=investigate].description",
+  "old": "Eleven days is a long time. Whatever you find won't be a rescue.",
+  "new": "Divert to the beacon's coordinates.",
+  "group": "flags",
+  "ref": "T2-17 (:1539)",
+  "why": "The remark and the forecast go (\"won't be a rescue\" also gave the outcome away). What is left is the act. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=distress_cold_signal_01].choices[id=log_it].description",
+  "old": "Somewhere an office will update a file. Somewhere else, a family is still waiting.",
+  "new": "Flag the beacon in the sector registry and keep flying.",
+  "group": "flags",
+  "ref": "T2-17 (:1553)",
+  "why": "The two-sentence kicker goes. The act comes from the label and the outcome. The outcome still carries the same kicker (flag 10)."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=legendary_iron_maw].choices[id=fight].description",
+  "old": "That thing has swallowed ships whole.",
+  "new": "Power up weapons and engage the Iron Maw.",
+  "group": "flags",
+  "ref": "T2-17 (:1985)",
+  "why": "The world fact goes and the act replaces it. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=merchant_trader_01].choices[id=trade].description",
+  "old": "Surplus runs between systems usually mean below-market prices.",
+  "new": "Dock and look over her surplus.",
+  "group": "flags",
+  "ref": "T2-17 (:281)",
+  "why": "The payoff goes and the act replaces it. It says \"look over\", not \"buy\", because the outcome pays +100 CR and loads no cargo (flag 10). Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=patrol_warning_01].choices[id=heed].description",
+  "old": "Raider positions, ship profiles, ambush points.",
+  "new": "Ask the officer for raider positions and ambush points.",
+  "group": "flags",
+  "ref": "T2-17 (:1472)",
+  "why": "The bare list becomes the act of asking for it (the outcome's list). Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=patrol_warning_01].choices[id=volunteer].description",
+  "old": "One more ship on a raider flush changes the math. The patrol pays a bounty.",
+  "new": "Offer to join the patrol's sweep.",
+  "group": "flags",
+  "ref": "T2-17 (:1486)",
+  "why": "The reason and the payoff go and the act replaces them. It promises no fight, since none starts (F-51). Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=anomaly_gravity_01].choices[id=study].description",
+  "old": "Hold at the edge and let your instruments record. Twenty minutes of readings the Collective would kill for.",
+  "new": "Hold at the edge for twenty minutes and let your instruments record.",
+  "group": "flags",
+  "ref": "T2-17 (:1075)",
+  "why": "The triage's ready swap, as given. The payoff goes; no system sells the readings (`gravity_anomaly_studied` has no reader)."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=derelict_freighter_01].choices[id=pass].description",
+  "old": "Dead ships mean dead crews. Give the wreck a wide berth.",
+  "new": "Give the wreck a wide berth.",
+  "group": "flags",
+  "ref": "T2-17 (:201)",
+  "why": "Cut the reason \"Dead ships mean dead crews.\" Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=distress_nav_01].choices[id=ignore].description",
+  "old": "The lanes are charted. Leave them to their own heading.",
+  "new": "Leave them to their own heading.",
+  "group": "flags",
+  "ref": "T2-17 (:140)",
+  "why": "Cut the reason \"The lanes are charted.\" Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=debris_minefield_01].choices[id=navigate].description",
+  "old": "Slow and steady through a field of dormant ordnance. Salvage teams pay for minefield maps.",
+  "new": "Creep through the gaps at quarter thrust, sensors on full sweep.",
+  "group": "flags",
+  "ref": "T2-17 (:907)",
+  "why": "The slogan and the payoff go. The act is in the outcome's own words. The outcome keeps the map and its 100 CR. Theme 2."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=distress_pirate_attack_01].choices[id=intervene].description",
+  "old": "Two against two changes the odds. The raiders might break off when they see you coming.",
+  "new": "Burn hard toward the firefight, weapons hot.",
+  "group": "flags",
+  "ref": "T2-10 remainder (:1306)",
+  "why": "The ruled cut takes \"Two against two changes the odds.\" What was left, \"The raiders might break off when they see you coming.\", is a forecast with no act, so the hint takes the outcome's own words. Theme 2 (flag 1)."
+ },
+ {
+  "file": "data/encounters/generic.json",
+  "path": ".encounters[id=comm_intercept_static_01].choices[id=log].outcome.description",
+  "old": "You dump the raw signal data to your ship's archive. The Expanse is full of ghosts on dead frequencies.",
+  "new": "You dump the raw signal data to your ship's archive.",
+  "group": "flags",
+  "ref": "W2 unruled, HO:1165-1167 (:750)",
+  "why": "Cut the maxim after the image (PN:1288-1291). Ends on the act."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_haven_supply_run_01].choices[id=escort].description",
+  "old": "Fly alongside. A supply ship this vulnerable could attract trouble.",
+  "new": "Fly alongside.",
+  "group": "flags",
+  "ref": "T3-14 (:470)",
+  "why": "Cut the reason; \"Fly alongside.\" is the act. Theme 2 (flag 8)."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_haven_supply_run_01].choices[id=decline].outcome.description",
+  "old": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven. Haven's Rest is full of ships like that, doing too much with too little.",
+  "new": "You send a brief message of goodwill and continue on your route. The Perseverance shrinks on your rear sensors, still limping toward Ring Seven.",
+  "group": "flags",
+  "ref": "T3-14 (:491)",
+  "why": "Cut the comment \"Haven's Rest is full of ships like that, doing too much with too little.\" Ends on the Perseverance on your rear sensors. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_iron_deep_signal_01].choices[id=record].outcome.description",
+  "old": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. The Collective would pay well for this. The Union would want to know what DCMC found under their claims. Even the Guild might be interested. You encrypt the data and store it in your secure logs.",
+  "new": "You grab the full telemetry dump before the DCMC network kills the broadcast: twelve seconds of data that paints a picture of something that shouldn't be there. You encrypt the data and store it in your secure logs.",
+  "group": "flags",
+  "ref": "T3-18 (:1269)",
+  "why": "Cut the captain's thinking (three would-be buyers). No system sells the telemetry, and `iron_depths_anomaly_recorded` has no reader. Theme 9 (flag 7)."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_iron_dcmc_patrol_01].description",
+  "old": "A heavy patrol cutter bearing Deep Core Mining Corporation markings drops out of cover and locks targeting sensors on your hull. The pilot's voice is flat, corporate, and brooks no argument: \"Unidentified vessel, you are entering a DCMC-secured extraction corridor. Transmit your credentials, cargo manifest, and intended destination. You have thirty seconds to comply before we escalate.\" Two more DCMC security drones flank your ship, weapons powered but not locked. Yet.",
+  "new": "A heavy patrol cutter bearing Deep Core Mining Corporation markings drops out of cover and locks targeting sensors on your hull. The pilot's voice is flat, corporate, and brooks no argument: \"Unidentified vessel, you are entering a DCMC-secured extraction corridor. Transmit your credentials, cargo manifest, and intended destination. You have thirty seconds to comply before we escalate.\" Two more DCMC security drones flank your ship, weapons powered but not locked.",
+  "group": "flags",
+  "ref": "T3-19 (:1321)",
+  "why": "Cut the punchline \"Yet.\" Ends on the drones. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_iron_dcmc_patrol_01].choices[id=negotiate].outcome.description",
+  "old": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. They know the regulations. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan, but DCMC has your name on a list now.",
+  "new": "You cite Union-recognized transit rights and refuse the full manifest disclosure. The patrol officer pauses. \"Fine. Credentials and destination only. But we're logging this interaction, Captain.\" You transit without the invasive cargo scan.",
+  "group": "flags",
+  "ref": "T3-19 (:1356)",
+  "why": "Cut the guess at the officer's mind (\"They know the regulations.\") and the list no system keeps (\", but DCMC has your name on a list now\"; the choice pays only XP and +5 Union). The officer's own \"we're logging this\" stands as speech. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_crimson_outlaw_offer_01].description",
+  "old": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked. A courtesy, or a warning.",
+  "new": "A scarred raider drops out of the debris field that passes for normal space in Crimson Reach and slides into an escort position off your port side. The captain hails you with the easy confidence of someone who does this every day: \"Welcome to the Reach, traveler. Name's Vex. I run security for this corridor. Freelance, of course. For a reasonable fee, I guarantee safe passage to the nearest beacon. Without my services, well... the Reach is unpredictable. Things happen. Ships disappear. I'd hate for that to be you.\" Vex's weapons are powered but not locked.",
+  "group": "flags",
+  "ref": "T3-21 (:1466)",
+  "why": "Cut the aside \"A courtesy, or a warning.\" Ends on Vex's weapons. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_crimson_outlaw_offer_01].choices[id=counter].outcome.description",
+  "old": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex seems amused, and a little impressed. They hand over a surprisingly detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\" The chart alone is worth more than the fee.",
+  "new": "You negotiate Vex down to a flat guide fee in exchange for safe corridor mapping data. Vex hands over a detailed nav chart of the local debris fields. \"You've got hustle, Captain. I respect that.\"",
+  "group": "flags",
+  "ref": "T3-21 (:1519)",
+  "why": "Cut the verdict \"The chart alone is worth more than the fee.\" Beyond the triage, I also cut \"Vex seems amused, and a little impressed.\" (the narrator naming feelings, which Vex's own line already shows) and \"surprisingly\" (the captain's reaction). \"They\" becomes \"Vex\" so the antecedent is clear. Theme 9; edge 6 (flag 5)."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_crimson_ghost_ship_01].choices[id=board].outcome.description",
+  "old": "The Margrave's interior is pristine. Too pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. By whom? The ship's computer won't say. You copy the nav logs and leave. The Margrave drifts on, going wherever it's going.",
+  "new": "The Margrave's interior is pristine. Personal effects are neatly stowed. The galley has food set out for a meal that was never eaten. The nav logs show the ship's last recorded position as deep in uncharted Reach space, then nothing for three years, then a course correction logged yesterday. You copy the nav logs and leave. The Margrave drifts on.",
+  "group": "flags",
+  "ref": "T3-22 (:1560)",
+  "why": "Cut \"Too pristine.\" and \"By whom? The ship's computer won't say.\" (commentary and a rhetorical question, edge 5). Also cut \", going wherever it's going\", a remark after the image. Theme 9 (flag 6)."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_fulcrum_encrypted_01].choices[id=intercept].description",
+  "old": "Pre-Expansion encryption is old. Old means crackable. Maybe.",
+  "new": "Set your computer to work on the deprecated cipher.",
+  "group": "flags",
+  "ref": "T3-23 (:1637)",
+  "why": "The reason and the joke go and the act replaces them. Theme 2."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_fulcrum_encrypted_01].choices[id=intercept].outcome.description",
+  "old": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names (only numbers), and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can. Someone went to a lot of trouble to keep this quiet.",
+  "new": "Your computer grinds through the deprecated cipher for twenty minutes before extracting fragments: coordinates, a personnel roster with no names (only numbers), and a phrase that repeats in the header: 'THRESHOLD PROTOCOL.' The rest is gibberish. You save what you can.",
+  "group": "flags",
+  "ref": "T3-23 (:1639)",
+  "why": "Cut the kicker. Ends on \"You save what you can.\" Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_fulcrum_encrypted_01].choices[id=trace].outcome.description",
+  "old": "You run a passive trace on the transmission's destination. The relay buoy is 40,000 kilometers out, hidden in an asteroid shadow. It's small, automated, and definitely not Guild infrastructure. You log its coordinates before it cycles to standby mode. Whoever placed it there doesn't want it found.",
+  "new": "You run a passive trace on the transmission's destination. The relay buoy is 40,000 kilometers out, hidden in an asteroid shadow. It's small, automated, and definitely not Guild infrastructure. You log its coordinates before it cycles to standby mode.",
+  "group": "flags",
+  "ref": "T3-23 (:1658)",
+  "why": "Cut the kicker. Ends on logging the coordinates. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_fulcrum_patrol_01].description",
+  "old": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice, deliberately stripped of identifying characteristics, hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked. This isn't a checkpoint. This is a warning.",
+  "new": "A patrol ship with no transponder code and no faction markings materializes from behind a debris screen, already at weapons range. Its hull is matte black, sensor-absorbent, and built for speed. A synthesized voice, deliberately stripped of identifying characteristics, hails you: \"Vessel, state your business in this sector. You have ten seconds.\" The ship's weapons are already locked.",
+  "group": "flags",
+  "ref": "T3-24 (:1687)",
+  "why": "Cut the aside. Ends on the lock. Theme 9."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_fulcrum_patrol_01].choices[id=retreat].description",
+  "old": "Unmarked, armed, and already locked on? Time to leave.",
+  "new": "Throw your engines into reverse and back out of the sector.",
+  "group": "flags",
+  "ref": "T3-24 (:1738)",
+  "why": "The rhetorical question and the verdict go. The act is in the outcome's own words. Theme 2."
+ },
+ {
+  "file": "data/encounters/system_specific.json",
+  "path": ".encounters[id=sys_haven_newcomer_01].choices[id=guide].outcome.description",
+  "old": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The young voice (a teenager's) thanks you three times before signing off. Their shuttle wobbles toward the station.",
+  "new": "You transmit the coordinates for Haven's Rest Intake Station and walk them through the beacon system. The teenager on the comms thanks you three times before signing off. Their shuttle wobbles toward the station.",
+  "group": "flags",
+  "ref": "T3-27 (:527)",
+  "why": "This is the line the ledger offered (PN:1263-1266). The possessive with its missing noun goes, and the teenager becomes a plain fact (flag 8)."
+ },
+ {
+  "file": "data/encounters/ce4_variety.json",
+  "path": ".encounters[id=bait_civilian_lure_01].choices[id=scan_first].failure_outcome.description",
+  "old": "The scans look fine. You commit. The trap closes.",
+  "new": "The scans look fine. The transport's beacon flickers off, and an armed ship drops out of stealth.",
+  "group": "flags",
+  "ref": "T4-17 (:58)",
+  "why": "Cut \"You commit.\", a decision the player did not pick (edge 8). Edge 8's own model, a failed bait check, ends on the threat arriving. So \"The trap closes.\" becomes that image, in the words of this encounter's `approach_blind` outcome. The fight follows, because `distress_bait` carries an enemy (flag 2)."
+ },
+ {
+  "file": "data/encounters/ce4_variety.json",
+  "path": ".encounters[id=bait_mining_rig_01].choices[id=scan_drive].description",
+  "old": "Run a remote diagnostic on his drive. A real fault shows. A faked one doesn't.",
+  "new": "Run a remote diagnostic on his drive.",
+  "group": "flags",
+  "ref": "T4-21 (:108)",
+  "why": "Cut the reason after the act. The interface shows the Technical 3 check. Theme 2."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_sato_returns_01].choices[id=warn_her].description",
+  "old": "Tell Sato to be careful. Whoever did this won't appreciate her asking questions.",
+  "new": "Tell Sato to be careful.",
+  "group": "flags",
+  "ref": "T4-50",
+  "why": "Cut the reason after the act. Theme 2: a hint names the act and nothing more."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_sato_ghost_01].choices[id=investigate].description",
+  "old": "Divert to the last known coordinates. Something was there.",
+  "new": "Divert to the last known coordinates.",
+  "group": "flags",
+  "ref": "T4-35",
+  "why": "Cut the captain's thought (theme 2)."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_sato_ghost_01].choices[id=investigate].outcome.description",
+  "old": "You sweep the area with every sensor you have. The results come back empty. Not a scrap of wreckage, not a residual energy reading, nothing to explain what you saw. But your nav computer logs a curious detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code. Someone is either using her identity or her ship survived. Either way, someone wants you to notice.",
+  "new": "You sweep the area with every sensor you have. The results come back empty. But your nav computer logs one detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code.",
+  "group": "flags",
+  "ref": "T4-36",
+  "why": "Cut the kicker and the narrator's two hypotheses before it (theme 9). The line now ends on the fact the captain learns, Sato's code. Also cut the triple-negation sentence: it is a cousin of the paired negation, it repeats \"empty\", and it ends on a remark. \"A curious detail\" became \"one detail\", since \"curious\" was the narrator rating the find. The flag `sato_ghost_investigated` and the fact learned are unchanged. See flag 3."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_sato_ghost_01].choices[id=run_diagnostics].description",
+  "old": "Could be a glitch. Check your instruments before chasing phantoms.",
+  "new": "Check your instruments.",
+  "group": "flags",
+  "ref": "T4-34",
+  "why": "Cut the thought and the reason. The act was already in the line (theme 2)."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_larsen_warning_01].choices[id=trace_source].description",
+  "old": "If someone flagged your ship, there's a paper trail. See if you can find it.",
+  "new": "Search the Guild customs databases for the order that flagged your ship.",
+  "group": "flags",
+  "ref": "T4-49",
+  "why": "The reason went. The act now uses the outcome's own words (\"Guild customs databases\"), as Task 12 did for theme 2 hints that had no clean act."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=salvage_evidence].description",
+  "old": "Pull the serial numbers and targeting logs from the wreckage. Someone armed these pirates.",
+  "new": "Pull the serial numbers and targeting logs from the wreckage.",
+  "group": "flags",
+  "ref": "T4-37",
+  "why": "Cut the conclusion after the act (theme 2)."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=strip_parts].description",
+  "old": "Military hardware sells well on the open market. Take what you can carry.",
+  "new": "Take what you can carry.",
+  "group": "flags",
+  "ref": "T4-38",
+  "why": "Cut the reason. The act stands."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=strip_parts].outcome.description",
+  "old": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. They'll fetch a good price at any station, no questions asked. As you load the last piece, your scanner catches something etched into the capacitor housing: a Guild logistics stamp, half-scraped away. Someone tried to remove the markings. They missed one.",
+  "new": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. As you load the last piece, your scanner catches something etched into the capacitor housing: a Guild logistics stamp, half-scraped away.",
+  "group": "flags",
+  "ref": "T4-39",
+  "why": "Cut the thought \"They'll fetch a good price...\" (theme 9). Also cut the inference and punchline after the stamp: \"half-scraped away\" already shows the scraping, so the line ends on the image. The stamp (what the captain learns) and the flag `pirate_weapons_evidence` are unchanged. The 200 CR this outcome pays now has no source in the words. See flag 1."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=mark_and_leave].description",
+  "old": "Tag the wreck for authorities and move on. Salvaging evidence makes you a witness.",
+  "new": "Tag the wreck for authorities and move on.",
+  "group": "flags",
+  "ref": "T4-40",
+  "why": "Cut the reason (theme 2)."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_pirate_weapons_01].choices[id=mark_and_leave].outcome.description",
+  "old": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers.",
+  "new": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, the wreck tumbles slowly into the asteroid field.",
+  "group": "flags",
+  "ref": "HO narrator inference",
+  "why": "Cut the forecast (theme 1). \"You watch the wreck tumble\" became the image itself. Direct perception passes edge 2, but the line needs no verb for the captain."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_guild_shadow_01].description",
+  "old": "For the last three jumps: the same sensor contact, always at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
+  "new": "For the last three jumps, the same sensor contact has held at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
+  "group": "flags",
+  "ref": "T4-7",
+  "why": "This is the reviewer's deferred fragment fix. The opening clause now has a verb (\"has held\"), and \"always matching\" keeps the cadence. Task 12 already cut the crew's intent, and nothing else changes."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_guild_shadow_01].choices[id=defy].outcome.description",
+  "old": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
+  "new": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit.",
+  "group": "flags",
+  "ref": "T4-41",
+  "why": "Cut the verdict (theme 9). The line ends on the act. See flag 9 for the speech that the option does not print."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_guild_shadow_01].choices[id=scan_shadow].outcome.description",
+  "old": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
+  "new": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. You store the signature data alongside your growing evidence file.",
+  "group": "flags",
+  "ref": "T4-42",
+  "why": "Cut the narrator's inference. The scan's own finding stays, so the captain learns the same thing and `shadow_ship_identified` is unchanged."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_final_warning_01].choices[id=double_down].outcome.description",
+  "old": "You spend the next hour transmitting encrypted copies of every document, scan, and testimony you've collected to every trusted contact in your network. Torres. Larsen. Your black market connections. Independent media outlets on three stations. If The Ledger comes for you now, the information survives. The screens return to normal, and your security sweep finds and purges the intrusion code. But the message is clear: the next move won't be digital.",
+  "new": "You spend the next hour transmitting encrypted copies of every document and scan you've collected to every trusted contact in your network. Torres. Larsen. Your black market connections. Independent media outlets on three stations. The screens return to normal, and your security sweep finds and purges the intrusion code.",
+  "group": "flags",
+  "ref": "T4-43",
+  "why": "Cut the kicker, and the forecast that served as a reason (theme 9). Also cut \"and testimony\" under theme 4. The only testimony in the data comes from `campaign_refugee_testimony_01`, which is optional. This encounter needs only `discovered_ledger_connection` and `completed_mission_15`. The three names stand. Every path to `discovered_ledger_connection` (set by `the_ledger`) passes `bill_of_landing` (Larsen) and `the_crimson_run` (`met_malia_torres`, `black_market_access`). See flag 4."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_final_warning_01].choices[id=set_trap].description",
+  "old": "They hacked your systems. That means they left a trail. Find it.",
+  "new": "Let the intrusion code run and trace its pathway.",
+  "group": "flags",
+  "ref": "T4-44",
+  "why": "The reason became the act, in the outcome's own words. Letting the code run is the act's visible risk, which edge 9 allows."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_old_allies_01].description",
+  "old": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. The pieces are falling into place. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other.",
+  "new": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other.",
+  "group": "flags",
+  "ref": "HO narrator inference",
+  "why": "Cut the inference \"The pieces are falling into place.\" The \"same conclusion\" clause stays as SP10's plot beat (flag 12)."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_old_allies_01].choices[id=coordinate].outcome.description",
+  "old": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department. It's a parallel power structure that has been steering the Commerce Guild for over a decade. And now, for the first time, someone has the complete picture. The channel goes quiet as the weight of it settles. Then a voice, you're not sure whose, says simply: 'So. How do we tear it down?'",
+  "new": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department. It's a parallel power structure that has been steering the Commerce Guild for over a decade. The channel goes quiet. Then someone says: 'So. How do we tear it down?'",
+  "group": "flags",
+  "ref": "T4-46",
+  "why": "Cut four things: the sentence rating the moment, the feeling (\"as the weight of it settles\"), the captain's uncertainty (\"you're not sure whose\") and \"simply\". \"Someone says\" keeps the speaker unnamed. The Ledger sentences are what the evidence shows, which is the beat, so they stay. The contacts bring the testimonies, so nothing here recalls an optional path."
+ },
+ {
+  "file": "data/encounters/campaign.json",
+  "path": ".encounters[id=campaign_old_allies_01].choices[id=hold_back].outcome.description",
+  "old": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready: a weapon that grows more dangerous the longer The Ledger doesn't know exactly what you have. It's a gamble: every day you wait is another day they might find a way to discredit or destroy what you've built. But it's also another day to gather more, to identify the people at the very top. The channel signs off with a shared understanding: when the time comes, you move together. Not before.",
+  "new": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready. The channel signs off on one agreement: when the time comes, you move together. Not before.",
+  "group": "flags",
+  "ref": "T4-47",
+  "why": "Cut the reasons supplied for the captain: the weapon metaphor, the gamble and its counterweight. \"A shared understanding\" reads every mind on the channel, so it became \"one agreement\", an act. The agreement's words and `evidence_held_reserve` are unchanged."
+ },
+ {
+  "file": "data/encounters/humor.json",
+  "path": ".encounters[id=humor_ghost_pirate_01].description",
+  "old": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream, but the hail that follows is... off. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer 200 credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The crew abandoned ship, but nobody told the autopilot to stop working.",
+  "new": "A battered pirate vessel drops out of the dark on an intercept course, weapons hot. Your threat systems scream. A cheerful, synthesized voice announces: 'Hello! Thank you for traveling through this sector. Your cooperation is appreciated! Please transfer fifty credits to avoid a mutually inconvenient weapons discharge. For your convenience, we accept all major credit transfers. Your satisfaction is our priority!' Sensors show zero life signs aboard. The ship is flying on autopilot.",
+  "group": "flags",
+  "ref": "T5-6, T5-7",
+  "why": "**T5-6:** \"200\" became \"fifty credits\", the `pay` choice's real charge (reward `credits -50`). It is spelled out because the 2026-10-13 token ruling gives tokens only to mission rewards. The customer-service robbery joke is untouched. **T5-7:** cut the narrator's comic timing \", but the hail that follows is... off\". **Beyond the named phrase:** the closing punchline (edge 5: a punchline sentence after the image) became the flat fact it carried. That fact is the antecedent for \"the autopilot\" in the hack hint and the fight and pay outcomes. See flag 6. **Left as is:** the `pay` outcome, the other path T5-7 names. Task 12 already cut it, and its \"It has a customer loyalty stamp.\" is the handbook's own Pass example."
+ },
+ {
+  "file": "data/encounters/humor.json",
+  "path": ".encounters[id=humor_retirement_01].choices[id=accept].outcome.description",
+  "old": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired. Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots. Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.' The star chart actually has some useful nav data on it.",
+  "new": "Declan docks and hands over a battered cargo crate. Inside: a faded photograph of a crew he flew with twenty years ago ('all dead or retired. Same thing, really'), a chunk of asteroid ore from his first score ('worth about four credits, but it was the first thing I ever stole'), a hand-written star chart with personal notes in the margins ('the good hiding spots. Yours now'), and a flask engraved with 'TO DECLAN, FROM DECLAN, BECAUSE NOBODY ELSE WILL.' He shakes your hand. 'Thirty years of raiding and all I've got is this box of junk and a bad back. But you know what? It was a hell of a ride.'",
+  "group": "flags",
+  "ref": "T5-10",
+  "why": "Cut the aside. It promised nav data no system grants: the rewards are 60 CR and 20 XP. The chart stays as a keepsake in the crate, carrying Declan's own words. See flag 2 for the 60 CR."
+ },
+ {
+  "file": "data/encounters/humor.json",
+  "path": ".encounters[id=humor_wrong_number_01].choices[id=play_along].outcome.description",
+  "old": "You lean into it. 'Francine! It's been too long!' What follows is a twenty-minute conversation in which Francine lists what Rodriguez did: he owes her money, borrowed her compression coils, and never returned her favorite data pad. You apologize for all of it. Francine is so touched by Rodriguez's sudden emotional growth that she forgives everything and sends you a care package of homemade ration supplements.",
+  "new": "You lean into it. 'Francine! It's been too long!' What follows is a twenty-minute conversation in which Francine lists what Rodriguez did: he owes her money, borrowed her compression coils, and never returned her favorite data pad. You apologize for all of it. The channel goes quiet. Then Francine says, 'You've never said sorry in your life, Rodriguez. I forgive you. All of it.' A minute later, a small credit transfer arrives, labeled 'PROUD OF YOU, RODRIGUEZ.'",
+  "group": "flags",
+  "ref": "HO W2 unruled",
+  "why": "The narrator's report of Francine's feelings became her own words (G8). The off-screen care package, which no cargo reward backs, became the 25 CR the data pays, sent as a small labeled credit transfer like the `explain` path's. The \"emotional growth\" joke now lives in her line and the label. \"You lean into it.\" stays because it reports the act the label picks, not a feeling. See flag 11."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_aurelia_beacon_01].description",
+  "old": "Your sensors lock onto a faint, repeating signal: old encoding, pre-settlement era. As you close the distance, the source resolves: a navigation beacon, scarred by micrometeorites and coated in a century of cosmic dust. It bears the faded emblem of the colony ship Aurelia. The transmission is automated, looping endlessly through the void. A woman's voice, calm and precise, reads coordinates: the original landing sites, one after another. Meridian. Breakstone. Veldt. Names that would become cities, read aloud before they were anything at all. The voice pauses between each entry as if waiting for confirmation that will never come. She has been speaking to no one for a hundred and fifty years.",
+  "new": "Your sensors lock onto a faint, repeating signal: old encoding, pre-settlement era. As you close the distance, the source resolves: a navigation beacon, scarred by micrometeorites and coated in a century of cosmic dust. It bears the faded emblem of the colony ship Aurelia. The transmission is automated, looping endlessly through the void. A woman's voice, calm and precise, reads coordinates: the original landing sites, one after another. Meridian. Breakstone. Veldt. The voice pauses between each entry. She has been speaking to no one for a hundred and fifty years.",
+  "group": "flags",
+  "ref": "T5-27",
+  "why": "Cut the forecast \"as if waiting for confirmation that will never come\". Also cut \"Names that would become cities...\", a remark after the image (theme 1; lore loses the narrator's commentary). The last sentence stays: it is a flat duration and the image the scene rests on, and it fits the cultural guide's 2185 launch. See flag 8."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_charter_fragment_01].choices[id=recover].outcome.description",
+  "old": "The hull segment barely fits through your cargo door. Up close, you can see the care that went into the engraving: every letter precise, every word deliberate. Beneath the Charter text, in smaller script, someone has added: 'We forgot this once. We must not forget it again.' It is unsigned and undated. Just the words and the void they were meant to survive.",
+  "new": "The hull segment barely fits through your cargo door. Up close, there is a line in smaller script beneath the Charter text: 'We forgot this once. We must not forget it again.' It is unsigned and undated.",
+  "group": "flags",
+  "ref": "T5-15",
+  "why": "Cut the inference about the carver's care (it also opened with a filter verb, \"you can see\") and the closing kicker. \"Up close\" now reveals the smaller line itself. The line ends on \"unsigned and undated\"."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_charter_fragment_01].choices[id=scan].outcome.description",
+  "old": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. This was done by someone from the first generation, someone who lived through the landing and felt the Charter's promise slipping away even then. You store the scans and release the hull fragment back into its slow tumble through the dark.",
+  "new": "Your sensors capture every groove and imperfection. Metallurgical analysis dates the etching to within a decade of the Aurelia's arrival. You store the scans and release the hull fragment back into its slow tumble through the dark.",
+  "group": "flags",
+  "ref": "T5-16",
+  "why": "Cut the guessed feeling of a dead stranger. This path never shows the smaller script, so nothing recalls it (theme 4)."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_first_miners_01].choices[id=pass].outcome.description",
+  "old": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions. But this one was placed on purpose.",
+  "new": "You dip your running lights as you pass, the spacer's salute. The memorial shrinks behind you, a small point of light among millions.",
+  "group": "flags",
+  "ref": "T5-17",
+  "why": "Cut the kicker. The line ends on the image. The hint (Task 12's cut) stands."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_pre_colony_probe_01].description",
+  "old": "Your sensors flag an object on an unusual trajectory: slow, deliberate, following a survey pattern that predates every human settlement in the Expanse. It's a probe. Automated, solar-powered, still functional after what your instruments estimate to be at least two hundred years. Its design language is Earth-era but matches no known space agency's catalog. The probe is methodically scanning asteroid compositions and transmitting data to a relay point that no longer exists. It arrived here decades before the Aurelia. Someone, or something, was mapping the Expanse long before humanity decided to call it home.",
+  "new": "Your sensors flag an object on an unusual trajectory: slow, deliberate, following a survey pattern that predates every human settlement in the Expanse. It's a probe. Automated, solar-powered, still functional after what your instruments estimate to be at least two hundred years. Its design language is Earth-era but matches no known space agency's catalog. The probe is methodically scanning asteroid compositions and transmitting data to a relay point that no longer exists. It arrived here decades before the Aurelia.",
+  "group": "flags",
+  "ref": "T5-18",
+  "why": "Cut both twin kickers, the brief's second option. This one now ends on the instruments' finding."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_pre_colony_probe_01].choices[id=intercept].outcome.description",
+  "old": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118. Eighty years before the Aurelia launched. Earth sent this probe during an era of expansion that history barely remembers. The question isn't who sent it. The question is what they found, and whether anyone was listening when it reported back.",
+  "new": "The probe doesn't resist your scans. Its memory banks are vast and mostly intact: geological surveys of systems the Expanse hasn't mapped yet, atmospheric data from worlds no human has visited. The manufacturing stamps are partially corroded, but you recover a partial serial number and a date: 2118.",
+  "group": "flags",
+  "ref": "T5-19",
+  "why": "Cut the framing (theme 9) and the two sentences before it. \"Earth sent this probe during an era of expansion that history barely remembers\" is commentary, and canon says otherwise: `cultural_guide.md` has the colony ships launching from 2132, \"bound for star systems identified by decades of deep-space probes\". **Figure disagrees with canon:** \"Eighty years before the Aurelia launched\" is wrong. The guide says the Aurelia launched in 2185, which is 67 years after 2118. The description already says the probe arrived decades before the Aurelia. See flag 7."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_generation_ship_01].choices[id=scan].outcome.description",
+  "old": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. A ship designed not just for travel but for life. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another. You watch them all. It takes eleven minutes.",
+  "new": "Your sensors penetrate the hull and return a ghostly blueprint. Living quarters for thousands. Hydroponics bays. Schools. The cryo-bays register as unpowered. Have been for decades. The passenger manifest transmits automatically when your scan reaches the bridge computer: 4,217 names scrolling across your display, one after another, for eleven minutes.",
+  "group": "flags",
+  "ref": "T5-21",
+  "why": "Cut the \"not just X but Y\" remark. **Beyond the flag:** \"You watch them all. It takes eleven minutes.\" adds an act the player did not pick (edge 8), so the eleven minutes now belong to the scroll. See flag 10."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_earth_song_01].choices[id=listen].outcome.description",
+  "old": "The pilot sings three songs. The first is mournful: something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark. You sit with the silence for a long time after.",
+  "new": "The pilot sings three songs. The first is mournful: something about rivers and seasons. The second is angry, defiant, a song about refusing to be forgotten. The third is quiet, almost a lullaby. When it ends, the pilot's voice comes through, rough and unsteady: 'Same time next year, for anyone listening.' The shuttle's engines fire and it slips away into the dark.",
+  "group": "flags",
+  "ref": "T5-27",
+  "why": "Cut the aside, which is also an act the player did not pick. The line ends on the shuttle leaving."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_forgotten_station_01].description",
+  "old": "Your sensors detect a structure that shouldn't be here: a space station, first-generation design, tucked into a stable Lagrange point between two minor bodies. It doesn't appear on any current chart. The station is small by modern standards: a central hub with four radiating arms, built for maybe two hundred residents. Power is negligible. Emergency lighting only. The hull is scarred but sound. This is one of the Expanse's first permanent habitats, built in the years after the Aurelia's landing, before the settlements grew large enough to make orbital stations obsolete. History forgot about it. But it's still here.",
+  "new": "Your sensors detect a structure that shouldn't be here: a space station, first-generation design, tucked into a stable Lagrange point between two minor bodies. It doesn't appear on any current chart. The station is small by modern standards: a central hub with four radiating arms, built for maybe two hundred residents. Power is negligible. Emergency lighting only. The hull is scarred but sound. This is one of the Expanse's first permanent habitats, built in the years after the Aurelia's landing, before the settlements grew large enough to make orbital stations obsolete.",
+  "group": "flags",
+  "ref": "T5-25",
+  "why": "Cut the verdict. \"It doesn't appear on any current chart.\" already carries the fact."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_forgotten_station_01].choices[id=explore].outcome.description",
+  "old": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere, on walls, doors, support beams: graffiti. Not vandalism. History. 'Ines Kato, born here, Year Three.' 'Water ration increased. We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
+  "new": "The station's interior is a time capsule. Living quarters sized for efficiency, not comfort. A communal mess hall with benches bolted to the floor. And everywhere, on walls, doors, support beams: graffiti. 'Ines Kato, born here, Year Three.' 'Water ration increased. We celebrated.' 'The Aurelia is visible from Arm 2 on clear rotations.' 'We argued about the Charter today. We argue about it every day. That's the point.' The last entry you find, scratched near the main airlock: 'Moving to the surface. Leaving this for whoever comes next. Remember we were here.'",
+  "group": "flags",
+  "ref": "T5-25",
+  "why": "Cut \"Not vandalism. History.\" The graffiti makes that case itself."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_forgotten_station_01].choices[id=scan].outcome.description",
+  "old": "Your scans reveal construction techniques that haven't been used in a century: hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. This station was built by people who had nothing except determination and whatever they could salvage. The engineering is crude by modern standards and astonishing by any other measure. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
+  "new": "Your scans reveal construction techniques that haven't been used in a century: hand-welded joints, improvised radiation shielding, a hull patched with material from at least three different vessels. You transmit the survey data to the Collective's historical archive. They respond within minutes: 'We have no record of this station. Coordinates logged. Thank you.'",
+  "group": "flags",
+  "ref": "T5-25",
+  "why": "Cut the flagged verdict and the inference about the builders before it. The welds and patches carry both."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_star_map_01].description",
+  "old": "Your sensors flag a metallic object tumbling through a region of otherwise empty space. As you approach, the reading becomes stranger: the object is a flat disc, roughly two meters across, composed of an alloy your instruments can't fully identify. Its surface is covered in precise engravings: circles, lines, clusters of dots. It takes your nav computer twelve seconds to recognize the pattern. It's a star map. The positions correspond to known systems in the Expanse and beyond, mapped with an accuracy that would require centuries of observation. The disc predates human presence in this region by an unknown margin. The alloy shows no signs of terrestrial manufacturing. Someone, or something, charted these stars before humanity ever looked up and wondered what was out there.",
+  "new": "Your sensors flag a metallic object tumbling through a region of otherwise empty space. As you approach, the reading becomes stranger: the object is a flat disc, roughly two meters across, composed of an alloy your instruments can't fully identify. Its surface is covered in precise engravings: circles, lines, clusters of dots. It takes your nav computer twelve seconds to recognize the pattern. It's a star map. The positions correspond to known systems in the Expanse and beyond, mapped with an accuracy that would require centuries of observation. The disc predates human presence in this region by an unknown margin. The alloy shows no signs of terrestrial manufacturing.",
+  "group": "flags",
+  "ref": "T5-18",
+  "why": "The other twin kicker, cut. The line ends on the alloy finding."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_star_map_01].choices[id=analyze].outcome.description",
+  "old": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
+  "new": "Hours of scanning reveal layers of complexity. The map includes ten systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
+  "group": "flags",
+  "ref": "HO narrator inference",
+  "why": "Cut the inference. The contradictory dating it summed up stays. \"Eleven\" becomes \"ten\", the cultural guide's count (the author's read 2026-10-16, E-starmap)."
+ },
+ {
+  "file": "data/encounters/lore.json",
+  "path": ".encounters[id=lore_star_map_01].choices[id=leave].outcome.description",
+  "old": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks your home system, under stars that have been burning since before your species learned to name them.",
+  "new": "You photograph every centimeter of the disc's surface and pull away without touching it. You queue the images for the Collective. One of them shows the cluster of dots that marks Nexus Prime.",
+  "group": "flags",
+  "ref": "T5-24",
+  "why": "\"Your home system\" had the narrator asserting the captain's past, which spec 2.4 leaves to the world. The commentary about the stars also went. The image keeps the system by name: Nexus Prime, where every game starts (`spacegame/engine/game.py:668`) and where the world puts the father's orbital (Priya, `dialogues.json:609`; spec 2.4). Its meaning is left to the player. This path never shows \"seven\", so the image does not use it (theme 4). See flag 5."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_tariff_01].choices[id=fight].description",
+  "old": "Power up weapons. You are not paying.",
+  "new": "Power up weapons.",
+  "group": "flags",
+  "ref": "T6-8",
+  "why": "Cut the captain's resolve; the hint keeps the act (theme 2; spec 2.2 edge 9). The label \"Refuse and Fight\" already names the refusal."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_blackmail_01].description",
+  "old": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career. Or make someone very grateful for your discretion.",
+  "new": "Your communications array intercepts a partially decrypted transmission between two Guild officials. The content is damning: a senior Meridian Trading House director has been funneling profits through shell companies to avoid Guild taxation. The transmission includes account numbers, dates, and enough detail to ruin a career.",
+  "group": "flags",
+  "ref": "T6-10",
+  "why": "Cut the aside after the image (theme 9). It also gave away what the sale would pay. \"The content is damning\" and \"enough detail to ruin a career\" stay: they say what the document holds, and every choice acts on it."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_blackmail_01].choices[id=sell_to_director].description",
+  "old": "The director might pay handsomely for this to disappear.",
+  "new": "Reach out to the director through back channels.",
+  "group": "flags",
+  "ref": "T6-10",
+  "why": "The hint was a forecast and named no act. Under theme 2, it takes the outcome's own words (\"You reach out through back channels.\"). Flag 6 has a version that names the sale."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_blackmail_01].choices[id=sell_to_director].outcome.description",
+  "old": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\" You have made a powerful friend. Or a dangerous enemy.",
+  "new": "You reach out through back channels. The response is swift and generous. A large sum appears in an untraceable account, and a curt message follows: \"This matter is concluded. I trust we understand each other.\"",
+  "group": "flags",
+  "ref": "T6-10",
+  "why": "Cut the kicker. It promised a friend or an enemy that no flag records: the choice pays 250 CR and 15 XP and costs 5 Commerce Guild standing. The line now ends on the director's message. \"Large sum\" and \"generous\" stand, since 250 CR outpays the report's \"modest\" 150."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_distress_luxury_01].choices[id=sell_rations].description",
+  "old": "Your emergency rations are not gourmet, but they are hot.",
+  "new": "Heat up your emergency ration packs and shuttle them over.",
+  "group": "flags",
+  "ref": "T6-12",
+  "why": "The joke named no act. Under theme 2, the hint takes the outcome's words (\"You heat up your entire stock of emergency ration packs and shuttle them over.\")."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_distress_luxury_01].choices[id=help_repair].outcome.description",
+  "old": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you with the desperate generosity of a person whose job was on the line.",
+  "new": "You dock with the Golden Dividend and help their engineer jury-rig the heating array with components from your own ship. Within an hour, the galley is operational again. The executives applaud as the first hot meal in six hours emerges from the kitchen. The purser pays you.",
+  "group": "flags",
+  "ref": "T6-12",
+  "why": "Cut the aside, which guessed the purser's motive (spec 2.2 edge 6; G8's kind). \"The purser pays you.\" keeps a source for the 200 CR."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_distress_luxury_01].choices[id=pass_by].outcome.description",
+  "old": "You log the distress signal, note that no lives are in danger, and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
+  "new": "You log the distress signal and continue on your route. Behind you, the Golden Dividend's purser can be heard arguing with an executive who is demanding to speak with \"whoever is in charge of the universe's logistics.\"",
+  "group": "flags",
+  "ref": "T6-12",
+  "why": "Cut the filter verb and the judgment it carried (spec 2.2 edge 2). The description already shows what is at stake: a galley heater, and six hours without hot meals."
+ },
+ {
+  "file": "data/encounters/commerce_guild.json",
+  "path": ".encounters[id=guild_signal_encoded_01].choices[id=decode_further].outcome.description",
+  "old": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments: shipping manifests, personnel codes, a reference to \"controlled market correction\". But the full picture remains elusive. Still, the data you have recovered could be valuable to the right buyer.",
+  "new": "Your systems grind through the encryption layers for hours, but the Guild's cryptographers are thorough. You extract fragments: shipping manifests, personnel codes, a reference to \"controlled market correction\".",
+  "group": "flags",
+  "ref": "T6-13",
+  "why": "Cut the thought, which named no buyer. Also cut \"But the full picture remains elusive.\": it is a remark after the image, and \"fragments\" already shows it (theme 1). The line now ends on the plant. The 125 CR the choice pays now has no source in the text: see flag 1."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_barter_01].choices[id=decline].outcome.description",
+  "old": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on to find another willing trader. Out here, persistence is survival.",
+  "new": "Ines nods. 'No hard feelings. Safe travels, friend.' Her ship drifts on.",
+  "group": "flags",
+  "ref": "T6-15",
+  "why": "Cut the aphorism (theme 9). Also cut \"to find another willing trader\", a guessed purpose (G8's kind), as Task 12 cut \"to find its next victim\" (T5-7)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_storyteller_01].choices[id=decline].outcome.description",
+  "old": "Oksana chuckles. 'Suit yourself, friend. The brandy'll keep.' Her broadcast continues, drifting through the void for anyone willing to listen. Some nights the void talks back.",
+  "new": "Oksana chuckles. 'Suit yourself, friend. The brandy'll keep.' Her broadcast continues, drifting through the void for anyone willing to listen.",
+  "group": "flags",
+  "ref": "T6-15",
+  "why": "Cut the aphorism. It also made the void an agent, which the bridge register's Never list and voice examples diagnostic 11 forbid."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_smuggler_medicine_01].choices[id=buy_some].outcome.description",
+  "old": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.' Practical goods at a practical price.",
+  "new": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.'",
+  "group": "flags",
+  "ref": "T6-15",
+  "why": "Cut the slogan; the line ends on Reeta's words. The crate against the 100 CR the choice pays is T6-24's finding, and this cut leaves it as it was (flag 4)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_salvage_claim_01].choices[id=offer_help].outcome.description",
+  "old": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone. You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' The work is hard but the payout is honest.",
+  "new": "Haddek eyes your ship and grins. 'Now that's the frontier spirit. My tug can't haul the engine block alone. You pull it free, we split the heavy salvage sixty-forty. My claim, my rules, but fair's fair.' You pull the engine block free. Haddek sends your share.",
+  "group": "flags",
+  "ref": "T6-15",
+  "why": "The verdict was the only sentence that did the job. A bare cut would end on Haddek's offer, unanswered, with 110 CR paid. The replacement gives the act the choice picked, in Haddek's own words (\"You pull it free\"), and a source for the pay. It carries no figure, since \"forty\" alone would read as 40 CR and the notice prints 110."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_community_01].choices[id=decline].outcome.description",
+  "old": "Priya nods without resentment. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.' That is the Alliance way: no one keeps score out loud.",
+  "new": "Priya nods. 'Understood. Times are tight for everyone. If your path brings you to Haven's Rest, you're still welcome at the communal table.'",
+  "group": "flags",
+  "ref": "T6-15, T6-19",
+  "why": "For T6-19, cut \"without resentment\", a read of her mind; the nod and her words stay. For T6-15, cut the narrator's gloss on Alliance custom. The invitation stays: it is hospitality, not a scheduled scene, so spec 3.7's promised-return rule does not reach it."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_salvage_claim_01].choices[id=contest].outcome.description",
+  "old": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in. Guild members stick together. You back off, but the damage is done. Word spreads fast among salvagers.",
+  "new": "Haddek's expression hardens. 'That ain't how we do things out here, friend.' He holds his ground, and within minutes two more Wrecker ships drop in.",
+  "group": "flags",
+  "ref": "T6-16",
+  "why": "Cut \"You back off\" (spec 2.2 edge 8: no act the player did not pick), the verdict and the forecast. Also cut \"Guild members stick together.\", a remark after the image of the two ships; \"Guild\" there also reads as the Commerce Guild. The encounter now closes on the standoff. Its cost, 8 Frontier Alliance standing, shows in the notice, and nothing records word spreading."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_barter_01].choices[id=haggle].description",
+  "old": "She is desperate. Push for a better deal.",
+  "new": "Push for a better deal.",
+  "group": "flags",
+  "ref": "T6-17",
+  "why": "Cut the read of Ines's mind (theme 2; G8's kind)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_barter_01].choices[id=haggle].outcome.description",
+  "old": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye. Word travels fast on the frontier. You got the better deal, but it may cost you later.",
+  "new": "Ines's expression cools. She agrees to the lopsided terms, but her voice is flat when she says goodbye.",
+  "group": "flags",
+  "ref": "T6-17",
+  "why": "Cut the forecast and the verdict; the line ends on her flat voice. The cost is 5 Frontier Alliance standing, paid at once and shown in the notice. Nothing later reads the haggle."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_harvest_01].choices[id=pass].outcome.description",
+  "old": "Fen nods without judgment. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
+  "new": "Fen nods. 'Fair enough, friend. Fly safe.' His hauler groans onward, listing but stubborn.",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut the read. \"Listing but stubborn\" stays: it is colour on a ship, not a mind."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_community_01].choices[id=small_help].outcome.description",
+  "old": "'Every bit counts,' Priya says, and means it. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward, hold slowly filling.",
+  "new": "'Every bit counts,' Priya says. 'My mother used to say a wall's only as strong as the hands that built it. And we got a lot of hands.' The Common Good trundles onward.",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut \"and means it\": her words carry it. Also cut \"hold slowly filling\", which the captain cannot see from outside the ship (theme 1)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_refugee_family_01].choices[id=supplies].outcome.description",
+  "old": "You send over fuel cells and food packs. Dara's brother nods through the viewport. A man of few words, but the gratitude is plain. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+  "new": "You send over fuel cells and food packs. Dara's brother nods through the viewport. 'We won't forget this,' Dara says. 'Alliance folk remember kindness.'",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut the read; the nod through the viewport is the act. Dara's promise stays as her word, backed by the 7 Frontier Alliance standing the choice gives."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_wrecker_01].choices[id=split].outcome.description",
+  "old": "They both grumble, but neither wants to lose the whole haul over pride. They divide the wreck down the middle and each toss you a small cut for playing peacemaker. 'Guess that's fair enough,' Tomoko admits.",
+  "new": "They both grumble, but they divide the wreck down the middle and each toss you a small cut. 'Guess that's fair enough,' Tomoko admits.",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut the read of both minds and joined the two sentences on \"but\". Also cut \"for playing peacemaker\", a comment on the captain (spec 2.2 edge 5). \"Admits\" stays: it names what her words do."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_moonshine_01].choices[id=buy].outcome.description",
+  "old": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.' The coolant actually works surprisingly well.",
+  "new": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.'",
+  "group": "flags",
+  "ref": "T6-20",
+  "why": "Cut the aside, which also claimed an effect no system has. The line ends on Szabo's joke, which is the world's. The drums against the 80 CR the choice pays is T6-24's finding (flag 4)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_festival_01].choices[id=trade_only].outcome.description",
+  "old": "You stick to the trading ships on the ring's edge. Festival pricing is real: these folks sell at cost during the Gathering as a point of pride. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel whether you asked for it or not.",
+  "new": "You stick to the trading ships on the ring's edge. These folks sell at cost during the Gathering. You pick up good cargo at rock-bottom prices. A fiddler on a nearby ship serenades you through the open channel.",
+  "group": "flags",
+  "ref": "T6-21",
+  "why": "Cut the aside. Also cut \"Festival pricing is real:\", a verdict confirming festival prices that only the join outcome mentions (theme 4). Also cut \"as a point of pride\", a guessed motive. The cargo against the 100 CR is T6-24's finding (flag 4)."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].description",
+  "old": "Volunteers have no legal authority over your ship.",
+  "new": "Tell Gil the scan is voluntary.",
+  "group": "flags",
+  "ref": "T6-22",
+  "why": "The hint was a reason with no act. The new act is a line the captain says, and Gil's reply (\"It's your right, Captain.\") answers it. Flag 7 has the option that repeats the label."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_picket_01].choices[id=honor_picket].outcome.description",
+  "old": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. Strong enough to strip hull paint. 'You're alright,' she says. The strike settles after a few hours, and the Union remembers who stood with them.",
+  "new": "You power down and drift with the picket ships. Roz sends over a thermos of coffee via drone. 'You're alright,' she says. The strike settles after a few hours.",
+  "group": "flags",
+  "ref": "T6-18",
+  "why": "The data gives 15 XP and 10 Miners Union standing and sets no flag. Only the encounter file, its parity goldens and W2's worklist name the encounter, so nothing reads the choice later. The standing is the only memory the data keeps, and the notice shows it, so the narrator's forecast goes (theme 1). Also cut \"Strong enough to strip hull paint.\", a narrator punchline after the image (spec 2.2 edge 5). Flag 5 gives it to Roz instead."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_picket_01].choices[id=force_through].outcome.description",
+  "old": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.' The Union won't forget this insult easily.",
+  "new": "You gun the engines and thread through the formation. Roz's voice follows you, cold as vacuum: 'We'll remember that, Captain. We remember everything.'",
+  "group": "flags",
+  "ref": "T6-18",
+  "why": "The data costs 8 Miners Union standing and does nothing else. Roz's own words carry the promise as the world's, and the standing backs them. The narrator's verdict (\"insult\") and forecast go. \"Cold as vacuum\" stays, since it is her tone as heard. Her \"Captain\" stays too: in a Union mouth a title is distance."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_scab_01].choices[id=convince_union].outcome.description",
+  "old": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates. She pretends not to smile.",
+  "new": "Jess goes quiet for a long moment. Then: 'Yeah, alright. You're right and I hate it.' The Union crew moves in to help. Later, Harlan quietly asks Jess about membership rates.",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut the read: \"pretends\" claims to know what she hides. The line ends on Harlan's question, the act that carries the scene."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_ore_spill_01].choices[id=help_recover].outcome.description",
+  "old": "You spend an hour scooping titanium clusters back into Britt's remaining bays. She's efficient and grateful without being sentimental about it. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
+  "new": "You spend an hour scooping titanium clusters back into Britt's remaining bays. 'You just saved my quarterly bonus. Here. Take a share. Fair's fair.' She splits the salvage evenly.",
+  "group": "flags",
+  "ref": "T6-19",
+  "why": "Cut the read; her words and the even split are the act. Britt is the only speaker present, so the quote needs no tag."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_equipment_swap_01].choices[id=trade_parts].outcome.description",
+  "old": "Suki runs a quick inventory of your spare parts and nods approvingly. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted. Union miners don't cheat on weight.",
+  "new": "Suki runs a quick inventory of your spare parts and nods. 'This'll keep us drilling for another two months easy.' She loads your bay with titanium ore, premium grade, already sorted.",
+  "group": "flags",
+  "ref": "T6-25",
+  "why": "Cut the aphorism. Also cut \"approvingly\", a read that her words already carry. The ore against the 150 CR the choice pays is T6-24's kind of defect, outside its list (flag 4)."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_scab_01].choices[id=help_hauler].outcome.description",
+  "old": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. He's sheepish about the whole thing. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Both sides grudgingly respect the call.",
+  "new": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Harlan wires you a tow fee.",
+  "group": "flags",
+  "ref": "T6-25",
+  "why": "Cut the aphorism, which also read two crews' minds. Also cut \"He's sheepish about the whole thing.\", a read of Harlan of T6-19's kind that the triage missed. Harlan's tow fee pays the 100 CR (R8), and it comes after Jess's joke so it answers it (the author's read 2026-10-16, E-hauler)."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_derelict_drill_01].choices[id=leave_it].outcome.description",
+  "old": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent, a monument to someone's abandoned ambitions.",
+  "new": "You give ORCA-7 a wide berth. She keeps tumbling, slow and silent.",
+  "group": "flags",
+  "ref": "T6-25",
+  "why": "Cut the remark. On this path the captain never boards, so the line ends where the eye does."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_derelict_drill_01].choices[id=salvage_drill].outcome.description",
+  "old": "The rig's interior is eerie: lunch trays still on the mess table, a mural of Breakstone's founding half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips. These'll fetch good money at any Union station.",
+  "new": "Inside the rig, lunch trays are still on the mess table and a mural of Breakstone's founding is half-finished on one wall. You pull three intact drill heads and a crate of industrial cutting tips from the parts locker, Breakstone co-op price tags still on every piece.",
+  "group": "flags",
+  "ref": "T6-27",
+  "why": "\"Eerie\" rated the room for the captain; the trays and the half-finished mural stay as the image. The thought was the 180 CR's only source. As you asked, the source is now something the captain sees: the co-op's price tags. They carry no figure, so nothing can disagree with the 180. The parts locker is the one the description names, which is why spares still carry tags. Flag 2 has a second option for what the captain sees."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_ore_spill_01].choices[id=fly_around].description",
+  "old": "Heeding Britt's warning, give the debris field a wide berth.",
+  "new": "Give the debris field a wide berth.",
+  "group": "flags",
+  "ref": "T6-28",
+  "why": "Cut the reason before the act (theme 2)."
+ },
+ {
+  "file": "data/encounters/miners_union.json",
+  "path": ".encounters[id=union_folk_song_01].choices[id=listen_along].outcome.description",
+  "old": "You tune in and let Gren sing. He's got a surprisingly good voice under the gravel. When he finishes, you talk for a while about the old days, the price of titanium, and whether station coffee counts as a war crime. He shares some route tips only a lifer would know.",
+  "new": "You tune in and let Gren sing. He's got a good voice under the gravel. When he finishes, you talk for a while about the old days, the price of titanium, and whether station coffee counts as a war crime. He shares some route tips.",
+  "group": "flags",
+  "ref": "T6-30",
+  "why": "\"Surprisingly\" was the captain's reaction; the voice stays as colour on Gren. Also cut \"only a lifer would know\", a verdict after the image. The tips stay as talk, though no system grants a route (flag 9)."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_specimen_01].choices[id=collect_samples].outcome.description",
+  "old": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one with visible excitement. Or what passes for excitement among Axiom researchers. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
+  "new": "You spend an hour carefully extracting sealed sample containers from the wreckage. Dr. Vasik catalogs each one. 'Exceptional preservation. You have contributed to a peer-reviewed study. Your name will appear in the acknowledgments section.'",
+  "group": "flags",
+  "ref": "T6-31",
+  "why": "Cut the narrator joke. Also cut \"with visible excitement\", which named her feeling and set up the joke. Her words carry the scene in the Collective's register, where an acknowledgment is the reward. The 120 CR is the \"Compensation will be provided\" that the description promises."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_specimen_01].choices[id=sell_data].description",
+  "old": "Run your own scans and offer the data instead. Less risk, less reward.",
+  "new": "Run your own scans and offer the data instead.",
+  "group": "flags",
+  "ref": "T6-31",
+  "why": "Cut the verdict (theme 2)."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_specimen_01].choices[id=decline_specimen].description",
+  "old": "Debris fields are hazardous. Pass on this one.",
+  "new": "Pass on this one.",
+  "group": "flags",
+  "ref": "T6-31",
+  "why": "Cut the reason (theme 2)."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_quarantine_01].choices[id=push_through].outcome.description",
+  "old": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone, but not without consequence.",
+  "new": "The Okafor frigate tracks you with its sensor array as you attempt to bypass the zone. Dr. Mwenzi's voice turns cold: 'Quarantine violation logged. Your transponder has been flagged. I strongly advise against exposure to the contaminant. Symptoms include progressive neural degradation.' You clear the zone.",
+  "group": "flags",
+  "ref": "T6-32",
+  "why": "Cut the kicker. It hinted at an exposure that no system applies: the choice costs 8 Science Collective standing and does nothing else. \"You clear the zone.\" stays as the result of the act picked. Mwenzi's \"Your transponder has been flagged.\" is her word; the standing is what the data keeps."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_ethics_01].choices[id=sell_nova].description",
+  "old": "Contact Nova and let them know their comms leaked. They will pay for discretion.",
+  "new": "Contact Nova and let them know their comms leaked.",
+  "group": "flags",
+  "ref": "T6-33",
+  "why": "Cut the forecast given as a reason (theme 2). The outcome stands as it is, with Task 12's cut and the ruled \"The credits are generous.\"."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_grant_01].choices[id=negotiate_grant].outcome.description",
+  "old": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.' The maps could indeed be useful for navigation.",
+  "new": "Ibanez winces. 'Captain, I am an astrophysicist. My entire annual budget would not cover your fuel costs for a week. But... I can add a data-sharing clause. You will receive a copy of the processed survey results: gravitational maps of every system you transit. That data has commercial value.'",
+  "group": "flags",
+  "ref": "T6-34",
+  "why": "Cut the thought, which also vouched for maps that no system grants. Ibanez's promise is still his to make: see flag 3."
+ },
+ {
+  "file": "data/encounters/science_collective.json",
+  "path": ".encounters[id=collective_nova_test_01].description",
+  "old": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand speaks with the enthusiasm of someone spending someone else's money: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising: 94 percent confidence interval on non-lethality.'",
+  "new": "A Nova Applied Sciences cruiser hails you with the logo prominently displayed on every surface. Project Lead Strand comes on the channel: 'Captain! Nova Applied Sciences is conducting field trials of our next-generation shield harmonics array. We need a vessel to fly through our test field so we can measure the interaction between our emitters and standard civilian shielding. Completely safe. Probably. The simulation data is very promising: 94 percent confidence interval on non-lethality.'",
+  "group": "flags",
+  "ref": "T6-35",
+  "why": "Cut the narrator joke, a comparison played for a laugh (spec 2.2 edge 5). \"Comes on the channel\" is the plain act that leads into the speech, and the speech carries Strand's pitch. The logo stays as a selected true detail, stated flat. Flag 10 has the bare cut."
+ },
+ {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].outcome.description",
+  "old": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+  "new": "Gil frowns but nods. 'It's your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+  "group": "flags",
+  "ref": "E-gil",
+  "why": "\"Your right\" read as a misspelling of \"You're right\"; Gil grants the captain's right to refuse, which the refuse hint asks for (the author's read 2026-10-16, E-gil)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_m06_priya].text",
+  "old": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise. Nothing like Breakstone.",
+  "new": "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to Axiom Labs had been reassigned, and her research samples were time-sensitive.",
+  "group": "log",
+  "ref": "auto_m06_priya",
+  "why": "Cut the closing verdict (\"clinical and precise. Nothing like Breakstone.\"), which is a conclusion (6.2). Cut \"Describes working conditions as data sets.\", the captain's summary of how she talks. Campaign entry, so SP10 text; trigger flagged below. The entry fires on met_priya_osei, set as her scene opens (decline included), so it says only what is true then (the author's read 2026-10-16, L-m06; the trigger stays SP6's and SP10's, F-66 and F-80)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_m08_helped].text",
+  "old": "Responded to a distress signal from a freighter under pirate attack. Met Captain Reva Sato, Guild military escort. Three convoy attacks this month, same pattern. Someone knows the patrol routes.",
+  "new": "Responded to a distress signal from a freighter under pirate attack. Met Captain Reva Sato, Guild military escort. Three convoy attacks this month, same pattern.",
+  "group": "log",
+  "ref": "auto_m08_helped",
+  "why": "Cut the conclusion \"Someone knows the patrol routes.\" Campaign entry, SP10; scene mismatch flagged below."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_m10_crimson].text",
+  "old": "Delivered a package to Malia Torres at Crimson Reach. She says whoever is backing the pirates has serious resources. Real money, real ships, real intelligence. This is not random raiding.",
+  "new": "Delivered a package to Malia Torres at Crimson Reach. She said whoever was backing the pirates had serious resources.",
+  "group": "log",
+  "ref": "auto_m10_crimson",
+  "why": "Cut the conclusion \"This is not random raiding.\" Cut the build-up triplet, which is the captain's emphasis and not her words (torres_underground.partial_read). Her report goes to the past tense. Campaign entry, SP10."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_m12_attack].text",
+  "old": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped. Better than any frontier raiders should be.",
+  "new": "Ambushed by pirates during travel. Survived the attack. Their ships were well-equipped.",
+  "group": "log",
+  "ref": "auto_m12_attack",
+  "why": "Cut the conclusion. Ends on the perception. Campaign entry, SP10."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_m14_scan].text",
+  "old": "Located a pirate command base near Iron Depths. Scan data confirms it is an active operations center. Hard evidence.",
+  "new": "Located a pirate command base near Iron Depths. Scan data showed an active operations center.",
+  "group": "log",
+  "ref": "auto_m14_scan",
+  "why": "Cut the verdict \"Hard evidence.\" \"confirms it is\" becomes the perception \"showed\", in the past tense. Campaign entry, SP10."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_arna_branch_b].text",
+  "old": "Clean pull at a derelict in Haven's Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time. When I got back she called it a fair trade for a scar and a lesson. She is not going to save her brother this way. She said so. She is staying anyway.",
+  "new": "Clean pull at a derelict in Haven's Rest. Nothing followed us out. Arna stayed behind at the manifest desk the whole time.",
+  "group": "log",
+  "ref": "auto_arna_branch_b",
+  "why": "Cut the forecast and the inner state. \"She said so\" reports a line no scene has. I also cut the fair-trade sentence under theme 4 (see the note below). Also an A1 string."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_arna_departure].text",
+  "old": "Said goodbye to Arna at the departure bay. She had a duffel bag at her feet. Not much else. She told me about the pendant before she went: it was her mother's, not any of the three stories she'd told me. She said she wanted one thing she'd said to me to be true. Then she walked toward the freighter bound for Port Kestrel and she did not look back. She never wrote the letter to her brother. He is still waiting.",
+  "new": "Said goodbye to Arna at the departure bay. She had a duffel bag at her feet. Not much else. She told me about the pendant before she went: it was her mother's. She said she wanted one thing she'd said to me to be true. Then she walked toward the freighter bound for Port Kestrel and she did not look back.",
+  "group": "log",
+  "ref": "auto_arna_departure",
+  "why": "Cut \"He is still waiting.\", another person's state in the present tense. Cut \"She never wrote the letter...\": she said only \"Didn't.\", and \"never\" reaches past her leaving. Cut \", not any of the three stories she'd told me\" under theme 4: no scene tells a pendant story, only her \"You got three of them, I think.\" That clause belongs to W2's open `pendant_truth` remainder. Ends on the last observed act."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_wreckers_first_contract].text",
+  "old": "Turned in my first contract at the Wreckers' Guild Hall. Malia weighed the haul, logged it, paid me out. No ceremony. She said this is what the work looks like. Standing builds slow. Down here, slow counts.",
+  "new": "Turned in my first contract at the Wreckers' Guild Hall. Malia weighed the haul, logged it, paid me out. No ceremony.",
+  "group": "log",
+  "ref": "auto_wreckers_first_contract",
+  "why": "Cut the verdict \"Down here, slow counts.\" and the maxim \"Standing builds slow.\" Also cut \"She said this is what the work looks like.\": neither apprentice turn-in line (`spacegame/models/wreckers_guild.py`:130 and :148, \"Eight crates, weighed in...\" and \"Boards check out...\") says it (theme 4)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_okafor_first_disposed].text",
+  "old": "First patent moved off held. The disposition is on file. Either the patent stays in circulation under license, or the lump sum is in the account. Either way, the work is done and the next cycle starts with the bench cleared.",
+  "new": "First patent moved off held. The disposition went on file. Either the patent stayed in circulation under license, or the lump sum went into the account.",
+  "group": "log",
+  "ref": "auto_okafor_first_disposed",
+  "why": "Cut the closing conclusion and forecast. Past tense. The either/or stays because one entry covers both acts (`okafor_view.py`:820-846)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_okafor_legacy_profit_ending].text",
+  "old": "Kweon named what the funding history looks like from her side. Commercial and industrial outcomes running ahead of clinical work over a long run. She did not say she regretted working with the resources available. She said: the pediatric cohort study sat unfunded for two cycles. The field clinic work was deferred once. That is the cost. She knows it by name.",
+  "new": "Kweon named what the funding history looked like from her side. Commercial and industrial outcomes running ahead of clinical work over a long run. She said: the pediatric cohort study sat unfunded for two cycles. The field clinic work was deferred once. That is the cost.",
+  "group": "log",
+  "ref": "auto_okafor_legacy_profit_ending",
+  "why": "Cut \"She knows it by name.\", her inner state stated by the Log (in the scene it is her own \"I know it by name\"). Cut \"She did not say she regretted...\", which points at a regret she explicitly disclaims (\"I do not regret those choices\", dialogues.json:10410). \"That is the cost.\" stays inside her quoted words. \"looks\" becomes \"looked\"."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_auction_first_session].text",
+  "old": "First session. Lot prices here move differently than the commodity floor. The ceiling is whatever the room will pay. Sable said two words the whole time. Both were correct.",
+  "new": "First session. Lot prices moved differently than on the commodity floor. The ceiling was whatever the room would pay. Sable said two words the whole time.",
+  "group": "log",
+  "ref": "auto_auction_first_session",
+  "why": "Cut the verdict \"Both were correct.\" Past tense, so both general statements read as observations of the session. Sable's presence is flagged below."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_auction_first_rivalry].text",
+  "old": "A name showed up on the floor. They bid on the lot I wanted. Lost that one. I know what the lot was. I know who took it.",
+  "new": "A name showed up on the floor. They bid against me for a lot. Lost that one.",
+  "group": "log",
+  "ref": "auto_auction_first_rivalry",
+  "why": "Cut the two \"I know\" sentences: \"I\" for knowing, which 2.4 bars, and a veiled forecast. \"the lot I wanted\" (\"I\" for a want) becomes the act the trigger records: a named rival won a lot the captain bid on (`auction_view.py`:508-516)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_auction_first_listing_created].text",
+  "old": "Filed my first consignment at the Stellaris floor. Paid the listing fee at the desk. The fee is gone whether the lot moves or not. The crate goes onto the catalogue under a number, not my name. That is the deal.",
+  "new": "Filed my first consignment at the Stellaris floor. Paid the listing fee at the desk. The fee was the floor's whether the lot moved or not. The crate went onto the catalogue under a number, not my name.",
+  "group": "log",
+  "ref": "auto_auction_first_listing_created",
+  "why": "Cut the verdict \"That is the deal.\" Past tense. \"is gone\" becomes \"was the floor's\", the flat fact (`auto_auction_first_listing_withdrawn` says \"The fee stayed with the floor.\")."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d1_vengeance_won].text",
+  "old": "Chose the pursuit. Odusanya's circuit is closed to me now. The warrant-holding line is gone. Rendik Foss and Callan Vert are still on the open board. The people who can help reach them do not ask about jurisdiction. That is the file I am running.",
+  "new": "Chose the pursuit. Odusanya's circuit was closed to me after that. The warrant-holding line was gone. Rendik Foss and Callan Vert were still on the open board. The people who could help reach them did not ask about jurisdiction.",
+  "group": "log",
+  "ref": "auto_d1_vengeance_won",
+  "why": "Cut the conclusion. Past tense, using W3a's own \"closed to me after that\" (`auto_iron_betrayal`)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d3_political_power_won].text",
+  "old": "Chose the council seat. Owusu drafted it, the fourth-day quorum passed it, and it is mine. Deng's cells are running debt buyouts around this ship now, and Halvorsen's registry does not read my signature. The council calendar does. That is the trade I made.",
+  "new": "Chose the council seat. Owusu drafted it, the fourth-day quorum passed it, and it was mine. Deng's cells started running debt buyouts around this ship, and Halvorsen's registry did not read my signature. The council calendar did.",
+  "group": "log",
+  "ref": "auto_d3_political_power_won",
+  "why": "Cut the conclusion. Past tense, with the ongoing act as \"started running\"."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d3_revolution_won].text",
+  "old": "Chose the cells. Deng put the coordination across three settlements through this ship. Debt buyouts, safety comms, legal writs on the shift-supervisor writeups. Owusu will not seat me at the fourth-day quorum. Halvorsen will not file for me. The cells will move work no one else will carry. That is the trade I made.",
+  "new": "Chose the cells. Deng put the coordination across three settlements through this ship. Debt buyouts, safety comms, legal writs on the shift-supervisor writeups. Owusu would not seat me at the fourth-day quorum. Halvorsen would not file for me.",
+  "group": "log",
+  "ref": "auto_d3_revolution_won",
+  "why": "Cut the conclusion and the forecast \"The cells will move...\". The two refusals become past acts (\"would not\")."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d3_empire_won].text",
+  "old": "Chose the parcel. Halvorsen signed the administrator-of-record filing at Crimson Reach Claims and the border ground is on the registry as mine. Owusu will not seat me. Deng is organizing around this ship specifically. Surveyors on Halvorsen's circuit route drift reports to my office now. That is the trade I made.",
+  "new": "Chose the parcel. Halvorsen signed the administrator-of-record filing at Crimson Reach Claims and the border ground went on the registry as mine. Owusu would not seat me. Deng organized around this ship specifically. Surveyors on Halvorsen's circuit started routing drift reports to my office.",
+  "group": "log",
+  "ref": "auto_d3_empire_won",
+  "why": "Cut the conclusion. Past tense throughout."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d5_legacy_won].text",
+  "old": "Chose the Institute. Solheim filed the wing dedication and the standing authority on the same day. My name is on the Farrow Institute's thirty-year endowment record. The crew kept doing what crews do when the captain is somewhere else. That was the trade.",
+  "new": "Chose the Institute. Solheim filed the wing dedication and the standing authority on the same day. My name went on the Farrow Institute's thirty-year endowment record. The crew kept doing what crews do when the captain is somewhere else.",
+  "group": "log",
+  "ref": "auto_d5_legacy_won",
+  "why": "Cut the conclusion \"That was the trade.\" \"is on\" becomes \"went on\". The crew sentence stays as the cost, stated as an act (option below)."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d7_faith_won].text",
+  "old": "Chose the chapel. Solano filed the dawn-rotation invitation the same week and the Cradlepoint network acknowledged it without ceremony. The access is informal, which is how it works there. Marchetti filed the procedure authorization on another applicant. I was not in that record. Both things are true and both things are settled.",
+  "new": "Chose the chapel. Solano filed the dawn-rotation invitation the same week and the Cradlepoint network acknowledged it without ceremony. The access was informal, which was how it worked there. Marchetti filed the procedure authorization on another applicant. I was not in that record.",
+  "group": "log",
+  "ref": "auto_d7_faith_won",
+  "why": "Cut the conclusion. Past tense. Ends on the record."
+ },
+ {
+  "file": "data/journal/entries.json",
+  "path": ".journal_entries[id=auto_d8_crime_won].text",
+  "old": "Chose the Understair. Wulan Doyle filed the standing access the same week, no per-run negotiation required. The Kettlebridge brokers have the ship inside the ledger now. Kallio's dock channels at Cradlepoint are closed. The list at Haven's Rest keeps its rotation without this name on the manifest. The ledger reads what it reads.",
+  "new": "Chose the Understair. Wulan Doyle filed the standing access the same week, no per-run negotiation required. The Kettlebridge brokers put the ship inside the ledger. Kallio's dock channels at Cradlepoint closed. The list at Haven's Rest kept its rotation without this name on the manifest.",
+  "group": "log",
+  "ref": "auto_d8_crime_won",
+  "why": "Cut the closing remark. Past tense, with each state written as the act that made it."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=odalys_kindling].surrender_line",
+  "old": "All right, sweetheart, you win this one. Yohan will float the crates over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+  "new": "All right, sweetheart, you win this one. If there's a crate we can spare, Yohan will float it over. Mind the dorsal gun, the young ones get twitchy when we lose.",
+  "group": "surrender",
+  "ref": "odalys_kindling (reach_bulwark, empty 50%)",
+  "why": "The offer becomes conditional, which fits her hungry crew. When the roll hits, the payout is exactly 1 unit (qty 1 to 3, halved), so \"a crate\" is exact. \"sweetheart\" is kept (WLog:355-359)."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=anatolia_kestrel_crow].surrender_line",
+  "old": "Acceptable. I am closing the account in your favor. Take the settlement from my hold. My report will call it an adjustment.",
+  "new": "Acceptable. I am closing the account in your favor. The settlement is whatever you find in my hold. My report will call it an adjustment.",
+  "group": "surrender",
+  "ref": "anatolia_kestrel_crow (guild_revenue_cutter, 24%)",
+  "why": "The settlement is no longer asserted to exist. Her ledger voice is kept, with no contractions, and \"adjustment\" lands drier on an empty hold."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=ink_silverback_gospel].surrender_line",
+  "old": "Thank you. I mean that. Take what you need from my hold. Call it a donation, and let me keep the ship.",
+  "new": "Thank you. I mean that. If my hold has anything you can use, take it. Call it a donation, and let me keep the ship.",
+  "group": "surrender",
+  "ref": "ink_silverback_gospel (mercenary_ace, 15%)",
+  "why": "\"what you need\" promised goods sized to a need, and the rule pays half a roll or nothing. Now conditional."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=wren_departure_angle].surrender_line",
+  "old": "Cheers, then. Take what's loose in my hold and skip the receipt. The Guild tax office would laugh at both of us.",
+  "new": "Cheers, then. Check my hold for anything loose and skip the receipt. The Guild tax office would laugh at both of us.",
+  "group": "surrender",
+  "ref": "wren_departure_angle (smuggler, 15%)",
+  "why": "An invitation to look instead of a claim of goods. Same length and joke."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=dowager_chamberlains_regret].surrender_line",
+  "old": "Very well. Civility becomes us both. My steward will transfer the goods with the decorum my station once commanded.",
+  "new": "Very well. Civility becomes us both. Should any goods remain aboard, my steward will transfer them with the decorum my station once commanded.",
+  "group": "surrender",
+  "ref": "dowager_chamberlains_regret (guild_arbiter, 50%)",
+  "why": "A formal conditional in her register."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=dusty_slow_star].surrender_line",
+  "old": "Fine. You've earned what's loose in my hold. Take it and fly straight out.",
+  "new": "Fine. Anything loose in my hold, you've earned. Take it and fly straight out.",
+  "group": "surrender",
+  "ref": "dusty_slow_star (iron_maw, 50%)",
+  "why": "\"what's loose\" becomes \"Anything loose\", which allows for nothing. Terse, same length."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=rhiannon_deep_veil].surrender_line",
+  "old": "Careful, careful. Take the cargo and leave my thruster alone. You are a better specimen than I thought.",
+  "new": "Careful, careful. Take any cargo you find and leave my thruster alone. You are a better specimen than I thought.",
+  "group": "surrender",
+  "ref": "rhiannon_deep_veil (ghost_raider, 35%)",
+  "why": "\"the cargo\" asserted goods. Now hedged."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=rin_wheat_dagger].surrender_line",
+  "old": "Standing down. Take what's in my hold. If you have any decency, some of it reaches the commissary.",
+  "new": "Standing down. My hold's open, for whatever it's worth. If you have any decency, some of it reaches the commissary.",
+  "group": "surrender",
+  "ref": "rin_wheat_dagger (frontier_interceptor, 20%)",
+  "why": "Offers access, not goods. Blunt contractions in her Verdant voice."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=thayer_clear_signal].surrender_line",
+  "old": "Fascinating. The trial concludes in your favor. Take the cargo as compensation. I will log you as Uncooperative Subject Seventeen.",
+  "new": "Fascinating. The trial concludes in your favor. Any cargo I carry is your compensation. I will log you as Uncooperative Subject Seventeen.",
+  "group": "surrender",
+  "ref": "thayer_clear_signal (science_surveyor, 18%)",
+  "why": "Hedged. Clinical register kept."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=marat_old_friend].surrender_line",
+  "old": "Beautiful. Beautiful. You win, friend. Take the Guild paper, the miners will understand. First drink on me next time you're in.",
+  "new": "Beautiful. Beautiful. You win, friend. Keep the Guild paper, the miners will understand. First drink on me next time you're in.",
+  "group": "surrender",
+  "ref": "marat_old_friend (union_corvette, 12%)",
+  "why": "One word. His hail names \"Guild paper on your manifest\", so the line releases the captain's own cargo; \"Take\" could be heard as an offer of his. \"Keep\" removes that reading and mirrors Ngozi's \"Keep the ore.\""
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=sovi_mirror].surrender_line",
+  "old": "Accepted. Transferring.",
+  "new": "Accepted. The hold is open.",
+  "group": "surrender",
+  "ref": "sovi_mirror (empty 50%)",
+  "why": "The line promised what the ship may not carry; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=juno_red_line_runner].surrender_line",
+  "old": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+  "new": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
+  "group": "surrender",
+  "ref": "juno_red_line_runner (empty 25%)",
+  "why": "The line promised what the ship may not carry; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=vela_wolfs_ear].surrender_line",
+  "old": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+  "new": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
+  "group": "surrender",
+  "ref": "vela_wolfs_ear (no price named)",
+  "why": "The line promised a price no system names; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
+ },
+ {
+  "file": "data/progression/skills.json",
+  "path": ".skills[id=shield_mastery].description",
+  "old": "+10% max shields per level",
+  "new": "+10% of the hull's base shields per level, added to max and starting shields",
+  "group": "skill",
+  "ref": "shield_mastery",
+  "why": "The rule: `int(hull.combat_shields * pct)` is added to the maximum, and the opening shields rise by the same amount, capped at max (`player_combat_builder.gd`:44-48; Python `combat.py`:1043-1050). The old text read as +10% of the whole maximum, which is false with a shield upgrade fitted (BB-75: 26 of 36). Terse style, like \"+5% max hull HP per level\" and \"Start combat with +10 momentum per level\". Pins: SG `tests/test_scenarios/test_scenario_skill_combat_paths.py`:244 (exact), and both builds' `skills/catalog.json` goldens."
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=footing_the_bill].hint",
+  "old": "Elena Reeves will appear at Nexus Prime once the iron delivery is settled or overdue. Listen to her trading advice.",
+  "new": "Listen to Elena Reeves's trading advice at Nexus Prime.",
+  "group": "data",
+  "ref": "footing_the_bill.hint",
+  "why": "The hint shows only while the mission is available or active, and that needs `talked_to_elena_cantina`, so she has already appeared. The first sentence forecasts the past. Theme 2: the hint names the act. Pinned by `tests/test_data/test_iron_delivery_outcomes.py`:95 (`\"settled or overdue\" in footing.hint`, BB-4's guard), which changes with it."
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=drifters_delivery].description",
+  "old": "Five bales of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Under Tomas's name the Guild tariff eats nearly the whole sale. You're the clean hands in this arrangement. Sell the goods and split the take.",
+  "new": "Five bales of Alliance textiles, your bill of landing, and Stellaris Port's premium buyers. Under Tomas's name the Guild tariff eats nearly the whole sale. You're the clean hands in this arrangement. Deliver the bales under your license and split the take.",
+  "group": "data",
+  "ref": "drifters_delivery.description",
+  "why": "\"Sell the goods\" was the loose clause. The captain does not sell: the textile desk clears the bales and wires shares (\"receipt\"; `tomas_havens.accept`). Q38's \"bales\", tariff sentence and \"bill of landing\" are kept. No pin."
+ },
+ {
+  "file": "data/combat/enemies.json",
+  "path": ".enemy_templates[id=reach_wrecker].description",
+  "old": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow. Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+  "new": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow. Reach combat doctrine favors getting close and tearing ships apart for salvage.",
+  "group": "data",
+  "ref": "reach_wrecker",
+  "why": "Cut the rhetorical question, the aside spec 2.2 edge 5 names, after the image (theme 9's cut). Not a narration field, but the same test applies."
+ },
+ {
+  "file": "data/combat/enemies.json",
+  "path": ".enemy_templates[id=science_surveyor].description",
+  "old": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade, but its analysis beam strips shields with clinical precision.",
+  "new": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade. Its Scan Pulse strips shields with clinical precision.",
+  "group": "data",
+  "ref": "science_surveyor",
+  "why": "The ship has no \"analysis beam\". Its shield-draining move is \"Scan Pulse\" (`shield_drain` 10), so the text names it. This also undoes the double \"but\" the dash repair left."
+ },
+ {
+  "file": "data/combat/enemies.json",
+  "path": ".enemy_templates[id=bounty_ace].description",
+  "old": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate, and almost impossible to outrun.",
+  "new": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate, and hard to outrun.",
+  "group": "data",
+  "ref": "bounty_ace",
+  "why": "Truth. Flee chance against speed 16 is 30 + 3 x (speed difference), floored at 10: 18% from a shuttle, 36% from a Phantom, more with Tactical Retreat. \"almost impossible\" overstates."
+ },
+ {
+  "file": "data/missions/missions.json",
+  "path": ".missions[id=recruit_navigator].description",
+  "old": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. She's too good for dock work and she knows it. Return to Nexus Prime and offer her a berth before someone else does. If every berth is taken, she'll head home to Stellaris Port and wait for one to open.",
+  "new": "Elena's been stuck at Nexus Prime running freight projections for ships that aren't hers. Return to Nexus Prime and offer her a berth. If every berth is taken, she'll head home to Stellaris Port and wait for one to open.",
+  "group": "data",
+  "ref": "recruit_navigator",
+  "why": "Cut the narrator's verdict and her inner state (\"she knows it\"; G8's class, a narration field). Cut \"before someone else does\", a false urgency with no clock (spec 3.7). The waiting rule is true and stays."
+ },
+ {
+  "file": "data/missions/side_missions.json",
+  "path": ".missions[id=arna_05b_clean_pull].hint",
+  "old": "Jump to Haven's Rest. Salvage what you can. Return to Arna at Nexus.",
+  "new": "Jump to Haven's Rest. Salvage scrap metal from the derelict. Return to Arna at Nexus Prime.",
+  "group": "data",
+  "ref": "arna_05b_clean_pull hint",
+  "why": "\"what you can\" understates a fixed leg (scrap metal, 4). The text uses the objective's own words and adds no figure. \"Nexus\" becomes \"Nexus Prime\" to match the objective."
+ },
+ {
+  "file": "data/missions/side_missions.json",
+  "path": ".missions[id=arna_02_ore_tip].discovery_text",
+  "old": "Arna pitched me a rare-metal run at Breakstone's outer belt. Says the site is marginal, enforcement is thin, and the margin is better than she let on with the machinery run. She had coordinates ready before I said yes.",
+  "new": "Arna pitched me a rare-metal run at Breakstone's outer belt. Said the site was marginal, enforcement was thin, and the cut would pay for more than a pallet of machinery. She had coordinates ready before I said yes.",
+  "group": "data",
+  "ref": "arna_02_ore_tip discovery",
+  "why": "Past tense (the Log's form, as W3a's Longer Ledger note uses). Her claim now reports what she said (\"Cut that pays for more than a pallet of machinery.\", `arna_post_completion.ore_pitch`) instead of a confused \"better than she let on\"."
+ },
+ {
+  "file": "data/progression/skills.json",
+  "path": ".skills[id=insurance].description",
+  "old": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit).",
+  "new": "On a combat defeat, lose 15% of each cargo stack instead of 30% (at least one unit)",
+  "group": "data",
+  "ref": "insurance",
+  "why": "Style only. It was the one skill description ending in a full stop. The rule reads true (`player.py`:749-758). The catalog golden pins it and is regenerated anyway for Shield Mastery."
+ },
+ {
+  "file": "data/ships/ship_types.json",
+  "path": ".ship_types[id=prospector].description",
+  "old": "A rugged utility vessel built for asteroid belts and resource-rich systems. Extra utility hardpoints let you pack mining drills and salvage gear, but you'll want to avoid fights. There's nowhere to mount a weapon.",
+  "new": "A rugged utility vessel built for asteroid belts and resource-rich systems. Extra utility hardpoints let you pack mining drills and salvage gear, but you'll want to avoid fights. There's room for one weapon.",
+  "group": "data",
+  "ref": "prospector",
+  "why": "False to data: `weapon_slots` is 1 and the frame allows one weapon, in both builds. No pin."
+ }
+]

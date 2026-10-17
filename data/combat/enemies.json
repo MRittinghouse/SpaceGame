@@ -1258,7 +1258,7 @@
     {
       "id": "science_surveyor",
       "name": "Science Surveyor",
-      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade, but its analysis beam strips shields with clinical precision.",
+      "description": "A Collective research vessel repurposed for patrol duty. High sensor resolution and excellent shields, but minimal weapons. Prefers to scan, analyze, and evade. Its Scan Pulse strips shields with clinical precision.",
       "behavior": "evasive",
       "hull": 37,
       "shields": 34,
@@ -1485,7 +1485,7 @@
     {
       "id": "reach_wrecker",
       "name": "Reach Wrecker",
-      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow. Reach combat doctrine favors getting close and tearing ships apart for salvage. Why destroy what you can repurpose?",
+      "description": "A medium combat vessel built from salvaged military hulls in Crimson Reach. Equipped with grapple launchers and a reinforced ram prow. Reach combat doctrine favors getting close and tearing ships apart for salvage.",
       "behavior": "aggressive",
       "hull": 82,
       "shields": 18,
@@ -1990,7 +1990,7 @@
     {
       "id": "bounty_ace",
       "name": "Bounty Ace",
-      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate, and almost impossible to outrun.",
+      "description": "An elite freelance hunter flying a custom interceptor. Extremely fast and accurate, and hard to outrun.",
       "behavior": "evasive",
       "hull": 75,
       "shields": 40,

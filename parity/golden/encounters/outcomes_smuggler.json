@@ -20,7 +20,7 @@
     "reputation_spillover": false,
     "shakedown_demand": 150
   },
-  "source_commit": "2b10898703fcfc582308e0f97b25013f7e3e30f4",
+  "source_commit": "5593354c71c3120ec7063ebaa73014d369f4428b",
   "steps": [
     {
       "args": [
@@ -604,7 +604,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.' The coolant actually works surprisingly well.",
+          "description": "Uncle Szabo loads two drums into your hold with a gap-toothed grin. 'Now, she might smell a little funny at first, but once she heats up? Smooth as silk. My grandmother's recipe. Well, she used it for soup, but the principle's the same.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [
@@ -1355,7 +1355,7 @@
           "xp_messages": []
         },
         "outcome": {
-          "description": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.' Practical goods at a practical price.",
+          "description": "Reeta sells you a crate of medical supplies at cost, well below what any station pharmacy charges. 'Sell it, use it, give it away. I don't care. Just don't tell the Guild where you got it.'",
           "enemy_template_ids": [],
           "leads_to_combat": false,
           "rewards": [

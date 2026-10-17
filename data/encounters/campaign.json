@@ -49,7 +49,7 @@
         {
           "id": "warn_her",
           "label": "Warn Her to Stay Safe",
-          "description": "Tell Sato to be careful. Whoever did this won't appreciate her asking questions.",
+          "description": "Tell Sato to be careful.",
           "outcome": {
             "description": "Sato laughs, but there's an edge to it. 'I survived the wreck. I'll survive the politics.' She sends you a set of comm frequencies used by the raider ships, scavenged from her Heron's damaged flight recorder. 'Keep your ears open. These frequencies are still active.'",
             "rewards": [
@@ -112,9 +112,9 @@
         {
           "id": "investigate",
           "label": "Investigate the Contact",
-          "description": "Divert to the last known coordinates. Something was there.",
+          "description": "Divert to the last known coordinates.",
           "outcome": {
-            "description": "You sweep the area with every sensor you have. The results come back empty. Not a scrap of wreckage, not a residual energy reading, nothing to explain what you saw. But your nav computer logs a curious detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code. Someone is either using her identity or her ship survived. Either way, someone wants you to notice.",
+            "description": "You sweep the area with every sensor you have. The results come back empty. But your nav computer logs one detail: the ghost contact was broadcasting a Guild transponder code that was decommissioned two weeks ago. Sato's code.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -131,7 +131,7 @@
         {
           "id": "run_diagnostics",
           "label": "Run Sensor Diagnostics",
-          "description": "Could be a glitch. Check your instruments before chasing phantoms.",
+          "description": "Check your instruments.",
           "outcome": {
             "description": "Your diagnostics come back clean: every system nominal. The contact was real, or at least your sensors believed it was. You log the anomaly and file it with the growing list of things that don't add up.",
             "rewards": [
@@ -374,7 +374,7 @@
         {
           "id": "trace_source",
           "label": "Try to Trace the Order",
-          "description": "If someone flagged your ship, there's a paper trail. See if you can find it.",
+          "description": "Search the Guild customs databases for the order that flagged your ship.",
           "outcome": {
             "description": "You spend hours digging through publicly accessible Guild customs databases, cross-referencing your ship's ID against inspection logs. The pattern is clear: every station you've docked at in the last month has queued an 'enhanced review' of your cargo within hours of your departure. The authorization codes all route back to a single internal department: Commerce Oversight Division, Section Nine. A department with no public charter and no listed personnel.",
             "rewards": [
@@ -435,7 +435,7 @@
         {
           "id": "salvage_evidence",
           "label": "Salvage the Weapons Data",
-          "description": "Pull the serial numbers and targeting logs from the wreckage. Someone armed these pirates.",
+          "description": "Pull the serial numbers and targeting logs from the wreckage.",
           "outcome": {
             "description": "You spend an hour in the debris field, extracting data cores and photographing serial plates. Every weapon traces back to Guild military contracts: hardware that was officially destroyed or reported lost in transit. The targeting computer's last calibration was performed at a Guild enforcement yard.",
             "rewards": [
@@ -458,9 +458,9 @@
         {
           "id": "strip_parts",
           "label": "Strip Usable Components",
-          "description": "Military hardware sells well on the open market. Take what you can carry.",
+          "description": "Take what you can carry.",
           "outcome": {
-            "description": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. They'll fetch a good price at any station, no questions asked. As you load the last piece, your scanner catches something etched into the capacitor housing: a Guild logistics stamp, half-scraped away. Someone tried to remove the markings. They missed one.",
+            "description": "You pull two intact pulse arrays and a functioning shield capacitor from the wreck. As you load the last piece, your scanner catches something etched into the capacitor housing: a Guild logistics stamp, half-scraped away.",
             "rewards": [
               {
                 "reward_type": "credits",
@@ -481,9 +481,9 @@
         {
           "id": "mark_and_leave",
           "label": "Log Coordinates and Leave",
-          "description": "Tag the wreck for authorities and move on. Salvaging evidence makes you a witness.",
+          "description": "Tag the wreck for authorities and move on.",
           "outcome": {
-            "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, you watch the wreck tumble slowly into the asteroid field. By the time anyone responds, the debris will be scattered across a thousand cubic kilometers.",
+            "description": "You drop a nav beacon and transmit the coordinates to the nearest patrol frequency. As you pull away, the wreck tumbles slowly into the asteroid field.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -498,7 +498,7 @@
       "id": "campaign_guild_shadow_01",
       "encounter_type": "patrol",
       "name": "The Shadow on Your Six",
-      "description": "For the last three jumps: the same sensor contact, always at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
+      "description": "For the last three jumps, the same sensor contact has held at the edge of detection range, always matching your course changes with a thirty-second delay. An unmarked vessel, running with minimal emissions. On the third jump, they finally hail. No video. Synthesized voice. 'We know what you've found. We know who you've spoken to. This is your opportunity to walk away with your ship and your life intact.'",
       "icon_color": [
         200,
         80,
@@ -522,7 +522,7 @@
           "label": "Defy the Threat",
           "description": "Open a channel and answer them.",
           "outcome": {
-            "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit. You've bought yourself time, but the message is clear: The Ledger knows your name, and they're not afraid to show it.",
+            "description": "You broadcast on the same frequency: 'I've backed up everything I know to three separate locations. Anything happens to me, it goes public.' Silence. Then a single ping. The shadow vessel's engines flare and it breaks off pursuit, jumping to transit.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -541,7 +541,7 @@
           "label": "Try to Identify the Ship",
           "description": "Run every scan you have on the shadow vessel.",
           "outcome": {
-            "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. Someone with access to Guild shipyards had this vessel constructed off the books. You store the signature data alongside your growing evidence file.",
+            "description": "Your sensors strain against the vessel's emission dampeners, but you manage to pull a partial hull signature. The alloy composition matches Guild military construction: not a converted freighter, but a purpose-built surveillance ship. You store the signature data alongside your growing evidence file.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -863,7 +863,7 @@
           "label": "Distribute Your Evidence",
           "description": "Send copies of everything to every contact you have.",
           "outcome": {
-            "description": "You spend the next hour transmitting encrypted copies of every document, scan, and testimony you've collected to every trusted contact in your network. Torres. Larsen. Your black market connections. Independent media outlets on three stations. If The Ledger comes for you now, the information survives. The screens return to normal, and your security sweep finds and purges the intrusion code. But the message is clear: the next move won't be digital.",
+            "description": "You spend the next hour transmitting encrypted copies of every document and scan you've collected to every trusted contact in your network. Torres. Larsen. Your black market connections. Independent media outlets on three stations. The screens return to normal, and your security sweep finds and purges the intrusion code.",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -884,7 +884,7 @@
         {
           "id": "set_trap",
           "label": "Trace the Intrusion",
-          "description": "They hacked your systems. That means they left a trail. Find it.",
+          "description": "Let the intrusion code run and trace its pathway.",
           "outcome": {
             "description": "You let the intrusion code run while your secondary systems map its communication pathway. The trace leads through fourteen relay points before terminating at a Guild communications satellite in high orbit above Kessler Station, the same station linked to the ghost weapons requisitions. The satellite's access logs show it's been used for hundreds of similar untraceable transmissions over the past two years. You've found The Ledger's comm backbone.",
             "rewards": [
@@ -920,7 +920,7 @@
       "id": "campaign_old_allies_01",
       "encounter_type": "comm_intercept",
       "name": "Convergence",
-      "description": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. The pieces are falling into place. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other.",
+      "description": "Three transmissions arrive within an hour of each other: different encryption, different routing, different voices, but the same urgency. Your contacts across the Expanse have been working independently, and they've all reached the same conclusion at the same time. One by one, they patch into a shared encrypted channel. For the first time, the people you've brought into this web can hear each other.",
       "icon_color": [
         140,
         180,
@@ -943,7 +943,7 @@
           "label": "Coordinate a Joint Operation",
           "description": "Everyone brings their piece. Together, you plan the next move.",
           "outcome": {
-            "description": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department. It's a parallel power structure that has been steering the Commerce Guild for over a decade. And now, for the first time, someone has the complete picture. The channel goes quiet as the weight of it settles. Then a voice, you're not sure whose, says simply: 'So. How do we tear it down?'",
+            "description": "The channel comes alive. Each contact contributes their fragment: shipping routes, weapons data, financial records, refugee testimonies, comm intercepts. Assembled together, the evidence describes a conspiracy that has infiltrated every level of Guild governance. The Ledger isn't a rogue department. It's a parallel power structure that has been steering the Commerce Guild for over a decade. The channel goes quiet. Then someone says: 'So. How do we tear it down?'",
             "rewards": [
               {
                 "reward_type": "xp",
@@ -999,7 +999,7 @@
           "label": "Hold the Evidence in Reserve",
           "description": "Keep the evidence encrypted and distributed.",
           "outcome": {
-            "description": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready: a weapon that grows more dangerous the longer The Ledger doesn't know exactly what you have. It's a gamble: every day you wait is another day they might find a way to discredit or destroy what you've built. But it's also another day to gather more, to identify the people at the very top. The channel signs off with a shared understanding: when the time comes, you move together. Not before.",
+            "description": "You convince your contacts to hold. The evidence stays encrypted, distributed, and ready. The channel signs off on one agreement: when the time comes, you move together. Not before.",
             "rewards": [
               {
                 "reward_type": "xp",
