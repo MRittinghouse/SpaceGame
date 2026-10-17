@@ -739,7 +739,7 @@
           "label": "Full Scientific Analysis",
           "description": "Run every instrument you have.",
           "outcome": {
-            "description": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
+            "description": "Hours of scanning reveal layers of complexity. The map includes ten systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
             "rewards": [
               {
                 "reward_type": "xp",

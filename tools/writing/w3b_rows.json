@@ -414,6 +414,15 @@
   "why": "no reliable list exists; the fuel is a forecast (economy design 7.4)"
  },
  {
+  "file": "data/missions/sa_v_investment_intro.json",
+  "path": ".missions[id=sa_v_investment_intro].description",
+  "old": "The cargo broker at Nexus Prime called you back. Not for another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
+  "new": "The cargo broker at Nexus Prime has more for you than another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
+  "group": "residual",
+  "ref": "Longer Ledger",
+  "why": "The summons premise went with the discovery text's \"Odom flagged me down\"; the ledger opens in conversation (the author's read 2026-10-16, L-sav)."
+ },
+ {
   "file": "data/economy/first_sale_lines.json",
   "path": ".first_sale_lines[0].text",
   "old": "New supplier on the register. File the form before your next load.",
@@ -1191,10 +1200,10 @@
   "file": "data/encounters/lore.json",
   "path": ".encounters[id=lore_star_map_01].choices[id=analyze].outcome.description",
   "old": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. The disc is either impossibly old or impossibly precise. You store the analysis.",
-  "new": "Hours of scanning reveal layers of complexity. The map includes eleven systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
+  "new": "Hours of scanning reveal layers of complexity. The map includes ten systems matching the known Expanse, and seven more beyond its borders, in regions no human vessel has reached. Isotope dating of the alloy returns contradictory results: some readings suggest thousands of years, others merely centuries. The engravings themselves show no tool marks your instruments can identify. You store the analysis.",
   "group": "flags",
   "ref": "HO narrator inference",
-  "why": "Cut the inference. The contradictory dating it summed up stays. See flag 13 for \"eleven\"."
+  "why": "Cut the inference. The contradictory dating it summed up stays. \"Eleven\" becomes \"ten\", the cultural guide's count (the author's read 2026-10-16, E-starmap)."
  },
  {
   "file": "data/encounters/lore.json",
@@ -1410,7 +1419,7 @@
   "new": "Tell Gil the scan is voluntary.",
   "group": "flags",
   "ref": "T6-22",
-  "why": "The hint was a reason with no act. The new act is a line the captain says, and Gil's reply (\"Your right, Captain.\") answers it. Flag 7 has the option that repeats the label."
+  "why": "The hint was a reason with no act. The new act is a line the captain says, and Gil's reply (\"It's your right, Captain.\") answers it. Flag 7 has the option that repeats the label."
  },
  {
   "file": "data/encounters/miners_union.json",
@@ -1461,10 +1470,10 @@
   "file": "data/encounters/miners_union.json",
   "path": ".encounters[id=union_scab_01].choices[id=help_hauler].outcome.description",
   "old": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. He's sheepish about the whole thing. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Both sides grudgingly respect the call.",
-  "new": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Harlan wires you a tow fee. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.'",
+  "new": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Harlan wires you a tow fee.",
   "group": "flags",
   "ref": "T6-25",
-  "why": "Cut the aphorism, which also read two crews' minds. Also cut \"He's sheepish about the whole thing.\", a read of Harlan of T6-19's kind that the triage missed. The line ends on Jess's joke. The 100 CR has no payer in the text, before the cut or after it (flag 8)."
+  "why": "Cut the aphorism, which also read two crews' minds. Also cut \"He's sheepish about the whole thing.\", a read of Harlan of T6-19's kind that the triage missed. The line ends on Jess's joke. Harlan's tow fee pays the 100 CR (R8), and it comes after Jess's joke so it answers it (the author's read 2026-10-16, E-hauler)."
  },
  {
   "file": "data/encounters/miners_union.json",
@@ -1566,13 +1575,22 @@
   "why": "Cut the narrator joke, a comparison played for a laugh (spec 2.2 edge 5). \"Comes on the channel\" is the plain act that leads into the speech, and the speech carries Strand's pitch. The logo stays as a selected true detail, stated flat. Flag 10 has the bare cut."
  },
  {
+  "file": "data/encounters/frontier_alliance.json",
+  "path": ".encounters[id=alliance_patrol_volunteer_01].choices[id=refuse].outcome.description",
+  "old": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+  "new": "Gil frowns but nods. 'It's your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+  "group": "flags",
+  "ref": "E-gil",
+  "why": "\"Your right\" read as a misspelling of \"You're right\"; Gil grants the captain's right to refuse, which the refuse hint asks for (the author's read 2026-10-16, E-gil)."
+ },
+ {
   "file": "data/journal/entries.json",
   "path": ".journal_entries[id=auto_m06_priya].text",
   "old": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studies resource extraction economics. Describes working conditions as data sets. Axiom Labs is clinical and precise. Nothing like Breakstone.",
-  "new": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studied resource extraction economics.",
+  "new": "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to Axiom Labs had been reassigned, and her research samples were time-sensitive.",
   "group": "log",
   "ref": "auto_m06_priya",
-  "why": "Cut the closing verdict (\"clinical and precise. Nothing like Breakstone.\"), which is a conclusion (6.2). Cut \"Describes working conditions as data sets.\", the captain's summary of how she talks. \"studies\" becomes past tense (2.4). Campaign entry, so SP10 text; trigger flagged below."
+  "why": "Cut the closing verdict (\"clinical and precise. Nothing like Breakstone.\"), which is a conclusion (6.2). Cut \"Describes working conditions as data sets.\", the captain's summary of how she talks. \"studies\" becomes past tense (2.4). Campaign entry, so SP10 text; trigger flagged below. The entry fires on met_priya_osei, set as her scene opens (decline included), so it says only what is true then (the author's read 2026-10-16, L-m06; the trigger stays SP6's and SP10's, F-66 and F-80)."
  },
  {
   "file": "data/journal/entries.json",
@@ -1834,6 +1852,33 @@
   "group": "surrender",
   "ref": "marat_old_friend (union_corvette, 12%)",
   "why": "One word. His hail names \"Guild paper on your manifest\", so the line releases the captain's own cargo; \"Take\" could be heard as an offer of his. \"Keep\" removes that reading and mirrors Ngozi's \"Keep the ore.\""
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=sovi_mirror].surrender_line",
+  "old": "Accepted. Transferring.",
+  "new": "Accepted. The hold is open.",
+  "group": "surrender",
+  "ref": "sovi_mirror (empty 50%)",
+  "why": "The line promised what the ship may not carry; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=juno_red_line_runner].surrender_line",
+  "old": "Oh thank god. Okay. Okay. Offloading to the coordinates, stay calm, everyone stays calm. This is my first one.",
+  "new": "Oh thank god. Okay. Okay. Whatever we've got, it's yours, stay calm, everyone stays calm. This is my first one.",
+  "group": "surrender",
+  "ref": "juno_red_line_runner (empty 25%)",
+  "why": "The line promised what the ship may not carry; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
+ },
+ {
+  "file": "data/combat/captains.json",
+  "path": ".captains[id=vela_wolfs_ear].surrender_line",
+  "old": "Wolf's Ear yielding. Name your price. I've walked off worse deals.",
+  "new": "Wolf's Ear yielding. The hold's yours, whatever's in it. I've walked off worse deals.",
+  "group": "surrender",
+  "ref": "vela_wolfs_ear (no price named)",
+  "why": "The line promised a price no system names; the new words promise the hold as it is (the author's read 2026-10-16, L-surrender)."
  },
  {
   "file": "data/progression/skills.json",

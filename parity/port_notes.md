@@ -1963,6 +1963,273 @@ choice 11 (polish design 6) with the Grand Bazaar's receipt. The author read eve
     banner queue, and a filing writes its Log entry at once (`Game._after_iron_clock`), both
     Python-only departures from the plan's code (Task 2's fix round).
 
+## Writing W3b (2026-10-16)
+
+Plan W3b-S (aurelia `docs/plans/2026-10-14-writing-w3b-spacegame.md`, its rows in
+`docs/plans/2026-10-14-writing-w3b-rows.json`) landed the SpaceGame half of the writing-discipline
+spec's 9.2 rows 10 and 11: the crew's nine barks and the restyled first-sale lines (polish design
+5.2 and 5.4); a mission's reward as a record token, with the price rows on it (spec 3.7 and 2.7);
+the T7-8 gesture sweep and G11's widening (spec 4.7 and 5.1); the truth fixes (the full-pay window,
+the made-good terms, Tomas's weaver) and W3a's residuals; and the writing pass's queue: the 65 open
+W3 flags and their remainders in the encounters, T8-11's twenty Log entries, the surrender lines,
+Shield Mastery's text, and B1's and A1's lines. Every changed data line is a row of
+`tools/writing/w3b_rows.json`, swapped in by `python -m tools.writing.w3b_rows apply`, which keeps
+each file's escaping and line endings. The author read every new line on 2026-10-16 and accepted
+every recommendation; Task 9 applied the seven calls that change a line and regenerated the goldens
+once.
+
+### Records for plan W3b-A
+
+- What the sync brings: 25 data files. The rows, 220 of them (the plan's 215, three of them re-ruled
+  at the read and a fourth's reason updated, and the read's five new rows), change one line each in
+  24 files: `data/dialogue/dialogues.json` (35: the twelve record-token lines and Tomas's spelled
+  tariff figure, fourteen gesture lines, the four truth fixes and four residuals);
+  `data/encounters/` (`campaign.json` 18, `ce4_variety.json` 2, `commerce_guild.json` 8,
+  `frontier_alliance.json` 16, `generic.json` 27, `humor.json` 3, `lore.json` 14,
+  `miners_union.json` 10, `science_collective.json` 7, `system_specific.json` 14);
+  `data/journal/entries.json` (21: T8-11's twenty and `auto_iron_short`);
+  `data/combat/captains.json` (13 surrender lines); `data/economy/first_sale_lines.json` (10);
+  `data/missions/missions.json` (6), `sa_v_investment_intro.json` (2) and `side_missions.json` (2);
+  `data/combat/enemies.json` (3); `data/progression/skills.json` (2: Shield Mastery and
+  `insurance`); `data/ships/ship_types.json` (the `prospector`);
+  `data/auctions/crimson_reach_voices.json` (2) and `stellaris_voices.json` (1);
+  `data/galaxy/locations.json` (1); and `data/journal/travel_log_templates.json` (2).
+  `data/crew/ambient_dialogue.json` gains the nine barks at `ambient_lines[330]` to `[338]`,
+  appended so no index moves (the port's `ambient_chatter_test.gd` pins 330 lines and becomes 339),
+  and plan W3b-A's pin on Elena's `sold_back` line (`test_a_sold_back_sale_plays_the_crews_line`)
+  moves to her new text, "They knew what they sold us and paid by it. It's a good system. I would
+  know. I spent years keeping it." The rows file now holds 220 rows where aurelia's planned copy,
+  `docs/plans/2026-10-14-writing-w3b-rows.json`, holds the plan's 215: the two differ by design, by
+  the read's seven calls below.
+  Goldens whose content changes, from the regeneration's diff: `dialogue/ambient` (48 steps to 50:
+  the `opened_market` and `sold_back` action types join the walk and pick Elena's `[330]` and
+  Marcus's `[337]`, so three later picks and six recorded states move with the stream); the new
+  `dialogue/record_tokens` case (16 `fill_records` steps: the four probes, then the twelve shipped
+  lines); the twelve encounter outcome goldens whose lines changed, `encounters/outcomes_anomaly`,
+  `outcomes_comm_intercept`, `outcomes_debris`, `outcomes_derelict`, `outcomes_distress_bait`,
+  `outcomes_distress_signal`, `outcomes_merchant`, `outcomes_patrol`, `outcomes_refugee`,
+  `outcomes_shakedown`, `outcomes_smuggler` and `outcomes_wildlife`; `encounters/captains` (the
+  thirteen surrender lines); and `skills/catalog` (Shield Mastery and `insurance`). The dialogue
+  tree goldens record each tree's structure, never its text, so none moves, and the Log entries, the
+  missions' lines, the first-sale lines (Python never reads them, F-014) and `parity/schema.json`
+  move none. (plan W3b-S Tasks 1 to 7 and 9)
+- The port's record tokens: `{pay:<mission id>}` and `{fee:<mission id>}` (R1) render with
+  `fill_records` from the missions' rewards: `pay` sums the mission's `credits` rewards and `fee`
+  its `deduct_credits` rewards, the base figures the records hold before the turn-in scales the
+  credits, written `f"{sum:,}"`; a token naming a mission the records lack, or a kind of reward the
+  mission lacks, is left as written. They render on the dialogue surface only (`TokenRegistry`), at
+  every dialogue print path, each of which passes the missions; twelve shipped lines carry one, in
+  `callum_rhee_informant` (4), `cassiel_maren_forgery` (2), `larsen_customs` (2), `priya_stranded`,
+  `rook_honor_thieves` (2) and `yuki_signal_deep`. The `dialogue/record_tokens` case replays them
+  (step `fill_records`, args `[line]`): four probes (both kinds, an unknown mission beside a kind
+  the mission lacks, the captain's tokens left for their own fill, and `okafor_legacy_clinic_run`'s
+  "8,000" for the thousands comma), then every shipped line. No shipped mission pays two credits
+  rewards or two deductions, so no golden can hold a sum: plan W3b-A's brief adds a port unit test
+  for a two-reward sum and a thousands comma (C2), as SpaceGame's
+  `tests/test_models/test_captain_tokens.py` (`TestRecordTokens`, 1200 and 300 rendering "1,500")
+  does. Quantities and days stay as written (R1). (plan W3b-S Task 2 and its fix round; the
+  controller's call C2)
+- The barks: five `opened_market` lines (Elena, Marcus, Priya, Tomas at `min_loyalty` 40, Kai) and
+  four `sold_back` lines (Tomas, Elena, Marcus, Priya), R6, each on polish design 5.2's or 5.4's
+  beat; Kai's takes no gate, since his loyalty never moves. Python never fires either action (F-014,
+  `tests/test_data/test_port_only_content.py`). The read reworded Elena's and Priya's `sold_back`
+  lines (B-stamp) so they hold at every market, Crimson Reach's Bazaar included, which polish design
+  5.2 says stamps nothing; that also ends Elena's near-repeat of Tomas's "paid it to the credit",
+  and Tomas's stamp stays, a story about another desk. Elena's `opened_market` line keeps "Article
+  eleven" at every opening, her Guild reflex (B-article). The four `sold_back` lines are the
+  complicity key's lines (spec 3.5's loop trade, a buy and a sale back at one desk); the key in code
+  is W9's. (plan W3b-S Task 5; the author's read)
+- The port's strings: none of this plan's (the port's own strings are plan W3b-A's). The read
+  confirmed W3b-A's four (P-four: the premium's opening line, the teaching line, the reserve
+  repayment and the second negotiation, voice only, their form SP6's), kept the sell-back receipt's
+  wording on a released mission load (P-receipt), and kept BB-56's "Crew full" wording at Crew
+  Manager's maximum (P-crew; SP6's crew screen can show the berths). (plan W3b-S; the author's read)
+- Records in aurelia for plan W3b-A: F-86 closes (rows 5, 6, 10 and 11 landed); spec 9.2 row 10's
+  "ten", F-86's "ten crew barks" and polish design 8.2 row 5.1's "six `opened_market`" become nine
+  and five; polish choice 17 and polish design 5.4's "The fiction" lose "a lore proposal" (adopted
+  2026-10-13); spec 3.7's token rule, its 2.7 table row, G11's text in 5.1 and the desk copy follow
+  R1 and R3: a token is the base figure the records hold (the mission log prints each credits reward
+  on its own line and hides the fee), quantities and days stay as written, and G11's bullet (spec
+  line 723) and its gate-table note (line 648) name the forms the gate reads, the gesture with do,
+  does or did and not, spelled out or contracted with a straight apostrophe, beside the original
+  phrase, in every player-facing string but Marcus's spoken lines and the Reads on his nodes;
+  economy design 14.7 and `docs/handoffs.md`'s SP10 bullet on prices in speech follow R1 (market and
+  floor figures spelled out); economy design 7.4 and 15.4, the chunk map's W3 row and
+  `docs/handoffs.md`'s SP5 section give the side missions' figures to SP5-m1; `docs/handoffs.md`'s
+  SP6 section names "The ledger is closed"; and the credit sources the cuts removed join F-94's
+  list: `campaign_pirate_weapons_01.strip_parts` (200 CR, E-T4-39),
+  `guild_signal_encoded_01.decode_further` (125, E-T6-13), `derelict_cargo_log_01.download` (80,
+  T2-6) and `humor_retirement_01.accept` (60, E-T5-10, already on the list). The read gives F-94
+  five found lines as well: `alliance_harvest_01.take_cargo` (60 CR for "keep a few crates"),
+  `merchant_trader_01.trade` (100 CR and no cargo for goods "well below market rate"),
+  `sys_fulcrum_patrol_01.bluff` (75 CR the text does not explain), and two promises of pay the
+  choice never makes, `wildlife_swarm_01.observe`'s hint and `derelict_freighter_01.scan` (XP only).
+  `union_scab_01.help_hauler` stays off the list, since Harlan's tow fee pays its 100 CR (R8,
+  E-hauler).
+  Two outcomes with goods in the words and credits in the data join F-97 and F-90 (T6-24's and
+  T3-26's findings, SP10): `union_equipment_swap_01.trade_parts` ("loads your bay with titanium
+  ore", pays 150 CR and loads none) and `alliance_refugee_family_01.supplies` ("fuel cells and food
+  packs", takes 40 CR, and its hint shows no cost) (E-goods). A new finding takes
+  `collective_grant_01.negotiate_grant`: Ibanez promises gravitational maps no system grants, and
+  asking for more pays 100 CR where accepting pays 150, which the line never says (E-T6-34, SP10).
+  R10 stands: the five "ready cuts" were made by plan W2-S's Task 12 (`7bc49ff8`) and T11-3 by plan
+  W3a-S, and E1's provisional floor lines (`docs/handoffs.md`) stay with E1 and SP6. (plan W3b-S
+  rulings R1, R3, R6, R8 and R10; the author's read)
+- Earlier hand-offs this run closed, each kept as dated history in its own section (C5). In "Writing
+  W3a", "What W3a leaves": Tier 3's two nodes go to SP10 (R10); the record tokens and the price rows
+  landed (Task 2); `iron_delivery`'s "keeps your fuel tank full" against economy design 7.4, the
+  seven gesture lines held for the T7-8 ruling and the two found beside them, and
+  `sienna_vek_warning`'s unmarked narration in `refuse_data` and `farewell` landed (the gesture and
+  residual groups); and of the read's residuals, Q19's "leans on the crate", Q18's four lane
+  mentions, Q8's "Odom flagged me down" and Q17's "the file doesn't cover the gap" landed (the
+  residual group), while Q2's Python-only collect leg stays open. In "Writing W2", "Records for plan
+  W2-A": the intervene hint's "Two against two changes the odds." and T2-10's row, the narrator
+  inferences in `campaign_old_allies_01`, `campaign_pirate_weapons_01.mark_and_leave` and
+  `lore_star_map_01.analyze`, T4-7's fragment and T5-24's "your home system", T3-27's newcomer
+  thanks (now the ledger's "The teenager on the comms thanks you three times before signing off."),
+  `humor_wrong_number_01.play_along`'s Francine and `comm_intercept_static_01.log`'s closing maxim
+  landed (the flags group), while the `mission_16_pirate_base` and `mission_16_the_fulcrum` story
+  triggers stay open. In "Bug bash A1", "Records for plan A2": BB-87's four surrender quotes and its
+  "eleven lines" landed (the surrender group, thirteen lines now), and BB-75's Shield Mastery note
+  is reversed (C6): "+10% of the hull's base shields per level, added to max and starting shields"
+  is exact on the ship-type path, the port's only path, while on Python's build path the share also
+  counts fitted shield parts, so when SP4's parts and hulls give the port a build path, that plan
+  keeps the share on the hull's own shields or rewords the skill. In "Bug bash B1", "Records for
+  plan B2": the writing pass's lines landed (Task 7): "(route fuel)" on the board and in the mission
+  log (now "(route fuel, once per landing)"), Sell Max's and Sell All's "No cargo to sell" over held
+  cargo, refining's "Missing: ..." and "Need ..., have ...", the auction's "... in inventory.", the
+  collect hint and Drifter's Delivery's "Sell the goods"; the route-fuel notice and the empty hold's
+  "No cargo to sell" stay as written. (the controller's calls C5 and C6; plan W3b-S's ledger, Tasks
+  4, 6 and 7)
+- The author's read: 2026-10-16. The author read the W3b reading desk (60 calls: R1 to R10, the
+  barks, the gesture's narration, the queue's encounters, the Log and the rest of the queue, and the
+  port's strings, each with a recommended option) and replied "W3b approved with your
+  recommendations.", so every call took its recommended option and R1 to R10 stand as written. Seven
+  calls change a line, each through the rows except the two barks, edited in place:
+  - B-stamp: `ambient_lines[336]` (Elena, `sold_back`) opens "They knew what they sold us and paid
+    by it." for "They read their own stamp and paid it to the credit.", and `[338]` (Priya) reads
+    "Purchase, then resale to the seller, same day. Result: null. They knew their own goods." for
+    "Purchase, resale to the same desk, same day. Result: null. The desk pays what it stamped."; the
+    rest of each line stays.
+  - E-starmap: `lore_star_map_01.analyze`'s "eleven systems matching the known Expanse" becomes "ten
+    systems", the cultural guide's count.
+  - E-gil: `alliance_patrol_volunteer_01.refuse`'s outcome, Gil's "Your right, Captain.", becomes
+    "It's your right, Captain." (a new row; T6-22's reason quotes it).
+  - E-hauler: in `union_scab_01.help_hauler`, "Harlan wires you a tow fee." moves after Jess's "Tell
+    Harlan his invoice is in the mail.", so the fee answers her joke, and the row's reason says the
+    tow fee pays the 100 CR (C4).
+  - L-m06: `auto_m06_priya` reads "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to
+    Axiom Labs had been reassigned, and her research samples were time-sensitive.", true when
+    `met_priya_osei` fires as her scene opens, a decline included (the trigger stays SP6's and
+    SP10's, F-66 and F-80).
+  - L-surrender: three surrender lines outside R9's count, words only (new rows): `sovi_mirror`'s
+    "Accepted. Transferring." becomes "Accepted. The hold is open."; `juno_red_line_runner`'s
+    "Offloading to the coordinates" becomes "Whatever we've got, it's yours"; and `vela_wolfs_ear`'s
+    "Name your price." becomes "The hold's yours, whatever's in it.". R9's count of eleven missed
+    Tsovinar's and Juno's lines, whose ships' loot rolls empty 50% and 25% of the time, and Vela
+    named a price no system names. Ngozi's "Keep the ore" stays (R9).
+  - L-sav: The Longer Ledger's description opens "The cargo broker at Nexus Prime has more for you
+    than another haul." for "The cargo broker at Nexus Prime called you back. Not for another
+    haul.", the summons premise its discovery text already lost (a new row).
+  - The other 53 calls change no line. Of the controller's nine, C1 regenerates the goldens with the
+    suite's interpreter (Python 3.14.0; the determinism check proves the replays byte-identical);
+    C2, C3 and C9 landed in `0ea702e7` and `0bb3c153` (the probe comment no longer claims a sum,
+    `RECORD_KINDS`' comment says what each kind sums, and BB-1's defeat comment names the incident
+    report); C4 rode with E-hauler; C5 and C6 are the bullet above; and C7 and C8 change nothing
+    (the render-site test and refining's 106-column string stay). The rulings file,
+    `../w3b-edits/author-rulings.md` beside the worktree (outside the repo, never committed), gives
+    every call with its option. (the author's read, 2026-10-16)
+- What W3b leaves, and to whom: the 50 lines found outside the lists, unchanged, with the owners the
+  read gave them:
+  - SP10 (34): in `campaign.json`, `campaign_sato_ghost_01`'s `run_diagnostics` and `ignore`
+    remarks, `campaign_guild_shadow_01.comply`'s "doesn't delete itself",
+    `campaign_final_warning_01.comply` (an act, and a closing remark), `campaign_old_allies_01`'s
+    `go_public` remark and its plot beats (the description and `coordinate`, with its hint),
+    `campaign_pirate_weapons_01`'s description, and the defy outcome (T4-41: the captain's spoken
+    line only in the outcome, and backups no system records; a structure change); in `lore.json`,
+    `lore_charter_fragment_01` (description and `leave`), `lore_pre_colony_probe_01.leave`,
+    `lore_aurelia_beacon_01.share`, `lore_earth_song_01`'s description and `lore_star_map_01.chart`
+    (seven coordinates no system records); eight narrator reads of a feeling in the faction
+    encounters (`alliance_community_01.donate`, `alliance_moonshine_01.report`,
+    `union_derelict_drill_01.report_location`, `collective_specimen_01.decline_specimen`,
+    `collective_quarantine_01.assist_containment`, `collective_grant_01.accept_grant` and
+    `collective_nova_test_01` twice); nav data no system grants
+    (`alliance_salvage_claim_01.respect`, `alliance_storyteller_01.trade_stories`, and
+    `offer_help`'s hint); `alliance_barter_01.trade`'s claim of worth; `alliance_festival_01.pass`'s
+    unseen scene; `distress_cold_signal_01`'s `log_it` and `investigate`;
+    `sys_haven_supply_run_01.escort`'s Captain Okonkwo, named only on the donate path;
+    `cargo_stowaway`'s `work` and `haven`; the hints of `comm_ghost_signal_01.trace`,
+    `debris_graveyard_01.scan_leave`, `distress_oxygen_01.relay`,
+    `sys_iron_dcmc_patrol_01.negotiate`, `bait_civilian_lure_01.scan_first`,
+    `distress_pirate_attack_01` (`signal` and `avoid`), `sys_crimson_ghost_ship_01.board` and
+    `sys_fulcrum_encrypted_01.trace`; `wildlife_swarm_01.collect`'s payoff reason;
+    `comm_intercept_static_01.decode`'s thought; `legendary_iron_maw`'s lines; and
+    `sys_crimson_outlaw_offer_01`'s description, the narrator guessing.
+  - F-94 (SP10, 5): `alliance_harvest_01.take_cargo`, `wildlife_swarm_01.observe`'s hint,
+    `derelict_freighter_01.scan`, `merchant_trader_01.trade` and `sys_fulcrum_patrol_01.bluff` (in
+    the records bullet above).
+  - The rest (11): "Captain" from Alliance and Union speakers (Gil, Haddek, Suki, Roz and the co-op
+    dispatcher), whose factions the bibles give no titles (the voice sheets; Roz's in
+    `force_through` stays); costs no choice charges in `debris_graveyard_01.avoid` and
+    `debris_minefield_01.detour` (spec 3.7, SP10); six captains attached to no encounter in either
+    build, so their lines never play (dowager, thayer, dusty, rhiannon, rin and marat; the findings
+    register); Ngozi Amaechi's lead pilot narrated "he" in `shakedown_ore_holdup_01` (the naming
+    pass); `consortium_merchantman`, whose `tariff_immunity` has no consumer and whose
+    `faction_required` names no faction, so the ship shows locked and can never be bought (SP4); the
+    Act II archive's other dilemma entries, present tense outside T8-11's twenty (SP11); the other
+    averted gaze, Arna's "does not look at you" family, Prentiss's and Salko's, and the captain's
+    "You don't look back." (they stay, R3); `requirements/archive/act_one_narrative.md:315`, still
+    quoting Tomas's farmer (it stays, an archive); the port's `SimSave.REASONS` "No save to load",
+    which neither string table lists (SP6); the mission log's route-fuel line, changed without a
+    test pin (`spacegame/views/mission_log_view.py:755`, SP6); and
+    `data/narrative/lens_reactions.json`'s "Guild routes cover eleven systems in the Reach." (pinned
+    by `tests/test_scenarios/test_scenario_oblique_readout.py:56`), the count E-starmap corrects,
+    found by the controller and unruled (SP10, flagged to the author).
+  - Also left: the complicity key in code (W9); Tier 3's `no_freight` and `no_freight_float` (SP10);
+    and the scene-true drafts for `auto_m08`, `auto_m10`, `auto_m12` and `auto_m14`, whose flags
+    nothing sets (SP10's records, L-m06).
+  - The run's flags for the author, with owners:
+    - the global interpreter is Python 3.14.0 while the repo names 3.13, and every gate of the run
+      passed under 3.14 (process; C1);
+    - `tools/parity/drivers/dialogue.py`'s probe comment says "No shipped mission pays two rewards
+      of one kind", true only of the two record kinds: `the_scholars_errand` and
+      `honor_among_thieves` pay two `set_flag` rewards and `bill_of_landing` three `trade_permit`
+      (unowned, a comment);
+    - the Fulcrum: the run's Task 5 ruling took as its default that the port plays no
+      `opened_market` bark at the Fulcrum, which has no first-sale line and whose only trade is a
+      seized cache (polish design 5.4); the desk did not put it to the author (plan W3b-A, for the
+      author to confirm);
+    - `arna_post_payback.start`'s Read, "She looks up this time.", was written against the first
+      encounter's Read the gesture sweep rewrote, so its contrast now rests on her typing and on
+      `board_is_ledger`'s glance; `arna_stays_closeout.offer`'s "She looks up." is the same family
+      (unowned);
+    - `requirements/combat_balance_design.md:311`'s Power Drift sample gives Tomas the gesture; it
+      ships nowhere, and G11 would catch it in data (unowned);
+    - `data/economy/first_sale_lines.json`'s `_comment` still ends "Working text for the writing
+      session." (unowned, a later records pass);
+    - G11's widened pattern passes "never", "won't", "hasn't", an interposed "even" and a curly
+      apostrophe, and would flag the search sense ("Don't look up his record."); no shipped line
+      holds either (the spec's G11 text, through plan W3b-A's records; a later plan that writes such
+      a line);
+    - `tests/test_views/test_auction_view_reach.py:301`'s `player_won` prefix lost its period with
+      Salko's gesture row, one character looser (it stays);
+    - `tests/test_views/test_arna_campaign.py`'s AR-5 test, which guarded Arna's unwritten letter as
+      the departure entry's beat, now guards its cut (`test_departure_entry_ends_on_her_last_act`;
+      L-departure confirmed the cut);
+    - `spacegame/tutorial_manager.py:51`, the first tutorial step ("The Map"), opens "Eleven systems
+      on the nav display.", the count E-starmap corrects, found at Task 9 and not on the desk
+      (`data/galaxy/systems.json` holds twelve entries, two of them platforms; unowned, flagged to
+      the author);
+    - `auto_m06_priya`'s record keeps `system_id` "axiom_labs": Python stamps a flag's entry with
+      the current system (`Game._check_journal_triggers`), so it reads Nexus Prime, and the record's
+      system shows only when a caller passes none (the plan that ports the Log, with the trigger's
+      SP6 and SP10);
+    - two rows' reasons trail their re-ruled lines: T6-25's `help_hauler` reason still says "The
+      line ends on Jess's joke." though the fee now follows it, and `auto_m06_priya`'s still says
+      "studies" becomes past tense, which the new entry no longer says; the rows never ship, and
+      their files are the run's records (unowned). (plan W3b-S's ledger, Tasks 1 to 7; Task 9; the
+      author's read)
+
 ## Act II v1
 
 Off behind `ACT_TWO_V1_ENABLED` (tag `act2-v1-archive`). Not ported.

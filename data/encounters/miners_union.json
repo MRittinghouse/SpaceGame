@@ -316,7 +316,7 @@
           "label": "Help the Hauler",
           "description": "Assist the non-union hauler yourself.",
           "outcome": {
-            "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Harlan wires you a tow fee. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.'",
+            "description": "You tow Harlan's rig to a safe orbit and patch his coolant line with sealant tape. Jess's voice crackles over comms: 'Well, at least someone's got a conscience. Tell Harlan his invoice is in the mail.' Harlan wires you a tow fee.",
             "rewards": [
               {
                 "reward_type": "credits",

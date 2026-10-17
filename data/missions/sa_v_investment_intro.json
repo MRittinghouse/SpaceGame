@@ -3,7 +3,7 @@
     {
       "id": "sa_v_investment_intro",
       "name": "The Longer Ledger",
-      "description": "The cargo broker at Nexus Prime called you back. Not for another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
+      "description": "The cargo broker at Nexus Prime has more for you than another haul. This is the kind of conversation he does not have with pilots whose manifests he has not read. He wants to show you a different part of the books.",
       "hint": "Find Odom at the Nexus Prime cargo office and hear what he has to say about the longer ledger.",
       "discovery_text": "Odom said he had something to show me. Not freight. The other side of the book.",
       "prerequisites": [

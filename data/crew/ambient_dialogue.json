@@ -2042,7 +2042,7 @@
     },
     {
       "crew_id": "elena_reeves",
-      "text": "They read their own stamp and paid it to the credit. It's a good system. I would know. I spent years keeping it.",
+      "text": "They knew what they sold us and paid by it. It's a good system. I would know. I spent years keeping it.",
       "context": "player_action",
       "action_type": "sold_back"
     },
@@ -2054,7 +2054,7 @@
     },
     {
       "crew_id": "dr_priya_osei",
-      "text": "A controlled trial, then. Purchase, resale to the same desk, same day. Result: null. The desk pays what it stamped. I would not repeat it without a new hypothesis.",
+      "text": "A controlled trial, then. Purchase, then resale to the seller, same day. Result: null. They knew their own goods. I would not repeat it without a new hypothesis.",
       "context": "player_action",
       "action_type": "sold_back"
     }

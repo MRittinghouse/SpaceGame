@@ -509,7 +509,7 @@
           "label": "Decline the Scan",
           "description": "Tell Gil the scan is voluntary.",
           "outcome": {
-            "description": "Gil frowns but nods. 'Your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
+            "description": "Gil frowns but nods. 'It's your right, Captain. Just know that folks who refuse scans tend to get remembered out here. Fly safe.' The patrol logs your transponder ID as it moves on.",
             "rewards": [
               {
                 "reward_type": "modify_reputation",

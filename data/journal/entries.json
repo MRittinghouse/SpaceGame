@@ -37,7 +37,7 @@
     },
     {
       "entry_id": "auto_m06_priya",
-      "text": "Transported Dr. Priya Osei to Axiom Labs with time-sensitive research samples. She studied resource extraction economics.",
+      "text": "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to Axiom Labs had been reassigned, and her research samples were time-sensitive.",
       "trigger_flag": "met_priya_osei",
       "system_id": "axiom_labs",
       "mission_id": ""
