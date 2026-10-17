@@ -2104,41 +2104,124 @@ once.
 - The author's read: 2026-10-16. The author read the W3b reading desk (60 calls: R1 to R10, the
   barks, the gesture's narration, the queue's encounters, the Log and the rest of the queue, and the
   port's strings, each with a recommended option) and replied "W3b approved with your
-  recommendations.", so every call took its recommended option and R1 to R10 stand as written. Seven
-  calls change a line, each through the rows except the two barks, edited in place:
+  recommendations.", so every call took its recommended option and R1 to R10 stand as written. The
+  rulings file, `../w3b-edits/author-rulings.md` beside the worktree, lives outside the repo and is
+  never committed. So the list below is the record, one sub-bullet per call in the desk's order,
+  then the controller's nine. Seven calls change a line, each through the rows except the two
+  barks, which are edited in place.
+  - R1: a mission's reward as a record token; no change, "Confirm R1"
+  - R2: promises the data does not back go with the figure; no change, "Confirm R2"
+  - R3: G11 reads the gesture everywhere; no change, "Confirm R3's breadth" (The read catches the
+    other forms.).
+  - R4: the gesture's observables; no change, "Confirm all"
+  - R5: Tomas's cloth has one maker, the weaver; no change, "Confirm the weaver"
+  - R6: nine barks; no change, "Confirm the nine"
+  - R7: the first-sale lines; no change, "Confirm the ten"
+  - R8: the queue's encounters; no change, "Confirm R8"
+  - R9: the rest of the queue; no change, "Confirm R9"
+  - R10: the records; no change, "Confirm R10"
   - B-stamp: `ambient_lines[336]` (Elena, `sold_back`) opens "They knew what they sold us and paid
     by it." for "They read their own stamp and paid it to the credit.", and `[338]` (Priya) reads
     "Purchase, then resale to the seller, same day. Result: null. They knew their own goods." for
     "Purchase, resale to the same desk, same day. Result: null. The desk pays what it stamped."; the
     rest of each line stays.
+  - B-article: "Article eleven" at every opening; no change, "Keep: the number is canon, the quoting
+    is her Guild reflex"
+  - G-narration: Narration that shows Marcus doing the gesture; no change, "Keep the rule as it is"
+  - E-T4-39: The salvaged parts' 200 CR; no change, "The cut stands" (The reward notice shows the
+    money; the outcome joins F-94 (SP10).).
+  - E-T5-10: Declan's 60 CR; no change, "Cut only" (The 60 CR joins F-94.).
+  - E-T4-36: Sato's ghost: what the captain learns; no change, "End on Sato's code"
+  - E-T4-43: The final warning's double_down; no change, "Cut both"
+  - E-T5-24: The star map photo; no change, "...the cluster of dots that marks Nexus Prime."
+  - E-T5-6: The ghost pirate's charge and punchline; no change, "fifty credits" and "The ship is
+    flying on autopilot."
+  - E-T5-19: The pre-colony probe's date; no change, "End on 'a date: 2118.'"
+  - E-T5-27: The Aurelia beacon; no change, "Cut the cities sentence, keep the last" (Ends "She has
+    been speaking to no one for a hundred and fifty years.").
+  - E-T5-21: The generation ship's eleven minutes; no change, "...one after another, for eleven
+    minutes."
+  - E-wrong: The wrong number's Francine; no change, "Francine's words and the labeled transfer"
   - E-starmap: `lore_star_map_01.analyze`'s "eleven systems matching the known Expanse" becomes "ten
     systems", the cultural guide's count.
+  - E-T6-13: The decoded fragments' 125 CR; no change, "Cut, and the 125 CR joins F-94"
+  - E-T6-27: The drill heads' price; no change, "Breakstone co-op price tags still on every piece"
+  - E-T6-34: Ibanez's maps and the stipend; no change, "The draft, and a finding for the maps and
+    the stipend"
+  - E-goods: Goods in the words, credits in the data; no change, "Register both beside T6-24 and
+    T3-26 (SP10)"
+  - E-T6-18: Roz's coffee; no change, "Cut it"
+  - E-T6-10: The blackmail sale's hint; no change, "Reach out to the director through back
+    channels."
+  - E-T6-22: Refusing Gil's scan; no change, "Tell Gil the scan is voluntary."
   - E-gil: `alliance_patrol_volunteer_01.refuse`'s outcome, Gil's "Your right, Captain.", becomes
     "It's your right, Captain." (a new row; T6-22's reason quotes it).
   - E-hauler: in `union_scab_01.help_hauler`, "Harlan wires you a tow fee." moves after Jess's "Tell
     Harlan his invoice is in the mail.", so the fee answers her joke, and the row's reason says the
     tow fee pays the 100 CR (C4).
+  - E-T6-30: Gren's route tips; no change, "Keep 'He shares some route tips.' as talk"
+  - E-T6-35: Strand's entrance; no change, "Project Lead Strand comes on the channel:"
+  - E-T2-10: The intervene hint; no change, "Burn hard toward the firefight, weapons hot."
+  - E-T4-17: The bait scan's failure; no change, "End on the threat arriving" ("The scans look fine.
+    The transport's beacon flickers off, and an armed ship drops out of stealth.").
+  - E-T2-8: The micro-story's cockpit lights; no change, "The cockpit lights are still burning."
+    (Echoes the description's last sentence.).
+  - E-T2-6: The cargo log's story; no change, "As applied"
+  - E-T3-21: Vex's counter; no change, "The draft"
+  - E-T3-22: The Margrave drifts on; no change, "Cut it"
+  - E-T3-18: The deep signal's picture; no change, "Keep it"
+  - E-T3-27: The newcomer's thanks; no change, "The teenager on the comms thanks you three times..."
+    (The ledger's offered line.).
+  - E-T3-14: The escort hint; no change, "Fly alongside."
   - L-m06: `auto_m06_priya` reads "Met Dr. Priya Osei at Nexus Prime. Her chartered transport to
     Axiom Labs had been reassigned, and her research samples were time-sensitive.", true when
     `met_priya_osei` fires as her scene opens, a decline included (the trigger stays SP6's and
     SP10's, F-66 and F-80).
+  - L-branch-b: Arna's fair trade; no change, "Cut it"
+  - L-departure: Arna's letter; no change, "Cut the letter"
+  - L-sable: Sable at the first auction; no change, "Keep 'Sable said two words the whole time.'"
+  - L-okafor: Kweon's cost; no change, "Cut it"
+  - L-d5: The Institute entry's crew sentence; no change, "Keep it"
   - L-surrender: three surrender lines outside R9's count, words only (new rows): `sovi_mirror`'s
     "Accepted. Transferring." becomes "Accepted. The hold is open."; `juno_red_line_runner`'s
     "Offloading to the coordinates" becomes "Whatever we've got, it's yours"; and `vela_wolfs_ear`'s
     "Name your price." becomes "The hold's yours, whatever's in it.". R9's count of eleven missed
     Tsovinar's and Juno's lines, whose ships' loot rolls empty 50% and 25% of the time, and Vela's
     asked the captain to name a price no system names. Ngozi's "Keep the ore" stays (R9).
+  - L-shield: Shield Mastery and Hull Reinforcement; no change, "As applied; Hull Reinforcement
+    unchanged"
+  - L-code: the eight code strings; no change, "Confirm the eight". It confirms Task 7's eight code
+    strings as written: the route-fuel line on the board and in the mission log, Sell Max's and Sell
+    All's held-cargo refusals, refining's two refusals, the auction's listing refusal and the
+    collect hint.
+  - L-footing: BB-4's footing hint; no change, "Confirm". It confirms BB-4's rewritten guard at
+    tests/test_data/test_iron_delivery_outcomes.py:95, which asserts that the footing hint names
+    Elena Reeves's trading advice at Nexus Prime.
+  - L-plight: The miners' plight; no change, "Leave W2's approved text"
+  - L-prospector: The Prospector's advice; no change, "Keep the advice"
   - L-sav: The Longer Ledger's description opens "The cargo broker at Nexus Prime has more for you
     than another haul." for "The cargo broker at Nexus Prime called you back. Not for another
     haul.", the summons premise its discovery text already lost (a new row).
-  - The other 53 calls change no line. Of the controller's nine, C1 regenerates the goldens with the
-    suite's interpreter (Python 3.14.0; the determinism check proves the replays byte-identical);
-    C2, C3 and C9 landed in `0ea702e7` and `0bb3c153` (the probe comment no longer claims a sum,
-    `RECORD_KINDS`' comment says what each kind sums, and BB-1's defeat comment names the incident
-    report); C4 rode with E-hauler; C5 and C6 are the bullet above; and C7 and C8 change nothing
-    (the render-site test and refining's 106-column string stay). The rulings file,
-    `../w3b-edits/author-rulings.md` beside the worktree (outside the repo, never committed), gives
-    every call with its option. (the author's read, 2026-10-16)
+  - P-four: The port's four strings; no change, "Confirm the four"
+  - P-receipt: The sell-back receipt on a released mission load; no change, "Keep: the receipt
+    teaches the round-trip buyer, and the case is rare"
+  - P-crew: "Crew full" at Crew Manager's maximum; no change, "Keep BB-56's wording" (The case needs
+    both points and three aboard; SP6's crew screen can show the berths.).
+  - C1: the regeneration runs under the suite's interpreter, Python 3.14.0; check_determinism
+    printed byte-identical for 447 files.
+  - C2: the probe comment in tools/parity/drivers/dialogue.py no longer claims a sum. It landed in
+    0ea702e7, and 61e89257 makes it name both record kinds. Plan W3b-A's brief adds the port unit
+    test for a two-reward sum and a thousands comma.
+  - C3: RECORD_KINDS' comment in spacegame/models/captain_tokens.py says what each kind sums; it
+    landed in 0ea702e7.
+  - C4: the help_hauler row's reason now says the tow fee pays the 100 CR; applied with E-hauler.
+  - C5: W2's and W3a's dated hand-offs stay as written; the bullet 'Earlier hand-offs this run
+    closed' names what superseded them.
+  - C6: BB-75's Shield Mastery note is reversed, recorded in that same bullet.
+  - C7: the render-site test stays.
+  - C8: refining.py's 106-column string stays until the next edit splits it.
+  - C9: game.py's BB-1 defeat comment names the incident report; it landed in 0bb3c153.
+  (the author's read, 2026-10-16; the controller's calls C1 to C9)
 - What W3b leaves, and to whom: the 50 items found outside the lists, each left as it stands, with
   the owners the read gave them:
   - SP10 (34): in `campaign.json`, `campaign_sato_ghost_01`'s `run_diagnostics` and `ignore`
