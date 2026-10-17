@@ -2126,8 +2126,8 @@ once.
     "Accepted. Transferring." becomes "Accepted. The hold is open."; `juno_red_line_runner`'s
     "Offloading to the coordinates" becomes "Whatever we've got, it's yours"; and `vela_wolfs_ear`'s
     "Name your price." becomes "The hold's yours, whatever's in it.". R9's count of eleven missed
-    Tsovinar's and Juno's lines, whose ships' loot rolls empty 50% and 25% of the time, and Vela
-    named a price no system names. Ngozi's "Keep the ore" stays (R9).
+    Tsovinar's and Juno's lines, whose ships' loot rolls empty 50% and 25% of the time, and Vela's
+    asked the captain to name a price no system names. Ngozi's "Keep the ore" stays (R9).
   - L-sav: The Longer Ledger's description opens "The cargo broker at Nexus Prime has more for you
     than another haul." for "The cargo broker at Nexus Prime called you back. Not for another
     haul.", the summons premise its discovery text already lost (a new row).
@@ -2139,8 +2139,8 @@ once.
     (the render-site test and refining's 106-column string stay). The rulings file,
     `../w3b-edits/author-rulings.md` beside the worktree (outside the repo, never committed), gives
     every call with its option. (the author's read, 2026-10-16)
-- What W3b leaves, and to whom: the 50 lines found outside the lists, unchanged, with the owners the
-  read gave them:
+- What W3b leaves, and to whom: the 50 items found outside the lists, each left as it stands, with
+  the owners the read gave them:
   - SP10 (34): in `campaign.json`, `campaign_sato_ghost_01`'s `run_diagnostics` and `ignore`
     remarks, `campaign_guild_shadow_01.comply`'s "doesn't delete itself",
     `campaign_final_warning_01.comply` (an act, and a closing remark), `campaign_old_allies_01`'s
