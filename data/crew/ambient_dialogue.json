@@ -2054,7 +2054,7 @@
     },
     {
       "crew_id": "dr_priya_osei",
-      "text": "A controlled trial, then. Purchase, then resale to the seller, same day. Result: null. They knew their own goods. I would not repeat it without a new hypothesis.",
+      "text": "A controlled trial, then. Purchase, then resale to the seller. Result: null. They knew their own goods. I would not repeat it without a new hypothesis.",
       "context": "player_action",
       "action_type": "sold_back"
     }
