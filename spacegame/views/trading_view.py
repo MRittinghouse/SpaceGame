@@ -1303,11 +1303,16 @@ class TradingView(BaseView):
             return
         total_credits = 0
         total_items = 0
+        held_for_missions = False
         for commodity_id, quantity in cargo.items():
+            if self._is_quest_good(commodity_id):
+                continue
             # Bug bash BB-1: Sell All leaves every mission's accept cargo aboard
             if self.mission_manager is not None:
-                quantity = self.mission_manager.free_units(self.player, commodity_id)
-            if quantity <= 0 or self._is_quest_good(commodity_id):
+                free = self.mission_manager.free_units(self.player, commodity_id)
+                held_for_missions = held_for_missions or (quantity > 0 and free <= 0)
+                quantity = free
+            if quantity <= 0:
                 continue
             if self._black_market_mode:
                 sell_price = self._get_black_market_sell_price(commodity_id)
@@ -1331,8 +1336,11 @@ class TradingView(BaseView):
             for m in xp_msgs:
                 self._show_message(m)
             self._refresh_tables()
-        else:
+        elif held_for_missions:
             self._show_message("Nothing to sell: the cargo aboard is held for missions.")
+        else:
+            # The A key skips the button's check, so this is the disabled button's own reason.
+            self._show_message("Nothing to sell.")
 
     def _execute_rest(self) -> None:
         current_system = self.systems[self.player.current_system_id]

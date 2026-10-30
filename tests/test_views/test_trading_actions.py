@@ -462,6 +462,13 @@ class TestConsignedCargo:
             "Nothing to sell: the cargo aboard is held for missions."
         )
 
+    def test_sell_all_with_only_quest_goods_gives_the_buttons_reason(self) -> None:
+        """The A key skips the button's check, so it must not blame missions for quest goods."""
+        view, player = self._view({"crafted_reinforced_plating": 1})
+        view._execute_sell_all()
+        assert player.ship.get_cargo_quantity("crafted_reinforced_plating") == 1
+        assert view.transaction_message == "Nothing to sell."
+
     def test_the_seal_holds_at_the_black_market(self) -> None:
         from spacegame.views.trading_view import SEALED_CARGO
 
